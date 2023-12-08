@@ -34,7 +34,6 @@ const Index = ({
 
   // handle Switch
   const [switch3, setswitch3] = useState(true);
-  const tableRef = React.useRef(null);
 
   const [subArray, setSubArray] = useState([
     {
@@ -82,6 +81,9 @@ const Index = ({
   const handleDropDownFilter = (e) => {
     if (e == "") {
       setData(dataSource);
+      setSubArray([  {
+        Tabs: data,
+      },])
     } else {
       const updatedData = dataSource.filter((val) => {
         return val.displayType == e;
@@ -122,12 +124,16 @@ const Index = ({
       // })
     }
   };
+
   const HandleSubTable = (record) => {
     setData(record.children);
-    console.log("this is previous array : ",subArray)
-    console.log("this is comming::", record.children)
-    setSubArray([...subArray, { [record.displayName]: record.children }]);
+    const isKeyPresent = subArray.some(obj => obj.hasOwnProperty(record.displayName));
+    if(!isKeyPresent){
+      setSubArray([...subArray, { [record.displayName]: record.children }]);
+    }
   };
+  
+  const tableRef = React.useRef(null);
   const downloadPDF = async () => {
     // Assuming 'tableRef' is a reference to your table element
     const content = tableRef.current;

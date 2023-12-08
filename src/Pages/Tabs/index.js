@@ -83,6 +83,10 @@ const Index = () => {
       }
     ).then((response)=>{
       console.log("this is response",response)
+      console.log("this is response",record.tabId)
+      const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
+      // setData(newArray)
+      // setIsLoading(false)
       fetchData()
     }).catch((error)=>{
       console.log(error);
