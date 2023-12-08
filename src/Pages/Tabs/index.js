@@ -8,13 +8,15 @@ import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
 import { decryptData } from "../Utility/encryptionUtils";
-
+import SpinnerModel from '../../components/Model/SpinnerModel';
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
+  //handleSpinner
+  const [isLoading, setIsLoading] = useState(false)
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -26,7 +28,7 @@ const Index = () => {
   // fetch data
   const fetchData = async () => {
     const token = decryptData(localStorage.getItem("authUser"));
-    const response = await axios.post(
+    await axios.post(
       `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
       {},
       {
@@ -35,9 +37,13 @@ const Index = () => {
           Authorization: `Bearer ${token.result?.token}`,
         },
       }
-    );
-    const tabsDataDB = validateTabResponse(response?.result);
-    setData(tabsDataDB);
+    ).then((response)=>{
+      const tabsDataDB = validateTabResponse(response?.result);
+      setData(tabsDataDB);
+      setIsLoading(false)
+    }).catch((error)=>{
+      setIsLoading(false)
+    });
   };
 
   //checkbox function
@@ -60,6 +66,7 @@ const Index = () => {
 
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
+    setIsLoading(true)
     await axios.post(
       `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
       {
@@ -77,10 +84,14 @@ const Index = () => {
     ).then((response)=>{
       console.log("this is response",response)
       fetchData()
-    }).catch((error)=>{console.log(error)})
+    }).catch((error)=>{
+      console.log(error);
+      setIsLoading(false)
+    })
   };
 
   const handleDelete = async (e) => {
+    setIsLoading(true)
     // e.preventDefault()
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
@@ -230,12 +241,14 @@ const Index = () => {
   ];
 
   //elements required
-  const tabElements = {
+  const tableElement = {
+    title :  "Tabs",
     headerSelect: true,
     switch: false,
   };
 
   useEffect(() => {
+    setIsLoading(true)
     fetchData();
   }, []);
 
@@ -244,10 +257,11 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
+          {isLoading && <SpinnerModel/>}
           <Table
             columns={columns}
             dataSource={data}
-            tabElements={tabElements}
+            tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
           />

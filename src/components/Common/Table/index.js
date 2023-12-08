@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './style.css'
+import "./style.css";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
 import html2pdf from "html2pdf.js";
@@ -18,22 +18,29 @@ const Index = ({
   columns,
   dataSource,
   subDataSourse,
-  tabElements,
+  tableElement,
   addModelFunction,
   deleteModelFunction,
-
 }) => {
-  document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
+  // search filter
   const [searchTerm, setSearchTerm] = useState("");
+  //sorting
   const [sortOrder, setSortOrder] = useState({
     sortOrder: "",
     key: "",
   });
-  const [filteredData, setFilteredData] = useState([]);
+
+  // handle Switch
   const [switch3, setswitch3] = useState(true);
   const tableRef = React.useRef(null);
 
+  const [subArray, setSubArray] = useState([
+    {
+      Tabs: data,
+    },
+  ]);
   const Offsymbol = () => {
     return (
       <div
@@ -52,6 +59,7 @@ const Index = ({
       </div>
     );
   };
+
   const OnSymbol = () => {
     return (
       <div
@@ -81,6 +89,7 @@ const Index = ({
       setData(updatedData);
     }
   };
+
   const handleSearchFilter = () => {
     console.log(searchTerm);
     if (searchTerm.length === 1) {
@@ -98,10 +107,31 @@ const Index = ({
       setData(updatedData);
     }
   };
+
+  const moveBack = (key) => {
+    console.log("this is what inside sub array -->>>>", subArray);
+    if (key == "Tabs") {
+      setData(dataSource);
+      setSubArray([
+        {
+          Tabs: dataSource,
+        },
+      ]);
+      // const updatedData = subArray.filter((val)=>{
+      //   return !subArray.includes(key)
+      // })
+    }
+  };
+  const HandleSubTable = (record) => {
+    setData(record.children);
+    console.log("this is previous array : ",subArray)
+    console.log("this is comming::", record.children)
+    setSubArray([...subArray, { [record.displayName]: record.children }]);
+  };
   const downloadPDF = async () => {
     // Assuming 'tableRef' is a reference to your table element
     const content = tableRef.current;
-    console.log("this is the content", content)
+    console.log("this is the content", content);
     // Configure PDF options
     const pdfOptions = {
       margin: 10,
@@ -110,14 +140,17 @@ const Index = ({
       html2canvas: { scale: 2 },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
-  
+
     try {
       // Generate PDF using html2pdf
-      const pdfBlob = await html2pdf().from(content).set(pdfOptions).outputPdf();
+      const pdfBlob = await html2pdf()
+        .from(content)
+        .set(pdfOptions)
+        .outputPdf();
 
       // Create a Blob from the Uint8Array
       const blob = new Blob([pdfBlob], { type: "application/pdf" });
-  console.log(blob)
+      console.log(blob);
       // Create a download link and trigger the download
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
@@ -129,6 +162,7 @@ const Index = ({
       console.error("Error generating PDF:", error);
     }
   };
+
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
       throw new Error(
@@ -158,12 +192,12 @@ const Index = ({
     setData(sortedData);
   };
 
-  const fetchData = () =>{
-    setData(dataSource)
-  }
+  const fetchData = () => {
+    setData(dataSource);
+  };
 
   useEffect(() => {
-    fetchData()
+    fetchData();
   }, [dataSource]);
   // import { Link } from "react-router-dom";
   return (
@@ -192,7 +226,7 @@ const Index = ({
                   >
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>
-                  {tabElements?.headerSelect ? (
+                  {tableElement?.headerSelect ? (
                     <div className="">
                       <select
                         className="form-select"
@@ -208,7 +242,7 @@ const Index = ({
                       </select>
                     </div>
                   ) : null}
-                  {tabElements?.switch ? (
+                  {tableElement?.switch ? (
                     <div className="d-flex align-items-center">
                       <Switch
                         width={70}
@@ -225,6 +259,28 @@ const Index = ({
                   ) : null}
                 </div>
               </Col>
+              <Col className="d-flex justify-content-end">
+                {subArray.map((val, index) => {
+                  const arrayKey = Object.keys(val).find((key) =>
+                    Array.isArray(val[key])
+                  );
+                  return (
+                    <div className="d-flex flex-row align-items-center cursor-pointer">
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => {
+                          moveBack(arrayKey);
+                        }}
+                      >
+                        {arrayKey}
+                      </span>
+                      {index !== subArray.length - 1 ? (
+                        <i className="bx bxs-chevron-right ms-3 me-3" />
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </Col>
             </Row>
           </CardHeader>
 
@@ -232,7 +288,10 @@ const Index = ({
             <div id="customerList">
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
-                  <span>Showing 3 of 3 entries</span>
+                  <span>
+                    Showing {data.length} of {data.length} entries
+                  </span>
+                  <div className="d-flex align-items-center justify-content-end"></div>
                 </Col>
                 <Col className="col-sm">
                   <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
@@ -245,7 +304,7 @@ const Index = ({
                       <Button size="large" className="btn border mx-1">
                         <i className="fas fa-file-excel"></i>
                       </Button>
-                      <Button onClick={downloadPDF} className="btn border" >
+                      <Button onClick={downloadPDF} className="btn border">
                         <i className="bx bxs-file-pdf"></i>
                       </Button>
                     </div>
@@ -267,7 +326,7 @@ const Index = ({
 
               <div className="table-responsive table-card mt-3 mb-1">
                 <table
-                ref={tableRef}
+                  ref={tableRef}
                   // border={2}
                   className="table align-middle table-nowrap"
                   id="customerTable"
@@ -325,7 +384,16 @@ const Index = ({
                     {data.map((record) => (
                       <tr key={record.tabId} className={`hover`}>
                         {columns.map((column) => (
-                          <td key={column.key} style={column.style } onClick={()=>{(record?.childrenCount>0 && column?.key == "tabName")?setData(record.children) : setData(data)}}>
+                          <td
+                            key={column.key}
+                            style={column.style}
+                            onClick={() => {
+                              record?.childrenCount > 0 &&
+                              column?.key == "tabName"
+                                ? HandleSubTable(record)
+                                : setData(data);
+                            }}
+                          >
                             {column.render
                               ? column.render(record[column.dataIndex], record)
                               : record[column.dataIndex]}
