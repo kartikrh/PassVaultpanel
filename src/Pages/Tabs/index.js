@@ -23,7 +23,6 @@ const Index = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
 
-  const []
   // fetch data
   const fetchData = async () => {
     const token = decryptData(localStorage.getItem("authUser"));
