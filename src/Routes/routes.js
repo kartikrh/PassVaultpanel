@@ -6,7 +6,8 @@ import Dashboard from "../Pages/Dashboard";
 
 //Pages
 import Tabs from '../Pages/Tabs'
-
+import Roles from '../Pages/Roles'
+import EventTypes from '../Pages/EventTypes'
 
 
 // Import Calender
@@ -103,7 +104,10 @@ import GoogleMap from "../Pages/Maps/GoogleMap";
 const authProtectedRoutes = [
   //dashboard
   { path: "/dashboard", component: <Dashboard /> },
-  { path: "/Tabs", component: <Tabs /> },
+  { path: "/tabs", component: <Tabs /> },
+  { path: "/roles", component: <Roles /> },
+  { path: "/eventType", component: <EventTypes /> },
+
 
   // Calender
   { path: "/calendar", component: <Calender /> },

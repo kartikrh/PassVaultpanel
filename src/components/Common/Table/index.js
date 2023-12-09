@@ -32,15 +32,16 @@ const Index = ({
     key: "",
   });
 
-  // handle Switch
-  const [switch3, setswitch3] = useState(true);
-
+  // handle statusSwitch
+  const [statusSwitch, setStatusSwitch] = useState(true);
+  // handle data inside data
   const [subArray, setSubArray] = useState([
     {
-      Tabs: data,
+      [tableElement?.title]: data,
     },
   ]);
-  const Offsymbol = () => {
+
+  const Offsymbol3 = () => {
     return (
       <div
         style={{
@@ -59,7 +60,7 @@ const Index = ({
     );
   };
 
-  const OnSymbol = () => {
+  const OnSymbol3 = () => {
     return (
       <div
         style={{
@@ -77,13 +78,29 @@ const Index = ({
       </div>
     );
   };
-
+  const handleStatusSwitch = () =>{
+    if(statusSwitch){
+      const switchData = dataSource.filter((val) => {
+        return val.isActive === statusSwitch;
+      });
+      setStatusSwitch(false)
+      setData(switchData)
+    }else{
+      const switchData = dataSource.filter((val) => {
+        return val.isActive === statusSwitch;
+      });
+      setStatusSwitch(true)
+      setData(switchData)
+    }
+  }
   const handleDropDownFilter = (e) => {
     if (e == "") {
       setData(dataSource);
-      setSubArray([  {
-        Tabs: data,
-      },])
+      setSubArray([
+        {
+          Tabs: data,
+        },
+      ]);
     } else {
       const updatedData = dataSource.filter((val) => {
         return val.displayType == e;
@@ -93,7 +110,6 @@ const Index = ({
   };
 
   const handleSearchFilter = () => {
-    console.log(searchTerm);
     if (searchTerm.length === 1) {
       setData(dataSource);
     } else if (searchTerm.length > 1) {
@@ -127,12 +143,14 @@ const Index = ({
 
   const HandleSubTable = (record) => {
     setData(record.children);
-    const isKeyPresent = subArray.some(obj => obj.hasOwnProperty(record.displayName));
-    if(!isKeyPresent){
+    const isKeyPresent = subArray.some((obj) =>
+      obj.hasOwnProperty(record.displayName)
+    );
+    if (!isKeyPresent) {
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  
+
   const tableRef = React.useRef(null);
   const downloadPDF = async () => {
     // Assuming 'tableRef' is a reference to your table element
@@ -197,9 +215,16 @@ const Index = ({
     });
     setData(sortedData);
   };
-
+  // getting data for the table coming from the page && checking default status
   const fetchData = () => {
-    setData(dataSource);
+    if (tableElement?.switch) {
+      const switchData = dataSource.filter((val) => {
+        return val.isActive === statusSwitch;
+      });
+      setData(switchData);
+    } else {
+      setData(dataSource);
+    }
   };
 
   useEffect(() => {
@@ -252,14 +277,14 @@ const Index = ({
                     <div className="d-flex align-items-center">
                       <Switch
                         width={70}
-                        uncheckedIcon={<Offsymbol />}
-                        checkedIcon={<OnSymbol />}
+                        uncheckedIcon={<Offsymbol3 />}
+                        checkedIcon={<OnSymbol3 />}
                         className="pe-0"
                         onColor="#02a499"
                         onChange={() => {
-                          setswitch3(!switch3);
+                          handleStatusSwitch()
                         }}
-                        checked={switch3}
+                        checked={statusSwitch}
                       />
                     </div>
                   ) : null}
