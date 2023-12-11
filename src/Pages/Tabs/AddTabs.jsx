@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { TabFields } from '../../constants/FieldConst/TabFieldConst';
+import { TabFields } from '../../constants/FieldConst/TabConst';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);

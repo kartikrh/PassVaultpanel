@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import {getToken} from '../../helpers/api_helper'
+import { getToken } from '../../helpers/api_helper'
 import fackData from "./data";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
@@ -37,11 +37,11 @@ const Index = () => {
           Authorization: `Bearer ${token.result?.token}`,
         },
       }
-    ).then((response)=>{
+    ).then((response) => {
       const tabsDataDB = validateTabResponse(response?.result);
       setData(tabsDataDB);
       setIsLoading(false)
-    }).catch((error)=>{
+    }).catch((error) => {
       setIsLoading(false)
     });
   };
@@ -73,7 +73,7 @@ const Index = () => {
         id: record.tabId,
         tabName: record.tabName,
         parentId: record.parentId,
-        [pType]: cState?false:true,
+        [pType]: cState ? false : true,
       },
       {
         headers: {
@@ -81,14 +81,14 @@ const Index = () => {
           Authorization: `Bearer ${getToken()}`,
         },
       }
-    ).then((response)=>{
-      console.log("this is response",response)
-      console.log("this is response",record.tabId)
+    ).then((response) => {
+      console.log("this is response", response)
+      console.log("this is response", record.tabId)
       const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
-    }).catch((error)=>{
+    }).catch((error) => {
       console.log(error);
       setIsLoading(false)
     })
@@ -97,23 +97,23 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
-        {
-          encryptedTabIds: singleCheck,
+    const response = await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
+      {
+        encryptedTabIds: singleCheck,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      ).then((response)=>{
-        setDeleteModelVisable(false);
-        fetchData();
-      }).catch((error)=>{
-        console.log(error)
-      });
+      }
+    ).then((response) => {
+      setDeleteModelVisable(false);
+      fetchData();
+    }).catch((error) => {
+      console.log(error)
+    });
   }
   //table columns
   const columns = [
@@ -158,7 +158,7 @@ const Index = () => {
     {
       title: "Tab Name",
       dataIndex: "tabName",
-      render: (text,record) =>(<span style={{cursor:"pointer"}}>{text}</span>),
+      render: (text, record) => (<span style={{ cursor: "pointer" }}>{text}</span>),
       key: "tabName",
       style: { width: "10%" },
     },
@@ -173,7 +173,7 @@ const Index = () => {
       title: "Display Type",
       dataIndex: "displayType",
       key: "displayType",
-      render: (text,record) =>(<span>{text===1?"Admin":"Agent"}</span>),
+      render: (text, record) => (<span>{text === 1 ? "Admin" : "Agent"}</span>),
       sort: true,
       style: { width: "10%" },
     },
@@ -216,7 +216,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isEdit",record, record.IsEdit);
+            handlePermissions("isEdit", record, record.IsEdit);
           }}
         >
           {" "}
@@ -246,7 +246,7 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title :  "Tabs",
+    title: "Tabs",
     headerSelect: true,
     switch: false,
   };
@@ -261,13 +261,13 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
-          {isLoading && <SpinnerModel/>}
+          {isLoading && <SpinnerModel />}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            onAddNavigate={"/addTabs"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

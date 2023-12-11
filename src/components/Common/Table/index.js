@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./style.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
 import html2pdf from "html2pdf.js";
 
@@ -23,7 +23,8 @@ const Index = ({
   addModelFunction,
   deleteModelFunction,
   eventTypes,
-  competitions
+  competitions,
+  onAddNavigate
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
@@ -34,7 +35,7 @@ const Index = ({
     sortOrder: "",
     key: "",
   });
-
+  const navigate = useNavigate();
   // handle statusSwitch
   const [statusSwitch, setStatusSwitch] = useState(true);
   // handle data inside data
@@ -81,16 +82,16 @@ const Index = ({
       </div>
     );
   };
-  const handleStatusSwitch = () =>{
-    if(statusSwitch){
+  const handleStatusSwitch = () => {
+    if (statusSwitch) {
       const switchData = dataSource.filter((val) => {
         return val.isActive !== statusSwitch;
       });
       setStatusSwitch(false)
       setData(switchData)
-    }else{
+    } else {
       const switchData = dataSource.filter((val) => {
-        return val.isActive !== statusSwitch ;
+        return val.isActive !== statusSwitch;
       });
       setStatusSwitch(true)
       setData(switchData)
@@ -111,7 +112,7 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleEventTyptDropDown = (e) =>{
+  const handleEventTyptDropDown = (e) => {
     if (e == "") {
       setData(dataSource);
     } else {
@@ -121,7 +122,7 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleCompetitionsDropdown = (e) =>{
+  const handleCompetitionsDropdown = (e) => {
     if (e == "") {
       setData(dataSource);
     } else {
@@ -261,13 +262,13 @@ const Index = ({
                     color="success"
                     className="add-btn"
                     onClick={() => {
-                      addModelFunction(true);
+                      navigate(onAddNavigate)
                     }}
                     id="create-btn"
                   >
                     <i className="ri-add-line align-bottom me-1"></i> Add
                   </Button>
-                  {tableElement?.clone?<Button
+                  {tableElement?.clone ? <Button
                     color="warning"
                     className="btn"
                     onClick={() => {
@@ -276,7 +277,7 @@ const Index = ({
                     id="create-btn"
                   >
                     <i className="ri-add-line align-bottom me-1"></i> Clone
-                  </Button>:null}
+                  </Button> : null}
                   <Button
                     color="soft-danger"
                     onClick={() => {
@@ -302,44 +303,44 @@ const Index = ({
                     </div>
                   ) : null}
                   {
-                    tableElement?.eventTypeSelect?(
+                    tableElement?.eventTypeSelect ? (
                       <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleEventTyptDropDown(e.target.value);
-                        }}
-                      >
-                        <option value="">Select Event Type</option>
-                        {
-                          eventTypes?.map((val)=>{
-                            return (<option value={val}>{val}</option>)
-                          })
-                        }
-                      </select>
-                    </div>
-                    ):null
+                        <select
+                          className="form-select"
+                          id="inlineFormSelectPref"
+                          onChange={(e) => {
+                            handleEventTyptDropDown(e.target.value);
+                          }}
+                        >
+                          <option value="">Select Event Type</option>
+                          {
+                            eventTypes?.map((val) => {
+                              return (<option value={val}>{val}</option>)
+                            })
+                          }
+                        </select>
+                      </div>
+                    ) : null
                   }
                   {
-                    tableElement?.competitionsSelect?(
+                    tableElement?.competitionsSelect ? (
                       <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleCompetitionsDropdown(e.target.value);
-                        }}
-                      >
-                        <option value="">Select Competition</option>
-                        {
-                          competitions?.map((val)=>{
-                            return (<option value={val}>{val}</option>)
-                          })
-                        }
-                      </select>
-                    </div>
-                    ):null
+                        <select
+                          className="form-select"
+                          id="inlineFormSelectPref"
+                          onChange={(e) => {
+                            handleCompetitionsDropdown(e.target.value);
+                          }}
+                        >
+                          <option value="">Select Competition</option>
+                          {
+                            competitions?.map((val) => {
+                              return (<option value={val}>{val}</option>)
+                            })
+                          }
+                        </select>
+                      </div>
+                    ) : null
                   }
                   {tableElement?.switch ? (
                     <div className="d-flex align-items-center">
@@ -444,12 +445,11 @@ const Index = ({
                                     sortByProperty("ascending", column.key);
                                   }}
                                   style={{
-                                    color: `${
-                                      sortOrder.key === column.key &&
+                                    color: `${sortOrder.key === column.key &&
                                       sortOrder.sortOrder === "ascending"
-                                        ? "gray"
-                                        : "lightGray"
-                                    }`,
+                                      ? "gray"
+                                      : "lightGray"
+                                      }`,
                                     fontSize: "12px",
                                     marginTop: "2px",
                                     cursor: "pointer",
@@ -461,12 +461,11 @@ const Index = ({
                                     sortByProperty("descending", column.key);
                                   }}
                                   style={{
-                                    color: `${
-                                      sortOrder.key === column.key &&
+                                    color: `${sortOrder.key === column.key &&
                                       sortOrder.sortOrder === "descending"
-                                        ? "gray"
-                                        : "lightGray"
-                                    }`,
+                                      ? "gray"
+                                      : "lightGray"
+                                      }`,
                                     marginTop: "-5px",
                                     fontSize: "12px",
                                     cursor: "pointer",
@@ -488,7 +487,7 @@ const Index = ({
                             style={column.style}
                             onClick={() => {
                               record?.childrenCount > 0 &&
-                              column?.key == "tabName"
+                                column?.key == "tabName"
                                 ? HandleSubTable(record)
                                 : setData(data);
                             }}

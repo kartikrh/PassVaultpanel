@@ -105,6 +105,7 @@ import IconBoxicons from "../Pages/Icons/IconBoxicons"
 // Import Map Pages
 import VectorMaps from "../Pages/Maps/VectorMap";
 import GoogleMap from "../Pages/Maps/GoogleMap";
+import AddTabs from "../Pages/Tabs/AddTabs.jsx";
 
 
 const authProtectedRoutes = [
@@ -114,13 +115,14 @@ const authProtectedRoutes = [
   { path: "/roles", component: <Roles /> },
   { path: "/eventType", component: <EventTypes /> },
   { path: "/Players", component: <Players /> },
-  { path: '/Teams', component: <Teams/> },
-  { path: '/matchType', component: <MatchType/> },
-  { path: '/penalty', component: <PenaltyRuns/> },
-  { path: '/competition', component: <Competition/> },
-  { path: '/events', component: <Events/> },
-  { path: '/commentary', component: <Commentary/> },
-  { path: '/users', component: <Users/> },
+  { path: '/Teams', component: <Teams /> },
+  { path: '/matchType', component: <MatchType /> },
+  { path: '/penalty', component: <PenaltyRuns /> },
+  { path: '/competition', component: <Competition /> },
+  { path: '/events', component: <Events /> },
+  { path: '/commentary', component: <Commentary /> },
+  { path: '/users', component: <Users /> },
+  { path: '/addTabs', component: <AddTabs /> },
 
   // Calender
   { path: "/calendar", component: <Calender /> },
