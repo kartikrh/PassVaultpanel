@@ -38,11 +38,11 @@ const Index = () => {
         }
       )
       .then((response) => {
-
         setData(response.result);
         setIsLoading(false);
       })
       .catch((error) => {
+        console.log("this is the error", error)
         setIsLoading(false);
       });
   };
@@ -70,7 +70,7 @@ const Index = () => {
     setIsLoading(true);
     await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
+        `${process.env.REACT_APP_BASE_URL}/admin/eventType/save`,
         {
           eventTypeId: record.eventTypeId,
           [pType]: cState ? false : true,
@@ -109,11 +109,12 @@ const Index = () => {
         }
       )
       .then((response) => {
+        console.log("this is the error", response)
         fetchData();
         setDeleteModelVisable(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.log("this is the error", error)
         setIsLoading(false)
       });
   };

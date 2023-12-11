@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import {getToken} from '../../helpers/api_helper'
 import {Avatar} from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
+import Toaster from '../../components/Toaster'
 import axios from "axios";
-import SpinnerModel from '../../components/Model/SpinnerModel';
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import SpinnerModel from '../../components/Model/SpinnerModel';
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -168,7 +168,7 @@ const Index = () => {
         ),
         key: "tabName",
         style: { width: "10%" },
-      },
+    },
     {
       title: "Player Name",
       dataIndex: "playerName",
@@ -228,6 +228,7 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
           {isLoading && <SpinnerModel/>}
+          <Toaster/>
           <Table
             columns={columns}
             dataSource={data}
