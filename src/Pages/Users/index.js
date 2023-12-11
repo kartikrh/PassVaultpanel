@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import {Avatar} from 'antd'
+import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
 import { getToken } from "../../helpers/api_helper";
 import { Button } from "reactstrap";
@@ -9,15 +9,19 @@ import axios from "axios";
 import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
-import TabModel from "../../components/Model/AddTabModel";
+import ChangePasswordModel from '../../components/Model/changePassword'
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  // password
+  const [password, setPassword] = useState("");
+  //useId
+  const [userId, setUserId] = useState("")
   // model state
-  const [addModelVisable, setAddModelVisable] = useState(false);
+  const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
 
   // checkbox state
@@ -28,7 +32,7 @@ const Index = () => {
   const fetchData = async () => {
     await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/eventType/all`,
+        `${process.env.REACT_APP_BASE_URL}/admin/user/all`,
         {},
         {
           headers: {
@@ -38,9 +42,9 @@ const Index = () => {
         }
       )
       .then((response) => {
-
         setData(response.result);
         setIsLoading(false);
+        setChangPasswordModelVisible(false)
       })
       .catch((error) => {
         setIsLoading(false);
@@ -57,10 +61,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.eventTypeId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.eventTypeId));
+      if (singleCheck.includes(e.userId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.userId));
       } else {
-        setSingleCheck([...singleCheck, e.eventTypeId]);
+        setSingleCheck([...singleCheck, e.userId]);
       }
     }
   };
@@ -70,9 +74,9 @@ const Index = () => {
     setIsLoading(true);
     await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
+        `${process.env.REACT_APP_BASE_URL}/admin/user/save`,
         {
-          eventTypeId: record.eventTypeId,
+          userId: record.userId,
           [pType]: cState ? false : true,
         },
         {
@@ -92,14 +96,14 @@ const Index = () => {
   };
 
   const handleDelete = async (e) => {
-    console.log(singleCheck)
+    console.log(singleCheck);
     setIsLoading(true);
     // e.preventDefault()
     await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/eventType/delete`,
+        `${process.env.REACT_APP_BASE_URL}/admin/user/delete`,
         {
-         eventTypeId:singleCheck,
+          userId: singleCheck,
         },
         {
           headers: {
@@ -114,9 +118,33 @@ const Index = () => {
       })
       .catch((error) => {
         console.log(error);
-        setIsLoading(false)
+        setIsLoading(false);
       });
   };
+
+  const handleChangePassword = async () =>{
+    setIsLoading(true);
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/admin/user/save`,
+        {
+          password: password,
+          userId: userId
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      )
+      .then((response) => {
+        fetchData();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  }
   //table columns
   const columns = [
     {
@@ -140,7 +168,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.eventTypeId)}
+            checked={checkedAll || singleCheck.includes(record.userId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
@@ -158,50 +186,41 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Image",
-      dataIndex: "image",
-      render: (text, record) => (
-        // <img src={process.env.REACT_APP_BASE_URL+text}/>
-        <div className="flex-shrink-0">
-          {
-            text?<div>
-            <img
-              className="avatar-xs rounded-circle"
-              alt=""
-              src={process.env.REACT_APP_BASE_URL + text}
-            />
-          </div> : <Avatar src="#" alt="ET">Image</Avatar>
-          }
-        </div>
-      ),
-      key: "image",
-      style: { width: "10%" },
-    },
-    {
-      title: "Event Type",
-      dataIndex: "eventType",
-      key: "eventType",
+      title: "User Name[Full Name]",
+      dataIndex: "userName",
+      key: "userName",
       sort: true,
       style: { width: "100%" },
     },
-    
     {
-      title: "Is Highlights",
-      key: "isHighlight",
-      dataIndex: "isHighlight",
-      render: (text, record) => (
-        <Button
-          color={`${text? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isHighlight", record, record.isHighlight);
-          }}
-        >
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
+      title: "Parent Name",
+      dataIndex: "parentName",
+      render: (text,record) =>(<span style={{cursor:"pointer"}}>{record.parentId === "0"? "Root" : null}</span>),
+      key: "parentName",
+      sort: true,
+      style: { width: "100%" },
+    },
+    {
+      title: "Role",
+      dataIndex: "roleName",
+      key: "roleName",
+      sort: true,
+      style: { width: "100%" },
+    },
+    {
+      title: "Password",
+      dataIndex: "password",
+      key: "password",
+      sort: true,
+      style: { width: "100%" },
+    },
+    {
+      title: "Change Password",
+      dataIndex: "cPassword",
+      render: (text,record) =>(<span style={{cursor:"pointer"}} onClick={()=>{setChangPasswordModelVisible(true); setUserId(record.userId)}}><i className=" bx bx-show-alt" style={{fontSize:"25px"}}/></span>),
+      key: "cPassword",
+      sort: true,
+      style: { width: "100%", textAlign:"center" },
     },
     {
       title: "Is Active",
@@ -209,11 +228,11 @@ const Index = () => {
       dataIndex: "isActive",
       render: (text, record) => (
         <Button
-          color={`${text? "primary" : "danger"}`}
+          color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isActive", record , record.isActive);
+            handlePermissions("isActive", record, record.isActive);
           }}
         >
           {" "}
@@ -226,7 +245,7 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title: "Event Types",
+    title: "Users",
     headerSelect: false,
     switch: true,
   };
@@ -240,23 +259,26 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Types" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Users" />
           {isLoading && <SpinnerModel />}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
+            setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
+
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
           />
-          <TabModel
-            addModelVisable={addModelVisable}
-            setAddModelVisable={setAddModelVisable}
+          <ChangePasswordModel
+          changePasswordVisible={changePasswordVisible}
+          setChangPasswordModelVisible={setChangPasswordModelVisible}
+          setPassword={setPassword}
+          handleChangePassword={handleChangePassword}
           />
         </Container>
       </div>

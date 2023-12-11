@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import {Avatar} from 'antd'
+import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import { getToken } from "../../helpers/api_helper";
+import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
-  document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Events | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  //get Events Types
+  const [eventTypes, setEventTypes] = useState([]);
+  // get competitions
+  const [competitions, setCompetitions] = useState([]);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
@@ -28,7 +31,7 @@ const Index = () => {
   const fetchData = async () => {
     await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/eventType/all`,
+        `${process.env.REACT_APP_BASE_URL}/admin/events/all`,
         {},
         {
           headers: {
@@ -38,8 +41,15 @@ const Index = () => {
         }
       )
       .then((response) => {
-
-        setData(response.result);
+        setData(response?.result);
+        const eventTypes = Array.from(
+          new Set(response?.result.map((item) => item.eventType))
+        );
+        const competitions = Array.from(
+          new Set(response?.result.map((item) => item.competition))
+        );
+        setEventTypes(eventTypes);
+        setCompetitions(competitions);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -57,10 +67,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.eventTypeId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.eventTypeId));
+      if (singleCheck.includes(e.eventId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.eventId));
       } else {
-        setSingleCheck([...singleCheck, e.eventTypeId]);
+        setSingleCheck([...singleCheck, e.eventId]);
       }
     }
   };
@@ -70,9 +80,9 @@ const Index = () => {
     setIsLoading(true);
     await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
+        `${process.env.REACT_APP_BASE_URL}/admin/events/save`,
         {
-          eventTypeId: record.eventTypeId,
+          eventId: record.eventId,
           [pType]: cState ? false : true,
         },
         {
@@ -92,14 +102,12 @@ const Index = () => {
   };
 
   const handleDelete = async (e) => {
-    console.log(singleCheck)
     setIsLoading(true);
-    // e.preventDefault()
-    await axios
+    const response = await axios
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/eventType/delete`,
+        `${process.env.REACT_APP_BASE_URL}/admin/events/delete`,
         {
-         eventTypeId:singleCheck,
+          eventId: singleCheck,
         },
         {
           headers: {
@@ -113,8 +121,8 @@ const Index = () => {
         setDeleteModelVisable(false);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.log(error);
-        setIsLoading(false)
       });
   };
   //table columns
@@ -140,14 +148,13 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.eventTypeId)}
+            checked={checkedAll || singleCheck.includes(record.eventId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
           />
-          <i className="bx bx-move ms-1 mt-1"></i>
         </div>
-      ), // Use 'select' as a placeholder key for the checkbox column
+      ),
       key: "select",
       style: { width: "2%" },
     },
@@ -158,65 +165,72 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Image",
-      dataIndex: "image",
+      title: "Event Name",
+      dataIndex: "eventName",
       render: (text, record) => (
-        // <img src={process.env.REACT_APP_BASE_URL+text}/>
-        <div className="flex-shrink-0">
-          {
-            text?<div>
-            <img
-              className="avatar-xs rounded-circle"
-              alt=""
-              src={process.env.REACT_APP_BASE_URL + text}
-            />
-          </div> : <Avatar src="#" alt="ET">Image</Avatar>
-          }
-        </div>
+        <span style={{ cursor: "pointer" }}>{text}</span>
       ),
-      key: "image",
+      key: "eventName",
       style: { width: "10%" },
     },
     {
       title: "Event Type",
       dataIndex: "eventType",
-      key: "eventType",
-      sort: true,
-      style: { width: "100%" },
-    },
-    
-    {
-      title: "Is Highlights",
-      key: "isHighlight",
-      dataIndex: "isHighlight",
       render: (text, record) => (
-        <Button
-          color={`${text? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isHighlight", record, record.isHighlight);
-          }}
-        >
-          <i className="bx bx-block"></i>
-        </Button>
+        <span style={{ cursor: "pointer" }}>{text}</span>
       ),
-      style: { width: "2%", textAlign: "center" },
+      key: "eventType",
+      style: { width: "10%" },
+    },
+    {
+      title: "Event Date",
+      dataIndex: "eventDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {new Intl.DateTimeFormat("en-US", {
+            year: "2-digit",
+            month: "numeric",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: true,
+          }).format(new Date(text))}
+        </span>
+      ),
+      key: "eventDate",
+      style: { width: "10%" },
+    },
+    {
+      title: "Venue",
+      dataIndex: "venue",
+      key: "venue",
+      style: { width: "10%" },
+    },
+    {
+      title: "Reference Id",
+      dataIndex: "refId",
+      key: "refId",
+      style: { width: "10%" },
+    },
+    {
+      title: "Competition",
+      dataIndex: "competition",
+      key: "competition",
+      style: { width: "40%" },
     },
     {
       title: "Is Active",
-      key: "isActive",
-      dataIndex: "isActive",
+      key: "active",
       render: (text, record) => (
         <Button
-          color={`${text? "primary" : "danger"}`}
+          color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isActive", record , record.isActive);
+            handlePermissions("isActive", record, record.isActive);
           }}
         >
-          {" "}
           <i className="bx bx-block"></i>
         </Button>
       ),
@@ -226,9 +240,11 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title: "Event Types",
+    title: "Events",
     headerSelect: false,
-    switch: true,
+    eventTypeSelect: true,
+    competitionsSelect: true,
+    switch: false,
   };
 
   useEffect(() => {
@@ -240,7 +256,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Types" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Events" />
           {isLoading && <SpinnerModel />}
           <Table
             columns={columns}
@@ -248,6 +264,8 @@ const Index = () => {
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            eventTypes={eventTypes}
+            competitions={competitions}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

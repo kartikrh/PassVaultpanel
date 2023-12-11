@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Container,
-  ListGroup,
-  ListGroupItem,
   Modal,
   ModalBody,
-  ModalFooter,
-  Row,
   ModalHeader,
 } from "reactstrap";
 import Flatpickr from "react-flatpickr";

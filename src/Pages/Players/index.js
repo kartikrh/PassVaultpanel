@@ -3,16 +3,16 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import {getToken} from '../../helpers/api_helper'
+import {Avatar} from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from '../../components/Model/SpinnerModel';
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
-  document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +27,7 @@ const Index = () => {
   // fetch data
   const fetchData = async () => {
     await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/roles/all`,
+      `${process.env.REACT_APP_BASE_URL}/admin/player/all`,
       {},
       {
         headers: {
@@ -36,9 +36,8 @@ const Index = () => {
         },
       }
     ).then((response)=>{
-        console.log(response?.result)
-    //   const tabsDataDB = validateTabResponse(response?.result);
       setData(response?.result);
+      console.log(response)
       setIsLoading(false)
     }).catch((error)=>{
       setIsLoading(false)
@@ -55,10 +54,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.roleId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.roleId));
+      if (singleCheck.includes(e.playerId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.playerId));
       } else {
-        setSingleCheck([...singleCheck, e.roleId]);
+        setSingleCheck([...singleCheck, e.playerId]);
       }
     }
   };
@@ -67,11 +66,10 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true)
     await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
+      `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
       {
-        id: record.roleId,
-        tabName: record.tabName,
-        parentId: record.parentId,
+        playerId: record.playerId,
+        playerName: record.playerName,
         [pType]: cState?false:true,
       },
       {
@@ -81,11 +79,7 @@ const Index = () => {
         },
       }
     ).then((response)=>{
-      console.log("this is response",response)
-      console.log("this is response",record.roleId)
-      const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
-      // setData(newArray)
-      // setIsLoading(false)
+      // const newArray = data.map(obj => (obj.playerId === record.playerId ? response.result : obj));
       fetchData()
     }).catch((error)=>{
       console.log(error);
@@ -96,10 +90,10 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-      await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/roles/delete`,
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/admin/player/delete`,
         {
-          roleIds: singleCheck,
+          playerId: singleCheck,
         },
         {
           headers: {
@@ -108,9 +102,10 @@ const Index = () => {
           },
         }
       ).then((response)=>{
-        setDeleteModelVisable(false);
         fetchData();
+        setDeleteModelVisable(false);
       }).catch((error)=>{
+        setIsLoading(false)
         console.log(error)
       });
   }
@@ -137,7 +132,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.roleId)}
+            checked={checkedAll || singleCheck.includes(record.playerId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
@@ -153,27 +148,71 @@ const Index = () => {
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"></i>,
       style: { width: "2%", textAlign: "center" },
-    },    
+    },
     {
-      title: "Role",
-      dataIndex: "roleName",
-      key: "roleName",
+        title: "Image",
+        dataIndex: "image",
+        render: (text, record) => (
+          // <img src={process.env.REACT_APP_BASE_URL+text}/>
+          <div className="flex-shrink-0">
+            {
+              text?<div>
+              <img
+                className="avatar-xs rounded-circle"
+                alt=""
+                src={process.env.REACT_APP_BASE_URL + text}
+              />
+            </div> : <Avatar src="#" alt="ET">Image</Avatar>
+            }
+          </div>
+        ),
+        key: "tabName",
+        style: { width: "10%" },
+      },
+    {
+      title: "Player Name",
+      dataIndex: "playerName",
+      render: (text,record) =>(<span style={{cursor:"pointer"}}>{text}</span>),
+      key: "playerName",
       sort:true,
       style: { width: "10%" },
     },
     {
-        title: "Description",
-        dataIndex: "description",
-        key: "description",
-        sort:true,
-        style: { width: "90%" },
-      },
-   
+      title: "Display Name",
+      dataIndex: "displayName",
+      key: "displayName",
+      style: { width: "10%" },
+      sort:true,
+    },
+    {
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
+
+      style: { width: "10%" },
+    },
+    {
+      title: "Is Active",
+      key: "active",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className="bx bx-block"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   //elements required
   const tableElement = {
-    title :  "Roles",
+    title :  "Players",
     headerSelect: false,
     switch: false,
   };
@@ -187,7 +226,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Roles" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
           {isLoading && <SpinnerModel/>}
           <Table
             columns={columns}
