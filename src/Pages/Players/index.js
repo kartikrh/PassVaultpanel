@@ -3,17 +3,16 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import {getToken} from '../../helpers/api_helper'
-import fackData from "./data";
+import {Avatar} from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from '../../components/Model/SpinnerModel';
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
-  document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false)
@@ -27,19 +26,18 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    const token = decryptData(localStorage.getItem("authUser"));
     await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
+      `${process.env.REACT_APP_BASE_URL}/admin/player/all`,
       {},
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.result?.token}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       }
     ).then((response)=>{
-      const tabsDataDB = validateTabResponse(response?.result);
-      setData(tabsDataDB);
+      setData(response?.result);
+      console.log(response)
       setIsLoading(false)
     }).catch((error)=>{
       setIsLoading(false)
@@ -56,10 +54,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.tabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
+      if (singleCheck.includes(e.playerId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.playerId));
       } else {
-        setSingleCheck([...singleCheck, e.tabId]);
+        setSingleCheck([...singleCheck, e.playerId]);
       }
     }
   };
@@ -68,11 +66,10 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true)
     await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
+      `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
       {
-        id: record.tabId,
-        tabName: record.tabName,
-        parentId: record.parentId,
+        playerId: record.playerId,
+        playerName: record.playerName,
         [pType]: cState?false:true,
       },
       {
@@ -82,11 +79,7 @@ const Index = () => {
         },
       }
     ).then((response)=>{
-      console.log("this is response",response)
-      console.log("this is response",record.tabId)
-      const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
-      // setData(newArray)
-      // setIsLoading(false)
+      // const newArray = data.map(obj => (obj.playerId === record.playerId ? response.result : obj));
       fetchData()
     }).catch((error)=>{
       console.log(error);
@@ -98,9 +91,9 @@ const Index = () => {
     setIsLoading(true)
     // e.preventDefault()
       const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
+        `${process.env.REACT_APP_BASE_URL}/admin/player/delete`,
         {
-          encryptedTabIds: singleCheck,
+          playerId: singleCheck,
         },
         {
           headers: {
@@ -109,9 +102,10 @@ const Index = () => {
           },
         }
       ).then((response)=>{
-        setDeleteModelVisable(false);
         fetchData();
+        setDeleteModelVisable(false);
       }).catch((error)=>{
+        setIsLoading(false)
         console.log(error)
       });
   }
@@ -138,12 +132,12 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.tabId)}
+            checked={checkedAll || singleCheck.includes(record.playerId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
           />
-          <i className="bx bx-move ms-1 mt-1"></i>
+          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
@@ -156,85 +150,57 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Tab Name",
-      dataIndex: "tabName",
+        title: "Image",
+        dataIndex: "image",
+        render: (text, record) => (
+          // <img src={process.env.REACT_APP_BASE_URL+text}/>
+          <div className="flex-shrink-0">
+            {
+              text?<div>
+              <img
+                className="avatar-xs rounded-circle"
+                alt=""
+                src={process.env.REACT_APP_BASE_URL + text}
+              />
+            </div> : <Avatar src="#" alt="ET">Image</Avatar>
+            }
+          </div>
+        ),
+        key: "tabName",
+        style: { width: "10%" },
+      },
+    {
+      title: "Player Name",
+      dataIndex: "playerName",
       render: (text,record) =>(<span style={{cursor:"pointer"}}>{text}</span>),
-      key: "tabName",
+      key: "playerName",
+      sort:true,
       style: { width: "10%" },
     },
     {
       title: "Display Name",
       dataIndex: "displayName",
       key: "displayName",
-      sort: true,
+      style: { width: "10%" },
+      sort:true,
+    },
+    {
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
+
       style: { width: "10%" },
     },
     {
-      title: "Display Type",
-      dataIndex: "displayType",
-      key: "displayType",
-      render: (text,record) =>(<span>{text===1?"Admin":"Agent"}</span>),
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "WebPage Route",
-      dataIndex: "webPage",
-      key: "webPage",
-      style: { width: "10%" },
-    },
-    {
-      title: "No. of Child",
-      dataIndex: "childrenCount",
-      key: "childrenCount",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Is Add",
-      key: "add",
+      title: "Is Active",
+      key: "active",
       render: (text, record) => (
         <Button
-          color={`${record.IsAdd ? "primary" : "danger"}`}
+          color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isAdd", record, record.IsAdd);
-          }}
-        >
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Edit",
-      key: "isEdit",
-      render: (text, record) => (
-        <Button
-          color={`${record.IsEdit ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isEdit",record, record.IsEdit);
-          }}
-        >
-          {" "}
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Delete",
-      key: "delete",
-      render: (text, record) => (
-        <Button
-          color={`${record.IsDelete ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isDelete", record, record.IsDelete);
+            handlePermissions("isActive", record, record.isActive);
           }}
         >
           <i className="bx bx-block"></i>
@@ -246,8 +212,8 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title :  "Tabs",
-    headerSelect: true,
+    title :  "Players",
+    headerSelect: false,
     switch: false,
   };
 
@@ -260,7 +226,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
           {isLoading && <SpinnerModel/>}
           <Table
             columns={columns}

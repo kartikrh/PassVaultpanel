@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
+import {Avatar} from 'antd'
 import Table from "../../components/Common/Table";
-import {getToken} from '../../helpers/api_helper'
-import fackData from "./data";
+import { getToken } from "../../helpers/api_helper";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
 import { decryptData } from "../Utility/encryptionUtils";
-import SpinnerModel from '../../components/Model/SpinnerModel';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
-  document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -27,23 +26,25 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    const token = decryptData(localStorage.getItem("authUser"));
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.result?.token}`,
-        },
-      }
-    ).then((response)=>{
-      const tabsDataDB = validateTabResponse(response?.result);
-      setData(tabsDataDB);
-      setIsLoading(false)
-    }).catch((error)=>{
-      setIsLoading(false)
-    });
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/admin/eventType/all`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      )
+      .then((response) => {
+
+        setData(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
   };
 
   //checkbox function
@@ -56,51 +57,23 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.tabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
+      if (singleCheck.includes(e.eventTypeId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.eventTypeId));
       } else {
-        setSingleCheck([...singleCheck, e.tabId]);
+        setSingleCheck([...singleCheck, e.eventTypeId]);
       }
     }
   };
 
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true)
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
-      {
-        id: record.tabId,
-        tabName: record.tabName,
-        parentId: record.parentId,
-        [pType]: cState?false:true,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response)=>{
-      console.log("this is response",response)
-      console.log("this is response",record.tabId)
-      const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
-      // setData(newArray)
-      // setIsLoading(false)
-      fetchData()
-    }).catch((error)=>{
-      console.log(error);
-      setIsLoading(false)
-    })
-  };
-
-  const handleDelete = async (e) => {
-    setIsLoading(true)
-    // e.preventDefault()
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
+    setIsLoading(true);
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
         {
-          encryptedTabIds: singleCheck,
+          eventTypeId: record.eventTypeId,
+          [pType]: cState ? false : true,
         },
         {
           headers: {
@@ -108,13 +81,42 @@ const Index = () => {
             Authorization: `Bearer ${getToken()}`,
           },
         }
-      ).then((response)=>{
-        setDeleteModelVisable(false);
+      )
+      .then((response) => {
         fetchData();
-      }).catch((error)=>{
-        console.log(error)
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false);
       });
-  }
+  };
+
+  const handleDelete = async (e) => {
+    console.log(singleCheck)
+    setIsLoading(true);
+    // e.preventDefault()
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/admin/eventType/delete`,
+        {
+         eventTypeId:singleCheck,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      )
+      .then((response) => {
+        fetchData();
+        setDeleteModelVisable(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false)
+      });
+  };
   //table columns
   const columns = [
     {
@@ -138,7 +140,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.tabId)}
+            checked={checkedAll || singleCheck.includes(record.eventTypeId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
@@ -156,50 +158,44 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Tab Name",
-      dataIndex: "tabName",
-      render: (text,record) =>(<span style={{cursor:"pointer"}}>{text}</span>),
-      key: "tabName",
+      title: "Image",
+      dataIndex: "image",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {
+            text?<div>
+            <img
+              className="avatar-xs rounded-circle"
+              alt=""
+              src={process.env.REACT_APP_BASE_URL + text}
+            />
+          </div> : <Avatar src="#" alt="ET">Image</Avatar>
+          }
+        </div>
+      ),
+      key: "image",
       style: { width: "10%" },
     },
     {
-      title: "Display Name",
-      dataIndex: "displayName",
-      key: "displayName",
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
       sort: true,
-      style: { width: "10%" },
+      style: { width: "100%" },
     },
+    
     {
-      title: "Display Type",
-      dataIndex: "displayType",
-      key: "displayType",
-      render: (text,record) =>(<span>{text===1?"Admin":"Agent"}</span>),
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "WebPage Route",
-      dataIndex: "webPage",
-      key: "webPage",
-      style: { width: "10%" },
-    },
-    {
-      title: "No. of Child",
-      dataIndex: "childrenCount",
-      key: "childrenCount",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Is Add",
-      key: "add",
+      title: "Is Highlights",
+      key: "isHighlight",
+      dataIndex: "isHighlight",
       render: (text, record) => (
         <Button
-          color={`${record.IsAdd ? "primary" : "danger"}`}
+          color={`${text? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isAdd", record, record.IsAdd);
+            handlePermissions("isHighlight", record, record.isHighlight);
           }}
         >
           <i className="bx bx-block"></i>
@@ -208,35 +204,19 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Edit",
-      key: "isEdit",
+      title: "Is Active",
+      key: "isActive",
+      dataIndex: "isActive",
       render: (text, record) => (
         <Button
-          color={`${record.IsEdit ? "primary" : "danger"}`}
+          color={`${text? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isEdit",record, record.IsEdit);
+            handlePermissions("isActive", record , record.isActive);
           }}
         >
           {" "}
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Delete",
-      key: "delete",
-      render: (text, record) => (
-        <Button
-          color={`${record.IsDelete ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isDelete", record, record.IsDelete);
-          }}
-        >
           <i className="bx bx-block"></i>
         </Button>
       ),
@@ -246,13 +226,13 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title :  "Tabs",
-    headerSelect: true,
-    switch: false,
+    title: "Event Types",
+    headerSelect: false,
+    switch: true,
   };
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     fetchData();
   }, []);
 
@@ -260,8 +240,8 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
-          {isLoading && <SpinnerModel/>}
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Types" />
+          {isLoading && <SpinnerModel />}
           <Table
             columns={columns}
             dataSource={data}
@@ -277,7 +257,6 @@ const Index = () => {
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>

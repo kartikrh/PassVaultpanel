@@ -3,7 +3,6 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import {getToken} from '../../helpers/api_helper'
-import fackData from "./data";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
@@ -13,7 +12,7 @@ import SpinnerModel from '../../components/Model/SpinnerModel';
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 const Index = () => {
-  document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false)
@@ -27,19 +26,19 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    const token = decryptData(localStorage.getItem("authUser"));
     await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
+      `${process.env.REACT_APP_BASE_URL}/admin/roles/all`,
       {},
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.result?.token}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       }
     ).then((response)=>{
-      const tabsDataDB = validateTabResponse(response?.result);
-      setData(tabsDataDB);
+        console.log(response?.result)
+    //   const tabsDataDB = validateTabResponse(response?.result);
+      setData(response?.result);
       setIsLoading(false)
     }).catch((error)=>{
       setIsLoading(false)
@@ -56,10 +55,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.tabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
+      if (singleCheck.includes(e.roleId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.roleId));
       } else {
-        setSingleCheck([...singleCheck, e.tabId]);
+        setSingleCheck([...singleCheck, e.roleId]);
       }
     }
   };
@@ -70,7 +69,7 @@ const Index = () => {
     await axios.post(
       `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
       {
-        id: record.tabId,
+        id: record.roleId,
         tabName: record.tabName,
         parentId: record.parentId,
         [pType]: cState?false:true,
@@ -83,8 +82,8 @@ const Index = () => {
       }
     ).then((response)=>{
       console.log("this is response",response)
-      console.log("this is response",record.tabId)
-      const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
+      console.log("this is response",record.roleId)
+      const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
@@ -97,10 +96,10 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
+      await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/admin/roles/delete`,
         {
-          encryptedTabIds: singleCheck,
+          roleIds: singleCheck,
         },
         {
           headers: {
@@ -138,12 +137,12 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.tabId)}
+            checked={checkedAll || singleCheck.includes(record.roleId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
           />
-          <i className="bx bx-move ms-1 mt-1"></i>
+          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
@@ -154,100 +153,28 @@ const Index = () => {
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"></i>,
       style: { width: "2%", textAlign: "center" },
-    },
+    },    
     {
-      title: "Tab Name",
-      dataIndex: "tabName",
-      render: (text,record) =>(<span style={{cursor:"pointer"}}>{text}</span>),
-      key: "tabName",
+      title: "Role",
+      dataIndex: "roleName",
+      key: "roleName",
+      sort:true,
       style: { width: "10%" },
     },
     {
-      title: "Display Name",
-      dataIndex: "displayName",
-      key: "displayName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Display Type",
-      dataIndex: "displayType",
-      key: "displayType",
-      render: (text,record) =>(<span>{text===1?"Admin":"Agent"}</span>),
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "WebPage Route",
-      dataIndex: "webPage",
-      key: "webPage",
-      style: { width: "10%" },
-    },
-    {
-      title: "No. of Child",
-      dataIndex: "childrenCount",
-      key: "childrenCount",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Is Add",
-      key: "add",
-      render: (text, record) => (
-        <Button
-          color={`${record.IsAdd ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isAdd", record, record.IsAdd);
-          }}
-        >
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Edit",
-      key: "isEdit",
-      render: (text, record) => (
-        <Button
-          color={`${record.IsEdit ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isEdit",record, record.IsEdit);
-          }}
-        >
-          {" "}
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Delete",
-      key: "delete",
-      render: (text, record) => (
-        <Button
-          color={`${record.IsDelete ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isDelete", record, record.IsDelete);
-          }}
-        >
-          <i className="bx bx-block"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+        sort:true,
+        style: { width: "90%" },
+      },
+   
   ];
 
   //elements required
   const tableElement = {
-    title :  "Tabs",
-    headerSelect: true,
+    title :  "Roles",
+    headerSelect: false,
     switch: false,
   };
 
@@ -260,7 +187,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Roles" />
           {isLoading && <SpinnerModel/>}
           <Table
             columns={columns}

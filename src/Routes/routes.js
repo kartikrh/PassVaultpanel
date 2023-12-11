@@ -6,9 +6,16 @@ import Dashboard from "../Pages/Dashboard";
 
 //Pages
 import Tabs from '../Pages/Tabs'
-
-
-
+import Roles from '../Pages/Roles'
+import EventTypes from '../Pages/EventTypes'
+import Players from '../Pages/Players'
+import Teams from '../Pages/Teams'
+import MatchType from '../Pages/MatchType'
+import PenaltyRuns from '../Pages/PenaltyRuns'
+import Competition from '../Pages/Competition'
+import Events from '../Pages/Events'
+import Commentary from '../Pages/Commentary'
+import Users from '../Pages/Users'
 // Import Calender
 import Calender from "../Pages/Calender";
 
@@ -103,7 +110,17 @@ import GoogleMap from "../Pages/Maps/GoogleMap";
 const authProtectedRoutes = [
   //dashboard
   { path: "/dashboard", component: <Dashboard /> },
-  { path: "/Tabs", component: <Tabs /> },
+  { path: "/tabs", component: <Tabs /> },
+  { path: "/roles", component: <Roles /> },
+  { path: "/eventType", component: <EventTypes /> },
+  { path: "/Players", component: <Players /> },
+  { path: '/Teams', component: <Teams/> },
+  { path: '/matchType', component: <MatchType/> },
+  { path: '/penalty', component: <PenaltyRuns/> },
+  { path: '/competition', component: <Competition/> },
+  { path: '/events', component: <Events/> },
+  { path: '/commentary', component: <Commentary/> },
+  { path: '/users', component: <Users/> },
 
   // Calender
   { path: "/calendar", component: <Calender /> },
