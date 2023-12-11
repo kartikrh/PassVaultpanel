@@ -173,7 +173,6 @@ const Index = () => {
               handleCheckedAll(record);
             }}
           />
-          <i className="bx bx-move ms-1 mt-1"></i>
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
@@ -210,6 +209,7 @@ const Index = () => {
     {
       title: "Password",
       dataIndex: "password",
+      render: (text,record) =>(<span>*******</span>),
       key: "password",
       sort: true,
       style: { width: "100%" },
