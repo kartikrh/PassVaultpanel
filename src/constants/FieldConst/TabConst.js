@@ -70,22 +70,26 @@ export const TabFields = [
         label: "Is Add",
         parentclassName: "",
         type: SWITCH
-    }, {
+    },
+    {
         name: "isActive",
         label: "Is Active",
         parentclassName: "",
         type: SWITCH
-    }, {
+    },
+    {
         name: "isEdit",
         label: "Is Edit",
         parentclassName: "",
         type: SWITCH
-    }, {
+    },
+    {
         name: "isDelete",
         label: "Is Delete",
         parentclassName: "",
         type: SWITCH
-    }, {
+    },
+    {
         name: "isMenu",
         label: "Is Menu",
         parentclassName: "",

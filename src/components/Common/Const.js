@@ -1,6 +1,8 @@
 export const TEXT = "TEXT"
 export const EMAIL = "EMAIL"
 export const SWITCH = "SWITCH"
+export const COUNTER = "COUNTER"
 export const SELECT = "SELECT"
+export const MULTI_SELECT = "SELECT"
 export const TEXT_AREA = "TEXT_AREA"
 export const FILE_TYPE = "FILE_TYPE"
