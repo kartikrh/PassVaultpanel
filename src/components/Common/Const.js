@@ -1,0 +1,5 @@
+export const TEXT = "TEXT"
+export const EMAIL = "EMAIL"
+export const SWITCH = "SWITCH"
+export const SELECT = "SELECT"
+export const TEXT_AREA = "TEXT_AREA"
