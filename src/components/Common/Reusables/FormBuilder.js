@@ -5,7 +5,7 @@ import Creatable from 'react-select/creatable';
 import { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty } from "./reusableMethods.js";
-import { EMAIL, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
+import { EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
 import Switch from "react-switch";
 
 const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
@@ -258,7 +258,7 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
                     ))}
                   </div>
                 )}
-                {field.type === "file" && (
+                {field.type === FILE_TYPE && (
                   <input
                     className="file_input"
                     type="file"
@@ -307,7 +307,7 @@ FormBuilder.propTypes = {
         TEXT_AREA,
         SELECT,
         "radio",
-        "file",
+        FILE_TYPE,
         SWITCH
       ]).isRequired,
       isRequired: PropTypes.bool.isRequired,
