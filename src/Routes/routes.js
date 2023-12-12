@@ -16,6 +16,18 @@ import Competition from '../Pages/Competition'
 import Events from '../Pages/Events'
 import Commentary from '../Pages/Commentary'
 import Users from '../Pages/Users'
+import AddTabs from "../Pages/Tabs/AddTabs.jsx";
+import AddRoles from "../Pages/Roles/AddRoles.jsx";
+import AddEventTypes from "../Pages/EventTypes/AddEventType.jsx";
+import AddPlayers from "../Pages/Players/AddPlayers.jsx";
+import AddTeams from "../Pages/Teams/AddTeams.jsx";
+import AddMatchType from "../Pages/MatchType/AddMatchTypes.jsx";
+import AddPenaltyRuns from "../Pages/PenaltyRuns/AddPaneltyRuns.jsx";
+import AddCompetition from "../Pages/Competition/AddCompetition.jsx";
+import AddEvents from "../Pages/Events/AddEvents.jsx";
+import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
+import AddUsers from "../Pages/Users/AddUsers.jsx";
+
 // Import Calender
 import Calender from "../Pages/Calender";
 
@@ -105,7 +117,6 @@ import IconBoxicons from "../Pages/Icons/IconBoxicons"
 // Import Map Pages
 import VectorMaps from "../Pages/Maps/VectorMap";
 import GoogleMap from "../Pages/Maps/GoogleMap";
-import AddTabs from "../Pages/Tabs/AddTabs.jsx";
 
 
 const authProtectedRoutes = [
@@ -123,6 +134,16 @@ const authProtectedRoutes = [
   { path: '/commentary', component: <Commentary /> },
   { path: '/users', component: <Users /> },
   { path: '/addTabs', component: <AddTabs /> },
+  { path: "/addRoles", component: <AddRoles /> },
+  { path: "/addEventType", component: <AddEventTypes /> },
+  { path: "/addPlayers", component: <AddPlayers /> },
+  { path: '/addTeams', component: <AddTeams /> },
+  { path: '/addMatchType', component: <AddMatchType /> },
+  { path: '/addPenalty', component: <AddPenaltyRuns /> },
+  { path: '/addCompetition', component: <AddCompetition /> },
+  { path: '/addEvents', component: <AddEvents /> },
+  { path: '/addCommentary', component: <AddCommentary /> },
+  { path: '/addUsers', component: <AddUsers /> },
 
   // Calender
   { path: "/calendar", component: <Calender /> },
