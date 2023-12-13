@@ -91,28 +91,28 @@ export const TabFields = [
         name: "isActive",
         label: "Is Active",
         type: SWITCH,
-        labelColspan: { xs: 4, md: 6, lg: 2 },
-        fieldColspan: { xs: 8, md: 6, lg: 1 }
+        labelColspan: { xs: 4, md: 2, lg: 2 },
+        fieldColspan: { xs: 8, md: 1, lg: 1 }
     },
     {
         name: "isEdit",
         label: "Is Edit",
         type: SWITCH,
-        labelColspan: { xs: 4, md: 6, lg: 1 },
-        fieldColspan: { xs: 8, md: 6, lg: 2 }
+        labelColspan: { xs: 4, md: 1, lg: 1 },
+        fieldColspan: { xs: 8, md: 2, lg: 2 }
     },
     {
         name: "isDelete",
         label: "Is Delete",
         type: SWITCH,
-        labelColspan: { xs: 4, md: 6, lg: 2 },
-        fieldColspan: { xs: 8, md: 6, lg: 1 }
+        labelColspan: { xs: 4, md: 2, lg: 2 },
+        fieldColspan: { xs: 8, md: 1, lg: 1 }
     },
     {
         name: "isMenu",
         label: "Is Menu",
         type: SWITCH,
-        labelColspan: { xs: 4, md: 6, lg: 1 },
-        fieldColspan: { xs: 8, md: 6, lg: 2 }
+        labelColspan: { xs: 4, md: 1, lg: 1 },
+        fieldColspan: { xs: 8, md: 2, lg: 2 }
     },
 ]
