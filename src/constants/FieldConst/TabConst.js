@@ -4,7 +4,6 @@ export const TabFields = [
     {
         name: "parentTab",
         label: "Parent Tab",
-        parentclassName: "",
         type: SELECT,
         defaultOption: { label: "Select a Parent Id", value: "Select a Parent Id" },
         options: [
@@ -22,77 +21,97 @@ export const TabFields = [
             { label: "Events", value: "Events" },
             { label: "Commentary", value: "Commentary" },
         ],
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "tabName",
         label: "Tab Name",
-        parentclassName: "",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter Tab name.",
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "displayName",
         label: "Display Name",
-        parentclassName: "",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter Display name.",
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "tabDiplayType",
         label: "Tab Display Type",
-        parentclassName: "",
         type: SELECT,
         defaultOption: { label: "Admin", value: "Admin" },
         options: [
             { label: "Admin", value: "Admin" },
             { label: "Agent", value: "Agent" },],
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "webPageRoute",
         label: "WebPage Route",
-        parentclassName: "",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter web page route.",
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "icon",
         label: "Icon",
-        parentclassName: "",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter icon.",
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "isAdd",
         label: "Is Add",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 6, md: 3, lg: 1 },
+        fieldColspan: { xs: 6, md: 3, lg: 5 }
+    },
+    {
+        name: "isAddExt",
+        label: "",
+        type: TEXT,
+        dependsOnField: "isAdd",
+        labelColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 9, md: 4, lg: 4 }
     },
     {
         name: "isActive",
         label: "Is Active",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 6, md: 6, lg: 1 },
+        fieldColspan: { xs: 6, md: 6, lg: 2 }
     },
     {
         name: "isEdit",
         label: "Is Edit",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 6, md: 6, lg: 1 },
+        fieldColspan: { xs: 6, md: 6, lg: 2 }
     },
     {
         name: "isDelete",
         label: "Is Delete",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 6, md: 6, lg: 1 },
+        fieldColspan: { xs: 6, md: 6, lg: 2 }
     },
     {
         name: "isMenu",
         label: "Is Menu",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 6, md: 6, lg: 1 },
+        fieldColspan: { xs: 6, md: 6, lg: 2 }
     },
 ]
