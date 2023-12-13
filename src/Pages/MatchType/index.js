@@ -186,12 +186,14 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={singleCheck}
           />
           <CloneModel
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
             setCloneName = {setCloneName}
+            singleCheck={singleCheck}
           />
         </Container>
       </div>

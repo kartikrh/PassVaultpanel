@@ -3,7 +3,7 @@ import "./style.css";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
 import html2pdf from "html2pdf.js";
-
+import Pagination from '../../Pagination'
 import {
   Container,
   Button,
@@ -27,6 +27,8 @@ const Index = ({
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
+  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(0);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
   //sorting
@@ -241,7 +243,8 @@ const Index = ({
       });
       setData(switchData);
     } else {
-      setData(dataSource);
+      const sliced = dataSource.slice(currentPage*pageSize, currentPage*pageSize + pageSize)
+      setData(sliced);
     }
   };
 
@@ -520,15 +523,13 @@ const Index = ({
               </div>
 
               <div className="d-flex justify-content-end">
-                <div className="pagination-wrap hstack gap-2">
-                  <Link className="page-item pagination-prev disabled" to="#">
-                    Previous
-                  </Link>
-                  <ul className="pagination listjs-pagination mb-0"></ul>
-                  <Link className="page-item pagination-next" to="#">
-                    Next
-                  </Link>
-                </div>
+                <Pagination 
+                total = {dataSource?.length} 
+                pageSize={pageSize} 
+                currentPage={currentPage} 
+                fetchData = {fetchData} 
+                setCurrentPage={setCurrentPage} 
+                setPageSize={setPageSize}/>
               </div>
             </div>
           </CardBody>

@@ -273,6 +273,7 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={singleCheck}
           />
           <ChangePasswordModel
           changePasswordVisible={changePasswordVisible}

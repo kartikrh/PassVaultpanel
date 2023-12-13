@@ -19,6 +19,12 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [toast, setToast] = useState({
+    message: "",
+    color:"",
+    header:""
+  });
+  const [toastStatus, setToastStatus] = useState(false);
 
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
@@ -80,10 +86,23 @@ const Index = () => {
       }
     ).then((response)=>{
       // const newArray = data.map(obj => (obj.playerId === record.playerId ? response.result : obj));
+
       fetchData()
+      setToast({
+        message: "Player Updated Successfully",
+        color:"green",
+        header:"Success"
+      });
+      setToastStatus(true)
     }).catch((error)=>{
       console.log(error);
       setIsLoading(false)
+      setToast({
+        message: "Error",
+        color:"red",
+        header:"Error"
+      });
+      setToastStatus(true)
     })
   };
 
@@ -104,9 +123,23 @@ const Index = () => {
       ).then((response)=>{
         fetchData();
         setDeleteModelVisable(false);
+        setToast({
+          message: "Player Deleted SuccessFully",
+          color:"green",
+          header:"Success"
+        });
+        setSingleCheck([])
+        setToastStatus(true)
       }).catch((error)=>{
         setIsLoading(false)
         console.log(error)
+        setToast({
+          message: "Error",
+          color:"red",
+          header:"Error"
+        });
+        setToastStatus(true)
+        setSingleCheck([])
       });
   }
   //table columns
@@ -158,7 +191,7 @@ const Index = () => {
             {
               text?<div>
               <img
-                className="avatar-xs rounded-circle"
+                className="avatar-sm rounded-circle"
                 alt=""
                 src={process.env.REACT_APP_BASE_URL + text}
               />
@@ -228,7 +261,7 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
           {isLoading && <SpinnerModel/>}
-          <Toaster/>
+          <Toaster toast={toast} setToast={setToast} toastStatus={toastStatus} setToastStatus={setToastStatus}/>
           <Table
             columns={columns}
             dataSource={data}
@@ -240,6 +273,8 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={singleCheck}
+            
           />
           <TabModel
             addModelVisable={addModelVisable}

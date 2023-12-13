@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalBody,
-  ModalHeader,
-} from "reactstrap";
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import Flatpickr from "react-flatpickr";
 
-const Index = ({ deleteModelVisable, setDeleteModelVisable, handleDelete }) => {
+const Index = ({
+  deleteModelVisable,
+  setDeleteModelVisable,
+  handleDelete,
+  singleCheck,
+}) => {
   const [modal_delete, setmodal_delete] = useState(true);
   function tog_delete() {
     setmodal_delete(!modal_delete);
@@ -34,9 +35,13 @@ const Index = ({ deleteModelVisable, setDeleteModelVisable, handleDelete }) => {
             className="d-flex flex-column justify-content-center align-items-center"
             id="modal-id"
           >
-            <span className="mt-4 mb-4">
-              Are you sure you want to delete this?
-            </span>
+            {singleCheck.length>0? (
+              <span className="mt-4 mb-4">
+                Are you sure you want to delete this?
+              </span>
+            ) : (
+              <h5 className="mt-4 mb-4 text-danger font-bold">Please Select at least one row</h5>
+            )}
             <div className="hstack gap-2 justify-content-center">
               <button
                 type="button"
@@ -47,9 +52,15 @@ const Index = ({ deleteModelVisable, setDeleteModelVisable, handleDelete }) => {
               >
                 Close
               </button>
-              <button className="btn btn-danger" id="add-btn" onClick={()=>{handleDelete()}}>
+              {singleCheck.length>0 ?<button
+                className="btn btn-danger"
+                id="add-btn"
+                onClick={() => {
+                  handleDelete();
+                }}
+              >
                 Delete
-              </button>
+              </button> : null}
             </div>
           </div>
         </ModalBody>
