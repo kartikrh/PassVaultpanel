@@ -254,6 +254,7 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={singleCheck}
           />
           <TabModel
             addModelVisable={addModelVisable}
