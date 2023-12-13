@@ -21,8 +21,8 @@ export const TabFields = [
             { label: "Events", value: "Events" },
             { label: "Commentary", value: "Commentary" },
         ],
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "tabDiplayType",
@@ -32,8 +32,8 @@ export const TabFields = [
         options: [
             { label: "Admin", value: "Admin" },
             { label: "Agent", value: "Agent" },],
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "tabName",
@@ -41,8 +41,8 @@ export const TabFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter Tab name.",
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "displayName",
@@ -50,8 +50,8 @@ export const TabFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter Display name.",
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
 
     {
@@ -60,22 +60,22 @@ export const TabFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter web page route.",
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "icon",
         label: "Icon",
         type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "isAdd",
         label: "Is Add",
         type: SWITCH,
-        labelColspan: { xs: 3, md: 3, lg: 2 },
-        fieldColspan: { xs: 9, md: 3, lg: 4 }
+        labelColspan: { xs: 4, md: 3, lg: 2 },
+        fieldColspan: { xs: 8, md: 3, lg: 4 }
     },
     {
         name: "isAddExt",
@@ -84,35 +84,35 @@ export const TabFields = [
         dependsOnField: "isAdd",
         isRequired: true,
         requiredErrorMessage: "Please enter add page route.",
-        labelColspan: { xs: 3, md: 2, lg: 2 },
-        fieldColspan: { xs: 9, md: 4, lg: 4 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "isActive",
         label: "Is Active",
         type: SWITCH,
-        labelColspan: { xs: 3, md: 6, lg: 2 },
-        fieldColspan: { xs: 9, md: 6, lg: 1 }
+        labelColspan: { xs: 4, md: 6, lg: 2 },
+        fieldColspan: { xs: 8, md: 6, lg: 1 }
     },
     {
         name: "isEdit",
         label: "Is Edit",
         type: SWITCH,
-        labelColspan: { xs: 3, md: 6, lg: 1 },
-        fieldColspan: { xs: 9, md: 6, lg: 2 }
+        labelColspan: { xs: 4, md: 6, lg: 1 },
+        fieldColspan: { xs: 8, md: 6, lg: 2 }
     },
     {
         name: "isDelete",
         label: "Is Delete",
         type: SWITCH,
-        labelColspan: { xs: 3, md: 6, lg: 2 },
-        fieldColspan: { xs: 9, md: 6, lg: 1 }
+        labelColspan: { xs: 4, md: 6, lg: 2 },
+        fieldColspan: { xs: 8, md: 6, lg: 1 }
     },
     {
         name: "isMenu",
         label: "Is Menu",
         type: SWITCH,
-        labelColspan: { xs: 3, md: 6, lg: 1 },
-        fieldColspan: { xs: 9, md: 6, lg: 2 }
+        labelColspan: { xs: 4, md: 6, lg: 1 },
+        fieldColspan: { xs: 8, md: 6, lg: 2 }
     },
 ]

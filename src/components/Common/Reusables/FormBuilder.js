@@ -98,210 +98,189 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
         return false;
       }}
     >
-      <Row>
-        <Col>
-          <Card>
-            <CardBody>
-              <Row>
-                {fields?.map((field) => (
-                  ((field.dependsOnField && formData[field.dependsOnField])
-                    || !field.dependsOnField)
-                  &&
-                  <>
-                    <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
-                      <div dir="rtl" className="lablediv pt-2">
-                        <label
-                          htmlFor={field.name}
-                          className="col-form-label d-inline"
-                        >
-                          {field.label}
-                          {field.isRequired && <span className="text-danger">&nbsp;*</span>}
-                        </label>
-                      </div>
-                    </Col >
-                    <Col className="mb-4" xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
-                      <div className="col-md-10">
-                        {field.type === TEXT && (
-                          <Input
-                            className="form-control"
-                            type="text"
-                            disabled={field.disabled}
-                            id={field.name}
-                            name={field.name}
-                            value={formData[field.name] || ""}
-                            onChange={(e) => handleChange(field, e.target.value)}
-                            required={field.isRequired}
-                            invalid={fieldErrors[field.name]}
-                          />
-                        )}
 
-                        {field.type === EMAIL && (
-                          <input
-                            className="inputtag input_elem normal_input"
-                            type={EMAIL}
-                            id={field.name}
-                            name={field.name}
-                            value={formData[field.name] || ""}
-                            onChange={(e) => handleChange(field, e.target.value)}
-                            required={field.isRequired}
-                          />
-                        )}
-                        {field.type === "password" && (
-                          <input
-                            className="inputtag input_elem normal_input"
-                            type="password"
-                            id={field.name}
-                            name={field.name}
-                            value={formData[field.name] || formData[field.dataKey] || ""}
-                            onChange={(e) => handleChange(field, e.target.value)}
-                            required={field.isRequired}
-                          />
-                        )}
-                        {field.type === TEXT_AREA && (
-                          <textarea
-                            className="inputtag input_elem textarea"
-                            id={field.name}
-                            name={field.name}
-                            value={formData[field.name] || formData[field.dataKey] || ""}
-                            onChange={(e) => handleChange(field, e.target.value)}
-                            required={field.isRequired}
-                          />
-                        )}
-                        {field.type === SELECT && (
-                          <Select
-                            className="inputtag input_elem"
-                            id={field.name}
-                            name={field.name}
-                            value={
-                              (formData[field.name] &&
-                                (typeof formData[field.name] === "string"
-                                  ? {
-                                    label: formData[field.name],
-                                    value: formData[field.name],
-                                  }
-                                  : formData[field.name])) ||
-                              field.defaultOption
-                            }
-                            options={field.options}
-                            styles={{
-                              control: (baseStyles, state) => ({
-                                ...baseStyles,
-                                width: "auto",
-                                display: "flex",
-                                alignItems: "center",
-                                border: state.isFocused ? baseStyles.border : "gray",
-                                borderBottom: "1px solid #ccc",
-                                borderRadius: state.isFocused
-                                  ? baseStyles.borderRadius
-                                  : "",
-                                textAlign: "left",
-                              }),
-                            }}
-                            onChange={(selectedOption) => {
-                              handleChange(field, selectedOption || null);
-                            }}
-                            closeMenuOnSelect={!field.isMulti}
-                            required={field.isRequired}
-                            isMulti={field.isMulti}
-                          />
-                        )}
-                        {field.type === "creatable_select" && (
-                          <Creatable
-                            className="inputtag input_elem"
-                            id={field.name}
-                            name={field.name}
-                            isClearable
-                            value={
-                              (formData[field.name] &&
-                                (typeof formData[field.name] === "string"
-                                  ? {
-                                    label: formData[field.name],
-                                    value: formData[field.name],
-                                  }
-                                  : formData[field.name])) ||
-                              field.defaultOption
-                            }
-                            options={field.options}
-                            styles={{
-                              control: (baseStyles, state) => ({
-                                ...baseStyles,
-                                width: "auto",
-                                display: "flex",
-                                alignItems: "center",
-                                border: state.isFocused ? baseStyles.border : "gray",
-                                borderBottom: "1px solid #ccc",
-                                borderRadius: state.isFocused
-                                  ? baseStyles.borderRadius
-                                  : "",
-                                textAlign: "left",
-                              }),
-                            }}
-                            onChange={(selectedOption) => {
-                              handleChange(field, selectedOption || null);
-                            }}
-                            closeMenuOnSelect={!field.isMulti}
-                            required={field.isRequired}
-                            isMulti={field.isMulti}
-                          />
-                        )}
-                        {field.type === "radio" && (
-                          <div className="radio-button-styling radio_options_list">
-                            {field.options.map((option) => (
-                              <label key={option.value} className="radio_option_label">
-                                <input
-                                  className="inputtag normal_input"
-                                  type="radio"
-                                  name={field.name}
-                                  value={option.value}
-                                  checked={
-                                    (formData[field.name] &&
-                                      capitalize(formData[field.name]) === option.value) ||
-                                    capitalize(formData[field.dataKey]) === option.value
-                                  }
-                                  onChange={() => handleChange(field, option.value)}
-                                  required={field.isRequired}
-                                />
-                                {option.label}
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                        {field.type === FILE_TYPE && (
-                          <input
-                            className="file_input"
-                            type="file"
-                            name={field.name}
-                            multiple={field.isMulti}
-                            onChange={(e) => handleChange(field, e.target.files)}
-                            accept={field?.acceptedFileTypes}
-                          />
-                        )}
-                        {
-                          field.type === SWITCH && (
-                            <div className="form-check form-switch form-switch-lg mb-3">
-                              <input
-                                type="checkbox"
-                                className="form-check-input"
-                                id="customSwitchsizelg"
-                                // defaultChecked
-                                onChange={(e) => {
-                                  // console.log(e.target.value, "hello")
-                                  handleChange(field, !formData[field.name])
-                                }}
-                                value={formData[field.name]}
-                              />
-                            </div>)}
-                      </div>
-                      <span className="text-danger">
-                        {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
-                      </span>
-                    </Col>
-                  </>
-                ))}
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
+      <Row>
+        {fields?.map((field) => (
+          ((field.dependsOnField && formData[field.dependsOnField])
+            || !field.dependsOnField)
+          &&
+          <>
+            <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
+              <div dir={"rtl"} className="lablediv pt-2">
+                <label
+                  htmlFor={field.name}
+                  className="col-form-label d-inline"
+                >
+                  {field.label}
+                  {field.isRequired && <span className="text-danger">&nbsp;*</span>}
+                </label>
+              </div>
+            </Col >
+            <Col className="mb-4" xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
+              <div className="col-md-10">
+                {field.type === TEXT && (
+                  <Input
+                    className="form-control"
+                    type="text"
+                    disabled={field.disabled}
+                    id={field.name}
+                    name={field.name}
+                    value={formData[field.name] || ""}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    required={field.isRequired}
+                    invalid={fieldErrors[field.name]}
+                  />
+                )}
+
+                {field.type === EMAIL && (
+                  <input
+                    className="inputtag input_elem normal_input"
+                    type={EMAIL}
+                    id={field.name}
+                    name={field.name}
+                    value={formData[field.name] || ""}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    required={field.isRequired}
+                  />
+                )}
+                {field.type === "password" && (
+                  <input
+                    className="inputtag input_elem normal_input"
+                    type="password"
+                    id={field.name}
+                    name={field.name}
+                    value={formData[field.name] || formData[field.dataKey] || ""}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    required={field.isRequired}
+                  />
+                )}
+                {field.type === TEXT_AREA && (
+                  <textarea
+                    className="inputtag input_elem textarea"
+                    id={field.name}
+                    name={field.name}
+                    value={formData[field.name] || formData[field.dataKey] || ""}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    required={field.isRequired}
+                  />
+                )}
+                {field.type === SELECT && (
+                  <Select
+                    classNamePrefix="select2-selection"
+                    id={field.name}
+                    name={field.name}
+                    value={
+                      (formData[field.name] &&
+                        (typeof formData[field.name] === "string"
+                          ? {
+                            label: formData[field.name],
+                            value: formData[field.name],
+                          }
+                          : formData[field.name])) ||
+                      field.defaultOption
+                    }
+                    options={field.options}
+                    onChange={(selectedOption) => {
+                      handleChange(field, selectedOption || null);
+                    }}
+                    closeMenuOnSelect={!field.isMulti}
+                    required={field.isRequired}
+                    isMulti={field.isMulti}
+                  />
+                )}
+                {field.type === "creatable_select" && (
+                  <Creatable
+                    className="inputtag input_elem"
+                    id={field.name}
+                    name={field.name}
+                    isClearable
+                    value={
+                      (formData[field.name] &&
+                        (typeof formData[field.name] === "string"
+                          ? {
+                            label: formData[field.name],
+                            value: formData[field.name],
+                          }
+                          : formData[field.name])) ||
+                      field.defaultOption
+                    }
+                    options={field.options}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        width: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        border: state.isFocused ? baseStyles.border : "gray",
+                        borderBottom: "1px solid #ccc",
+                        borderRadius: state.isFocused
+                          ? baseStyles.borderRadius
+                          : "",
+                        textAlign: "left",
+                      }),
+                    }}
+                    onChange={(selectedOption) => {
+                      handleChange(field, selectedOption || null);
+                    }}
+                    closeMenuOnSelect={!field.isMulti}
+                    required={field.isRequired}
+                    isMulti={field.isMulti}
+                  />
+                )}
+                {field.type === "radio" && (
+                  <div className="radio-button-styling radio_options_list">
+                    {field.options.map((option) => (
+                      <label key={option.value} className="radio_option_label">
+                        <input
+                          className="inputtag normal_input"
+                          type="radio"
+                          name={field.name}
+                          value={option.value}
+                          checked={
+                            (formData[field.name] &&
+                              capitalize(formData[field.name]) === option.value) ||
+                            capitalize(formData[field.dataKey]) === option.value
+                          }
+                          onChange={() => handleChange(field, option.value)}
+                          required={field.isRequired}
+                        />
+                        {option.label}
+                      </label>
+                    ))}
+                  </div>
+                )}
+                {field.type === FILE_TYPE && (
+                  <input
+                    className="file_input"
+                    type="file"
+                    name={field.name}
+                    multiple={field.isMulti}
+                    onChange={(e) => handleChange(field, e.target.files)}
+                    accept={field?.acceptedFileTypes}
+                  />
+                )}
+                {
+                  field.type === SWITCH && (
+                    <div className="form-check form-switch form-switch-lg mb-3">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="customSwitchsizelg"
+                        // defaultChecked
+                        onChange={(e) => {
+                          // console.log(e.target.value, "hello")
+                          handleChange(field, !formData[field.name])
+                        }}
+                        value={formData[field.name]}
+                      />
+                    </div>)}
+              </div>
+              <span className="text-danger">
+                {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
+              </span>
+            </Col>
+          </>
+        ))}
       </Row>
     </Form >
 

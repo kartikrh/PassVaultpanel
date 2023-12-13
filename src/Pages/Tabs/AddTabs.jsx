@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { TabFields } from '../../constants/FieldConst/TabConst';
-import { Button, ButtonDropdown, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
+import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -76,35 +76,37 @@ function AddTabs() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Tabs </h3>
                         </Col>
-                        <Col xs={3} md={1} lg={1}>
 
-                            <button className="btn btn-danger" onClick={handleBackClick}>Back</button>
-                        </Col>
-                        <Col xs={9} md={3} lg={2}>
-
-                            <ButtonDropdown
-
-                                direction="down"
-                                isOpen={drp_up11}
-                                toggle={() => setDrp_up11(!drp_up11)}
-                            >
-                                <Button id="caret" color="primary" onClick={handleSaveClick}>
-                                    Save & Close
-                                </Button>
-                                <DropdownToggle caret color="primary">
-                                    <i className="mdi mdi-chevron-down" />
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                    <DropdownItem onClick={handleSaveClick}>Save</DropdownItem>
-                                    <DropdownItem onClick={handleSaveClick}>Save & New</DropdownItem>
-                                </DropdownMenu>
-                            </ButtonDropdown>
-                        </Col>
-                        <FormBuilder
-                            ref={finalizeRef}
-                            fields={TabFields}
-                            propsFormData={initialEditData}
-                        />
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
+                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
+                                        <ButtonDropdown
+                                            direction="down"
+                                            isOpen={drp_up11}
+                                            toggle={() => setDrp_up11(!drp_up11)}
+                                        >
+                                            <Button id="caret" color="primary" onClick={handleSaveClick}>
+                                                Save & Close
+                                            </Button>
+                                            <DropdownToggle caret color="primary">
+                                                <i className="mdi mdi-chevron-down" />
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                                <DropdownItem onClick={handleSaveClick}>Save</DropdownItem>
+                                                <DropdownItem onClick={handleSaveClick}>Save & New</DropdownItem>
+                                            </DropdownMenu>
+                                        </ButtonDropdown>
+                                    </Col>
+                                </Row>
+                                <FormBuilder
+                                    ref={finalizeRef}
+                                    fields={TabFields}
+                                    propsFormData={initialEditData}
+                                />
+                            </CardBody>
+                        </Card>
                     </Row>
                 </Container>
             </div>
