@@ -201,10 +201,9 @@ const authProtectedRoutes = [
   {
     path: "/",
     exact: true,
-    component: <Dashboard />,
+    component: <Navigate to="/dashboard" />,
   },
 ];
-
 const publicRoutes = [
 
   // Authentication Page
