@@ -6,8 +6,7 @@ import { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty } from "./reusableMethods.js";
 import { EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
-import * as Yup from "yup";
-import { useFormik } from "formik";
+import "./CustomCss.css"
 import {
   Row,
   Col,
@@ -106,13 +105,13 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
           &&
           <>
             <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
-              <div dir={"rtl"} className="lablediv pt-2">
+              <div className="lablediv">
                 <label
                   htmlFor={field.name}
-                  className="col-form-label d-inline"
+                  className="col-form-label dynamic-label-right"
                 >
+                  {field.isRequired && <span className="text-danger">*&nbsp;</span>}
                   {field.label}
-                  {field.isRequired && <span className="text-danger">&nbsp;*</span>}
                 </label>
               </div>
             </Col >
