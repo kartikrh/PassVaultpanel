@@ -104,24 +104,25 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
             <CardBody>
               <Row>
                 {fields?.map((field) => (
-                  ((field.dependsOnField && !formData[field.dependsOnField])
+                  ((field.dependsOnField && formData[field.dependsOnField])
                     || !field.dependsOnField)
                   &&
                   <>
                     <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
-                      <div className="lablediv">
+                      <div dir="rtl" className="lablediv pt-2">
                         <label
                           htmlFor={field.name}
-                          className="col-form-label"
+                          className="col-form-label d-inline"
                         >
                           {field.label}
+                          {field.isRequired && <span className="text-danger">&nbsp;*</span>}
                         </label>
                       </div>
-                    </Col>
+                    </Col >
                     <Col className="mb-4" xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
                       <div className="col-md-10">
                         {field.type === TEXT && (
-                          <input
+                          <Input
                             className="form-control"
                             type="text"
                             disabled={field.disabled}
@@ -130,6 +131,7 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
                             value={formData[field.name] || ""}
                             onChange={(e) => handleChange(field, e.target.value)}
                             required={field.isRequired}
+                            invalid={fieldErrors[field.name]}
                           />
                         )}
 
@@ -290,7 +292,7 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
                               />
                             </div>)}
                       </div>
-                      <span className="input_validation_error_msg">
+                      <span className="text-danger">
                         {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
                       </span>
                     </Col>

@@ -39,23 +39,19 @@ function AddTabs() {
 
     const handleSaveClick = async () => {
         try {
-            const postData = {
-                // your data here
-            };
-
+            const formData = finalizeRef.current.finalizeData();
+            console.log(formData)
             // Replace with your API endpoint
             const response = await fetch('https://your-api-endpoint.com/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(postData),
+                body: JSON.stringify(formData),
             });
-
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-
             // Show snackbar on success
             setSnackbarMessage("Data saved successfully!");
         } catch (error) {
