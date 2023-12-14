@@ -78,6 +78,7 @@
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.5",
     "web-vitals": "^1.0.1",
+    "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
   "scripts": {
