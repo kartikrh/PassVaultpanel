@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./style.css";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
-import html2pdf from "html2pdf.js";
-import Pagination from '../../Pagination'
+// import Pdf from "react-to-pdf";
+import Pagination from "../../Pagination";
+import jsPDF from 'jspdf';
+// import html2pdf from "html2pdf.js";
+import * as XLSX from 'xlsx';
+
 import {
   Container,
   Button,
@@ -23,11 +27,11 @@ const Index = ({
   addModelFunction,
   deleteModelFunction,
   eventTypes,
-  competitions
+  competitions,
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
-  const [pageSize, setPageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,21 +87,21 @@ const Index = ({
       </div>
     );
   };
-  const handleStatusSwitch = () =>{
-    if(statusSwitch){
+  const handleStatusSwitch = () => {
+    if (statusSwitch) {
       const switchData = dataSource.filter((val) => {
         return val.isActive !== statusSwitch;
       });
-      setStatusSwitch(false)
-      setData(switchData)
-    }else{
+      setStatusSwitch(false);
+      setData(switchData);
+    } else {
       const switchData = dataSource.filter((val) => {
-        return val.isActive !== statusSwitch ;
+        return val.isActive !== statusSwitch;
       });
-      setStatusSwitch(true)
-      setData(switchData)
+      setStatusSwitch(true);
+      setData(switchData);
     }
-  }
+  };
   const handleDropDownFilter = (e) => {
     if (e == "") {
       setData(dataSource);
@@ -113,7 +117,7 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleEventTyptDropDown = (e) =>{
+  const handleEventTyptDropDown = (e) => {
     if (e == "") {
       setData(dataSource);
     } else {
@@ -123,7 +127,7 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleCompetitionsDropdown = (e) =>{
+  const handleCompetitionsDropdown = (e) => {
     if (e == "") {
       setData(dataSource);
     } else {
@@ -132,7 +136,7 @@ const Index = ({
       });
       setData(updatedData);
     }
-  }
+  };
   const handleSearchFilter = () => {
     if (searchTerm.length === 1) {
       setData(dataSource);
@@ -172,41 +176,39 @@ const Index = ({
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  const tableRef = React.useRef(null);
-  const downloadPDF = async () => {
-    // Assuming 'tableRef' is a reference to your table element
-    const content = tableRef.current;
-    console.log("this is the content", content);
-    // Configure PDF options
-    const pdfOptions = {
-      margin: 10,
-      filename: "data.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
 
-    try {
-      // Generate PDF using html2pdf
-      const pdfBlob = await html2pdf()
-        .from(content)
-        .set(pdfOptions)
-        .outputPdf();
 
-      // Create a Blob from the Uint8Array
-      const blob = new Blob([pdfBlob], { type: "application/pdf" });
-      console.log(blob);
-      // Create a download link and trigger the download
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data.pdf";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
+  const generatePDF = () => {
+    const table = document.getElementById('myTable');
+    const pdf = new jsPDF({
+      orientation: 'landscape',  // or 'portrait'
+      unit: 'mm',
+      format: 'ledger',  // or [width, height]
+      fontSize: 3,   // Set the font size
+    });
+    // Use html method instead of fromHTML
+    pdf.html(table, {
+      callback: () => {
+        pdf.save('table.pdf');
+      },
+      html2canvas: { scale: 0.45 }, 
+    });
   };
+  const downloadExcel = () => {
+    // Get the table element by its ID (adjust the ID accordingly)
+    const table = document.getElementById('myTable');
+  
+    // Create a worksheet
+    const ws = XLSX.utils.table_to_sheet(table);
+  
+    // Create a workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
+
+    // Download the workbook
+    XLSX.writeFile(wb, `download.xlsx`);
+  };
+
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
       throw new Error(
@@ -243,7 +245,10 @@ const Index = ({
       });
       setData(switchData);
     } else {
-      const sliced = dataSource.slice(currentPage*pageSize, currentPage*pageSize + pageSize)
+      const sliced = dataSource.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
       setData(sliced);
     }
   };
@@ -270,16 +275,18 @@ const Index = ({
                   >
                     <i className="ri-add-line align-bottom me-1"></i> Add
                   </Button>
-                  {tableElement?.clone?<Button
-                    color="warning"
-                    className="btn"
-                    onClick={() => {
-                      cloneModelFunction(true);
-                    }}
-                    id="create-btn"
-                  >
-                    <i className="ri-add-line align-bottom me-1"></i> Clone
-                  </Button>:null}
+                  {tableElement?.clone ? (
+                    <Button
+                      color="warning"
+                      className="btn"
+                      onClick={() => {
+                        cloneModelFunction(true);
+                      }}
+                      id="create-btn"
+                    >
+                      <i className="ri-add-line align-bottom me-1"></i> Clone
+                    </Button>
+                  ) : null}
                   <Button
                     color="soft-danger"
                     onClick={() => {
@@ -304,9 +311,8 @@ const Index = ({
                       </select>
                     </div>
                   ) : null}
-                  {
-                    tableElement?.eventTypeSelect?(
-                      <div className="">
+                  {tableElement?.eventTypeSelect ? (
+                    <div className="">
                       <select
                         className="form-select"
                         id="inlineFormSelectPref"
@@ -315,18 +321,14 @@ const Index = ({
                         }}
                       >
                         <option value="">Select Event Type</option>
-                        {
-                          eventTypes?.map((val)=>{
-                            return (<option value={val}>{val}</option>)
-                          })
-                        }
+                        {eventTypes?.map((val) => {
+                          return <option value={val}>{val}</option>;
+                        })}
                       </select>
                     </div>
-                    ):null
-                  }
-                  {
-                    tableElement?.competitionsSelect?(
-                      <div className="">
+                  ) : null}
+                  {tableElement?.competitionsSelect ? (
+                    <div className="">
                       <select
                         className="form-select"
                         id="inlineFormSelectPref"
@@ -335,15 +337,12 @@ const Index = ({
                         }}
                       >
                         <option value="">Select Competition</option>
-                        {
-                          competitions?.map((val)=>{
-                            return (<option value={val}>{val}</option>)
-                          })
-                        }
+                        {competitions?.map((val) => {
+                          return <option value={val}>{val}</option>;
+                        })}
                       </select>
                     </div>
-                    ):null
-                  }
+                  ) : null}
                   {tableElement?.switch ? (
                     <div className="d-flex align-items-center">
                       <Switch
@@ -353,7 +352,7 @@ const Index = ({
                         className="pe-0"
                         onColor="#02a499"
                         onChange={() => {
-                          handleStatusSwitch()
+                          handleStatusSwitch();
                         }}
                         checked={statusSwitch}
                       />
@@ -403,10 +402,10 @@ const Index = ({
                           <i className="fas fa-file-csv"></i>
                         </Button>
                       </CSVLink>
-                      <Button size="large" className="btn border mx-1">
+                      <Button size="large" className="btn border mx-1" onClick={downloadExcel}>
                         <i className="fas fa-file-excel"></i>
                       </Button>
-                      <Button onClick={downloadPDF} className="btn border">
+                      <Button onClick={generatePDF} className="btn border">
                         <i className="bx bxs-file-pdf"></i>
                       </Button>
                     </div>
@@ -426,9 +425,9 @@ const Index = ({
                 </Col>
               </Row>
 
-              <div className="table-responsive table-card mt-3 mb-1">
+              <div className="table-responsive table-card mt-3 mb-1" id="myTable">
                 <table
-                  ref={tableRef}
+ 
                   // border={2}
                   className="table align-middle table-nowrap"
                   id="customerTable"
@@ -523,13 +522,14 @@ const Index = ({
               </div>
 
               <div className="d-flex justify-content-end">
-                <Pagination 
-                total = {dataSource?.length} 
-                pageSize={pageSize} 
-                currentPage={currentPage} 
-                fetchData = {fetchData} 
-                setCurrentPage={setCurrentPage} 
-                setPageSize={setPageSize}/>
+                <Pagination
+                  total={dataSource?.length}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  fetchData={fetchData}
+                  setCurrentPage={setCurrentPage}
+                  setPageSize={setPageSize}
+                />
               </div>
             </div>
           </CardBody>
