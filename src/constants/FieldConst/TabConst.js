@@ -2,11 +2,12 @@ import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const TabFields = [
     {
-        name: "parentTab",
+        name: "id",
         label: "Parent",
         type: SELECT,
-        defaultOption: { label: "Select a Parent Id", value: "Select a Parent Id" },
+        defaultOption: { label: "Select a Parent Id", value: "0" },
         options: [
+            { label: "Select a Parent Id", value: "0" },
             { label: "CMS", value: "CMS" },
             { label: "Tabs", value: "Tabs" },
             { label: "Roles", value: "Roles" },
@@ -25,13 +26,13 @@ export const TabFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "tabDiplayType",
+        name: "displayType",
         label: "Display Type",
         type: SELECT,
         defaultOption: { label: "Admin", value: "Admin" },
         options: [
-            { label: "Admin", value: "Admin" },
-            { label: "Agent", value: "Agent" },],
+            { label: "Admin", value: 1 },
+            { label: "Agent", value: 2 },],
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -55,7 +56,7 @@ export const TabFields = [
     },
 
     {
-        name: "webPageRoute",
+        name: "webPage",
         label: "WebPage Route",
         type: TEXT,
         isRequired: true,
@@ -64,7 +65,7 @@ export const TabFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "icon",
+        name: "iconName",
         label: "Icon",
         type: TEXT,
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -74,11 +75,11 @@ export const TabFields = [
         name: "isAdd",
         label: "Is Add",
         type: SWITCH,
-        labelColspan: { xs: 4, md: 3, lg: 2 },
-        fieldColspan: { xs: 8, md: 3, lg: 4 }
+        labelColspan: { xs: 4, md: 2, lg: 2 },
+        fieldColspan: { xs: 8, md: 4, lg: 4 }
     },
     {
-        name: "isAddExt",
+        name: "addWebpage",
         label: "Add Page Route",
         type: TEXT,
         dependsOnField: "isAdd",

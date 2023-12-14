@@ -4,7 +4,7 @@ import Select from "react-select";
 import Creatable from 'react-select/creatable';
 import { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
-import { isValueEmpty } from "./reusableMethods.js";
+import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
 import { EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
 import "./CustomCss.css"
 import {
@@ -48,7 +48,7 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
   const finalizeData = (doNotValidateFields = []) => {
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
-      return formData;
+      return sanitizeFormData(formData);
     } else {
       console.error(
         "There are errors in the form. Please correct them before saving."

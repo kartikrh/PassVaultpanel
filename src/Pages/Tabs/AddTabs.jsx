@@ -3,19 +3,20 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { TabFields } from '../../constants/FieldConst/TabConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
-
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
+import { useDispatch } from 'react-redux';
+import { decryptData } from '../Utility/encryptionUtils';
+import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { findIndex } from 'lodash';
 
 function AddTabs() {
     const finalizeRef = useRef(null);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up11, setDrp_up11] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
+    const dispatch = useDispatch();
     let navigate = useNavigate();
-    const query = useQuery();
-    const id = query.get('id');
+    const location = useLocation();
+    const id = location.state?.id;
 
     useEffect(() => {
         if (id) {
@@ -24,36 +25,54 @@ function AddTabs() {
     }, [id]);
 
     const fetchData = async (id) => {
+        console.log(id)
+        const authToken = decryptData(localStorage.getItem("authUser"));
+        console.log(authToken)
         try {
-            const response = await fetch(`https://your-api-endpoint.com/data?id=${id}`);
-            if (!response.ok) {
+            const response = await fetch('https://scorenodeapi.cloudd.live/admin/tabs/byId', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken?.result?.token}`,
+
+                },
+                body: JSON.stringify({ id }),
+            });
+            if (!response.status === 200) {
                 throw new Error('Network response was not ok');
             }
-            const data = await response.json();
-            setInitialEditData(data);
+            setInitialEditData(response?.result);
         } catch (error) {
             console.error('Error fetching data:', error);
             setSnackbarMessage('Error fetching data');
         }
     };
 
-    const handleSaveClick = async () => {
+    const handleSaveClick = async (saveAction) => {
         try {
+            const authToken = decryptData(localStorage.getItem("authUser"));
             const formData = finalizeRef.current.finalizeData();
             console.log(formData)
             // Replace with your API endpoint
-            const response = await fetch('https://your-api-endpoint.com/save', {
+            const response = await fetch('https://scorenodeapi.cloudd.live/admin/tabs/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken?.result?.token}`,
                 },
                 body: JSON.stringify(formData),
             });
-            if (!response.ok) {
+            if (response.status === 200) {
+                if (saveAction === SAVE)
+                    setSnackbarMessage("Data saved successfully!");
+                else if (saveAction === SAVE_AND_CLOSE)
+                    navigate("/tabs")
+                else if (saveAction === SAVE_AND_NEW)
+                    finalizeRef.current.resetForm()
+            } else {
                 throw new Error('Network response was not ok');
             }
             // Show snackbar on success
-            setSnackbarMessage("Data saved successfully!");
         } catch (error) {
             console.error('Error saving data:', error);
             setSnackbarMessage("");
@@ -87,15 +106,15 @@ function AddTabs() {
                                             isOpen={drp_up11}
                                             toggle={() => setDrp_up11(!drp_up11)}
                                         >
-                                            <Button id="caret" color="primary" onClick={handleSaveClick}>
+                                            <Button id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
                                                 Save & Close
                                             </Button>
                                             <DropdownToggle caret color="primary">
                                                 <i className="mdi mdi-chevron-down" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                                <DropdownItem onClick={handleSaveClick}>Save</DropdownItem>
-                                                <DropdownItem onClick={handleSaveClick}>Save & New</DropdownItem>
+                                                <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
+                                                <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
                                             </DropdownMenu>
                                         </ButtonDropdown>
                                     </Col>

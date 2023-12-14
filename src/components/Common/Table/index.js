@@ -262,7 +262,7 @@ const Index = ({
                     color="success"
                     className="add-btn"
                     onClick={() => {
-                      navigate(onAddNavigate)
+                      navigate(onAddNavigate, { state: { id: "12312" } })
                     }}
                     id="create-btn"
                   >

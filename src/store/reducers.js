@@ -10,6 +10,7 @@ import calendar from "./calendar/reducer";
 import forgetPassword from "./auth/forgetpwd/reducer";
 import login from "./auth/login/reducer";
 import profile from "./auth/profile/reducer";
+// import screenData from "./screen/reducer";
 import account from "./auth/register/reducer";
 
 const rootReducer = combineReducers({
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   login,
   profile,
   account,
+  // screenData
 });
 
 export default rootReducer;

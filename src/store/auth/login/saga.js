@@ -51,11 +51,11 @@ function* LoginUser({ payload: { user, history } }) {
       const response = yield call(loginApi, user.username, user.password);
       yield put(loginSuccess(response));
       // if (rememberMe) {
-        response.result.password = user.password;
-        localStorage.setItem("authUser", encryptData(response));
-        // sidebarApi();
-        // const response2 = yield call(sidebarApi);
-        // console.log("this is response 2:", response2)
+      response.result.password = user.password;
+      localStorage.setItem("authUser", encryptData(response));
+      // sidebarApi();
+      // const response2 = yield call(sidebarApi);
+      // console.log("this is response 2:", response2)
       // }
     }
     history("/dashboard");
@@ -75,8 +75,8 @@ function* logoutUser() {
       yield put(logoutUserSuccess(LOGOUT_USER, true));
       const authData = localStorage.getItem("authUser");
       const data = decryptData(authData);
-        delete data?.result?.token
-      localStorage.setItem("authUser",encryptData(data))
+      delete data?.result?.token
+      localStorage.setItem("authUser", encryptData(data))
     }
   } catch (error) {
     yield put(apiError(LOGOUT_USER, error));

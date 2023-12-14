@@ -152,7 +152,9 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i onClick={() => {
+        console.log("hello")
+      }} className="bx bx-edit"></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
