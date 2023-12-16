@@ -16,6 +16,8 @@ import Competition from '../Pages/Competition'
 import Events from '../Pages/Events'
 import Commentary from '../Pages/Commentary'
 import Users from '../Pages/Users'
+import Xyz from '../Pages/xyz'
+
 // Import Calender
 import Calender from "../Pages/Calender";
 
@@ -121,6 +123,8 @@ const authProtectedRoutes = [
   { path: '/events', component: <Events/> },
   { path: '/commentary', component: <Commentary/> },
   { path: '/users', component: <Users/> },
+  { path: '/xyz', component: <Xyz/> },
+
 
   // Calender
   { path: "/calendar", component: <Calender /> },
