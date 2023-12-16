@@ -16,6 +16,17 @@ import Competition from '../Pages/Competition'
 import Events from '../Pages/Events'
 import Commentary from '../Pages/Commentary'
 import Users from '../Pages/Users'
+import AddTabs from "../Pages/Tabs/AddTabs.jsx";
+import AddRoles from "../Pages/Roles/AddRoles.jsx";
+import AddEventTypes from "../Pages/EventTypes/AddEventType.jsx";
+import AddPlayers from "../Pages/Players/AddPlayers.jsx";
+import AddTeams from "../Pages/Teams/AddTeams.jsx";
+import AddMatchType from "../Pages/MatchType/AddMatchTypes.jsx";
+import AddPenaltyRuns from "../Pages/PenaltyRuns/AddPaneltyRuns.jsx";
+import AddCompetition from "../Pages/Competition/AddCompetition.jsx";
+import AddEvents from "../Pages/Events/AddEvents.jsx";
+import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
+import AddUsers from "../Pages/Users/AddUsers.jsx";
 import Xyz from '../Pages/xyz'
 
 // Import Calender
@@ -116,6 +127,24 @@ const authProtectedRoutes = [
   { path: "/roles", component: <Roles /> },
   { path: "/eventType", component: <EventTypes /> },
   { path: "/Players", component: <Players /> },
+  { path: '/Teams', component: <Teams /> },
+  { path: '/matchType', component: <MatchType /> },
+  { path: '/penalty', component: <PenaltyRuns /> },
+  { path: '/competition', component: <Competition /> },
+  { path: '/events', component: <Events /> },
+  { path: '/commentary', component: <Commentary /> },
+  { path: '/users', component: <Users /> },
+  { path: '/addTabs', component: <AddTabs /> },
+  { path: "/addRoles", component: <AddRoles /> },
+  { path: "/addEventType", component: <AddEventTypes /> },
+  { path: "/addPlayers", component: <AddPlayers /> },
+  { path: '/addTeams', component: <AddTeams /> },
+  { path: '/addMatchType', component: <AddMatchType /> },
+  { path: '/addPenalty', component: <AddPenaltyRuns /> },
+  { path: '/addCompetition', component: <AddCompetition /> },
+  { path: '/addEvents', component: <AddEvents /> },
+  { path: '/addCommentary', component: <AddCommentary /> },
+  { path: '/addUsers', component: <AddUsers /> },
   { path: '/Teams', component: <Teams/> },
   { path: '/matchType', component: <MatchType/> },
   { path: '/penalty', component: <PenaltyRuns/> },
@@ -124,8 +153,6 @@ const authProtectedRoutes = [
   { path: '/commentary', component: <Commentary/> },
   { path: '/users', component: <Users/> },
   { path: '/xyz', component: <Xyz/> },
-
-
   // Calender
   { path: "/calendar", component: <Calender /> },
 

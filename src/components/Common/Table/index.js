@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./style.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
 // import Pdf from "react-to-pdf";
 import Pagination from "../../Pagination";
@@ -32,6 +32,7 @@ const Index = ({
   deleteModelFunction,
   eventTypes,
   competitions,
+  onAddNavigate
   changeOrderApiName = "",
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
@@ -47,7 +48,7 @@ const Index = ({
     sortOrder: "",
     key: "",
   });
-
+  const navigate = useNavigate();
   // handle statusSwitch
   const [statusSwitch, setStatusSwitch] = useState(true);
   // handle data inside data
@@ -97,8 +98,8 @@ const Index = ({
       const switchData = dataSource.filter((val) => {
         return val.isActive !== statusSwitch;
       });
-      setStatusSwitch(false);
-      setData(switchData);
+      setStatusSwitch(false)
+      setData(switchData)
     } else {
       const switchData = dataSource.filter((val) => {
         return val.isActive !== statusSwitch;
@@ -297,12 +298,13 @@ const Index = ({
                     color="success"
                     className="add-btn"
                     onClick={() => {
-                      addModelFunction(true);
+                      navigate(onAddNavigate, { state: { id: "12312" } })
                     }}
                     id="create-btn"
                   >
                     <i className="ri-add-line align-bottom me-1"></i> Add
                   </Button>
+
                   {tableElement?.clone ? (
                     <Button
                       color="warning"
@@ -378,7 +380,7 @@ const Index = ({
                         uncheckedIcon={<OffsymbolStatus />}
                         checkedIcon={<OnSymbolStatus />}
                         className="pe-0"
-                        onColor="#02a499"
+                        onColor="02a499"
                         onChange={() => {
                           handleStatusSwitch();
                         }}
@@ -456,7 +458,6 @@ const Index = ({
                   </div>
                 </Col>
               </Row>
-
               <div
                 className="table-responsive table-card mt-3 mb-1"
                 id="myTable"
@@ -619,7 +620,6 @@ const Index = ({
                                       cursor: "pointer",
                                     }}
                                   ></i>
-                                </span>
                               ) : null}
                             </div>
                           </th>
