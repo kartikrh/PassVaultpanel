@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
-import {apiGetTabCleaner} from '../../helpers/helper'
+import { apiGetTabCleaner } from '../../helpers/helper'
 import Table from "../../components/Common/Table";
 import { getToken } from '../../helpers/api_helper'
 import fackData from "./data";
@@ -122,8 +122,8 @@ const Index = () => {
     });
   }
 
-  const handleEdit = (id) =>{
-    navigate('/xyz', { state: { userId: id } });
+  const handleEdit = (id) => {
+    navigate('/addTabs', { state: { userId: id } });
   }
   //table columns
   const columns = [
@@ -162,7 +162,7 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit" onClick={()=>{handleEdit(record.tabId)}}></i>,
+      render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.tabId) }}></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -256,11 +256,11 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title :  "Tabs",
-    dragDrop:true,
+    title: "Tabs",
+    dragDrop: true,
     headerSelect: true,
     switch: false,
-    subTable:true,
+    subTable: true,
   };
 
   useEffect(() => {

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
 // import Pdf from "react-to-pdf";
 import Pagination from "../../Pagination";
@@ -12,7 +12,6 @@ import { changeDisplayOrder } from "../../../helpers/api_helper";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import {
-  Container,
   Button,
   Card,
   CardBody,
@@ -31,6 +30,7 @@ const Index = ({
   deleteModelFunction,
   eventTypes,
   competitions,
+  onAddNavigate,
   changeOrderApiName = "",
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
@@ -50,6 +50,7 @@ const Index = ({
   // handle statusSwitch
   const [statusSwitch, setStatusSwitch] = useState(true);
   // handle data inside data
+  const navigate = useNavigate();
   const [subArray, setSubArray] = useState([
     {
       [tableElement?.title]: data,
@@ -296,7 +297,7 @@ const Index = ({
                     color="success"
                     className="add-btn"
                     onClick={() => {
-                      addModelFunction(true);
+                      navigate(onAddNavigate)
                     }}
                     id="create-btn"
                   >
