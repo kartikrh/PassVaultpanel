@@ -243,8 +243,8 @@ const Login = (props) => {
                                 </label>
                               </div>
                             </Col>
-                            <Col className="col-7">
-                              <div className="text-md-end mt-3 mt-md-0">
+                            {/* <Col className="col-7"> */}
+                              {/* <div className="text-md-end mt-3 mt-md-0">
                                 <Link
                                   to="/auth-recoverpw"
                                   className="text-muted"
@@ -252,8 +252,8 @@ const Login = (props) => {
                                   <i className="mdi mdi-lock"></i> Forgot your
                                   password?
                                 </Link>
-                              </div>
-                            </Col>
+                              </div> */}
+                            {/* </Col> */}
                           </Row>
                           <div className="d-grid mt-4">
                             <button
@@ -263,7 +263,7 @@ const Login = (props) => {
                               Log In
                             </button>
                           </div>
-                          <div className="mt-4 text-center">
+                          {/* <div className="mt-4 text-center">
                             <h5 className="font-size-14 mb-3">Sign in with</h5>
 
                             <ul className="list-inline">
@@ -301,7 +301,7 @@ const Login = (props) => {
                                 />
                               </li>
                             </ul>
-                          </div>
+                          </div> */}
                         </Col>
                       </Row>
                     </Form>
@@ -309,13 +309,13 @@ const Login = (props) => {
                 </CardBody>
               </Card>
               <div className="mt-5 text-center">
-                <p className="text-white-50">
+                {/* <p className="text-white-50">
                   Don't have an account ?{" "}
                   <Link to="/register" className="fw-medium text-primary">
                     {" "}
                     Register{" "}
                   </Link>{" "}
-                </p>
+                </p> */}
                 <p className="text-white-50">
                   © {new Date().getFullYear()} Upzet. Crafted with{" "}
                   <i className="mdi mdi-heart text-danger"></i> by Themesdesign

@@ -1,24 +1,19 @@
-import React, { useState, useEffect } from "react";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
-import {apiGetTabCleaner} from '../../helpers/helper'
-import Table from "../../components/Common/Table";
-import { getToken } from '../../helpers/api_helper'
-import fackData from "./data";
-import { Button } from "reactstrap";
-import { Container } from "reactstrap";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+
+import { Row, Container, Button } from "reactstrap";
+import {getToken} from '../../helpers/api_helper'
+
+import Table2 from "../../components/Common/Table/Table2";
 import { decryptData } from "../Utility/encryptionUtils";
-import SpinnerModel from '../../components/Model/SpinnerModel';
-// import Model
-import TabModel from "../../components/Model/AddTabModel";
-import DeleteTabModel from "../../components/Model/DeleteModel";
+import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
+import axios from 'axios'
 const Index = () => {
-  document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  const location = useLocation();
+  document.title = "Dashboard | Upzet - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
   const [isLoading, setIsLoading] = useState(false)
+  //handleSpinner
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -26,7 +21,7 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-  const navigate = useNavigate()
+
   // fetch data
   const fetchData = async () => {
     const token = decryptData(localStorage.getItem("authUser"));
@@ -39,15 +34,11 @@ const Index = () => {
           Authorization: `Bearer ${token.result?.token}`,
         },
       }
-    ).then((response) => {
+    ).then((response)=>{
       const tabsDataDB = validateTabResponse(response?.result);
-      const first = apiGetTabCleaner(tabsDataDB)
-      console.log("this is first", first)
-      const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
-      console.log("this is 2nd", sorted)
-      setData(sorted);
+      setData(tabsDataDB);
       setIsLoading(false)
-    }).catch((error) => {
+    }).catch((error)=>{
       setIsLoading(false)
     });
   };
@@ -79,7 +70,7 @@ const Index = () => {
         id: record.tabId,
         tabName: record.tabName,
         parentId: record.parentId,
-        [pType]: cState ? false : true,
+        [pType]: cState?false:true,
       },
       {
         headers: {
@@ -87,14 +78,14 @@ const Index = () => {
           Authorization: `Bearer ${getToken()}`,
         },
       }
-    ).then((response) => {
-      console.log("this is response", response)
-      console.log("this is response", record.tabId)
+    ).then((response)=>{
+      console.log("this is response",response)
+      console.log("this is response",record.tabId)
       const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
-    }).catch((error) => {
+    }).catch((error)=>{
       console.log(error);
       setIsLoading(false)
     })
@@ -103,29 +94,25 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-    const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
-      {
-        encryptedTabIds: singleCheck,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
+        {
+          encryptedTabIds: singleCheck,
         },
-      }
-    ).then((response) => {
-      setDeleteModelVisable(false);
-      fetchData();
-    }).catch((error) => {
-      console.log(error)
-    });
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      ).then((response)=>{
+        setDeleteModelVisable(false);
+        fetchData();
+      }).catch((error)=>{
+        console.log(error)
+      });
   }
 
-  const handleEdit = (id) =>{
-    navigate('/xyz', { state: { userId: id } });
-  }
-  //table columns
   const columns = [
     {
       title: (
@@ -162,13 +149,19 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit" onClick={()=>{handleEdit(record.tabId)}}></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Tab Name",
       dataIndex: "tabName",
-      render: (text, record) => (<span style={{ cursor: "pointer" }}>{text}</span>),
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
       key: "tabName",
       style: { width: "10%" },
     },
@@ -183,7 +176,7 @@ const Index = () => {
       title: "Display Type",
       dataIndex: "displayType",
       key: "displayType",
-      render: (text, record) => (<span>{text === 1 ? "Admin" : "Agent"}</span>),
+      render: (text, record) => <span>{text === 1 ? "Admin" : "Agent"}</span>,
       sort: true,
       style: { width: "10%" },
     },
@@ -254,45 +247,15 @@ const Index = () => {
     },
   ];
 
-  //elements required
-  const tableElement = {
-    title :  "Tabs",
-    dragDrop:true,
-    headerSelect: true,
-    switch: false,
-    subTable:true,
-  };
-
   useEffect(() => {
-    setIsLoading(true)
-    fetchData();
+    fetchData()
   }, []);
-
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
-          {isLoading && <SpinnerModel />}
-          <Table
-            columns={columns}
-            dataSource={data}
-            tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
-            onAddNavigate={"/addTabs"}
-            changeOrderApiName="tabs"
-          />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
-            singleCheck={singleCheck}
-          />
-          <TabModel
-            addModelVisable={addModelVisable}
-            setAddModelVisable={setAddModelVisable}
-
-          />
+          <span>{location?.state?.userId}</span>
+          <Table2 columns={columns} dataSource={data} />
         </Container>
       </div>
     </React.Fragment>

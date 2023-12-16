@@ -1,6 +1,7 @@
 import axios from "axios";
 import config from "../config";
 import {decryptData} from './../Pages/Utility/encryptionUtils'
+
 // default
 axios.defaults.baseURL = config.API_URL;
 
@@ -85,4 +86,24 @@ const getLoggedinUser = () => {
   }
 };
 
-export { APIClient, setAuthorization, getLoggedinUser, getToken };
+const changeDisplayOrder = async (tabdisplayOrder,apiName)=> {
+  console.log("this is tabDisplayOrder ---->>>>",tabdisplayOrder)
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/admin/${apiName}/changeDisplayOrder`,
+
+      tabdisplayOrder, // Send the updated order data to the API
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+      }
+    );
+
+    return response?.data?.result || [];
+  } catch (error) {
+    throw Error(error);
+  }
+}
+export { APIClient, setAuthorization, getLoggedinUser, getToken, changeDisplayOrder };

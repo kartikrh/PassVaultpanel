@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./style.css";
 import { Link, useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
-import html2pdf from "html2pdf.js";
+// import Pdf from "react-to-pdf";
+import Pagination from "../../Pagination";
+
+import jsPDF from "jspdf";
+// import html2pdf from "html2pdf.js";
+import * as XLSX from "xlsx";
+import { filterOrderChange } from "../../../helpers/helper";
+import { changeDisplayOrder } from "../../../helpers/api_helper";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import {
   Container,
@@ -25,9 +33,14 @@ const Index = ({
   eventTypes,
   competitions,
   onAddNavigate
+  changeOrderApiName = "",
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
+  const [total, setTotal] = useState(dataSource.length);
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(0);
+
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
   //sorting
@@ -44,7 +57,6 @@ const Index = ({
       [tableElement?.title]: data,
     },
   ]);
-
   const OffsymbolStatus = () => {
     return (
       <div
@@ -53,7 +65,7 @@ const Index = ({
           justifyContent: "center",
           alignItems: "center",
           height: "100%",
-          fontSize: 12,
+          fontSize: 10,
           color: "#fff",
           // paddingRight: 2,
         }}
@@ -63,7 +75,6 @@ const Index = ({
       </div>
     );
   };
-
   const OnSymbolStatus = () => {
     return (
       <div
@@ -93,10 +104,10 @@ const Index = ({
       const switchData = dataSource.filter((val) => {
         return val.isActive !== statusSwitch;
       });
-      setStatusSwitch(true)
-      setData(switchData)
+      setStatusSwitch(true);
+      setData(switchData);
     }
-  }
+  };
   const handleDropDownFilter = (e) => {
     if (e == "") {
       setData(dataSource);
@@ -131,21 +142,27 @@ const Index = ({
       });
       setData(updatedData);
     }
-  }
+  };
   const handleSearchFilter = () => {
-    if (searchTerm.length === 1) {
-      setData(dataSource);
-    } else if (searchTerm.length > 1) {
-      const updatedData = data.filter((val) => {
-        const found = Object.values(val).some((value) => {
-          if (typeof value === "string" || value instanceof String) {
-            return value.toLowerCase().includes(searchTerm.toLowerCase());
-          }
-          return false;
-        });
-        return found === true;
+    const updatedData = dataSource.filter((val) => {
+      const found = Object.values(val).some((value) => {
+        if (typeof value === "string" || value instanceof String) {
+          return value.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+        return false;
       });
+      return found === true;
+    });
+    if (searchTerm === "") {
+      setTotal(dataSource.length);
+      const sliced = dataSource.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
+      setData(sliced);
+    } else {
       setData(updatedData);
+      setTotal(updatedData.length);
     }
   };
   const moveBack = (key) => {
@@ -171,40 +188,38 @@ const Index = ({
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  const tableRef = React.useRef(null);
-  const downloadPDF = async () => {
-    // Assuming 'tableRef' is a reference to your table element
-    const content = tableRef.current;
-    console.log("this is the content", content);
-    // Configure PDF options
-    const pdfOptions = {
-      margin: 10,
-      filename: "data.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
+  const generatePDF = () => {
+    const table = document.getElementById("myTable");
+    const pdf = new jsPDF({
+      orientation: "landscape", // or 'portrait'
+      unit: "mm",
+      format: "ledger", // or [width, height]
+      fontSize: 3, // Set the font size
+    });
+    // Use html method instead of fromHTML
+    pdf.html(table, {
+      callback: () => {
+        pdf.save("table.pdf");
+      },
+      html2canvas: {
+        scale: 0.5,
+        useCORS: true,
+      },
+    });
+  };
+  const downloadExcel = () => {
+    // Get the table element by its ID (adjust the ID accordingly)
+    const table = document.getElementById("myTable");
 
-    try {
-      // Generate PDF using html2pdf
-      const pdfBlob = await html2pdf()
-        .from(content)
-        .set(pdfOptions)
-        .outputPdf();
+    // Create a worksheet
+    const ws = XLSX.utils.table_to_sheet(table);
 
-      // Create a Blob from the Uint8Array
-      const blob = new Blob([pdfBlob], { type: "application/pdf" });
-      console.log(blob);
-      // Create a download link and trigger the download
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data.pdf";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
+    // Create a workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
+
+    // Download the workbook
+    XLSX.writeFile(wb, `download.xlsx`);
   };
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
@@ -236,19 +251,40 @@ const Index = ({
   };
   // getting data for the table coming from the page && checking default status
   const fetchData = () => {
+    setTotal(dataSource.length);
     if (tableElement?.switch) {
       const switchData = dataSource.filter((val) => {
         return val.isActive === statusSwitch;
       });
       setData(switchData);
     } else {
-      setData(dataSource);
+      const sliced = dataSource.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
+      setData(sliced);
     }
   };
+  const handleDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    
+    const newData = [...data];
+    const [movedRow] = newData.splice(result.source.index, 1);
+    newData.splice(result.destination.index, 0, movedRow);
+    setData(newData);
 
+    const tabOrders = filterOrderChange(newData);
+    changeDisplayOrder(tabOrders, changeOrderApiName);
+  };
+  useEffect(() => {
+    handleSearchFilter();
+  }, [searchTerm]);
   useEffect(() => {
     fetchData();
   }, [dataSource]);
+
   // import { Link } from "react-router-dom";
   return (
     <Row>
@@ -268,16 +304,19 @@ const Index = ({
                   >
                     <i className="ri-add-line align-bottom me-1"></i> Add
                   </Button>
-                  {tableElement?.clone ? <Button
-                    color="warning"
-                    className="btn"
-                    onClick={() => {
-                      cloneModelFunction(true);
-                    }}
-                    id="create-btn"
-                  >
-                    <i className="ri-add-line align-bottom me-1"></i> Clone
-                  </Button> : null}
+
+                  {tableElement?.clone ? (
+                    <Button
+                      color="warning"
+                      className="btn"
+                      onClick={() => {
+                        cloneModelFunction(true);
+                      }}
+                      id="create-btn"
+                    >
+                      <i className="ri-add-line align-bottom me-1"></i> Clone
+                    </Button>
+                  ) : null}
                   <Button
                     color="soft-danger"
                     onClick={() => {
@@ -302,46 +341,38 @@ const Index = ({
                       </select>
                     </div>
                   ) : null}
-                  {
-                    tableElement?.eventTypeSelect ? (
-                      <div className="">
-                        <select
-                          className="form-select"
-                          id="inlineFormSelectPref"
-                          onChange={(e) => {
-                            handleEventTyptDropDown(e.target.value);
-                          }}
-                        >
-                          <option value="">Select Event Type</option>
-                          {
-                            eventTypes?.map((val) => {
-                              return (<option value={val}>{val}</option>)
-                            })
-                          }
-                        </select>
-                      </div>
-                    ) : null
-                  }
-                  {
-                    tableElement?.competitionsSelect ? (
-                      <div className="">
-                        <select
-                          className="form-select"
-                          id="inlineFormSelectPref"
-                          onChange={(e) => {
-                            handleCompetitionsDropdown(e.target.value);
-                          }}
-                        >
-                          <option value="">Select Competition</option>
-                          {
-                            competitions?.map((val) => {
-                              return (<option value={val}>{val}</option>)
-                            })
-                          }
-                        </select>
-                      </div>
-                    ) : null
-                  }
+                  {tableElement?.eventTypeSelect ? (
+                    <div className="">
+                      <select
+                        className="form-select"
+                        id="inlineFormSelectPref"
+                        onChange={(e) => {
+                          handleEventTyptDropDown(e.target.value);
+                        }}
+                      >
+                        <option value="">Select Event Type</option>
+                        {eventTypes?.map((val) => {
+                          return <option value={val}>{val}</option>;
+                        })}
+                      </select>
+                    </div>
+                  ) : null}
+                  {tableElement?.competitionsSelect ? (
+                    <div className="">
+                      <select
+                        className="form-select"
+                        id="inlineFormSelectPref"
+                        onChange={(e) => {
+                          handleCompetitionsDropdown(e.target.value);
+                        }}
+                      >
+                        <option value="">Select Competition</option>
+                        {competitions?.map((val) => {
+                          return <option value={val}>{val}</option>;
+                        })}
+                      </select>
+                    </div>
+                  ) : null}
                   {tableElement?.switch ? (
                     <div className="d-flex align-items-center">
                       <Switch
@@ -349,9 +380,9 @@ const Index = ({
                         uncheckedIcon={<OffsymbolStatus />}
                         checkedIcon={<OnSymbolStatus />}
                         className="pe-0"
-                        onColor="#02a499"
+                        onColor="02a499"
                         onChange={() => {
-                          handleStatusSwitch()
+                          handleStatusSwitch();
                         }}
                         checked={statusSwitch}
                       />
@@ -360,26 +391,27 @@ const Index = ({
                 </div>
               </Col>
               <Col className="d-flex justify-content-end">
-                {subArray.map((val, index) => {
-                  const arrayKey = Object.keys(val).find((key) =>
-                    Array.isArray(val[key])
-                  );
-                  return (
-                    <div className="d-flex flex-row align-items-center cursor-pointer">
-                      <span
-                        className="cursor-pointer"
-                        onClick={() => {
-                          moveBack(arrayKey);
-                        }}
-                      >
-                        {arrayKey}
-                      </span>
-                      {index !== subArray.length - 1 ? (
-                        <i className="bx bxs-chevron-right ms-3 me-3" />
-                      ) : null}
-                    </div>
-                  );
-                })}
+                {tableElement.subTable &&
+                  subArray.map((val, index) => {
+                    const arrayKey = Object.keys(val).find((key) =>
+                      Array.isArray(val[key])
+                    );
+                    return (
+                      <div className="d-flex flex-row align-items-center cursor-pointer">
+                        <span
+                          className="cursor-pointer"
+                          onClick={() => {
+                            moveBack(arrayKey);
+                          }}
+                        >
+                          {arrayKey}
+                        </span>
+                        {index !== subArray.length - 1 ? (
+                          <i className="bx bxs-chevron-right ms-3 me-3" />
+                        ) : null}
+                      </div>
+                    );
+                  })}
               </Col>
             </Row>
           </CardHeader>
@@ -389,7 +421,7 @@ const Index = ({
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
-                    Showing {data.length} of {data.length} entries
+                    Showing {data.length} of {dataSource?.length} entries
                   </span>
                   <div className="d-flex align-items-center justify-content-end"></div>
                 </Col>
@@ -401,10 +433,14 @@ const Index = ({
                           <i className="fas fa-file-csv"></i>
                         </Button>
                       </CSVLink>
-                      <Button size="large" className="btn border mx-1">
+                      <Button
+                        size="large"
+                        className="btn border mx-1"
+                        onClick={downloadExcel}
+                      >
                         <i className="fas fa-file-excel"></i>
                       </Button>
-                      <Button onClick={downloadPDF} className="btn border">
+                      <Button onClick={generatePDF} className="btn border">
                         <i className="bx bxs-file-pdf"></i>
                       </Button>
                     </div>
@@ -415,7 +451,6 @@ const Index = ({
                         placeholder="Search Min. 2 characters"
                         onChange={(e) => {
                           setSearchTerm(e.target.value);
-                          handleSearchFilter();
                         }}
                       />
                       {/* <i className="ri-search-line search-icon"></i> */}
@@ -423,84 +458,202 @@ const Index = ({
                   </div>
                 </Col>
               </Row>
-
-              <div className="table-responsive table-card mt-3 mb-1">
-                <table
-                  ref={tableRef}
-                  // border={2}
-                  className="table align-middle table-nowrap"
-                  id="customerTable"
-                >
-                  <thead className="table-light">
-                    <tr>
-                      {columns.map((column) => (
-                        <th key={column.key} style={column.style}>
-                          <div className="d-flex">
-                            <span>{column.title}</span>
-                            {column.sort ? (
-                              <span className="d-flex flex-column align-items-center">
-                                <i
-                                  className="bx bx-caret-up"
-                                  onClick={() => {
-                                    sortByProperty("ascending", column.key);
-                                  }}
-                                  style={{
-                                    color: `${sortOrder.key === column.key &&
-                                      sortOrder.sortOrder === "ascending"
-                                      ? "gray"
-                                      : "lightGray"
-                                      }`,
-                                    fontSize: "12px",
-                                    marginTop: "2px",
-                                    cursor: "pointer",
-                                  }}
-                                ></i>
-                                <i
-                                  className="bx bx-caret-down"
-                                  onClick={() => {
-                                    sortByProperty("descending", column.key);
-                                  }}
-                                  style={{
-                                    color: `${sortOrder.key === column.key &&
-                                      sortOrder.sortOrder === "descending"
-                                      ? "gray"
-                                      : "lightGray"
-                                      }`,
-                                    marginTop: "-5px",
-                                    fontSize: "12px",
-                                    cursor: "pointer",
-                                  }}
-                                ></i>
-                              </span>
-                            ) : null}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="list form-check-all">
-                    {data.map((record) => (
-                      <tr key={record.tabId} className={`hover`}>
+              <div
+                className="table-responsive table-card mt-3 mb-1"
+                id="myTable"
+              >
+                {tableElement?.dragDrop ? (
+                  <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="droppable" direction="vertical">
+                      {(provided) => (
+                        <table
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="table align-middle table-nowrap"
+                          id="customerTable"
+                        >
+                          <thead className="table-light">
+                            <tr>
+                              {columns.map((column) => (
+                                <th key={column.key} style={column.style}>
+                                  <div className="d-flex">
+                                    <span>{column.title}</span>
+                                    {column.sort ? (
+                                      <span className="d-flex flex-column align-items-center">
+                                        <i
+                                          className="bx bx-caret-up"
+                                          onClick={() => {
+                                            sortByProperty(
+                                              "ascending",
+                                              column.key
+                                            );
+                                          }}
+                                          style={{
+                                            color: `${
+                                              sortOrder.key === column.key &&
+                                              sortOrder.sortOrder ===
+                                                "ascending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
+                                            fontSize: "12px",
+                                            marginTop: "2px",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                        <i
+                                          className="bx bx-caret-down"
+                                          onClick={() => {
+                                            sortByProperty(
+                                              "descending",
+                                              column.key
+                                            );
+                                          }}
+                                          style={{
+                                            color: `${
+                                              sortOrder.key === column.key &&
+                                              sortOrder.sortOrder ===
+                                                "descending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
+                                            marginTop: "-5px",
+                                            fontSize: "12px",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody className="list form-check-all">
+                            {data.map((record, index) => (
+                              <Draggable
+                                key={record.tabId}
+                                draggableId={`row-${index}`}
+                                index={index}
+                              >
+                                {(provided) => (
+                                  <tr
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={`hover`}
+                                  >
+                                    {columns.map((column) => (
+                                      <td
+                                        key={column.key}
+                                        style={column.style}
+                                        onClick={() => {
+                                          record?.childrenCount > 0 &&
+                                          column?.key == "tabName"
+                                            ? HandleSubTable(record)
+                                            : setData(data);
+                                        }}
+                                      >
+                                        {column.render
+                                          ? column.render(
+                                              record[column.dataIndex],
+                                              record
+                                            )
+                                          : record[column.dataIndex]}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </tbody>
+                        </table>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                ) : (
+                  <table
+                    // border={2}
+                    className="table align-middle table-nowrap"
+                    id="customerTable"
+                  >
+                    <thead className="table-light">
+                      <tr>
                         {columns.map((column) => (
-                          <td
-                            key={column.key}
-                            style={column.style}
-                            onClick={() => {
-                              record?.childrenCount > 0 &&
-                                column?.key == "tabName"
-                                ? HandleSubTable(record)
-                                : setData(data);
-                            }}
-                          >
-                            {column.render
-                              ? column.render(record[column.dataIndex], record)
-                              : record[column.dataIndex]}
-                          </td>
+                          <th key={column.key} style={column.style}>
+                            <div className="d-flex">
+                              <span>{column.title}</span>
+                              {column.sort ? (
+                                <span className="d-flex flex-column align-items-center">
+                                  <i
+                                    className="bx bx-caret-up"
+                                    onClick={() => {
+                                      sortByProperty("ascending", column.key);
+                                    }}
+                                    style={{
+                                      color: `${
+                                        sortOrder.key === column.key &&
+                                        sortOrder.sortOrder === "ascending"
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
+                                      fontSize: "12px",
+                                      marginTop: "2px",
+                                      cursor: "pointer",
+                                    }}
+                                  ></i>
+                                  <i
+                                    className="bx bx-caret-down"
+                                    onClick={() => {
+                                      sortByProperty("descending", column.key);
+                                    }}
+                                    style={{
+                                      color: `${
+                                        sortOrder.key === column.key &&
+                                        sortOrder.sortOrder === "descending"
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
+                                      marginTop: "-5px",
+                                      fontSize: "12px",
+                                      cursor: "pointer",
+                                    }}
+                                  ></i>
+                              ) : null}
+                            </div>
+                          </th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="list form-check-all">
+                      {data.map((record) => (
+                        <tr key={record.tabId} className={`hover`}>
+                          {columns.map((column) => (
+                            <td
+                              key={column.key}
+                              style={column.style}
+                              onClick={() => {
+                                record?.childrenCount > 0 &&
+                                column?.key == "tabName"
+                                  ? HandleSubTable(record)
+                                  : setData(data);
+                              }}
+                            >
+                              {column.render
+                                ? column.render(
+                                    record[column.dataIndex],
+                                    record
+                                  )
+                                : record[column.dataIndex]}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
                 <div className="noresult" style={{ display: "none" }}>
                   <div className="text-center">
                     <lord-icon
@@ -519,15 +672,14 @@ const Index = ({
               </div>
 
               <div className="d-flex justify-content-end">
-                <div className="pagination-wrap hstack gap-2">
-                  <Link className="page-item pagination-prev disabled" to="#">
-                    Previous
-                  </Link>
-                  <ul className="pagination listjs-pagination mb-0"></ul>
-                  <Link className="page-item pagination-next" to="#">
-                    Next
-                  </Link>
-                </div>
+                <Pagination
+                  total={total}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  fetchData={fetchData}
+                  setCurrentPage={setCurrentPage}
+                  setPageSize={setPageSize}
+                />
               </div>
             </div>
           </CardBody>

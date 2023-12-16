@@ -27,6 +27,7 @@ import AddCompetition from "../Pages/Competition/AddCompetition.jsx";
 import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
+import Xyz from '../Pages/xyz'
 
 // Import Calender
 import Calender from "../Pages/Calender";
@@ -144,7 +145,14 @@ const authProtectedRoutes = [
   { path: '/addEvents', component: <AddEvents /> },
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/addUsers', component: <AddUsers /> },
-
+  { path: '/Teams', component: <Teams/> },
+  { path: '/matchType', component: <MatchType/> },
+  { path: '/penalty', component: <PenaltyRuns/> },
+  { path: '/competition', component: <Competition/> },
+  { path: '/events', component: <Events/> },
+  { path: '/commentary', component: <Commentary/> },
+  { path: '/users', component: <Users/> },
+  { path: '/xyz', component: <Xyz/> },
   // Calender
   { path: "/calendar", component: <Calender /> },
 
@@ -221,13 +229,12 @@ const authProtectedRoutes = [
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
-  {
+{
     path: "/",
     exact: true,
     component: <Navigate to="/dashboard" />,
   },
 ];
-
 const publicRoutes = [
 
   // Authentication Page
