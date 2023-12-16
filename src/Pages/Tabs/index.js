@@ -54,10 +54,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.tabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
+      if (singleCheck.includes(e.encryptedTabId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.encryptedTabId));
       } else {
-        setSingleCheck([...singleCheck, e.tabId]);
+        setSingleCheck([...singleCheck, e.encryptedTabId]);
       }
     }
   };
@@ -79,10 +79,8 @@ const Index = () => {
           Authorization: `Bearer ${getToken()}`,
         },
       }
-    ).then((response) => {
-      console.log("this is response", response)
-      console.log("this is response", record.tabId)
-      const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
+    ).then((response)=>{
+      const newArray = data.map(obj => (obj.encryptedTabId === record.encryptedTabId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
@@ -140,7 +138,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.tabId)}
+            checked={checkedAll || singleCheck.includes(record.encryptedTabId)}
             onChange={() => {
               handleCheckedAll(record);
             }}

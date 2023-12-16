@@ -230,6 +230,7 @@ const Index = () => {
     title: "Event Types",
     headerSelect: false,
     switch: true,
+    dragDrop:true,
   };
 
   useEffect(() => {
@@ -249,6 +250,7 @@ const Index = () => {
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            changeOrderApiName="eventType"
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

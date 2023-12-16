@@ -11,7 +11,6 @@ const Index = ({
   const onShowSizeChange = (currentPage, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(currentPage);
-    console.log(currentPage, pageSize);
   };
   useEffect(() => {
     fetchData();

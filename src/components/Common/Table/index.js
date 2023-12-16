@@ -35,6 +35,7 @@ const Index = ({
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
+  const [subData, setSubData] = useState([])
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
@@ -143,29 +144,48 @@ const Index = ({
     }
   };
   const handleSearchFilter = () => {
-    const updatedData = dataSource.filter((val) => {
-      const found = Object.values(val).some((value) => {
-        if (typeof value === "string" || value instanceof String) {
-          return value.toLowerCase().includes(searchTerm.toLowerCase());
-        }
-        return false;
+    if(tableElement.title === "Tabs"){
+      const updatedData = data.filter((val) => {
+        const found = Object.values(val).some((value) => {
+          if (typeof value === "string" || value instanceof String) {
+            return value.toLowerCase().includes(searchTerm.toLowerCase());
+          }
+          return false;
+        });
+        return found === true;
       });
-      return found === true;
-    });
-    if (searchTerm === "") {
-      setTotal(dataSource.length);
-      const sliced = dataSource.slice(
-        currentPage * pageSize,
-        currentPage * pageSize + pageSize
-      );
-      setData(sliced);
-    } else {
-      setData(updatedData);
-      setTotal(updatedData.length);
+      if (searchTerm === "") {
+        setTotal(dataSource.length);
+        setData(subData);
+        // setData(subData);
+      } else {
+        setData(updatedData);
+        setTotal(updatedData.length);
+      }
+    }else {
+      const updatedData = dataSource.filter((val) => {
+        const found = Object.values(val).some((value) => {
+          if (typeof value === "string" || value instanceof String) {
+            return value.toLowerCase().includes(searchTerm.toLowerCase());
+          }
+          return false;
+        });
+        return found === true;
+      });
+      if (searchTerm === "") {
+        setTotal(dataSource.length);
+        const sliced = dataSource.slice(
+          currentPage * pageSize,
+          currentPage * pageSize + pageSize
+        );
+        setData(sliced);
+      } else {
+        setData(updatedData);
+        setTotal(updatedData.length);
+      }
     }
   };
   const moveBack = (key) => {
-    console.log("this is what inside sub array -->>>>", subArray);
     if (key == "Tabs") {
       setData(dataSource);
       setSubArray([
@@ -273,13 +293,13 @@ const Index = ({
     const [movedRow] = newData.splice(result.source.index, 1);
     newData.splice(result.destination.index, 0, movedRow);
     setData(newData);
-
-    const tabOrders = filterOrderChange(newData);
+    const tabOrders = filterOrderChange(newData, changeOrderApiName);
     changeDisplayOrder(tabOrders, changeOrderApiName);
   };
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
+
   useEffect(() => {
     fetchData();
   }, [dataSource]);
@@ -395,9 +415,10 @@ const Index = ({
                       Array.isArray(val[key])
                     );
                     return (
-                      <div className="d-flex flex-row align-items-center cursor-pointer">
+                      <div className="d-flex flex-row align-items-center">
                         <span
                           className="cursor-pointer"
+                          style={{cursor:"pointer"}}
                           onClick={() => {
                             moveBack(arrayKey);
                           }}
@@ -419,7 +440,7 @@ const Index = ({
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
-                    Showing {data.length} of {dataSource?.length} entries
+                    Showing {data.length} of {tableElement.title === "Tabs"? data?.length: dataSource?.length} entries
                   </span>
                   <div className="d-flex align-items-center justify-content-end"></div>
                 </Col>
@@ -549,6 +570,7 @@ const Index = ({
                                             column?.key == "tabName"
                                             ? HandleSubTable(record)
                                             : setData(data);
+                                            record?.childrenCount > 0 && setSubData( record?.children);
                                         }}
                                       >
                                         {column.render

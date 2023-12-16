@@ -212,7 +212,7 @@ const Sidebar = (props) => {
                     </li>
                   )}
                 </React.Fragment>
-              ))}
+              ))} */}
             </ul>
           </div>
         </SimpleBar>

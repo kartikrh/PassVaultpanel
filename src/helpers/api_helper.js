@@ -71,12 +71,21 @@ class APIClient {
   };
 }
 
+
 const getToken = () => {
+  if (localStorage.getItem("authUser") == "null") {
+    return null
+  }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
   return decryptedAuth.token;
 }
+
+
 const getLoggedinUser = () => {
+  if (localStorage.getItem("authUser") === null) {
+    return null
+  }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
   if (!decryptedAuth.token) {
@@ -86,8 +95,8 @@ const getLoggedinUser = () => {
   }
 };
 
+
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
-  console.log("this is tabDisplayOrder ---->>>>", tabdisplayOrder)
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BASE_URL}/admin/${apiName}/changeDisplayOrder`,
