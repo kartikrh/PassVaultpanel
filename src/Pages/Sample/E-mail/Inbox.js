@@ -22,7 +22,7 @@ import classnames from "classnames";
 import InboxSidebar from "./Sidebar";
 
 //Import Breadcrumb
-import Breadcrumbs from "../../components/Common/Breadcrumb";
+import Breadcrumbs from "../../../components/Common/Breadcrumb";
 
 const Inbox = () => {
   document.title = "Inbox  | Upzet - React Admin & Dashboard Template";

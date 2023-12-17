@@ -147,86 +147,25 @@ const Sidebar = (props) => {
                 <React.Fragment key={key}>
                   <li className="menu-title" >{props.t(val.displayName)}</li>
                   {val.children.map((val) => {
-                    return( 
-                    <li>
-                    <Link
-                    to={val.webPage ? val.webPage : "/#"}
-                  >
-                   <i
-                      className="bx bx-circle"
-                      style={{ marginRight: "5px" }}
-                    ></i>
-                      <span
-                      >
-                        {" "}
-                      </span>
-                    <span>{props.t(val.displayName)}</span>
-                  </Link>
-                  </li>)
+                    return (
+                      <li>
+                        <Link
+                          to={val.webPage ? val.webPage : "/#"}
+                        >
+                          <i
+                            className="bx bx-circle"
+                            style={{ marginRight: "5px" }}
+                          ></i>
+                          <span
+                          >
+                            {" "}
+                          </span>
+                          <span>{props.t(val.displayName)}</span>
+                        </Link>
+                      </li>)
                   })}
                 </React.Fragment>
               ))}
-            {/* dropdowns list not done yet. */}
-              {/* {(tabList || []).map((item, key) => (
-                <React.Fragment key={key}>
-                  {item.isMainMenu ? (
-                    <li className="menu-title">{props.t(item.displayName)}</li>
-                  ) : (
-                    <li key={key}>
-                      <Link
-                        to={item.webPage ? item.webPage : "/#"}
-                        className={
-                          item.issubMenubadge || item.isHasArrow
-                            ? " "
-                            : "has-arrow"
-                        }
-                      >
-                        <i
-                          className={item.icon}
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                        {item.issubMenubadge && (
-                          <span
-                            className={
-                              "badge rounded-pill float-end " + item.bgcolor
-                            }
-                          >
-                            {" "}
-                            {item.badgeValue}{" "}
-                          </span>
-                        )}
-                        <span>{props.t(item.displayName)}</span>
-                      </Link>
-                      {item.childrenCount>0 && (
-                        <ul className="sub-menu">
-                          {item.children.map((value, index) => (
-                            <li key={index}>
-                              <Link
-                                to={value.webpage}
-                                className={
-                                  false && "has-arrow waves-effect"
-                                }
-                              >
-                                {props.t(value.displayName)}
-                              </Link>
-                              {item.subMenu && (
-                                <ul className="sub-menu">
-                                  {item.subMenu.map((item, key) => (
-                                    <li key={key}>
-                                      <Link to="#">{props.t(item.title)}</Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  )}
-                </React.Fragment>
-              ))} */}
-            {/* default list of the theme */}
               {(sidebarData || []).map((item, key) => (
                 <React.Fragment key={key}>
                   {item.isMainMenu ? (

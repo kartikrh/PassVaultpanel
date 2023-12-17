@@ -122,7 +122,7 @@ const Index = () => {
       });
   };
 
-  const handleChangePassword = async () =>{
+  const handleChangePassword = async () => {
     setIsLoading(true);
     await axios
       .post(
@@ -194,7 +194,7 @@ const Index = () => {
     {
       title: "Parent Name",
       dataIndex: "parentName",
-      render: (text,record) =>(<span style={{cursor:"pointer"}}>{record.parentId === "0"? "Root" : null}</span>),
+      render: (text, record) => (<span style={{ cursor: "pointer" }}>{record.parentId === "0" ? "Root" : null}</span>),
       key: "parentName",
       sort: true,
       style: { width: "100%" },
@@ -209,7 +209,7 @@ const Index = () => {
     {
       title: "Password",
       dataIndex: "password",
-      render: (text,record) =>(<span>*******</span>),
+      render: (text, record) => (<span>*******</span>),
       key: "password",
       sort: true,
       style: { width: "100%" },
@@ -217,10 +217,10 @@ const Index = () => {
     {
       title: "Change Password",
       dataIndex: "cPassword",
-      render: (text,record) =>(<span style={{cursor:"pointer"}} onClick={()=>{setChangPasswordModelVisible(true); setUserId(record.userId)}}><i className=" bx bx-show-alt" style={{fontSize:"25px"}}/></span>),
+      render: (text, record) => (<span style={{ cursor: "pointer" }} onClick={() => { setChangPasswordModelVisible(true); setUserId(record.userId) }}><i className=" bx bx-show-alt" style={{ fontSize: "25px" }} /></span>),
       key: "cPassword",
       sort: true,
-      style: { width: "100%", textAlign:"center" },
+      style: { width: "100%", textAlign: "center" },
     },
     {
       title: "Is Active",
@@ -276,10 +276,10 @@ const Index = () => {
             singleCheck={singleCheck}
           />
           <ChangePasswordModel
-          changePasswordVisible={changePasswordVisible}
-          setChangPasswordModelVisible={setChangPasswordModelVisible}
-          setPassword={setPassword}
-          handleChangePassword={handleChangePassword}
+            changePasswordVisible={changePasswordVisible}
+            setChangPasswordModelVisible={setChangPasswordModelVisible}
+            setPassword={setPassword}
+            handleChangePassword={handleChangePassword}
           />
         </Container>
       </div>

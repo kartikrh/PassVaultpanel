@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import {getToken} from '../../helpers/api_helper'
+import { getToken } from '../../helpers/api_helper'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import axios from "axios";
@@ -35,12 +35,12 @@ const Index = () => {
           Authorization: `Bearer ${getToken()}`,
         },
       }
-    ).then((response)=>{
-        console.log(response?.result)
-    //   const tabsDataDB = validateTabResponse(response?.result);
+    ).then((response) => {
+      console.log(response?.result)
+      //   const tabsDataDB = validateTabResponse(response?.result);
       setData(response?.result);
       setIsLoading(false)
-    }).catch((error)=>{
+    }).catch((error) => {
       setIsLoading(false)
     });
   };
@@ -72,7 +72,7 @@ const Index = () => {
         id: record.roleId,
         tabName: record.tabName,
         parentId: record.parentId,
-        [pType]: cState?false:true,
+        [pType]: cState ? false : true,
       },
       {
         headers: {
@@ -80,14 +80,14 @@ const Index = () => {
           Authorization: `Bearer ${getToken()}`,
         },
       }
-    ).then((response)=>{
-      console.log("this is response",response)
-      console.log("this is response",record.roleId)
+    ).then((response) => {
+      console.log("this is response", response)
+      console.log("this is response", record.roleId)
       const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
-    }).catch((error)=>{
+    }).catch((error) => {
       console.log(error);
       setIsLoading(false)
     })
@@ -96,23 +96,23 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-      await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/roles/delete`,
-        {
-          roleIds: singleCheck,
+    await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/admin/roles/delete`,
+      {
+        roleIds: singleCheck,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      ).then((response)=>{
-        setDeleteModelVisable(false);
-        fetchData();
-      }).catch((error)=>{
-        console.log(error)
-      });
+      }
+    ).then((response) => {
+      setDeleteModelVisable(false);
+      fetchData();
+    }).catch((error) => {
+      console.log(error)
+    });
   }
   //table columns
   const columns = [
@@ -153,27 +153,27 @@ const Index = () => {
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"></i>,
       style: { width: "2%", textAlign: "center" },
-    },    
+    },
     {
       title: "Role",
       dataIndex: "roleName",
       key: "roleName",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
-        title: "Description",
-        dataIndex: "description",
-        key: "description",
-        sort:true,
-        style: { width: "90%" },
-      },
-   
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      sort: true,
+      style: { width: "90%" },
+    },
+
   ];
 
   //elements required
   const tableElement = {
-    title :  "Roles",
+    title: "Roles",
     headerSelect: false,
     switch: false,
   };
@@ -188,7 +188,7 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Roles" />
-          {isLoading && <SpinnerModel/>}
+          {isLoading && <SpinnerModel />}
           <Table
             columns={columns}
             dataSource={data}

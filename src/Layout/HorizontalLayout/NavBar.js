@@ -3,7 +3,7 @@ import { Collapse, Row, Col, Container } from "reactstrap";
 import classname from "classnames";
 import { decryptData } from "../../Pages/Utility/encryptionUtils";
 import axios from 'axios'
-import {validateTabResponse} from "./../VerticalLayout/functions";
+import { validateTabResponse } from "./../VerticalLayout/functions";
 import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -15,26 +15,26 @@ import navdata from "./Navdata";
 const Navbar = (props) => {
   const navData = navdata().props.children;
   const [tabList, setTabList] = useState([]);
-useEffect(()=>{
-  const menuData = async () => {
-    const token = decryptData(localStorage.getItem("authUser"));
-    console.log("this is token 222", token.result?.token);
-    const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.result?.token}`,
-        },
-      }
-    );
-    const tabsDataDB = validateTabResponse(response?.result);
-    setTabList(tabsDataDB);
-    console.log("this is horizentle navData",tabsDataDB )
-  };
-  menuData();
-},[])
+  useEffect(() => {
+    const menuData = async () => {
+      const token = decryptData(localStorage.getItem("authUser"));
+      console.log("this is token 222", token.result?.token);
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.result?.token}`,
+          },
+        }
+      );
+      const tabsDataDB = validateTabResponse(response?.result);
+      setTabList(tabsDataDB);
+      console.log("this is horizentle navData", tabsDataDB)
+    };
+    menuData();
+  }, [])
   useEffect(() => {
     var matchingMenuItem = null;
     var ul = document.getElementById("navigation");
@@ -92,7 +92,7 @@ useEffect(()=>{
     }
     return false;
   }
-  
+
   return (
     <React.Fragment>
       <div className="topnav">
@@ -107,14 +107,14 @@ useEffect(()=>{
               id="topnav-menu-content"
             >
               <ul className="navbar-nav">
-              {tabList.map((item, key) => (
+                {tabList.map((item, key) => (
                   <React.Fragment key={key}>
                     {item.children.length === 0 ? (
                       <li key={key} className="nav-item dropdown">
                         <Link
                           to="/#"
                           className="nav-link dropdown-toggle arrow-none"
-                          // onClick={item.click}
+                        // onClick={item.click}
                         >
                           <i className={item.IconName}></i>
                           {" "}
@@ -127,7 +127,7 @@ useEffect(()=>{
                         <Link
                           to="/#"
                           className="nav-link dropdown-toggle arrow-none"
-                          // onClick={item.click}
+                        // onClick={item.click}
                         >
 
                           <i className={item.IconName}>{" "}</i>
@@ -136,25 +136,25 @@ useEffect(()=>{
                         </Link>
 
                         {/* {item.id === 2 ? ( */}
-                          <div
-                            className={classname(
-                              "dropdown-menu mega-dropdown-menu dropdown-menu-left dropdown-mega-menu-xl",
-                              // { show: item.currentState }
-                            )}
-                          >
-                            <Row>
-                              {item.children.map((subItem, key) => (
-                                <Col lg={4} key={key}>
-                                  <Link
-                                    to={subItem.webPage}
-                                    className="dropdown-item"
-                                  >
-                                    {props.t(subItem.displayName)}
-                                  </Link>
-                                </Col>
-                              ))}
-                            </Row>
-                          </div>
+                        <div
+                          className={classname(
+                            "dropdown-menu mega-dropdown-menu dropdown-menu-left dropdown-mega-menu-xl",
+                            // { show: item.currentState }
+                          )}
+                        >
+                          <Row>
+                            {item.children.map((subItem, key) => (
+                              <Col lg={4} key={key}>
+                                <Link
+                                  to={subItem.webPage}
+                                  className="dropdown-item"
+                                >
+                                  {props.t(subItem.displayName)}
+                                </Link>
+                              </Col>
+                            ))}
+                          </Row>
+                        </div>
                       </li>
                     )}
                   </React.Fragment>

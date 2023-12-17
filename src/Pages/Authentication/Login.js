@@ -69,10 +69,10 @@ const Login = (props) => {
   //   dispatch(loginUser(values, props.router.navigate));
   // };
   const handleRememberMe = () => {
-    if (rememberMe===true) {
+    if (rememberMe === true) {
       localStorage.setItem("rememberMe", false)
       setRememberMe(false)
-    } else if(rememberMe === false) {
+    } else if (rememberMe === false) {
       localStorage.setItem("rememberMe", true)
       setRememberMe(true)
     }
@@ -178,7 +178,7 @@ const Login = (props) => {
                           <div className="mb-4">
                             <Label className="form-label">Username</Label>
                             <Input
-                            autocomplete="off"
+                              autocomplete="off"
                               name="username"
                               className="form-control"
                               placeholder="Enter username"
@@ -188,13 +188,13 @@ const Login = (props) => {
                               value={validation.values.username || ""}
                               invalid={
                                 validation.touched.username &&
-                                validation.errors.username
+                                  validation.errors.username
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.username &&
-                            validation.errors.username ? (
+                              validation.errors.username ? (
                               <FormFeedback type="invalid">
                                 <div>{validation.errors.username}</div>
                               </FormFeedback>
@@ -212,13 +212,13 @@ const Login = (props) => {
                               onBlur={validation.handleBlur}
                               invalid={
                                 validation.touched.password &&
-                                validation.errors.password
+                                  validation.errors.password
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.password &&
-                            validation.errors.password ? (
+                              validation.errors.password ? (
                               <FormFeedback type="invalid">
                                 <div> {validation.errors.password} </div>
                               </FormFeedback>
@@ -244,7 +244,7 @@ const Login = (props) => {
                               </div>
                             </Col>
                             {/* <Col className="col-7"> */}
-                              {/* <div className="text-md-end mt-3 mt-md-0">
+                            {/* <div className="text-md-end mt-3 mt-md-0">
                                 <Link
                                   to="/auth-recoverpw"
                                   className="text-muted"
@@ -316,10 +316,6 @@ const Login = (props) => {
                     Register{" "}
                   </Link>{" "}
                 </p> */}
-                <p className="text-white-50">
-                  © {new Date().getFullYear()} Upzet. Crafted with{" "}
-                  <i className="mdi mdi-heart text-danger"></i> by Themesdesign
-                </p>
               </div>
             </Col>
           </Row>

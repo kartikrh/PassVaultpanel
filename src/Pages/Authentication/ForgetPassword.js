@@ -45,7 +45,7 @@ const ForgetPasswordPage = props => {
 
   return (
     <React.Fragment>
-      
+
       <div className="account-pages my-5 pt-sm-5">
         <Container>
           <Row className="justify-content-center">
@@ -137,10 +137,6 @@ const ForgetPasswordPage = props => {
                   <Link to="login" className="font-weight-medium text-primary">
                     Login
                   </Link>{" "}
-                </p>
-                <p>
-                  © {new Date().getFullYear()} Upzet. Crafted with{" "}
-                  <i className="mdi mdi-heart text-danger" /> by Themesdesign
                 </p>
               </div>
             </Col>

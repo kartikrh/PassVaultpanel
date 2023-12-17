@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardBody, CardTitle, Col, Container, Row } from "reactstrap";
 
 //Import Breadcrumb
-import Breadcrumbs from "../../components/Common/Breadcrumb";
+import Breadcrumbs from "../../../components/Common/Breadcrumb";
 
 const IconDripicons = () => {
   document.title = "Drip Icons | Upzet - React Admin & Dashboard Template";

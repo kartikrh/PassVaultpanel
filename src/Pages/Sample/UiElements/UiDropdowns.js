@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 
 //Import Breadcrumb
-import Breadcrumbs from "../../components/Common/Breadcrumb";
+import Breadcrumbs from "../../../components/Common/Breadcrumb";
 
 const UiDropdown = () => {
   document.title = "Dropdowns | Upzet - React Admin & Dashboard Template";
