@@ -30,11 +30,11 @@ const Layout = props => {
     showRightSidebar,
     leftSideBarTheme,
   } = useSelector(state => ({
-    leftSideBarType: state.Layout.leftSideBarType,
-    layoutWidth: state.Layout.layoutWidth,
-    topbarTheme: state.Layout.topbarTheme,
-    showRightSidebar: state.Layout.showRightSidebar,
-    leftSideBarTheme: state.Layout.leftSideBarTheme,
+    leftSideBarType: state?.Layout?.leftSideBarType,
+    layoutWidth: state?.Layout?.layoutWidth,
+    topbarTheme: state?.Layout?.topbarTheme,
+    showRightSidebar: state?.Layout?.showRightSidebar,
+    leftSideBarTheme: state?.Layout?.leftSideBarTheme,
   }));
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);

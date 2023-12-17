@@ -292,7 +292,7 @@ RightSidebar.propTypes = {
 };
 
 const mapStateToProps = state => {
-  return { ...state.Layout };
+  return { ...state?.Layout };
 };
 
 export default connect(mapStateToProps, {

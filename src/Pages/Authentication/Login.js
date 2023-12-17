@@ -19,7 +19,7 @@ import {
 //redux
 import { useSelector, useDispatch } from "react-redux";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import withRouter from "../../components/Common/withRouter";
 
 // Formik validation
@@ -42,36 +42,41 @@ import { loginUser } from "../../Features/Authentication/loginSlice";
 const Login = (props) => {
   const [rememberMe, setRememberMe] = useState(false)
   document.title = "Login | Upzet - React Admin & Dashboard Template";
-
   const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const { error } = useSelector((state) => ({
+    error: state.login.error,
+  }));
+
+  const token = useSelector((state) => state.login.token);
+  const isLoggedIn = token !== null;
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
     initialValues: {
-      username: "",
+      userName: "",
       password: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string().required("Please Enter Your Username"),
+      userName: Yup.string().required("Please Enter Your Username"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: (values) => {
-      // dispatch()
       dispatch(loginUser(values));
-
-      // dispatch(loginUser(values, props.router.navigate));
     },
   });
 
-  const { error } = useSelector((state) => ({
-    error: state.login.error,
-  }));
 
-  // handleValidSubmit
-  // const handleValidSubmit = (event, values) => {
-  //   dispatch(loginUser(values, props.router.navigate));
-  // };
+  useEffect(() => {
+    console.log("step1")
+    console.log(isLoggedIn)
+    if (isLoggedIn) {
+      console.log("step2")
+      navigate('/Dashboard')
+    }
+  }, [isLoggedIn])
+
   const handleRememberMe = () => {
     if (rememberMe === true) {
       localStorage.setItem("rememberMe", false)
@@ -85,7 +90,7 @@ const Login = (props) => {
     if (type === "google" && res) {
       const postData = {
         name: res.profileObj.name,
-        username: res.profileObj.username,
+        userName: res.profileObj.userName,
         token: res.tokenObj.access_token,
         idToken: res.tokenId,
       };
@@ -93,7 +98,7 @@ const Login = (props) => {
     } else if (type === "facebook" && res) {
       const postData = {
         name: res.name,
-        username: res.username,
+        userName: res.userName,
         token: res.accessToken,
         idToken: res.tokenId,
       };
@@ -121,7 +126,7 @@ const Login = (props) => {
       const userAuth = decryptData(localStorage.getItem("authUser"));
       const { userName, password } = userAuth?.result;
       validation.setValues({
-        username: userName, // Replace with your saved username logic
+        userName: userName, // Replace with your saved userName logic
         password: password, // Replace with your saved password logic
       });
     }
@@ -183,24 +188,24 @@ const Login = (props) => {
                             <Label className="form-label">Username</Label>
                             <Input
                               autocomplete="off"
-                              name="username"
+                              name="userName"
                               className="form-control"
-                              placeholder="Enter username"
-                              type="username"
+                              placeholder="Enter userName"
+                              type="userName"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
-                              value={validation.values.username || ""}
+                              value={validation.values.userName || ""}
                               invalid={
-                                validation.touched.username &&
-                                  validation.errors.username
+                                validation.touched.userName &&
+                                  validation.errors.userName
                                   ? true
                                   : false
                               }
                             />
-                            {validation.touched.username &&
-                              validation.errors.username ? (
+                            {validation.touched.userName &&
+                              validation.errors.userName ? (
                               <FormFeedback type="invalid">
-                                <div>{validation.errors.username}</div>
+                                <div>{validation.errors.userName}</div>
                               </FormFeedback>
                             ) : null}
                           </div>

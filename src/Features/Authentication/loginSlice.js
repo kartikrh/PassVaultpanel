@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Base URL for Axios
-const baseURL = 'https://scorenodeapi.cloudd.live';
+const baseURL = `${process.env.REACT_APP_BASE_URL}`
 
 // Axios instance
 const axiosInstance = axios.create({ baseURL });
@@ -12,8 +12,8 @@ export const loginUser = createAsyncThunk(
   'login/user',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/login', userData);
-      return response?.data.data; // Assuming this contains the token
+      const response = await axiosInstance.post('/signin', userData);
+      return response?.data.result; // Assuming this contains the token
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -36,6 +36,7 @@ const loginSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.token = action.payload.token;
+        state.userName = action.payload.userName;
         state.isLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {

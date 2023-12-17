@@ -191,14 +191,5 @@ const Header = (props) => {
   );
 };
 
-const mapStatetoProps = (state) => {
-  const { layoutType, showRightSidebar, leftMenu, leftSideBarType } =
-    state.Layout;
-  return { layoutType, showRightSidebar, leftMenu, leftSideBarType };
-};
 
-export default connect(mapStatetoProps, {
-  // showRightSidebarAction,
-  // toggleLeftmenu,
-  // changeSidebarType,
-})(withTranslation()(Header));
+export default Header;

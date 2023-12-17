@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
-import {decryptData} from './../../../Pages/Utility/encryptionUtils'
+import { decryptData } from './../../../Pages/Utility/encryptionUtils'
 import {
   Dropdown,
   DropdownToggle,
@@ -61,10 +61,11 @@ const ProfileMenu = props => {
         </DropdownToggle>
         <DropdownMenu className="dropdown-menu-end">
           {/* default path was /userprofile */}
-          <DropdownItem tag="a" href="/#"> 
+          <DropdownItem tag="a" href="/#">
             {" "}
             <i className="ri-user-line align-middle me-2" />
-            {props.t("Profile")}{" "}
+            {/* {props.t("Profile")}{" "} */}
+            Profile
           </DropdownItem>
           {/* <DropdownItem tag="a" href="#">
             <i className="ri-wallet-2-line align-middle me-2" />
@@ -77,12 +78,14 @@ const ProfileMenu = props => {
           </DropdownItem> */}
           <DropdownItem tag="a" href="#">
             <i className="bx bx-transfer align-middle me-2" />
-            {props.t("Change Password")}
+            {/* {props.t("Change Password")} */}
+            Change Password
           </DropdownItem>
           <div className="dropdown-divider" />
           <Link to="/logout" className="dropdown-item">
             <i className="ri-shut-down-line align-middle me-2 text-danger" />
-            <span>{props.t("Logout")}</span>
+            {/* <span>{props.t("Logout")}</span> */}
+            <span>Logout</span>
           </Link>
         </DropdownMenu>
       </Dropdown>
@@ -95,11 +98,4 @@ ProfileMenu.propTypes = {
   t: PropTypes.any
 };
 
-const mapStatetoProps = state => {
-  const { error, success } = state.profile;
-  return { error, success };
-};
-
-export default withRouter(
-  connect(mapStatetoProps, {})(withTranslation()(ProfileMenu))
-);
+export default ProfileMenu;

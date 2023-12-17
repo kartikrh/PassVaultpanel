@@ -260,7 +260,7 @@ const Navbar = (props) => {
 };
 
 const mapStatetoProps = (state) => {
-  const { leftMenu } = state.Layout;
+  const { leftMenu } = state?.Layout;
   return { leftMenu };
 };
 

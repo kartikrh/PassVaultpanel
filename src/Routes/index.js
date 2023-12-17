@@ -33,7 +33,7 @@ const getLayout = (layoutType) => {
 const Index = () => {
 
   const { layoutType } = useSelector((state) => ({
-    layoutType: state.Layout?.layoutType,
+    layoutType: state?.Layout?.layoutType,
   }));
 
   const Layout = getLayout(layoutType);

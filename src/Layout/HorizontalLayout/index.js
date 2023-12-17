@@ -24,9 +24,9 @@ const Layout = (props) => {
 
   const { topbarTheme, layoutWidth, showRightSidebar } =
     useSelector((state) => ({
-      topbarTheme: state.Layout.topbarTheme,
-      layoutWidth: state.Layout.layoutWidth,
-      showRightSidebar: state.Layout.showRightSidebar,
+      topbarTheme: state?.Layout.topbarTheme,
+      layoutWidth: state?.Layout.layoutWidth,
+      showRightSidebar: state?.Layout.showRightSidebar,
     }));
 
   /*
