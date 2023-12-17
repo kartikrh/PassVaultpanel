@@ -2,13 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import withRouter from "../../components/Common/withRouter";
 
-//actions
-import {
-  changeLayout,
-  changeTopbarTheme,
-  changeLayoutWidth,
-  showRightSidebarAction,
-} from "../../store/actions";
+// //actions
+// import {
+//   changeLayout,
+//   changeTopbarTheme,
+//   changeLayoutWidth,
+//   showRightSidebarAction,
+// } from "../../store/actions";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Navbar from "./NavBar";
 import Header from "./Header";
 import Footer from "./Footer";
-// import RightSidebar from "../../components/Common/RightSideBar";
+import RightSidebar from "../../components/Common/RightSideBar";
 
 const Layout = (props) => {
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ const Layout = (props) => {
         return;
       } else {
         //if clicked in outside of rightbar then fire action for hide rightbar
-        dispatch(showRightSidebarAction(false));
+        // dispatch(showRightSidebarAction(false));
       }
     },
     [dispatch]
@@ -61,9 +61,9 @@ const Layout = (props) => {
   /*
   layout settings
   */
-  useEffect(() => {
-    dispatch(changeLayout("horizontal"));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(changeLayout("horizontal"));
+  // }, [dispatch]);
 
   useEffect(() => {
     //init body click event fot toggle rightbar
@@ -72,13 +72,13 @@ const Layout = (props) => {
 
   useEffect(() => {
     if (topbarTheme) {
-      dispatch(changeTopbarTheme(topbarTheme));
+      // dispatch(changeTopbarTheme(topbarTheme));
     }
   }, [dispatch, topbarTheme]);
 
   useEffect(() => {
     if (layoutWidth) {
-      dispatch(changeLayoutWidth(layoutWidth));
+      // dispatch(changeLayoutWidth(layoutWidth));
     }
   }, [dispatch, layoutWidth]);
 
@@ -101,7 +101,7 @@ const Layout = (props) => {
         <Footer />
       </div>
 
-      {/* {showRightSidebar ? <RightSidebar /> : null} */}
+      {showRightSidebar ? <RightSidebar /> : null}
     </React.Fragment>
   );
 };

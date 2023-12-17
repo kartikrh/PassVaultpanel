@@ -11,14 +11,14 @@ import RightSidebar from '../../components/Common/RightSideBar';
 //redux
 import { useSelector, useDispatch } from "react-redux";
 
-import {
-  changeLayout,
-  changeSidebarTheme,
-  changeSidebarType,
-  changeTopbarTheme,
-  changeLayoutWidth,
-  showRightSidebarAction
-} from "../../store/actions";
+// import {
+//   changeLayout,
+//   changeSidebarTheme,
+//   changeSidebarType,
+//   changeTopbarTheme,
+//   changeLayoutWidth,
+//   showRightSidebarAction
+// } from "../../store/actions";
 
 const Layout = props => {
   const dispatch = useDispatch();
@@ -41,9 +41,9 @@ const Layout = props => {
 
   const toggleMenuCallback = () => {
     if (leftSideBarType === "default") {
-      dispatch(changeSidebarType("condensed", isMobile));
+      // dispatch(changeSidebarType("condensed", isMobile));
     } else if (leftSideBarType === "condensed") {
-      dispatch(changeSidebarType("default", isMobile));
+      // dispatch(changeSidebarType("default", isMobile));
     }
   };
 
@@ -55,7 +55,7 @@ const Layout = props => {
       return;
     } else {
       //if clicked in outside of rightbar then fire action for hide rightbar
-      dispatch(showRightSidebarAction(false));
+      // dispatch(showRightSidebarAction(false));
     }
   }, [dispatch]);
 
@@ -73,30 +73,30 @@ const Layout = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(changeLayout("vertical"));
+    // dispatch(changeLayout("vertical"));
   }, [dispatch]);
 
   useEffect(() => {
     if (leftSideBarTheme) {
-      dispatch(changeSidebarTheme(leftSideBarTheme));
+      // dispatch(changeSidebarTheme(leftSideBarTheme));
     }
   }, [leftSideBarTheme, dispatch]);
 
   useEffect(() => {
     if (layoutWidth) {
-      dispatch(changeLayoutWidth(layoutWidth));
+      // dispatch(changeLayoutWidth(layoutWidth));
     }
   }, [layoutWidth, dispatch]);
 
   useEffect(() => {
     if (leftSideBarType) {
-      dispatch(changeSidebarType(leftSideBarType));
+      // dispatch(changeSidebarType(leftSideBarType));
     }
   }, [leftSideBarType, dispatch]);
 
   useEffect(() => {
     if (topbarTheme) {
-      dispatch(changeTopbarTheme(topbarTheme));
+      // dispatch(changeTopbarTheme(topbarTheme));
     }
   }, [topbarTheme, dispatch]);
 

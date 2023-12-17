@@ -14,12 +14,12 @@ import logoSm from "../../assets/images/logo-sm.png";
 import logoDark from "../../assets/images/logo-dark.png";
 import logoLight from "../../assets/images/logo-light.png";
 
-// Redux Store
-import {
-  showRightSidebarAction,
-  toggleLeftmenu,
-  changeSidebarType,
-} from "../../store/actions";
+// // Redux Store
+// import {
+//   showRightSidebarAction,
+//   toggleLeftmenu,
+//   changeSidebarType,
+// } from "../../store/actions";
 import ProfileMenu from "../../components/Common/TopbarDropdown/ProfileMenu";
 // import AppsDropdown from "../../components/Common/TopbarDropdown/AppsDropdown";
 
@@ -198,7 +198,7 @@ const mapStatetoProps = (state) => {
 };
 
 export default connect(mapStatetoProps, {
-  showRightSidebarAction,
-  toggleLeftmenu,
-  changeSidebarType,
+  // showRightSidebarAction,
+  // toggleLeftmenu,
+  // changeSidebarType,
 })(withTranslation()(Header));

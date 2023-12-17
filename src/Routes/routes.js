@@ -30,15 +30,15 @@ import AddUsers from "../Pages/Users/AddUsers.jsx";
 
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
-import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
+// import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
 import Logout from "../Pages/Authentication/Logout";
-import Register from "../Pages/Authentication/Register";
+// import Register from "../Pages/Authentication/Register";
 
 // Import Authentication Inner Pages
 import Login1 from "../Pages/AuthenticationPages/Login";
-import Register1 from "../Pages/AuthenticationPages/Register";
-import RecoverPassword from "../Pages/AuthenticationPages/RecoverPassword";
-import LockScreen from "../Pages/AuthenticationPages/LockScreen";
+// import Register1 from "../Pages/AuthenticationPages/Register";
+// import RecoverPassword from "../Pages/AuthenticationPages/RecoverPassword";
+// import LockScreen from "../Pages/AuthenticationPages/LockScreen";
 
 // Import Utility Pages
 import Maintenance from "../Pages/Utility/Maintenance-Page.js";
@@ -89,14 +89,14 @@ const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-  { path: "/forgot-password", component: <ForgetPasswordPage /> },
-  { path: "/register", component: <Register /> },
+  // { path: "/forgot-password", component: <ForgetPasswordPage /> },
+  // { path: "/register", component: <Register /> },
 
   // Authentication Inner Pages
   { path: "/auth-login", component: <Login1 /> },
-  { path: "/auth-register", component: <Register1 /> },
-  { path: "/auth-recoverpw", component: <RecoverPassword /> },
-  { path: "/auth-lock-screen", component: <LockScreen /> },
+  // { path: "/auth-register", component: <Register1 /> },
+  // { path: "/auth-recoverpw", component: <RecoverPassword /> },
+  // { path: "/auth-lock-screen", component: <LockScreen /> },
 
   // Utility Pages
   { path: "/pages-404", component: <Error404 /> },

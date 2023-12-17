@@ -32,11 +32,12 @@ import { GoogleLogin } from "react-google-login";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 
 // actions
-import { loginUser, socialLogin, } from "../../store/actions";
+// import { loginUser, socialLogin, } from "../../store/actions";
 
 //Import config
 import { facebook, google } from "../../config";
 import { decryptData } from "../Utility/encryptionUtils";
+import { loginUser } from "../../Features/Authentication/loginSlice";
 
 const Login = (props) => {
   const [rememberMe, setRememberMe] = useState(false)
@@ -56,7 +57,10 @@ const Login = (props) => {
       password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: (values) => {
-      dispatch(loginUser(values, props.router.navigate));
+      // dispatch()
+      dispatch(loginUser(values));
+
+      // dispatch(loginUser(values, props.router.navigate));
     },
   });
 
@@ -85,7 +89,7 @@ const Login = (props) => {
         token: res.tokenObj.access_token,
         idToken: res.tokenId,
       };
-      dispatch(socialLogin(postData, props.router.navigate, type));
+      // dispatch(socialLogin(postData, props.router.navigate, type));
     } else if (type === "facebook" && res) {
       const postData = {
         name: res.name,
@@ -93,7 +97,7 @@ const Login = (props) => {
         token: res.accessToken,
         idToken: res.tokenId,
       };
-      dispatch(socialLogin(postData, props.router.navigate, type));
+      // dispatch(socialLogin(postData, props.router.navigate, type));
     }
   };
 

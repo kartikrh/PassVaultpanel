@@ -13,7 +13,7 @@ export const loginUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/login', userData);
-      return response.data; // Assuming this contains the token
+      return response?.data.data; // Assuming this contains the token
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -29,19 +29,20 @@ const loginSlice = createSlice({
     error: null,
   },
   reducers: {},
-  extraReducers: {
-    [loginUser.pending]: (state) => {
-      state.isLoading = true;
-    },
-    [loginUser.fulfilled]: (state, action) => {
-      state.token = action.payload.token;
-      state.isLoading = false;
-    },
-    [loginUser.rejected]: (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+        state.isLoading = false;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+  }
 });
 
 export default loginSlice.reducer;
