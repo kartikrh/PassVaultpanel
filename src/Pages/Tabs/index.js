@@ -14,6 +14,7 @@ import SpinnerModel from '../../components/Model/SpinnerModel';
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -29,27 +30,18 @@ const Index = () => {
   const navigate = useNavigate()
   // fetch data
   const fetchData = async () => {
-    const token = decryptData(localStorage.getItem("authUser"));
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.result?.token}`,
-        },
-      }
-    ).then((response) => {
-      const tabsDataDB = validateTabResponse(response?.result);
-      const first = apiGetTabCleaner(tabsDataDB)
-      console.log("this is first", first)
-      const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
-      console.log("this is 2nd", sorted)
-      setData(sorted);
-      setIsLoading(false)
-    }).catch((error) => {
-      setIsLoading(false)
-    });
+    await axiosInstance.post('/admin/tabs/all')
+      .then((response) => {
+        const tabsDataDB = validateTabResponse(response?.result);
+        const first = apiGetTabCleaner(tabsDataDB)
+        console.log("this is first", first)
+        const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
+        console.log("this is 2nd", sorted)
+        setData(sorted);
+        setIsLoading(false)
+      }).catch((error) => {
+        setIsLoading(false)
+      });
   };
 
   //checkbox function
