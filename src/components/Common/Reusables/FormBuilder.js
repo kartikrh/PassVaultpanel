@@ -1,8 +1,8 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
-import { capitalize } from "lodash";
+import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
 import { EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
@@ -24,8 +24,14 @@ import {
 } from "reactstrap";
 
 const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
-  const [formData, setFormData] = useState(propsFormData || {});
+  console.log(propsFormData)
+  const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    if (!_.isEmpty(propsFormData) && _.isEmpty(formData))
+      setFormData(propsFormData)
+  }, [propsFormData])
 
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
@@ -266,6 +272,7 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
                         className="form-check-input"
                         id="customSwitchsizelg"
                         // defaultChecked
+                        checked={formData[field.name]}
                         onChange={(e) => {
                           // console.log(e.target.value, "hello")
                           handleChange(field, !formData[field.name])
@@ -312,7 +319,7 @@ FormBuilder.propTypes = {
       ),
     })
   ).isRequired,
-  onFormDataChange: PropTypes.func.isRequired,
+  // onFormDataChange: PropTypes.func.isRequired,
 };
 
 export default FormBuilder;

@@ -6,12 +6,12 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import "./i18n";
-
-import {configureStore} from "./store/store";
+import store from './store';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
-  <Provider store={configureStore({})}>
+  <Provider store={store}>
     <React.Fragment>
       <BrowserRouter>
         <App />

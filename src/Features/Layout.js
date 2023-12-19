@@ -1,0 +1,65 @@
+import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {
+    layoutType: 'vertical',
+    layoutWidth: 'fluid',
+    leftSideBarTheme: 'dark',
+    leftSideBarType: 'default',
+    topbarTheme: 'light',
+    showRightSidebar: false,
+    isMobile: false,
+    showSidebar: true,
+    leftMenu: false,
+    sidebarMenuData: [],
+};
+
+const layoutSlice = createSlice({
+    name: 'layout',
+    initialState,
+    reducers: {
+        changeLayout: (state, action) => {
+            state.layoutType = action.payload;
+        },
+        changeLayoutWidth: (state, action) => {
+            state.layoutWidth = action.payload;
+        },
+        changeSidebarTheme: (state, action) => {
+            state.leftSideBarTheme = action.payload;
+        },
+        changeSidebarType: (state, action) => {
+            const { sidebarType, isMobile } = action.payload;
+            state.leftSideBarType = sidebarType;
+            state.isMobile = isMobile;
+        },
+        changeTopbarTheme: (state, action) => {
+            state.topbarTheme = action.payload;
+        },
+        showRightSidebar: (state, action) => {
+            state.showRightSidebar = action.payload;
+        },
+        showSidebar: (state, action) => {
+            state.showSidebar = action.payload;
+        },
+        toggleLeftmenu: (state, action) => {
+            state.leftMenu = action.payload;
+        },
+        setSidebarMenuData: (state, action) => {
+            state.sidebarMenuData = action.payload;
+        },
+    },
+});
+
+export const {
+    changeLayout,
+    changeLayoutWidth,
+    changeSidebarTheme,
+    changeSidebarType,
+    changeTopbarTheme,
+    showRightSidebar,
+    showSidebar,
+    toggleLeftmenu,
+    setSidebarMenuData,
+} = layoutSlice.actions;
+
+// Reducer
+export default layoutSlice.reducer;

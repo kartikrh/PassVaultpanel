@@ -40,3 +40,41 @@ export const isValueEmpty = (value) => {
   // Use Lodash's isEmpty for other types
   return _.isEmpty(value);
 };
+export const transformApiDataToSidebarData = (apiData) => {
+  console.log(apiData);
+  const SidebarData = [];
+
+  // First, add main menu items to SidebarData
+  apiData.forEach(item => {
+    if ((item.parentId === "0" || !item.parentId) && item.isActive && item.isView) {
+      SidebarData.push({
+        label: item.displayName,
+        icon: item.iconName,
+        url: item.webPage,
+        // isMainMenu: true,
+        encryptedTabId: item.encryptedTabId, // Add encryptedTabId to identify parents
+        subItem: []
+      });
+    }
+  });
+
+  // Then, add sub-items to their respective parent items
+  apiData.forEach(item => {
+    if (item.parentId && item.parentId !== "0" && item.isActive && item.isView) {
+      let parentItem = SidebarData.find(parent => parent.encryptedTabId === item.parentId);
+      if (parentItem) {
+        parentItem.subItem.push({
+          sublabel: item.displayName,
+          link: item.webPage,
+          icon: item.iconName
+        });
+      }
+    }
+  });
+
+  // Remove encryptedTabId from final output
+  SidebarData.forEach(item => delete item.encryptedTabId);
+
+  console.log(SidebarData);
+  return SidebarData;
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import UsePanel from "./UserPanel";
 // import OrderStatus from "./OrderStatus";
 // import Notifications from "./Notifications";
@@ -11,9 +11,19 @@ import { Row, Container } from "reactstrap";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
+import { useDispatch } from "react-redux";
+import { getAuthorisedTabs } from "../../Features/Authentication/authorizationSlice";
+
 
 const Dashboard = () => {
+  const dispatch = useDispatch()
   document.title = "Dashboard | Upzet - React Admin & Dashboard Template";
+
+  useEffect(() => {
+    dispatch(getAuthorisedTabs());
+    // fetchData(id);
+  }, []);
+
   return (
     <React.Fragment>
       <div className="page-content">

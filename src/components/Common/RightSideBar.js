@@ -3,14 +3,14 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { connect } from "react-redux";
-import {
-  changeLayout,
-  changeLayoutWidth,
-  changeSidebarTheme,
-  changeSidebarType,
-  changeTopbarTheme,
-  showRightSidebarAction,
-} from "../../store/actions";
+// import {
+//   changeLayout,
+//   changeLayoutWidth,
+//   changeSidebarTheme,
+//   changeSidebarType,
+//   changeTopbarTheme,
+//   showRightSidebarAction,
+// } from "../../store/actions";
 
 //SimpleBar
 import SimpleBar from "simplebar-react";
@@ -44,7 +44,7 @@ const RightSidebar = props => {
                 to="#"
                 onClick={e => {
                   e.preventDefault();
-                  props.showRightSidebarAction(false);
+                  props?.showRightSidebarAction(false);
                 }}
                 className="right-bar-toggle float-end"
               >
@@ -63,10 +63,10 @@ const RightSidebar = props => {
                   id="radioVertical"
                   name="radioFruit"
                   value={layoutTypes.VERTICAL}
-                  checked={props.layoutType === layoutTypes.VERTICAL}
+                  checked={props?.layoutType === layoutTypes.VERTICAL}
                   onChange={e => {
                     if (e.target.checked) {
-                      props.changeLayout(e.target.value);
+                      props?.changeLayout(e.target.value);
                     }
                   }}
                 />
@@ -76,10 +76,10 @@ const RightSidebar = props => {
                   id="radioHorizontal"
                   name="radioFruit"
                   value={layoutTypes.HORIZONTAL}
-                  checked={props.layoutType === layoutTypes.HORIZONTAL}
+                  checked={props?.layoutType === layoutTypes.HORIZONTAL}
                   onChange={e => {
                     if (e.target.checked) {
-                      props.changeLayout(e.target.value);
+                      props?.changeLayout(e.target.value);
                     }
                   }}
                 />
@@ -97,10 +97,10 @@ const RightSidebar = props => {
                   id="radioFluid"
                   name="radioWidth"
                   value={layoutWidthTypes.FLUID}
-                  checked={props.layoutWidth === layoutWidthTypes.FLUID}
+                  checked={props?.layoutWidth === layoutWidthTypes.FLUID}
                   onChange={e => {
                     if (e.target.checked) {
-                      props.changeLayoutWidth(e.target.value);
+                      props?.changeLayoutWidth(e.target.value);
                     }
                   }}
                 />
@@ -110,10 +110,10 @@ const RightSidebar = props => {
                   id="radioBoxed"
                   name="radioWidth"
                   value={layoutWidthTypes.BOXED}
-                  checked={props.layoutWidth === layoutWidthTypes.BOXED}
+                  checked={props?.layoutWidth === layoutWidthTypes.BOXED}
                   onChange={e => {
                     if (e.target.checked) {
-                      props.changeLayoutWidth(e.target.value);
+                      props?.changeLayoutWidth(e.target.value);
                     }
                   }}
                 />
@@ -132,10 +132,10 @@ const RightSidebar = props => {
                   id="radioThemeLight"
                   name="radioTheme"
                   value={topBarThemeTypes.LIGHT}
-                  checked={props.topbarTheme === topBarThemeTypes.LIGHT}
+                  checked={props?.topbarTheme === topBarThemeTypes.LIGHT}
                   onChange={e => {
                     if (e.target.checked) {
-                      props.changeTopbarTheme(e.target.value);
+                      props?.changeTopbarTheme(e.target.value);
                     }
                   }}
                 />
@@ -145,17 +145,17 @@ const RightSidebar = props => {
                   id="radioThemeDark"
                   name="radioTheme"
                   value={topBarThemeTypes.DARK}
-                  checked={props.topbarTheme === topBarThemeTypes.DARK}
+                  checked={props?.topbarTheme === topBarThemeTypes.DARK}
                   onChange={e => {
                     if (e.target.checked) {
-                      props.changeTopbarTheme(e.target.value);
+                      props?.changeTopbarTheme(e.target.value);
                     }
                   }}
                 />
                 <label className="me-1" htmlFor="radioThemeDark">Dark</label>
               </div>
 
-              {props.layoutType === "vertical" ? (
+              {props?.layoutType === "vertical" ? (
                 <React.Fragment>
                   <hr className="mt-1" />
                   <div className="radio-toolbar">
@@ -167,10 +167,10 @@ const RightSidebar = props => {
                       id="sidebarDefault"
                       name="sidebarType"
                       value={leftSidebarTypes.DEFAULT}
-                      checked={props.leftSideBarType === leftSidebarTypes.DEFAULT}
+                      checked={props?.leftSideBarType === leftSidebarTypes.DEFAULT}
                       onChange={e => {
                         if (e.target.checked) {
-                          props.changeSidebarType(e.target.value);
+                          props?.changeSidebarType(e.target.value);
                         }
                       }}
                     />
@@ -180,10 +180,10 @@ const RightSidebar = props => {
                       id="sidebarCompact"
                       name="sidebarType"
                       value={leftSidebarTypes.COMPACT}
-                      checked={props.leftSideBarType === leftSidebarTypes.COMPACT}
+                      checked={props?.leftSideBarType === leftSidebarTypes.COMPACT}
                       onChange={e => {
                         if (e.target.checked) {
-                          props.changeSidebarType(e.target.value);
+                          props?.changeSidebarType(e.target.value);
                         }
                       }}
                     />
@@ -193,10 +193,10 @@ const RightSidebar = props => {
                       id="sidebarIcon"
                       name="sidebarType"
                       value={leftSidebarTypes.ICON}
-                      checked={props.leftSideBarType === leftSidebarTypes.ICON}
+                      checked={props?.leftSideBarType === leftSidebarTypes.ICON}
                       onChange={e => {
                         if (e.target.checked) {
-                          props.changeSidebarType(e.target.value);
+                          props?.changeSidebarType(e.target.value);
                         }
                       }}
                     />
@@ -214,10 +214,10 @@ const RightSidebar = props => {
                       id="leftsidebarThemelight"
                       name="leftsidebarTheme"
                       value={leftSideBarThemeTypes.LIGHT}
-                      checked={props.leftSideBarTheme === leftSideBarThemeTypes.LIGHT}
+                      checked={props?.leftSideBarTheme === leftSideBarThemeTypes.LIGHT}
                       onChange={e => {
                         if (e.target.checked) {
-                          props.changeSidebarTheme(e.target.value);
+                          props?.changeSidebarTheme(e.target.value);
                         }
                       }}
                     />
@@ -227,10 +227,10 @@ const RightSidebar = props => {
                       id="leftsidebarThemedark"
                       name="leftsidebarTheme"
                       value={leftSideBarThemeTypes.DARK}
-                      checked={props.leftSideBarTheme === leftSideBarThemeTypes.DARK}
+                      checked={props?.leftSideBarTheme === leftSideBarThemeTypes.DARK}
                       onChange={e => {
                         if (e.target.checked) {
-                          props.changeSidebarTheme(e.target.value);
+                          props?.changeSidebarTheme(e.target.value);
                         }
                       }}
                     />
@@ -292,14 +292,14 @@ RightSidebar.propTypes = {
 };
 
 const mapStateToProps = state => {
-  return { ...state.Layout };
+  return { ...state?.Layout };
 };
 
 export default connect(mapStateToProps, {
-  changeLayout,
-  changeSidebarTheme,
-  changeSidebarType,
-  changeLayoutWidth,
-  changeTopbarTheme,
-  showRightSidebarAction,
+  // changeLayout,
+  // changeSidebarTheme,
+  // changeSidebarType,
+  // changeLayoutWidth,
+  // changeTopbarTheme,
+  // showRightSidebarAction,
 })(RightSidebar);

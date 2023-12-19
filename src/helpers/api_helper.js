@@ -1,6 +1,6 @@
 import axios from "axios";
 import config from "../config";
-import {decryptData} from './../Pages/Utility/encryptionUtils'
+import { decryptData } from '../Pages/Utility/encryptionUtils'
 
 // default
 axios.defaults.baseURL = config.API_URL;
@@ -71,23 +71,32 @@ class APIClient {
   };
 }
 
-const getToken = () =>{
+
+const getToken = () => {
+  if (localStorage.getItem("authUser") == "null") {
+    return null
+  }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  return decryptedAuth.result.token;
+  return decryptedAuth.token;
 }
+
+
 const getLoggedinUser = () => {
+  if (localStorage.getItem("authUser") === null) {
+    return null
+  }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  if (!decryptedAuth.result.token) {
+  if (!decryptedAuth.token) {
     return null;
   } else {
     return decryptedAuth;
   }
 };
 
-const changeDisplayOrder = async (tabdisplayOrder,apiName)=> {
-  console.log("this is tabDisplayOrder ---->>>>",tabdisplayOrder)
+
+const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BASE_URL}/admin/${apiName}/changeDisplayOrder`,

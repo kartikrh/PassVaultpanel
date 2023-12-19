@@ -11,7 +11,7 @@ const RecoverPassword = () => {
     document.title = "Recover Password | Upzet - React Admin & Dashboard Template";
     return (
         <React.Fragment>
-            <div className="bg-pattern" style={{height:"100vh"}}>
+            <div className="bg-pattern" style={{ height: "100vh" }}>
                 <div className="bg-overlay"></div>
                 <div className="account-pages pt-5">
                     <Container>
@@ -21,10 +21,10 @@ const RecoverPassword = () => {
                                     <CardBody className="p-4">
                                         <div className="">
                                             <div className="text-center">
-                                                 <Link to="/" className="">
+                                                <Link to="/" className="">
                                                     <img src={logodark} alt="" height="24" className="auth-logo logo-dark mx-auto" />
                                                     <img src={logolight} alt="" height="24" className="auth-logo logo-light mx-auto" />
-                                                 </Link>
+                                                </Link>
                                             </div>
                                             <h4 className="font-size-18 text-muted mt-2 text-center">Reset Password</h4>
                                             <p className="mb-5 text-center">Reset your Password with Upzet.</p>
@@ -51,7 +51,6 @@ const RecoverPassword = () => {
                                 </Card>
                                 <div className="mt-5 text-center">
                                     <p className="text-white-50">Don't have an account ?  <Link to="/auth-register" className="fw-medium text-primary"> Register  </Link> </p>
-                                    <p className="text-white-50">© {new Date().getFullYear()} Upzet. Crafted with <i className="mdi mdi-heart text-danger"></i> by Themesdesign</p>
                                 </div>
                             </Col>
                         </Row>

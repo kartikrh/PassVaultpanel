@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import {Avatar} from 'antd'
+import { Avatar } from 'antd'
 import Table from "../../components/Common/Table";
 import { getToken } from "../../helpers/api_helper";
 import { Button } from "reactstrap";
@@ -99,7 +99,7 @@ const Index = () => {
       .post(
         `${process.env.REACT_APP_BASE_URL}/admin/eventType/delete`,
         {
-         eventTypeId:singleCheck,
+          eventTypeId: singleCheck,
         },
         {
           headers: {
@@ -165,13 +165,13 @@ const Index = () => {
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
           {
-            text?<div>
-            <img
-              className="avatar-xs rounded-circle"
-              alt=""
-              src={process.env.REACT_APP_BASE_URL + text}
-            />
-          </div> : <Avatar src="#" alt="ET">Image</Avatar>
+            text ? <div>
+              <img
+                className="avatar-xs rounded-circle"
+                alt=""
+                src={process.env.REACT_APP_BASE_URL + text}
+              />
+            </div> : <Avatar src="#" alt="ET">Image</Avatar>
           }
         </div>
       ),
@@ -185,14 +185,14 @@ const Index = () => {
       sort: true,
       style: { width: "100%" },
     },
-    
+
     {
       title: "Is Highlights",
       key: "isHighlight",
       dataIndex: "isHighlight",
       render: (text, record) => (
         <Button
-          color={`${text? "primary" : "danger"}`}
+          color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
@@ -210,11 +210,11 @@ const Index = () => {
       dataIndex: "isActive",
       render: (text, record) => (
         <Button
-          color={`${text? "primary" : "danger"}`}
+          color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isActive", record , record.isActive);
+            handlePermissions("isActive", record, record.isActive);
           }}
         >
           {" "}
@@ -230,6 +230,7 @@ const Index = () => {
     title: "Event Types",
     headerSelect: false,
     switch: true,
+    dragDrop:true,
   };
 
   useEffect(() => {
@@ -249,6 +250,7 @@ const Index = () => {
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            changeOrderApiName="eventType"
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

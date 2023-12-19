@@ -58,7 +58,6 @@ const Register = () => {
                                 </Card>
                                 <div className="mt-5 text-center">
                                     <p className="text-white-50">Already have an account ?<Link to="/auth-login" className="fw-medium text-primary"> Login </Link> </p>
-                                    <p className="text-white-50">© {new Date().getFullYear()} Upzet. Crafted with <i className="mdi mdi-heart text-danger"></i> by Themesdesign</p>
                                 </div>
                             </Col>
                         </Row>

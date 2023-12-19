@@ -19,7 +19,7 @@ import {
 //redux
 import { useSelector, useDispatch } from "react-redux";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import withRouter from "../../components/Common/withRouter";
 
 // Formik validation
@@ -32,47 +32,56 @@ import { GoogleLogin } from "react-google-login";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 
 // actions
-import { loginUser, socialLogin, } from "../../store/actions";
+// import { loginUser, socialLogin, } from "../../store/actions";
 
 //Import config
 import { facebook, google } from "../../config";
 import { decryptData } from "../Utility/encryptionUtils";
+import { loginUser } from "../../Features/Authentication/loginSlice";
 
 const Login = (props) => {
   const [rememberMe, setRememberMe] = useState(false)
   document.title = "Login | Upzet - React Admin & Dashboard Template";
-
   const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const { error } = useSelector((state) => ({
+    error: state.login.error,
+  }));
+
+  const token = useSelector((state) => state.login.token);
+  const isLoggedIn = token !== null;
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
     initialValues: {
-      username: "",
+      userName: "",
       password: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string().required("Please Enter Your Username"),
+      userName: Yup.string().required("Please Enter Your Username"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: (values) => {
-      dispatch(loginUser(values, props.router.navigate));
+      dispatch(loginUser(values));
     },
   });
 
-  const { error } = useSelector((state) => ({
-    error: state.login.error,
-  }));
 
-  // handleValidSubmit
-  // const handleValidSubmit = (event, values) => {
-  //   dispatch(loginUser(values, props.router.navigate));
-  // };
+  useEffect(() => {
+    console.log("step1")
+    console.log(isLoggedIn)
+    if (isLoggedIn) {
+      console.log("step2")
+      navigate('/Dashboard')
+    }
+  }, [isLoggedIn])
+
   const handleRememberMe = () => {
-    if (rememberMe===true) {
+    if (rememberMe === true) {
       localStorage.setItem("rememberMe", false)
       setRememberMe(false)
-    } else if(rememberMe === false) {
+    } else if (rememberMe === false) {
       localStorage.setItem("rememberMe", true)
       setRememberMe(true)
     }
@@ -81,19 +90,19 @@ const Login = (props) => {
     if (type === "google" && res) {
       const postData = {
         name: res.profileObj.name,
-        username: res.profileObj.username,
+        userName: res.profileObj.userName,
         token: res.tokenObj.access_token,
         idToken: res.tokenId,
       };
-      dispatch(socialLogin(postData, props.router.navigate, type));
+      // dispatch(socialLogin(postData, props.router.navigate, type));
     } else if (type === "facebook" && res) {
       const postData = {
         name: res.name,
-        username: res.username,
+        userName: res.userName,
         token: res.accessToken,
         idToken: res.tokenId,
       };
-      dispatch(socialLogin(postData, props.router.navigate, type));
+      // dispatch(socialLogin(postData, props.router.navigate, type));
     }
   };
 
@@ -111,16 +120,16 @@ const Login = (props) => {
   };
 
   useEffect(() => {
-    const AuthUser = localStorage.getItem("rememberMe");
-    if (AuthUser == "true") {
-      setRememberMe(true)
-      const userAuth = decryptData(localStorage.getItem("authUser"));
-      const { userName, password } = userAuth?.result;
-      validation.setValues({
-        username: userName, // Replace with your saved username logic
-        password: password, // Replace with your saved password logic
-      });
-    }
+    // const AuthUser = localStorage.getItem("rememberMe");
+    // if (AuthUser == "true") {
+    //   setRememberMe(true)
+    //   const userAuth = decryptData(localStorage.getItem("authUser"));
+    //   const { userName, password } = userAuth?.result;
+    //   validation.setValues({
+    //     userName: userName, // Replace with your saved userName logic
+    //     password: password, // Replace with your saved password logic
+    //   });
+    // }
     document.body.className = "bg-pattern";
     // remove classname when component will unmount
     return function cleanup() {
@@ -178,25 +187,24 @@ const Login = (props) => {
                           <div className="mb-4">
                             <Label className="form-label">Username</Label>
                             <Input
-                            autocomplete="off"
-                              name="username"
+                              name="userName"
                               className="form-control"
-                              placeholder="Enter username"
-                              type="username"
+                              placeholder="Enter userName"
+                              type="userName"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
-                              value={validation.values.username || ""}
+                              value={validation.values.userName || ""}
                               invalid={
-                                validation.touched.username &&
-                                validation.errors.username
+                                validation.touched.userName &&
+                                  validation.errors.userName
                                   ? true
                                   : false
                               }
                             />
-                            {validation.touched.username &&
-                            validation.errors.username ? (
+                            {validation.touched.userName &&
+                              validation.errors.userName ? (
                               <FormFeedback type="invalid">
-                                <div>{validation.errors.username}</div>
+                                <div>{validation.errors.userName}</div>
                               </FormFeedback>
                             ) : null}
                           </div>
@@ -204,7 +212,6 @@ const Login = (props) => {
                             <Label className="form-label">Password</Label>
                             <Input
                               name="password"
-                              autocomplete="off"
                               value={validation.values.password || ""}
                               type="password"
                               placeholder="Enter Password"
@@ -212,13 +219,13 @@ const Login = (props) => {
                               onBlur={validation.handleBlur}
                               invalid={
                                 validation.touched.password &&
-                                validation.errors.password
+                                  validation.errors.password
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.password &&
-                            validation.errors.password ? (
+                              validation.errors.password ? (
                               <FormFeedback type="invalid">
                                 <div> {validation.errors.password} </div>
                               </FormFeedback>
@@ -234,6 +241,7 @@ const Login = (props) => {
                                   type="checkbox"
                                   className="form-check-input"
                                   id="customControlInline"
+                                  readOnly
                                 />
                                 <label
                                   className="form-label form-check-label"
@@ -244,7 +252,7 @@ const Login = (props) => {
                               </div>
                             </Col>
                             {/* <Col className="col-7"> */}
-                              {/* <div className="text-md-end mt-3 mt-md-0">
+                            {/* <div className="text-md-end mt-3 mt-md-0">
                                 <Link
                                   to="/auth-recoverpw"
                                   className="text-muted"
@@ -316,10 +324,6 @@ const Login = (props) => {
                     Register{" "}
                   </Link>{" "}
                 </p> */}
-                <p className="text-white-50">
-                  © {new Date().getFullYear()} Upzet. Crafted with{" "}
-                  <i className="mdi mdi-heart text-danger"></i> by Themesdesign
-                </p>
               </div>
             </Col>
           </Row>

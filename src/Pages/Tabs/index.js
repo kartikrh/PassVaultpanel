@@ -3,17 +3,14 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import { apiGetTabCleaner } from '../../helpers/helper'
 import Table from "../../components/Common/Table";
-import { getToken } from '../../helpers/api_helper'
-import fackData from "./data";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from '../../components/Model/SpinnerModel';
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
+
 const Index = () => {
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -29,27 +26,18 @@ const Index = () => {
   const navigate = useNavigate()
   // fetch data
   const fetchData = async () => {
-    const token = decryptData(localStorage.getItem("authUser"));
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.result?.token}`,
-        },
-      }
-    ).then((response) => {
-      const tabsDataDB = validateTabResponse(response?.result);
-      const first = apiGetTabCleaner(tabsDataDB)
-      console.log("this is first", first)
-      const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
-      console.log("this is 2nd", sorted)
-      setData(sorted);
-      setIsLoading(false)
-    }).catch((error) => {
-      setIsLoading(false)
-    });
+    await axiosInstance.post('/admin/tabs/all')
+      .then((response) => {
+        const tabsDataDB = validateTabResponse(response?.data?.result);
+        const first = apiGetTabCleaner(tabsDataDB)
+        console.log("this is first", first)
+        const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
+        console.log("this is 2nd", sorted)
+        setData(sorted);
+        setIsLoading(false)
+      }).catch((error) => {
+        setIsLoading(false)
+      });
   };
 
   //checkbox function
@@ -62,10 +50,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.tabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
+      if (singleCheck.includes(e.encryptedTabId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.encryptedTabId));
       } else {
-        setSingleCheck([...singleCheck, e.tabId]);
+        setSingleCheck([...singleCheck, e.encryptedTabId]);
       }
     }
   };
@@ -73,53 +61,35 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true)
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
-      {
-        id: record.tabId,
-        tabName: record.tabName,
-        parentId: record.parentId,
-        [pType]: cState ? false : true,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response) => {
-      console.log("this is response", response)
-      console.log("this is response", record.tabId)
-      const newArray = data.map(obj => (obj.tabId === record.tabId ? response.result : obj));
-      // setData(newArray)
-      // setIsLoading(false)
-      fetchData()
-    }).catch((error) => {
-      console.log(error);
-      setIsLoading(false)
+    await axiosInstance.post('/admin/tabs/save', {
+      id: record.tabId,
+      tabName: record.tabName,
+      parentId: record.parentId,
+      [pType]: cState ? false : true,
     })
+      .then((response) => {
+        response = response?.data
+        const newArray = data.map(obj => (obj.encryptedTabId === record.encryptedTabId ? response.result : obj));
+        // setData(newArray)
+        // setIsLoading(false)
+        fetchData()
+      }).catch((error) => {
+        console.log(error);
+        setIsLoading(false)
+      })
   };
 
   const handleDelete = async (e) => {
     setIsLoading(true)
-    // e.preventDefault()
-    const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
-      {
-        encryptedTabIds: singleCheck,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response) => {
-      setDeleteModelVisable(false);
-      fetchData();
-    }).catch((error) => {
-      console.log(error)
-    });
+    await axiosInstance.post('/admin/tabs/delete', {
+      encryptedTabIds: singleCheck,
+    })
+      .then((response) => {
+        setDeleteModelVisable(false);
+        fetchData();
+      }).catch((error) => {
+        console.log(error)
+      });
   }
 
   const handleEdit = (id) => {
@@ -148,7 +118,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.tabId)}
+            checked={checkedAll || singleCheck.includes(record.encryptedTabId)}
             onChange={() => {
               handleCheckedAll(record);
             }}

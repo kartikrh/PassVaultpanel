@@ -2,13 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import withRouter from "../../components/Common/withRouter";
 
-//actions
-import {
-  changeLayout,
-  changeTopbarTheme,
-  changeLayoutWidth,
-  showRightSidebarAction,
-} from "../../store/actions";
+// //actions
+// import {
+//   changeLayout,
+//   changeTopbarTheme,
+//   changeLayoutWidth,
+//   showRightSidebarAction,
+// } from "../../store/actions";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
@@ -24,9 +24,9 @@ const Layout = (props) => {
 
   const { topbarTheme, layoutWidth, showRightSidebar } =
     useSelector((state) => ({
-      topbarTheme: state.Layout.topbarTheme,
-      layoutWidth: state.Layout.layoutWidth,
-      showRightSidebar: state.Layout.showRightSidebar,
+      topbarTheme: state?.Layout.topbarTheme,
+      layoutWidth: state?.Layout.layoutWidth,
+      showRightSidebar: state?.Layout.showRightSidebar,
     }));
 
   /*
@@ -52,7 +52,7 @@ const Layout = (props) => {
         return;
       } else {
         //if clicked in outside of rightbar then fire action for hide rightbar
-        dispatch(showRightSidebarAction(false));
+        // dispatch(showRightSidebarAction(false));
       }
     },
     [dispatch]
@@ -61,9 +61,9 @@ const Layout = (props) => {
   /*
   layout settings
   */
-  useEffect(() => {
-    dispatch(changeLayout("horizontal"));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(changeLayout("horizontal"));
+  // }, [dispatch]);
 
   useEffect(() => {
     //init body click event fot toggle rightbar
@@ -72,13 +72,13 @@ const Layout = (props) => {
 
   useEffect(() => {
     if (topbarTheme) {
-      dispatch(changeTopbarTheme(topbarTheme));
+      // dispatch(changeTopbarTheme(topbarTheme));
     }
   }, [dispatch, topbarTheme]);
 
   useEffect(() => {
     if (layoutWidth) {
-      dispatch(changeLayoutWidth(layoutWidth));
+      // dispatch(changeLayoutWidth(layoutWidth));
     }
   }, [dispatch, layoutWidth]);
 

@@ -35,7 +35,7 @@ const Index = ({
             className="d-flex flex-column justify-content-center align-items-center"
             id="modal-id"
           >
-            {singleCheck.length>0? (
+            {singleCheck?.length>0? (
               <span className="mt-4 mb-4">
                 Are you sure you want to delete this?
               </span>
@@ -52,7 +52,7 @@ const Index = ({
               >
                 Close
               </button>
-              {singleCheck.length>0 ?<button
+              {singleCheck?.length>0 ?<button
                 className="btn btn-danger"
                 id="add-btn"
                 onClick={() => {

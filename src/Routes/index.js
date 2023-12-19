@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Routes, Route } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 // redux
 import { useSelector } from "react-redux";
@@ -33,11 +34,10 @@ const getLayout = (layoutType) => {
 const Index = () => {
 
   const { layoutType } = useSelector((state) => ({
-    layoutType: state.Layout.layoutType,
+    layoutType: state?.Layout?.layoutType,
   }));
 
   const Layout = getLayout(layoutType);
-
   return (
     <Routes>
       <Route>
