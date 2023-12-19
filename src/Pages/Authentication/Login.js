@@ -120,16 +120,16 @@ const Login = (props) => {
   };
 
   useEffect(() => {
-    const AuthUser = localStorage.getItem("rememberMe");
-    if (AuthUser == "true") {
-      setRememberMe(true)
-      const userAuth = decryptData(localStorage.getItem("authUser"));
-      const { userName, password } = userAuth?.result;
-      validation.setValues({
-        userName: userName, // Replace with your saved userName logic
-        password: password, // Replace with your saved password logic
-      });
-    }
+    // const AuthUser = localStorage.getItem("rememberMe");
+    // if (AuthUser == "true") {
+    //   setRememberMe(true)
+    //   const userAuth = decryptData(localStorage.getItem("authUser"));
+    //   const { userName, password } = userAuth?.result;
+    //   validation.setValues({
+    //     userName: userName, // Replace with your saved userName logic
+    //     password: password, // Replace with your saved password logic
+    //   });
+    // }
     document.body.className = "bg-pattern";
     // remove classname when component will unmount
     return function cleanup() {
@@ -187,7 +187,6 @@ const Login = (props) => {
                           <div className="mb-4">
                             <Label className="form-label">Username</Label>
                             <Input
-                              autocomplete="off"
                               name="userName"
                               className="form-control"
                               placeholder="Enter userName"
@@ -213,7 +212,6 @@ const Login = (props) => {
                             <Label className="form-label">Password</Label>
                             <Input
                               name="password"
-                              autocomplete="off"
                               value={validation.values.password || ""}
                               type="password"
                               placeholder="Enter Password"
@@ -243,6 +241,7 @@ const Login = (props) => {
                                   type="checkbox"
                                   className="form-check-input"
                                   id="customControlInline"
+                                  readOnly
                                 />
                                 <label
                                   className="form-label form-check-label"

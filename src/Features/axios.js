@@ -1,14 +1,26 @@
 import axios from 'axios';
-import store from '../store'; // Import your Redux store
+import { getToken } from '../helpers/api_helper';
 
 const axiosInstance = axios.create({
-    baseURL: 'https://scorenodeapi.cloudd.live',
+    baseURL: `${process.env.REACT_APP_BASE_URL}`
 });
 
-axiosInstance.interceptors.request.use(config => {
-    const token = store.getState().login.token;
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+let authToken = null;
+export const setAuthToken = (token) => {
+    authToken = token;
+};
+
+axiosInstance.interceptors.request.use(async config => {
+    if (!authToken) {
+        try {
+            authToken = await getToken();
+            config.headers.Authorization = `Bearer ${authToken}`;
+        } catch (error) {
+            console.error('Error fetching auth token', error);
+            return Promise.reject(error);
+        }
+    } else {
+        config.headers.Authorization = `Bearer ${authToken}`;
     }
     return config;
 }, error => {

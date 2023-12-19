@@ -1,13 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance, { setAuthToken } from '../axios';
+import { encryptData } from '../../Pages/Utility/encryptionUtils';
 
-// Base URL for Axios
-const baseURL = `${process.env.REACT_APP_BASE_URL}`
-
-// Axios instance
-const axiosInstance = axios.create({ baseURL });
-
-// Async thunk for login
 export const loginUser = createAsyncThunk(
   'login/user',
   async (userData, { rejectWithValue }) => {
@@ -37,6 +31,7 @@ const loginSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.userName = action.payload.userName;
+        localStorage.setItem("authUser", encryptData(action.payload))
         state.isLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {

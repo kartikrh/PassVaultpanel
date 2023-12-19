@@ -40,8 +40,8 @@ export const isValueEmpty = (value) => {
   // Use Lodash's isEmpty for other types
   return _.isEmpty(value);
 };
-
 export const transformApiDataToSidebarData = (apiData) => {
+  console.log(apiData);
   const SidebarData = [];
 
   // First, add main menu items to SidebarData
@@ -51,8 +51,9 @@ export const transformApiDataToSidebarData = (apiData) => {
         label: item.displayName,
         icon: item.iconName,
         url: item.webPage,
-        isMainMenu: true,
-        subItems: []
+        // isMainMenu: true,
+        encryptedTabId: item.encryptedTabId, // Add encryptedTabId to identify parents
+        subItem: []
       });
     }
   });
@@ -62,7 +63,7 @@ export const transformApiDataToSidebarData = (apiData) => {
     if (item.parentId && item.parentId !== "0" && item.isActive && item.isView) {
       let parentItem = SidebarData.find(parent => parent.encryptedTabId === item.parentId);
       if (parentItem) {
-        parentItem.subItems.push({
+        parentItem.subItem.push({
           sublabel: item.displayName,
           link: item.webPage,
           icon: item.iconName
@@ -71,5 +72,9 @@ export const transformApiDataToSidebarData = (apiData) => {
     }
   });
 
+  // Remove encryptedTabId from final output
+  SidebarData.forEach(item => delete item.encryptedTabId);
+
+  console.log(SidebarData);
   return SidebarData;
-}
+};

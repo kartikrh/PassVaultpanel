@@ -12,9 +12,12 @@ import withRouter from "../../components/Common/withRouter";
 import { Link } from "react-router-dom";
 //i18n
 import { withTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 const Sidebar = (props) => {
   const ref = useRef();
   const [tabList, setTabList] = useState([]);
+  const newTabList = useSelector(state => state.auth.tabList);
+
   const activateParentDropdown = useCallback((item) => {
     item.classList.add("active");
     const parent = item.parentElement;
@@ -48,6 +51,7 @@ const Sidebar = (props) => {
     scrollElement(item);
     return false;
   }, []);
+
   const removeActivation = (items) => {
     for (var i = 0; i < items.length; ++i) {
       var item = items[i];
@@ -85,6 +89,7 @@ const Sidebar = (props) => {
       }
     }
   };
+
   const activeMenu = useCallback(() => {
     const pathName = props.router.location.pathname;
     const fullPath = pathName;
@@ -102,30 +107,11 @@ const Sidebar = (props) => {
       activateParentDropdown(matchingMenuItem);
     }
   }, [props.router.location.pathname, activateParentDropdown]);
+
   useEffect(() => {
     ref.current.recalculate();
   }, []);
-  useEffect(() => {
-    const menuData = async () => {
-      const token = decryptData(localStorage.getItem("authUser"));
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token.result?.token}`,
-          },
-        }
-      );
-      const tabsDataDB = validateTabResponse(response?.result);
-      setTabList(tabsDataDB);
-    };
-    menuData();
-    new MetisMenu("#side-menu-item");
-    activeMenu();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
   useEffect(() => {
     activeMenu();
   }, [activeMenu]);
@@ -137,13 +123,15 @@ const Sidebar = (props) => {
       }
     }
   }
+
   return (
     <React.Fragment>
       <div className="vertical-menu">
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">
-              {tabList.map((val, key) => (
+              {console.log(newTabList)}
+              {/* {tabList.map((val, key) => (
                 <React.Fragment key={key}>
                   <li className="menu-title" >{props.t(val.displayName)}</li>
                   {val.children.map((val) => {
@@ -165,8 +153,8 @@ const Sidebar = (props) => {
                       </li>)
                   })}
                 </React.Fragment>
-              ))}
-              {(sidebarData || []).map((item, key) => (
+              ))} */}
+              {(newTabList || sidebarData).map((item, key) => (
                 <React.Fragment key={key}>
                   {item.isMainMenu ? (
                     <li className="menu-title">{props.t(item.label)}</li>
@@ -206,7 +194,7 @@ const Sidebar = (props) => {
                                   item.subMenu && "has-arrow waves-effect"
                                 }
                               >
-                                {props.t(item.sublabel)} ====
+                                {props.t(item.sublabel)}
                               </Link>
                               {item.subMenu && (
                                 <ul className="sub-menu">

@@ -74,12 +74,12 @@ class APIClient {
 const getToken = () => {
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  return decryptedAuth.result.token;
+  return decryptedAuth.token;
 }
 const getLoggedinUser = () => {
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  if (!decryptedAuth.result.token) {
+  if (!decryptedAuth.token) {
     return null;
   } else {
     return decryptedAuth;
