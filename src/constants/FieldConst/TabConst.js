@@ -2,26 +2,11 @@ import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const TabFields = [
     {
-        name: "id",
+        name: "parentId",
         label: "Parent",
         type: SELECT,
-        defaultOption: { label: "Select a Parent Id", value: "0" },
-        options: [
-            { label: "Select a Parent Id", value: "0" },
-            { label: "CMS", value: "CMS" },
-            { label: "Tabs", value: "Tabs" },
-            { label: "Roles", value: "Roles" },
-            { label: "Users", value: "Users" },
-            { label: "Master", value: "Master" },
-            { label: "Event Type", value: "Event Type" },
-            { label: "Players", value: "Players" },
-            { label: "Teams", value: "Teams" },
-            { label: "Match Types", value: "Match Type" },
-            { label: "Panelty Run", value: "Panelty Run" },
-            { label: "Competition", value: "Competition" },
-            { label: "Events", value: "Events" },
-            { label: "Commentary", value: "Commentary" },
-        ],
+        options: [{ label: "Select a Parent Id", value: "0" }],
+        defaultValue: "0",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },

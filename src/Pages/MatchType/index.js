@@ -39,7 +39,6 @@ const Index = () => {
       )
       .then((response) => {
         setData(response?.result);
-        console.log(response);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -80,7 +79,6 @@ const Index = () => {
         setCloneModelVisible(false)
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
@@ -105,7 +103,6 @@ const Index = () => {
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
       });
   };
   //table columns
