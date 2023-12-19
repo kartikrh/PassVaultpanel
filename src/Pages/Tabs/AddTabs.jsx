@@ -4,7 +4,6 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { TabFields } from '../../constants/FieldConst/TabConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { decryptData } from '../Utility/encryptionUtils';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addTabToDb } from '../../Features/Tabs/tabsSlice';
 import axiosInstance from '../../Features/axios';
@@ -12,19 +11,26 @@ import axiosInstance from '../../Features/axios';
 function AddTabs() {
     const finalizeRef = useRef(null);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [drp_up11, setDrp_up11] = useState(false);
+    const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+    const [masterData, setMasterData] = useState({});
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.tab);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const id = location.state?.userId;
+    const id = location.state?.userId || "0";
 
     useEffect(() => {
-        if (id) {
+        console.log("level 1")
+        fetchMasterData()
+    }, []);
+
+    useEffect(() => {
+        if (id !== "0") {
             fetchData(id);
         }
+
     }, [id]);
 
     useEffect(() => {
@@ -45,30 +51,27 @@ function AddTabs() {
             }).catch((error) => {
                 // setIsLoading(false)
             });
-
-        // const authToken = decryptData(localStorage.getItem("authUser"));
-        // try {
-        //     const response = await fetch('https://scorenodeapi.cloudd.live/admin/tabs/byId', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             Authorization: `Bearer ${authToken?.result?.token}`,
-        //         },
-        //         body: JSON.stringify({ id }),
-        //     });
-        //     if (!response.status === 200) {
-        //         throw new Error('Network response was not ok');
-        //     }
-        //     setInitialEditData(response?.result);
-        // } catch (error) {
-        //     console.error('Error fetching data:', error);
-        //     setSnackbarMessage('Error fetching data');
-        // }
     };
+
+    const fetchMasterData = async () => {
+        await axiosInstance.post('/admin/tabs/all')
+            .then((response) => {
+                console.log(response.data?.result)
+                setMasterData({
+                    "parentId":
+                        response.data?.result?.map(item => {
+                            return { label: item.tabName, value: item.encryptedTabId }
+                        })
+                });
+            }).catch((error) => {
+                // setIsLoading(false)
+            });
+    };
+
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb(finalizeRef.current.finalizeData()))
+        dispatch(addTabToDb({ ...finalizeRef.current.finalizeData(), id }))
     };
 
     const handleBackClick = () => {
@@ -91,8 +94,8 @@ function AddTabs() {
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
                                         <ButtonDropdown
                                             direction="down"
-                                            isOpen={drp_up11}
-                                            toggle={() => setDrp_up11(!drp_up11)}
+                                            isOpen={drp_up}
+                                            toggle={() => setDrp_up(!drp_up)}
                                         >
                                             <Button id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
                                                 Save & Close
@@ -111,7 +114,7 @@ function AddTabs() {
                                     ref={finalizeRef}
                                     fields={TabFields}
                                     editFormData={initialEditData}
-                                    masterData={{}}
+                                    masterData={masterData}
                                 />
                             </CardBody>
                         </Card>

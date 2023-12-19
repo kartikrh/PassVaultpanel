@@ -169,9 +169,14 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData }, ref) => {
                     id={field.name}
                     name={field.name}
                     value={
-                      (masterData[field.name] || field.options || []).filter(e => e.value === formData[field.name])
+                      [].concat(field.options, masterData[field.name] || [])
+                        .filter(e => {
+                          if (formData[field.name])
+                            return e?.value === formData[field.name]
+                          else return e?.value === field.defaultValue
+                        })
                     }
-                    options={masterData[field.name] || field.options}
+                    options={[].concat(field.options, masterData[field.name] || [])}
                     onChange={(selectedOption) => {
                       handleChange(field, selectedOption?.value || null);
                     }}
@@ -180,6 +185,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData }, ref) => {
                     isMulti={field.isMulti}
                   />
                 )}
+                {console.log("asdasd", masterData, masterData[field.name])}
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"
