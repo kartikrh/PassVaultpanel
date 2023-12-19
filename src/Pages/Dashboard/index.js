@@ -11,18 +11,10 @@ import { Row, Container } from "reactstrap";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { useDispatch } from "react-redux";
-import { getAuthorisedTabs } from "../../Features/Authentication/authorizationSlice";
-
 
 const Dashboard = () => {
-  const dispatch = useDispatch()
   document.title = "Dashboard | Upzet - React Admin & Dashboard Template";
 
-  useEffect(() => {
-    dispatch(getAuthorisedTabs());
-    // fetchData(id);
-  }, []);
 
   return (
     <React.Fragment>
@@ -33,19 +25,19 @@ const Dashboard = () => {
           {/* <UsePanel /> */}
 
           {/* <Row> */}
-            {/* Overview Chart */}
-            {/* <OverView /> */}
-            {/* Social Source Chart */}
-            {/* <SocialSource /> */}
+          {/* Overview Chart */}
+          {/* <OverView /> */}
+          {/* Social Source Chart */}
+          {/* <SocialSource /> */}
           {/* </Row> */}
 
           {/* <Row> */}
-            {/* Order Stats */}
-            {/* <OrderStatus /> */}
-            {/* Notifications */}
-            {/* <Notifications /> */}
-            {/* Revenue by Location Vector Map */}
-            {/* <RevenueByLocation /> */}
+          {/* Order Stats */}
+          {/* <OrderStatus /> */}
+          {/* Notifications */}
+          {/* <Notifications /> */}
+          {/* Revenue by Location Vector Map */}
+          {/* <RevenueByLocation /> */}
           {/* </Row> */}
 
           {/* Latest Transaction Table */}
