@@ -36,7 +36,6 @@ const Index = () => {
         },
       }
     ).then((response) => {
-      console.log(response?.result)
       //   const tabsDataDB = validateTabResponse(response?.result);
       setData(response?.result);
       setIsLoading(false)
@@ -81,14 +80,11 @@ const Index = () => {
         },
       }
     ).then((response) => {
-      console.log("this is response", response)
-      console.log("this is response", record.roleId)
       const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
     }).catch((error) => {
-      console.log(error);
       setIsLoading(false)
     })
   };
@@ -111,7 +107,6 @@ const Index = () => {
       setDeleteModelVisable(false);
       fetchData();
     }).catch((error) => {
-      console.log(error)
     });
   }
   //table columns

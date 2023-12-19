@@ -39,7 +39,6 @@ const Index = () => {
       )
       .then((response) => {
         setData(response?.result);
-        console.log(response);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -87,7 +86,6 @@ const Index = () => {
         fetchData();
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };
@@ -114,7 +112,6 @@ const Index = () => {
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
       });
   };
   //table columns

@@ -88,7 +88,6 @@ const Index = () => {
         fetchData();
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };
@@ -115,7 +114,6 @@ const Index = () => {
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
       });
   };
 
@@ -132,7 +130,6 @@ const Index = () => {
         fetchData();
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };

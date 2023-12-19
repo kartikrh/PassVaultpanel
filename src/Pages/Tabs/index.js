@@ -30,9 +30,7 @@ const Index = () => {
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.data?.result);
         const first = apiGetTabCleaner(tabsDataDB)
-        console.log("this is first", first)
         const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
-        console.log("this is 2nd", sorted)
         setData(sorted);
         setIsLoading(false)
       }).catch((error) => {
@@ -74,7 +72,6 @@ const Index = () => {
         // setIsLoading(false)
         fetchData()
       }).catch((error) => {
-        console.log(error);
         setIsLoading(false)
       })
   };
@@ -88,7 +85,6 @@ const Index = () => {
         setDeleteModelVisable(false);
         fetchData();
       }).catch((error) => {
-        console.log(error)
       });
   }
 

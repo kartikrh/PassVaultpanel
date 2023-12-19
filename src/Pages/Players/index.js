@@ -43,7 +43,6 @@ const Index = () => {
       }
     ).then((response)=>{
       setData(response?.result);
-      console.log(response)
       setIsLoading(false)
     }).catch((error)=>{
       setIsLoading(false)
@@ -95,7 +94,6 @@ const Index = () => {
       });
       setToastStatus(true)
     }).catch((error)=>{
-      console.log(error);
       setIsLoading(false)
       setToast({
         message: "Error",
@@ -132,7 +130,6 @@ const Index = () => {
         setToastStatus(true)
       }).catch((error)=>{
         setIsLoading(false)
-        console.log(error)
         setToast({
           message: "Error",
           color:"red",

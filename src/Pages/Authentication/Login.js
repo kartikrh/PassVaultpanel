@@ -69,10 +69,7 @@ const Login = (props) => {
 
 
   useEffect(() => {
-    console.log("step1")
-    console.log(isLoggedIn)
     if (isLoggedIn) {
-      console.log("step2")
       navigate('/Dashboard')
     }
   }, [isLoggedIn])

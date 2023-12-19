@@ -116,7 +116,6 @@ const Index = () => {
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
       });
   };
   //table columns
