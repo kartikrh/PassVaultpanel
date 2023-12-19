@@ -13,7 +13,6 @@ export const sanitizeFormData = (data) => {
       sanitizedData[key] = sanitizedData[key].value;
     }
   }
-  console.log(sanitizedData);
   return sanitizedData;
 };
 
@@ -41,7 +40,6 @@ export const isValueEmpty = (value) => {
   return _.isEmpty(value);
 };
 export const transformApiDataToSidebarData = (apiData) => {
-  console.log(apiData);
   const SidebarData = [];
 
   // First, add main menu items to SidebarData
@@ -75,6 +73,5 @@ export const transformApiDataToSidebarData = (apiData) => {
   // Remove encryptedTabId from final output
   SidebarData.forEach(item => delete item.encryptedTabId);
 
-  console.log(SidebarData);
   return SidebarData;
 };

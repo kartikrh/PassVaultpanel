@@ -130,7 +130,6 @@ const Sidebar = (props) => {
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">
-              {console.log(newTabList)}
               {/* {tabList.map((val, key) => (
                 <React.Fragment key={key}>
                   <li className="menu-title" >{props.t(val.displayName)}</li>

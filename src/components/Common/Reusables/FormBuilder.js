@@ -23,15 +23,14 @@ import {
   Form,
 } from "reactstrap";
 
-const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
-  console.log(propsFormData)
+const FormBuilder = forwardRef(({ fields, editFormData, masterData }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
-    if (!_.isEmpty(propsFormData) && _.isEmpty(formData))
-      setFormData(propsFormData)
-  }, [propsFormData])
+    if (!_.isEmpty(editFormData) && _.isEmpty(formData))
+      setFormData(editFormData)
+  }, [editFormData])
 
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
@@ -46,7 +45,6 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
     });
-    // console.log('+++++ errors +++++', errors);
     setFieldErrors(errors);
     return errors;
   };
@@ -64,16 +62,14 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
   };
 
   const resetForm = () => {
-    setFormData(propsFormData || {});
+    setFormData({});
   };
 
   // Expose the finalizeData & reset function to the parent using a ref
   useImperativeHandle(ref, () => ({ finalizeData, resetForm }));
 
   const handleChange = (field, value) => {
-    // console.log(field, value, formData)
     const errors = { ...fieldErrors };
-    console.log(value);
     if (field.isRequired && isValueEmpty(value)) {
       errors[field.name] =
         field.requiredErrorMessage || "This field is required.";
@@ -87,10 +83,8 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
       ...prevFormData,
       [field.name]: value,
     }));
-    // formData[field.name] !== value && propsFormData[field.name] !== value
+    // formData[field.name] !== value && editFormData[field.name] !== value
     setFieldErrors(errors);
-    // console.log(formData, errors);
-    console.log(formData)
   };
 
   return (
@@ -175,18 +169,11 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
                     id={field.name}
                     name={field.name}
                     value={
-                      (formData[field.name] &&
-                        (typeof formData[field.name] === "string"
-                          ? {
-                            label: formData[field.name],
-                            value: formData[field.name],
-                          }
-                          : formData[field.name])) ||
-                      field.defaultOption
+                      (masterData[field.name] || field.options || []).filter(e => e.value === formData[field.name])
                     }
-                    options={field.options}
+                    options={masterData[field.name] || field.options}
                     onChange={(selectedOption) => {
-                      handleChange(field, selectedOption || null);
+                      handleChange(field, selectedOption?.value || null);
                     }}
                     closeMenuOnSelect={!field.isMulti}
                     required={field.isRequired}
@@ -274,7 +261,6 @@ const FormBuilder = forwardRef(({ fields, propsFormData }, ref) => {
                         // defaultChecked
                         checked={formData[field.name]}
                         onChange={(e) => {
-                          // console.log(e.target.value, "hello")
                           handleChange(field, !formData[field.name])
                         }}
                         value={formData[field.name]}

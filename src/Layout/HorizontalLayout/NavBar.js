@@ -18,7 +18,6 @@ const Navbar = (props) => {
   useEffect(() => {
     const menuData = async () => {
       const token = decryptData(localStorage.getItem("authUser"));
-      console.log("this is token 222", token.result?.token);
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
         {},
@@ -31,7 +30,6 @@ const Navbar = (props) => {
       );
       const tabsDataDB = validateTabResponse(response?.result);
       setTabList(tabsDataDB);
-      console.log("this is horizentle navData", tabsDataDB)
     };
     menuData();
   }, [])

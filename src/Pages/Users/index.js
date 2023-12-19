@@ -90,13 +90,11 @@ const Index = () => {
         fetchData();
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };
 
   const handleDelete = async (e) => {
-    console.log(singleCheck);
     setIsLoading(true);
     // e.preventDefault()
     await axios
@@ -117,7 +115,6 @@ const Index = () => {
         setDeleteModelVisable(false);
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };

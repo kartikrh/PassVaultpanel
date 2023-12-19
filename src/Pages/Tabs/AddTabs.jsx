@@ -20,7 +20,6 @@ function AddTabs() {
     let navigate = useNavigate();
     const location = useLocation();
     const id = location.state?.userId;
-    console.log(id)
 
     useEffect(() => {
         if (id) {
@@ -29,7 +28,6 @@ function AddTabs() {
     }, [id]);
 
     useEffect(() => {
-        console.log(isSaved, currentSaveAction)
         if (isSaved) {
             if (currentSaveAction === SAVE)
                 setSnackbarMessage("Data saved successfully!");
@@ -44,14 +42,11 @@ function AddTabs() {
         await axiosInstance.post('/admin/tabs/byId', { id })
             .then((response) => {
                 setInitialEditData(response?.data?.result);
-                console.log(response?.data.result)
             }).catch((error) => {
                 // setIsLoading(false)
             });
 
-        // console.log(id)
         // const authToken = decryptData(localStorage.getItem("authUser"));
-        // console.log(authToken)
         // try {
         //     const response = await fetch('https://scorenodeapi.cloudd.live/admin/tabs/byId', {
         //         method: 'POST',
@@ -73,7 +68,6 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        console.log(finalizeRef.current.finalizeData())
         dispatch(addTabToDb(finalizeRef.current.finalizeData()))
     };
 
@@ -116,9 +110,9 @@ function AddTabs() {
                                 <FormBuilder
                                     ref={finalizeRef}
                                     fields={TabFields}
-                                    propsFormData={initialEditData}
+                                    editFormData={initialEditData}
+                                    masterData={{}}
                                 />
-                                {console.log(initialEditData)}
                             </CardBody>
                         </Card>
                     </Row>
