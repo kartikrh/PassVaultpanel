@@ -73,7 +73,7 @@ class APIClient {
 
 
 const getToken = () => {
-  if (localStorage.getItem("authUser") == "null") {
+  if (!localStorage.getItem("authUser")) {
     return null
   }
   const encryptedAuth = localStorage.getItem("authUser");
