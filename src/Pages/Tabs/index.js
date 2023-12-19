@@ -32,7 +32,7 @@ const Index = () => {
   const fetchData = async () => {
     await axiosInstance.post('/admin/tabs/all')
       .then((response) => {
-        const tabsDataDB = validateTabResponse(response?.result);
+        const tabsDataDB = validateTabResponse(response?.data?.result);
         const first = apiGetTabCleaner(tabsDataDB)
         console.log("this is first", first)
         const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
