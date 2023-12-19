@@ -3,18 +3,14 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import { apiGetTabCleaner } from '../../helpers/helper'
 import Table from "../../components/Common/Table";
-import { getToken } from '../../helpers/api_helper'
-import fackData from "./data";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from '../../components/Model/SpinnerModel';
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+
 const Index = () => {
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -65,51 +61,35 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true)
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
-      {
-        id: record.tabId,
-        tabName: record.tabName,
-        parentId: record.parentId,
-        [pType]: cState ? false : true,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response)=>{
-      const newArray = data.map(obj => (obj.encryptedTabId === record.encryptedTabId ? response.result : obj));
-      // setData(newArray)
-      // setIsLoading(false)
-      fetchData()
-    }).catch((error) => {
-      console.log(error);
-      setIsLoading(false)
+    await axiosInstance.post('/admin/tabs/save', {
+      id: record.tabId,
+      tabName: record.tabName,
+      parentId: record.parentId,
+      [pType]: cState ? false : true,
     })
+      .then((response) => {
+        response = response?.data
+        const newArray = data.map(obj => (obj.encryptedTabId === record.encryptedTabId ? response.result : obj));
+        // setData(newArray)
+        // setIsLoading(false)
+        fetchData()
+      }).catch((error) => {
+        console.log(error);
+        setIsLoading(false)
+      })
   };
 
   const handleDelete = async (e) => {
     setIsLoading(true)
-    // e.preventDefault()
-    const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/delete`,
-      {
-        encryptedTabIds: singleCheck,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response) => {
-      setDeleteModelVisable(false);
-      fetchData();
-    }).catch((error) => {
-      console.log(error)
-    });
+    await axiosInstance.post('/admin/tabs/delete', {
+      encryptedTabIds: singleCheck,
+    })
+      .then((response) => {
+        setDeleteModelVisable(false);
+        fetchData();
+      }).catch((error) => {
+        console.log(error)
+      });
   }
 
   const handleEdit = (id) => {
