@@ -37,7 +37,7 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 //Import config
 import { facebook, google } from "../../config";
 import { decryptData } from "../Utility/encryptionUtils";
-import { loginUser } from "../../Features/Authentication/loginSlice";
+import { loginUser } from "../../Features/Authentication/userSlice";
 
 const Login = (props) => {
   const [rememberMe, setRememberMe] = useState(false)
@@ -45,10 +45,10 @@ const Login = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const { error } = useSelector((state) => ({
-    error: state.login.error,
+    error: state.user.error,
   }));
 
-  const token = useSelector((state) => state.login.token);
+  const token = useSelector((state) => state.user.token);
   const isLoggedIn = token !== null;
 
   const validation = useFormik({
