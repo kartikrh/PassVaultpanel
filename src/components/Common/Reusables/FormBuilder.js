@@ -23,7 +23,7 @@ import {
   Form,
 } from "reactstrap";
 
-const FormBuilder = forwardRef(({ fields, editFormData, masterData }, ref) => {
+const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -168,6 +168,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData }, ref) => {
                     classNamePrefix="select2-selection"
                     id={field.name}
                     name={field.name}
+                    isDisabled={disabledFields[field.name]}
                     value={
                       [].concat(field.options, masterData[field.name] || [])
                         .filter(e => {
@@ -185,7 +186,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData }, ref) => {
                     isMulti={field.isMulti}
                   />
                 )}
-                {console.log("asdasd", masterData, masterData[field.name])}
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"

@@ -15,6 +15,7 @@ function AddTabs() {
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
+    const [disabledFields, setDisabledFields] = useState({});
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.tab);
     const dispatch = useDispatch();
     let navigate = useNavigate();
@@ -22,15 +23,17 @@ function AddTabs() {
     const id = location.state?.userId || "0";
 
     useEffect(() => {
-        console.log("level 1")
         fetchMasterData()
     }, []);
 
     useEffect(() => {
         if (id !== "0") {
             fetchData(id);
+            setDisabledFields({
+                "parentId": true,
+                "displayType": true
+            })
         }
-
     }, [id]);
 
     useEffect(() => {
@@ -115,6 +118,7 @@ function AddTabs() {
                                     fields={TabFields}
                                     editFormData={initialEditData}
                                     masterData={masterData}
+                                    disabledFields={disabledFields}
                                 />
                             </CardBody>
                         </Card>

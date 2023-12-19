@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { validateTabResponse } from "./functions";
-import axios from "axios";
-import { decryptData } from "../../Pages/Utility/encryptionUtils";
 import PropTypes from "prop-types";
 import sidebarData from "./SidebarData";
-//Simple bar
 import SimpleBar from "simplebar-react";
-// MetisMenu
-import MetisMenu from "metismenujs";
+// import MetisMenu from "metismenujs";
 import withRouter from "../../components/Common/withRouter";
 import { Link } from "react-router-dom";
-//i18n
 import { withTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthorisedTabs } from "../../Features/Authentication/authorizationSlice";
+import MetisMenu from "metismenujs";
 const Sidebar = (props) => {
   const ref = useRef();
-  const [tabList, setTabList] = useState([]);
   const newTabList = useSelector(state => state.auth.tabList);
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getAuthorisedTabs());
+  }, [])
 
   const activateParentDropdown = useCallback((item) => {
     item.classList.add("active");
@@ -109,10 +109,6 @@ const Sidebar = (props) => {
   }, [props.router.location.pathname, activateParentDropdown]);
 
   useEffect(() => {
-    ref.current.recalculate();
-  }, []);
-
-  useEffect(() => {
     activeMenu();
   }, [activeMenu]);
   function scrollElement(item) {
@@ -123,6 +119,12 @@ const Sidebar = (props) => {
       }
     }
   }
+
+  useEffect(() => {
+    ref.current.recalculate();
+    new MetisMenu("#side-menu-item");
+    activeMenu();
+  }, [newTabList]);
 
   return (
     <React.Fragment>
