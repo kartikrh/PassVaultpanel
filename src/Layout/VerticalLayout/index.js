@@ -22,7 +22,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 const Layout = props => {
   const dispatch = useDispatch();
-
   const {
     layoutWidth,
     leftSideBarType,

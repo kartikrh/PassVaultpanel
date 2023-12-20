@@ -11,6 +11,7 @@ import axios from "axios";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from '../../components/Model/SpinnerModel';
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -43,8 +44,10 @@ const Index = () => {
       }
     ).then((response)=>{
       setData(response?.result);
+      console.log(response)
       setIsLoading(false)
     }).catch((error)=>{
+      console.log(error)
       setIsLoading(false)
     });
   };
@@ -107,7 +110,7 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${process.env.REACT_APP_BASE_URL}/admin/player/delete`,
         {
           playerId: singleCheck,
@@ -120,6 +123,7 @@ const Index = () => {
         }
       ).then((response)=>{
         fetchData();
+        console.log("delete response: ",response)
         setDeleteModelVisable(false);
         setToast({
           message: "Player Deleted SuccessFully",
@@ -129,6 +133,7 @@ const Index = () => {
         setSingleCheck([])
         setToastStatus(true)
       }).catch((error)=>{
+        console.log("delete error: ",error)
         setIsLoading(false)
         setToast({
           message: "Error",
@@ -265,13 +270,13 @@ const Index = () => {
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            singleCheck = {singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={singleCheck}
-            
           />
           <TabModel
             addModelVisable={addModelVisable}

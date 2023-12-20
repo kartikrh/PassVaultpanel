@@ -264,6 +264,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             competitions={competitions}
+            singleCheck = {singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

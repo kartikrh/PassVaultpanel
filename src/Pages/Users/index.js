@@ -184,6 +184,7 @@ const Index = () => {
     {
       title: "User Name[Full Name]",
       dataIndex: "userName",
+      render: (text, record) => (<span>{text}{" "}[{record?.name}]</span>),
       key: "userName",
       sort: true,
       style: { width: "100%" },
@@ -264,13 +265,12 @@ const Index = () => {
             tableElement={tableElement}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
-
+            singleCheck={singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
           />
           <ChangePasswordModel
             changePasswordVisible={changePasswordVisible}
