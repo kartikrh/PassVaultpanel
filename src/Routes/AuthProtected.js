@@ -3,12 +3,14 @@ import { Navigate, Route, useNavigate } from "react-router-dom";
 
 import { useProfile } from "../Hooks/UserHooks";
 import { io } from "socket.io-client";
-import axios from "axios";
-import { getToken } from "../helpers/api_helper";
+import axiosInstance from "../Features/axios";
+import { useSelector } from "react-redux";
 
 
 const AuthProtected = (props) => {
   const { userProfile, loading } = useProfile();
+  const token = useSelector((state) => state.user.token);
+
   const navigate = useNavigate();
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
@@ -19,21 +21,12 @@ const AuthProtected = (props) => {
   const goToLogout = () => navigate("/logout");
 
   const verifyToken = async () => {
-    await axios
-    .post(
-      `${process.env.REACT_APP_BASE_URL}/verifyToken`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    )
-    .then((response) => {
-      if (response.status !== 200) goToLogout()
-    })
-    .catch(goToLogout);
+    await axiosInstance
+      .post(`/verifyToken`)
+      .then((response) => {
+        if (response.status !== 200) goToLogout()
+      })
+      .catch(goToLogout);
   }
 
   const storageChange = (event) => {
@@ -49,10 +42,11 @@ const AuthProtected = (props) => {
   }, []);
 
   useEffect(() => {
-    if (userProfile?.token) {
-      const socket = io.connect(process.env.REACT_APP_BASE_URL, {
+    let socket;
+    if (token) {
+      socket = io.connect(process.env.REACT_APP_BASE_URL, {
         auth: {
-          token: userProfile.token
+          token: token
         }
       });
       socket.on("connect", () => {
@@ -65,7 +59,12 @@ const AuthProtected = (props) => {
       });
       socket.on("logout", goToLogout)
     }
-  }, [userProfile]);
+    return () => {
+      if (socket) {
+        socket.disconnect()
+      }
+    }
+  }, [token]);
 
   useEffect(() => {
     let interval;

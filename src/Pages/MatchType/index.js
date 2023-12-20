@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { getToken } from "../../helpers/api_helper";
 import { Container } from "reactstrap";
-import axios from "axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import CloneModel from '../../components/Model/CloneMatchType'
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Match Type | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -26,17 +25,9 @@ const Index = () => {
   const[cloneName, setCloneName] = useState("");
   // fetch data
   const fetchData = async () => {
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/matchType/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        `/admin/matchType/all`)
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -67,13 +58,8 @@ const Index = () => {
   const handleClone = async (
   ) => {
     setIsLoading(true)
-    await axios
-      .post(`${process.env.REACT_APP_BASE_URL}/admin/matchType/clone`, {matchTypeId: singleCheck[0], matchType:cloneName}, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      })
+    await axiosInstance
+      .post(`/admin/matchType/clone`, {matchTypeId: singleCheck[0], matchType:cloneName})
       .then((response) => {
         fetchData();
         setCloneModelVisible(false)
@@ -84,19 +70,12 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true);
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/matchType/delete`,
+        `/admin/matchType/delete`,
         {
           matchTypeId: singleCheck,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);

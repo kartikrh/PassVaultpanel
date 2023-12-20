@@ -1,13 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance, { setAuthToken } from '../axios';
-import { decryptData, encryptData, removeStorageToken } from '../../Pages/Utility/encryptionUtils';
+import { encryptData, removeStorageToken } from '../../Pages/Utility/encryptionUtils';
+import { isUserLogout } from '../../helpers/api_helper';
 
 export const loginUser = createAsyncThunk(
   'user/login',
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/signin', userData);
-      return response?.data.result; // Assuming this contains the token
+      return response; // Assuming this contains the token
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -19,7 +20,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/signout');
-      return response?.data.result; // Assuming this contains the token
+      return response?.result; // Assuming this contains the token
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -32,7 +33,7 @@ const userSlice = createSlice({
     token: null,
     isLoading: false,
     error: null,
-    isUserLogout: true
+    isUserLogout: isUserLogout
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -46,6 +47,7 @@ const userSlice = createSlice({
         state.isUserLogout = false;
         localStorage.setItem("authUser", encryptData(action.payload));
         localStorage.setItem('loggedIn', true);
+        setAuthToken(action.payload.token);
         state.isLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -65,7 +67,6 @@ const userSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.isLoading = false;
-        console.log("error in logout");
         state.isUserLogout = true;
         localStorage.setItem('loggedIn', false);
         removeStorageToken()

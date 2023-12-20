@@ -50,7 +50,7 @@ function AddTabs() {
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/tabs/byId', { id })
             .then((response) => {
-                setInitialEditData(response?.data?.result);
+                setInitialEditData(response?.result);
             }).catch((error) => {
                 // setIsLoading(false)
             });
