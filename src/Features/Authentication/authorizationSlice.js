@@ -7,10 +7,10 @@ export const getAuthorisedTabs = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('/admin/tabs/all');
-            return response?.data.result; // Assuming this contains the token
+            return response?.result; // Assuming this contains the token
 
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response);
         }
     }
 );

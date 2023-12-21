@@ -8,11 +8,24 @@ import jsPDF from "jspdf";
 // import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
 import { filterOrderChange } from "../../../helpers/helper";
-import { changeDisplayOrder } from "../../../helpers/api_helper";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Toaster from "../../Toaster/index";
 import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 import Switch from "react-switch";
+import axiosInstance from "../../../Features/axios";
+
+const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
+  try {
+    const response = await axiosInstance.post(
+      `/admin/${apiName}/changeDisplayOrder`,
+      tabdisplayOrder, // Send the updated order data to the API
+    );
+    return response?.result || [];
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
 const Index = ({
   columns,
   dataSource,

@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import { getToken } from "../../helpers/api_helper";
 import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import axios from "axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
@@ -30,17 +29,8 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    await axios
-      .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/competition/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+    await axiosInstance
+      .post(`/admin/competition/all`)
       .then((response) => {
         setData(response?.result);
         const eventTypes = Array.from(new Set(response?.result.map(item => item.eventType)));
@@ -73,20 +63,13 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/competition/save`,
+        `/admin/competition/save`,
         {
           competitionId: record.competitionId,
           [pType]: cState ? false : true,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
       })
@@ -97,19 +80,12 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true);
-    const response = await axios
+    const response = await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/competition/delete`,
+        `/admin/competition/delete`,
         {
           competitionId: singleCheck,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);

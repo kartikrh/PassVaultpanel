@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import { getToken } from '../../helpers/api_helper'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from '../../components/Model/SpinnerModel';
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -26,22 +24,14 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/roles/all`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response) => {
-      //   const tabsDataDB = validateTabResponse(response?.result);
-      setData(response?.result);
-      setIsLoading(false)
-    }).catch((error) => {
-      setIsLoading(false)
-    });
+    await axiosInstance.post(`/admin/roles/all`)
+      .then((response) => {
+        //   const tabsDataDB = validateTabResponse(response?.result);
+        setData(response?.result);
+        setIsLoading(false)
+      }).catch((error) => {
+        setIsLoading(false)
+      });
   };
 
   //checkbox function
@@ -65,21 +55,14 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true)
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/tabs/save`,
+    await axiosInstance.post(
+      `/admin/tabs/save`,
       {
         id: record.roleId,
         tabName: record.tabName,
         parentId: record.parentId,
         [pType]: cState ? false : true,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response) => {
+      }).then((response) => {
       const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
       // setData(newArray)
       // setIsLoading(false)
@@ -92,18 +75,11 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true)
     // e.preventDefault()
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/roles/delete`,
+    await axiosInstance.post(
+      `/admin/roles/delete`,
       {
         roleIds: singleCheck,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response) => {
+      }).then((response) => {
       setDeleteModelVisable(false);
       fetchData();
     }).catch((error) => {

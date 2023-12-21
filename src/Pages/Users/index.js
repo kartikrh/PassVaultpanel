@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
-import { getToken } from "../../helpers/api_helper";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import axios from "axios";
-import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import ChangePasswordModel from '../../components/Model/changePassword'
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -30,17 +28,8 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    await axios
-      .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/user/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+    await axiosInstance
+      .post(`/admin/user/all`)
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
@@ -72,20 +61,13 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/user/save`,
+        `/admin/user/save`,
         {
           userId: record.userId,
           [pType]: cState ? false : true,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
       })
@@ -97,19 +79,12 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     // e.preventDefault()
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/user/delete`,
+        `/admin/user/delete`,
         {
           userId: singleCheck,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
@@ -121,20 +96,13 @@ const Index = () => {
 
   const handleChangePassword = async () => {
     setIsLoading(true);
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/user/save`,
+        `/admin/user/save`,
         {
           password: password,
           userId: userId
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
       })

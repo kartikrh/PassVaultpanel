@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import {getToken} from '../../helpers/api_helper'
 import {Avatar} from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import Toaster from '../../components/Toaster'
-import axios from "axios";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -33,23 +31,13 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/player/all`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response)=>{
-      setData(response?.result);
-      console.log(response)
-      setIsLoading(false)
-    }).catch((error)=>{
-      console.log(error)
-      setIsLoading(false)
-    });
+    await axiosInstance.post(`/admin/player/all`)
+      .then((response) => {
+        setData(response?.result);
+        setIsLoading(false)
+      }).catch((error) => {
+        setIsLoading(false)
+      });
   };
 
   //checkbox function
@@ -73,20 +61,13 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true)
-    await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/admin/player/save`,
+    await axiosInstance.post(
+      `/admin/player/save`,
       {
         playerId: record.playerId,
         playerName: record.playerName,
         [pType]: cState?false:true,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      }
-    ).then((response)=>{
+      }).then((response)=>{
       // const newArray = data.map(obj => (obj.playerId === record.playerId ? response.result : obj));
 
       fetchData()
@@ -109,19 +90,11 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true)
-    // e.preventDefault()
       const response = await axiosInstance.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/player/delete`,
+        `/admin/player/delete`,
         {
           playerId: singleCheck,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      ).then((response)=>{
+        }).then((response)=>{
         fetchData();
         console.log("delete response: ",response)
         setDeleteModelVisable(false);

@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import { getToken } from "../../helpers/api_helper";
 import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import axios from "axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -28,17 +27,8 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    await axios
-      .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/paneltyRun/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+    await axiosInstance
+      .post(`/admin/paneltyRun/all`)
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -69,20 +59,13 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/paneltyRun/save`,
+        `/admin/paneltyRun/save`,
         {
           paneltyId: record.paneltyId,
           [pType]: cState ? false : true,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         // const newArray = data.map(obj => (obj.paneltyId === record.paneltyId ? response.result : obj));
         fetchData();
@@ -95,19 +78,12 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     // e.preventDefault()
-    const response = await axios
+    const response = await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/paneltyRun/delete`,
+        `/admin/paneltyRun/delete`,
         {
           paneltyId: singleCheck,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+        })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
@@ -119,13 +95,8 @@ const Index = () => {
 
   const handleRuns = async (value) => {
     setIsLoading(true);
-    await axios
-      .post(`${process.env.REACT_APP_BASE_URL}/admin/paneltyRun/save`, value, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      })
+    await axiosInstance
+      .post(`/admin/paneltyRun/save`, value)
       .then((response) => {
         fetchData();
       })
