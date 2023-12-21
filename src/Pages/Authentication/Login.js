@@ -36,20 +36,15 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 
 //Import config
 import { facebook, google } from "../../config";
-import { decryptData } from "../Utility/encryptionUtils";
-import { loginUser } from "../../Features/Authentication/loginSlice";
+import { loginUser } from "../../Features/Authentication/userSlice";
 
 const Login = (props) => {
   const [rememberMe, setRememberMe] = useState(false)
   document.title = "Login | Upzet - React Admin & Dashboard Template";
   const dispatch = useDispatch();
-  const navigate = useNavigate()
-  const { error } = useSelector((state) => ({
-    error: state.login.error,
-  }));
+  const navigate = useNavigate();
 
-  const token = useSelector((state) => state.login.token);
-  const isLoggedIn = token !== null;
+  const {error, token, isUserLogout } = useSelector((state) => state.user);
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -69,10 +64,10 @@ const Login = (props) => {
 
 
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/Dashboard')
+    if (token && !isUserLogout) {
+      navigate('/dashboard')
     }
-  }, [isLoggedIn])
+  }, [token])
 
   const handleRememberMe = () => {
     if (rememberMe === true) {

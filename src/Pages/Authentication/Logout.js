@@ -3,20 +3,19 @@ import React, { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import withRouter from "../../components/Common/withRouter";
 
-// import { logoutUser } from "../../store/actions";
-
 //redux
 import { useSelector, useDispatch } from "react-redux";
+import { logoutUser } from "../../Features/Authentication/userSlice";
 
 const Logout = () => {
   const dispatch = useDispatch();
 
   const { isUserLogout } = useSelector((state) => ({
-    isUserLogout: state.login.isUserLogout,
+    isUserLogout: state.user.isUserLogout,
   }));
 
   useEffect(() => {
-    // dispatch(logoutUser());
+    dispatch(logoutUser());
   }, [dispatch]);
 
   if (isUserLogout) {

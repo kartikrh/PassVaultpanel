@@ -10,7 +10,7 @@ export const encryptData = (data) => {
       ENCRYPTION_SECRET
     ).toString();
     return encrypted;
-  } catch (e) {}
+  } catch (e) { }
 };
 
 // Decrypt data and return the decrypted object
@@ -19,3 +19,10 @@ export const decryptData = (encryptedData) => {
   const decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   return decrypted;
 };
+
+export const removeStorageToken = () => {
+  const authData = localStorage.getItem("authUser");
+  const data = decryptData(authData);
+  delete data?.token;
+  localStorage.setItem("authUser", encryptData(data))
+}

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { getToken } from "../../helpers/api_helper";
 import {mapCommentaryStatus} from './functions'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import axios from "axios";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Commentary | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -28,17 +27,8 @@ const Index = () => {
 
   // fetch data
   const fetchData = async () => {
-    await axios
-      .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/commentary/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
+    await axiosInstance
+      .post(`/admin/commentary/all`)
       .then((response) => {
         setData(response?.result);
         const eventTypes = Array.from(
@@ -73,18 +63,12 @@ const Index = () => {
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
-    await axios
+    await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/commentary/save`,
+        `/admin/commentary/save`,
         {
           commentaryId: record.commentaryId,
           [pType]: cState ? false : true,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
         }
       )
       .then((response) => {
@@ -97,17 +81,11 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true);
-    const response = await axios
+    const response = await axiosInstance
       .post(
-        `${process.env.REACT_APP_BASE_URL}/admin/commentary/delete`,
+        `/admin/commentary/delete`,
         {
           commentaryId: singleCheck,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`,
-          },
         }
       )
       .then((response) => {
