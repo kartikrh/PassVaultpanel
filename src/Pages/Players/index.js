@@ -90,13 +90,13 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true)
-    // e.preventDefault()
       const response = await axiosInstance.post(
         `/admin/player/delete`,
         {
           playerId: singleCheck,
         }).then((response)=>{
         fetchData();
+        console.log("delete response: ",response)
         setDeleteModelVisable(false);
         setToast({
           message: "Player Deleted SuccessFully",
@@ -106,6 +106,7 @@ const Index = () => {
         setSingleCheck([])
         setToastStatus(true)
       }).catch((error)=>{
+        console.log("delete error: ",error)
         setIsLoading(false)
         setToast({
           message: "Error",
@@ -242,18 +243,17 @@ const Index = () => {
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            singleCheck = {singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={singleCheck}
-            
           />
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>

@@ -10,7 +10,7 @@ import SpinnerModel from '../../components/Model/SpinnerModel';
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-
+import Toaster from '../../components/Toaster'
 const Index = () => {
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -19,7 +19,13 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  const [toast, setToast] = useState({
+    message: "",
+    color:"",
+    header:""
+  });
+  //displyTypeDropdown elements
+  const [displayTypes, setDisplayTypes] = useState([]);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
@@ -31,7 +37,16 @@ const Index = () => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB)
         const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
+        sorted.forEach(item => {
+          if (item.children && Array.isArray(item.children)) {
+            item.children.sort((x, y) => x.displayOrder - y.displayOrder);
+          }
+        })
         setData(sorted);
+        const displayType = Array.from(
+          new Set(response?.data?.result.map((item) => item.displayType))
+        );
+        setDisplayTypes(displayType)
         setIsLoading(false)
       }).catch((error) => {
         setIsLoading(false)
@@ -40,6 +55,7 @@ const Index = () => {
 
   //checkbox function
   const handleCheckedAll = (e) => {
+    console.log("this is the record ::: ", e)
     if (e === "all") {
       if (checkedAll) {
         setCheckedAll(false);
@@ -48,10 +64,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.encryptedTabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.encryptedTabId));
+      if (singleCheck.includes(e.tabId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
       } else {
-        setSingleCheck([...singleCheck, e.encryptedTabId]);
+        setSingleCheck([...singleCheck, e.tabId]);
       }
     }
   };
@@ -76,15 +92,17 @@ const Index = () => {
   };
 
   const handleDelete = async (e) => {
+   if(singleCheck.length>0){
     setIsLoading(true)
     await axiosInstance.post('/admin/tabs/delete', {
       encryptedTabIds: singleCheck,
     })
       .then((response) => {
-        setDeleteModelVisable(false);
+        // setDeleteModelVisable(false);
         fetchData();
       }).catch((error) => {
       });
+   }
   }
 
   const handleEdit = (id) => {
@@ -113,7 +131,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.encryptedTabId)}
+            checked={checkedAll || singleCheck.includes(record.tabId)}
             onChange={() => {
               handleCheckedAll(record);
             }}
@@ -246,6 +264,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             onAddNavigate={"/addTabs"}
             changeOrderApiName="tabs"
+            displayTypes = {displayTypes}
+            singleCheck = {singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

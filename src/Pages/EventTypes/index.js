@@ -226,6 +226,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
+            singleCheck = {singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

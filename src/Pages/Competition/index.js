@@ -224,6 +224,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
+            singleCheck = {singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
