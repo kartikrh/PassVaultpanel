@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
             if (encryptedAuth) {
                 const decryptedAuth = decryptData(encryptedAuth);
                 decryptedAuth.token = newToken;
-                localStorage.setItem("authUser", encryptData(decryptData));
+                localStorage.setItem("authUser", encryptData(decryptedAuth));
             }
         }
         return response.data ? response.data : response;
@@ -55,6 +55,9 @@ axiosInstance.interceptors.response.use(
                 break;
             case 401:
                 message = "Invalid credentials";
+                if (error?.response?.data?.title !== "signout") {
+                    window.location.href = "/logout"
+                }
                 break;
             case 404:
                 message = "Sorry! the data you are looking for could not be found";
