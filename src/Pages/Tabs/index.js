@@ -62,7 +62,6 @@ const Index = () => {
 
   //checkbox function
   const handleCheckedAll = (e) => {
-    console.log("this is the record ::: ", e);
     if (e === "all") {
       if (checkedAll) {
         setCheckedAll(false);

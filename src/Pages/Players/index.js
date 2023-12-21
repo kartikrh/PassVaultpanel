@@ -5,7 +5,6 @@ import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import Toaster from "../../components/Toaster";
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -18,17 +17,16 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  //toaster
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -70,18 +68,15 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        // const newArray = data.map(obj => (obj.playerId === record.playerId ? response.result : obj));
-        console.log(response);
         fetchData();
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
-          header: response.title,
+          header: "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
         setToast({
           message: error.error.message,
@@ -100,7 +95,6 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        console.log("delete response: ", response);
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,
@@ -111,7 +105,6 @@ const Index = () => {
         setToastStatus(true);
       })
       .catch((error) => {
-        console.log("delete error: ", error);
         setIsLoading(false);
         setToast({
           message: error.error.message,

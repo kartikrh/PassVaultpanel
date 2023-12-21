@@ -65,7 +65,6 @@ axiosInstance.interceptors.response.use(
             default:
                 message = error.message || error;
         }
-        // console.log("error message", message);
         if (error?.response?.data) error = error.response.data;
         return Promise.reject(error);
     }

@@ -48,7 +48,7 @@ const Index = ({
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
   const [toast, setToast] = useState({
-    message: "Select at least one row",
+    message: "Select at least one (only One) row",
     color: "red",
     header: "Error",
   });
@@ -186,8 +186,6 @@ const Index = ({
       });
       if (searchTerm === "") {
         setTotal(dataSource.length);
-        console.log("currentPage --->>>",currentPage )
-        console.log("pageSize --->>>",pageSize )
         const sliced = dataSource.slice(
           currentPage * pageSize,
           currentPage * pageSize + pageSize
@@ -295,7 +293,6 @@ const Index = ({
         currentPage * pageSize,
         currentPage * pageSize + pageSize
       );
-      console.log("this is slice ::: ", sliced)
       setData(sliced);
     }
   };
@@ -345,8 +342,8 @@ const Index = ({
                       color="warning"
                       className="btn"
                       onClick={() => {
-                        singleCheck.length > 0?
-                        cloneModelFunction(true) : setToastStatus(true);
+                        singleCheck.length === 1?
+                        cloneModelFunction(true) : setToastStatus(true)
                       }}
                       id="create-btn"
                     >

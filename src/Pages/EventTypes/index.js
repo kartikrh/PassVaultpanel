@@ -73,7 +73,6 @@ const Index = () => {
           [pType]: cState ? false : true,
         })
       .then((response) => {
-        console.log(response)
         setToast({
           message: `${response.title} status updated successfully`,
           color:"green",
@@ -104,7 +103,6 @@ const Index = () => {
         })
       .then((response) => {
         fetchData();
-        console.log("response", response);
         setDeleteModelVisable(false);
         setToast({
           message: response.result.message,
@@ -114,7 +112,6 @@ const Index = () => {
         setToastStatus(true)
       })
       .catch((error) => {
-        console.log("error", error);
         setIsLoading(false)
         setToast({
           message: error.error.message,
