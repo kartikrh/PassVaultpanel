@@ -108,6 +108,13 @@ const Sidebar = (props) => {
     }
   }, [props.router.location.pathname, activateParentDropdown]);
 
+  function tToggle() {
+    var body = document.body;
+    if (window.screen.width <= 998) {
+      body.classList.toggle("sidebar-enable");
+    }
+  }
+
   useEffect(() => {
     activeMenu();
   }, [activeMenu]);
@@ -200,7 +207,7 @@ const Sidebar = (props) => {
                               )
                               .map((subItem, subKey) => (
                                 <li key={subKey}>
-                                  <Link to={subItem.link}>
+                                  <Link to={subItem.link} onClick={tToggle}>
                                     {props.t(subItem.sublabel)}
                                   </Link>
                                 </li>

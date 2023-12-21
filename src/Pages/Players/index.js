@@ -281,7 +281,6 @@ const Index = () => {
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>

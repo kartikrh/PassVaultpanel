@@ -55,6 +55,7 @@ const Index = () => {
 
   //checkbox function
   const handleCheckedAll = (e) => {
+    console.log("this is the record ::: ", e)
     if (e === "all") {
       if (checkedAll) {
         setCheckedAll(false);
@@ -63,10 +64,10 @@ const Index = () => {
         setCheckedAll(true);
       }
     } else {
-      if (singleCheck.includes(e.encryptedTabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.encryptedTabId));
+      if (singleCheck.includes(e.tabId)) {
+        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
       } else {
-        setSingleCheck([...singleCheck, e.encryptedTabId]);
+        setSingleCheck([...singleCheck, e.tabId]);
       }
     }
   };
@@ -131,7 +132,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.encryptedTabId)}
+            checked={checkedAll || singleCheck.includes(record.tabId)}
             onChange={() => {
               handleCheckedAll(record);
             }}

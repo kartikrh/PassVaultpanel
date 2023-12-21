@@ -173,6 +173,8 @@ const Index = ({
       });
       if (searchTerm === "") {
         setTotal(dataSource.length);
+        console.log("currentPage --->>>",currentPage )
+        console.log("pageSize --->>>",pageSize )
         const sliced = dataSource.slice(
           currentPage * pageSize,
           currentPage * pageSize + pageSize
@@ -280,6 +282,7 @@ const Index = ({
         currentPage * pageSize,
         currentPage * pageSize + pageSize
       );
+      console.log("this is slice ::: ", sliced)
       setData(sliced);
     }
   };
