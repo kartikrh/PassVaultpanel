@@ -8,6 +8,8 @@ import TabModel from "../../components/Model/AddTabModel";
 import CloneModel from '../../components/Model/CloneMatchType'
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from '../../components/Toaster'
+
 const Index = () => {
   document.title = "Match Type | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -16,7 +18,13 @@ const Index = () => {
   // model state
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+    //toaster
+    const [toast, setToast] = useState({
+      message: "",
+      color:"",
+      header:""
+    });
+    const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
@@ -61,10 +69,24 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/matchType/clone`, {matchTypeId: singleCheck[0], matchType:cloneName})
       .then((response) => {
+        console.log(response)
+
         fetchData();
+        setToast({
+          message: `${response.title} cloned successfully`,
+          color:"green",
+          header:"Success"
+        })
+        setToastStatus(true)
         setCloneModelVisible(false)
       })
       .catch((error) => {
+        setToast({
+          message: error.error.message,
+          color:"red",
+          header:"Warning"
+        })
+        setToastStatus(true);
       });
   };
 
@@ -77,11 +99,24 @@ const Index = () => {
           matchTypeId: singleCheck,
         })
       .then((response) => {
+        console.log(response)
         fetchData();
+        setToast({
+          message: `${response.title} deleted successfully`,
+          color:"green",
+          header:"Success"
+        })
+        setToastStatus(true)
         setDeleteModelVisable(false);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color:"red",
+          header:"Warning"
+        })
+        setToastStatus(true);
       });
   };
   //table columns
@@ -151,6 +186,7 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Match Type" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && <Toaster toast={toast} setToast={setToast} toastStatus={toastStatus} setToastStatus={setToastStatus}/>}
           <Table
             columns={columns}
             dataSource={data}

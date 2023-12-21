@@ -345,7 +345,8 @@ const Index = ({
                       color="warning"
                       className="btn"
                       onClick={() => {
-                        cloneModelFunction(true);
+                        singleCheck.length > 0?
+                        cloneModelFunction(true) : setToastStatus(true);
                       }}
                       id="create-btn"
                     >
