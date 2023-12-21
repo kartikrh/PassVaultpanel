@@ -6,7 +6,7 @@ export const addTabToDb = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('/admin/tabs/save', userData);
-            return response?.data.result;
+            return response?.result;
         } catch (error) {
             return rejectWithValue(error.response.data);
         }

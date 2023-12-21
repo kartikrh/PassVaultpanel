@@ -28,7 +28,7 @@ const Index = () => {
   const fetchData = async () => {
     await axiosInstance.post('/admin/tabs/all')
       .then((response) => {
-        const tabsDataDB = validateTabResponse(response?.data?.result);
+        const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB)
         const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
         setData(sorted);
@@ -66,7 +66,6 @@ const Index = () => {
       [pType]: cState ? false : true,
     })
       .then((response) => {
-        response = response?.data
         const newArray = data.map(obj => (obj.encryptedTabId === record.encryptedTabId ? response.result : obj));
         // setData(newArray)
         // setIsLoading(false)

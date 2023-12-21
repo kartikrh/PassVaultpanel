@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Collapse, Row, Col, Container } from "reactstrap";
 import classname from "classnames";
-import { decryptData } from "../../Pages/Utility/encryptionUtils";
 import axios from 'axios'
 import { validateTabResponse } from "./../VerticalLayout/functions";
 import { withTranslation } from "react-i18next";
@@ -17,17 +16,7 @@ const Navbar = (props) => {
   const [tabList, setTabList] = useState([]);
   useEffect(() => {
     const menuData = async () => {
-      const token = decryptData(localStorage.getItem("authUser"));
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/admin/tabs/all`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token.result?.token}`,
-          },
-        }
-      );
+      const response = await axios.post(`/admin/tabs/all`);
       const tabsDataDB = validateTabResponse(response?.result);
       setTabList(tabsDataDB);
     };
