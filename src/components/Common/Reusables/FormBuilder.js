@@ -340,7 +340,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                         className="form-check-input"
                         id="customSwitchsizelg"
                         // defaultChecked
-                        checked={formData[field.name] || field.defaultValue}
+                        checked={formData[field.name] ? formData[field.name] : () => {handleChange(field, field.defaultValue); return field.defaultValue}}
                         onChange={(e) => {
                           handleChange(field, !formData[field.name])
                         }}

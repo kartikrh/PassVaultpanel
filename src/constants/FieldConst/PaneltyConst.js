@@ -28,7 +28,6 @@ export const PaneltyRunConst = [
         parentclassName: "",
         defaultValue: true,
         type: SWITCH,
-        defaultValue: true,
         labelColspan: { xs: 12, md: 4, lg: 3 },
         fieldColspan: { xs: 12, md: 8, lg: 9 }
     },
