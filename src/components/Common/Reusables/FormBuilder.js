@@ -67,6 +67,9 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }
   }, [editFormData])
 
+  useEffect(()=>{
+console.log("this is masterData", masterData)
+  },[masterData])
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
 
@@ -221,6 +224,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
+                {console.log(masterData)}
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"

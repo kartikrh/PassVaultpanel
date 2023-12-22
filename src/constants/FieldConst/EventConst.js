@@ -2,16 +2,24 @@ import { DATE_TIME_PICKER, SELECT, SWITCH, TEXT } from "../../components/Common/
 
 export const EventFields = [
     {
-        name: "eventType",
+        name: "eventId",
         label: "Event Type",
         parentclassName: "",
         type: SELECT,
+        options: [{ label: "Select Event Type", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "competition",
+        name: "competitionId",
         label: "Competition",
         parentclassName: "",
         type: SELECT,
+        options: [{ label: "Select a Competition", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "eventName",
@@ -20,7 +28,7 @@ export const EventFields = [
         type: TEXT,
     },
     {
-        name: "referenceId",
+        name: "refId",
         label: "Reference Id",
         parentclassName: "",
         type: TEXT,
@@ -38,7 +46,7 @@ export const EventFields = [
         type: TEXT,
     },
     {
-        name: "timezone",
+        name: "timeZone",
         label: "TimeZone",
         parentclassName: "",
         type: TEXT,
