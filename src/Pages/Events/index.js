@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
 import { Button } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
@@ -25,7 +24,8 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-
+  //redirect
+  const navigate = useNavigate();
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -99,6 +99,10 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
+  const handleEdit = (id) => {
+    navigate("/addEvents", { state: { userId: id } });
+  };
   //table columns
   const columns = [
     {
@@ -135,7 +139,11 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit"
+      onClick={() => {
+        handleEdit(record.eventId);
+      }}
+      ></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -241,6 +249,7 @@ const Index = () => {
             eventTypes={eventTypes}
             competitions={competitions}
             singleCheck = {singleCheck}
+            onAddNavigate={"/addEvents"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
