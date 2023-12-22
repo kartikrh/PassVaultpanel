@@ -2,6 +2,7 @@ const SidebarData = [
     {
         label: "Menu",
         isMainMenu: true,
+        displayOrder: 1
     },
     {
         label: "Dashboard",
@@ -9,36 +10,53 @@ const SidebarData = [
         url: "/dashboard",
         issubMenubadge: true,
         bgcolor: "bg-primary",
-        badgeValue: "3"
+        badgeValue: "3",
+        displayOrder: 2
     },
     {
         label: "Calendar",
         icon: "mdi mdi-calendar-outline",
         isHasArrow: true,
         url: "/calendar",
+        displayOrder: 3
     },
     {
         label: "Email",
         icon: "mdi mdi-email-outline",
         subItem: [
-            { sublabel: "Inbox", link: "/inbox" },
-            { sublabel: "Read Email", link: "/read-email" },
-            { sublabel: "Email Compose", link: "/compose-email" },
+            { 
+                sublabel: "Inbox", link: "/inbox", 
+        displayOrder: 5
+        },
+            { sublabel: "Read Email", link: "/read-email",  displayOrder: 6 },
+            { sublabel: "Email Compose", link: "/compose-email",  displayOrder: 7 },
         ],
+        displayOrder: 4
     },
     {
         label: "Pages",
         isMainMenu: true,
+        displayOrder: 8
     },
     {
         label: "Authentication",
         icon: "mdi mdi-account-circle-outline",
         subItem: [
-            { sublabel: "Login", link: "/auth-login" },
-            { sublabel: "Register", link: "/auth-register" },
-            { sublabel: "Recover Password", link: "/auth-recoverpw" },
-            { sublabel: "Lock Screen", link: "/auth-lock-screen" },
+            { sublabel: "Login", link: "/auth-login", 
+            displayOrder: 12
+        
+        },
+            { sublabel: "Register", link: "/auth-register",
+            displayOrder: 11
+        },
+            { sublabel: "Recover Password", link: "/auth-recoverpw",
+            displayOrder: 13
+        },
+            { sublabel: "Lock Screen", link: "/auth-lock-screen",  
+            displayOrder: 10
+        },
         ],
+        displayOrder: 9
     },
     {
         label: "Utility",

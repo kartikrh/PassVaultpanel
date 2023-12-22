@@ -35,13 +35,9 @@ const Index = ({
             className="d-flex flex-column justify-content-center align-items-center"
             id="modal-id"
           >
-            {singleCheck?.length>0? (
-              <span className="mt-4 mb-4">
-                Are you sure you want to delete this?
-              </span>
-            ) : (
-              <h5 className="mt-4 mb-4 text-danger font-bold">Please Select at least one row</h5>
-            )}
+            <span className="mt-4 mb-4">
+              Are you sure you want to delete this?
+            </span>
             <div className="hstack gap-2 justify-content-center">
               <button
                 type="button"
@@ -52,7 +48,7 @@ const Index = ({
               >
                 Close
               </button>
-              {singleCheck?.length>0 ?<button
+              <button
                 className="btn btn-danger"
                 id="add-btn"
                 onClick={() => {
@@ -60,7 +56,7 @@ const Index = ({
                 }}
               >
                 Delete
-              </button> : null}
+              </button>
             </div>
           </div>
         </ModalBody>

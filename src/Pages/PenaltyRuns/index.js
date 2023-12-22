@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster";
+
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -24,7 +23,13 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-
+  //toaster
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -37,7 +42,6 @@ const Index = () => {
         setIsLoading(false);
       });
   };
-
   //checkbox function
   const handleCheckedAll = (e) => {
     if (e === "all") {
@@ -55,53 +59,82 @@ const Index = () => {
       }
     }
   };
-
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/paneltyRun/save`,
-        {
-          paneltyId: record.paneltyId,
-          [pType]: cState ? false : true,
-        })
+      .post(`/admin/paneltyRun/save`, {
+        paneltyId: record.paneltyId,
+        [pType]: cState ? false : true,
+      })
       .then((response) => {
-        // const newArray = data.map(obj => (obj.paneltyId === record.paneltyId ? response.result : obj));
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
         fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
-
+  //delete row
   const handleDelete = async (e) => {
     setIsLoading(true);
-    // e.preventDefault()
     const response = await axiosInstance
-      .post(
-        `/admin/paneltyRun/delete`,
-        {
-          paneltyId: singleCheck,
-        })
+      .post(`/admin/paneltyRun/delete`, {
+        paneltyId: singleCheck,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
+        setToast({
+          message: response?.result,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
-
+  //chnage Penalty Run
   const handleRuns = async (value) => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/paneltyRun/save`, value)
       .then((response) => {
         fetchData();
+        setToast({
+          message: `${response.title} updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true)
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
   //table columns
@@ -206,13 +239,12 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
-
   //elements required
   const tableElement = {
     title: "Penalty Runs",
     headerSelect: false,
     switch: false,
-    clone:false,
+    clone: false,
   };
 
   useEffect(() => {
@@ -226,12 +258,21 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Penalty Runs" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            singleCheck={singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

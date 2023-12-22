@@ -49,6 +49,7 @@ export const transformApiDataToSidebarData = (apiData) => {
         label: item.displayName,
         icon: item.iconName,
         url: item.webPage,
+        displayOrder: item.displayOrder,
         // isMainMenu: true,
         encryptedTabId: item.encryptedTabId, // Add encryptedTabId to identify parents
         subItem: []
@@ -63,6 +64,7 @@ export const transformApiDataToSidebarData = (apiData) => {
       if (parentItem) {
         parentItem.subItem.push({
           sublabel: item.displayName,
+          displayOrder: item.displayOrder,
           link: item.webPage,
           icon: item.iconName
         });

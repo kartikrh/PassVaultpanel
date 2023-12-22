@@ -5,9 +5,11 @@ import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 // import Model
 import TabModel from "../../components/Model/AddTabModel";
-import CloneModel from '../../components/Model/CloneMatchType'
+import CloneModel from "../../components/Model/CloneMatchType";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster";
+
 const Index = () => {
   document.title = "Match Type | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -16,18 +18,23 @@ const Index = () => {
   // model state
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  //toaster
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
 
   // cloneName
-  const[cloneName, setCloneName] = useState("");
+  const [cloneName, setCloneName] = useState("");
   // fetch data
   const fetchData = async () => {
     await axiosInstance
-      .post(
-        `/admin/matchType/all`)
+      .post(`/admin/matchType/all`)
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -55,33 +62,57 @@ const Index = () => {
     }
   };
 
-  const handleClone = async (
-  ) => {
-    setIsLoading(true)
+  const handleClone = async () => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/matchType/clone`, {matchTypeId: singleCheck[0], matchType:cloneName})
+      .post(`/admin/matchType/clone`, {
+        matchTypeId: singleCheck[0],
+        matchType: cloneName,
+      })
       .then((response) => {
         fetchData();
-        setCloneModelVisible(false)
+        setToast({
+          message: `${response.title} cloned successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
+        setCloneModelVisible(false);
       })
       .catch((error) => {
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/matchType/delete`,
-        {
-          matchTypeId: singleCheck,
-        })
+      .post(`/admin/matchType/delete`, {
+        matchTypeId: singleCheck,
+      })
       .then((response) => {
         fetchData();
+        setToast({
+          message: `${response.title} deleted successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
         setDeleteModelVisable(false);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
   //table columns
@@ -151,12 +182,21 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Match Type" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
+            singleCheck={singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -168,7 +208,7 @@ const Index = () => {
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
-            setCloneName = {setCloneName}
+            setCloneName={setCloneName}
             singleCheck={singleCheck}
           />
         </Container>

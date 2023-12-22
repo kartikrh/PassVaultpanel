@@ -1,42 +1,42 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import {Avatar} from "antd";
+import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import Toaster from '../../components/Toaster'
-// import Model
+import Toaster from "../../components/Toaster";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
-import SpinnerModel from '../../components/Model/SpinnerModel';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  //toaster
   const [toast, setToast] = useState({
     message: "",
-    color:"",
-    header:""
+    color: "",
+    header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-
   // fetch data
   const fetchData = async () => {
-    await axiosInstance.post(`/admin/player/all`)
+    await axiosInstance
+      .post(`/admin/player/all`)
       .then((response) => {
         setData(response?.result);
-        setIsLoading(false)
-      }).catch((error) => {
-        setIsLoading(false)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
       });
   };
 
@@ -60,62 +60,61 @@ const Index = () => {
 
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true)
-    await axiosInstance.post(
-      `/admin/player/save`,
-      {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/player/save`, {
         playerId: record.playerId,
         playerName: record.playerName,
-        [pType]: cState?false:true,
-      }).then((response)=>{
-      // const newArray = data.map(obj => (obj.playerId === record.playerId ? response.result : obj));
-
-      fetchData()
-      setToast({
-        message: "Player Updated Successfully",
-        color:"green",
-        header:"Success"
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
-      setToastStatus(true)
-    }).catch((error)=>{
-      setIsLoading(false)
-      setToast({
-        message: "Error",
-        color:"red",
-        header:"Error"
-      });
-      setToastStatus(true)
-    })
   };
 
   const handleDelete = async (e) => {
-    setIsLoading(true)
-    // e.preventDefault()
-      const response = await axiosInstance.post(
-        `/admin/player/delete`,
-        {
-          playerId: singleCheck,
-        }).then((response)=>{
+    setIsLoading(true);
+    const response = await axiosInstance
+      .post(`/admin/player/delete`, {
+        playerId: singleCheck,
+      })
+      .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
         setToast({
-          message: "Player Deleted SuccessFully",
-          color:"green",
-          header:"Success"
+          message: response?.result,
+          color: "green",
+          header: "Success",
         });
-        setSingleCheck([])
-        setToastStatus(true)
-      }).catch((error)=>{
-        setIsLoading(false)
+        setSingleCheck([]);
+        setToastStatus(true);
+      })
+      .catch((error) => {
+        setIsLoading(false);
         setToast({
-          message: "Error",
-          color:"red",
-          header:"Error"
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
         });
-        setToastStatus(true)
-        setSingleCheck([])
+        setToastStatus(true);
+        setSingleCheck([]);
       });
-  }
+  };
   //table columns
   const columns = [
     {
@@ -157,31 +156,37 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-        title: "Image",
-        dataIndex: "image",
-        render: (text, record) => (
-          // <img src={process.env.REACT_APP_BASE_URL+text}/>
-          <div className="flex-shrink-0">
-            {
-              text?<div>
+      title: "Image",
+      dataIndex: "image",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div>
               <img
                 className="avatar-sm rounded-circle"
                 alt=""
                 src={process.env.REACT_APP_BASE_URL + text}
               />
-            </div> : <Avatar src="#" alt="ET">Image</Avatar>
-            }
-          </div>
-        ),
-        key: "tabName",
-        style: { width: "10%" },
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%" },
     },
     {
       title: "Player Name",
       dataIndex: "playerName",
-      render: (text,record) =>(<span style={{cursor:"pointer"}}>{text}</span>),
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
       key: "playerName",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
@@ -189,7 +194,7 @@ const Index = () => {
       dataIndex: "displayName",
       key: "displayName",
       style: { width: "10%" },
-      sort:true,
+      sort: true,
     },
     {
       title: "Event Type",
@@ -219,13 +224,13 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title :  "Players",
+    title: "Players",
     headerSelect: false,
     switch: false,
   };
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     fetchData();
   }, []);
 
@@ -234,26 +239,30 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
-          {isLoading && <SpinnerModel/>}
-          <Toaster toast={toast} setToast={setToast} toastStatus={toastStatus} setToastStatus={setToastStatus}/>
+          {isLoading && <SpinnerModel />}
+          <Toaster
+            toast={toast}
+            setToast={setToast}
+            toastStatus={toastStatus}
+            setToastStatus={setToastStatus}
+          />
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            singleCheck={singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={singleCheck}
-            
           />
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>

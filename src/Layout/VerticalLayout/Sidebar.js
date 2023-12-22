@@ -11,12 +11,12 @@ import { getAuthorisedTabs } from "../../Features/Authentication/authorizationSl
 import MetisMenu from "metismenujs";
 const Sidebar = (props) => {
   const ref = useRef();
-  const newTabList = useSelector(state => state.auth.tabList);
-  const dispatch = useDispatch()
+  const newTabList = useSelector((state) => state.auth.tabList);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAuthorisedTabs());
-  }, [])
+  }, []);
 
   const activateParentDropdown = useCallback((item) => {
     item.classList.add("active");
@@ -108,6 +108,13 @@ const Sidebar = (props) => {
     }
   }, [props.router.location.pathname, activateParentDropdown]);
 
+  function tToggle() {
+    var body = document.body;
+    if (window.screen.width <= 998) {
+      body.classList.toggle("sidebar-enable");
+    }
+  }
+
   useEffect(() => {
     activeMenu();
   }, [activeMenu]);
@@ -155,65 +162,61 @@ const Sidebar = (props) => {
                   })}
                 </React.Fragment>
               ))} */}
-              {(newTabList || sidebarData).map((item, key) => (
-                <React.Fragment key={key}>
-                  {item.isMainMenu ? (
-                    <li className="menu-title">{props.t(item.label)}</li>
-                  ) : (
-                    <li key={key}>
-                      <Link
-                        to={item.url ? item.url : "/#"}
-                        className={
-                          item.issubMenubadge || item.isHasArrow
-                            ? " "
-                            : "has-arrow"
-                        }
-                      >
-                        <i
-                          className={item.icon}
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                        {item.issubMenubadge && (
-                          <span
-                            className={
-                              "badge rounded-pill float-end " + item.bgcolor
-                            }
-                          >
-                            {" "}
-                            {item.badgeValue}{" "}
-                          </span>
+              {(newTabList || sidebarData)
+                .slice() // Create a shallow copy
+                .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+                .map((item, key) => (
+                  <React.Fragment key={key}>
+                    {item.isMainMenu ? (
+                      <li className="menu-title">{props.t(item.label)}</li>
+                    ) : (
+                      <li key={key}>
+                        <Link
+                          to={item.url ? item.url : "/#"}
+                          className={
+                            item.issubMenubadge || item.isHasArrow
+                              ? " "
+                              : "has-arrow"
+                          }
+                        >
+                          <i
+                            className={item.icon}
+                            style={{ marginRight: "5px" }}
+                          ></i>
+                          {item.issubMenubadge && (
+                            <span
+                              className={
+                                "badge rounded-pill float-end " + item.bgcolor
+                              }
+                            >
+                              {" "}
+                              {item.badgeValue}{" "}
+                            </span>
+                          )}
+                          <span>{props.t(item.label)}</span>
+                        </Link>
+                        {item.subItem && (
+                          <ul className="sub-menu">
+                            {item.subItem
+                              .slice() // Create a shallow copy
+                              .sort(
+                                (subA, subB) =>
+                                  (subA.displayOrder || 0) -
+                                  (subB.displayOrder || 0)
+                              )
+                              .map((subItem, subKey) => (
+                                <li key={subKey}>
+                                  <Link to={subItem.link} onClick={tToggle}>
+                                    {props.t(subItem.sublabel)}
+                                  </Link>
+                                </li>
+                              ))}
+                          </ul>
                         )}
-                        <span>{props.t(item.label)}</span>
-                      </Link>
-                      {item.subItem && (
-                        <ul className="sub-menu">
-                          {item.subItem.map((item, key) => (
-                            <li key={key}>
-                              <Link
-                                to={item.link}
-                                className={
-                                  item.subMenu && "has-arrow waves-effect"
-                                }
-                              >
-                                {props.t(item.sublabel)}
-                              </Link>
-                              {item.subMenu && (
-                                <ul className="sub-menu">
-                                  {item.subMenu.map((item, key) => (
-                                    <li key={key}>
-                                      <Link to="#">{props.t(item.title)} ++++</Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  )}
-                </React.Fragment>
-              ))}
+                      </li>
+                    )}
+                  </React.Fragment>
+                ))}
             </ul>
           </div>
         </SimpleBar>

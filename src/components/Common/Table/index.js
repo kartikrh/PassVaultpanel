@@ -9,15 +9,8 @@ import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import { filterOrderChange } from "../../../helpers/helper";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-} from "reactstrap";
+import Toaster from "../../Toaster/index";
+import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 import Switch from "react-switch";
 import axiosInstance from "../../../Features/axios";
 
@@ -41,6 +34,8 @@ const Index = ({
   cloneModelFunction,
   addModelFunction,
   deleteModelFunction,
+  singleCheck,
+  displayTypes,
   eventTypes,
   competitions,
   onAddNavigate,
@@ -48,11 +43,16 @@ const Index = ({
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
-  const [subData, setSubData] = useState([])
+  const [subData, setSubData] = useState([]);
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const [toast, setToast] = useState({
+    message: "Select at least one (only One) row",
+    color: "red",
+    header: "Error",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
   //sorting
@@ -60,7 +60,6 @@ const Index = ({
     sortOrder: "",
     key: "",
   });
-
   // handle statusSwitch
   const [statusSwitch, setStatusSwitch] = useState(true);
   // handle data inside data
@@ -157,7 +156,7 @@ const Index = ({
     }
   };
   const handleSearchFilter = () => {
-    if(tableElement.title === "Tabs"){
+    if (tableElement.title === "Tabs") {
       const updatedData = data.filter((val) => {
         const found = Object.values(val).some((value) => {
           if (typeof value === "string" || value instanceof String) {
@@ -175,7 +174,7 @@ const Index = ({
         setData(updatedData);
         setTotal(updatedData.length);
       }
-    }else {
+    } else {
       const updatedData = dataSource.filter((val) => {
         const found = Object.values(val).some((value) => {
           if (typeof value === "string" || value instanceof String) {
@@ -297,6 +296,7 @@ const Index = ({
       setData(sliced);
     }
   };
+
   const handleDragEnd = (result) => {
     if (!result.destination) {
       return;
@@ -309,6 +309,7 @@ const Index = ({
     const tabOrders = filterOrderChange(newData, changeOrderApiName);
     changeDisplayOrder(tabOrders, changeOrderApiName);
   };
+
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -330,7 +331,7 @@ const Index = ({
                     color="success"
                     className="add-btn"
                     onClick={() => {
-                      navigate(onAddNavigate)
+                      navigate(onAddNavigate);
                     }}
                     id="create-btn"
                   >
@@ -341,7 +342,8 @@ const Index = ({
                       color="warning"
                       className="btn"
                       onClick={() => {
-                        cloneModelFunction(true);
+                        singleCheck.length === 1?
+                        cloneModelFunction(true) : setToastStatus(true)
                       }}
                       id="create-btn"
                     >
@@ -351,11 +353,21 @@ const Index = ({
                   <Button
                     color="soft-danger"
                     onClick={() => {
-                      deleteModelFunction(true);
+                        singleCheck.length > 0
+                          ? deleteModelFunction(true)
+                          : setToastStatus(true);
                     }}
                   >
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>
+                  {toastStatus ? (
+                    <Toaster
+                      toast={toast}
+                      setToast={setToast}
+                      toastStatus={toastStatus}
+                      setToastStatus={setToastStatus}
+                    />
+                  ) : null}
                   {tableElement?.headerSelect ? (
                     <div className="">
                       <select
@@ -366,9 +378,17 @@ const Index = ({
                         }}
                       >
                         <option value="">Select Display Type</option>
-                        <option value={1}>Admin</option>
-                        <option value={2}>Agent</option>
-                        <option value={3}>vendor</option>
+                        {displayTypes.map((val, index) => {
+                          return (
+                            <option value={val}>
+                              {val === 1
+                                ? "Admin"
+                                : val === 2
+                                ? "Agent"
+                                : "Vendor"}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                   ) : null}
@@ -431,7 +451,7 @@ const Index = ({
                       <div className="d-flex flex-row align-items-center">
                         <span
                           className="cursor-pointer"
-                          style={{cursor:"pointer"}}
+                          style={{ cursor: "pointer" }}
                           onClick={() => {
                             moveBack(arrayKey);
                           }}
@@ -453,7 +473,11 @@ const Index = ({
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
-                    Showing {data.length} of {tableElement.title === "Tabs"? data?.length: dataSource?.length} entries
+                    Showing {data.length} of{" "}
+                    {tableElement.title === "Tabs"
+                      ? data?.length
+                      : dataSource?.length}{" "}
+                    entries
                   </span>
                   <div className="d-flex align-items-center justify-content-end"></div>
                 </Col>
@@ -522,12 +546,13 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${sortOrder.key === column.key &&
+                                            color: `${
+                                              sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                              "ascending"
-                                              ? "gray"
-                                              : "lightGray"
-                                              }`,
+                                                "ascending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -542,12 +567,13 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${sortOrder.key === column.key &&
+                                            color: `${
+                                              sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                              "descending"
-                                              ? "gray"
-                                              : "lightGray"
-                                              }`,
+                                                "descending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -561,43 +587,50 @@ const Index = ({
                             </tr>
                           </thead>
                           <tbody className="list form-check-all">
-                            {data.map((record, index) => (
-                              <Draggable
-                                key={record.tabId}
-                                draggableId={`row-${index}`}
-                                index={index}
-                              >
-                                {(provided) => (
-                                  <tr
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className={`hover`}
-                                  >
-                                    {columns.map((column) => (
-                                      <td
-                                        key={column.key}
-                                        style={column.style}
-                                        onClick={() => {
-                                          record?.childrenCount > 0 &&
-                                            column?.key == "tabName"
-                                            ? HandleSubTable(record)
-                                            : setData(data);
-                                            record?.childrenCount > 0 && setSubData( record?.children);
-                                        }}
-                                      >
-                                        {column.render
-                                          ? column.render(
-                                            record[column.dataIndex],
-                                            record
-                                          )
-                                          : record[column.dataIndex]}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                )}
-                              </Draggable>
-                            ))}
+                            {data
+                              // .sort(
+                              //   (a, b) =>
+                              //     (a.displayOrder || 0) - (b.displayOrder || 0)
+                              // )
+                              .map((record, index) => (
+                                <Draggable
+                                  key={record.tabId}
+                                  draggableId={`row-${index}`}
+                                  index={index}
+                                >
+                                  {(provided) => (
+                                    <tr
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`hover`}
+                                    >
+                                      {columns.map((column) => (
+                                        <td
+                                          key={column.key}
+                                          style={column.style}
+                                          onClick={() => {
+                                            record?.childrenCount > 0 &&
+                                            column?.key === "tabName"
+                                              ? HandleSubTable(record)
+                                              : setData(data);
+                                            record?.childrenCount > 0 &&
+                                              setSubData(record?.children);
+                                          }}
+                                        >
+                                          {column.render
+                                            ? column.render(
+                                                record[column.dataIndex],
+                                                record
+                                              )
+                                            : record[column.dataIndex]}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  )}
+                                </Draggable>
+                              ))}
+
                             {provided.placeholder}
                           </tbody>
                         </table>
@@ -624,11 +657,12 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${sortOrder.key === column.key &&
+                                      color: `${
+                                        sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                        ? "gray"
-                                        : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -640,11 +674,12 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${sortOrder.key === column.key &&
+                                      color: `${
+                                        sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                        ? "gray"
-                                        : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -666,16 +701,16 @@ const Index = ({
                               style={column.style}
                               onClick={() => {
                                 record?.childrenCount > 0 &&
-                                  column?.key == "tabName"
+                                column?.key == "tabName"
                                   ? HandleSubTable(record)
                                   : setData(data);
                               }}
                             >
                               {column.render
                                 ? column.render(
-                                  record[column.dataIndex],
-                                  record
-                                )
+                                    record[column.dataIndex],
+                                    record
+                                  )
                                 : record[column.dataIndex]}
                             </td>
                           ))}
