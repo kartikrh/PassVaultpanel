@@ -6,10 +6,11 @@ import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster";
+
 const Index = () => {
   document.title = "Teams | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -18,7 +19,13 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  //toaster
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
@@ -58,14 +65,11 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/player/save`,
-        {
-          teamId: record.teamId,
-          [pType]: cState ? false : true,
-        })
+      .post(`/admin/player/save`, {
+        teamId: record.teamId,
+        [pType]: cState ? false : true,
+      })
       .then((response) => {
-        // const newArray = data.map(obj => (obj.teamId === record.teamId ? response.result : obj));
         fetchData();
       })
       .catch((error) => {
@@ -75,19 +79,28 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true);
-    // e.preventDefault()
-    const response = await axiosInstance
-      .post(
-        `/admin/team/delete`,
-        {
-          teamId: singleCheck,
-        })
+    await axiosInstance
+      .post(`/admin/team/delete`, {
+        teamId: singleCheck,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
+        setToast({
+          message: `${response.title} deleted successfully`,
+          color: "green",
+          header: "Success",
+        })
+        setToastStatus(true)
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        })
+        setToastStatus(true)
       });
   };
   //table columns
@@ -173,7 +186,7 @@ const Index = () => {
         </div>
       ),
       key: "jersey",
-      style: { width: "15%",textAlign:"left" },
+      style: { width: "15%", textAlign: "left" },
     },
     {
       title: "Team Name",
@@ -194,23 +207,6 @@ const Index = () => {
       key: "country",
       style: { width: "10%" },
     },
-    // {
-    //   title: "Is Active",
-    //   key: "active",
-    //   render: (text, record) => (
-    //     <Button
-    //       color={`${record.isActive ? "primary" : "danger"}`}
-    //       size="sm"
-    //       className="btn"
-    //       onClick={() => {
-    //         handlePermissions("isActive", record, record.isActive);
-    //       }}
-    //     >
-    //       <i className="bx bx-block"></i>
-    //     </Button>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
   ];
 
   //elements required
@@ -231,18 +227,26 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Teams" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            singleCheck={singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
           />
           <TabModel
             addModelVisable={addModelVisable}

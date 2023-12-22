@@ -35,9 +35,9 @@ const Index = ({
             className="d-flex flex-column justify-content-center align-items-center"
             id="modal-id"
           >
-              <span className="mt-4 mb-4">
-                Are you sure you want to delete this?
-              </span>
+            <span className="mt-4 mb-4">
+              Are you sure you want to delete this?
+            </span>
             <div className="hstack gap-2 justify-content-center">
               <button
                 type="button"
@@ -48,7 +48,7 @@ const Index = ({
               >
                 Close
               </button>
-             <button
+              <button
                 className="btn btn-danger"
                 id="add-btn"
                 onClick={() => {

@@ -14,7 +14,7 @@ const Index = ({ toast, setToast, toastStatus, setToastStatus }) => {
   return (
     <div className="position-fixed top-0 end-0 p-3 " style={{ zIndex: "1005" }}>
       <Toast isOpen={toastStatus} style={{ border: `solid ${toast.color} 2px` }}>
-        <ToastHeader toggle={toggleToast}>{toast.header}</ToastHeader>
+        <ToastHeader toggle={toggleToast} style={{color: toast.color}}>{toast.header}</ToastHeader>
         <ToastBody color="primary">{toast.message}</ToastBody>
       </Toast>
     </div>
