@@ -2,9 +2,80 @@
     .dynamic-label-right {
         float: left !important;
     }
+    .ImageDropBox {
+        padding-left: 10px;
+        margin-top: 20px;
+    }
 }
 
 .dynamic-label-right {
     float: right;
     white-space: nowrap;
+}
+
+.image-uploader-Event {
+    width: 150px;
+    /* Adjust the size as needed */
+    height: 150px;
+    /* This makes it a square box */
+    border: 2px dashed #007bff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.file-input-EventImage-uploader {
+    display: none;
+    visibility: hidden;
+}
+
+.file-label-Event-Uploader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-iconEventUploader {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+/* Style the box when hovering over it */
+.image-uploader-Event:hover {
+    border-color: #007bff;
+}
+
+/* Style the box when a file is dragged over it */
+.image-uploader-Event.dragover {
+    border-color: #ff5722;
+}
+
+.UploadImageText {
+    text-align: center;
+    color: #a0a0a0;
+}
+
+.ImageDropBox {
+    height: fit-content;
+    /* padding-left: 170px; */
+    display: flex;
+    justify-content: center;
+
+}
+
+.UploadImageText,
+.upload-iconEventUploader {
+    color: #908d8d;
+    font-weight: bolder;
+    padding: 5px;
 }
