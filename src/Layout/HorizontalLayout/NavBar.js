@@ -10,13 +10,14 @@ import withRouter from "../../components/Common/withRouter";
 
 // Import Data
 import navdata from "./Navdata";
+import axiosInstance from "../../Features/axios";
 
 const Navbar = (props) => {
   const navData = navdata().props.children;
   const [tabList, setTabList] = useState([]);
   useEffect(() => {
     const menuData = async () => {
-      const response = await axios.post(`/admin/tabs/all`);
+      const response = await axiosInstance.post(`/admin/tabs/all`);
       const tabsDataDB = validateTabResponse(response?.result);
       setTabList(tabsDataDB);
     };
