@@ -1,29 +1,31 @@
-import { FILE_TYPE, SWITCH, TEXT } from "../../components/Common/Const";
+import { IMAGE, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const EventTypeFields = [
     {
         name: "eventType",
         label: "Event Type",
         parentclassName: "",
+        isRequired: true,
         type: TEXT,
     },
     {
-        name: "referenceIf",
+        name: "refId",
         label: "Reference Id",
         parentclassName: "",
+        isRequired: true,
         type: TEXT,
     },
     {
-        name: "remarks",
+        name: "remark",
         label: "Remarks",
         parentclassName: "",
         type: TEXT,
     },
     {
-        name: "eventImage",
+        name: "image",
         label: "Event Image",
         parentclassName: "",
-        type: FILE_TYPE
+        type: IMAGE
     },
     {
         name: "isActive",

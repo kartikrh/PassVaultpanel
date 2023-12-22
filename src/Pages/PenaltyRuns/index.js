@@ -10,6 +10,8 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import { useNavigate } from "react-router-dom";
+
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -24,6 +26,8 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
+
+  const navigate = useNavigate()
 
   // fetch data
   const fetchData = async () => {
@@ -104,6 +108,11 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
+  const handleEdit = (paneltyId) => {
+    navigate('/addPenalty', { state: { paneltyId } });
+  }
+
   //table columns
   const columns = [
     {
@@ -141,7 +150,7 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.paneltyId) }}></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -230,9 +239,10 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck = {singleCheck}
+            // addModelFunction={setAddModelVisable}
+            onAddNavigate={"/addPenalty"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
