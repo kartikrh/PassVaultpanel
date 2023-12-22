@@ -5,7 +5,7 @@ import Creatable from 'react-select/creatable';
 import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
-import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
@@ -24,7 +24,7 @@ import {
 } from "reactstrap";
 import axiosInstance from "../../../Features/axios.js";
 
-const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields }, ref) => {
+const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [onChangApiData, setOnChangeApiData] = useState({})
@@ -33,6 +33,16 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     if (!_.isEmpty(editFormData) && _.isEmpty(formData))
       setFormData(editFormData)
   }, [editFormData])
+
+  useEffect(() => {
+    updateParentFormData();
+  }, [formData]);
+
+  const updateParentFormData = () => {
+    if (typeof onFormDataChange === 'function') {
+      onFormDataChange(formData);
+    }
+  };
 
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
@@ -71,7 +81,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   useImperativeHandle(ref, () => ({ finalizeData, resetForm }));
 
   const handleChange = (field, value) => {
-    console.log(field.name, value)
     const errors = { ...fieldErrors };
     if (field.isRequired && isValueEmpty(value)) {
       errors[field.name] =
@@ -86,10 +95,10 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       ...prevFormData,
       [field.name]: value,
     }));
-    console.log({
-      ...formData,
-      [field.name]: value,
-    })
+    // console.log({
+    //   ...formData,
+    //   [field.name]: value,
+    // })
     // formData[field.name] !== value && editFormData[field.name] !== value
     setFieldErrors(errors);
   };
@@ -120,8 +129,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
               </>
               // </Col>
             }
-
-            {console.log(field.label)}
             <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <div className="lablediv">
                 <label
@@ -204,7 +211,43 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {console.log(field.options, masterData[field.name], masterData)}
+                {/* {console.log(field.options, masterData[field.name], masterData)} */}
+                {field.type === MULTI_SELECT && (
+                  (() => {
+                    // Define options within the function scope
+                    let options = [].concat(field.options, masterData[field.name] || []);
+                    if (field.showSelectAll) {
+                      options = [{ label: "Select All", value: "all" }, ...options];
+                    }
+
+                    return (
+                      <Select
+                        classNamePrefix="select2-selection"
+                        id={field.name}
+                        name={field.name}
+                        isDisabled={disabledFields[field.name]}
+                        value={formData[field.name]?.map(val =>
+                          options.find(option => option.value === val))
+                        }
+                        options={options}
+                        onChange={(selectedOptions) => {
+                          if (selectedOptions.some(option => option.value === "all")) {
+                            // Select All option was chosen
+                            const allValues = options.filter(opt => opt.value !== "all").map(opt => opt.value);
+                            handleChange(field, allValues);
+                          } else {
+                            // Regular selection
+                            const values = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                            handleChange(field, values);
+                          }
+                        }}
+                        closeMenuOnSelect={!field.isMulti}
+                        required={field.isRequired}
+                        isMulti={true}
+                      />
+                    );
+                  })()
+                )}
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"

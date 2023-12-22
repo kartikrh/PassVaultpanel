@@ -12,6 +12,7 @@ import classnames from "classnames";
 function AddTabs() {
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
+    const [teamDetails, setTeamDetails] = useState({});
     const [activeTab, setactiveTab] = useState(1);
     const [passedSteps, setPassedSteps] = useState([1]);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -53,8 +54,64 @@ function AddTabs() {
         }
     });
 
+    const handleFormDataChange = (newFormData) => {
+        console.log(newFormData)
+        setTeamDetails(newFormData);
+        // if both data are not same then do API call and fetch data
+        if (newFormData["team1Id"] !== teamDetails["team1Id"]) {
+            if (newFormData["team1Id"] !== "0") {
+                axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team1Id"] })
+                    .then((response) => {
+                        const formattedData = response?.result?.map(item => {
+                            return { label: item.playerName, value: item.playerId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "team1Captain": formattedData,
+                            "team1Kipper": formattedData,
+                            "team1Players": formattedData
+                        }));
+                    }).catch((error) => {
+                        // setIsLoading(false)
+                    });
+            }
+            else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    "team1Captain": [],
+                    "team1Kipper": [],
+                    "team1Players": []
+                }));
+            }
+        } else if (newFormData["team2Id"] !== teamDetails["team2Id"]) {
+            if (newFormData["team2Id"] !== "0") {
+                axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team2Id"] })
+                    .then((response) => {
+                        const formattedData = response?.result?.map(item => {
+                            return { label: item.playerName, value: item.playerId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "team2Captain": formattedData,
+                            "team2Kipper": formattedData,
+                            "team2Players": formattedData
+                        }));
+                    }).catch((error) => {
+                        // setIsLoading(false)
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    "team2Captain": [],
+                    "team2Kipper": [],
+                    "team2Players": []
+                }));
+            }
+        }
+    };
+
     const fetchData = async (id) => {
-        await axiosInstance.post('/admin/tabs/byId', { id })
+        axiosInstance.post('/admin/tabs/byId', { id })
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
@@ -63,30 +120,28 @@ function AddTabs() {
     };
 
     const fetchMasterData = async () => {
-        console.log("inside Fetch Data")
-        await axiosInstance.post('/admin/matchType/all')
+        axiosInstance.post('/admin/matchType/all')
             .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item.matchType, value: item.matchTypeId }
+                })
                 setMasterData((preData) => ({
                     ...preData,
-                    "matchType":
-                        response?.result?.map(item => {
-                            return { label: item.matchType, value: item.matchTypeId }
-                        })
+                    "matchTypeId": formattedData
+
                 }));
             }).catch((error) => {
                 // setIsLoading(false)
             });
-        await axiosInstance.post('/admin/team/all')
+        axiosInstance.post('/admin/team/all')
             .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item.teamName, value: item.teamId }
+                })
                 setMasterData((preData) => ({
                     ...preData,
-                    "teamA":
-                        response?.result?.map(item => {
-                            return { label: item.teamName, value: item.teamId }
-                        }),
-                    "teamB": response?.result?.map(item => {
-                        return { label: item.teamName, value: item.teamId }
-                    })
+                    "team1Id": formattedData,
+                    "team2Id": formattedData
                 }));
 
             }).catch((error) => {
@@ -97,7 +152,7 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), id }))
+        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), commentaryId: id, }))
     };
 
 
@@ -192,6 +247,7 @@ function AddTabs() {
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
+                                                onFormDataChange={handleFormDataChange}
                                             />
                                         </TabPane>
                                     </TabContent>

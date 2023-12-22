@@ -2,7 +2,7 @@ import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT } from "../../components/C
 
 export const MatchDetailFields = [
     {
-        name: "matchType",
+        name: "matchTypeId",
         label: "Match Type",
         options: [{ label: "Select a Match Type", value: "0" }],
         defaultValue: "0",
@@ -86,27 +86,27 @@ export const MatchDetailFields = [
 
 export const TeamDetailsFields = [
     {
-        name: "teamA",
+        name: "team1Id",
         label: "Team",
         type: SELECT,
         defaultValue: "0",
-        onchangeApi: "/admin/player/byTeamId",
-        onChangeApiKey: "teamId",
+        onchangeApi: true,
         options: [{ label: "Select a A Team", value: "0" }],
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        name: "teamB",
+        name: "team2Id",
         label: "Co. Team",
         options: [{ label: "Select a A Team", value: "0" }],
         defaultValue: "0",
+        onchangeApi: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SELECT,
     },
     {
-        name: "teamCaptainA",
+        name: "team1Captain",
         label: "Team Captain",
         options: [{ label: "Select a Captain", value: "0" }],
         defaultValue: "0",
@@ -115,7 +115,7 @@ export const TeamDetailsFields = [
         type: SELECT,
     },
     {
-        name: "teamCaptainB",
+        name: "team2Captain",
         label: "Co. Team Captain",
         type: SELECT,
         options: [{ label: "Select a Captain", value: "0" }],
@@ -124,7 +124,7 @@ export const TeamDetailsFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        name: "teamKeeperA",
+        name: "team1Kipper",
         label: "Team Keeper",
         options: [{ label: "Select a A Keeper", value: "0" }],
         defaultValue: "0",
@@ -133,7 +133,7 @@ export const TeamDetailsFields = [
         type: SELECT,
     },
     {
-        name: "teamKeeperB",
+        name: "team2Kipper",
         label: "Co. Team Keeper",
         options: [{ label: "Select a Keeper", value: "0" }],
         defaultValue: "0",
@@ -142,19 +142,19 @@ export const TeamDetailsFields = [
         type: SELECT,
     },
     {
-        name: "selectPlayersA",
+        name: "team1Players",
         label: "Select Players",
-        options: [{ label: "Select Players", value: "0" }],
-        defaultValue: "0",
+        options: [],
+        showSelectAll: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: MULTI_SELECT,
     },
     {
-        name: "selectPlayersB",
+        name: "team2Players",
         label: "Select Players",
-        options: [{ label: "Select players", value: "0" }],
-        defaultValue: "0",
+        options: [],
+        showSelectAll: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: MULTI_SELECT,
