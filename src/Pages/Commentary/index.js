@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import {mapCommentaryStatus} from './functions'
+import { mapCommentaryStatus } from './functions'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 // import Model
@@ -153,7 +153,7 @@ const Index = () => {
         </span>
       ),
       key: "eventDate",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
 
@@ -164,21 +164,21 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{text}</span>
       ),
       key: "eventName",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
       title: "Team",
       dataIndex: "team1Name",
       key: "team1Name",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
       title: "Competitor",
       dataIndex: "team2Name",
       key: "team2Name",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
@@ -188,7 +188,7 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{mapCommentaryStatus(text)}</span>
       ),
       key: "commentaryStatus",
-      sort:true,
+      sort: true,
       style: { width: "40%" },
     },
     {
@@ -200,7 +200,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            
+
           }}
         >
           <i className="bx bx-plus"></i>
@@ -236,7 +236,8 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            singleCheck = {singleCheck}
+            singleCheck={singleCheck}
+            onAddNavigate={"/addCommentary"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

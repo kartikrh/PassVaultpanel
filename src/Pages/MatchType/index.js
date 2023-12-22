@@ -22,7 +22,7 @@ const Index = () => {
   const [singleCheck, setSingleCheck] = useState([]);
 
   // cloneName
-  const[cloneName, setCloneName] = useState("");
+  const [cloneName, setCloneName] = useState("");
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -59,7 +59,7 @@ const Index = () => {
   ) => {
     setIsLoading(true)
     await axiosInstance
-      .post(`/admin/matchType/clone`, {matchTypeId: singleCheck[0], matchType:cloneName})
+      .post(`/admin/matchType/clone`, { matchTypeId: singleCheck[0], matchType: cloneName })
       .then((response) => {
         fetchData();
         setCloneModelVisible(false)
@@ -157,7 +157,8 @@ const Index = () => {
             tableElement={tableElement}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck = {singleCheck}
+            singleCheck={singleCheck}
+            onAddNavigate={"/addMatchType"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -169,7 +170,7 @@ const Index = () => {
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
-            setCloneName = {setCloneName}
+            setCloneName={setCloneName}
             singleCheck={singleCheck}
           />
         </Container>

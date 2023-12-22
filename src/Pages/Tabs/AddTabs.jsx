@@ -62,7 +62,7 @@ function AddTabs() {
                 console.log(response.data?.result)
                 setMasterData({
                     "parentId":
-                        response.data?.result?.map(item => {
+                        response?.result?.map(item => {
                             return { label: item.tabName, value: item.encryptedTabId }
                         })
                 });
