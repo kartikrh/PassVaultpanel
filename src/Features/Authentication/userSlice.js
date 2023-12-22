@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance, { setAuthToken } from '../axios';
 import { encryptData, removeStorageToken } from '../../Pages/Utility/encryptionUtils';
-import { isUserLogout } from '../../helpers/api_helper';
+import { getToken, isUserLogout } from '../../helpers/api_helper';
 
 export const loginUser = createAsyncThunk(
   'user/login',
@@ -30,7 +30,7 @@ export const logoutUser = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    token: null,
+    token: getToken(),
     isLoading: false,
     error: null,
     isUserLogout: isUserLogout
