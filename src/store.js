@@ -7,13 +7,14 @@ import EventTypeReducer from "./Features/EventTypes/combinedReducer";
 import eventReducer from './Features/Events/combinedReducer'
 import users from './Features/Users/usersSlice'
 
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     user: userReducer,
     tabsData: tabReducer,
     penaltyRunsData: penaltyRunReducer,
-    eventTypesData: EventTypeReducer
+    eventTypesData: EventTypeReducer,
     eventsData: eventReducer,
     usersData: users
   }
