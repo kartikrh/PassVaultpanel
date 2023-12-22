@@ -14,7 +14,7 @@ export const store = configureStore({
     user: userReducer,
     tabsData: tabReducer,
     penaltyRunsData: penaltyRunReducer,
-    eventTypesData: EventTypeReducer
+    eventTypesData: EventTypeReducer,
     eventsData: eventReducer,
     usersData: users
   }
