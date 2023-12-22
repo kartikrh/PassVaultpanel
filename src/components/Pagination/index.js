@@ -10,8 +10,6 @@ const Index = ({
 }) => {
   const shouldShowSizeChanger = total >= 10;
   const onShowSizeChange = (currentPage, pageSize) => {
-    console.log(total)
-    console.log(currentPage, " ", pageSize )
     setPageSize(pageSize);
     setCurrentPage(currentPage - 1);
   };

@@ -128,7 +128,6 @@ const Sidebar = (props) => {
   }
 
   useEffect(() => {
-    console.log("this is it:::", newTabList);
     ref.current.recalculate();
     new MetisMenu("#side-menu-item");
     activeMenu();

@@ -1,61 +1,67 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
-import { apiGetTabCleaner } from '../../helpers/helper'
+import { apiGetTabCleaner } from "../../helpers/helper";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import SpinnerModel from '../../components/Model/SpinnerModel';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from '../../components/Toaster'
+import Toaster from "../../components/Toaster";
 const Index = () => {
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   //handleSpinner
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+
+  //toaster
   const [toast, setToast] = useState({
     message: "",
-    color:"",
-    header:""
+    color: "",
+    header: "",
   });
-  //displyTypeDropdown elements
+  const [toastStatus, setToastStatus] = useState(false);
+  //displyTypes
   const [displayTypes, setDisplayTypes] = useState([]);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // fetch data
   const fetchData = async () => {
-    await axiosInstance.post('/admin/tabs/all')
+    await axiosInstance
+      .post("/admin/tabs/all")
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
-        const first = apiGetTabCleaner(tabsDataDB)
-        const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
-        sorted.forEach(item => {
+        const first = apiGetTabCleaner(tabsDataDB);
+        const sorted = [...first].sort(
+          (a, b) => a.displayOrder - b.displayOrder
+        );
+        sorted.forEach((item) => {
           if (item.children && Array.isArray(item.children)) {
             item.children.sort((x, y) => x.displayOrder - y.displayOrder);
           }
-        })
+        });
         setData(sorted);
         const displayType = Array.from(
-          new Set(response?.data?.result.map((item) => item.displayType))
+          new Set(response?.result.map((item) => item.displayType))
         );
-        setDisplayTypes(displayType)
-        setIsLoading(false)
-      }).catch((error) => {
-        setIsLoading(false)
+        setDisplayTypes(displayType);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
       });
   };
 
   //checkbox function
   const handleCheckedAll = (e) => {
-    console.log("this is the record ::: ", e)
     if (e === "all") {
       if (checkedAll) {
         setCheckedAll(false);
@@ -74,40 +80,64 @@ const Index = () => {
 
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true)
-    await axiosInstance.post('/admin/tabs/save', {
-      id: record.tabId,
-      tabName: record.tabName,
-      parentId: record.parentId,
-      [pType]: cState ? false : true,
-    })
-      .then((response) => {
-        const newArray = data.map(obj => (obj.encryptedTabId === record.encryptedTabId ? response.result : obj));
-        // setData(newArray)
-        // setIsLoading(false)
-        fetchData()
-      }).catch((error) => {
-        setIsLoading(false)
+    setIsLoading(true);
+    await axiosInstance
+      .post("/admin/tabs/save", {
+        id: record.tabId,
+        tabName: record.tabName,
+        parentId: record.parentId,
+        [pType]: cState ? false : true,
       })
+      .then((response) => {
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        })
+        setToastStatus(true)
+        fetchData();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        })
+        setToastStatus(true)
+      });
   };
 
   const handleDelete = async (e) => {
-   if(singleCheck.length>0){
-    setIsLoading(true)
-    await axiosInstance.post('/admin/tabs/delete', {
-      encryptedTabIds: singleCheck,
-    })
-      .then((response) => {
-        // setDeleteModelVisable(false);
-        fetchData();
-      }).catch((error) => {
-      });
-   }
-  }
+    if (singleCheck.length > 0) {
+      setIsLoading(true);
+      await axiosInstance
+        .post("/admin/tabs/delete", {
+          encryptedTabIds: singleCheck,
+        })
+        .then((response) => {
+          setToast({
+            message: `${response.title} deleted successfully`,
+            color: "green",
+            header: "Success",
+          })
+          setToastStatus(true)
+          fetchData();
+        })
+        .catch((error) => {
+          setToast({
+            message: error.error.message,
+            color: "red",
+            header: "Warning",
+          })
+          setToastStatus(true)
+        });
+    }
+  };
 
   const handleEdit = (id) => {
-    navigate('/addTabs', { state: { userId: id } });
-  }
+    navigate("/addTabs", { state: { userId: id } });
+  };
   //table columns
   const columns = [
     {
@@ -145,13 +175,22 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.tabId) }}></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.tabId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Tab Name",
       dataIndex: "tabName",
-      render: (text, record) => (<span style={{ cursor: "pointer" }}>{text}</span>),
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
       key: "tabName",
       style: { width: "10%" },
     },
@@ -166,7 +205,7 @@ const Index = () => {
       title: "Display Type",
       dataIndex: "displayType",
       key: "displayType",
-      render: (text, record) => (<span>{text === 1 ? "Admin" : "Agent"}</span>),
+      render: (text, record) => <span>{text === 1 ? "Admin" : "Agent"}</span>,
       sort: true,
       style: { width: "10%" },
     },
@@ -247,7 +286,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     fetchData();
   }, []);
 
@@ -257,6 +296,14 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
@@ -264,8 +311,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             onAddNavigate={"/addTabs"}
             changeOrderApiName="tabs"
-            displayTypes = {displayTypes}
-            singleCheck = {singleCheck}
+            displayTypes={displayTypes}
+            singleCheck={singleCheck}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -276,7 +323,6 @@ const Index = () => {
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>
