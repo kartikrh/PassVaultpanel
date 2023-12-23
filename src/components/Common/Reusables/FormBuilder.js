@@ -30,11 +30,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const fileInputRef = useRef(null);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = (field,event) => {
+    console.log("this is field", field)
+    console.log("this is event", event)
     const file = event.target.files[0];
     setFormData((prevFormData) => ({
       ...prevFormData,
-      ["image"]: file,
+      [field.name]: file,
     }));
     if (file) {
       const reader = new FileReader();
@@ -67,9 +69,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }
   }, [editFormData])
 
-  useEffect(()=>{
-console.log("this is masterData", masterData)
-  },[masterData])
+
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
 
@@ -90,6 +90,7 @@ console.log("this is masterData", masterData)
   const finalizeData = (doNotValidateFields = []) => {
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
+      console.log("this is formData", formData)
       return sanitizeFormData(formData);
     } else {
       console.error(
@@ -306,12 +307,12 @@ console.log("this is masterData", masterData)
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={handleImageChange}
+                          onChange={(e)=>{handleImageChange(field, e)}}
                         />
                         <label for="fileInput" class="file-label-Event-Uploader">
                           <div class="upload-iconEventUploader">+</div>
                           <p className="UploadImageText">
-                            Drop or click to upload Event Image
+                            Drop or click to upload Image
                           </p>
                         </label>
                       </div>
@@ -323,7 +324,7 @@ console.log("this is masterData", masterData)
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={handleImageChange}
+                          onChange={(e)=>{handleImageChange(field, e)}}
                         />
                         <img
                           src={viewImage}

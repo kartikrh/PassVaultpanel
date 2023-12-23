@@ -31,7 +31,7 @@ function AddUsers() {
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
-  const { isSaved, isLoading, error } = useSelector(state => state.usersData)
+  const { isSaved, isLoading, error } = useSelector(state => state.usersData.user)
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +59,7 @@ function AddUsers() {
       else if (currentSaveAction === SAVE_AND_NEW)
         finalizeRef.current.resetForm();
     }
-  },[]);
+  });
 
   const fetchData = async (id) => {
     await axiosInstance
@@ -102,10 +102,12 @@ function AddUsers() {
         // setIsLoading(false)
       });
   };
+  
   const handleSaveClick = async (saveAction) => {
     setCurrentSaveAction(saveAction);
     dispatch(addUserToDb({ ...finalizeRef.current.finalizeData(), userId }));
   };
+
   const handleBackClick = () => {
     navigate("/users");
   };
