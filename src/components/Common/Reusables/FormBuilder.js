@@ -245,7 +245,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {/* {console.log(field.options, masterData[field.name], masterData)} */}
+                {/* {field.name === "competitionId" && console.log(field.options, masterData[field.name], masterData)} */}
                 {field.type === MULTI_SELECT && (
                   (() => {
                     // Define options within the function scope

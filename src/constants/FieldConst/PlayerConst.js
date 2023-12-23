@@ -1,100 +1,125 @@
-import { FILE_TYPE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { IMAGE, MULTI_SELECT, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const PlayerFields = [
     {
-        name: "eventType",
-        label: "Event Type",
-        parentclassName: "",
         type: SELECT,
+        name: "eventTypeId",
+        label: "Event Type",
+        options: [{ label: "Select a Event Type", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "playerName",
         label: "Player Name",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "displayName",
         label: "Display Name",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "selectTeam",
+        type: MULTI_SELECT,
+        options: [],
+        showSelectAll: true,
+        name: "teamId",
         label: "Select Team",
-        parentclassName: "",
-        type: SELECT,
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "country",
         label: "Country",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "batsmanAverage",
         label: "Batsman Average",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "bowlerAverage",
         label: "Bowler Average",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: IMAGE,
         name: "playerImage",
         label: "Player Image",
-        parentclassName: "",
-        type: FILE_TYPE
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "playerType",
-        label: "Player Type",
-        parentclassName: "",
         type: SELECT,
+        name: "playerTypeId",
+        label: "Player Type",
+        options: [{ label: "Select a Player Type", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: SELECT,
         name: "bowlingStyle",
         label: "Bowling Style",
-        parentclassName: "",
-        type: SELECT,
+        options: [{ label: "Select a Bowling Style", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "batsmanStrikeRate",
         label: "Batsman Strike Rate",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "bowlerEconomy",
         label: "Bowler Economy",
-        parentclassName: "",
-        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "isLeftBowler",
+        type: SWITCH,
+        name: "isLeftArmFielding",
         label: "Is Left Hand Bowling",
-        parentclassName: "",
-        type: SWITCH
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "isLeftBatting",
+        type: SWITCH,
+        name: "isLeftHandedBatting",
         label: "Is Left Hand Batting",
-        parentclassName: "",
-        type: SWITCH
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "isKeeper",
+        type: SWITCH,
+        name: "isKipper",
         label: "Is Keeper",
-        parentclassName: "",
-        type: SWITCH
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: SWITCH,
         name: "isActive",
         label: "Is Active",
-        parentclassName: "",
-        type: SWITCH
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
 ]

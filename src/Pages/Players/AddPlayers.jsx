@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { TabFields } from '../../constants/FieldConst/TabConst';
+import { PlayerFields } from '../../constants/FieldConst/PlayerConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addTabToDb } from '../../Features/Tabs/tabsSlice';
+import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 
-function AddTabs() {
+function AddPlayer() {
     const finalizeRef = useRef(null);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
@@ -41,14 +41,14 @@ function AddTabs() {
             if (currentSaveAction === SAVE)
                 setSnackbarMessage("Data saved successfully!");
             else if (currentSaveAction === SAVE_AND_CLOSE)
-                navigate("/tabs")
+                navigate("/Players")
             else if (currentSaveAction === SAVE_AND_NEW)
                 finalizeRef.current.resetForm()
         }
     });
 
     const fetchData = async (id) => {
-        await axiosInstance.post('/admin/tabs/byId', { id })
+        await axiosInstance.post('/admin/player/byId', { id })
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
@@ -57,14 +57,48 @@ function AddTabs() {
     };
 
     const fetchMasterData = async () => {
-        await axiosInstance.post('/admin/tabs/all')
+        axiosInstance.post('/admin/team/all')
             .then((response) => {
-                setMasterData({
-                    "parentId":
+                setMasterData((prevData) => ({
+                    ...prevData, "teamId":
                         response?.result?.map(item => {
-                            return { label: item.tabName, value: item.encryptedTabId }
+                            return { label: item.teamName, value: item.teamId }
                         })
-                });
+                }));
+            }).catch((error) => {
+                // setIsLoading(false)
+            });
+        axiosInstance.post('/admin/eventType/all')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData, "eventTypeId":
+                        response?.result?.map(item => {
+                            return { label: item.eventType, value: item.eventTypeId }
+                        })
+                }));
+            }).catch((error) => {
+                // setIsLoading(false)
+            });
+        axiosInstance.post('/admin/player/allPlayerTypes')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData, "playerTypeId":
+                        response?.result?.map(item => {
+                            return { label: item.playerType, value: item.playerTypeId }
+                        })
+                }));
+            }).catch((error) => {
+                // setIsLoading(false)
+            });
+        axiosInstance.post('admin/player/allBowlingTypes')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData,
+                    "bowlingStyle":
+                        response?.result?.map(item => {
+                            return { label: item.bowlingType, value: item.bowlingTypeId }
+                        })
+                }));
             }).catch((error) => {
                 // setIsLoading(false)
             });
@@ -73,11 +107,11 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef.current.finalizeData(), id }))
+        dispatch(addPlayerToDb({ ...finalizeRef.current.finalizeData(), playerId: id }))
     };
 
     const handleBackClick = () => {
-        navigate("/tabs");
+        navigate("/Players");
     };
 
     return (
@@ -86,7 +120,7 @@ function AddTabs() {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Tabs </h3>
+                            <h3>Players </h3>
                         </Col>
 
                         <Card>
@@ -114,7 +148,7 @@ function AddTabs() {
                                 </Row>
                                 <FormBuilder
                                     ref={finalizeRef}
-                                    fields={TabFields}
+                                    fields={PlayerFields}
                                     editFormData={initialEditData}
                                     masterData={masterData}
                                     disabledFields={disabledFields}
@@ -136,4 +170,4 @@ function AddTabs() {
     );
 }
 
-export default AddTabs;
+export default AddPlayer;
