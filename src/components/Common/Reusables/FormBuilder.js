@@ -5,7 +5,7 @@ import Creatable from 'react-select/creatable';
 import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
-import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA,IMAGE } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
@@ -51,21 +51,21 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   };
 
   useEffect(() => {
-    const isImageField = fields.findIndex(field=>field.type ===IMAGE) !== -1;
-    if (!_.isEmpty(editFormData) && _.isEmpty(formData)){
+    const isImageField = fields.findIndex(field => field.type === IMAGE) !== -1;
+    if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
       if (isImageField && editFormData?.image) {
         // Fetch the image from the URL
         fetch(process.env.REACT_APP_BASE_URL + editFormData.image)
-        .then((response) => response.blob())
-        .then((blob) => {
-          // Convert the image data to base64
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setViewImage(reader.result);
-          };
-          reader.readAsDataURL(blob);
-        });
-        
+          .then((response) => response.blob())
+          .then((blob) => {
+            // Convert the image data to base64
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setViewImage(reader.result);
+            };
+            reader.readAsDataURL(blob);
+          });
+
       }
       setFormData(editFormData)
     }
@@ -435,8 +435,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                   </div>
                 )}
 
-                {
-                  field.type === SWITCH && (
+                {/* {field.type === SWITCH && (
                     <div className="form-check form-switch form-switch-lg mb-3">
                       <input
                         type="checkbox"
@@ -449,7 +448,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                         }}
                         value={formData[field.name]}
                       />
-                    </div>)}
+                    </div>)} */}
               </div>
               <span className="text-danger">
                 {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}

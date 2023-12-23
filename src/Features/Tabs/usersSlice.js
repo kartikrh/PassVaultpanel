@@ -3,9 +3,9 @@ import axiosInstance from '../axios';
 
 export const addUserToDb = createAsyncThunk(
     'User/addUser',
-    async (userData, { rejectWithValue }) => {
+    async (data, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/admin/user/save', userData);
+            const response = await axiosInstance.post('/admin/user/save', data);
             return response?.result;
         } catch (error) {
             return rejectWithValue(error.response.data);

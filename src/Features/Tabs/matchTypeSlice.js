@@ -3,9 +3,9 @@ import axiosInstance from '../axios';
 
 export const addMatchTypeToDb = createAsyncThunk(
     'matchType/addMatchType',
-    async (userData, { rejectWithValue }) => {
+    async (data, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/admin/matchType/save', userData);
+            const response = await axiosInstance.post('/admin/matchType/save', data);
             return response?.result;
         } catch (error) {
             return rejectWithValue(error.response.data);
