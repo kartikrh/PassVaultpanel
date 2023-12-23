@@ -58,7 +58,7 @@ const authProtectedRoutes = [
   { path: '/events', component: <Events /> },
   { path: '/addEvents', component: <AddEvents /> },
   { path: "/Players", component: <Players /> },
-  { path: "/addPlayers", component: <AddPlayers /> },
+  { path: "/addPlayer", component: <AddPlayers /> },
   { path: '/Teams', component: <Teams /> },
   { path: '/addTeams', component: <AddTeams /> },
   { path: '/matchType', component: <MatchType /> },

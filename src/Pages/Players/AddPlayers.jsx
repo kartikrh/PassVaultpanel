@@ -16,7 +16,7 @@ function AddTabs() {
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.players);
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.player);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();

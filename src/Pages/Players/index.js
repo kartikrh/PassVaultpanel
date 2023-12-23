@@ -253,6 +253,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
+            onAddNavigate={"/addPlayer"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
