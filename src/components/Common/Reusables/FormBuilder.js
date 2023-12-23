@@ -5,7 +5,7 @@ import Creatable from 'react-select/creatable';
 import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
-import { EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA,IMAGE } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
@@ -22,10 +22,12 @@ import {
   FormFeedback,
   Form,
 } from "reactstrap";
+import axiosInstance from "../../../Features/axios.js";
 
-const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields }, ref) => {
+const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+  const [onChangApiData, setOnChangeApiData] = useState({})
   const [viewImage, setViewImage] = useState(null);
 
   const fileInputRef = useRef(null);
@@ -68,6 +70,17 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       setFormData(editFormData)
     }
   }, [editFormData])
+
+
+  useEffect(() => {
+    updateParentFormData();
+  }, [formData]);
+
+  const updateParentFormData = () => {
+    if (typeof onFormDataChange === 'function') {
+      onFormDataChange(formData);
+    }
+  };
 
 
   const validateAllFields = (doNotValidateFields) => {
@@ -122,9 +135,18 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       ...prevFormData,
       [field.name]: value,
     }));
+    // console.log({
+    //   ...formData,
+    //   [field.name]: value,
+    // })
     // formData[field.name] !== value && editFormData[field.name] !== value
     setFieldErrors(errors);
   };
+
+  const fetchIsDependable = (field) => {
+    return (field.dependsOnField && formData[field.dependsOnField])
+      || !field.dependsOnField
+  }
 
   return (
 
@@ -139,11 +161,14 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
       <Row>
         {fields?.map((field) => (
-          ((field.dependsOnField && formData[field.dependsOnField])
-            || !field.dependsOnField)
-          &&
           <>
-            <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
+            {field.type === DIVIDER &&
+              <>
+                <h5>{field.sectionLabel}</h5>
+                <div className="dropdown-divider"></div>
+              </>
+            }
+            <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <div className="lablediv">
                 <label
                   htmlFor={field.name}
@@ -154,7 +179,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 </label>
               </div>
             </Col >
-            <Col className="mb-4" xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
+            <Col className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
               <div className="col-md-10">
                 {field.type === TEXT && (
                   <Input
@@ -225,7 +250,43 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {console.log(masterData)}
+                {/* {console.log(field.options, masterData[field.name], masterData)} */}
+                {field.type === MULTI_SELECT && (
+                  (() => {
+                    // Define options within the function scope
+                    let options = [].concat(field.options, masterData[field.name] || []);
+                    if (field.showSelectAll) {
+                      options = [{ label: "Select All", value: "all" }, ...options];
+                    }
+
+                    return (
+                      <Select
+                        classNamePrefix="select2-selection"
+                        id={field.name}
+                        name={field.name}
+                        isDisabled={disabledFields[field.name]}
+                        value={formData[field.name]?.map(val =>
+                          options.find(option => option.value === val))
+                        }
+                        options={options}
+                        onChange={(selectedOptions) => {
+                          if (selectedOptions.some(option => option.value === "all")) {
+                            // Select All option was chosen
+                            const allValues = options.filter(opt => opt.value !== "all").map(opt => opt.value);
+                            handleChange(field, allValues);
+                          } else {
+                            // Regular selection
+                            const values = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                            handleChange(field, values);
+                          }
+                        }}
+                        closeMenuOnSelect={!field.isMulti}
+                        required={field.isRequired}
+                        isMulti={true}
+                      />
+                    );
+                  })()
+                )}
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"
@@ -295,6 +356,43 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     multiple={field.isMulti}
                     onChange={(e) => handleChange(field, e.target.files)}
                     accept={field?.acceptedFileTypes}
+                  />
+                )}
+                {field.type === SWITCH && (
+                  <div className="form-check form-switch form-switch-lg mb-3">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="customSwitchsizelg"
+                      // defaultChecked
+                      checked={formData[field.name]}
+                      onChange={(e) => {
+                        handleChange(field, !formData[field.name])
+                      }}
+                      value={formData[field.name]}
+                    />
+                  </div>
+                )}
+                {field.type === DATE_TIME_PICKER && (
+                  <input
+                    className="form-control"
+                    type="datetime-local"
+                    value={formData[field.name] || ""}
+                    placeholder="hello"
+                    id={field.name}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                )}
+                {field.type === COUNTER && (
+                  <input
+                    className="form-control"
+                    type="number"
+                    value={formData[field.name] || field.defaultValue || ""}
+                    id={field.name}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
                   />
                 )}
                 {field.type === IMAGE && (

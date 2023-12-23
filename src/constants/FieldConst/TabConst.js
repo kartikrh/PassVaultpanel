@@ -14,7 +14,8 @@ export const TabFields = [
         name: "displayType",
         label: "Display Type",
         type: SELECT,
-        defaultOption: { label: "Admin", value: "Admin" },
+        defaultOption: { label: "Admin", value: "1" },
+        defaultValue: "1",
         options: [
             { label: "Admin", value: 1 },
             { label: "Agent", value: 2 },],

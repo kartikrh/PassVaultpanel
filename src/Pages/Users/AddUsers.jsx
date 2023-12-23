@@ -20,8 +20,8 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
 } from "../../components/Common/Const";
-import { addUserToDb } from "../../Features/Users/usersSlice";
 import axiosInstance from "../../Features/axios";
+import { addUserToDb } from "../../Features/Tabs/usersSlice";
 
 function AddUsers() {
   const finalizeRef = useRef(null);
@@ -31,7 +31,7 @@ function AddUsers() {
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
-  const { isSaved, isLoading, error } = useSelector(state => state.usersData.user)
+  const { isSaved, isLoading, error } = useSelector(state => state.tabsData.user);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +59,7 @@ function AddUsers() {
       else if (currentSaveAction === SAVE_AND_NEW)
         finalizeRef.current.resetForm();
     }
-  });
+  }, []);
 
   const fetchData = async (id) => {
     await axiosInstance

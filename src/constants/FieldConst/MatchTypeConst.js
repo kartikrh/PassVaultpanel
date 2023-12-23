@@ -1,213 +1,309 @@
-import { COUNTER, SWITCH, TEXT } from "../../components/Common/Const";
+import { COUNTER, DIVIDER, SWITCH, TEXT } from "../../components/Common/Const";
 
-export const GeneralInformationFields = [
+export const MatchTypeFields = [
     {
-        name: "name",
-        label: "Name",
-        parentclassName: "",
+        type: DIVIDER,
+        sectionLabel: "General Information",
+        labelColspan: { xs: 12, md: 12, lg: 12 },
+    },
+    {
+        name: "matchType",
+        label: "Match Type",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter name.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 10 }
     },
     {
-        name: "noOfInnings",
+        name: "noOfIningsPerSide",
         label: "No Of Innings",
-        parentclassName: "",
         type: COUNTER,
-        min: 0,
+        min: 1,
         max: 10,
-        step: 1
+        step: 1,
+        defaultValue: 1,
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "noOfDays",
         label: "No Of Days",
-        parentclassName: "",
         type: COUNTER,
-        min: 0,
+        min: 1,
         max: 10,
-        step: 1
+        step: 1,
+        defaultValue: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "noOfPlayers",
+        name: "noOfPlayer",
         label: "No Of Players",
-        parentclassName: "",
         type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1
+        min: 1,
+        max: 20,
+        step: 1,
+        defaultValue: 11,
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "noOfSubstitutes",
+        name: "substitutesPlayer",
         label: "No Of Substitutes",
-        parentclassName: "",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
-    }
-];
-
-export const OverInformation = [
+        step: 1,
+        defaultValue: 0,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
     {
-        name: "limitedOvers",
+        type: DIVIDER,
+        sectionLabel: "Over Information",
+        labelColspan: { xs: 12, md: 12, lg: 12 },
+    },
+    {
+        name: "isLimitedOvers",
         label: "Limited Overs",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        // checked
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "bowlersOversLimited",
+        name: "oversPerInings",
+        label: false,
+        dependsOnField: "isLimitedOvers",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        isRequired: true,
+        fieldColspan: { xs: 12, md: 4, lg: 3 }
+    },
+    {
+        name: "isBowlersLimitedOvers",
         label: "Bowlers Overs Limited",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "oversInDay",
-        label: "Overs In Day",
-        parentclassName: "",
+        name: "oversPerBowler",
+        label: false,
+        dependsOnField: "isBowlersLimitedOvers",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
+        step: 1,
+        isRequired: true,
+        fieldColspan: { xs: 12, md: 4, lg: 3 }
     },
     {
-        name: "firstInningsMaxOver",
-        label: "1st Innings Max Over",
-        parentclassName: "",
-        type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1
-    },
-    {
-        name: "secondInningsMaxOver",
-        label: "2nd Innings Max Over",
-        parentclassName: "",
-        type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1
-    },
-    {
-        name: "powerPlay",
+        name: "isPowerPlay",
         label: "Power Play",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "extraInnings",
+        name: "totalPowerPlay",
+        label: false,
+        dependsOnField: "isPowerPlay",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        fieldColspan: { xs: 12, md: 4, lg: 3 }
+    },
+    {
+        name: "oversPerDay",
+        label: "Overs In Day",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "maxOversInFirstInings",
+        label: "1st Innings Max Over",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "maxOversInSecondInings",
+        label: "2nd Innings Max Over",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+
+    {
+        name: "isExtraInings",
         label: "Extra Innings",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
+    {
+        name: "batsmenPerInings",
+        label: false,
+        dependsOnField: "isExtraInings",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        fieldColspan: { xs: 12, md: 4, lg: 3 }
     },
     {
         name: "oversInLastHour",
         label: "Overs In Last Hours",
-        parentclassName: "",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "newBallAfterOver",
+        name: "takeNewBallAfterOvers",
         label: "New Ball After Overs",
-        parentclassName: "",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
-]
-
-export const BallInformationFields = [
     {
-        name: "ballPerOver",
+        type: DIVIDER,
+        sectionLabel: "Ball Information",
+        labelColspan: { xs: 12, md: 12, lg: 12 },
+    },
+    {
+        name: "ballsPerOver",
         label: "Ball Per Overs",
-        parentclassName: "",
         type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1
+        min: 1,
+        max: 20,
+        step: 1,
+        isRequired: true,
+        defaultValue: 6,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "noBallRun",
-        label: "No Ball Run",
-        parentclassName: "",
-        type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1
-    },
-    {
-        name: "noBallRunExtra",
-        label: "Is Extra Ball",
-        parentclassName: "",
-        type: COUNTER,
-    },
-    {
-        name: "noBallRunLastOver",
-        label: "No Ball Run[Last Over]",
-        parentclassName: "",
-        type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1
-    },
-    {
-        name: "noBallRunLastOverExtra",
-        label: "Is Extra Ball",
-        parentclassName: "",
-        type: SWITCH
-    },
-    {
-        name: "paneltyRunCountPartnership",
+        name: "isPenaltyRunsInPartnership",
         label: "Penalty Run Count [Partnership]",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "frontFootNoBall",
-        label: "Front Foot No. Ball Run",
-        parentclassName: "",
+        name: "valueOfNoBall",
+        label: "No Ball Run",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
+        step: 1,
+        defaultValue: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "wideBallRun",
+        name: "isExtraBallWhenNoBall",
+        label: "Is Extra Ball",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 2 }
+    },
+    {
+        name: "valueOfNoBallInLastOver",
+        label: "No Ball Run[Last Over]",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
+    {
+        name: "isExtraBallWhenNoBallInLastOver",
+        label: "Is Extra Ball",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 2 }
+    },
+
+    {
+        name: "valueOfWideBall",
         label: "Wide Ball Run",
-        parentclassName: "",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "wideBallRunExtra",
+        name: "isExtraBallWhenWideBall",
         label: "Is Extra Ball",
-        parentclassName: "",
-        type: COUNTER,
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 2 }
     },
     {
-        name: "wideBallRunLastOver",
+        name: "valueOfWideBallInLastOver",
         label: "Wide Ball Run[Last Over]",
-        parentclassName: "",
         type: COUNTER,
         min: 0,
         max: 10,
-        step: 1
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "wideBallRunLastOverExtra",
+        name: "isExtraBallWhenWideBallInLastOver",
         label: "Is Extra Ball",
-        parentclassName: "",
-        type: SWITCH
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 2 }
     },
     {
-        name: "wideBallCountPartnership",
-        label: "Wide Ball Count [Partnership]",
-        parentclassName: "",
-        type: SWITCH
+        name: "valueOfFrontFootNoBall",
+        label: "Front Foot No. Ball Run",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
-]
+    {
+        name: "isWideBallCountInPartnership",
+        label: "Wide Ball Count [Partnership]",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
+    {
+        name: "isLastManStand",
+        label: "Last Man Standing",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
+];
