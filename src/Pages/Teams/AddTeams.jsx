@@ -53,7 +53,6 @@ function AddTeams() {
   const teamId = location.state?.userId || "0";
 
   useEffect(() => {
-    console.log("this is ref  --->>>>", finalizeRef)
     fetchMasterData();
   }, []);
 
@@ -68,7 +67,6 @@ function AddTeams() {
   }, [teamId]);
 
   useEffect(() => {
-    console.log("this is ref 2", finalizeRef)
     if (isSaved) {
       if (currentSaveAction === SAVE)
         setSnackbarMessage("Data saved successfully!");
@@ -82,6 +80,7 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/team/byId", { teamId })
       .then((response) => {
+        console.log("response by Id", response.result)
         setInitialEditData(response?.result);
       })
       .catch((error) => {

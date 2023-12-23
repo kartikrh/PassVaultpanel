@@ -61,6 +61,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
             // Convert the image data to base64
             const reader = new FileReader();
             reader.onloadend = () => {
+              console.log("this is the reader ::: ",reader.result )
               setViewImage(reader.result);
             };
             reader.readAsDataURL(blob);
@@ -425,8 +426,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           onChange={(e)=>{handleImageChange(field, e)}}
                         />
                         <img
-                          src={viewImage}
-                          alt="Uploaded"
+                          src={field.name}
+                          alt={field.name}
                           className="preview-image"
                           onClick={() => fileInputRef.current.click()}
                         />
