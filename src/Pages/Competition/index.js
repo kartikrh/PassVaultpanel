@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from '../../components/Toaster'
 const Index = () => {
   document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
@@ -19,6 +18,13 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  //toast
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   //get Event Types
   const [eventTypes, setEventTypes] = useState([]);
   //get Competition
@@ -59,7 +65,6 @@ const Index = () => {
       }
     }
   };
-
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -72,15 +77,27 @@ const Index = () => {
         })
       .then((response) => {
         fetchData();
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
-
+  //delete function
   const handleDelete = async (e) => {
     setIsLoading(true);
-    const response = await axiosInstance
+    await axiosInstance
       .post(
         `/admin/competition/delete`,
         {
@@ -89,9 +106,21 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
+        setToast({
+          message: response?.result,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
   //table columns
@@ -218,6 +247,14 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Competition" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}

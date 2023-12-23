@@ -9,6 +9,8 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from '../../components/Toaster'
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
@@ -18,10 +20,18 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  //toaster
+  const [toast, setToast] = useState({
+    message: "",
+    color:"",
+    header:""
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
+
+  const navigate = useNavigate()
 
   // fetch data
   const fetchData = async () => {
@@ -67,10 +77,22 @@ const Index = () => {
           [pType]: cState ? false : true,
         })
       .then((response) => {
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color:"green",
+          header:"Success",
+        })
+        setToastStatus(true)
         fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color:"red",
+          header:"Warning",
+        })
+        setToastStatus(true)
       });
   };
 
@@ -85,14 +107,30 @@ const Index = () => {
         })
       .then((response) => {
         fetchData();
-        console.log("response", response);
         setDeleteModelVisable(false);
+        setToast({
+          message: response.result.message,
+          color:"green",
+          header:"Success"
+        })
+        setToastStatus(true)
       })
       .catch((error) => {
-        console.log("error", error);
         setIsLoading(false)
+        setToast({
+          message: error.error.message,
+          color:"red",
+          header:"Warning"
+        })
+        setToastStatus(true);
+        setDeleteModelVisable(false);
       });
   };
+
+  const handleEdit = (eventTypeId) => {
+    navigate('/addEventType', { state: { eventTypeId } });
+  }
+
   //table columns
   const columns = [
     {
@@ -130,7 +168,7 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.eventTypeId) }}></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -219,14 +257,16 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Types" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && <Toaster toast={toast} setToast={setToast} toastStatus={toastStatus} setToastStatus={setToastStatus}/>}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
             singleCheck = {singleCheck}
+            // addModelFunction={setAddModelVisable}
+            onAddNavigate={"/addEventType"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

@@ -59,7 +59,6 @@ function AddTabs() {
     const fetchMasterData = async () => {
         await axiosInstance.post('/admin/tabs/all')
             .then((response) => {
-                console.log(response.data?.result)
                 setMasterData({
                     "parentId":
                         response?.result?.map(item => {

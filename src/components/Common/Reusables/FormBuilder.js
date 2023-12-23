@@ -1,11 +1,11 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
 import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
-import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA,IMAGE } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
@@ -28,10 +28,45 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [onChangApiData, setOnChangeApiData] = useState({})
+  const [viewImage, setViewImage] = useState(null);
+
+  const fileInputRef = useRef(null);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      ["image"]: file,
+    }));
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        setViewImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
-    if (!_.isEmpty(editFormData) && _.isEmpty(formData))
+    const isImageField = fields.findIndex(field=>field.type ===IMAGE) !== -1;
+    if (!_.isEmpty(editFormData) && _.isEmpty(formData)){
+      if (isImageField && editFormData?.image) {
+        // Fetch the image from the URL
+        fetch(process.env.REACT_APP_BASE_URL + editFormData.image)
+        .then((response) => response.blob())
+        .then((blob) => {
+          // Convert the image data to base64
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setViewImage(reader.result);
+          };
+          reader.readAsDataURL(blob);
+        });
+        
+      }
       setFormData(editFormData)
+    }
   }, [editFormData])
 
   useEffect(() => {
@@ -355,7 +390,61 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     step={field.step}
                   />
                 )}
+                {field.type === IMAGE && (
+                  <div className="col-12 col-md-6 ImageDropBox" >
+                    {!viewImage ? (
+                      <div class="image-uploader-Event">
+                        <input
+                          type="file"
+                          id="fileInput"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          class="file-input-EventImage-uploader"
+                          onChange={handleImageChange}
+                        />
+                        <label for="fileInput" class="file-label-Event-Uploader">
+                          <div class="upload-iconEventUploader">+</div>
+                          <p className="UploadImageText">
+                            Drop or click to upload Event Image
+                          </p>
+                        </label>
+                      </div>
+                    ) : (
+                      <div class="image-uploader-Event">
+                        <input
+                          type="file"
+                          id="fileInput"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          class="file-input-EventImage-uploader"
+                          onChange={handleImageChange}
+                        />
+                        <img
+                          src={viewImage}
+                          alt="Uploaded"
+                          className="preview-image"
+                          onClick={() => fileInputRef.current.click()}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
 
+                {
+                  field.type === SWITCH && (
+                    <div className="form-check form-switch form-switch-lg mb-3">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="customSwitchsizelg"
+                        // defaultChecked
+                        checked={formData[field.name] ? formData[field.name] : () => {handleChange(field, field.defaultValue); return field.defaultValue}}
+                        onChange={(e) => {
+                          handleChange(field, !formData[field.name])
+                        }}
+                        value={formData[field.name]}
+                      />
+                    </div>)}
               </div>
               <span className="text-danger">
                 {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}

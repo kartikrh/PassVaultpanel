@@ -48,7 +48,7 @@ const Index = ({
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
   const [toast, setToast] = useState({
-    message: "Select at least one row",
+    message: "Select at least one (only One) row",
     color: "red",
     header: "Error",
   });
@@ -342,7 +342,8 @@ const Index = ({
                       color="warning"
                       className="btn"
                       onClick={() => {
-                        cloneModelFunction(true);
+                        singleCheck.length === 1?
+                        cloneModelFunction(true) : setToastStatus(true)
                       }}
                       id="create-btn"
                     >
