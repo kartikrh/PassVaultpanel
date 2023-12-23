@@ -197,6 +197,7 @@ const Index = () => {
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
+            onAddNavigate={"/addMatchType"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
