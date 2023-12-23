@@ -120,7 +120,6 @@ function AddTabs() {
                 ...resetData
             }));
             if (newFormData["eventId"] !== "0") {
-                console.log(newFormData["eventId"])
                 axiosInstance.post('/admin/events/byId', { eventId: newFormData["eventId"] })
                     .then((response) => {
                         const updatedData = {
