@@ -5,7 +5,7 @@ import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addTabToDb } from '../../Features/Tabs/tabsSlice';
+import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
 
@@ -256,7 +256,12 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), commentaryId: id, marketId: "0", tpId: "0", matchTypeId: "0" }))
+        dispatch(addCommentaryToDb({
+            ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(),
+            commentaryId: id,
+            // marketId: "0", tpId: "0", matchTypeId: "0"
+            // , currentInnings: 0
+        }))
     };
 
 
