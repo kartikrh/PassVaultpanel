@@ -21,7 +21,7 @@ function AddTabs() {
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.tab);
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.commentary);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
@@ -53,8 +53,10 @@ function AddTabs() {
             }
         }
     });
+    const handleFormADataChange = (newFormData) => {
 
-    const handleFormDataChange = (newFormData) => {
+    }
+    const handleFormBDataChange = (newFormData) => {
         console.log(newFormData)
         setTeamDetails(newFormData);
         // if both data are not same then do API call and fetch data
@@ -247,7 +249,7 @@ function AddTabs() {
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
-                                                onFormDataChange={handleFormDataChange}
+                                                onFormDataChange={handleFormBDataChange}
                                             />
                                         </TabPane>
                                     </TabContent>

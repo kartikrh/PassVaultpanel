@@ -50,7 +50,13 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addMatchTypeToDb({ ...finalizeRef.current.finalizeData(), matchTypeId: id }))
+        const formData = finalizeRef.current.finalizeData()
+        let totalOvers;
+        if (formData["isLimitedOvers"])
+            totalOvers = formData["oversPerInings"] * (formData["noOfIningsPerSide"] * 2)
+        else
+            totalOvers = -1
+        dispatch(addMatchTypeToDb({ ...formData, matchTypeId: id, totalOversInMatch: totalOvers }))
     };
 
     const handleBackClick = () => {
