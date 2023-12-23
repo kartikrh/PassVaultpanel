@@ -1,0 +1,33 @@
+{
+    "commentaryId": "string",
+    // "eventTypeId": "string", New Dropdown
+    "matchTypeId": "string",
+    "competitionId": 0,
+    "eventId": 0,
+    "eventDate": "string",
+    "eventName": "string",
+    "eventRefId": "string",
+    "team1Id": "string",
+    "team2Id": "string",
+    "location": "string",
+    "weather": 0,
+    "pitch": 0,
+    "displayStatus": "string",
+    "target": 0,
+    "marketId": 0,
+    "tpId": 0,
+    "isSignalROn": true,
+    "isMatchTypeUpdated": true,
+    "team1Captain": "string",
+    "team1Kipper": "string",
+    "team2Captain": "string",
+    "team2Kipper": "string",
+    "team1Players": [
+        "string"
+    ],
+    "team2Players": [
+        "string"
+    ],
+    "currentInnings": 0
+}
+Parameter content type

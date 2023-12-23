@@ -2,6 +2,33 @@ import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT } from "../../components/C
 
 export const MatchDetailFields = [
     {
+        name: "eventType",
+        label: "Event Type",
+        options: [{ label: "Select a Event Type", value: "0" }],
+        defaultValue: "0",
+        type: SELECT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "competitionType",
+        label: "Competition Type",
+        options: [{ label: "Select a Competition Type", value: "0" }],
+        defaultValue: "0",
+        type: SELECT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "eventNewId",
+        label: "Event",
+        options: [{ label: "Select a Event", value: "0" }],
+        defaultValue: "0",
+        type: SELECT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
         name: "matchTypeId",
         label: "Match Type",
         options: [{ label: "Select a Match Type", value: "0" }],
@@ -11,12 +38,34 @@ export const MatchDetailFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        name: "eventId",
+        label: "Event Id",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: TEXT,
+    },
+    {
         name: "eventName",
         label: "Event Name",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
+    {
+        name: "eventDate",
+        label: "Event Date",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: DATE_TIME_PICKER,
+    },
+    {
+        name: "location",
+        label: "Location",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: TEXT,
+    },
+
     {
         name: "weather",
         label: "Weather",
@@ -36,27 +85,6 @@ export const MatchDetailFields = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SELECT,
-    },
-    {
-        name: "location",
-        label: "Location",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: TEXT,
-    },
-    {
-        name: "eventId",
-        label: "Event Id",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: TEXT,
-    },
-    {
-        name: "eventDate",
-        label: "Event Date",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: DATE_TIME_PICKER,
     },
     {
         name: "pitch",

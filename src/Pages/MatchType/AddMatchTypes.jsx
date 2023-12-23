@@ -5,7 +5,7 @@ import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addTabToDb } from '../../Features/Tabs/tabsSlice';
+import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
 
 function AddTabs() {
@@ -15,7 +15,7 @@ function AddTabs() {
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.tab);
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
@@ -39,7 +39,7 @@ function AddTabs() {
     });
 
     const fetchData = async (id) => {
-        await axiosInstance.post('/admin/tabs/byId', { id })
+        await axiosInstance.post('/admin/matchType/byId', { matchTypeId: id })
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
@@ -50,7 +50,7 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef.current.finalizeData(), id }))
+        dispatch(addMatchTypeToDb({ ...finalizeRef.current.finalizeData(), matchTypeId: id }))
     };
 
     const handleBackClick = () => {

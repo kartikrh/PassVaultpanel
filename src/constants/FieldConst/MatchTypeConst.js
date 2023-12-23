@@ -2,21 +2,28 @@ import { COUNTER, DIVIDER, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const MatchTypeFields = [
     {
-        name: "name",
-        label: "Name",
+        type: DIVIDER,
+        sectionLabel: "General Information",
+        labelColspan: { xs: 12, md: 12, lg: 12 },
+    },
+    {
+        name: "matchType",
+        label: "Match Type",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter name.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+        fieldColspan: { xs: 12, md: 4, lg: 10 }
     },
     {
-        name: "noOfInnings",
+        name: "noOfIningsPerSide",
         label: "No Of Innings",
         type: COUNTER,
-        min: 0,
+        min: 1,
         max: 10,
         step: 1,
+        defaultValue: 1,
+        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -24,63 +31,89 @@ export const MatchTypeFields = [
         name: "noOfDays",
         label: "No Of Days",
         type: COUNTER,
-        min: 0,
+        min: 1,
         max: 10,
         step: 1,
+        defaultValue: 1,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "noOfPlayers",
+        name: "noOfPlayer",
         label: "No Of Players",
         type: COUNTER,
-        min: 0,
-        max: 10,
+        min: 1,
+        max: 20,
         step: 1,
+        defaultValue: 11,
+        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "noOfSubstitutes",
+        name: "substitutesPlayer",
         label: "No Of Substitutes",
         type: COUNTER,
         min: 0,
         max: 10,
         step: 1,
+        defaultValue: 0,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: DIVIDER
+        type: DIVIDER,
+        sectionLabel: "Over Information",
+        labelColspan: { xs: 12, md: 12, lg: 12 },
     },
     {
-        name: "limitedOvers",
+        name: "isLimitedOvers",
         label: "Limited Overs",
         type: SWITCH,
+        // checked
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "limitedOverValue",
+        name: "oversPerInings",
         label: false,
-        dependsOnField: "limitedOvers",
+        dependsOnField: "isLimitedOvers",
         type: COUNTER,
         min: 0,
         max: 10,
         step: 1,
+        isRequired: true,
         fieldColspan: { xs: 12, md: 4, lg: 3 }
     },
     {
-        name: "bowlersOversLimited",
+        name: "isBowlersLimitedOvers",
         label: "Bowlers Overs Limited",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "bowlersOversLimitedValue",
+        name: "oversPerBowler",
         label: false,
-        dependsOnField: "bowlersOversLimited",
+        dependsOnField: "isBowlersLimitedOvers",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
+        isRequired: true,
+        fieldColspan: { xs: 12, md: 4, lg: 3 }
+    },
+    {
+        name: "isPowerPlay",
+        label: "Power Play",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
+    {
+        name: "totalPowerPlay",
+        label: false,
+        dependsOnField: "isPowerPlay",
         type: COUNTER,
         min: 0,
         max: 10,
@@ -88,7 +121,7 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 3 }
     },
     {
-        name: "oversInDay",
+        name: "oversPerDay",
         label: "Overs In Day",
         type: COUNTER,
         min: 0,
@@ -98,7 +131,7 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "firstInningsMaxOver",
+        name: "maxOversInFirstInings",
         label: "1st Innings Max Over",
         type: COUNTER,
         min: 0,
@@ -108,7 +141,7 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "secondInningsMaxOver",
+        name: "maxOversInSecondInings",
         label: "2nd Innings Max Over",
         type: COUNTER,
         min: 0,
@@ -117,34 +150,18 @@ export const MatchTypeFields = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
+
     {
-        name: "powerPlay",
-        label: "Power Play",
-        type: SWITCH,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 1 }
-    },
-    {
-        name: "powerPlayValue",
-        label: false,
-        dependsOnField: "powerPlay",
-        type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1,
-        fieldColspan: { xs: 12, md: 4, lg: 3 }
-    },
-    {
-        name: "extraInnings",
+        name: "isExtraInings",
         label: "Extra Innings",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "extraInningsValue",
+        name: "batsmenPerInings",
         label: false,
-        dependsOnField: "extraInnings",
+        dependsOnField: "isExtraInings",
         type: COUNTER,
         min: 0,
         max: 10,
@@ -162,7 +179,7 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "newBallAfterOver",
+        name: "takeNewBallAfterOvers",
         label: "New Ball After Overs",
         type: COUNTER,
         min: 0,
@@ -172,37 +189,49 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: DIVIDER
+        type: DIVIDER,
+        sectionLabel: "Ball Information",
+        labelColspan: { xs: 12, md: 12, lg: 12 },
     },
     {
-        name: "ballPerOver",
+        name: "ballsPerOver",
         label: "Ball Per Overs",
         type: COUNTER,
-        min: 0,
-        max: 10,
+        min: 1,
+        max: 20,
         step: 1,
+        isRequired: true,
+        defaultValue: 6,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "noBallRun",
+        name: "isPenaltyRunsInPartnership",
+        label: "Penalty Run Count [Partnership]",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "valueOfNoBall",
         label: "No Ball Run",
         type: COUNTER,
         min: 0,
         max: 10,
         step: 1,
+        defaultValue: 1,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "noBallRunExtra",
+        name: "isExtraBallWhenNoBall",
         label: "Is Extra Ball",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 1 },
-        fieldColspan: { xs: 12, md: 4, lg: 1 }
+        fieldColspan: { xs: 12, md: 4, lg: 2 }
     },
     {
-        name: "noBallRunLastOver",
+        name: "valueOfNoBallInLastOver",
         label: "No Ball Run[Last Over]",
         type: COUNTER,
         min: 0,
@@ -212,31 +241,15 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "noBallRunLastOverExtra",
+        name: "isExtraBallWhenNoBallInLastOver",
         label: "Is Extra Ball",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 1 },
         fieldColspan: { xs: 12, md: 4, lg: 2 }
     },
+
     {
-        name: "paneltyRunCountPartnership",
-        label: "Penalty Run Count [Partnership]",
-        type: SWITCH,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        name: "frontFootNoBall",
-        label: "Front Foot No. Ball Run",
-        type: COUNTER,
-        min: 0,
-        max: 10,
-        step: 1,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        name: "wideBallRun",
+        name: "valueOfWideBall",
         label: "Wide Ball Run",
         type: COUNTER,
         min: 0,
@@ -246,14 +259,14 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "wideBallRunExtra",
+        name: "isExtraBallWhenWideBall",
         label: "Is Extra Ball",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 1 },
-        fieldColspan: { xs: 12, md: 4, lg: 1 }
+        fieldColspan: { xs: 12, md: 4, lg: 2 }
     },
     {
-        name: "wideBallRunLastOver",
+        name: "valueOfWideBallInLastOver",
         label: "Wide Ball Run[Last Over]",
         type: COUNTER,
         min: 0,
@@ -263,18 +276,34 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 1 }
     },
     {
-        name: "wideBallRunLastOverExtra",
+        name: "isExtraBallWhenWideBallInLastOver",
         label: "Is Extra Ball",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 1 },
         fieldColspan: { xs: 12, md: 4, lg: 2 }
     },
     {
-        name: "wideBallCountPartnership",
-        label: "Wide Ball Count [Partnership]",
-        type: SWITCH,
+        name: "valueOfFrontFootNoBall",
+        label: "Front Foot No. Ball Run",
+        type: COUNTER,
+        min: 0,
+        max: 10,
+        step: 1,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
-
+    {
+        name: "isWideBallCountInPartnership",
+        label: "Wide Ball Count [Partnership]",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
+    {
+        name: "isLastManStand",
+        label: "Last Man Standing",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 1 }
+    },
 ];

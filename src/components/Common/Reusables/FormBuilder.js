@@ -123,11 +123,10 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
         {fields?.map((field) => (
           <>
             {field.type === DIVIDER &&
-              // <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <>
+                <h5>{field.sectionLabel}</h5>
                 <div className="dropdown-divider"></div>
               </>
-              // </Col>
             }
             <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <div className="lablediv">
@@ -348,7 +347,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                   <input
                     className="form-control"
                     type="number"
-                    value={formData[field.name] || ""}
+                    value={formData[field.name] || field.defaultValue || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
                     min={field.min}
