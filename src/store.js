@@ -5,7 +5,7 @@ import tabReducer from "./Features/Tabs/combinedReducer"
 import penaltyRunReducer from "./Features/PenaltyRuns/combinedReducer";
 import EventTypeReducer from "./Features/EventTypes/combinedReducer";
 import eventReducer from './Features/Events/combinedReducer'
-
+import teamsReducer from './Features/Teams/combinedReducer'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -14,6 +14,7 @@ export const store = configureStore({
     penaltyRunsData: penaltyRunReducer,
     eventTypesData: EventTypeReducer,
     eventsData: eventReducer,
+    teamsData: teamsReducer,
   }
 });
 
