@@ -3,9 +3,9 @@ import axiosInstance from '../axios';
 
 export const addTabToDb = createAsyncThunk(
     'tab/addTab',
-    async (userData, { rejectWithValue }) => {
+    async (data, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/admin/tabs/save', userData);
+            const response = await axiosInstance.post('/admin/tabs/save', data);
             return response?.result;
         } catch (error) {
             return rejectWithValue(error.response.data);
