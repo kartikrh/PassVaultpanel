@@ -31,7 +31,7 @@ function AddUsers() {
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
-  const { isSaved, isLoading, error } = useSelector(state => state.tabsData.user)
+  const { isSaved, isLoading, error } = useSelector(state => state.tabsData.user);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
@@ -102,10 +102,12 @@ function AddUsers() {
         // setIsLoading(false)
       });
   };
+  
   const handleSaveClick = async (saveAction) => {
     setCurrentSaveAction(saveAction);
     dispatch(addUserToDb({ ...finalizeRef.current.finalizeData(), userId }));
   };
+
   const handleBackClick = () => {
     navigate("/users");
   };

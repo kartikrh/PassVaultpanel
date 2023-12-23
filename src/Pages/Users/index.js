@@ -6,7 +6,7 @@ import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
-import ChangePasswordModel from '../../components/Model/changePassword'
+import ChangePasswordModel from "../../components/Model/changePassword";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 const Index = () => {
@@ -17,7 +17,7 @@ const Index = () => {
   // password
   const [password, setPassword] = useState("");
   //useId
-  const [userId, setUserId] = useState("")
+  const [userId, setUserId] = useState("");
   // model state
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -25,8 +25,8 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-    //redirect
-    const navigate = useNavigate();
+  //redirect
+  const navigate = useNavigate();
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -34,7 +34,7 @@ const Index = () => {
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
-        setChangPasswordModelVisible(false)
+        setChangPasswordModelVisible(false);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -63,12 +63,10 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/user/save`,
-        {
-          userId: record.userId,
-          [pType]: cState ? false : true,
-        })
+      .post(`/admin/user/save`, {
+        userId: record.userId,
+        [pType]: cState ? false : true,
+      })
       .then((response) => {
         fetchData();
       })
@@ -81,11 +79,9 @@ const Index = () => {
     setIsLoading(true);
     // e.preventDefault()
     await axiosInstance
-      .post(
-        `/admin/user/delete`,
-        {
-          userId: singleCheck,
-        })
+      .post(`/admin/user/delete`, {
+        userId: singleCheck,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
@@ -98,19 +94,17 @@ const Index = () => {
   const handleChangePassword = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/user/save`,
-        {
-          password: password,
-          userId: userId
-        })
+      .post(`/admin/user/save`, {
+        password: password,
+        userId: userId,
+      })
       .then((response) => {
         fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
       });
-  }
+  };
 
   const handleEdit = (id) => {
     navigate("/addUsers", { state: { userId: id } });
@@ -151,17 +145,24 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"
-      onClick={() => {
-        handleEdit(record.userId);
-      }}
-      ></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.userId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
       title: "User Name[Full Name]",
       dataIndex: "userName",
-      render: (text, record) => (<span>{text}{" "}[{record?.name}]</span>),
+      render: (text, record) => (
+        <span>
+          {text} [{record?.name}]
+        </span>
+      ),
       key: "userName",
       sort: true,
       style: { width: "100%" },
@@ -169,7 +170,11 @@ const Index = () => {
     {
       title: "Parent Name",
       dataIndex: "parentName",
-      render: (text, record) => (<span style={{ cursor: "pointer" }}>{record.parentId === "0" ? "Root" : null}</span>),
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {record.parentId === "0" ? "Root" : null}
+        </span>
+      ),
       key: "parentName",
       sort: true,
       style: { width: "100%" },
@@ -184,7 +189,7 @@ const Index = () => {
     {
       title: "Password",
       dataIndex: "password",
-      render: (text, record) => (<span>*******</span>),
+      render: (text, record) => <span>*******</span>,
       key: "password",
       sort: true,
       style: { width: "100%" },
@@ -192,7 +197,17 @@ const Index = () => {
     {
       title: "Change Password",
       dataIndex: "cPassword",
-      render: (text, record) => (<span style={{ cursor: "pointer" }} onClick={() => { setChangPasswordModelVisible(true); setUserId(record.userId) }}><i className=" bx bx-show-alt" style={{ fontSize: "25px" }} /></span>),
+      render: (text, record) => (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setChangPasswordModelVisible(true);
+            setUserId(record.userId);
+          }}
+        >
+          <i className=" bx bx-show-alt" style={{ fontSize: "25px" }} />
+        </span>
+      ),
       key: "cPassword",
       sort: true,
       style: { width: "100%", textAlign: "center" },

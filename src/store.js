@@ -6,7 +6,6 @@ import penaltyRunReducer from "./Features/PenaltyRuns/combinedReducer";
 import EventTypeReducer from "./Features/EventTypes/combinedReducer";
 import eventReducer from './Features/Events/combinedReducer'
 
-
 export const store = configureStore({
   reducer: {
     auth: authReducer,
