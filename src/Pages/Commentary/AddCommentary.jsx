@@ -93,7 +93,7 @@ function AddTabs() {
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
-                            return { label: item.eventName, value: item.eventTypeId }
+                            return { label: item.eventName, value: item.eventId }
                         })
                         setMasterData((preData) => ({
                             ...preData,
@@ -109,34 +109,40 @@ function AddTabs() {
                 }));
             }
         } else if (newFormData["eventId"] !== savedFormState["eventId"]) {
-            setMasterData((preData) => ({
-                ...preData,
+            const resetData = {
                 "eventRefId": undefined,
                 "eventName": undefined,
                 "eventDate": undefined,
                 "location": undefined,
+            }
+            setMasterData((preData) => ({
+                ...preData,
+                ...resetData
             }));
             if (newFormData["eventId"] !== "0") {
+                console.log(newFormData["eventId"])
                 axiosInstance.post('/admin/events/byId', { eventId: newFormData["eventId"] })
                     .then((response) => {
-                        setMasterData((preData) => ({
-                            ...preData,
+                        const updatedData = {
                             "eventRefId": response?.result?.refId,
                             "eventName": response?.result?.eventName,
                             "eventDate": response?.result?.eventDate,
                             "location": response?.result?.venue,
+                        }
+                        setMasterData((preData) => ({
+                            ...preData,
+                            ...updatedData
                         }));
+                        finalizeRef1.current.updateFormFromParent(updatedData)
                     }).catch((error) => {
                         // setIsLoading(false)
                     });
             } else {
                 setMasterData((preData) => ({
                     ...preData,
-                    "eventRefId": undefined,
-                    "eventName": undefined,
-                    "eventDate": undefined,
-                    "location": undefined,
+                    ...resetData
                 }));
+                finalizeRef1.current.updateFormFromParent(resetData)
             }
         }
     }
@@ -181,6 +187,7 @@ function AddTabs() {
                             "team2Kipper": formattedData,
                             "team2Players": formattedData
                         }));
+
                     }).catch((error) => {
                         // setIsLoading(false)
                     });
@@ -249,7 +256,7 @@ function AddTabs() {
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), commentaryId: id, }))
+        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), commentaryId: id, marketId: "0", tpId: "0", matchTypeId: "0" }))
     };
 
 
