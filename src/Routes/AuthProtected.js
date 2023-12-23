@@ -51,11 +51,9 @@ const AuthProtected = (props) => {
       });
       socket.on("connect", () => {
         setIsSocketConnected(true);
-        console.log("socket connected")
       });
       socket.on("disconnect", (reason) => {
         setIsSocketConnected(false);
-        console.log("disconnected", reason);
       });
       socket.on("logout", goToLogout)
     }

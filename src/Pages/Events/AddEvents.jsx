@@ -78,7 +78,6 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/events/all")
       .then((response) => {
-        console.log("response", response);
         setMasterData((preData)=>({
             ...preData,
             eventId: response.result?.map((item) => {
@@ -92,7 +91,6 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/competition/all")
       .then((response) => {
-        console.log("response", response);
         setMasterData((preData)=>({
             ...preData,
             competitionId: response.result?.map((item) => {

@@ -5,14 +5,17 @@ import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addTabToDb } from '../../Features/Tabs/tabsSlice';
+import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
 
+const fetchResult = (response) => {
+    return Array.isArray(response.result) ? response?.result : [response?.result]
+}
 function AddTabs() {
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
-    const [teamDetails, setTeamDetails] = useState({});
+    const [savedFormState, setSavedFormState] = useState({});
     const [activeTab, setactiveTab] = useState(1);
     const [passedSteps, setPassedSteps] = useState([1]);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -54,13 +57,98 @@ function AddTabs() {
         }
     });
     const handleFormADataChange = (newFormData) => {
-
+        setSavedFormState(newFormData);
+        if (newFormData["eventTypeId"] !== savedFormState["eventTypeId"]) {
+            setMasterData((preData) => ({
+                ...preData,
+                "competitionId": [],
+            }));
+            if (newFormData["eventTypeId"] !== "0") {
+                axiosInstance.post('/admin/competition/byeventTypeId', { eventTypeId: newFormData["eventTypeId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response)
+                        const formattedData = resultData?.map(item => {
+                            return { label: item.competition, value: item.competitionId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "competitionId": formattedData,
+                        }));
+                    }).catch((error) => {
+                        // setIsLoading(false)
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    "competitionId": [],
+                }));
+            }
+        } else if (newFormData["competitionId"] !== savedFormState["competitionId"]) {
+            setMasterData((preData) => ({
+                ...preData,
+                "eventId": [],
+            }));
+            if (newFormData["competitionId"] !== "0") {
+                axiosInstance.post('/admin/events/bycompetitionId', { competitionId: newFormData["competitionId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response)
+                        const formattedData = resultData?.map(item => {
+                            return { label: item.eventName, value: item.eventId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "eventId": formattedData,
+                        }));
+                    }).catch((error) => {
+                        // setIsLoading(false)
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    "eventId": [],
+                }));
+            }
+        } else if (newFormData["eventId"] !== savedFormState["eventId"]) {
+            const resetData = {
+                "eventRefId": undefined,
+                "eventName": undefined,
+                "eventDate": undefined,
+                "location": undefined,
+            }
+            setMasterData((preData) => ({
+                ...preData,
+                ...resetData
+            }));
+            if (newFormData["eventId"] !== "0") {
+                axiosInstance.post('/admin/events/byId', { eventId: newFormData["eventId"] })
+                    .then((response) => {
+                        const updatedData = {
+                            "eventRefId": response?.result?.refId,
+                            "eventName": response?.result?.eventName,
+                            "eventDate": response?.result?.eventDate,
+                            "location": response?.result?.venue,
+                        }
+                        setMasterData((preData) => ({
+                            ...preData,
+                            ...updatedData
+                        }));
+                        finalizeRef1.current.updateFormFromParent(updatedData)
+                    }).catch((error) => {
+                        // setIsLoading(false)
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    ...resetData
+                }));
+                finalizeRef1.current.updateFormFromParent(resetData)
+            }
+        }
     }
     const handleFormBDataChange = (newFormData) => {
-        console.log(newFormData)
-        setTeamDetails(newFormData);
+        setSavedFormState(newFormData);
         // if both data are not same then do API call and fetch data
-        if (newFormData["team1Id"] !== teamDetails["team1Id"]) {
+        if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team1Id"] })
                     .then((response) => {
@@ -85,7 +173,7 @@ function AddTabs() {
                     "team1Players": []
                 }));
             }
-        } else if (newFormData["team2Id"] !== teamDetails["team2Id"]) {
+        } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team2Id"] })
                     .then((response) => {
@@ -98,6 +186,7 @@ function AddTabs() {
                             "team2Kipper": formattedData,
                             "team2Players": formattedData
                         }));
+
                     }).catch((error) => {
                         // setIsLoading(false)
                     });
@@ -149,12 +238,29 @@ function AddTabs() {
             }).catch((error) => {
                 // setIsLoading(false)
             });
+        axiosInstance.post('/admin/eventType/all')
+            .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item.eventType, value: item.eventTypeId }
+                })
+                setMasterData((preData) => ({
+                    ...preData,
+                    "eventTypeId": formattedData,
+                }));
+            }).catch((error) => {
+                // setIsLoading(false)
+            });
     };
 
 
     const handleSaveClick = async (saveAction) => {
         setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), commentaryId: id, }))
+        dispatch(addCommentaryToDb({
+            ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(),
+            commentaryId: id,
+            // marketId: "0", tpId: "0", matchTypeId: "0"
+            // , currentInnings: 0
+        }))
     };
 
 
@@ -240,6 +346,7 @@ function AddTabs() {
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
+                                                onFormDataChange={handleFormADataChange}
                                             />
                                         </TabPane>
                                         <TabPane tabId={2}>

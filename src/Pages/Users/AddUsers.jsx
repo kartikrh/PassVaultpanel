@@ -76,7 +76,6 @@ function AddUsers() {
     await axiosInstance
       .post("/admin/user/all")
       .then((response) => {
-        console.log("Users ===>", response)
         setMasterData((preData) => ({
           ...preData,
           parentName: response.result?.map((item) => {
@@ -90,7 +89,6 @@ function AddUsers() {
     await axiosInstance
       .post("/admin/roles/all")
       .then((response) => {
-        console.log("Roles ===>", response)
         setMasterData((preData) => ({
           ...preData,
           roleId: response.result?.map((item) => {

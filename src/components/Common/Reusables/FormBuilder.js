@@ -118,8 +118,14 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     setFormData({});
   };
 
+  const updateFormFromParent = (newData) => {
+    setFormData((oldData) => ({
+      ...oldData,
+      ...newData
+    }))
+  }
   // Expose the finalizeData & reset function to the parent using a ref
-  useImperativeHandle(ref, () => ({ finalizeData, resetForm }));
+  useImperativeHandle(ref, () => ({ finalizeData, resetForm, updateFormFromParent }));
 
   const handleChange = (field, value) => {
     const errors = { ...fieldErrors };
@@ -251,7 +257,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {/* {console.log(field.options, masterData[field.name], masterData)} */}
+                {field.name === "eventDate" && console.log(field.options, masterData[field.name], masterData)}
                 {field.type === MULTI_SELECT && (
                   (() => {
                     // Define options within the function scope

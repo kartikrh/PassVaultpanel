@@ -40,7 +40,6 @@ function AddPenaltyRuns() {
     const fetchData = async (paneltyId) => {
         await axiosInstance.post('/admin/paneltyRun/byId', { paneltyId })
             .then((response) => {
-                console.log("res", response);
                 setInitialEditData(response?.result);
             }).catch((error) => {
                 // setIsLoading(false)
