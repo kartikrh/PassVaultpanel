@@ -8,6 +8,7 @@ import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Cons
 import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
+import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -125,7 +126,7 @@ function AddTabs() {
                         const updatedData = {
                             "eventRefId": response?.result?.refId,
                             "eventName": response?.result?.eventName,
-                            "eventDate": response?.result?.eventDate,
+                            "eventDate": convertDateString(response?.result?.eventDate),
                             "location": response?.result?.venue,
                         }
                         setMasterData((preData) => ({

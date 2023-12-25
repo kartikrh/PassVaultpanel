@@ -10,24 +10,13 @@ import "./CustomCss.css"
 import {
   Row,
   Col,
-  Card,
-  CardBody,
-  FormGroup,
-  Button,
-  CardTitle,
-  CardSubtitle,
-  Label,
   Input,
-  Container,
-  FormFeedback,
   Form,
 } from "reactstrap";
-import axiosInstance from "../../../Features/axios.js";
 
 const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
-  const [onChangApiData, setOnChangeApiData] = useState({})
   const [viewImage, setViewImage] = useState(null);
 
   const fileInputRef = useRef(null);
@@ -84,7 +73,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
     fields.forEach((field) => {
       const value = formData[field.name];
-
       if (field.isRequired && isValueEmpty(value) && !doNotValidateFields.includes(field.name)) {
         errors[field.name] =
           field.requiredErrorMessage || "This field is required.";
@@ -251,7 +239,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {field.name === "eventDate" && console.log(field.options, masterData[field.name], masterData)}
+                {/* {field.name === "eventDate" && console.log(formData, field.options, masterData[field.name], masterData)} */}
                 {field.type === MULTI_SELECT && (
                   (() => {
                     // Define options within the function scope
@@ -259,7 +247,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     if (field.showSelectAll) {
                       options = [{ label: "Select All", value: "all" }, ...options];
                     }
-
                     return (
                       <Select
                         classNamePrefix="select2-selection"
