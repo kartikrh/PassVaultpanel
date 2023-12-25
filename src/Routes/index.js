@@ -1,6 +1,5 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Navigate } from "react-router-dom";
 
 // redux
 import { useSelector } from "react-redux";
@@ -15,6 +14,7 @@ import HorizontalLayout from "../Layout/HorizontalLayout/index";
 import { AuthProtected } from "./AuthProtected";
 
 import { authProtectedRoutes, publicRoutes } from "./routes";
+import CommonToast from "../components/Common/CommonToast";
 
 const getLayout = (layoutType) => {
   let Layout = VerticalLayout;
@@ -39,36 +39,39 @@ const Index = () => {
 
   const Layout = getLayout(layoutType);
   return (
-    <Routes>
-      <Route>
-        {publicRoutes.map((route, idx) => (
-          <Route
-            path={route.path}
-            element={
-              <NonAuthLayout>
+    <>
+      <CommonToast />
+      <Routes>
+        <Route>
+          {publicRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <NonAuthLayout>
                   {route.component}
-              </NonAuthLayout>
-          }
-            key={idx}
-            exact={true}
-          />
-        ))}
-      </Route>
+                </NonAuthLayout>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
 
-      <Route>
+        <Route>
           {authProtectedRoutes.map((route, idx) => (
             <Route
               path={route.path}
               element={
                 <AuthProtected>
-                    <Layout>{route.component}</Layout>
+                  <Layout>{route.component}</Layout>
                 </AuthProtected>}
               key={idx}
               exact={true}
             />
           ))}
-      </Route>
-    </Routes>
+        </Route>
+      </Routes>
+    </>
   );
 };
 

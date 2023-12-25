@@ -4,13 +4,14 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { PlayerFields } from '../../constants/FieldConst/PlayerConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { updateToastData } from '../../Features/toasterSlice';
 
 function AddPlayer() {
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -38,8 +39,7 @@ function AddPlayer() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
+            if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/Players")
             else if (currentSaveAction === SAVE_AND_NEW)
@@ -52,7 +52,7 @@ function AddPlayer() {
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
@@ -66,7 +66,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/eventType/all')
             .then((response) => {
@@ -77,7 +77,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/player/allPlayerTypes')
             .then((response) => {
@@ -88,7 +88,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('admin/player/allBowlingTypes')
             .then((response) => {
@@ -100,7 +100,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
@@ -127,9 +127,9 @@ function AddPlayer() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Players </h3>
                         </Col>
-
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
@@ -164,14 +164,6 @@ function AddPlayer() {
                 </Container>
             </div>
         </React.Fragment >
-        //         {
-        //     snackbarMessage && (
-        //         <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-        //             {snackbarMessage}
-        //         </div>
-        //     )
-        // }
-        // </div >
     );
 }
 

@@ -229,7 +229,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     classNamePrefix="select2-selection"
                     id={field.name}
                     name={field.name}
-                    isDisabled={disabledFields[field.name]}
+                    isDisabled={disabledFields?.[field.name]}
                     value={
                       [].concat(field.options, masterData[field.name] || [])
                         .filter(e => {
@@ -260,7 +260,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                         classNamePrefix="select2-selection"
                         id={field.name}
                         name={field.name}
-                        isDisabled={disabledFields[field.name]}
+                        isDisabled={disabledFields?.[field.name]}
                         value={formData[field.name]?.map(val =>
                           options.find(option => option.value === val))
                         }
