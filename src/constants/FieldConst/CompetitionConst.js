@@ -1,11 +1,15 @@
-import { FILE_TYPE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { FILE_TYPE, IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const CompetitionFields = [
     {
-        name: "eventType",
+        name: "eventTypeId",
         label: "Event Type",
         parentclassName: "",
         type: SELECT,
+        options: [{ label: "Select Event Type", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "competition",
@@ -14,7 +18,7 @@ export const CompetitionFields = [
         type: TEXT,
     },
     {
-        name: "referenceId",
+        name: "refId",
         label: "Reference Id",
         parentclassName: "",
         type: TEXT,
@@ -29,6 +33,6 @@ export const CompetitionFields = [
         name: "eventImage",
         label: "Event Image",
         parentclassName: "",
-        type: FILE_TYPE,
+        type: IMAGE,
     },
 ]
