@@ -5,17 +5,17 @@ import { EventTypeFields } from '../../constants/FieldConst/EventTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addEventTypeToDb } from '../../Features/EventTypes/eventTypesSlice';
+import { addEventTypeToDb } from '../../Features/Tabs/eventTypesSlice';
 import axiosInstance from '../../Features/axios';
 
 const convertObjtoFormData = (obj) => {
     const formData = new FormData();
-    for ( const key in obj ) {
-        if (key==="image") {
+    for (const key in obj) {
+        if (key === "image") {
             typeof obj[key] !== "string" && formData.append(key, obj[key]);
             continue;
         }
-        formData.append(key, obj[key]);            
+        formData.append(key, obj[key]);
     }
     return formData
 }
@@ -27,7 +27,7 @@ function AddEventType() {
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-    const { isSaved, isLoading, error } = useSelector(state => state.eventTypesData.eventType);
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.eventType);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();

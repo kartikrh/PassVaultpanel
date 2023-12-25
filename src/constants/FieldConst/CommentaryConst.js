@@ -34,6 +34,7 @@ export const MatchDetailFields = [
         options: [{ label: "Select a Match Type", value: "0" }],
         defaultValue: "0",
         type: SELECT,
+        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
