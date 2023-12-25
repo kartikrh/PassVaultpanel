@@ -1,4 +1,4 @@
-import { FILE_TYPE, IMAGE, MULTI_SELECT, SELECT, TEXT } from "../../components/Common/Const";
+import { IMAGE, MULTI_SELECT, SELECT, TEXT } from "../../components/Common/Const";
 
 export const TeamFields = [
     {

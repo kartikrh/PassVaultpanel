@@ -21,7 +21,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const fileInputRef = useRef(null);
 
-  const handleImageChange = (field,event) => {
+  const handleImageChange = (field, event) => {
     console.log("this is field", field)
     console.log("this is event", event)
     const file = event.target.files[0];
@@ -50,7 +50,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
             // Convert the image data to base64
             const reader = new FileReader();
             reader.onloadend = () => {
-              console.log("this is the reader ::: ",reader.result )
+              console.log("this is the reader ::: ", reader.result)
               setViewImage(reader.result);
             };
             reader.readAsDataURL(blob);
@@ -59,11 +59,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       }
       setFormData(editFormData)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editFormData])
 
 
   useEffect(() => {
     updateParentFormData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   const updateParentFormData = () => {
@@ -80,7 +82,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       const value = formData[field.name];
       if (field.isRequired && isValueEmpty(value) && !doNotValidateFields.includes(field.name)) {
         errors[field.name] =
-          field.requiredErrorMessage || "This field is required.";
+          field.requiredErrorMessage || `Please Enter ${field.label}`;
       } else if (field.isRequired && field.regex && !field.regex.test(value)) {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
@@ -93,7 +95,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
       console.log("this is formData", formData)
-      return sanitizeFormData(formData);
+      return formData;
     } else {
       console.error(
         "There are errors in the form. Please correct them before saving."
@@ -112,8 +114,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       ...newData
     }))
   }
-  // Expose the finalizeData & reset function to the parent using a ref
-  useImperativeHandle(ref, () => ({ finalizeData, resetForm, updateFormFromParent }));
 
   const handleChange = (field, value) => {
     const errors = { ...fieldErrors };
@@ -143,6 +143,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       || !field.dependsOnField
   }
 
+  // Expose the finalizeData & reset function to the parent using a ref
+  useImperativeHandle(ref, () => ({ finalizeData, resetForm, updateFormFromParent }));
   return (
 
     <Form
@@ -359,7 +361,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                       className="form-check-input"
                       id="customSwitchsizelg"
                       // defaultChecked
-                      checked={formData[field.name]}
+
+                      checked={formData[field.name] || field.defaultValue}
                       onChange={(e) => {
                         handleChange(field, !formData[field.name])
                       }}
@@ -399,7 +402,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={(e)=>{handleImageChange(field, e)}}
+                          onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <label for="fileInput" class="file-label-Event-Uploader">
                           <div class="upload-iconEventUploader">+</div>
@@ -416,7 +419,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={(e)=>{handleImageChange(field, e)}}
+                          onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <img
                           src={field.name}

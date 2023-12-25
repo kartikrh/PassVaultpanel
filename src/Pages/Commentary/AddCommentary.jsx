@@ -254,14 +254,19 @@ function AddTabs() {
     };
 
 
+
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addCommentaryToDb({
-            ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(),
-            commentaryId: id,
-            // marketId: "0", tpId: "0", matchTypeId: "0"
-            // , currentInnings: 0
-        }))
+        const dataToSave1 = finalizeRef1.current.finalizeData()
+        const dataToSave2 = finalizeRef2.current.finalizeData()
+        if (dataToSave1 && dataToSave2) {
+            const extraData = {
+                commentaryId: id,
+                // marketId: "0", tpId: "0", matchTypeId: "0"
+                // , currentInnings: 0
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addCommentaryToDb({ ...dataToSave1, ...dataToSave2, ...extraData }))
+        }
     };
 
 

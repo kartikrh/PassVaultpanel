@@ -104,10 +104,15 @@ function AddPlayer() {
             });
     };
 
-
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addPlayerToDb({ ...finalizeRef.current.finalizeData(), playerId: id }))
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            const extraData = {
+                playerId: id
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addPlayerToDb({ ...dataToSave, ...extraData }))
+        }
     };
 
     const handleBackClick = () => {

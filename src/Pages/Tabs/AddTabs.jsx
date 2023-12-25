@@ -72,8 +72,14 @@ function AddTabs() {
 
 
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef.current.finalizeData(), id }))
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            const extraData = {
+                id: id
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addTabToDb({ ...dataToSave, ...extraData }))
+        }
     };
 
     const handleBackClick = () => {
