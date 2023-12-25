@@ -4,10 +4,13 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
+import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from '../../Features/toasterSlice';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -18,7 +21,6 @@ function AddTabs() {
     const [savedFormState, setSavedFormState] = useState({});
     const [activeTab, setactiveTab] = useState(1);
     const [passedSteps, setPassedSteps] = useState([1]);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -46,8 +48,7 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
+            if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/commentary")
             else if (currentSaveAction === SAVE_AND_NEW) {
@@ -75,7 +76,7 @@ function AddTabs() {
                             "competitionId": formattedData,
                         }));
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -100,7 +101,7 @@ function AddTabs() {
                             "eventId": formattedData,
                         }));
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -125,7 +126,7 @@ function AddTabs() {
                         const updatedData = {
                             "eventRefId": response?.result?.refId,
                             "eventName": response?.result?.eventName,
-                            "eventDate": response?.result?.eventDate,
+                            "eventDate": convertDateString(response?.result?.eventDate),
                             "location": response?.result?.venue,
                         }
                         setMasterData((preData) => ({
@@ -134,7 +135,7 @@ function AddTabs() {
                         }));
                         finalizeRef1.current.updateFormFromParent(updatedData)
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -162,7 +163,7 @@ function AddTabs() {
                             "team1Players": formattedData
                         }));
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             }
             else {
@@ -188,7 +189,7 @@ function AddTabs() {
                         }));
 
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -206,7 +207,7 @@ function AddTabs() {
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
@@ -222,7 +223,7 @@ function AddTabs() {
 
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/team/all')
             .then((response) => {
@@ -236,7 +237,7 @@ function AddTabs() {
                 }));
 
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/eventType/all')
             .then((response) => {
@@ -248,19 +249,24 @@ function AddTabs() {
                     "eventTypeId": formattedData,
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
 
+
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addCommentaryToDb({
-            ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(),
-            commentaryId: id,
-            // marketId: "0", tpId: "0", matchTypeId: "0"
-            // , currentInnings: 0
-        }))
+        const dataToSave1 = finalizeRef1.current.finalizeData()
+        const dataToSave2 = finalizeRef2.current.finalizeData()
+        if (dataToSave1 && dataToSave2) {
+            const extraData = {
+                commentaryId: id,
+                // marketId: "0", tpId: "0", matchTypeId: "0"
+                // , currentInnings: 0
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addCommentaryToDb({ ...dataToSave1, ...dataToSave2, ...extraData }))
+        }
     };
 
 
@@ -289,6 +295,7 @@ function AddTabs() {
 
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
@@ -383,14 +390,6 @@ function AddTabs() {
                 </Container>
             </div>
         </React.Fragment >
-        //         {
-        //     snackbarMessage && (
-        //         <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-        //             {snackbarMessage}
-        //         </div>
-        //     )
-        // }
-        // </div >
     );
 }
 

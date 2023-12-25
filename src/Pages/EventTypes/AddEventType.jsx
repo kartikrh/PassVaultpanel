@@ -76,7 +76,7 @@ function AddEventType() {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Tabs </h3>
+                            <h3>Event Type </h3>
                         </Col>
 
                         <Card>

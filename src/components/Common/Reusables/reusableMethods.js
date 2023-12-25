@@ -77,3 +77,17 @@ export const transformApiDataToSidebarData = (apiData) => {
 
   return SidebarData;
 };
+
+
+export const convertDateString = (dateString) => {
+  if (dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) { // Check if the date is valid
+      return "Invalid Date";
+    }
+
+    // Extract the date and time in ISO format, then remove the seconds and timezone
+    return date.toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
+  }
+  return "";
+}

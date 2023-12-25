@@ -4,13 +4,14 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
+import { updateToastData } from '../../Features/toasterSlice';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 function AddTabs() {
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -29,8 +30,7 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
+            if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/matchType")
             else if (currentSaveAction === SAVE_AND_NEW)
@@ -43,20 +43,26 @@ function AddTabs() {
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
 
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        const formData = finalizeRef.current.finalizeData()
-        let totalOvers;
-        if (formData["isLimitedOvers"])
-            totalOvers = formData["oversPerInings"] * (formData["noOfIningsPerSide"] * 2)
-        else
-            totalOvers = -1
-        dispatch(addMatchTypeToDb({ ...formData, matchTypeId: id, totalOversInMatch: totalOvers }))
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            let totalOvers;
+            if (dataToSave["isLimitedOvers"])
+                totalOvers = dataToSave["oversPerInings"] * (dataToSave["noOfIningsPerSide"] * 2)
+            else
+                totalOvers = -1
+            const extraData = {
+                matchTypeId: id,
+                totalOversInMatch: totalOvers
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addMatchTypeToDb({ ...dataToSave, ...extraData }))
+        }
     };
 
     const handleBackClick = () => {
@@ -71,9 +77,9 @@ function AddTabs() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Match Type </h3>
                         </Col>
-
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
@@ -107,14 +113,6 @@ function AddTabs() {
                 </Container>
             </div>
         </React.Fragment >
-        //         {
-        //     snackbarMessage && (
-        //         <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-        //             {snackbarMessage}
-        //         </div>
-        //     )
-        // }
-        // </div >
     );
 }
 

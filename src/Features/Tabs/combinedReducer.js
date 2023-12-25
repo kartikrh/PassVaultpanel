@@ -7,6 +7,8 @@ import playerSlice from "./playerSlice"
 import PenaltyRunSlice from "./penaltyRunsSlice"
 import EventTypeSlice from "./eventTypesSlice"
 import eventSlice from "../Tabs/eventsSlice"
+import CompetitionSlice from "./competitionSlice"
+import TeamSlice from "./teamSlice"
 
 const rootReducer = combineReducers({
     tab: TabSlice,
@@ -17,6 +19,8 @@ const rootReducer = combineReducers({
     penaltyRun: PenaltyRunSlice,
     eventType: EventTypeSlice,
     event: eventSlice,
+    competition: CompetitionSlice,
+    team: TeamSlice,
 });
 
 export default rootReducer;

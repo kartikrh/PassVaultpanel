@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import {CompetitionFields} from '../../constants/FieldConst/CompetitionConst'
+import { CompetitionFields } from '../../constants/FieldConst/CompetitionConst'
 import {
   Button,
   ButtonDropdown,
@@ -20,17 +20,17 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
 } from "../../components/Common/Const";
-import { addCompetitionToDb } from "../../Features/Competitions/competitionSlice";
+import { addCompetitionToDb } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 
 const convertObjtoFormData = (obj) => {
   const formData = new FormData();
-  for ( const key in obj ) {
-      if (key==="image") {
-          typeof obj[key] !== "string" && formData.append(key, obj[key]);
-          continue;
-      }
-      formData.append(key, obj[key]);            
+  for (const key in obj) {
+    if (key === "image") {
+      typeof obj[key] !== "string" && formData.append(key, obj[key]);
+      continue;
+    }
+    formData.append(key, obj[key]);
   }
   return formData
 }
@@ -92,9 +92,9 @@ function AddCompetitions() {
       .post("/admin/eventType/all")
       .then((response) => {
         console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            eventTypeId: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          eventTypeId: response.result?.map((item) => {
             return { label: item.eventType, value: item.eventTypeId };
           }),
         }));
