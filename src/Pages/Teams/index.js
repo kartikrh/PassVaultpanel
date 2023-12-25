@@ -3,8 +3,8 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
-import { Button } from "reactstrap";
 import { Container } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -29,6 +29,7 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
+  const navigate = useNavigate();
 
   // fetch data
   const fetchData = async () => {
@@ -103,6 +104,11 @@ const Index = () => {
         setToastStatus(true)
       });
   };
+
+  const handleEdit = (id) => {
+    navigate("/addTeams", { state: { userId: id } });
+  };
+
   //table columns
   const columns = [
     {
@@ -139,7 +145,11 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit"
+      onClick={() => {
+        handleEdit(record.teamId);
+      }}
+      ></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -242,6 +252,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
+            onAddNavigate={"/addTeams"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

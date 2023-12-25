@@ -21,11 +21,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const fileInputRef = useRef(null);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = (field,event) => {
+    console.log("this is field", field)
+    console.log("this is event", event)
     const file = event.target.files[0];
     setFormData((prevFormData) => ({
       ...prevFormData,
-      ["image"]: file,
+      [field.name]: file,
     }));
     if (file) {
       const reader = new FileReader();
@@ -48,6 +50,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
             // Convert the image data to base64
             const reader = new FileReader();
             reader.onloadend = () => {
+              console.log("this is the reader ::: ",reader.result )
               setViewImage(reader.result);
             };
             reader.readAsDataURL(blob);
@@ -58,6 +61,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }
   }, [editFormData])
 
+
   useEffect(() => {
     updateParentFormData();
   }, [formData]);
@@ -67,6 +71,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       onFormDataChange(formData);
     }
   };
+
 
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
@@ -87,6 +92,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const finalizeData = (doNotValidateFields = []) => {
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
+      console.log("this is formData", formData)
       return sanitizeFormData(formData);
     } else {
       console.error(
@@ -393,12 +399,12 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={handleImageChange}
+                          onChange={(e)=>{handleImageChange(field, e)}}
                         />
                         <label for="fileInput" class="file-label-Event-Uploader">
                           <div class="upload-iconEventUploader">+</div>
                           <p className="UploadImageText">
-                            Drop or click to upload Event Image
+                            Drop or click to upload Image
                           </p>
                         </label>
                       </div>
@@ -410,11 +416,11 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={handleImageChange}
+                          onChange={(e)=>{handleImageChange(field, e)}}
                         />
                         <img
-                          src={viewImage}
-                          alt="Uploaded"
+                          src={field.name}
+                          alt={field.name}
                           className="preview-image"
                           onClick={() => fileInputRef.current.click()}
                         />
