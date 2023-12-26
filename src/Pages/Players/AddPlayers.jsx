@@ -48,7 +48,7 @@ function AddPlayer() {
     });
 
     const fetchData = async (id) => {
-        await axiosInstance.post('/admin/player/byId', { id })
+        await axiosInstance.post('/admin/player/byId', { playerId: id })
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
