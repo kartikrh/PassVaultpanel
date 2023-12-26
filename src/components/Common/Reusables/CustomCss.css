@@ -8,6 +8,10 @@
     }
 }
 
+.block{
+    display: block;
+}
+
 .dynamic-label-right {
     float: right;
     white-space: nowrap;

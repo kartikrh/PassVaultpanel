@@ -2,14 +2,17 @@ import { SELECT, TEXT, TEXT_AREA } from "../../components/Common/Const";
 
 export const RoleFields = [
     {
-        name: "diplayType",
+        name: "displayType",
         label: "Display Type",
         parentclassName: "",
         type: SELECT,
         defaultOption: { label: "Select Display For", value: "Select Display For" },
         options: [
-            { label: "Admin", value: "Admin" },
-            { label: "Agent", value: "Agent" },],
+            { label: "Admin", value: 1 },
+            { label: "Agent", value: 2 },
+            // { label: "Client", value: 3 },
+            // { label: "Support", value: 4 }
+        ],
         isRequired: true,
         requiredErrorMessage: "Please Select Display Type.",
     },
@@ -26,5 +29,6 @@ export const RoleFields = [
         label: "Description",
         parentclassName: "",
         type: TEXT_AREA,
+        defaultRows: 3,
     },
 ]
