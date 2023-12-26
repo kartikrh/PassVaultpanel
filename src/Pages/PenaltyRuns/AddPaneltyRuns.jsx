@@ -47,8 +47,14 @@ function AddPenaltyRuns() {
     };
 
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addPenaltyRunToDb({ ...finalizeRef.current.finalizeData(), paneltyId }))
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            const extraData = {
+                paneltyId: paneltyId
+            }
+            dispatch(addPenaltyRunToDb({ ...finalizeRef.current.finalizeData(), ...extraData }))
+            setCurrentSaveAction(saveAction);
+        }
     };
 
     const handleBackClick = () => {

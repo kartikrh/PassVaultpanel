@@ -60,10 +60,15 @@ function AddEventType() {
             });
     };
 
-
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addEventTypeToDb(convertObjtoFormData({ ...finalizeRef.current.finalizeData(), eventTypeId })))
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            const extraData = {
+                eventTypeId: eventTypeId
+            }
+            dispatch(addEventTypeToDb(convertObjtoFormData({ ...finalizeRef.current.finalizeData(), ...extraData })))
+            setCurrentSaveAction(saveAction);
+        }
     };
 
     const handleBackClick = () => {
@@ -76,7 +81,7 @@ function AddEventType() {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Event Type </h3>
+                            <h3>Event Types</h3>
                         </Col>
 
                         <Card>

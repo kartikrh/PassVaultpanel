@@ -8,19 +8,23 @@ export const PaneltyRunConst = [
         type: TEXT,
         regex: /^\d+$/,
         isRequired: true,
+        customStyle: {
+            maxWidth: "200px",
+        },
         requiredErrorMessage: "Please enter runs.",
-        labelColspan: { xs: 12, md: 4, lg: 3 },
-        fieldColspan: { xs: 12, md: 8, lg: 9 }
+        labelColspan: { xs: 12, md: 3, lg: 3 },
+        fieldColspan: { xs: 12, md: 9, lg: 9 }
     },
     {
         name: "desc",
         label: "Description",
         parentclassName: "",
         type: TEXT_AREA,
+        defaultRows: 3,
         isRequired: true,
         requiredErrorMessage: "Please enter description.",
-        labelColspan: { xs: 12, md: 4, lg: 3 },
-        fieldColspan: { xs: 12, md: 8, lg: 9 }
+        labelColspan: { xs: 12, md: 3, lg: 3 },
+        fieldColspan: { xs: 12, md: 9, lg: 9 }
     },
     {
         name: "isActive",
@@ -28,7 +32,7 @@ export const PaneltyRunConst = [
         parentclassName: "",
         defaultValue: true,
         type: SWITCH,
-        labelColspan: { xs: 12, md: 4, lg: 3 },
-        fieldColspan: { xs: 12, md: 8, lg: 9 }
+        labelColspan: { xs: 12, md: 3, lg: 3 },
+        fieldColspan: { xs: 12, md: 9, lg: 9 }
     },
 ]
