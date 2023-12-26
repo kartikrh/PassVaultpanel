@@ -10,29 +10,18 @@ import "./CustomCss.css"
 import {
   Row,
   Col,
-  Card,
-  CardBody,
-  FormGroup,
-  Button,
-  CardTitle,
-  CardSubtitle,
-  Label,
   Input,
-  Container,
-  FormFeedback,
   Form,
 } from "reactstrap";
-import axiosInstance from "../../../Features/axios.js";
 
 const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
-  const [onChangApiData, setOnChangeApiData] = useState({})
   const [viewImage, setViewImage] = useState(null);
 
   const fileInputRef = useRef(null);
 
-  const handleImageChange = (field,event) => {
+  const handleImageChange = (field, event) => {
     console.log("this is field", field)
     console.log("this is event", event)
     const file = event.target.files[0];
@@ -61,7 +50,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
             // Convert the image data to base64
             const reader = new FileReader();
             reader.onloadend = () => {
-              console.log("this is the reader ::: ",reader.result )
+              console.log("this is the reader ::: ", reader.result)
               setViewImage(reader.result);
             };
             reader.readAsDataURL(blob);
@@ -70,11 +59,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       }
       setFormData(editFormData)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editFormData])
 
 
   useEffect(() => {
     updateParentFormData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   const updateParentFormData = () => {
@@ -89,10 +80,9 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
     fields.forEach((field) => {
       const value = formData[field.name];
-
       if (field.isRequired && isValueEmpty(value) && !doNotValidateFields.includes(field.name)) {
         errors[field.name] =
-          field.requiredErrorMessage || "This field is required.";
+          field.requiredErrorMessage || `Please Enter ${field.label}`;
       } else if (field.isRequired && field.regex && !field.regex.test(value)) {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
@@ -105,7 +95,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
       console.log("this is formData", formData)
-      return sanitizeFormData(formData);
+      return formData;
     } else {
       console.error(
         "There are errors in the form. Please correct them before saving."
@@ -118,8 +108,12 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     setFormData({});
   };
 
-  // Expose the finalizeData & reset function to the parent using a ref
-  useImperativeHandle(ref, () => ({ finalizeData, resetForm }));
+  const updateFormFromParent = (newData) => {
+    setFormData((oldData) => ({
+      ...oldData,
+      ...newData
+    }))
+  }
 
   const handleChange = (field, value) => {
     const errors = { ...fieldErrors };
@@ -149,6 +143,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       || !field.dependsOnField
   }
 
+  // Expose the finalizeData & reset function to the parent using a ref
+  useImperativeHandle(ref, () => ({ finalizeData, resetForm, updateFormFromParent }));
   return (
 
     <Form
@@ -233,7 +229,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     classNamePrefix="select2-selection"
                     id={field.name}
                     name={field.name}
-                    isDisabled={disabledFields[field.name]}
+                    isDisabled={disabledFields?.[field.name]}
                     value={
                       [].concat(field.options, masterData[field.name] || [])
                         .filter(e => {
@@ -251,7 +247,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {/* {console.log(field.options, masterData[field.name], masterData)} */}
+                {/* {field.name === "eventDate" && console.log(formData, field.options, masterData[field.name], masterData)} */}
                 {field.type === MULTI_SELECT && (
                   (() => {
                     // Define options within the function scope
@@ -259,13 +255,12 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     if (field.showSelectAll) {
                       options = [{ label: "Select All", value: "all" }, ...options];
                     }
-
                     return (
                       <Select
                         classNamePrefix="select2-selection"
                         id={field.name}
                         name={field.name}
-                        isDisabled={disabledFields[field.name]}
+                        isDisabled={disabledFields?.[field.name]}
                         value={formData[field.name]?.map(val =>
                           options.find(option => option.value === val))
                         }
@@ -366,7 +361,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                       className="form-check-input"
                       id="customSwitchsizelg"
                       // defaultChecked
-                      checked={formData[field.name]}
+
+                      checked={formData[field.name] || field.defaultValue}
                       onChange={(e) => {
                         handleChange(field, !formData[field.name])
                       }}
@@ -406,7 +402,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={(e)=>{handleImageChange(field, e)}}
+                          onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <label for="fileInput" class="file-label-Event-Uploader">
                           <div class="upload-iconEventUploader">+</div>
@@ -423,7 +419,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           accept="image/*"
                           ref={fileInputRef}
                           class="file-input-EventImage-uploader"
-                          onChange={(e)=>{handleImageChange(field, e)}}
+                          onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <img
                           src={field.name}

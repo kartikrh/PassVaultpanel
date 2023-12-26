@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import {TeamFields} from '../../constants/FieldConst/TeamConst'
+import { TeamFields } from '../../constants/FieldConst/TeamConst'
 import {
   Button,
   ButtonDropdown,
@@ -20,18 +20,17 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
 } from "../../components/Common/Const";
-import { addTeamToDb } from "../../Features/Teams/teamSlice";
+import { addTeamToDb } from "../../Features/Tabs/teamSlice";
 import axiosInstance from "../../Features/axios";
 
 const convertObjtoFormData = (obj) => {
-    console.log("this is object ---->>>>", obj)
   const formData = new FormData();
-  for ( const key in obj ) {
-      if (key==="image") {
-          typeof obj[key] !== "string" && formData.append(key, obj[key]);
-          continue;
-      }
-      formData.append(key, obj[key]);            
+  for (const key in obj) {
+    if (key === "image") {
+      typeof obj[key] !== "string" && formData.append(key, obj[key]);
+      continue;
+    }
+    formData.append(key, obj[key]);
   }
   return formData
 }
@@ -93,9 +92,9 @@ function AddTeams() {
       .post("/admin/eventType/all")
       .then((response) => {
         console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            eventType: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          eventType: response.result?.map((item) => {
             return { label: item.eventType, value: item.eventTypeId };
           }),
         }));
@@ -104,13 +103,13 @@ function AddTeams() {
         // setIsLoading(false)
       });
 
-      await axiosInstance
+    await axiosInstance
       .post("/admin/player/all")
       .then((response) => {
         console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            players: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          players: response.result?.map((item) => {
             return { label: item.playerName, value: item.playerId };
           }),
         }));
@@ -192,7 +191,7 @@ function AddTeams() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
-                
+
                 />
               </CardBody>
             </Card>

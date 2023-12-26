@@ -4,18 +4,23 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addTabToDb } from '../../Features/Tabs/tabsSlice';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
+import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from '../../Features/toasterSlice';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
+const fetchResult = (response) => {
+    return Array.isArray(response.result) ? response?.result : [response?.result]
+}
 function AddTabs() {
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
-    const [teamDetails, setTeamDetails] = useState({});
+    const [savedFormState, setSavedFormState] = useState({});
     const [activeTab, setactiveTab] = useState(1);
     const [passedSteps, setPassedSteps] = useState([1]);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -43,8 +48,7 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
+            if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/commentary")
             else if (currentSaveAction === SAVE_AND_NEW) {
@@ -54,13 +58,98 @@ function AddTabs() {
         }
     });
     const handleFormADataChange = (newFormData) => {
-
+        setSavedFormState(newFormData);
+        if (newFormData["eventTypeId"] !== savedFormState["eventTypeId"]) {
+            setMasterData((preData) => ({
+                ...preData,
+                "competitionId": [],
+            }));
+            if (newFormData["eventTypeId"] !== "0") {
+                axiosInstance.post('/admin/competition/byeventTypeId', { eventTypeId: newFormData["eventTypeId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response)
+                        const formattedData = resultData?.map(item => {
+                            return { label: item.competition, value: item.competitionId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "competitionId": formattedData,
+                        }));
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    "competitionId": [],
+                }));
+            }
+        } else if (newFormData["competitionId"] !== savedFormState["competitionId"]) {
+            setMasterData((preData) => ({
+                ...preData,
+                "eventId": [],
+            }));
+            if (newFormData["competitionId"] !== "0") {
+                axiosInstance.post('/admin/events/bycompetitionId', { competitionId: newFormData["competitionId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response)
+                        const formattedData = resultData?.map(item => {
+                            return { label: item.eventName, value: item.eventId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "eventId": formattedData,
+                        }));
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    "eventId": [],
+                }));
+            }
+        } else if (newFormData["eventId"] !== savedFormState["eventId"]) {
+            const resetData = {
+                "eventRefId": undefined,
+                "eventName": undefined,
+                "eventDate": undefined,
+                "location": undefined,
+            }
+            setMasterData((preData) => ({
+                ...preData,
+                ...resetData
+            }));
+            if (newFormData["eventId"] !== "0") {
+                axiosInstance.post('/admin/events/byId', { eventId: newFormData["eventId"] })
+                    .then((response) => {
+                        const updatedData = {
+                            "eventRefId": response?.result?.refId,
+                            "eventName": response?.result?.eventName,
+                            "eventDate": convertDateString(response?.result?.eventDate),
+                            "location": response?.result?.venue,
+                        }
+                        setMasterData((preData) => ({
+                            ...preData,
+                            ...updatedData
+                        }));
+                        finalizeRef1.current.updateFormFromParent(updatedData)
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
+            } else {
+                setMasterData((preData) => ({
+                    ...preData,
+                    ...resetData
+                }));
+                finalizeRef1.current.updateFormFromParent(resetData)
+            }
+        }
     }
     const handleFormBDataChange = (newFormData) => {
-        console.log(newFormData)
-        setTeamDetails(newFormData);
+        setSavedFormState(newFormData);
         // if both data are not same then do API call and fetch data
-        if (newFormData["team1Id"] !== teamDetails["team1Id"]) {
+        if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team1Id"] })
                     .then((response) => {
@@ -74,7 +163,7 @@ function AddTabs() {
                             "team1Players": formattedData
                         }));
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             }
             else {
@@ -85,7 +174,7 @@ function AddTabs() {
                     "team1Players": []
                 }));
             }
-        } else if (newFormData["team2Id"] !== teamDetails["team2Id"]) {
+        } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team2Id"] })
                     .then((response) => {
@@ -98,8 +187,9 @@ function AddTabs() {
                             "team2Kipper": formattedData,
                             "team2Players": formattedData
                         }));
+
                     }).catch((error) => {
-                        // setIsLoading(false)
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -117,7 +207,7 @@ function AddTabs() {
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
@@ -133,7 +223,7 @@ function AddTabs() {
 
                 }));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/team/all')
             .then((response) => {
@@ -147,14 +237,36 @@ function AddTabs() {
                 }));
 
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
+            });
+        axiosInstance.post('/admin/eventType/all')
+            .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item.eventType, value: item.eventTypeId }
+                })
+                setMasterData((preData) => ({
+                    ...preData,
+                    "eventTypeId": formattedData,
+                }));
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 
 
+
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef1.current.finalizeData(), ...finalizeRef2.current.finalizeData(), commentaryId: id, }))
+        const dataToSave1 = finalizeRef1.current.finalizeData()
+        const dataToSave2 = finalizeRef2.current.finalizeData()
+        if (dataToSave1 && dataToSave2) {
+            const extraData = {
+                commentaryId: id,
+                // marketId: "0", tpId: "0", matchTypeId: "0"
+                // , currentInnings: 0
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addCommentaryToDb({ ...dataToSave1, ...dataToSave2, ...extraData }))
+        }
     };
 
 
@@ -183,6 +295,7 @@ function AddTabs() {
 
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
@@ -240,6 +353,7 @@ function AddTabs() {
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
+                                                onFormDataChange={handleFormADataChange}
                                             />
                                         </TabPane>
                                         <TabPane tabId={2}>
@@ -276,14 +390,6 @@ function AddTabs() {
                 </Container>
             </div>
         </React.Fragment >
-        //         {
-        //     snackbarMessage && (
-        //         <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-        //             {snackbarMessage}
-        //         </div>
-        //     )
-        // }
-        // </div >
     );
 }
 

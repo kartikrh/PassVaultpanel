@@ -5,7 +5,7 @@ import { PaneltyRunConst } from '../../constants/FieldConst/PaneltyConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
-import { addPenaltyRunToDb } from '../../Features/PenaltyRuns/penaltyRunsSlice';
+import { addPenaltyRunToDb } from '../../Features/Tabs/penaltyRunsSlice';
 import axiosInstance from '../../Features/axios';
 
 function AddPenaltyRuns() {
@@ -14,7 +14,7 @@ function AddPenaltyRuns() {
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-    const { isSaved, isLoading, error } = useSelector(state => state.penaltyRunsData.penaltyRun);
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.penaltyRun);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
@@ -40,7 +40,6 @@ function AddPenaltyRuns() {
     const fetchData = async (paneltyId) => {
         await axiosInstance.post('/admin/paneltyRun/byId', { paneltyId })
             .then((response) => {
-                console.log("res", response);
                 setInitialEditData(response?.result);
             }).catch((error) => {
                 // setIsLoading(false)

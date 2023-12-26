@@ -20,7 +20,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
 } from "../../components/Common/Const";
-import { addEventToDb } from "../../Features/Events/eventsSlice";
+import { addEventToDb } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 
 function AddEvents() {
@@ -32,7 +32,7 @@ function AddEvents() {
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading, error } = useSelector(
-    (state) => state.eventsData.event
+    (state) => state.tabsData.event
   );
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -78,10 +78,9 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/events/all")
       .then((response) => {
-        console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            eventId: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          eventId: response.result?.map((item) => {
             return { label: item.eventType, value: item.eventTypeId };
           }),
         }));
@@ -92,10 +91,9 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/competition/all")
       .then((response) => {
-        console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            competitionId: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          competitionId: response.result?.map((item) => {
             return { label: item.competition, value: item.competitionId };
           }),
         }));

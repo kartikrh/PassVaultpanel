@@ -2,7 +2,7 @@ import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT } from "../../components/C
 
 export const MatchDetailFields = [
     {
-        name: "eventType",
+        name: "eventTypeId",
         label: "Event Type",
         options: [{ label: "Select a Event Type", value: "0" }],
         defaultValue: "0",
@@ -11,7 +11,7 @@ export const MatchDetailFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "competitionType",
+        name: "competitionId",
         label: "Competition Type",
         options: [{ label: "Select a Competition Type", value: "0" }],
         defaultValue: "0",
@@ -20,7 +20,7 @@ export const MatchDetailFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "eventNewId",
+        name: "eventId",
         label: "Event",
         options: [{ label: "Select a Event", value: "0" }],
         defaultValue: "0",
@@ -34,12 +34,14 @@ export const MatchDetailFields = [
         options: [{ label: "Select a Match Type", value: "0" }],
         defaultValue: "0",
         type: SELECT,
+        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "eventId",
-        label: "Event Id",
+        name: "eventRefId",
+        label: "Event Ref Id",
+        defaultValueDepends: "",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
