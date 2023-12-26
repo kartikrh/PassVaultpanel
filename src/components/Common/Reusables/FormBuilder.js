@@ -207,7 +207,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 )}
                 {field.type === TEXT_AREA && (
                   <textarea
-                    className="inputtag input_elem textarea w-100"
+                    className="inputtag input_elem textarea w-100 form-control"
                     style={field?.customStyle}
                     id={field.name}
                     rows={field?.defaultRows || 2}
@@ -403,7 +403,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           id="fileInput"
                           accept="image/*"
                           ref={fileInputRef}
-                          className="file-input-EventImage-uploader"
                           onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <label for="fileInput" className="file-label-Event-Uploader">
@@ -422,7 +421,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                           id="fileInput"
                           accept="image/*"
                           ref={fileInputRef}
-                          className="file-input-EventImage-uploader"
                           onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <img

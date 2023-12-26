@@ -127,6 +127,7 @@ function AddTeams() {
   const handleBackClick = () => {
     navigate("/teams");
   };
+  
   return (
     <React.Fragment>
       <div className="page-content">
