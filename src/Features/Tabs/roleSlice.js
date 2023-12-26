@@ -3,12 +3,12 @@ import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 
-export const addPenaltyRunToDb = createAsyncThunk(
-    'penaltyRun/addPenaltyRun',
-    async (paneltyRunData, { rejectWithValue, dispatch }) => {
+export const addRoleToDb = createAsyncThunk(
+    'role/addPenaltyRun',
+    async (roleData, { rejectWithValue, dispatch }) => {
         try {
-            const response = await axiosInstance.post('/admin/paneltyRun/save', paneltyRunData);
-            dispatch(updateToastData({ data: "Penalty run data saved successfully.", type: SUCCESS }));
+            const response = await axiosInstance.post('/admin/roles/create', roleData);
+            dispatch(updateToastData({ data: "Role data saved successfully.", type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));
@@ -18,7 +18,7 @@ export const addPenaltyRunToDb = createAsyncThunk(
 );
 
 const penaltyRunSlice = createSlice({
-    name: 'penaltyRun',
+    name: 'role',
     initialState: {
         isSaved: undefined,
         isLoading: false,
@@ -27,14 +27,14 @@ const penaltyRunSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(addPenaltyRunToDb.pending, (state) => {
+            .addCase(addRoleToDb.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addPenaltyRunToDb.fulfilled, (state, action) => {
+            .addCase(addRoleToDb.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addPenaltyRunToDb.rejected, (state, action) => {
+            .addCase(addRoleToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });

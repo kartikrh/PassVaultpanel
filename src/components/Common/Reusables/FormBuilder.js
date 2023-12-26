@@ -88,7 +88,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const finalizeData = (doNotValidateFields = []) => {
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
-      return formData;
+      return sanitizeFormData(formData);
     } else {
       console.error(
         "There are errors in the form. Please correct them before saving."
@@ -145,8 +145,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     >
 
       <Row>
-        {fields?.map((field) => (
-          <>
+        {fields?.map((field, key) => (
+          <React.Fragment key={key} >
             {field.type === DIVIDER &&
               <>
                 <h5>{field.sectionLabel}</h5>
@@ -169,6 +169,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === TEXT && (
                   <Input
                     className="form-control"
+                    style={field?.customStyle}
                     type="text"
                     disabled={field.disabled}
                     id={field.name}
@@ -183,6 +184,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === EMAIL && (
                   <input
                     className="inputtag input_elem normal_input"
+                    style={field?.customStyle}
                     type={EMAIL}
                     id={field.name}
                     name={field.name}
@@ -193,6 +195,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 )}
                 {field.type === "password" && (
                   <input
+                    style={field?.customStyle}
                     className="inputtag input_elem normal_input form-control"
                     type="password"
                     id={field.name}
@@ -204,8 +207,10 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 )}
                 {field.type === TEXT_AREA && (
                   <textarea
-                    className="inputtag input_elem textarea"
+                    className="inputtag input_elem textarea w-100"
+                    style={field?.customStyle}
                     id={field.name}
+                    rows={field?.defaultRows || 2}
                     name={field.name}
                     value={formData[field.name] || formData[field.dataKey] || ""}
                     onChange={(e) => handleChange(field, e.target.value)}
@@ -215,18 +220,19 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === SELECT && (
                   <Select
                     classNamePrefix="select2-selection"
+                    style={field?.customStyle}
                     id={field.name}
                     name={field.name}
                     isDisabled={disabledFields?.[field.name]}
                     value={
-                      [].concat(field.options, masterData[field.name] || [])
+                      [].concat(field.options, masterData?.[field.name] || [])
                         .filter(e => {
                           if (formData[field.name])
                             return e?.value === formData[field.name]
                           else return e?.value === field.defaultValue
                         })
                     }
-                    options={[].concat(field.options, masterData[field.name] || [])}
+                    options={[].concat(field.options, masterData?.[field.name] || [])}
                     onChange={(selectedOption) => {
                       handleChange(field, selectedOption?.value || null);
                     }}
@@ -246,6 +252,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     return (
                       <Select
                         classNamePrefix="select2-selection"
+                        style={field?.customStyle}
                         id={field.name}
                         name={field.name}
                         isDisabled={disabledFields?.[field.name]}
@@ -274,6 +281,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"
+                    style={field?.customStyle}
                     id={field.name}
                     name={field.name}
                     isClearable
@@ -316,6 +324,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                       <label key={option.value} className="radio_option_label">
                         <input
                           className="inputtag normal_input"
+                          style={field?.customStyle}
                           type="radio"
                           name={field.name}
                           value={option.value}
@@ -335,6 +344,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === FILE_TYPE && (
                   <input
                     className="file_input"
+                    style={field?.customStyle}
                     type="file"
                     name={field.name}
                     multiple={field.isMulti}
@@ -345,8 +355,9 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === SWITCH && (
                   <div className="form-check form-switch form-switch-lg mb-3">
                     <input
-                      type="checkbox"
                       className="form-check-input"
+                      style={field?.customStyle}
+                      type="checkbox"
                       id="customSwitchsizelg"
                       // defaultChecked
 
@@ -361,6 +372,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === DATE_TIME_PICKER && (
                   <input
                     className="form-control"
+                    style={field?.customStyle}
                     type="datetime-local"
                     value={formData[field.name] || ""}
                     id={field.name}
@@ -370,6 +382,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === COUNTER && (
                   <input
                     className="form-control"
+                    style={field?.customStyle}
                     type="number"
                     value={formData[field.name] || field.defaultValue || ""}
                     id={field.name}
@@ -384,6 +397,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     {!viewImage ? (
                       <div className="image-uploader-Event">
                         <input
+                          className="file-input-EventImage-uploader"
+                          style={field?.customStyle}
                           type="file"
                           id="fileInput"
                           accept="image/*"
@@ -401,6 +416,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     ) : (
                       <div className="image-uploader-Event">
                         <input
+                          className="file-input-EventImage-uploader"
+                          style={field?.customStyle}
                           type="file"
                           id="fileInput"
                           accept="image/*"
@@ -423,7 +440,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
               </span>
             </Col>
-          </>
+          </React.Fragment>
         ))}
       </Row>
     </Form >

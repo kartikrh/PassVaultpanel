@@ -33,7 +33,7 @@ const Index = () => {
   });
   const [toastStatus, setToastStatus] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // fetch data
   const fetchData = async () => {
