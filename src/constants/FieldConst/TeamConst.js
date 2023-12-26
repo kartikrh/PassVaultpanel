@@ -2,7 +2,7 @@ import { IMAGE, MULTI_SELECT, SELECT, TEXT } from "../../components/Common/Const
 
 export const TeamFields = [
     {
-        name: "eventType",
+        name: "eventTypeId",
         label: "Event Type",
         parentclassName: "",
         type: SELECT,
@@ -19,6 +19,8 @@ export const TeamFields = [
         parentclassName: "",
         type: TEXT,
         isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         requiredErrorMessage: "Please enter team name.",
     },
     {
@@ -26,11 +28,13 @@ export const TeamFields = [
         label: "Jersey Image",
         parentclassName: "",
         type: IMAGE,
+
     },
     {
         name: "players",
         label: "Select Players",
         options: [],
+        defaultValue:"0",
         showSelectAll: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
@@ -40,14 +44,18 @@ export const TeamFields = [
         name: "country",
         label: "Country",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
     {
-        name: "shortName",
+        name: "teamShortName",
         label: "Short Name",
         parentclassName: "",
         type: TEXT,
         isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         requiredErrorMessage: "Please enter short name.",
     },
     {

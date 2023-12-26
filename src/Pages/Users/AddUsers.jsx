@@ -46,7 +46,6 @@ function AddUsers() {
       fetchData(userId);
       setDisabledFields({
         parentId: true,
-        displayType: true,
       });
     }
   }, [userId]);
@@ -78,8 +77,8 @@ function AddUsers() {
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
-          parentName: response.result?.map((item) => {
-            return { label: item.name, value: item.userId };
+          parentId: response.result?.map((item) => {
+            return { label: item.userName, value: item.userId };
           }),
         }));
       })

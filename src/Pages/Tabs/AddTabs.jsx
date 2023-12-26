@@ -46,7 +46,6 @@ function AddTabs() {
                 finalizeRef.current.resetForm()
         }
     });
-
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/tabs/byId', { id })
             .then((response) => {
@@ -55,7 +54,6 @@ function AddTabs() {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
-
     const fetchMasterData = async () => {
         await axiosInstance.post('/admin/tabs/all')
             .then((response) => {
@@ -69,8 +67,6 @@ function AddTabs() {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
-
-
     const handleSaveClick = async (saveAction) => {
         const dataToSave = finalizeRef.current.finalizeData()
         if (dataToSave) {
@@ -81,7 +77,6 @@ function AddTabs() {
             dispatch(addTabToDb({ ...dataToSave, ...extraData }))
         }
     };
-
     const handleBackClick = () => {
         navigate("/tabs");
     };

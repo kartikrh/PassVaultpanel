@@ -4,6 +4,7 @@ import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from './functions'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -31,6 +32,7 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
+  const navigate = useNavigate();
 
   // fetch data
   const fetchData = async () => {
@@ -115,6 +117,15 @@ const Index = () => {
         setToastStatus(true);
       });
   };
+
+  const handleEdit = (id) => {
+    navigate("/addCommentary", { state: { userId: id } });
+  };
+
+  const handleBackClick = () => {
+    navigate("/commentary");
+};
+
   //table columns
   const columns = [
     {
@@ -152,7 +163,11 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit"
+        onClick={() => {
+            handleEdit(record.commentaryId);
+          }}
+      ></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {

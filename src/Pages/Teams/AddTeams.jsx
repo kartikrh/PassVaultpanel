@@ -44,7 +44,7 @@ function AddTeams() {
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading, error } = useSelector(
-    (state) => state.teamsData.team
+    (state) => state.tabsData.team
   );
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -79,8 +79,12 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/team/byId", { teamId })
       .then((response) => {
-        console.log("response by Id", response.result)
-        setInitialEditData(response?.result);
+        const formattedData = response?.result.players?.map(item => {
+          return { label: item.playerName, value: item.playerId }
+      })
+      console.log("this is formattedData ====>>>>", formattedData)
+      console.log(response.result.players)
+        setInitialEditData({...response?.result, players: formattedData});
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -91,10 +95,9 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/eventType/all")
       .then((response) => {
-        console.log("response", response);
         setMasterData((preData) => ({
           ...preData,
-          eventType: response.result?.map((item) => {
+          eventTypeId: response.result?.map((item) => {
             return { label: item.eventType, value: item.eventTypeId };
           }),
         }));
@@ -106,7 +109,6 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/player/all")
       .then((response) => {
-        console.log("response", response);
         setMasterData((preData) => ({
           ...preData,
           players: response.result?.map((item) => {

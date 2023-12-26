@@ -2,7 +2,7 @@ import { DATE_TIME_PICKER, SELECT, SWITCH, TEXT } from "../../components/Common/
 
 export const EventFields = [
     {
-        name: "eventId",
+        name: "eventTypeId",
         label: "Event Type",
         parentclassName: "",
         type: SELECT,
@@ -25,42 +25,55 @@ export const EventFields = [
         name: "eventName",
         label: "Event Name",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
     {
         name: "refId",
         label: "Reference Id",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
     {
         name: "isActive",
         label: "Is Active",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SWITCH
     },
     {
         name: "countryCode",
         label: "Country Code",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
     {
         name: "timeZone",
         label: "TimeZone",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
     {
         name: "venue",
         label: "Venue",
         parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
     },
     {
-        name: "dateAndTime",
-        label: "Date And Time",
-        parentclassName: "",
+        name: "eventDate",
+        label: "Date and Time",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: DATE_TIME_PICKER,
     },
 ]

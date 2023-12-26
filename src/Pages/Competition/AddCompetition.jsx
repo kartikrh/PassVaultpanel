@@ -45,7 +45,7 @@ function AddCompetitions() {
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading, error } = useSelector(
-    (state) => state.competitionsData.competition
+    (state) => state.tabsData.competition
   );
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -91,7 +91,6 @@ function AddCompetitions() {
     await axiosInstance
       .post("/admin/eventType/all")
       .then((response) => {
-        console.log("response", response);
         setMasterData((preData) => ({
           ...preData,
           eventTypeId: response.result?.map((item) => {
