@@ -15,7 +15,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
 }
-function AddTabs() {
+function AddCommentary() {
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
     const [savedFormState, setSavedFormState] = useState({});
@@ -346,7 +346,6 @@ function AddTabs() {
                                     </ul>
                                     <TabContent activeTab={activeTab} className="twitter-bs-wizard-tab-content">
                                         <TabPane tabId={1}>
-
                                             <FormBuilder
                                                 ref={finalizeRef1}
                                                 fields={MatchDetailFields}
@@ -393,4 +392,4 @@ function AddTabs() {
     );
 }
 
-export default AddTabs;
+export default AddCommentary;

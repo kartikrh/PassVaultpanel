@@ -22,6 +22,7 @@ import {
 } from "../../components/Common/Const";
 import { addEventToDb } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
+import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 
 function AddEvents() {
   const finalizeRef = useRef(null);
@@ -67,7 +68,7 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/events/byId", { eventId })
       .then((response) => {
-        setInitialEditData(response?.result);
+        setInitialEditData({...response?.result, eventDate:convertDateString(response?.result.eventDate) });
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -76,11 +77,11 @@ function AddEvents() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/events/all")
+      .post("/admin/eventType/all")
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
-          eventId: response.result?.map((item) => {
+          eventTypeId: response.result?.map((item) => {
             return { label: item.eventType, value: item.eventTypeId };
           }),
         }));

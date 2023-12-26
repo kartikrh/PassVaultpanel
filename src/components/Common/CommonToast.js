@@ -39,7 +39,6 @@ const CommonToast = () => {
                 style={{ border: `solid ${toastData.type === SUCCESS ? "Green" : "Red"} 2px` }}
                 isOpen={toastData.isVisible} >
                 <ToastHeader toggle={() => {
-                    console.log("onClose")
                     handleToastClose()
                 }}>
                     {toastData.type === SUCCESS ? "Success" : "Error"}

@@ -22,8 +22,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const fileInputRef = useRef(null);
 
   const handleImageChange = (field, event) => {
-    console.log("this is field", field)
-    console.log("this is event", event)
     const file = event.target.files[0];
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -43,25 +41,21 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     const isImageField = fields.findIndex(field => field.type === IMAGE) !== -1;
     if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
       if (isImageField && editFormData?.image) {
-        // Fetch the image from the URL
         fetch(process.env.REACT_APP_BASE_URL + editFormData.image)
           .then((response) => response.blob())
           .then((blob) => {
             // Convert the image data to base64
             const reader = new FileReader();
             reader.onloadend = () => {
-              console.log("this is the reader ::: ", reader.result)
               setViewImage(reader.result);
             };
             reader.readAsDataURL(blob);
           });
-
       }
       setFormData(editFormData)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editFormData])
-
 
   useEffect(() => {
     updateParentFormData();
@@ -94,7 +88,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const finalizeData = (doNotValidateFields = []) => {
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
-      console.log("this is formData", formData)
       return formData;
     } else {
       console.error(
@@ -130,11 +123,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       ...prevFormData,
       [field.name]: value,
     }));
-    // console.log({
-    //   ...formData,
-    //   [field.name]: value,
-    // })
-    // formData[field.name] !== value && editFormData[field.name] !== value
     setFieldErrors(errors);
   };
 
@@ -205,7 +193,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 )}
                 {field.type === "password" && (
                   <input
-                    className="inputtag input_elem normal_input"
+                    className="inputtag input_elem normal_input form-control"
                     type="password"
                     id={field.name}
                     name={field.name}
@@ -375,7 +363,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     className="form-control"
                     type="datetime-local"
                     value={formData[field.name] || ""}
-                    placeholder="hello"
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
                   />
@@ -395,34 +382,34 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 {field.type === IMAGE && (
                   <div className="col-12 col-md-6 ImageDropBox" >
                     {!viewImage ? (
-                      <div class="image-uploader-Event">
+                      <div className="image-uploader-Event">
                         <input
                           type="file"
                           id="fileInput"
                           accept="image/*"
                           ref={fileInputRef}
-                          class="file-input-EventImage-uploader"
+                          className="file-input-EventImage-uploader"
                           onChange={(e) => { handleImageChange(field, e) }}
                         />
-                        <label for="fileInput" class="file-label-Event-Uploader">
-                          <div class="upload-iconEventUploader">+</div>
+                        <label for="fileInput" className="file-label-Event-Uploader">
+                          <div className="upload-iconEventUploader">+</div>
                           <p className="UploadImageText">
                             Drop or click to upload Image
                           </p>
                         </label>
                       </div>
                     ) : (
-                      <div class="image-uploader-Event">
+                      <div className="image-uploader-Event">
                         <input
                           type="file"
                           id="fileInput"
                           accept="image/*"
                           ref={fileInputRef}
-                          class="file-input-EventImage-uploader"
+                          className="file-input-EventImage-uploader"
                           onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <img
-                          src={field.name}
+                          src={viewImage}
                           alt={field.name}
                           className="preview-image"
                           onClick={() => fileInputRef.current.click()}
@@ -431,21 +418,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     )}
                   </div>
                 )}
-
-                {/* {field.type === SWITCH && (
-                    <div className="form-check form-switch form-switch-lg mb-3">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="customSwitchsizelg"
-                        // defaultChecked
-                        checked={formData[field.name] ? formData[field.name] : () => {handleChange(field, field.defaultValue); return field.defaultValue}}
-                        onChange={(e) => {
-                          handleChange(field, !formData[field.name])
-                        }}
-                        value={formData[field.name]}
-                      />
-                    </div>)} */}
               </div>
               <span className="text-danger">
                 {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}

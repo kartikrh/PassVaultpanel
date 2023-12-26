@@ -1,13 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
-
+import { updateToastData } from '../toasterSlice';
+import { ERROR, SUCCESS } from '../../components/Common/Const';
 export const addTeamToDb = createAsyncThunk(
     'team/addTeam',
-    async (teamData, { rejectWithValue }) => {
+    async (teamData, { rejectWithValue,dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/team/save', teamData);
+            dispatch(updateToastData({ data: "Team data saved successfully.", type: SUCCESS }));
             return response?.result;
         } catch (error) {
+            dispatch(updateToastData({ data: error.response.data, type: ERROR }));
             return rejectWithValue(error.response.data);
         }
     }

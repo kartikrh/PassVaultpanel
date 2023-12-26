@@ -93,8 +93,8 @@ const Index = () => {
           message: `${response.title} status updated successfully`,
           color: "green",
           header: "Success",
-        })
-        setToastStatus(true)
+        });
+        setToastStatus(true);
         fetchData();
       })
       .catch((error) => {
@@ -103,8 +103,8 @@ const Index = () => {
           message: error.error.message,
           color: "red",
           header: "Warning",
-        })
-        setToastStatus(true)
+        });
+        setToastStatus(true);
       });
   };
 
@@ -120,8 +120,8 @@ const Index = () => {
             message: `${response.title} deleted successfully`,
             color: "green",
             header: "Success",
-          })
-          setToastStatus(true)
+          });
+          setToastStatus(true);
           fetchData();
         })
         .catch((error) => {
@@ -129,8 +129,8 @@ const Index = () => {
             message: error.error.message,
             color: "red",
             header: "Warning",
-          })
-          setToastStatus(true)
+          });
+          setToastStatus(true);
         });
     }
   };
@@ -234,7 +234,7 @@ const Index = () => {
             handlePermissions("isAdd", record, record.IsAdd);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.IsAdd ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -252,7 +252,7 @@ const Index = () => {
           }}
         >
           {" "}
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.IsEdit ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -269,7 +269,7 @@ const Index = () => {
             handlePermissions("isDelete", record, record.IsDelete);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.IsDelete ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
