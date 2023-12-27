@@ -103,9 +103,15 @@ function AddCompetitions() {
       });
   };
   const handleSaveClick = async (saveAction) => {
-    setCurrentSaveAction(saveAction);
-    dispatch(addCompetitionToDb(convertObjtoFormData({ ...finalizeRef.current.finalizeData(), competitionId })));
-  };
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            competitionId
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addCompetitionToDb({ ...dataToSave, ...extraData }))
+    }
+};
   const handleBackClick = () => {
     navigate("/competition");
   };

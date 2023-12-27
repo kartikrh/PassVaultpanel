@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { UserFields } from "../../constants/FieldConst/UserConst";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+
 import {
   Button,
   ButtonDropdown,
@@ -46,6 +48,8 @@ function AddUsers() {
       fetchData(userId);
       setDisabledFields({
         parentId: true,
+        userType: true,
+        userName: true
       });
     }
   }, [userId]);
@@ -58,7 +62,7 @@ function AddUsers() {
       else if (currentSaveAction === SAVE_AND_NEW)
         finalizeRef.current.resetForm();
     }
-  }, []);
+  });
 
   const fetchData = async (id) => {
     await axiosInstance
@@ -101,9 +105,15 @@ function AddUsers() {
   };
   
   const handleSaveClick = async (saveAction) => {
-    setCurrentSaveAction(saveAction);
-    dispatch(addUserToDb({ ...finalizeRef.current.finalizeData(), userId }));
-  };
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            id: userId
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addUserToDb({ ...dataToSave, ...extraData }))
+    }
+};
 
   const handleBackClick = () => {
     navigate("/users");
@@ -116,7 +126,7 @@ function AddUsers() {
             <Col xs={12} md={8} lg={9}>
               <h3>Users </h3>
             </Col>
-
+            {isLoading && <SpinnerModel />}
             <Card>
               <CardBody>
                 <Row>

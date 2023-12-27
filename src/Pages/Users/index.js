@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import ChangePasswordModel from "../../components/Model/changePassword";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import { Tooltip } from 'antd';
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -106,6 +107,7 @@ const Index = () => {
       });
   };
 
+
   const handleEdit = (id) => {
     navigate("/addUsers", { state: { userId: id } });
   };
@@ -189,7 +191,7 @@ const Index = () => {
     {
       title: "Password",
       dataIndex: "password",
-      render: (text, record) => <span>*******</span>,
+      render: (text, record) => <Tooltip title={text}> <span>*******</span> </Tooltip>,
       key: "password",
       sort: true,
       style: { width: "100%" },
@@ -233,6 +235,7 @@ const Index = () => {
     },
   ];
 
+  
   //elements required
   const tableElement = {
     title: "Users",

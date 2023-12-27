@@ -121,9 +121,15 @@ function AddTeams() {
       });
   };
   const handleSaveClick = async (saveAction) => {
-    setCurrentSaveAction(saveAction);
-    dispatch(addTeamToDb(convertObjtoFormData({ ...finalizeRef.current.finalizeData(), teamId })));
-  };
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            teamId
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addTeamToDb({ ...dataToSave, ...extraData }))
+    }
+};
   const handleBackClick = () => {
     navigate("/teams");
   };
