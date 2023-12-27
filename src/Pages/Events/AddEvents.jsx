@@ -109,9 +109,15 @@ function AddEvents() {
       });
   };
   const handleSaveClick = async (saveAction) => {
-    setCurrentSaveAction(saveAction);
-    dispatch(addEventToDb({ ...finalizeRef.current.finalizeData(), eventId }));
-  };
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            eventId,
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addEventToDb({ ...dataToSave, ...extraData }))
+    }
+};
   const handleBackClick = () => {
     navigate("/events");
   };

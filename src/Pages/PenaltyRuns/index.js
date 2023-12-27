@@ -243,7 +243,7 @@ const Index = () => {
             handlePermissions("isActive", record, record.isActive);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },

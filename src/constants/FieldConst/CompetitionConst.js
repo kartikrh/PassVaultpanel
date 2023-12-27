@@ -4,6 +4,7 @@ export const CompetitionFields = [
     {
         name: "eventTypeId",
         label: "Event Type",
+        isRequired: true,
         parentclassName: "",
         type: SELECT,
         options: [{ label: "Select Event Type", value: "0" }],
@@ -13,12 +14,14 @@ export const CompetitionFields = [
     },
     {
         name: "competition",
+        isRequired: true,
         label: "Competition",
         parentclassName: "",
         type: TEXT,
     },
     {
         name: "refId",
+        isRequired: true,
         label: "Reference Id",
         parentclassName: "",
         type: TEXT,
