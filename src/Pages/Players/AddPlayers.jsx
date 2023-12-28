@@ -9,6 +9,7 @@ import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
+import { convertObjtoFormData } from '../../components/Common/Reusables/reusableMethods';
 
 function AddPlayer() {
     const finalizeRef = useRef(null);
@@ -46,6 +47,7 @@ function AddPlayer() {
                 finalizeRef.current.resetForm()
         }
     });
+
 
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/player/byId', { playerId: id })
@@ -111,7 +113,7 @@ function AddPlayer() {
                 playerId: id
             }
             setCurrentSaveAction(saveAction);
-            dispatch(addPlayerToDb({ ...dataToSave, ...extraData }))
+            dispatch(addPlayerToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
         }
     };
 
