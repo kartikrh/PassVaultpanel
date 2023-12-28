@@ -36,9 +36,11 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
     await axiosInstance
-      .post(`/admin/user/all`)
+      .post(`/admin/user/all`,{
+        isActive:isActive === undefined? true : isActive
+      })
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
@@ -297,6 +299,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
+            reFetchData={fetchData}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
