@@ -282,18 +282,23 @@ const Index = ({
   };
   // getting data for the table coming from the page && checking default status
   const fetchData = () => {
-    setTotal(dataSource.length);
     if (tableElement?.switch) {
       const switchData = dataSource.filter((val) => {
         return val.isActive === statusSwitch;
       });
+      const sliced = switchData.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
+      setTotal(switchData.length);
       setData(switchData);
-      
+      setData(sliced);
     } else {
       const sliced = dataSource.slice(
         currentPage * pageSize,
         currentPage * pageSize + pageSize
       );
+      setTotal(dataSource.length);
       setData(sliced);
     }
   };
