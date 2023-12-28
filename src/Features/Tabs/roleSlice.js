@@ -8,11 +8,11 @@ export const addRoleToDb = createAsyncThunk(
     async (roleData, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/roles/create', roleData);
-            dispatch(updateToastData({ data: "Role data saved successfully.", type: SUCCESS }));
+            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error.response.data, type: ERROR }));
-            return rejectWithValue(error.response.data);
+            dispatch(updateToastData({ data: error.message, type: ERROR }));
+            return rejectWithValue(error);
         }
     }
 );

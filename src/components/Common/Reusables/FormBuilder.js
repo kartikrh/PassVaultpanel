@@ -99,6 +99,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const resetForm = () => {
     setFormData({});
+    setViewImage(null);
   };
 
   const updateFormFromParent = (newData) => {
