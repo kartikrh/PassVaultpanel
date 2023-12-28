@@ -36,9 +36,10 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/paneltyRun/all`)
+      .post(`/admin/paneltyRun/all`,{isActive})
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -253,7 +254,7 @@ const Index = () => {
   const tableElement = {
     title: "Penalty Runs",
     headerSelect: false,
-    switch: false,
+    isActive: true,
     clone: false,
   };
 
@@ -282,7 +283,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck = {singleCheck}
-            // addModelFunction={setAddModelVisable}
+            reFetchData={fetchData}
             onAddNavigate={"/addPenalty"}
           />
           <DeleteTabModel

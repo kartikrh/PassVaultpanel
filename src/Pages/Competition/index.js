@@ -36,9 +36,12 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/competition/all`)
+      .post(`/admin/competition/all`,{
+        isActive
+      })
       .then((response) => {
         setData(response?.result);
         const eventTypes = Array.from(
@@ -243,8 +246,7 @@ const Index = () => {
     title: "Competition",
     headerSelect: false,
     eventTypeSelect: true,
-
-    switch: false,
+    isActive: true,
   };
 
   useEffect(() => {
@@ -273,6 +275,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={singleCheck}
+            reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
           />
           <DeleteTabModel

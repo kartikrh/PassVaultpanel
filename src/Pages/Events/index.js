@@ -34,9 +34,12 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/events/all`)
+      .post(`/admin/events/all`,{
+        isActive
+      })
       .then((response) => {
         setData(response?.result);
         const eventTypes = Array.from(
@@ -256,7 +259,7 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: true,
     competitionsSelect: true,
-    switch: false,
+    isActive: true,
   };
 
   useEffect(() => {
@@ -285,6 +288,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
+            reFetchData={fetchData}
             competitions={competitions}
             singleCheck={singleCheck}
             onAddNavigate={"/addEvents"}
