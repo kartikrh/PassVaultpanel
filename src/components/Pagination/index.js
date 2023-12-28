@@ -11,12 +11,14 @@ const Index = ({
   const shouldShowSizeChanger = total >= 10;
   const onShowSizeChange = (currentPage, pageSize) => {
     console.log("this is page Size", pageSize)
+    console.log("this is total", total)
     setPageSize(pageSize);
     setCurrentPage(currentPage - 1);
   };
   useEffect(() => {
+
     fetchData();
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize,total]);
   return (
     <Pagination
       showSizeChanger = {shouldShowSizeChanger}

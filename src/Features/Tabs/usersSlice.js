@@ -7,7 +7,7 @@ export const addUserToDb = createAsyncThunk(
     async (data, { rejectWithValue ,dispatch}) => {
         try {
             const response = await axiosInstance.post('/admin/user/save', data);
-            dispatch(updateToastData({ data: "Users data saved successfully.", type: SUCCESS }));
+            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));

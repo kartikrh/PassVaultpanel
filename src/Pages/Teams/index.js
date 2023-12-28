@@ -62,22 +62,6 @@ const Index = () => {
     }
   };
 
-  //permissions function
-  const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/player/save`, {
-        teamId: record.teamId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
-  };
-
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance

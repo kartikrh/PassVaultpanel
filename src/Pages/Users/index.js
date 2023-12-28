@@ -10,6 +10,7 @@ import ChangePasswordModel from "../../components/Model/changePassword";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
+import Toaster from "../../components/Toaster";
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -22,7 +23,13 @@ const Index = () => {
   // model state
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  //toast
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
@@ -70,9 +77,21 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
 
@@ -86,9 +105,21 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
+        setToast({
+          message: response?.result,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
 
@@ -254,6 +285,14 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Users" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}

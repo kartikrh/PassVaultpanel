@@ -9,7 +9,7 @@ export const addEventToDb = createAsyncThunk(
     async (userData, { rejectWithValue,dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/events/save', userData);
-            dispatch(updateToastData({ data: "Event data saved successfully.", type: SUCCESS }));
+            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));
