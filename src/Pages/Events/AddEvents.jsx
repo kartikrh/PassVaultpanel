@@ -23,6 +23,7 @@ import {
 import { addEventToDb } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 function AddEvents() {
   const finalizeRef = useRef(null);
@@ -129,9 +130,9 @@ function AddEvents() {
             <Col xs={12} md={8} lg={9}>
               <h3>Events </h3>
             </Col>
-
             <Card>
               <CardBody>
+                {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
                     className="mb-3"

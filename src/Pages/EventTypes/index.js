@@ -74,7 +74,7 @@ const Index = () => {
       })
       .then((response) => {
         setToast({
-          message: `${response.title} status updated successfully`,
+          message: response?.message,
           color: "green",
           header: "Success",
         });
@@ -84,7 +84,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
           header: "Warning",
         });
@@ -103,7 +103,7 @@ const Index = () => {
         fetchData();
         setDeleteModelVisable(false);
         setToast({
-          message: response.result.message,
+          message: response?.message,
           color: "green",
           header: "Success",
         });
@@ -112,7 +112,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
           header: "Warning",
         });

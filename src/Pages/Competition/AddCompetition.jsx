@@ -22,6 +22,7 @@ import {
 } from "../../components/Common/Const";
 import { addCompetitionToDb } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 const convertObjtoFormData = (obj) => {
   const formData = new FormData();
@@ -105,13 +106,13 @@ function AddCompetitions() {
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
-        const extraData = {
-            competitionId
-        }
-        setCurrentSaveAction(saveAction);
-        dispatch(addCompetitionToDb({ ...dataToSave, ...extraData }))
+      const extraData = {
+        competitionId
+      }
+      setCurrentSaveAction(saveAction);
+      dispatch(addCompetitionToDb({ ...dataToSave, ...extraData }))
     }
-};
+  };
   const handleBackClick = () => {
     navigate("/competition");
   };
@@ -123,9 +124,9 @@ function AddCompetitions() {
             <Col xs={12} md={8} lg={9}>
               <h3>Competitions </h3>
             </Col>
-
             <Card>
               <CardBody>
+                {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
                     className="mb-3"

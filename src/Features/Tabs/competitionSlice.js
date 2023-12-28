@@ -5,13 +5,13 @@ import { ERROR, SUCCESS } from '../../components/Common/Const';
 
 export const addCompetitionToDb = createAsyncThunk(
     'competition/addCompetition',
-    async (competitionData, { rejectWithValue,dispatch }) => {
+    async (competitionData, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/competition/save', competitionData);
-            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
+            dispatch(updateToastData({ data: response?.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error.response.data, type: ERROR }));
+            dispatch(updateToastData({ data: error.message, type: ERROR }));
             return rejectWithValue(error.response.data);
         }
     }
