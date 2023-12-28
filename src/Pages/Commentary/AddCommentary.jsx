@@ -69,7 +69,7 @@ function AddCommentary() {
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
-                            return { label: item.competition, value: item.competitionId }
+                            return { label: item?.competition, value: item?.competitionId }
                         })
                         setMasterData((preData) => ({
                             ...preData,
