@@ -35,7 +35,17 @@ const convertObjtoFormData = (obj) => {
   }
   return formData
 }
+const formatMultiSelectDataPlayers = (inputList) => {
+  const outputList = [];
 
+  inputList.forEach((item) =>
+    item.displayOrder !== undefined
+      ? (outputList[item.displayOrder - 1] = item.playerId)
+      : outputList.push(item.playerId)
+  );
+
+  return outputList;
+};
 function AddTeams() {
   const finalizeRef = useRef(null);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -80,12 +90,10 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/team/byId", { teamId })
       .then((response) => {
-        const formattedData = response?.result.players?.map(item => {
-          return { label: item.playerName, value: item.playerId }
-        })
-        console.log("this is formattedData ====>>>>", formattedData)
-        console.log(response.result.players)
-        setInitialEditData({ ...response?.result, players: formattedData });
+        setInitialEditData({
+          ...response?.result,
+          players: formatMultiSelectDataPlayers(response?.result?.players)
+        });
       })
       .catch((error) => {
         // setIsLoading(false)

@@ -60,7 +60,7 @@ export const PlayerFields = [
     },
     {
         type: IMAGE,
-        name: "playerImage",
+        name: "image",
         label: "Player Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }

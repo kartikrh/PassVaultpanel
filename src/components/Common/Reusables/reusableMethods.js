@@ -92,14 +92,4 @@ export const convertDateString = (dateString) => {
   return "";
 }
 
-export const convertObjtoFormData = (obj) => {
-  const formData = new FormData();
-  for (const key in obj) {
-    if (key === "image") {
-      typeof obj[key] !== "string" && formData.append(key, obj[key]);
-      continue;
-    }
-    formData.append(key, obj[key]);
-  }
-  return formData
-}
+
