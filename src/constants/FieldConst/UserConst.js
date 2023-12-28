@@ -77,6 +77,7 @@ export const UserFields = [
     {
         name: "isActive",
         label: "Is Active",
+        defaultValue: true,
         parentclassName: "",
         type: SWITCH
     },
