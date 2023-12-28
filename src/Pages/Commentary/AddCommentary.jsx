@@ -15,6 +15,17 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
 }
+const formatMultiSelectDataPlayers = (inputList) => {
+    const outputList = [];
+
+    inputList.forEach((item) =>
+        item.displayOrder !== undefined
+            ? (outputList[item.displayOrder - 1] = item.playerId)
+            : outputList.push(item.playerId)
+    );
+
+    return outputList;
+};
 function AddCommentary() {
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
@@ -203,12 +214,82 @@ function AddCommentary() {
     };
 
     const fetchData = async (id) => {
-        axiosInstance.post('/admin/tabs/byId', { id })
-            .then((response) => {
-                setInitialEditData(response?.result);
+        let updateScreenData = {}
+        let newMasterData = {}
+        // setInitialEditData(response?.result);
+        await axiosInstance.post('/admin/commentary/byId', { commentaryId: id })
+            .then(async (response) => {
+                console.log("Update Screen Data", response?.result)
+                updateScreenData = {
+                    ...response?.result,
+                    team1Players: formatMultiSelectDataPlayers(response?.result?.["team1Players"]),
+                    team2Players: formatMultiSelectDataPlayers(response?.result?.["team2Players"])
+                }
+                // Fetch Competition Options based on EventTypeId
+                await axiosInstance.post('/admin/competition/byeventTypeId', { eventTypeId: updateScreenData["eventTypeId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response)
+                        const formattedData = resultData?.map(item => {
+                            return { label: item?.competition, value: item?.competitionId }
+                        })
+                        console.log("getCompetitionData", formattedData)
+                        newMasterData = { ...newMasterData, competitionId: formattedData }
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
+                // Fetch Events based on Competition
+                await axiosInstance.post('/admin/events/bycompetitionId', { competitionId: updateScreenData["competitionId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response)
+                        const formattedData = resultData?.map(item => {
+                            return { label: item.eventName, value: item.eventId }
+                        })
+                        console.log("getEventData", formattedData)
+                        console.log("Previous Data", newMasterData)
+                        newMasterData = { ...newMasterData, eventId: formattedData }
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
+                await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team1Id"] })
+                    .then((response) => {
+                        const formattedData = response?.result?.map(item => {
+                            return { label: item.playerName, value: item.playerId }
+                        })
+                        newMasterData = {
+                            ...newMasterData,
+                            "team1Captain": formattedData,
+                            "team1Kipper": formattedData,
+                            "team1Players": formattedData
+                        };
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
+                await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team2Id"] })
+                    .then((response) => {
+                        const formattedData = response?.result?.map(item => {
+                            return { label: item.playerName, value: item.playerId }
+                        })
+                        newMasterData = {
+                            ...newMasterData,
+                            "team2Captain": formattedData,
+                            "team2Kipper": formattedData,
+                            "team2Players": formattedData
+                        };
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error, type: ERROR }));
+                    });
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
+        setMasterData((preData) => ({
+            ...preData,
+            ...newMasterData
+        }));
+        setInitialEditData((preData) => ({
+            ...preData,
+            ...updateScreenData
+        }));
+        console.log(newMasterData, updateScreenData)
     };
 
     const fetchMasterData = async () => {

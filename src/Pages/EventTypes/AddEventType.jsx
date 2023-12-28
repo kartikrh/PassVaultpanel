@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addEventTypeToDb } from '../../Features/Tabs/eventTypesSlice';
 import axiosInstance from '../../Features/axios';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 const convertObjtoFormData = (obj) => {
     const formData = new FormData();
@@ -83,9 +84,9 @@ function AddEventType() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Event Types</h3>
                         </Col>
-
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
