@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import {mapCommentaryStatus} from './functions'
+import { mapCommentaryStatus } from './functions'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -31,6 +32,7 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
+  const navigate = useNavigate();
 
   // fetch data
   const fetchData = async () => {
@@ -115,6 +117,15 @@ const Index = () => {
         setToastStatus(true);
       });
   };
+
+  const handleEdit = (id) => {
+    navigate("/addCommentary", { state: { userId: id } });
+  };
+
+  const handleBackClick = () => {
+    navigate("/commentary");
+};
+
   //table columns
   const columns = [
     {
@@ -152,7 +163,11 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit"
+        onClick={() => {
+            handleEdit(record.commentaryId);
+          }}
+      ></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -172,7 +187,7 @@ const Index = () => {
         </span>
       ),
       key: "eventDate",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
 
@@ -183,21 +198,21 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{text}</span>
       ),
       key: "eventName",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
       title: "Team",
       dataIndex: "team1Name",
       key: "team1Name",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
       title: "Competitor",
       dataIndex: "team2Name",
       key: "team2Name",
-      sort:true,
+      sort: true,
       style: { width: "10%" },
     },
     {
@@ -207,7 +222,7 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{mapCommentaryStatus(text)}</span>
       ),
       key: "commentaryStatus",
-      sort:true,
+      sort: true,
       style: { width: "40%" },
     },
     {
@@ -219,7 +234,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            
+
           }}
         >
           <i className="bx bx-plus"></i>
@@ -263,7 +278,8 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            singleCheck = {singleCheck}
+            singleCheck={singleCheck}
+            onAddNavigate={"/addCommentary"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

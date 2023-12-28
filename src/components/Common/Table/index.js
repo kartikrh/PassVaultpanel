@@ -288,6 +288,7 @@ const Index = ({
         return val.isActive === statusSwitch;
       });
       setData(switchData);
+      
     } else {
       const sliced = dataSource.slice(
         currentPage * pageSize,
@@ -474,7 +475,7 @@ const Index = ({
                 <Col className="col-sm-auto">
                   <span>
                     Showing {data.length} of{" "}
-                    {tableElement.title === "Tabs"
+                    {tableElement.title === "Tabs" || "Users"
                       ? data?.length
                       : dataSource?.length}{" "}
                     entries

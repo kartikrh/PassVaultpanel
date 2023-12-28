@@ -4,13 +4,14 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { TabFields } from '../../constants/FieldConst/TabConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addTabToDb } from '../../Features/Tabs/tabsSlice';
 import axiosInstance from '../../Features/axios';
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { updateToastData } from '../../Features/toasterSlice';
 
 function AddTabs() {
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -38,44 +39,44 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
+            if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/tabs")
             else if (currentSaveAction === SAVE_AND_NEW)
                 finalizeRef.current.resetForm()
         }
     });
-
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/tabs/byId', { id })
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
-
     const fetchMasterData = async () => {
         await axiosInstance.post('/admin/tabs/all')
             .then((response) => {
                 setMasterData({
                     "parentId":
-                        response.data?.result?.map(item => {
+                        response?.result?.map(item => {
                             return { label: item.tabName, value: item.encryptedTabId }
                         })
                 });
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
-
-
     const handleSaveClick = async (saveAction) => {
-        setCurrentSaveAction(saveAction);
-        dispatch(addTabToDb({ ...finalizeRef.current.finalizeData(), id }))
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            const extraData = {
+                id: id
+            }
+            setCurrentSaveAction(saveAction);
+            dispatch(addTabToDb({ ...dataToSave, ...extraData }))
+        }
     };
-
     const handleBackClick = () => {
         navigate("/tabs");
     };
@@ -88,9 +89,9 @@ function AddTabs() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Tabs </h3>
                         </Col>
-
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
@@ -125,14 +126,6 @@ function AddTabs() {
                 </Container>
             </div>
         </React.Fragment >
-        //         {
-        //     snackbarMessage && (
-        //         <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-        //             {snackbarMessage}
-        //         </div>
-        //     )
-        // }
-        // </div >
     );
 }
 

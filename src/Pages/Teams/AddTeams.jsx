@@ -1,93 +1,214 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { TabFields } from '../../constants/FieldConst/TabConst';
+import FormBuilder from "../../components/Common/Reusables/FormBuilder";
+import { TeamFields } from '../../constants/FieldConst/TeamConst'
+import {
+  Button,
+  ButtonDropdown,
+  Card,
+  CardBody,
+  Col,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
+} from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  SAVE,
+  SAVE_AND_CLOSE,
+  SAVE_AND_NEW,
+} from "../../components/Common/Const";
+import { addTeamToDb } from "../../Features/Tabs/teamSlice";
+import axiosInstance from "../../Features/axios";
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
+const convertObjtoFormData = (obj) => {
+  const formData = new FormData();
+  for (const key in obj) {
+    if (key === "image") {
+      typeof obj[key] !== "string" && formData.append(key, obj[key]);
+      continue;
+    }
+    formData.append(key, obj[key]);
+  }
+  return formData
 }
 
 function AddTeams() {
-    const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [initialEditData, setInitialEditData] = useState(undefined);
-    let navigate = useNavigate();
-    const query = useQuery();
-    const id = query.get('id');
+  const finalizeRef = useRef(null);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [drp_up, setDrp_up] = useState(false);
+  const [initialEditData, setInitialEditData] = useState(undefined);
+  const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+  const [masterData, setMasterData] = useState({});
+  const [disabledFields, setDisabledFields] = useState({});
+  const { isSaved, isLoading, error } = useSelector(
+    (state) => state.tabsData.team
+  );
+  const dispatch = useDispatch();
+  let navigate = useNavigate();
+  const location = useLocation();
+  const teamId = location.state?.userId || "0";
 
-    useEffect(() => {
-        if (id) {
-            fetchData(id);
+  useEffect(() => {
+    fetchMasterData();
+  }, []);
+
+  useEffect(() => {
+    if (teamId !== "0") {
+      fetchData(teamId);
+      setDisabledFields({
+        parentId: true,
+        displayType: true,
+      });
+    }
+  }, [teamId]);
+
+  useEffect(() => {
+    if (isSaved) {
+      if (currentSaveAction === SAVE)
+        setSnackbarMessage("Data saved successfully!");
+      else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/teams");
+      else if (currentSaveAction === SAVE_AND_NEW)
+        finalizeRef.current.resetForm();
+    }
+  });
+
+  const fetchData = async (id) => {
+    await axiosInstance
+      .post("/admin/team/byId", { teamId })
+      .then((response) => {
+        const formattedData = response?.result.players?.map(item => {
+          return { label: item.playerName, value: item.playerId }
+      })
+      console.log("this is formattedData ====>>>>", formattedData)
+      console.log(response.result.players)
+        setInitialEditData({...response?.result, players: formattedData});
+      })
+      .catch((error) => {
+        // setIsLoading(false)
+      });
+  };
+
+  const fetchMasterData = async () => {
+    await axiosInstance
+      .post("/admin/eventType/all")
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          eventTypeId: response.result?.map((item) => {
+            return { label: item.eventType, value: item.eventTypeId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        // setIsLoading(false)
+      });
+
+    await axiosInstance
+      .post("/admin/player/all")
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          players: response.result?.map((item) => {
+            return { label: item.playerName, value: item.playerId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        // setIsLoading(false)
+      });
+  };
+  const handleSaveClick = async (saveAction) => {
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            teamId
         }
-    }, [id]);
+        setCurrentSaveAction(saveAction);
+        dispatch(addTeamToDb({ ...dataToSave, ...extraData }))
+    }
+};
+  const handleBackClick = () => {
+    navigate("/teams");
+  };
+  
+  return (
+    <React.Fragment>
+      <div className="page-content">
+        <Container fluid={true}>
+          <Row>
+            <Col xs={12} md={8} lg={9}>
+              <h3>Teams </h3>
+            </Col>
 
-    const fetchData = async (id) => {
-        try {
-            const response = await fetch(`https://your-api-endpoint.com/data?id=${id}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setInitialEditData(data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setSnackbarMessage('Error fetching data');
-        }
-    };
+            <Card>
+              <CardBody>
+                <Row>
+                  <Col
+                    className="mb-3"
+                    xs={12}
+                    md={{ span: 4, offset: 8 }}
+                    lg={{ span: 3, offset: 9 }}
+                  >
+                    <button
+                      className="btn btn-danger mx-1"
+                      onClick={handleBackClick}
+                    >
+                      Back
+                    </button>
+                    <ButtonDropdown
+                      direction="down"
+                      isOpen={drp_up}
+                      toggle={() => setDrp_up(!drp_up)}
+                    >
+                      <Button
+                        id="caret"
+                        color="primary"
+                        onClick={() => {
+                          handleSaveClick(SAVE_AND_CLOSE);
+                        }}
+                      >
+                        Save & Close
+                      </Button>
+                      <DropdownToggle caret color="primary">
+                        <i className="mdi mdi-chevron-down" />
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => {
+                            handleSaveClick(SAVE);
+                          }}
+                        >
+                          Save
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            handleSaveClick(SAVE_AND_NEW);
+                          }}
+                        >
+                          Save & New
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </ButtonDropdown>
+                  </Col>
+                </Row>
+                <FormBuilder
+                  ref={finalizeRef}
+                  fields={TeamFields}
+                  editFormData={initialEditData}
+                  masterData={masterData}
+                  disabledFields={disabledFields}
 
-    const handleSaveClick = async () => {
-        try {
-            const postData = {
-                // your data here
-            };
-
-            // Replace with your API endpoint
-            const response = await fetch('https://your-api-endpoint.com/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(postData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            // Show snackbar on success
-            setSnackbarMessage("Data saved successfully!");
-        } catch (error) {
-            console.error('Error saving data:', error);
-            setSnackbarMessage("");
-        }
-    };
-
-    const handleBackClick = () => {
-        navigate("/Teams");
-    };
-
-    const handleCloseSnackbar = () => {
-        setSnackbarMessage('');
-    };
-
-    return (
-        <div>
-            <h1>Teams</h1>
-            <button className="btn btn-danger" onClick={handleBackClick}>Back</button>
-            <button className="btn btn-primary" onClick={handleSaveClick}>Save</button>
-            <FormBuilder
-                ref={finalizeRef}
-                fields={TabFields}
-                propsFormData={initialEditData}
-            />
-
-            {snackbarMessage && (
-                <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-                    {snackbarMessage}
-                </div>
-            )}
-        </div>
-    );
+                />
+              </CardBody>
+            </Card>
+          </Row>
+        </Container>
+      </div>
+    </React.Fragment>
+  );
 }
 
 export default AddTeams;

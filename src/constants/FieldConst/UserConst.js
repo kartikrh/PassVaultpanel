@@ -2,7 +2,7 @@ import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const UserFields = [
     {
-        name: "parentName",
+        name: "parentId",
         label: "Parent Name",
         parentclassName: "",
         type: SELECT,
@@ -54,8 +54,10 @@ export const UserFields = [
         name: "password",
         label: "Password",
         parentclassName: "",
-        type: TEXT,
+        type: "password",
         isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         requiredErrorMessage: "Please enter password.",
     },
     {

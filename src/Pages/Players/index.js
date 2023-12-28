@@ -9,6 +9,7 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
+import { useNavigate } from "react-router-dom";
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -27,6 +28,9 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
+
+  const navigate = useNavigate();
+
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -115,6 +119,9 @@ const Index = () => {
         setSingleCheck([]);
       });
   };
+  const handleEdit = (id) => {
+    navigate("/addPlayer", { state: { userId: id } });
+  };
   //table columns
   const columns = [
     {
@@ -152,7 +159,11 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit"
+      onClick={() => {
+        handleEdit(record.playerId);
+      }}
+      ></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -215,7 +226,7 @@ const Index = () => {
             handlePermissions("isActive", record, record.isActive);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -253,6 +264,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
+            onAddNavigate={"/addPlayer"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

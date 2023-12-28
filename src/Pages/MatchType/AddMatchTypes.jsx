@@ -1,64 +1,67 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { TabFields } from '../../constants/FieldConst/TabConst';
+import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
+import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
+import axiosInstance from '../../Features/axios';
+import { updateToastData } from '../../Features/toasterSlice';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
-
-function AddMatchTypes() {
+function AddTabs() {
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
+    const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+    const [masterData, setMasterData] = useState({});
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
+    const dispatch = useDispatch();
     let navigate = useNavigate();
-    const query = useQuery();
-    const id = query.get('id');
+    const location = useLocation();
+    const id = location.state?.userId || "0";
 
     useEffect(() => {
-        if (id) {
+        if (id !== "0") {
             fetchData(id);
         }
     }, [id]);
 
-    const fetchData = async (id) => {
-        try {
-            const response = await fetch(`https://your-api-endpoint.com/data?id=${id}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setInitialEditData(data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setSnackbarMessage('Error fetching data');
+    useEffect(() => {
+        if (isSaved) {
+            if (currentSaveAction === SAVE) { }
+            else if (currentSaveAction === SAVE_AND_CLOSE)
+                navigate("/matchType")
+            else if (currentSaveAction === SAVE_AND_NEW)
+                finalizeRef.current.resetForm()
         }
+    });
+
+    const fetchData = async (id) => {
+        await axiosInstance.post('/admin/matchType/byId', { matchTypeId: id })
+            .then((response) => {
+                setInitialEditData(response?.result);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
+            });
     };
 
-    const handleSaveClick = async () => {
-        try {
-            const postData = {
-                // your data here
-            };
 
-            // Replace with your API endpoint
-            const response = await fetch('https://your-api-endpoint.com/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(postData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+    const handleSaveClick = async (saveAction) => {
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            let totalOvers;
+            if (dataToSave["isLimitedOvers"])
+                totalOvers = dataToSave["oversPerInings"] * (dataToSave["noOfIningsPerSide"] * 2)
+            else
+                totalOvers = -1
+            const extraData = {
+                matchTypeId: id,
+                totalOversInMatch: totalOvers
             }
-
-            // Show snackbar on success
-            setSnackbarMessage("Data saved successfully!");
-        } catch (error) {
-            console.error('Error saving data:', error);
-            setSnackbarMessage("");
+            setCurrentSaveAction(saveAction);
+            dispatch(addMatchTypeToDb({ ...dataToSave, ...extraData }))
         }
     };
 
@@ -66,28 +69,51 @@ function AddMatchTypes() {
         navigate("/matchType");
     };
 
-    const handleCloseSnackbar = () => {
-        setSnackbarMessage('');
-    };
-
     return (
-        <div>
-            <h1>Match Types</h1>
-            <button className="btn btn-danger" onClick={handleBackClick}>Back</button>
-            <button className="btn btn-primary" onClick={handleSaveClick}>Save</button>
-            <FormBuilder
-                ref={finalizeRef}
-                fields={TabFields}
-                propsFormData={initialEditData}
-            />
-
-            {snackbarMessage && (
-                <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-                    {snackbarMessage}
-                </div>
-            )}
-        </div>
+        <React.Fragment>
+            <div className="page-content">
+                <Container fluid={true}>
+                    <Row>
+                        <Col xs={12} md={8} lg={9}>
+                            <h3>Match Type </h3>
+                        </Col>
+                        <Card>
+                            <CardBody>
+                                {isLoading && <SpinnerModel />}
+                                <Row>
+                                    <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
+                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
+                                        <ButtonDropdown
+                                            direction="down"
+                                            isOpen={drp_up}
+                                            toggle={() => setDrp_up(!drp_up)}
+                                        >
+                                            <Button id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
+                                                Save & Close
+                                            </Button>
+                                            <DropdownToggle caret color="primary">
+                                                <i className="mdi mdi-chevron-down" />
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                                <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
+                                                <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
+                                            </DropdownMenu>
+                                        </ButtonDropdown>
+                                    </Col>
+                                </Row>
+                                <FormBuilder
+                                    ref={finalizeRef}
+                                    fields={MatchTypeFields}
+                                    editFormData={initialEditData}
+                                    masterData={masterData}
+                                />
+                            </CardBody>
+                        </Card>
+                    </Row>
+                </Container>
+            </div>
+        </React.Fragment >
     );
 }
 
-export default AddMatchTypes;
+export default AddTabs;

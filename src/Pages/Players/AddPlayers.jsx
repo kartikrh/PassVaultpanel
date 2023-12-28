@@ -1,93 +1,170 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { TabFields } from '../../constants/FieldConst/TabConst';
+import { PlayerFields } from '../../constants/FieldConst/PlayerConst';
+import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
+import axiosInstance from '../../Features/axios';
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { updateToastData } from '../../Features/toasterSlice';
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
-
-function AddPlayers() {
+function AddPlayer() {
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
+    const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+    const [masterData, setMasterData] = useState({});
+    const [disabledFields, setDisabledFields] = useState({});
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.player);
+    const dispatch = useDispatch();
     let navigate = useNavigate();
-    const query = useQuery();
-    const id = query.get('id');
+    const location = useLocation();
+    const id = location.state?.userId || "0";
 
     useEffect(() => {
-        if (id) {
+        fetchMasterData()
+    }, []);
+
+    useEffect(() => {
+        if (id !== "0") {
             fetchData(id);
+            setDisabledFields({
+                "parentId": true,
+                "displayType": true
+            })
         }
     }, [id]);
 
-    const fetchData = async (id) => {
-        try {
-            const response = await fetch(`https://your-api-endpoint.com/data?id=${id}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setInitialEditData(data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setSnackbarMessage('Error fetching data');
+    useEffect(() => {
+        if (isSaved) {
+            if (currentSaveAction === SAVE) { }
+            else if (currentSaveAction === SAVE_AND_CLOSE)
+                navigate("/Players")
+            else if (currentSaveAction === SAVE_AND_NEW)
+                finalizeRef.current.resetForm()
         }
+    });
+
+    const fetchData = async (id) => {
+        await axiosInstance.post('/admin/player/byId', { playerId: id })
+            .then((response) => {
+                setInitialEditData(response?.result);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
+            });
     };
 
-    const handleSaveClick = async () => {
-        try {
-            const postData = {
-                // your data here
-            };
-
-            // Replace with your API endpoint
-            const response = await fetch('https://your-api-endpoint.com/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(postData),
+    const fetchMasterData = async () => {
+        axiosInstance.post('/admin/team/all')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData, "teamId":
+                        response?.result?.map(item => {
+                            return { label: item.teamName, value: item.teamId }
+                        })
+                }));
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
+        axiosInstance.post('/admin/eventType/all')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData, "eventTypeId":
+                        response?.result?.map(item => {
+                            return { label: item.eventType, value: item.eventTypeId }
+                        })
+                }));
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
+            });
+        axiosInstance.post('/admin/player/allPlayerTypes')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData, "playerTypeId":
+                        response?.result?.map(item => {
+                            return { label: item.playerType, value: item.playerTypeId }
+                        })
+                }));
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
+            });
+        axiosInstance.post('admin/player/allBowlingTypes')
+            .then((response) => {
+                setMasterData((prevData) => ({
+                    ...prevData,
+                    "bowlingStyle":
+                        response?.result?.map(item => {
+                            return { label: item.bowlingType, value: item.bowlingTypeId }
+                        })
+                }));
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error, type: ERROR }));
+            });
+    };
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+    const handleSaveClick = async (saveAction) => {
+        const dataToSave = finalizeRef.current.finalizeData()
+        if (dataToSave) {
+            const extraData = {
+                playerId: id
             }
-
-            // Show snackbar on success
-            setSnackbarMessage("Data saved successfully!");
-        } catch (error) {
-            console.error('Error saving data:', error);
-            setSnackbarMessage("");
+            setCurrentSaveAction(saveAction);
+            dispatch(addPlayerToDb({ ...dataToSave, ...extraData }))
         }
     };
 
     const handleBackClick = () => {
-        navigate("/players");
-    };
-
-    const handleCloseSnackbar = () => {
-        setSnackbarMessage('');
+        navigate("/Players");
     };
 
     return (
-        <div>
-            <h1>Players</h1>
-            <button className="btn btn-danger" onClick={handleBackClick}>Back</button>
-            <button className="btn btn-primary" onClick={handleSaveClick}>Save</button>
-            <FormBuilder
-                ref={finalizeRef}
-                fields={TabFields}
-                propsFormData={initialEditData}
-            />
-
-            {snackbarMessage && (
-                <div className="alert alert-success" role="alert" style={{ position: 'fixed', bottom: '20px', right: '20px' }} onClick={handleCloseSnackbar}>
-                    {snackbarMessage}
-                </div>
-            )}
-        </div>
+        <React.Fragment>
+            <div className="page-content">
+                <Container fluid={true}>
+                    <Row>
+                        <Col xs={12} md={8} lg={9}>
+                            <h3>Players </h3>
+                        </Col>
+                        <Card>
+                            <CardBody>
+                                {isLoading && <SpinnerModel />}
+                                <Row>
+                                    <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
+                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
+                                        <ButtonDropdown
+                                            direction="down"
+                                            isOpen={drp_up}
+                                            toggle={() => setDrp_up(!drp_up)}
+                                        >
+                                            <Button id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
+                                                Save & Close
+                                            </Button>
+                                            <DropdownToggle caret color="primary">
+                                                <i className="mdi mdi-chevron-down" />
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                                <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
+                                                <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
+                                            </DropdownMenu>
+                                        </ButtonDropdown>
+                                    </Col>
+                                </Row>
+                                <FormBuilder
+                                    ref={finalizeRef}
+                                    fields={PlayerFields}
+                                    editFormData={initialEditData}
+                                    masterData={masterData}
+                                    disabledFields={disabledFields}
+                                />
+                            </CardBody>
+                        </Card>
+                    </Row>
+                </Container>
+            </div>
+        </React.Fragment >
     );
 }
 
-export default AddPlayers;
+export default AddPlayer;

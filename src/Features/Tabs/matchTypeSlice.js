@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
-import { updateToastData } from '../toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
+import { updateToastData } from '../toasterSlice';
 
-export const addTabToDb = createAsyncThunk(
-    'tab/addTab',
+export const addMatchTypeToDb = createAsyncThunk(
+    'matchType/addMatchType',
     async (data, { rejectWithValue, dispatch }) => {
         try {
-            const response = await axiosInstance.post('/admin/tabs/save', data);
-            dispatch(updateToastData({ data: "Tab data saved successfully.", type: SUCCESS }));
+            const response = await axiosInstance.post('/admin/matchType/save', data);
+            dispatch(updateToastData({ data: "Match type data saved successfully.", type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));
@@ -17,8 +17,8 @@ export const addTabToDb = createAsyncThunk(
     }
 );
 
-const tabSlice = createSlice({
-    name: 'tab',
+const matchTypeSlice = createSlice({
+    name: 'matchType',
     initialState: {
         isSaved: undefined,
         isLoading: false,
@@ -27,18 +27,18 @@ const tabSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(addTabToDb.pending, (state) => {
+            .addCase(addMatchTypeToDb.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addTabToDb.fulfilled, (state, action) => {
+            .addCase(addMatchTypeToDb.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addTabToDb.rejected, (state, action) => {
+            .addCase(addMatchTypeToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export default tabSlice.reducer;
+export default matchTypeSlice.reducer;

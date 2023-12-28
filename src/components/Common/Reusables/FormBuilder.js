@@ -5,36 +5,27 @@ import Creatable from 'react-select/creatable';
 import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
-import { EMAIL, FILE_TYPE, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
   Col,
-  Card,
-  CardBody,
-  FormGroup,
-  Button,
-  CardTitle,
-  CardSubtitle,
-  Label,
   Input,
-  Container,
-  FormFeedback,
   Form,
 } from "reactstrap";
 
-const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields }, ref) => {
+const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [viewImage, setViewImage] = useState(null);
 
   const fileInputRef = useRef(null);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = (field, event) => {
     const file = event.target.files[0];
     setFormData((prevFormData) => ({
       ...prevFormData,
-      ["image"]: file,
+      [field.name]: file,
     }));
     if (file) {
       const reader = new FileReader();
@@ -47,38 +38,45 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   };
 
   useEffect(() => {
-    const isImageField = fields.findIndex(field=>field.type ===IMAGE) !== -1;
-    if (!_.isEmpty(editFormData) && _.isEmpty(formData)){
+    const isImageField = fields.findIndex(field => field.type === IMAGE) !== -1;
+    if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
       if (isImageField && editFormData?.image) {
-        // Fetch the image from the URL
         fetch(process.env.REACT_APP_BASE_URL + editFormData.image)
-        .then((response) => response.blob())
-        .then((blob) => {
-          // Convert the image data to base64
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setViewImage(reader.result);
-          };
-          reader.readAsDataURL(blob);
-        });
-        
+          .then((response) => response.blob())
+          .then((blob) => {
+            // Convert the image data to base64
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setViewImage(reader.result);
+            };
+            reader.readAsDataURL(blob);
+          });
       }
       setFormData(editFormData)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editFormData])
 
-  useEffect(()=>{
-console.log("this is masterData", masterData)
-  },[masterData])
+  useEffect(() => {
+    updateParentFormData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]);
+
+  const updateParentFormData = () => {
+    if (typeof onFormDataChange === 'function') {
+      onFormDataChange(formData);
+    }
+  };
+
+
   const validateAllFields = (doNotValidateFields) => {
     let errors = {};
 
     fields.forEach((field) => {
       const value = formData[field.name];
-
       if (field.isRequired && isValueEmpty(value) && !doNotValidateFields.includes(field.name)) {
         errors[field.name] =
-          field.requiredErrorMessage || "This field is required.";
+          field.requiredErrorMessage || `Please Enter ${field.label}`;
       } else if (field.isRequired && field.regex && !field.regex.test(value)) {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
@@ -103,8 +101,12 @@ console.log("this is masterData", masterData)
     setFormData({});
   };
 
-  // Expose the finalizeData & reset function to the parent using a ref
-  useImperativeHandle(ref, () => ({ finalizeData, resetForm }));
+  const updateFormFromParent = (newData) => {
+    setFormData((oldData) => ({
+      ...oldData,
+      ...newData
+    }))
+  }
 
   const handleChange = (field, value) => {
     const errors = { ...fieldErrors };
@@ -121,10 +123,16 @@ console.log("this is masterData", masterData)
       ...prevFormData,
       [field.name]: value,
     }));
-    // formData[field.name] !== value && editFormData[field.name] !== value
     setFieldErrors(errors);
   };
 
+  const fetchIsDependable = (field) => {
+    return (field.dependsOnField && formData[field.dependsOnField])
+      || !field.dependsOnField
+  }
+
+  // Expose the finalizeData & reset function to the parent using a ref
+  useImperativeHandle(ref, () => ({ finalizeData, resetForm, updateFormFromParent }));
   return (
 
     <Form
@@ -137,12 +145,15 @@ console.log("this is masterData", masterData)
     >
 
       <Row>
-        {fields?.map((field) => (
-          ((field.dependsOnField && formData[field.dependsOnField])
-            || !field.dependsOnField)
-          &&
-          <>
-            <Col className="mb-4" xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
+        {fields?.map((field, key) => (
+          <React.Fragment key={key} >
+            {field.type === DIVIDER &&
+              <>
+                <h5>{field.sectionLabel}</h5>
+                <div className="dropdown-divider"></div>
+              </>
+            }
+            <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <div className="lablediv">
                 <label
                   htmlFor={field.name}
@@ -153,13 +164,14 @@ console.log("this is masterData", masterData)
                 </label>
               </div>
             </Col >
-            <Col className="mb-4" xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
+            <Col className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.fieldColspan?.xs || 9} md={field.fieldColspan?.md || 4} lg={field.fieldColspan?.lg || 4}>
               <div className="col-md-10">
                 {field.type === TEXT && (
                   <Input
                     className="form-control"
+                    style={field?.customStyle}
                     type="text"
-                    disabled={field.disabled}
+                    isDisabled={disabledFields?.[field.name]}
                     id={field.name}
                     name={field.name}
                     value={formData[field.name] || ""}
@@ -172,6 +184,7 @@ console.log("this is masterData", masterData)
                 {field.type === EMAIL && (
                   <input
                     className="inputtag input_elem normal_input"
+                    style={field?.customStyle}
                     type={EMAIL}
                     id={field.name}
                     name={field.name}
@@ -182,7 +195,8 @@ console.log("this is masterData", masterData)
                 )}
                 {field.type === "password" && (
                   <input
-                    className="inputtag input_elem normal_input"
+                    style={field?.customStyle}
+                    className="inputtag input_elem normal_input form-control"
                     type="password"
                     id={field.name}
                     name={field.name}
@@ -193,8 +207,10 @@ console.log("this is masterData", masterData)
                 )}
                 {field.type === TEXT_AREA && (
                   <textarea
-                    className="inputtag input_elem textarea"
+                    className="inputtag input_elem textarea w-100 form-control"
+                    style={field?.customStyle}
                     id={field.name}
+                    rows={field?.defaultRows || 2}
                     name={field.name}
                     value={formData[field.name] || formData[field.dataKey] || ""}
                     onChange={(e) => handleChange(field, e.target.value)}
@@ -204,18 +220,19 @@ console.log("this is masterData", masterData)
                 {field.type === SELECT && (
                   <Select
                     classNamePrefix="select2-selection"
+                    style={field?.customStyle}
                     id={field.name}
                     name={field.name}
-                    isDisabled={disabledFields[field.name]}
+                    isDisabled={disabledFields?.[field.name]}
                     value={
-                      [].concat(field.options, masterData[field.name] || [])
+                      [].concat(field.options, masterData?.[field.name] || [])
                         .filter(e => {
                           if (formData[field.name])
                             return e?.value === formData[field.name]
                           else return e?.value === field.defaultValue
                         })
                     }
-                    options={[].concat(field.options, masterData[field.name] || [])}
+                    options={[].concat(field.options, masterData?.[field.name] || [])}
                     onChange={(selectedOption) => {
                       handleChange(field, selectedOption?.value || null);
                     }}
@@ -224,10 +241,47 @@ console.log("this is masterData", masterData)
                     isMulti={field.isMulti}
                   />
                 )}
-                {console.log(masterData)}
+                {/* {field.name === "eventDate" && console.log(formData, field.options, masterData[field.name], masterData)} */}
+                {field.type === MULTI_SELECT && (
+                  (() => {
+                    // Define options within the function scope
+                    let options = [].concat(field.options, masterData[field.name] || []);
+                    if (field.showSelectAll) {
+                      options = [{ label: "Select All", value: "all" }, ...options];
+                    }
+                    return (
+                      <Select
+                        classNamePrefix="select2-selection"
+                        style={field?.customStyle}
+                        id={field.name}
+                        name={field.name}
+                        isDisabled={disabledFields?.[field.name]}
+                        value={formData[field.name]?.map(val =>
+                          options.find(option => option.value === val))
+                        }
+                        options={options}
+                        onChange={(selectedOptions) => {
+                          if (selectedOptions.some(option => option.value === "all")) {
+                            // Select All option was chosen
+                            const allValues = options.filter(opt => opt.value !== "all").map(opt => opt.value);
+                            handleChange(field, allValues);
+                          } else {
+                            // Regular selection
+                            const values = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                            handleChange(field, values);
+                          }
+                        }}
+                        closeMenuOnSelect={!field.isMulti}
+                        required={field.isRequired}
+                        isMulti={true}
+                      />
+                    );
+                  })()
+                )}
                 {field.type === "creatable_select" && (
                   <Creatable
                     className="inputtag input_elem"
+                    style={field?.customStyle}
                     id={field.name}
                     name={field.name}
                     isClearable
@@ -270,6 +324,7 @@ console.log("this is masterData", masterData)
                       <label key={option.value} className="radio_option_label">
                         <input
                           className="inputtag normal_input"
+                          style={field?.customStyle}
                           type="radio"
                           name={field.name}
                           value={option.value}
@@ -289,6 +344,7 @@ console.log("this is masterData", masterData)
                 {field.type === FILE_TYPE && (
                   <input
                     className="file_input"
+                    style={field?.customStyle}
                     type="file"
                     name={field.name}
                     multiple={field.isMulti}
@@ -296,38 +352,80 @@ console.log("this is masterData", masterData)
                     accept={field?.acceptedFileTypes}
                   />
                 )}
+                {field.type === SWITCH && (
+                  <div className="form-check form-switch form-switch-lg mb-3">
+                    <input
+                      className="form-check-input"
+                      style={field?.customStyle}
+                      type="checkbox"
+                      id="customSwitchsizelg"
+                      // defaultChecked
+
+                      checked={formData[field.name] || field.defaultValue}
+                      onChange={(e) => {
+                        handleChange(field, !formData[field.name])
+                      }}
+                      value={formData[field.name]}
+                    />
+                  </div>
+                )}
+                {field.type === DATE_TIME_PICKER && (
+                  <input
+                    className="form-control"
+                    style={field?.customStyle}
+                    type="datetime-local"
+                    value={formData[field.name] || ""}
+                    id={field.name}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                )}
+                {field.type === COUNTER && (
+                  <input
+                    className="form-control"
+                    style={field?.customStyle}
+                    type="number"
+                    value={formData[field.name] || field.defaultValue || ""}
+                    id={field.name}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                  />
+                )}
                 {field.type === IMAGE && (
                   <div className="col-12 col-md-6 ImageDropBox" >
                     {!viewImage ? (
-                      <div class="image-uploader-Event">
+                      <div className="image-uploader-Event">
                         <input
+                          className="file-input-EventImage-uploader"
+                          style={field?.customStyle}
                           type="file"
                           id="fileInput"
                           accept="image/*"
                           ref={fileInputRef}
-                          class="file-input-EventImage-uploader"
-                          onChange={handleImageChange}
+                          onChange={(e) => { handleImageChange(field, e) }}
                         />
-                        <label for="fileInput" class="file-label-Event-Uploader">
-                          <div class="upload-iconEventUploader">+</div>
+                        <label for="fileInput" className="file-label-Event-Uploader">
+                          <div className="upload-iconEventUploader">+</div>
                           <p className="UploadImageText">
-                            Drop or click to upload Event Image
+                            Drop or click to upload Image
                           </p>
                         </label>
                       </div>
                     ) : (
-                      <div class="image-uploader-Event">
+                      <div className="image-uploader-Event">
                         <input
+                          className="file-input-EventImage-uploader"
+                          style={field?.customStyle}
                           type="file"
                           id="fileInput"
                           accept="image/*"
                           ref={fileInputRef}
-                          class="file-input-EventImage-uploader"
-                          onChange={handleImageChange}
+                          onChange={(e) => { handleImageChange(field, e) }}
                         />
                         <img
                           src={viewImage}
-                          alt="Uploaded"
+                          alt={field.name}
                           className="preview-image"
                           onClick={() => fileInputRef.current.click()}
                         />
@@ -335,28 +433,12 @@ console.log("this is masterData", masterData)
                     )}
                   </div>
                 )}
-
-                {
-                  field.type === SWITCH && (
-                    <div className="form-check form-switch form-switch-lg mb-3">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="customSwitchsizelg"
-                        // defaultChecked
-                        checked={formData[field.name] ? formData[field.name] : () => {handleChange(field, field.defaultValue); return field.defaultValue}}
-                        onChange={(e) => {
-                          handleChange(field, !formData[field.name])
-                        }}
-                        value={formData[field.name]}
-                      />
-                    </div>)}
               </div>
               <span className="text-danger">
                 {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
               </span>
             </Col>
-          </>
+          </React.Fragment>
         ))}
       </Row>
     </Form >

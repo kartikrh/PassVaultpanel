@@ -27,7 +27,8 @@ const Index = ({
           setDeleteModelVisable(false);
         }}
       >
-        Delete Tab
+        Delete
+        {/* TODO, do we need to add teh screen name also like delete tabs or delete Penelty run */}
       </ModalHeader>
       <div className="tablelist-form">
         <ModalBody>

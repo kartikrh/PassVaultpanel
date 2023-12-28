@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Avatar } from 'antd'
+import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
@@ -9,7 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from '../../components/Toaster'
+import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
@@ -23,22 +23,20 @@ const Index = () => {
   //toaster
   const [toast, setToast] = useState({
     message: "",
-    color:"",
-    header:""
+    color: "",
+    header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // fetch data
   const fetchData = async () => {
     await axiosInstance
-      .post(
-        `/admin/eventType/all`
-      )
+      .post(`/admin/eventType/all`)
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
@@ -70,29 +68,27 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/eventType/save`,
-        {
-          eventTypeId: record.eventTypeId,
-          [pType]: cState ? false : true,
-        })
+      .post(`/admin/eventType/save`, {
+        eventTypeId: record.eventTypeId,
+        [pType]: cState ? false : true,
+      })
       .then((response) => {
         setToast({
           message: `${response.title} status updated successfully`,
-          color:"green",
-          header:"Success",
-        })
-        setToastStatus(true)
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
         fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
           message: error.error.message,
-          color:"red",
-          header:"Warning",
-        })
-        setToastStatus(true)
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
 
@@ -100,36 +96,34 @@ const Index = () => {
     setIsLoading(true);
     // e.preventDefault()
     await axiosInstance
-      .post(
-        `/admin/eventType/delete`,
-        {
-          eventTypeId: singleCheck,
-        })
+      .post(`/admin/eventType/delete`, {
+        eventTypeId: singleCheck,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
         setToast({
           message: response.result.message,
-          color:"green",
-          header:"Success"
-        })
-        setToastStatus(true)
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
-        setIsLoading(false)
+        setIsLoading(false);
         setToast({
           message: error.error.message,
-          color:"red",
-          header:"Warning"
-        })
+          color: "red",
+          header: "Warning",
+        });
         setToastStatus(true);
         setDeleteModelVisable(false);
       });
   };
 
   const handleEdit = (eventTypeId) => {
-    navigate('/addEventType', { state: { eventTypeId } });
-  }
+    navigate("/addEventType", { state: { eventTypeId } });
+  };
 
   //table columns
   const columns = [
@@ -168,7 +162,14 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.eventTypeId) }}></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.eventTypeId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -177,15 +178,19 @@ const Index = () => {
       render: (text, record) => (
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
-          {
-            text ? <div>
+          {text ? (
+            <div>
               <img
                 className="avatar-xs rounded-circle"
                 alt=""
                 src={process.env.REACT_APP_BASE_URL + text}
               />
-            </div> : <Avatar src="#" alt="ET">Image</Avatar>
-          }
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
         </div>
       ),
       key: "image",
@@ -212,7 +217,9 @@ const Index = () => {
             handlePermissions("isHighlight", record, record.isHighlight);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i
+            className={`bx ${record.isHighlight ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -231,7 +238,7 @@ const Index = () => {
           }}
         >
           {" "}
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -243,7 +250,7 @@ const Index = () => {
     title: "Event Types",
     headerSelect: false,
     switch: true,
-    dragDrop:true,
+    dragDrop: true,
   };
 
   useEffect(() => {
@@ -257,14 +264,21 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Types" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && <Toaster toast={toast} setToast={setToast} toastStatus={toastStatus} setToastStatus={setToastStatus}/>}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
-            singleCheck = {singleCheck}
+            singleCheck={singleCheck}
             // addModelFunction={setAddModelVisable}
             onAddNavigate={"/addEventType"}
           />

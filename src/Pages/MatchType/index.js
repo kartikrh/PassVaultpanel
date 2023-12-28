@@ -3,7 +3,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-// import Model
+import { useNavigate } from "react-router-dom";
 import TabModel from "../../components/Model/AddTabModel";
 import CloneModel from "../../components/Model/CloneMatchType";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -31,6 +31,9 @@ const Index = () => {
 
   // cloneName
   const [cloneName, setCloneName] = useState("");
+
+  const navigate = useNavigate();
+
   // fetch data
   const fetchData = async () => {
     await axiosInstance
@@ -115,6 +118,9 @@ const Index = () => {
         setToastStatus(true);
       });
   };
+  const handleEdit = (id) => {
+    navigate("/addMatchType", { state: { userId: id } });
+  };
   //table columns
   const columns = [
     {
@@ -151,7 +157,11 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => <i className="bx bx-edit"
+      onClick={() => {
+        handleEdit(record.matchTypeId);
+      }}
+      ></i>,
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -197,6 +207,7 @@ const Index = () => {
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
+            onAddNavigate={"/addMatchType"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

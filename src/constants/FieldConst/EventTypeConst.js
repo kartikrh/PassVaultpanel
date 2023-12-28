@@ -23,7 +23,7 @@ export const EventTypeFields = [
     },
     {
         name: "image",
-        label: "Event Image",
+        label: "Image",
         parentclassName: "",
         type: IMAGE
     },

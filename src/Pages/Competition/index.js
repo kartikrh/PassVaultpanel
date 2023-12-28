@@ -5,10 +5,11 @@ import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from '../../components/Toaster'
+import Toaster from "../../components/Toaster";
+import { useNavigate } from "react-router-dom";
+
 const Index = () => {
   document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
@@ -32,14 +33,17 @@ const Index = () => {
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
-
+  //redirect
+  const navigate = useNavigate();
   // fetch data
   const fetchData = async () => {
     await axiosInstance
       .post(`/admin/competition/all`)
       .then((response) => {
         setData(response?.result);
-        const eventTypes = Array.from(new Set(response?.result.map(item => item.eventType)));
+        const eventTypes = Array.from(
+          new Set(response?.result.map((item) => item.eventType))
+        );
         setEventTypes(eventTypes);
         setIsLoading(false);
       })
@@ -69,12 +73,10 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/competition/save`,
-        {
-          competitionId: record.competitionId,
-          [pType]: cState ? false : true,
-        })
+      .post(`/admin/competition/save`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
       .then((response) => {
         fetchData();
         setToast({
@@ -98,11 +100,9 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/competition/delete`,
-        {
-          competitionId: singleCheck,
-        })
+      .post(`/admin/competition/delete`, {
+        competitionId: singleCheck,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
@@ -122,6 +122,10 @@ const Index = () => {
         });
         setToastStatus(true);
       });
+  };
+  //edit
+  const handleEdit = (id) => {
+    navigate("/addCompetition", { state: { userId: id } });
   };
   //table columns
   const columns = [
@@ -160,7 +164,14 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.competitionId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -220,7 +231,7 @@ const Index = () => {
             handlePermissions("isActive", record, record.isActive);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -261,14 +272,14 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            singleCheck = {singleCheck}
+            singleCheck={singleCheck}
+            onAddNavigate={"/addCompetition"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
           />
-
         </Container>
       </div>
     </React.Fragment>

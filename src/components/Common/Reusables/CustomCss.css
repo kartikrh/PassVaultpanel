@@ -3,9 +3,13 @@
         float: left !important;
     }
     .ImageDropBox {
-        padding-left: 10px;
-        margin-top: 20px;
+        /* padding-left: 10px;
+        margin-top: 20px; */
     }
+}
+
+.block{
+    display: block;
 }
 
 .dynamic-label-right {
@@ -16,7 +20,7 @@
 .image-uploader-Event {
     width: 150px;
     /* Adjust the size as needed */
-    height: 150px;
+    height: 120px;
     /* This makes it a square box */
     border: 2px dashed #007bff;
     display: flex;
@@ -47,7 +51,7 @@
 
 .upload-iconEventUploader {
     font-size: 48px;
-    margin-bottom: 10px;
+    /* margin-bottom: 5px; */
 }
 
 /* Style the box when hovering over it */
@@ -77,5 +81,5 @@
 .upload-iconEventUploader {
     color: #908d8d;
     font-weight: bolder;
-    padding: 5px;
+    /* padding: 5px; */
 }

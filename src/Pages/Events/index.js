@@ -69,12 +69,10 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/events/save`,
-        {
-          eventId: record.eventId,
-          [pType]: cState ? false : true,
-        })
+      .post(`/admin/events/save`, {
+        eventId: record.eventId,
+        [pType]: cState ? false : true,
+      })
       .then((response) => {
         fetchData();
       })
@@ -86,11 +84,9 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     const response = await axiosInstance
-      .post(
-        `/admin/events/delete`,
-        {
-          eventId: singleCheck,
-        })
+      .post(`/admin/events/delete`, {
+        eventId: singleCheck,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
@@ -139,11 +135,14 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"
-      onClick={() => {
-        handleEdit(record.eventId);
-      }}
-      ></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.eventId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -213,7 +212,7 @@ const Index = () => {
             handlePermissions("isActive", record, record.isActive);
           }}
         >
-          <i className="bx bx-block"></i>
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -248,7 +247,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             competitions={competitions}
-            singleCheck = {singleCheck}
+            singleCheck={singleCheck}
             onAddNavigate={"/addEvents"}
           />
           <DeleteTabModel

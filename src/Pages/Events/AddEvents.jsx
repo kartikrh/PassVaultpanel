@@ -20,8 +20,9 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
 } from "../../components/Common/Const";
-import { addEventToDb } from "../../Features/Events/eventsSlice";
+import { addEventToDb } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
+import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 
 function AddEvents() {
   const finalizeRef = useRef(null);
@@ -32,7 +33,7 @@ function AddEvents() {
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading, error } = useSelector(
-    (state) => state.eventsData.event
+    (state) => state.tabsData.event
   );
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -67,7 +68,7 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/events/byId", { eventId })
       .then((response) => {
-        setInitialEditData(response?.result);
+        setInitialEditData({...response?.result, eventDate:convertDateString(response?.result.eventDate) });
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -76,12 +77,11 @@ function AddEvents() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/events/all")
+      .post("/admin/eventType/all")
       .then((response) => {
-        console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            eventId: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          eventTypeId: response.result?.map((item) => {
             return { label: item.eventType, value: item.eventTypeId };
           }),
         }));
@@ -92,10 +92,9 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/competition/all")
       .then((response) => {
-        console.log("response", response);
-        setMasterData((preData)=>({
-            ...preData,
-            competitionId: response.result?.map((item) => {
+        setMasterData((preData) => ({
+          ...preData,
+          competitionId: response.result?.map((item) => {
             return { label: item.competition, value: item.competitionId };
           }),
         }));
@@ -110,9 +109,15 @@ function AddEvents() {
       });
   };
   const handleSaveClick = async (saveAction) => {
-    setCurrentSaveAction(saveAction);
-    dispatch(addEventToDb({ ...finalizeRef.current.finalizeData(), eventId }));
-  };
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            eventId,
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addEventToDb({ ...dataToSave, ...extraData }))
+    }
+};
   const handleBackClick = () => {
     navigate("/events");
   };

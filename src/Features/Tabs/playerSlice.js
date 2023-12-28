@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 
-export const addUserToDb = createAsyncThunk(
-    'User/addUser',
-    async (userData, { rejectWithValue }) => {
+export const addPlayerToDb = createAsyncThunk(
+    'player/addPlayer',
+    async (data, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/admin/user/save', userData);
+            const response = await axiosInstance.post('/admin/player/save', data);
             return response?.result;
         } catch (error) {
             return rejectWithValue(error.response.data);
@@ -13,8 +13,8 @@ export const addUserToDb = createAsyncThunk(
     }
 );
 
-const userSlice = createSlice({
-    name: 'user',
+const playerSlice = createSlice({
+    name: 'player',
     initialState: {
         isSaved: undefined,
         isLoading: false,
@@ -23,18 +23,18 @@ const userSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(addUserToDb.pending, (state) => {
+            .addCase(addPlayerToDb.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addUserToDb.fulfilled, (state, action) => {
+            .addCase(addPlayerToDb.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addUserToDb.rejected, (state, action) => {
+            .addCase(addPlayerToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export default userSlice.reducer;
+export default playerSlice.reducer;

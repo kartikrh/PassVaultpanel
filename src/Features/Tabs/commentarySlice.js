@@ -3,12 +3,12 @@ import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 
-export const addTabToDb = createAsyncThunk(
-    'tab/addTab',
+export const addCommentaryToDb = createAsyncThunk(
+    'commentary/addCommentary',
     async (data, { rejectWithValue, dispatch }) => {
         try {
-            const response = await axiosInstance.post('/admin/tabs/save', data);
-            dispatch(updateToastData({ data: "Tab data saved successfully.", type: SUCCESS }));
+            const response = await axiosInstance.post('/admin/commentary/save', data);
+            dispatch(updateToastData({ data: "Commentary data saved successfully.", type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));
@@ -17,8 +17,8 @@ export const addTabToDb = createAsyncThunk(
     }
 );
 
-const tabSlice = createSlice({
-    name: 'tab',
+const commentarySlice = createSlice({
+    name: 'commentary',
     initialState: {
         isSaved: undefined,
         isLoading: false,
@@ -27,18 +27,18 @@ const tabSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(addTabToDb.pending, (state) => {
+            .addCase(addCommentaryToDb.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addTabToDb.fulfilled, (state, action) => {
+            .addCase(addCommentaryToDb.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addTabToDb.rejected, (state, action) => {
+            .addCase(addCommentaryToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export default tabSlice.reducer;
+export default commentarySlice.reducer;

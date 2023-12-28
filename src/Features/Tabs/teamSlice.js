@@ -2,13 +2,12 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
-
-export const addTabToDb = createAsyncThunk(
-    'tab/addTab',
-    async (data, { rejectWithValue, dispatch }) => {
+export const addTeamToDb = createAsyncThunk(
+    'team/addTeam',
+    async (teamData, { rejectWithValue,dispatch }) => {
         try {
-            const response = await axiosInstance.post('/admin/tabs/save', data);
-            dispatch(updateToastData({ data: "Tab data saved successfully.", type: SUCCESS }));
+            const response = await axiosInstance.post('/admin/team/save', teamData);
+            dispatch(updateToastData({ data: "Team data saved successfully.", type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));
@@ -17,8 +16,8 @@ export const addTabToDb = createAsyncThunk(
     }
 );
 
-const tabSlice = createSlice({
-    name: 'tab',
+const teamSlice = createSlice({
+    name: 'team',
     initialState: {
         isSaved: undefined,
         isLoading: false,
@@ -27,18 +26,18 @@ const tabSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(addTabToDb.pending, (state) => {
+            .addCase(addTeamToDb.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addTabToDb.fulfilled, (state, action) => {
+            .addCase(addTeamToDb.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addTabToDb.rejected, (state, action) => {
+            .addCase(addTeamToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export default tabSlice.reducer;
+export default teamSlice.reducer;

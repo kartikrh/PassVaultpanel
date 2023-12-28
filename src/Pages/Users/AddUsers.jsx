@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { UserFields } from "../../constants/FieldConst/UserConst";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+
 import {
   Button,
   ButtonDropdown,
@@ -20,8 +22,8 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
 } from "../../components/Common/Const";
-import { addUserToDb } from "../../Features/Users/usersSlice";
 import axiosInstance from "../../Features/axios";
+import { addUserToDb } from "../../Features/Tabs/usersSlice";
 
 function AddUsers() {
   const finalizeRef = useRef(null);
@@ -31,7 +33,7 @@ function AddUsers() {
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
-  const { isSaved, isLoading, error } = useSelector(state => state.usersData)
+  const { isSaved, isLoading, error } = useSelector(state => state.tabsData.user);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +48,8 @@ function AddUsers() {
       fetchData(userId);
       setDisabledFields({
         parentId: true,
-        displayType: true,
+        userType: true,
+        userName: true
       });
     }
   }, [userId]);
@@ -59,7 +62,7 @@ function AddUsers() {
       else if (currentSaveAction === SAVE_AND_NEW)
         finalizeRef.current.resetForm();
     }
-  },[]);
+  });
 
   const fetchData = async (id) => {
     await axiosInstance
@@ -76,11 +79,10 @@ function AddUsers() {
     await axiosInstance
       .post("/admin/user/all")
       .then((response) => {
-        console.log("Users ===>", response)
         setMasterData((preData) => ({
           ...preData,
-          parentName: response.result?.map((item) => {
-            return { label: item.name, value: item.userId };
+          parentId: response.result?.map((item) => {
+            return { label: item.userName, value: item.userId };
           }),
         }));
       })
@@ -90,7 +92,6 @@ function AddUsers() {
     await axiosInstance
       .post("/admin/roles/all")
       .then((response) => {
-        console.log("Roles ===>", response)
         setMasterData((preData) => ({
           ...preData,
           roleId: response.result?.map((item) => {
@@ -102,10 +103,18 @@ function AddUsers() {
         // setIsLoading(false)
       });
   };
+  
   const handleSaveClick = async (saveAction) => {
-    setCurrentSaveAction(saveAction);
-    dispatch(addUserToDb({ ...finalizeRef.current.finalizeData(), userId }));
-  };
+    const dataToSave = finalizeRef.current.finalizeData()
+    if (dataToSave) {
+        const extraData = {
+            id: userId
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addUserToDb({ ...dataToSave, ...extraData }))
+    }
+};
+
   const handleBackClick = () => {
     navigate("/users");
   };
@@ -117,7 +126,7 @@ function AddUsers() {
             <Col xs={12} md={8} lg={9}>
               <h3>Users </h3>
             </Col>
-
+            {isLoading && <SpinnerModel />}
             <Card>
               <CardBody>
                 <Row>
