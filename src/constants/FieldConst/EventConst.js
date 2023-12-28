@@ -81,6 +81,5 @@ export const EventFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SWITCH,
         defaultValue:true,
-
     },
 ]

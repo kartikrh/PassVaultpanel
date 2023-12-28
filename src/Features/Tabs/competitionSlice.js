@@ -8,7 +8,7 @@ export const addCompetitionToDb = createAsyncThunk(
     async (competitionData, { rejectWithValue,dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/competition/save', competitionData);
-            dispatch(updateToastData({ data: "Competition data saved successfully.", type: SUCCESS }));
+            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error.response.data, type: ERROR }));
