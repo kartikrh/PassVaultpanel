@@ -9,6 +9,7 @@ import SpinnerModel from '../../components/Model/SpinnerModel';
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
@@ -19,7 +20,13 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  //toaster
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
@@ -68,11 +75,23 @@ const Index = () => {
         [pType]: cState ? false : true,
       }).then((response) => {
       const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
+      setToast({
+        message: response?.message,
+        color: "green",
+        header: "Success",
+      });
+      setToastStatus(true);
       // setData(newArray)
       // setIsLoading(false)
       fetchData()
     }).catch((error) => {
-      setIsLoading(false)
+      setIsLoading(false);
+      setToast({
+        message: error?.message,
+        color: "red",
+        header: "Warning",
+      });
+      setToastStatus(true);
     })
   };
 
@@ -86,7 +105,20 @@ const Index = () => {
       }).then((response) => {
       setDeleteModelVisable(false);
       fetchData();
+      setToast({
+        message: response?.message,
+        color: "green",
+        header: "Success",
+      });
+      setToastStatus(true);
     }).catch((error) => {
+      setDeleteModelVisable(false);
+      setToast({
+        message: error?.message,
+        color: "red",
+        header: "Warning",
+      });
+      setToastStatus(true);
     });
   }
 
@@ -169,6 +201,14 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Roles" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
