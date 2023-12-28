@@ -8,19 +8,7 @@ import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Cons
 import { addEventTypeToDb } from '../../Features/Tabs/eventTypesSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
-
-const convertObjtoFormData = (obj) => {
-    const formData = new FormData();
-    for (const key in obj) {
-        if (key === "image") {
-            typeof obj[key] !== "string" && formData.append(key, obj[key]);
-            continue;
-        }
-        formData.append(key, obj[key]);
-    }
-    return formData
-}
-
+import { convertObjtoFormData } from '../../components/Common/utilities';
 
 function AddEventType() {
     const finalizeRef = useRef(null);
@@ -67,7 +55,7 @@ function AddEventType() {
             const extraData = {
                 eventTypeId: eventTypeId
             }
-            dispatch(addEventTypeToDb(convertObjtoFormData({ ...finalizeRef.current.finalizeData(), ...extraData })))
+            dispatch(addEventTypeToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
             setCurrentSaveAction(saveAction);
         }
     };

@@ -13,13 +13,12 @@ import {
   Input,
   Form,
 } from "reactstrap";
+import ImageField from "./ImageField.jsx";
 
 const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [viewImage, setViewImage] = useState(null);
-
-  const fileInputRef = useRef(null);
 
   const handleImageChange = (field, event) => {
     const file = event.target.files[0];
@@ -31,27 +30,34 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       const reader = new FileReader();
 
       reader.onload = function (e) {
-        setViewImage(e.target.result);
+        setViewImage(prev => ({
+          ...prev,
+          [field.name]: e.target.result
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
   useEffect(() => {
-    const isImageField = fields.findIndex(field => field.type === IMAGE) !== -1;
     if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
-      if (isImageField && editFormData?.image) {
-        fetch(process.env.REACT_APP_BASE_URL + editFormData.image)
-          .then((response) => response.blob())
-          .then((blob) => {
-            // Convert the image data to base64
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setViewImage(reader.result);
-            };
-            reader.readAsDataURL(blob);
-          });
-      }
+      fields.forEach(async (element) => {
+        if (element.type === IMAGE && editFormData[element.name]) {
+          fetch(process.env.REACT_APP_BASE_URL + editFormData[element.name])
+            .then((response) => response.blob())
+            .then((blob) => {
+              // Convert the image data to base64
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setViewImage(prev => ({
+                  ...prev,
+                  [element.name]: reader.result
+                }));
+              };
+              reader.readAsDataURL(blob);
+            });
+        }
+      });
       setFormData(editFormData)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,10 +91,21 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     return errors;
   };
 
+  const filterData = (data) => {
+    const imageFields = fields.filter(field=>field.type===IMAGE).map(value=>value.name)
+    for (const key in data) {
+        if (imageFields.includes(key)) {
+            typeof data[key] === "string" && delete data[key];
+        }
+    }
+    return data
+  }
+
   const finalizeData = (doNotValidateFields = []) => {
     const errors = validateAllFields(doNotValidateFields);
     if (isValueEmpty(errors)) {
-      return sanitizeFormData(formData);
+      const filteredData = filterData(formData)
+      return sanitizeFormData(filteredData);
     } else {
       console.error(
         "There are errors in the form. Please correct them before saving."
@@ -393,45 +410,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                   />
                 )}
                 {field.type === IMAGE && (
-                  <div className="col-12 col-md-6 ImageDropBox" >
-                    {!viewImage ? (
-                      <div className="image-uploader-Event">
-                        <input
-                          className="file-input-EventImage-uploader"
-                          style={field?.customStyle}
-                          type="file"
-                          id="fileInput"
-                          accept="image/*"
-                          ref={fileInputRef}
-                          onChange={(e) => { handleImageChange(field, e) }}
-                        />
-                        <label for="fileInput" className="file-label-Event-Uploader">
-                          <div className="upload-iconEventUploader">+</div>
-                          <p className="UploadImageText">
-                            Drop or click to upload Image
-                          </p>
-                        </label>
-                      </div>
-                    ) : (
-                      <div className="image-uploader-Event">
-                        <input
-                          className="file-input-EventImage-uploader"
-                          style={field?.customStyle}
-                          type="file"
-                          id="fileInput"
-                          accept="image/*"
-                          ref={fileInputRef}
-                          onChange={(e) => { handleImageChange(field, e) }}
-                        />
-                        <img
-                          src={viewImage}
-                          alt={field.name}
-                          className="preview-image"
-                          onClick={() => fileInputRef.current.click()}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <ImageField field={field} handleImageChange={handleImageChange} src={viewImage?.[field.name]} />
                 )}
               </div>
               <span className="text-danger">

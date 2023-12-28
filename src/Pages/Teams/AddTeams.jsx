@@ -23,18 +23,8 @@ import {
 import { addTeamToDb } from "../../Features/Tabs/teamSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
-const convertObjtoFormData = (obj) => {
-  const formData = new FormData();
-  for (const key in obj) {
-    if (key === "image") {
-      typeof obj[key] !== "string" && formData.append(key, obj[key]);
-      continue;
-    }
-    formData.append(key, obj[key]);
-  }
-  return formData
-}
 const formatMultiSelectDataPlayers = (inputList) => {
   const outputList = [];
 
@@ -46,6 +36,7 @@ const formatMultiSelectDataPlayers = (inputList) => {
 
   return outputList;
 };
+
 function AddTeams() {
   const finalizeRef = useRef(null);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -132,11 +123,11 @@ function AddTeams() {
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
-      const extraData = {
-        teamId
-      }
-      setCurrentSaveAction(saveAction);
-      dispatch(addTeamToDb({ ...dataToSave, ...extraData }))
+        const extraData = {
+            teamId
+        }
+        setCurrentSaveAction(saveAction);
+        dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {
