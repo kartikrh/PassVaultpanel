@@ -7,6 +7,7 @@ export const PlayerFields = [
         label: "Event Type",
         options: [{ label: "Select a Event Type", value: "0" }],
         defaultValue: "0",
+        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -22,6 +23,7 @@ export const PlayerFields = [
         type: TEXT,
         name: "displayName",
         label: "Display Name",
+        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
