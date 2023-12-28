@@ -76,6 +76,7 @@ export const EventFields = [
     {
         name: "isActive",
         label: "Is Active",
+        defaultValue: true,
         parentclassName: "",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },

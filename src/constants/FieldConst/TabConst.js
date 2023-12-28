@@ -78,6 +78,7 @@ export const TabFields = [
         name: "isActive",
         label: "Is Active",
         type: SWITCH,
+        defaultValue: true,
         labelColspan: { xs: 4, md: 2, lg: 2 },
         fieldColspan: { xs: 8, md: 1, lg: 1 }
     },
