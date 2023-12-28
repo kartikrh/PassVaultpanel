@@ -32,9 +32,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/player/all`)
+      .post(`/admin/player/all`,{
+        isActive: isActive
+      })
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -237,7 +240,7 @@ const Index = () => {
   const tableElement = {
     title: "Players",
     headerSelect: false,
-    switch: false,
+    isActive: true,
   };
 
   useEffect(() => {
@@ -260,6 +263,7 @@ const Index = () => {
           <Table
             columns={columns}
             dataSource={data}
+            reFetchData={fetchData}
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}

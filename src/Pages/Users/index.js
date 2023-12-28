@@ -37,11 +37,13 @@ const Index = () => {
   const navigate = useNavigate();
   // fetch data
   const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
       .post(`/admin/user/all`,{
-        isActive:isActive === undefined? true : isActive
+        isActive
       })
       .then((response) => {
+        console.log("this is response", response)
         setData(response.result);
         setIsLoading(false);
         setChangPasswordModelVisible(false);
@@ -273,7 +275,7 @@ const Index = () => {
   const tableElement = {
     title: "Users",
     headerSelect: false,
-    switch: true,
+    isActive: true,
   };
 
   useEffect(() => {

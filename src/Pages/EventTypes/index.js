@@ -34,9 +34,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventType/all`)
+      .post(`/admin/eventType/all`,{
+        isActive
+      })
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
@@ -249,7 +252,7 @@ const Index = () => {
   const tableElement = {
     title: "Event Types",
     headerSelect: false,
-    switch: true,
+    isActive: true,
     dragDrop: true,
   };
 
@@ -279,6 +282,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
             singleCheck={singleCheck}
+            reFetchData={fetchData}
             // addModelFunction={setAddModelVisable}
             onAddNavigate={"/addEventType"}
           />

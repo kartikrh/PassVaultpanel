@@ -277,7 +277,7 @@ const Index = ({
   };
   // getting data for the table coming from the page && checking default status
   const fetchData = () => {
-    if (tableElement?.switch) {
+    if (tableElement?.isActive) {
       const switchData = dataSource.filter((val) => {
         return val.isActive === statusSwitch;
       });
@@ -425,7 +425,7 @@ const Index = ({
                       </select>
                     </div>
                   ) : null}
-                  {tableElement?.switch ? (
+                  {tableElement?.isActive ? (
                     <div className="d-flex align-items-center">
                       <Switch
                         width={70}
