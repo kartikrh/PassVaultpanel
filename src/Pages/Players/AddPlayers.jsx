@@ -9,18 +9,8 @@ import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
+import { convertObjtoFormData } from '../../components/Common/utilities';
 
-const convertObjtoFormData = (obj) => {
-    const formData = new FormData();
-    for (const key in obj) {
-        if (key === "image") {
-            typeof obj[key] !== "string" && formData.append(key, obj[key]);
-            continue;
-        }
-        formData.append(key, obj[key]);
-    }
-    return formData
-}
 const formatMultiSelectDataTeams = (inputList) => {
     console.log(inputList)
     const outputList = [];
