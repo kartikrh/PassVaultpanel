@@ -19,9 +19,9 @@ const formatMultiSelectDataPlayers = (inputList) => {
     const outputList = [];
 
     inputList.forEach((item) =>
-        item.displayOrder !== undefined
-            ? (outputList[item.displayOrder - 1] = item.playerId)
-            : outputList.push(item.playerId)
+        item?.displayOrder !== undefined
+            ? (outputList[item?.displayOrder - 1] = item?.playerId)
+            : outputList.push(item?.playerId)
     );
 
     return outputList;
@@ -72,6 +72,8 @@ function AddCommentary() {
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/commentary")
             else if (currentSaveAction === SAVE_AND_NEW) {
+                setDisabledFields({})
+                setSavedFormState({})
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
             }
@@ -114,7 +116,7 @@ function AddCommentary() {
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
-                            return { label: item.eventName, value: item.eventId }
+                            return { label: item?.eventName, value: item?.eventId }
                         })
                         setMasterData((preData) => ({
                             ...preData,
@@ -174,7 +176,7 @@ function AddCommentary() {
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team1Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
-                            return { label: item.playerName, value: item.playerId }
+                            return { label: item?.playerName, value: item?.playerId }
                         }).filter(element => element.value);
                         setMasterData((preData) => ({
                             ...preData,
@@ -199,7 +201,7 @@ function AddCommentary() {
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team2Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
-                            return { label: item.playerName, value: item.playerId }
+                            return { label: item?.playerName, value: item?.playerId }
                         }).filter(element => element.value);
                         setMasterData((preData) => ({
                             ...preData,
@@ -250,7 +252,7 @@ function AddCommentary() {
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
-                            return { label: item.eventName, value: item.eventId }
+                            return { label: item?.eventName, value: item?.eventId }
                         })
                         newMasterData = { ...newMasterData, eventId: formattedData }
                     }).catch((error) => {
@@ -259,7 +261,7 @@ function AddCommentary() {
                 await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team1Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
-                            return { label: item.playerName, value: item.playerId }
+                            return { label: item?.playerName, value: item?.playerId }
                         }).filter(element => element.value);
                         newMasterData = {
                             ...newMasterData,
@@ -273,7 +275,7 @@ function AddCommentary() {
                 await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team2Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
-                            return { label: item.playerName, value: item.playerId }
+                            return { label: item?.playerName, value: item?.playerId }
                         }).filter(element => element.value);
                         newMasterData = {
                             ...newMasterData,
@@ -301,7 +303,7 @@ function AddCommentary() {
         axiosInstance.post('/admin/matchType/all')
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
-                    return { label: item.matchType, value: item.matchTypeId }
+                    return { label: item?.matchType, value: item?.matchTypeId }
                 })
                 setMasterData((preData) => ({
                     ...preData,
@@ -314,7 +316,7 @@ function AddCommentary() {
         axiosInstance.post('/admin/team/all')
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
-                    return { label: item.teamName, value: item.teamId }
+                    return { label: item?.teamName, value: item?.teamId }
                 }).filter(element => element.value);
                 setMasterData((preData) => ({
                     ...preData,
@@ -328,7 +330,7 @@ function AddCommentary() {
         axiosInstance.post('/admin/eventType/all', {})
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
-                    return { label: item.eventType, value: item.eventTypeId }
+                    return { label: item?.eventType, value: item?.eventTypeId }
                 })
                 setMasterData((preData) => ({
                     ...preData,
