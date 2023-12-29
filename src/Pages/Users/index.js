@@ -14,8 +14,14 @@ import Toaster from "../../components/Toaster";
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
+
+  //password decryption
+  const [decryptedPasswords, setDecryptedPasswords] = useState(null);
+
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  //isActive
+  const [isActive, setIsActive] = useState(true)
   // password
   const [password, setPassword] = useState("");
   //useId
@@ -36,14 +42,13 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async (isActive) => {
+  const fetchData = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/user/all`,{
+      .post(`/admin/user/all`, {
         isActive
       })
       .then((response) => {
-        console.log("this is response", response)
         setData(response.result);
         setIsLoading(false);
         setChangPasswordModelVisible(false);
@@ -80,7 +85,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData();
+        fetchData(false);
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
@@ -142,6 +147,30 @@ const Index = () => {
       });
   };
 
+  const getDecryptedPassword = async (userId, copy = false) => {
+    await axiosInstance
+      .post(`/admin/user/decryptPassword`, {
+        userId: userId,
+      })
+      .then((response) => {
+        const password = response?.result?.password || "";
+        setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
+        if (copy) navigator.clipboard.writeText(password)
+      })
+      .catch((error) => {
+        setToast({
+          message: error?.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
+      });
+  }
+
+  const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
+    <span onClick={() => getDecryptedPassword(userId)} >*******</span>
+    <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
+  </div>)
 
   const handleEdit = (id) => {
     navigate("/addUsers", { state: { userId: id } });
@@ -226,7 +255,11 @@ const Index = () => {
     {
       title: "Password",
       dataIndex: "password",
-      render: (text, record) => <Tooltip title={text}> <span>*******</span> </Tooltip>,
+      render: (text, record) => (
+        decryptedPasswords?.[record.userId] ?
+          <Tooltip title={decryptedPasswords?.[record.userId]}>{passwordRecord(record.userId)}</Tooltip> :
+          passwordRecord(record.userId)
+      ),
       key: "password",
       sort: true,
       style: { width: "100%" },
@@ -281,7 +314,7 @@ const Index = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -301,6 +334,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
+            setIsActive={setIsActive}
             reFetchData={fetchData}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}

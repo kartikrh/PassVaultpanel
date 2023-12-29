@@ -58,9 +58,9 @@ function AddRoles() {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
                 if (storeInitialData) setInitialEditData(response?.result);
-                const permission = rearrangeTabs(response?.result?.permissions || [])
-                setPermissions(permission)
-                setNewPermissionValue(transformData(permissions));
+                const newPermission = rearrangeTabs(response?.result?.permissions || []);
+                setPermissions(newPermission)
+                setNewPermissionValue(transformData(newPermission));
             }).catch((error) => {
                 // setIsLoading(false)
             });

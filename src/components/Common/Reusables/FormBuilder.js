@@ -1,10 +1,10 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
 import _, { capitalize } from "lodash";
 import { useImperativeHandle } from "react";
-import { isValueEmpty, sanitizeFormData } from "./reusableMethods.js";
+import { isValueEmpty, sanitizeFormData, compareNumStringValues } from "./reusableMethods.js";
 import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
 import "./CustomCss.css"
 import {
@@ -92,11 +92,11 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   };
 
   const filterData = (data) => {
-    const imageFields = fields.filter(field=>field.type===IMAGE).map(value=>value.name)
+    const imageFields = fields.filter(field => field.type === IMAGE).map(value => value.name)
     for (const key in data) {
-        if (imageFields.includes(key)) {
-            typeof data[key] === "string" && delete data[key];
-        }
+      if (imageFields.includes(key)) {
+        typeof data[key] === "string" && delete data[key];
+      }
     }
     return data
   }
@@ -189,7 +189,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     className="form-control"
                     style={field?.customStyle}
                     type="text"
-                    isDisabled={disabledFields?.[field.name]}
+                    disabled={disabledFields?.[field.name]}
                     id={field.name}
                     name={field.name}
                     value={formData[field.name] || ""}
@@ -246,8 +246,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                       [].concat(field.options, masterData?.[field.name] || [])
                         .filter(e => {
                           if (formData[field.name])
-                            return e?.value === formData[field.name]
-                          else return e?.value === field.defaultValue
+                            return compareNumStringValues(e?.value, formData[field.name])
+                          else return compareNumStringValues(e?.value, formData[field.name])
                         })
                     }
                     options={[].concat(field.options, masterData?.[field.name] || [])}
@@ -259,7 +259,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {/* {field.name === "eventDate" && console.log(formData, field.options, masterData[field.name], masterData)} */}
+                {/* {field.name === "eventDate" && console.log(field.name, formData[field.name])} */}
+                {/* {field.type === SELECT && console.log(field.name, formData[field.name], field.options, masterData[field.name], masterData)} */}
                 {field.type === MULTI_SELECT && (
                   (() => {
                     // Define options within the function scope

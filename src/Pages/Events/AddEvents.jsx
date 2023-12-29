@@ -69,7 +69,7 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/events/byId", { eventId })
       .then((response) => {
-        setInitialEditData({...response?.result, eventDate:convertDateString(response?.result.eventDate) });
+        setInitialEditData({ ...response?.result, eventDate: convertDateString(response?.result.eventDate) });
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -78,7 +78,7 @@ function AddEvents() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all")
+      .post("/admin/eventType/all", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -91,7 +91,7 @@ function AddEvents() {
         // setIsLoading(false)
       });
     await axiosInstance
-      .post("/admin/competition/all")
+      .post("/admin/competition/all",{})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -99,11 +99,6 @@ function AddEvents() {
             return { label: item.competition, value: item.competitionId };
           }),
         }));
-        // setMasterData((preData) => ({
-        //     ...preData,
-        //     "team1Id": formattedData,
-        //     "team2Id": formattedData
-        // }));
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -112,13 +107,13 @@ function AddEvents() {
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
-        const extraData = {
-            eventId,
-        }
-        setCurrentSaveAction(saveAction);
-        dispatch(addEventToDb({ ...dataToSave, ...extraData }))
+      const extraData = {
+        eventId,
+      }
+      setCurrentSaveAction(saveAction);
+      dispatch(addEventToDb({ ...dataToSave, ...extraData }))
     }
-};
+  };
   const handleBackClick = () => {
     navigate("/events");
   };

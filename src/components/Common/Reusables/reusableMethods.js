@@ -92,4 +92,13 @@ export const convertDateString = (dateString) => {
   return "";
 }
 
+export function compareNumStringValues(value1, value2) {
+  if (typeof value1 === 'string' && typeof value2 === 'string') {
+    return value1 === value2;
+  }
 
+  const numValue1 = parseFloat(value1);
+  const numValue2 = parseFloat(value2);
+
+  return !isNaN(numValue1) && !isNaN(numValue2) && numValue1 === numValue2;
+}
