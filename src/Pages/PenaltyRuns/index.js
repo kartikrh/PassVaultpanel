@@ -16,6 +16,8 @@ const Index = () => {
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  //isActive
+  const [isActive, setIsActive] = useState(true);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -36,10 +38,10 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async (isActive) => {
+  const fetchData = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/paneltyRun/all`,{isActive})
+      .post(`/admin/paneltyRun/all`, { isActive })
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -131,7 +133,7 @@ const Index = () => {
           color: "green",
           header: "Success",
         });
-        setToastStatus(true)
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -145,8 +147,8 @@ const Index = () => {
   };
 
   const handleEdit = (paneltyId) => {
-    navigate('/addPenalty', { state: { paneltyId } });
-  }
+    navigate("/addPenalty", { state: { paneltyId } });
+  };
 
   //table columns
   const columns = [
@@ -185,7 +187,14 @@ const Index = () => {
     {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.paneltyId) }}></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.paneltyId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -261,7 +270,7 @@ const Index = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -282,8 +291,8 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck = {singleCheck}
-            reFetchData={fetchData}
+            singleCheck={singleCheck}
+            setIsActive={setIsActive}
             onAddNavigate={"/addPenalty"}
           />
           <DeleteTabModel

@@ -14,6 +14,8 @@ const Index = () => {
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  //isActive
+  const [isActive, setIsActive] = useState(true);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -34,11 +36,11 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async (isActive) => {
+  const fetchData = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/events/all`,{
-        isActive
+      .post(`/admin/events/all`, {
+        isActive,
       })
       .then((response) => {
         setData(response?.result);
@@ -265,7 +267,7 @@ const Index = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -288,7 +290,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            reFetchData={fetchData}
+            setIsActive={setIsActive}
             competitions={competitions}
             singleCheck={singleCheck}
             onAddNavigate={"/addEvents"}

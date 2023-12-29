@@ -15,6 +15,8 @@ const Index = () => {
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  //isActive
+  const [isActive, setIsActive] = useState(true)
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -32,7 +34,7 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async (isActive) => {
+  const fetchData = async () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/player/all`,{
@@ -75,7 +77,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData();
+        fetchData(false);
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
@@ -246,7 +248,7 @@ const Index = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -263,7 +265,7 @@ const Index = () => {
           <Table
             columns={columns}
             dataSource={data}
-            reFetchData={fetchData}
+            setIsActive={setIsActive}
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
