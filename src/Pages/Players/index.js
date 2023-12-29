@@ -34,11 +34,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (value) => {
     setIsLoading(true);
+    setIsActive(value)
     await axiosInstance
       .post(`/admin/player/all`,{
-        isActive: isActive
+       ...value
       })
       .then((response) => {
         setData(response?.result);
@@ -77,7 +78,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData(false);
+        fetchData(isActive);
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
@@ -246,9 +247,9 @@ const Index = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading({isActive:true});
     fetchData();
-  }, [isActive]);
+  }, []);
 
   return (
     <React.Fragment>
@@ -271,6 +272,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
             onAddNavigate={"/addPlayer"}
+            reFetchData={fetchData}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
