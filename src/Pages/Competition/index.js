@@ -247,6 +247,7 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: true,
     isActive: true,
+    resetButton:true,
   };
 
   useEffect(() => {
