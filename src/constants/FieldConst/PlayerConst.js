@@ -76,7 +76,7 @@ export const PlayerFields = [
     },
     {
         type: SELECT,
-        name: "bowlingStyle",
+        name: "bowlingTypeId",
         label: "Bowling Style",
         options: [{ label: "Select a Bowling Style", value: "0" }],
         defaultValue: "0",

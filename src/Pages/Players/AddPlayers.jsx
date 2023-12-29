@@ -18,7 +18,6 @@ const formatMultiSelectDataTeams = (inputList) => {
     inputList.forEach((item) =>
         outputList.push(item.teamId)
     );
-    console.log(outputList.filter(element => element))
     return outputList.filter(element => element);
 };
 function AddPlayer() {
@@ -72,7 +71,7 @@ function AddPlayer() {
     };
 
     const fetchMasterData = async () => {
-        axiosInstance.post('/admin/team/all')
+        axiosInstance.post('/admin/team/all', {})
             .then((response) => {
                 setMasterData((prevData) => ({
                     ...prevData, "teamId":
@@ -83,7 +82,7 @@ function AddPlayer() {
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
-        axiosInstance.post('/admin/eventType/all')
+        axiosInstance.post('/admin/eventType/all', {})
             .then((response) => {
                 setMasterData((prevData) => ({
                     ...prevData, "eventTypeId":
@@ -94,7 +93,7 @@ function AddPlayer() {
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
-        axiosInstance.post('/admin/player/allPlayerTypes')
+        axiosInstance.post('/admin/player/allPlayerTypes', {})
             .then((response) => {
                 setMasterData((prevData) => ({
                     ...prevData,
@@ -106,11 +105,11 @@ function AddPlayer() {
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
-        axiosInstance.post('admin/player/allBowlingTypes')
+        axiosInstance.post('admin/player/allBowlingTypes', {})
             .then((response) => {
                 setMasterData((prevData) => ({
                     ...prevData,
-                    "bowlingStyle":
+                    "bowlingTypeId":
                         response?.result?.map(item => {
                             return { label: item.bowlingType, value: item.bowlingTypeId }
                         })
