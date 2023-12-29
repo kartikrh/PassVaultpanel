@@ -27,9 +27,10 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
 }
 
 const Index = ({
+
   columns,
   dataSource,
-  subDataSourse,
+  reFetchData,
   tableElement,
   cloneModelFunction,
   addModelFunction,
@@ -107,17 +108,11 @@ const Index = ({
   };
   const handleStatusSwitch = () => {
     if (statusSwitch) {
-      const switchData = dataSource.filter((val) => {
-        return val.isActive !== statusSwitch;
-      });
+      reFetchData(false)
       setStatusSwitch(false);
-      setData(switchData);
     } else {
-      const switchData = dataSource.filter((val) => {
-        return val.isActive !== statusSwitch;
-      });
       setStatusSwitch(true);
-      setData(switchData);
+      reFetchData(true)
     }
   };
   const handleDropDownFilter = (e) => {
@@ -282,18 +277,23 @@ const Index = ({
   };
   // getting data for the table coming from the page && checking default status
   const fetchData = () => {
-    setTotal(dataSource.length);
-    if (tableElement?.switch) {
+    if (tableElement?.isActive) {
       const switchData = dataSource.filter((val) => {
         return val.isActive === statusSwitch;
       });
+      const sliced = switchData.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
+      setTotal(switchData.length);
       setData(switchData);
-      
+      setData(sliced);
     } else {
       const sliced = dataSource.slice(
         currentPage * pageSize,
         currentPage * pageSize + pageSize
       );
+      setTotal(dataSource.length);
       setData(sliced);
     }
   };
@@ -425,7 +425,7 @@ const Index = ({
                       </select>
                     </div>
                   ) : null}
-                  {tableElement?.switch ? (
+                  {tableElement?.isActive ? (
                     <div className="d-flex align-items-center">
                       <Switch
                         width={70}
@@ -475,7 +475,7 @@ const Index = ({
                 <Col className="col-sm-auto">
                   <span>
                     Showing {data.length} of{" "}
-                    {tableElement.title === "Tabs" || "Users"
+                    {tableElement.title === "Tabs"
                       ? data?.length
                       : dataSource?.length}{" "}
                     entries

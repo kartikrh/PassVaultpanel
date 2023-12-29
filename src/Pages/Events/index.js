@@ -5,10 +5,10 @@ import { Button } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster";
 const Index = () => {
   document.title = "Events | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -17,6 +17,13 @@ const Index = () => {
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  //toast
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
   //get Events Types
   const [eventTypes, setEventTypes] = useState([]);
   // get competitions
@@ -27,9 +34,12 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/events/all`)
+      .post(`/admin/events/all`,{
+        isActive
+      })
       .then((response) => {
         setData(response?.result);
         const eventTypes = Array.from(
@@ -75,9 +85,21 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
 
@@ -90,9 +112,21 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
+        setToast({
+          message: response?.result,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
       });
   };
 
@@ -225,7 +259,7 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: true,
     competitionsSelect: true,
-    switch: false,
+    isActive: true,
   };
 
   useEffect(() => {
@@ -239,6 +273,14 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Events" />
           {isLoading && <SpinnerModel />}
+          {toastStatus && (
+            <Toaster
+              toast={toast}
+              setToast={setToast}
+              toastStatus={toastStatus}
+              setToastStatus={setToastStatus}
+            />
+          )}
           <Table
             columns={columns}
             dataSource={data}
@@ -246,6 +288,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
+            reFetchData={fetchData}
             competitions={competitions}
             singleCheck={singleCheck}
             onAddNavigate={"/addEvents"}

@@ -22,18 +22,20 @@ import {
 } from "../../components/Common/Const";
 import { addTeamToDb } from "../../Features/Tabs/teamSlice";
 import axiosInstance from "../../Features/axios";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
-const convertObjtoFormData = (obj) => {
-  const formData = new FormData();
-  for (const key in obj) {
-    if (key === "image") {
-      typeof obj[key] !== "string" && formData.append(key, obj[key]);
-      continue;
-    }
-    formData.append(key, obj[key]);
-  }
-  return formData
-}
+const formatMultiSelectDataPlayers = (inputList) => {
+  const outputList = [];
+
+  inputList.forEach((item) =>
+    item.displayOrder !== undefined
+      ? (outputList[item.displayOrder - 1] = item.playerId)
+      : outputList.push(item.playerId)
+  );
+
+  return outputList;
+};
 
 function AddTeams() {
   const finalizeRef = useRef(null);
@@ -79,12 +81,10 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/team/byId", { teamId })
       .then((response) => {
-        const formattedData = response?.result.players?.map(item => {
-          return { label: item.playerName, value: item.playerId }
-      })
-      console.log("this is formattedData ====>>>>", formattedData)
-      console.log(response.result.players)
-        setInitialEditData({...response?.result, players: formattedData});
+        setInitialEditData({
+          ...response?.result,
+          players: formatMultiSelectDataPlayers(response?.result?.players)
+        });
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -127,13 +127,13 @@ function AddTeams() {
             teamId
         }
         setCurrentSaveAction(saveAction);
-        dispatch(addTeamToDb({ ...dataToSave, ...extraData }))
+        dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
-};
+  };
   const handleBackClick = () => {
     navigate("/teams");
   };
-  
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -142,9 +142,9 @@ function AddTeams() {
             <Col xs={12} md={8} lg={9}>
               <h3>Teams </h3>
             </Col>
-
             <Card>
               <CardBody>
+                {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
                     className="mb-3"

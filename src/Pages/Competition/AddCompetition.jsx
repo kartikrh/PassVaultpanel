@@ -22,19 +22,8 @@ import {
 } from "../../components/Common/Const";
 import { addCompetitionToDb } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
-
-const convertObjtoFormData = (obj) => {
-  const formData = new FormData();
-  for (const key in obj) {
-    if (key === "image") {
-      typeof obj[key] !== "string" && formData.append(key, obj[key]);
-      continue;
-    }
-    formData.append(key, obj[key]);
-  }
-  return formData
-}
-
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
 function AddCompetitions() {
   const finalizeRef = useRef(null);
@@ -105,13 +94,13 @@ function AddCompetitions() {
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
-        const extraData = {
-            competitionId
-        }
-        setCurrentSaveAction(saveAction);
-        dispatch(addCompetitionToDb({ ...dataToSave, ...extraData }))
+      const extraData = {
+        competitionId
+      }
+      setCurrentSaveAction(saveAction);
+      dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
-};
+  };
   const handleBackClick = () => {
     navigate("/competition");
   };
@@ -123,9 +112,9 @@ function AddCompetitions() {
             <Col xs={12} md={8} lg={9}>
               <h3>Competitions </h3>
             </Col>
-
             <Card>
               <CardBody>
+                {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
                     className="mb-3"

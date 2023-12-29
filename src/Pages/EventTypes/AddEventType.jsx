@@ -7,19 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addEventTypeToDb } from '../../Features/Tabs/eventTypesSlice';
 import axiosInstance from '../../Features/axios';
-
-const convertObjtoFormData = (obj) => {
-    const formData = new FormData();
-    for (const key in obj) {
-        if (key === "image") {
-            typeof obj[key] !== "string" && formData.append(key, obj[key]);
-            continue;
-        }
-        formData.append(key, obj[key]);
-    }
-    return formData
-}
-
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from '../../components/Common/utilities';
 
 function AddEventType() {
     const finalizeRef = useRef(null);
@@ -66,7 +55,7 @@ function AddEventType() {
             const extraData = {
                 eventTypeId: eventTypeId
             }
-            dispatch(addEventTypeToDb(convertObjtoFormData({ ...finalizeRef.current.finalizeData(), ...extraData })))
+            dispatch(addEventTypeToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
             setCurrentSaveAction(saveAction);
         }
     };
@@ -83,9 +72,9 @@ function AddEventType() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Event Types</h3>
                         </Col>
-
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>

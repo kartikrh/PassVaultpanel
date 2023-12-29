@@ -9,7 +9,18 @@ import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
+import { convertObjtoFormData } from '../../components/Common/utilities';
 
+const formatMultiSelectDataTeams = (inputList) => {
+    console.log(inputList)
+    const outputList = [];
+
+    inputList.forEach((item) =>
+        outputList.push(item.teamId)
+    );
+    console.log(outputList.filter(element => element))
+    return outputList.filter(element => element);
+};
 function AddPlayer() {
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
@@ -47,10 +58,14 @@ function AddPlayer() {
         }
     });
 
+
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/player/byId', { playerId: id })
             .then((response) => {
-                setInitialEditData(response?.result);
+                setInitialEditData({
+                    ...response?.result,
+                    teamId: formatMultiSelectDataTeams(response?.result?.teams)
+                });
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
             });
@@ -82,7 +97,8 @@ function AddPlayer() {
         axiosInstance.post('/admin/player/allPlayerTypes')
             .then((response) => {
                 setMasterData((prevData) => ({
-                    ...prevData, "playerTypeId":
+                    ...prevData,
+                    "playerTypeId":
                         response?.result?.map(item => {
                             return { label: item.playerType, value: item.playerTypeId }
                         })
@@ -111,7 +127,7 @@ function AddPlayer() {
                 playerId: id
             }
             setCurrentSaveAction(saveAction);
-            dispatch(addPlayerToDb({ ...dataToSave, ...extraData }))
+            dispatch(addPlayerToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
         }
     };
 

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
 import { addPenaltyRunToDb } from '../../Features/Tabs/penaltyRunsSlice';
 import axiosInstance from '../../Features/axios';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 function AddPenaltyRuns() {
     const finalizeRef = useRef(null);
@@ -52,7 +53,7 @@ function AddPenaltyRuns() {
             const extraData = {
                 paneltyId: paneltyId
             }
-            dispatch(addPenaltyRunToDb({ ...finalizeRef.current.finalizeData(), ...extraData }))
+            dispatch(addPenaltyRunToDb({ ...dataToSave, ...extraData }))
             setCurrentSaveAction(saveAction);
         }
     };
@@ -71,6 +72,7 @@ function AddPenaltyRuns() {
                         </Col>
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>

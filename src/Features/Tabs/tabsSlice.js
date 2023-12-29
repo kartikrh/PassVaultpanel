@@ -8,10 +8,10 @@ export const addTabToDb = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/tabs/save', data);
-            dispatch(updateToastData({ data: "Tab data saved successfully.", type: SUCCESS }));
+            dispatch(updateToastData({ data: response?.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error.response.data, type: ERROR }));
+            dispatch(updateToastData({ data: error.message, type: ERROR }));
             return rejectWithValue(error.response.data);
         }
     }

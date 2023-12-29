@@ -10,6 +10,7 @@ import axiosInstance from '../../Features/axios';
 import PermissionTable from './PermissionTable';
 import { Columns } from './Columns';
 import { rearrangeTabs, transformData } from './helpers';
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 function AddRoles() {
     const finalizeRef = useRef(null);
@@ -72,7 +73,7 @@ function AddRoles() {
                 roleId: roleId,
                 permissions: newPermissionValue
             }
-            dispatch(addRoleToDb({ ...finalizeRef.current.finalizeData(), ...extraData }))
+            dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
             setCurrentSaveAction(saveAction);
         }
     };
@@ -104,6 +105,7 @@ function AddRoles() {
                         </Col>
                         <Card>
                             <CardBody>
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>

@@ -34,9 +34,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (isActive) => {
+    setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventType/all`)
+      .post(`/admin/eventType/all`,{
+        isActive
+      })
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
@@ -74,7 +77,7 @@ const Index = () => {
       })
       .then((response) => {
         setToast({
-          message: `${response.title} status updated successfully`,
+          message: response?.message,
           color: "green",
           header: "Success",
         });
@@ -84,7 +87,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
           header: "Warning",
         });
@@ -103,7 +106,7 @@ const Index = () => {
         fetchData();
         setDeleteModelVisable(false);
         setToast({
-          message: response.result.message,
+          message: response?.message,
           color: "green",
           header: "Success",
         });
@@ -112,7 +115,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
           header: "Warning",
         });
@@ -249,7 +252,7 @@ const Index = () => {
   const tableElement = {
     title: "Event Types",
     headerSelect: false,
-    switch: true,
+    isActive: true,
     dragDrop: true,
   };
 
@@ -279,6 +282,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
             singleCheck={singleCheck}
+            reFetchData={fetchData}
             // addModelFunction={setAddModelVisable}
             onAddNavigate={"/addEventType"}
           />
