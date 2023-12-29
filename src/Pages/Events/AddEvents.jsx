@@ -91,7 +91,7 @@ function AddEvents() {
         // setIsLoading(false)
       });
     await axiosInstance
-      .post("/admin/competition/all", {})
+      .post("/admin/competition/all",{})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -99,11 +99,6 @@ function AddEvents() {
             return { label: item.competition, value: item.competitionId };
           }),
         }));
-        // setMasterData((preData) => ({
-        //     ...preData,
-        //     "team1Id": formattedData,
-        //     "team2Id": formattedData
-        // }));
       })
       .catch((error) => {
         // setIsLoading(false)

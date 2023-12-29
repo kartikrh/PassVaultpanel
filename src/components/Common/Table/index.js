@@ -27,7 +27,6 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
 }
 
 const Index = ({
-
   columns,
   dataSource,
   tableElement,
@@ -37,6 +36,10 @@ const Index = ({
   singleCheck,
   displayTypes,
   eventTypes,
+  reFetchData,
+  reFetchEventTypeData,
+  handleReset,
+  reFetchCompetitionData,
   competitions,
   onAddNavigate,
   changeOrderApiName = "",
@@ -145,24 +148,13 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleEventTyptDropDown = (e) => {
-    if (e == "") {
-      setData(dataSource);
-    } else {
-      const updatedData = dataSource.filter((val) => {
-        return val.eventType == e;
-      });
-      setData(updatedData);
-    }
-  };
-  const handleCompetitionsDropdown = (e) => {
-    if (e == "") {
-      setData(dataSource);
-    } else {
-      const updatedData = dataSource.filter((val) => {
-        return val.competition == e;
-      });
-      setData(updatedData);
+  const handleDropDown = (key,id) => {
+    console.log(`this is dropdown ${key} and id ${id}`)
+    if(key==="eventTypeId"){
+      reFetchData({[key]:id})
+      reFetchCompetitionData(id)
+    }else if(key==="competitionId"){
+      reFetchData({[key]:id})
     }
   };
   const handleSearchFilter = () => {
@@ -202,6 +194,7 @@ const Index = ({
         );
         setData(sliced);
       } else {
+        
         setData(updatedData);
         setTotal(updatedData.length);
       }
@@ -326,6 +319,10 @@ const Index = ({
     changeDisplayOrder(tabOrders, changeOrderApiName);
   };
 
+  const handleTableReset = () =>{
+
+  }
+
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -416,12 +413,12 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleEventTyptDropDown(e.target.value);
+                          handleDropDown("eventTypeId", e.target.value);
                         }}
                       >
                         <option value="">Select Event Type</option>
                         {eventTypes?.map((val) => {
-                          return <option value={val}>{val}</option>;
+                          return <option value={val?.eventTypeId}>{val?.eventType}</option>;
                         })}
                       </select>
                     </div>
@@ -432,12 +429,12 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleCompetitionsDropdown(e.target.value);
+                          handleDropDown("competitionId", e.target.value);
                         }}
                       >
                         <option value="">Select Competition</option>
                         {competitions?.map((val) => {
-                          return <option value={val}>{val}</option>;
+                          return <option value={val.competitionId}>{val.competition}</option>;
                         })}
                       </select>
                     </div>
@@ -457,6 +454,21 @@ const Index = ({
                       />
                     </div>
                   ) : null}
+                  {
+                    tableElement?.resetButton?(<div>
+                      <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        handleReset();
+                        handleTableReset()
+                      }}
+                      id="create-btn"
+                    >
+                      Reset
+                      {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                    </button>
+                    </div>):null
+                  }
                 </div>
               </Col>
               <Col className="d-flex justify-content-end">

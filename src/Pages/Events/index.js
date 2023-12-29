@@ -36,29 +36,42 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (value) => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/events/all`, {
         isActive,
+        eventTypeId: value?.eventTypeId ? value.eventTypeId : 0,
+        competitionId: value?.competitionId ? value.competitionId : 0,
       })
       .then((response) => {
         setData(response?.result);
-        const eventTypes = Array.from(
-          new Set(response?.result.map((item) => item.eventType))
-        );
-        const competitions = Array.from(
-          new Set(response?.result.map((item) => item.competition))
-        );
-        setEventTypes(eventTypes);
-        setCompetitions(competitions);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
       });
   };
-
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/eventType/all`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {});
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/competition/${value === undefined? `all`: `byeventTypeId`}`, {
+        eventTypeId: value
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {});
+  };
   //checkbox function
   const handleCheckedAll = (e) => {
     if (e === "all") {
@@ -76,7 +89,6 @@ const Index = () => {
       }
     }
   };
-
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -135,6 +147,11 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addEvents", { state: { userId: id } });
   };
+  const handleReset =() =>{
+    fetchData()
+    fetchCompetitionData()
+    fetchEventTypeData()
+  }
   //table columns
   const columns = [
     {
@@ -262,7 +279,14 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsSelect: true,
     isActive: true,
+    resetButton:true,
   };
+
+  useEffect(() => {
+    fetchData();
+    fetchEventTypeData();
+    fetchCompetitionData();
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -292,7 +316,11 @@ const Index = () => {
             eventTypes={eventTypes}
             setIsActive={setIsActive}
             competitions={competitions}
+            reFetchData={fetchData}
+            reFetchEventTypeData={fetchEventTypeData}
+            reFetchCompetitionData={fetchCompetitionData}
             singleCheck={singleCheck}
+            handleReset = {handleReset}
             onAddNavigate={"/addEvents"}
           />
           <DeleteTabModel
