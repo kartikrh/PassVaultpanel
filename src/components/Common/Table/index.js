@@ -30,10 +30,9 @@ const Index = ({
 
   columns,
   dataSource,
-  reFetchData,
   tableElement,
   cloneModelFunction,
-  addModelFunction,
+  setIsActive,
   deleteModelFunction,
   singleCheck,
   displayTypes,
@@ -108,11 +107,11 @@ const Index = ({
   };
   const handleStatusSwitch = () => {
     if (statusSwitch) {
-      reFetchData(false)
+      setIsActive(false)
       setStatusSwitch(false);
     } else {
       setStatusSwitch(true);
-      reFetchData(true)
+      setIsActive(true)
     }
   };
   const handleDropDownFilter = (e) => {
