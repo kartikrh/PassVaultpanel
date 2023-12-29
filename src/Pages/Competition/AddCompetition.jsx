@@ -23,19 +23,7 @@ import {
 import { addCompetitionToDb } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-
-const convertObjtoFormData = (obj) => {
-  const formData = new FormData();
-  for (const key in obj) {
-    if (key === "image") {
-      typeof obj[key] !== "string" && formData.append(key, obj[key]);
-      continue;
-    }
-    formData.append(key, obj[key]);
-  }
-  return formData
-}
-
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
 function AddCompetitions() {
   const finalizeRef = useRef(null);
@@ -110,7 +98,7 @@ function AddCompetitions() {
         competitionId
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addCompetitionToDb({ ...dataToSave, ...extraData }))
+      dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {

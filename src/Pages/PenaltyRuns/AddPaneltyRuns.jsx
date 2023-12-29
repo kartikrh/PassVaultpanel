@@ -53,7 +53,7 @@ function AddPenaltyRuns() {
             const extraData = {
                 paneltyId: paneltyId
             }
-            dispatch(addPenaltyRunToDb({ ...finalizeRef.current.finalizeData(), ...extraData }))
+            dispatch(addPenaltyRunToDb({ ...dataToSave, ...extraData }))
             setCurrentSaveAction(saveAction);
         }
     };

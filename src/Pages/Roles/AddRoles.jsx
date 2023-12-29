@@ -73,7 +73,7 @@ function AddRoles() {
                 roleId: roleId,
                 permissions: newPermissionValue
             }
-            dispatch(addRoleToDb({ ...finalizeRef.current.finalizeData(), ...extraData }))
+            dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
             setCurrentSaveAction(saveAction);
         }
     };
