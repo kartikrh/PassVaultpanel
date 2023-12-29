@@ -101,7 +101,7 @@ export const MatchDetailFields = [
         options: [
             { label: "Select Pitch", value: "0" },
             { label: "Hard", value: "1" },
-            { label: "Wer", value: "2" },
+            { label: "Wet", value: "2" },
             { label: "Damp", value: "3" },
             { label: "Green", value: "4" },
             { label: "Cracked", value: "5" },
