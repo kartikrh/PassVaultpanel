@@ -9,7 +9,7 @@ import { addTabToDb } from '../../Features/Tabs/tabsSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
-
+const navigateTo = "/tabs"
 function AddTabs() {
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
@@ -22,6 +22,7 @@ function AddTabs() {
     let navigate = useNavigate();
     const location = useLocation();
     const id = location.state?.userId || "0";
+    const selectedTabId = location.state?.selectedTabId
 
     useEffect(() => {
         fetchMasterData()
@@ -35,13 +36,20 @@ function AddTabs() {
                 "displayType": true
             })
         }
-    }, [id]);
+        if (selectedTabId && typeof (selectedTabId) === "string") {
+            setInitialEditData({
+                parentId: selectedTabId
+            })
+        }
+    }, [id, selectedTabId]);
 
     useEffect(() => {
         if (isSaved) {
             if (currentSaveAction === SAVE) { }
-            else if (currentSaveAction === SAVE_AND_CLOSE)
-                navigate("/tabs")
+            else if (currentSaveAction === SAVE_AND_CLOSE) {
+                selectedTabId ?
+                    navigate(navigateTo, { state: { selectedTabId } }) : navigate(navigateTo)
+            }
             else if (currentSaveAction === SAVE_AND_NEW)
                 finalizeRef.current.resetForm()
         }
@@ -78,7 +86,8 @@ function AddTabs() {
         }
     };
     const handleBackClick = () => {
-        navigate("/tabs");
+        selectedTabId ?
+            navigate(navigateTo, { state: { selectedTabId } }) : navigate(navigateTo)
     };
 
     return (

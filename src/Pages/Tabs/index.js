@@ -5,14 +5,17 @@ import { apiGetTabCleaner } from "../../helpers/helper";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 const Index = () => {
+  const location = useLocation();
+  const selectedTabId = location.state?.selectedTabId
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  const [currentParentTab, setCurrentParentTab] = useState(undefined)
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +34,7 @@ const Index = () => {
   const [displayTypes, setDisplayTypes] = useState([]);
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
+  let sorted = []
   const [singleCheck, setSingleCheck] = useState([]);
   const navigate = useNavigate();
   // fetch data
@@ -40,7 +44,7 @@ const Index = () => {
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
-        const sorted = [...first].sort(
+        sorted = [...first].sort(
           (a, b) => a.displayOrder - b.displayOrder
         );
         sorted.forEach((item) => {
@@ -49,6 +53,11 @@ const Index = () => {
           }
         });
         setData(sorted);
+        if (selectedTabId) {
+          setCurrentParentTab(sorted.filter((element) => {
+            return element?.tabId === selectedTabId
+          })?.[0])
+        }
         const displayType = Array.from(
           new Set(response?.result.map((item) => item.displayType))
         );
@@ -107,7 +116,9 @@ const Index = () => {
         setToastStatus(true);
       });
   };
-
+  const resetJumpToChild = () => {
+    setCurrentParentTab(undefined)
+  }
   const handleDelete = async (e) => {
     if (singleCheck.length > 0) {
       setIsLoading(true);
@@ -313,6 +324,8 @@ const Index = () => {
             changeOrderApiName="tabs"
             displayTypes={displayTypes}
             singleCheck={singleCheck}
+            jumpToChild={currentParentTab}
+            resetJumpToChild={resetJumpToChild}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
