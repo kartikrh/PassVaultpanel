@@ -221,9 +221,9 @@ const Index = () => {
               border: "solid lightgray 1px",
               borderRadius: "5px",
             }}
-            value={run === null ? text : run}
+            value={run?.[record.paneltyId] === undefined ? text : run[record.paneltyId]}
             onChange={(e) => {
-              setRun(e.target.value);
+              setRun(prev => ({ ...prev, [record.paneltyId]: e.target.value }));
             }}
           />
           <button
@@ -231,7 +231,7 @@ const Index = () => {
             onClick={(e) => {
               handleRuns({
                 paneltyId: record.paneltyId,
-                run: run === null ? text : run,
+                run: run?.[record.paneltyId] === undefined ? text : run[record.paneltyId]
               });
             }}
           >
