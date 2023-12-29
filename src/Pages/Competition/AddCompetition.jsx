@@ -78,7 +78,7 @@ function AddCompetitions() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all")
+      .post("/admin/eventType/all", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,

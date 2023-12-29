@@ -93,7 +93,7 @@ function AddTeams() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all")
+      .post("/admin/eventType/all",{})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -107,7 +107,7 @@ function AddTeams() {
       });
 
     await axiosInstance
-      .post("/admin/player/all")
+      .post("/admin/player/all", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -123,11 +123,11 @@ function AddTeams() {
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
-        const extraData = {
-            teamId
-        }
-        setCurrentSaveAction(saveAction);
-        dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
+      const extraData = {
+        teamId
+      }
+      setCurrentSaveAction(saveAction);
+      dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {
