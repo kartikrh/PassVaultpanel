@@ -77,7 +77,7 @@ function AddUsers() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/user/all")
+      .post(`/admin/user/all`, {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -103,17 +103,17 @@ function AddUsers() {
         // setIsLoading(false)
       });
   };
-  
+
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
-        const extraData = {
-            id: userId
-        }
-        setCurrentSaveAction(saveAction);
-        dispatch(addUserToDb({ ...dataToSave, ...extraData }))
+      const extraData = {
+        id: userId
+      }
+      setCurrentSaveAction(saveAction);
+      dispatch(addUserToDb({ ...dataToSave, ...extraData }))
     }
-};
+  };
 
   const handleBackClick = () => {
     navigate("/users");
