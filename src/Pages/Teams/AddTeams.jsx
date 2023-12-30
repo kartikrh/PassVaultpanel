@@ -83,7 +83,7 @@ function AddTeams() {
       .then((response) => {
         setInitialEditData({
           ...response?.result,
-          players: formatMultiSelectDataPlayers(response?.result?.players)
+          playerId: formatMultiSelectDataPlayers(response?.result?.players)
         });
       })
       .catch((error) => {
@@ -93,7 +93,7 @@ function AddTeams() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all",{})
+      .post("/admin/eventType/all", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -111,7 +111,7 @@ function AddTeams() {
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
-          players: response.result?.map((item) => {
+          playerId: response.result?.map((item) => {
             return { label: item.playerName, value: item.playerId };
           }),
         }));

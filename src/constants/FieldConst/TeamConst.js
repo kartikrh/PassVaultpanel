@@ -56,7 +56,7 @@ export const TeamFields = [
     },
     {
         type: MULTI_SELECT,
-        name: "players",
+        name: "playerId",
         label: "Select Players",
         options: [],
         showSelectAll: true,
