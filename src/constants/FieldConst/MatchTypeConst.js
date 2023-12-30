@@ -118,6 +118,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
+        isRequired: true,
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
     {
@@ -166,6 +167,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
+        isRequired: true,
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
     {
