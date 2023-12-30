@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
-import _, { capitalize } from "lodash";
+import _, { capitalize, isEmpty, isEqual } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData, compareNumStringValues } from "./reusableMethods.js";
 import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
@@ -39,20 +39,17 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }
   };
 
-  // useEffect(() => {
-  //   if (isEmpty(formData)) {
-  //     let defaultValueObj = {}
-  //     fields?.forEach((field) => {
-  //       if (field?.defaultValue) {
-  //         defaultValueObj = { ...defaultValueObj, [field.name]: field.defaultValue }
-  //       }
-  //     })
-  //     setFormData(defaultValueObj)
-  //   }
-  // }, [])
-
   useEffect(() => {
-    if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
+    let defaultValueObj = {}
+    fields?.forEach((field) => {
+      if (field.defaultValue) {
+        defaultValueObj[field.name] = field.defaultValue
+      }
+    })
+    if (isEmpty(formData) && isEmpty(editFormData)) {
+      setFormData(defaultValueObj)
+    } else if (!isEmpty(editFormData) &&
+      (isEmpty(formData) || isEqual(formData, defaultValueObj))) {
       fields.forEach(async (element) => {
         if (element.type === IMAGE && editFormData[element.name]) {
           fetch(process.env.REACT_APP_BASE_URL + editFormData[element.name])
@@ -72,8 +69,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       });
       setFormData(editFormData)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editFormData])
+  }, [editFormData, fields, formData])
 
   useEffect(() => {
     updateParentFormData();

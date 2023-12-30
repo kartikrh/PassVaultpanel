@@ -12,7 +12,6 @@ import { updateToastData } from '../../Features/toasterSlice';
 import { convertObjtoFormData } from '../../components/Common/utilities';
 
 const formatMultiSelectDataTeams = (inputList) => {
-    console.log(inputList)
     const outputList = [];
 
     inputList.forEach((item) =>
