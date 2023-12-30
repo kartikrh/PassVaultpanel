@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import TabSlice from "./tabsSlice"
 import CommentarySlice from "./commentarySlice"
-import MatchTypeSLice from "./commentarySlice"
+import MatchTypeSLice from "./matchTypeSlice"
 import usersSlice from "./usersSlice"
 import playerSlice from "./playerSlice"
 import PenaltyRunSlice from "./penaltyRunsSlice"
