@@ -7,6 +7,10 @@
         /* padding-left: 10px;
         margin-top: 20px; */
     }
+
+    .form-label-class {
+        margin-bottom: 0rem !important;
+    }
 }
 
 .block {
@@ -86,7 +90,7 @@
 }
 
 
-.white-space-break {
+.form-label-class {
     white-space: break-spaces;
     word-break: break-all;
 }
