@@ -123,7 +123,6 @@ export const PlayerFields = [
         showSelectAll: true,
         name: "teamId",
         label: "Select Team",
-        defaultValue: "0",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
