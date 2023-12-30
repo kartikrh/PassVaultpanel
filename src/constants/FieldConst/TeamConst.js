@@ -24,31 +24,6 @@ export const TeamFields = [
         requiredErrorMessage: "Please enter team name.",
     },
     {
-        name: "jersey",
-        label: "Jersey Image",
-        parentclassName: "",
-        type: IMAGE,
-
-    },
-    {
-        name: "players",
-        label: "Select Players",
-        options: [],
-        defaultValue:"0",
-        showSelectAll: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: MULTI_SELECT,
-    },
-    {
-        name: "country",
-        label: "Country",
-        parentclassName: "",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: TEXT,
-    },
-    {
         name: "teamShortName",
         label: "Short Name",
         parentclassName: "",
@@ -59,9 +34,34 @@ export const TeamFields = [
         requiredErrorMessage: "Please enter short name.",
     },
     {
+        name: "country",
+        label: "Country",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: TEXT,
+    },
+    {
+        name: "jersey",
+        label: "Jersey Image",
+        parentclassName: "",
+        type: IMAGE,
+
+    },
+    {
         name: "image",
         label: "Team Image",
         parentclassName: "",
         type: IMAGE,
+    },
+    {
+        name: "players",
+        label: "Select Players",
+        options: [],
+        defaultValue: "0",
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: MULTI_SELECT,
     },
 ]

@@ -39,6 +39,18 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }
   };
 
+  // useEffect(() => {
+  //   if (isEmpty(formData)) {
+  //     let defaultValueObj = {}
+  //     fields?.forEach((field) => {
+  //       if (field?.defaultValue) {
+  //         defaultValueObj = { ...defaultValueObj, [field.name]: field.defaultValue }
+  //       }
+  //     })
+  //     setFormData(defaultValueObj)
+  //   }
+  // }, [])
+
   useEffect(() => {
     if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
       fields.forEach(async (element) => {
@@ -175,7 +187,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
               <div className="lablediv">
                 <label
                   htmlFor={field.name}
-                  className="col-form-label dynamic-label-right"
+                  className="col-form-label dynamic-label-right white-space-break"
                 >
                   {field.isRequired && <span className="text-danger">*&nbsp;</span>}
                   {field.label}
@@ -379,7 +391,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                       type="checkbox"
                       id="customSwitchsizelg"
                       // defaultChecked
-                      checked={formData[field.name] || (_.isEmpty(formData) && field.defaultValue)}
+                      checked={formData[field.name]}
                       onChange={(e) => {
                         handleChange(field, !formData[field.name])
                       }}
