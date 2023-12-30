@@ -88,20 +88,27 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
 
   const validateAllFields = (doNotValidateFields) => {
-    let errors = {};
+    const errors = {};
 
     fields.forEach((field) => {
       const value = formData[field.name];
-      if (field.isRequired && isValueEmpty(value) && !doNotValidateFields.includes(field.name)) {
+      const shouldValidate =
+        !doNotValidateFields.includes(field.name) &&
+        (!field.dependsOnField || formData[field.dependsOnField]);
+
+      if (shouldValidate && field.isRequired && isValueEmpty(value)) {
         errors[field.name] =
           field.requiredErrorMessage || `Please Enter ${field.label}`;
-      } else if (field.isRequired && field.regex && !field.regex.test(value)) {
+      }
+      if (field.regex && !field.regex.test(value)) {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
     });
+
     setFieldErrors(errors);
     return errors;
   };
+
 
   const filterData = (data) => {
     const imageFields = fields.filter(field => field.type === IMAGE).map(value => value.name)
@@ -140,7 +147,11 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const handleChange = (field, value) => {
     const errors = { ...fieldErrors };
-    if (field.isRequired && isValueEmpty(value)) {
+    const dependentFieldValue = formData[field.dependsOnField];
+    if (
+      (!field.dependsOnField || dependentFieldValue) &&
+      (field.isRequired && isValueEmpty(value))
+    ) {
       errors[field.name] =
         field.requiredErrorMessage || "This field is required.";
     } else if (field.regex && !field.regex.test(value)) {
