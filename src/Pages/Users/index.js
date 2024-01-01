@@ -11,9 +11,12 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
 import Toaster from "../../components/Toaster";
+import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
+
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
+  const [clipboard, setClipboard] = useState(null);
 
   //password decryption
   const [decryptedPasswords, setDecryptedPasswords] = useState(null);
@@ -154,8 +157,14 @@ const Index = () => {
       })
       .then((response) => {
         const password = response?.result?.password || "";
-        setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
-        if (copy) navigator.clipboard.writeText(password)
+        if (copy) {
+          navigator.clipboard.writeText(password)
+            .then(res => setClipboard({ [userId]: password }))
+            .catch(err => oldSchoolCopy(password))
+            .finally(() => setTimeout(() => setClipboard(null), 2000))
+        } else {
+          setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
+        }
       })
       .catch((error) => {
         setToast({
@@ -169,7 +178,11 @@ const Index = () => {
 
   const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
     <span onClick={() => getDecryptedPassword(userId)} >*******</span>
-    <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
+    {clipboard?.[userId] ? <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
+      <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
+    </Tooltip> :
+      <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
+    }
   </div>)
 
   const handleEdit = (id) => {
