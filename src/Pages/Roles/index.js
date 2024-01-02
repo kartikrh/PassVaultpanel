@@ -215,7 +215,6 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck = {singleCheck}
-            // addModelFunction={setAddModelVisable}
             reFetchData={fetchData}
             onAddNavigate={"/addRoles"}
           />
