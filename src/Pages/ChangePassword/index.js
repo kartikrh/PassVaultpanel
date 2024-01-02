@@ -11,22 +11,11 @@ import {
   Form,
   FormFeedback,
 } from "reactstrap";
-
+import Breadcrumbs from "../../components/Common/Breadcrumb";
 // Formik Validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
-
-// action
-// import { registerUser, apiError } from "../../store/actions";
-
-//redux
 import { useSelector, useDispatch } from "react-redux";
-
-import { Link } from "react-router-dom";
-
-// import images
-import logolight from "../../assets/images/logo-light.png";
-import logodark from "../../assets/images/logo-dark.png";
 
 const Register = (props) => {
   document.title = "Register | Upzet - React Admin & Dashboard Template";
@@ -39,20 +28,14 @@ const Register = (props) => {
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
-
     initialValues: {
-      email: "",
-      username: "",
+      userId: "",
       password: "",
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
-      username: Yup.string().required("Please Enter Your Username"),
+      userId: Yup.string().required("Please Enter Your Username"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
-    onSubmit: (values) => {
-      //   dispatch(registerUser(values));
-    },
   });
 
   useEffect(() => {
@@ -60,16 +43,17 @@ const Register = (props) => {
   }, [dispatch]);
 
   return (
-    <div className="mt-5">
-      <div className="account-pages pt-5 ">
-        <Container>
+    <div className="mt-5" style={{}}>
+      <div className="account-pages pt-5">
+        <Container fluid={true}>
+        <Breadcrumbs title="ScoreCard" breadcrumbItem="Change Password" />
           <Row className="justify-content-center">
             <Col lg={6} md={8} xl={4}>
               <Card className="mt-5">
                 <CardBody className="p-4">
-                  <h4 className="font-size-18 text-muted text-center mt-2 mb-5">
+                  {/* <h4 className="font-size-18 text-muted text-center mt-2 mb-5">
                     Change Password
-                  </h4>
+                  </h4> */}
                   {/* <p className="text-muted text-center mb-4">Get your free Upzet account now.</p> */}
                   <Form
                     className="form-horizontal"
@@ -82,14 +66,11 @@ const Register = (props) => {
                     <Row>
                       <Col md={12}>
                         <div className="mb-4">
-                          <Label className="form-label">Current Password</Label>
+                          <Label className="form-label">User ID</Label>
                           <Input
                             name="username"
                             type="text"
-                            placeholder="Enter username"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.username || ""}
+                            placeholder="Enter UserId"
                             invalid={
                               validation.touched.username &&
                               validation.errors.username
@@ -110,10 +91,7 @@ const Register = (props) => {
                             type={showPassword ? "text" : "password"}
                             name="password"
                             id="password"
-                            placeholder="Enter Password"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.password || ""}
+                            placeholder="New Password"
                             invalid={
                               validation.touched.password &&
                               validation.errors.password

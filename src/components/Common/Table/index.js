@@ -362,8 +362,8 @@ const Index = ({
       eventTypeId: 0,
       competitionId: 0,
     });
-    handleReset();
     setStatusSwitch(true);
+    handleReset();
   };
 
   useEffect(() => {

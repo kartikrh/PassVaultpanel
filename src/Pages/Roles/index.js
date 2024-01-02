@@ -215,7 +215,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck = {singleCheck}
-            // addModelFunction={setAddModelVisable}
+            reFetchData={fetchData}
             onAddNavigate={"/addRoles"}
           />
           <DeleteTabModel
@@ -227,7 +227,6 @@ const Index = () => {
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>
