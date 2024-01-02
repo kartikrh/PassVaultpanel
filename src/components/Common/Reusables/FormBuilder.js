@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
-import _, { capitalize } from "lodash";
+import _, { capitalize, isEmpty, isEqual } from "lodash";
 import { useImperativeHandle } from "react";
 import { isValueEmpty, sanitizeFormData, compareNumStringValues } from "./reusableMethods.js";
 import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
@@ -40,7 +40,16 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   };
 
   useEffect(() => {
-    if (!_.isEmpty(editFormData) && _.isEmpty(formData)) {
+    let defaultValueObj = {}
+    fields?.forEach((field) => {
+      if (field.defaultValue) {
+        defaultValueObj[field.name] = field.defaultValue
+      }
+    })
+    if (isEmpty(formData) && isEmpty(editFormData)) {
+      setFormData(defaultValueObj)
+    } else if (!isEmpty(editFormData) &&
+      (isEmpty(formData) || isEqual(formData, defaultValueObj))) {
       fields.forEach(async (element) => {
         if (element.type === IMAGE && editFormData[element.name]) {
           fetch(process.env.REACT_APP_BASE_URL + editFormData[element.name])
@@ -60,8 +69,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       });
       setFormData(editFormData)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editFormData])
+  }, [editFormData, fields, formData])
 
   useEffect(() => {
     updateParentFormData();
@@ -76,20 +84,27 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
 
   const validateAllFields = (doNotValidateFields) => {
-    let errors = {};
+    const errors = {};
 
     fields.forEach((field) => {
       const value = formData[field.name];
-      if (field.isRequired && isValueEmpty(value) && !doNotValidateFields.includes(field.name)) {
+      const shouldValidate =
+        !doNotValidateFields.includes(field.name) &&
+        (!field.dependsOnField || formData[field.dependsOnField]);
+
+      if (shouldValidate && field.isRequired && isValueEmpty(value)) {
         errors[field.name] =
           field.requiredErrorMessage || `Please Enter ${field.label}`;
-      } else if (field.isRequired && field.regex && !field.regex.test(value)) {
+      }
+      if (field.regex && !field.regex.test(value)) {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
     });
+
     setFieldErrors(errors);
     return errors;
   };
+
 
   const filterData = (data) => {
     const imageFields = fields.filter(field => field.type === IMAGE).map(value => value.name)
@@ -128,7 +143,11 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const handleChange = (field, value) => {
     const errors = { ...fieldErrors };
-    if (field.isRequired && isValueEmpty(value)) {
+    const dependentFieldValue = formData[field.dependsOnField];
+    if (
+      (!field.dependsOnField || dependentFieldValue) &&
+      (field.isRequired && isValueEmpty(value))
+    ) {
       errors[field.name] =
         field.requiredErrorMessage || "This field is required.";
     } else if (field.regex && !field.regex.test(value)) {
@@ -171,11 +190,11 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 <div className="dropdown-divider"></div>
               </>
             }
-            <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
+            <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"}`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <div className="lablediv">
                 <label
                   htmlFor={field.name}
-                  className="col-form-label dynamic-label-right"
+                  className="col-form-label dynamic-label-right form-label-class"
                 >
                   {field.isRequired && <span className="text-danger">*&nbsp;</span>}
                   {field.label}
@@ -379,7 +398,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                       type="checkbox"
                       id="customSwitchsizelg"
                       // defaultChecked
-                      checked={formData[field.name] || (_.isEmpty(formData) && field.defaultValue)}
+                      checked={formData[field.name]}
                       onChange={(e) => {
                         handleChange(field, !formData[field.name])
                       }}
