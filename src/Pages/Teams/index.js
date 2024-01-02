@@ -237,6 +237,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
             onAddNavigate={"/addTeams"}
+            reFetchData={fetchData}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

@@ -326,6 +326,7 @@ const Index = () => {
             singleCheck={singleCheck}
             jumpToChild={currentParentTab}
             resetJumpToChild={resetJumpToChild}
+            reFetchData={fetchData}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

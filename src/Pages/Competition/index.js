@@ -36,18 +36,19 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (value) => {
     setIsLoading(true);
+    setIsActive(value)
     await axiosInstance
       .post(`/admin/competition/all`, {
-        isActive,
+        ...value
       })
       .then((response) => {
         setData(response?.result);
-        const eventTypes = Array.from(
-          new Set(response?.result.map((item) => item.eventType))
-        );
-        setEventTypes(eventTypes);
+        // const eventTypes = Array.from(
+        //   new Set(response?.result.map((item) => item.eventType))
+        // );
+        // setEventTypes(eventTypes);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -55,6 +56,15 @@ const Index = () => {
       });
   };
 
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/eventType/all`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {});
+  };
   //checkbox function
   const handleCheckedAll = (e) => {
     if (e === "all") {
@@ -81,7 +91,8 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData();
+        console.log("this is from permissions ===>>>>", isActive)
+        fetchData(isActive);
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
@@ -250,10 +261,12 @@ const Index = () => {
     resetButton:true,
   };
 
+
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading({isActive:true});
     fetchData();
-  }, [isActive]);
+    fetchEventTypeData();
+  }, []);
 
   return (
     <React.Fragment>

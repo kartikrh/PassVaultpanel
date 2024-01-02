@@ -204,6 +204,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
+            reFetchData={fetchData}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}

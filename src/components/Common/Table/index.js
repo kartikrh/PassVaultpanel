@@ -48,7 +48,7 @@ const Index = ({
   const [data, setData] = useState(dataSource);
   const [currentParentId, setCurrentParentId] = useState(dataSource);
   const [subData, setSubData] = useState([]);
-  const [dropDownSelected, setDropDownSelected] = useState({
+  const [tableActions, setTableActions] = useState({
     isActive: true,
     eventTypeId: 0,
     competitionId: 0,
@@ -56,7 +56,7 @@ const Index = ({
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedEventType, setSelectedEventType] = useState(0)
+  const [selectedEventType, setSelectedEventType] = useState(0);
   const [toast, setToast] = useState({
     message: "Select at least one (only One) row",
     color: "red",
@@ -65,6 +65,7 @@ const Index = ({
   const [toastStatus, setToastStatus] = useState(false);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedValue, setSelectedValue] = useState('');
   //sorting
   const [sortOrder, setSortOrder] = useState({
     sortOrder: "",
@@ -128,7 +129,7 @@ const Index = ({
   const handleStatusSwitch = () => {
     if (statusSwitch) {
       setStatusSwitch(false);
-      setDropDownSelected((preValue) => {
+      setTableActions((preValue) => {
         return {
           ...preValue,
           isActive: false,
@@ -136,7 +137,7 @@ const Index = ({
       });
     } else {
       setStatusSwitch(true);
-      setDropDownSelected((preValue) => {
+      setTableActions((preValue) => {
         return {
           ...preValue,
           isActive: true,
@@ -159,20 +160,13 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleDropDown = (key, id) => {
-    setDropDownSelected((preValue) => {
+  const handleTableActions = (key, id) => {
+    setTableActions((preValue) => {
       return {
         ...preValue,
         [key]: id,
       };
     });
-    // console.log(`this is dropdown ${key} and id ${id}`)
-    // if(key==="eventTypeId"){
-    //   reFetchData({[key]:id})
-    //   reFetchCompetitionData(id)
-    // }else if(key==="competitionId"){
-    //   reFetchData({[key]:id})
-    // }
   };
   const handleSearchFilter = () => {
     if (tableElement.title === "Tabs") {
@@ -302,18 +296,6 @@ const Index = ({
   };
   // getting data for the table coming from the page && checking default status
   const fetchData = () => {
-    // if (tableElement?.isActive) {
-    //   const switchData = dataSource.filter((val) => {
-    //     return val.isActive === statusSwitch;
-    //   });
-    //   const sliced = switchData.slice(
-    //     currentPage * pageSize,
-    //     currentPage * pageSize + pageSize
-    //   );
-    //   setTotal(switchData.length);
-    //   setData(switchData);
-    //   setData(sliced);
-    // } else {
     const sliced = dataSource.slice(
       currentPage * pageSize,
       currentPage * pageSize + pageSize
@@ -337,14 +319,18 @@ const Index = ({
   };
 
   const handleTableReset = () => {
-    setDropDownSelected();
+    setTableActions({
+      isActive: true,
+      eventTypeId: 0,
+      competitionId: 0,
+    });
     handleReset();
     setStatusSwitch(true);
   };
 
   useEffect(() => {
-      reFetchData(dropDownSelected);
-  }, [dropDownSelected]);
+    reFetchData(tableActions);
+  }, [tableActions]);
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -438,8 +424,9 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleDropDown("eventTypeId", e.target.value);
+                          handleTableActions("eventTypeId", e.target.value);
                         }}
+                        value={tableActions?.eventTypeId}
                       >
                         <option value={0}>Select Event Type</option>
                         {eventTypes?.map((val) => {
@@ -458,8 +445,9 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleDropDown("competitionId", e.target.value);
+                          handleTableActions("competitionId", e.target.value);
                         }}
+                        value={tableActions?.competitionId}
                       >
                         <option value={0}>Select Competition</option>
                         {competitions?.map((val) => {
