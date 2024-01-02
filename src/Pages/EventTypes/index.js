@@ -17,6 +17,8 @@ const Index = () => {
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  //isActive
+  const [isActive, setIsActive] = useState(true);
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -34,11 +36,11 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async (isActive) => {
+  const fetchData = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventType/all`,{
-        isActive
+      .post(`/admin/eventType/all`, {
+        isActive,
       })
       .then((response) => {
         setData(response.result);
@@ -259,7 +261,7 @@ const Index = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -282,8 +284,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
             singleCheck={singleCheck}
-            reFetchData={fetchData}
-            // addModelFunction={setAddModelVisable}
+            setIsActive={setIsActive}
             onAddNavigate={"/addEventType"}
           />
           <DeleteTabModel
