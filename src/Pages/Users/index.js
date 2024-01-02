@@ -277,6 +277,7 @@ const Index = () => {
       key: "password",
       sort: true,
       style: { width: "100%" },
+      printType: "ignore"
     },
     {
       title: "Change Password",
@@ -295,6 +296,7 @@ const Index = () => {
       key: "cPassword",
       sort: true,
       style: { width: "100%", textAlign: "center" },
+      printType: "ignore"
     },
     {
       title: "Is Active",

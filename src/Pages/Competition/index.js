@@ -191,6 +191,7 @@ const Index = () => {
     {
       title: "Image",
       dataIndex: "image",
+      printType: "ignore",
       render: (text, record) => (
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
@@ -235,7 +236,7 @@ const Index = () => {
     },
     {
       title: "Is Active",
-      key: "active",
+      key: "isActive",
       render: (text, record) => (
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}

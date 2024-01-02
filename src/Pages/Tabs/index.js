@@ -235,7 +235,7 @@ const Index = () => {
     },
     {
       title: "Is Add",
-      key: "add",
+      key: "IsAdd",
       render: (text, record) => (
         <Button
           color={`${record.IsAdd ? "primary" : "danger"}`}
@@ -252,7 +252,7 @@ const Index = () => {
     },
     {
       title: "Is Edit",
-      key: "isEdit",
+      key: "IsEdit",
       render: (text, record) => (
         <Button
           color={`${record.IsEdit ? "primary" : "danger"}`}
@@ -270,7 +270,7 @@ const Index = () => {
     },
     {
       title: "Is Delete",
-      key: "delete",
+      key: "IsDelete",
       render: (text, record) => (
         <Button
           color={`${record.IsDelete ? "primary" : "danger"}`}
