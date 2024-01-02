@@ -5,6 +5,7 @@ import { CSVLink } from "react-csv";
 // import Pdf from "react-to-pdf";
 import Pagination from "../../Pagination";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 // import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
 import { filterOrderChange } from "../../../helpers/helper";
@@ -27,17 +28,19 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
 }
 
 const Index = ({
-
   columns,
   dataSource,
-  reFetchData,
   tableElement,
   cloneModelFunction,
-  addModelFunction,
+  setIsActive,
   deleteModelFunction,
   singleCheck,
   displayTypes,
   eventTypes,
+  reFetchData,
+  reFetchEventTypeData,
+  handleReset,
+  reFetchCompetitionData,
   competitions,
   onAddNavigate,
   changeOrderApiName = "",
@@ -129,11 +132,11 @@ const Index = ({
   };
   const handleStatusSwitch = () => {
     if (statusSwitch) {
-      reFetchData(false)
+      setIsActive(false)
       setStatusSwitch(false);
     } else {
       setStatusSwitch(true);
-      reFetchData(true)
+      setIsActive(true)
     }
   };
   const handleDropDownFilter = (e) => {
@@ -151,24 +154,13 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleEventTyptDropDown = (e) => {
-    if (e == "") {
-      setData(dataSource);
-    } else {
-      const updatedData = dataSource.filter((val) => {
-        return val.eventType == e;
-      });
-      setData(updatedData);
-    }
-  };
-  const handleCompetitionsDropdown = (e) => {
-    if (e == "") {
-      setData(dataSource);
-    } else {
-      const updatedData = dataSource.filter((val) => {
-        return val.competition == e;
-      });
-      setData(updatedData);
+  const handleDropDown = (key,id) => {
+    console.log(`this is dropdown ${key} and id ${id}`)
+    if(key==="eventTypeId"){
+      reFetchData({[key]:id})
+      reFetchCompetitionData(id)
+    }else if(key==="competitionId"){
+      reFetchData({[key]:id})
     }
   };
   const handleSearchFilter = () => {
@@ -241,24 +233,37 @@ const Index = ({
     }
   };
   const generatePDF = () => {
-    const table = document.getElementById("myTable");
+    let pdfCols = [];
+    let colsDataKey = [];
+
+    columns?.forEach((item) => {
+      if (item.key !== "select" && item.key !== "edit" && item.key !== "image" && item.key !== "jersey" && item.key !== "tabName") {
+        pdfCols.push(item.title);
+        colsDataKey.push(item.key)
+      }
+    })
+
+    const colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+
     const pdf = new jsPDF({
-      orientation: "landscape", // or 'portrait'
+      orientation: "portrait", // or 'landscape'
       unit: "mm",
       format: "ledger", // or [width, height]
       fontSize: 3, // Set the font size
     });
-    // Use html method instead of fromHTML
-    pdf.html(table, {
-      callback: () => {
-        pdf.save("table.pdf");
-      },
-      html2canvas: {
-        scale: 0.5,
-        useCORS: true,
-      },
-    });
+
+    const headers = [pdfCols];
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: colsData
+    };
+
+    pdf.autoTable(content);
+    pdf.save(tableElement.title + ".pdf");
   };
+
   const downloadExcel = () => {
     // Get the table element by its ID (adjust the ID accordingly)
     const table = document.getElementById("myTable");
@@ -336,6 +341,10 @@ const Index = ({
     const tabOrders = filterOrderChange(newData, changeOrderApiName);
     changeDisplayOrder(tabOrders, changeOrderApiName);
   };
+
+  const handleTableReset = () =>{
+
+  }
 
   useEffect(() => {
     handleSearchFilter();
@@ -427,12 +436,12 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleEventTyptDropDown(e.target.value);
+                          handleDropDown("eventTypeId", e.target.value);
                         }}
                       >
                         <option value="">Select Event Type</option>
                         {eventTypes?.map((val) => {
-                          return <option value={val}>{val}</option>;
+                          return <option value={val?.eventTypeId}>{val?.eventType}</option>;
                         })}
                       </select>
                     </div>
@@ -443,12 +452,12 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleCompetitionsDropdown(e.target.value);
+                          handleDropDown("competitionId", e.target.value);
                         }}
                       >
                         <option value="">Select Competition</option>
                         {competitions?.map((val) => {
-                          return <option value={val}>{val}</option>;
+                          return <option value={val.competitionId}>{val.competition}</option>;
                         })}
                       </select>
                     </div>
@@ -468,6 +477,21 @@ const Index = ({
                       />
                     </div>
                   ) : null}
+                  {
+                    tableElement?.resetButton?(<div>
+                      <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        handleReset();
+                        handleTableReset()
+                      }}
+                      id="create-btn"
+                    >
+                      Reset
+                      {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                    </button>
+                    </div>):null
+                  }
                 </div>
               </Col>
               <Col className="d-flex justify-content-end">

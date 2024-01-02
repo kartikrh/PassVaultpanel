@@ -16,8 +16,9 @@ const Index = () => {
   const [data, setData] = useState([]);
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
+  //isActive
+  const [isActive, setIsActive] = useState(true);
   // model state
-  const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   //toast
   const [toast, setToast] = useState({
@@ -28,19 +29,18 @@ const Index = () => {
   const [toastStatus, setToastStatus] = useState(false);
   //get Event Types
   const [eventTypes, setEventTypes] = useState([]);
-  //get Competition
-  const [competitions, setCompetitions] = useState([]);
+
   // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   const [singleCheck, setSingleCheck] = useState([]);
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async (isActive) => {
+  const fetchData = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/competition/all`,{
-        isActive
+      .post(`/admin/competition/all`, {
+        isActive,
       })
       .then((response) => {
         setData(response?.result);
@@ -247,12 +247,13 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: true,
     isActive: true,
+    resetButton:true,
   };
 
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -275,6 +276,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={singleCheck}
+            setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
           />
