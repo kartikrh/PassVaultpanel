@@ -97,6 +97,7 @@ const Register = (props) => {
                                 : false
                             }
                           />
+                          
                           {validation.touched.username &&
                           validation.errors.username ? (
                             <FormFeedback type="invalid">
