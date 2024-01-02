@@ -45,10 +45,7 @@ const Index = () => {
       })
       .then((response) => {
         setData(response?.result);
-        // const eventTypes = Array.from(
-        //   new Set(response?.result.map((item) => item.eventType))
-        // );
-        // setEventTypes(eventTypes);
+        setSingleCheck([])
         setIsLoading(false);
       })
       .catch((error) => {

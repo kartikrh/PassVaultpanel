@@ -11,110 +11,109 @@ import {
   Form,
   FormFeedback,
 } from "reactstrap";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-// Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
+import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster/index";
 import { useSelector, useDispatch } from "react-redux";
-
-const Register = (props) => {
-  document.title = "Register | Upzet - React Admin & Dashboard Template";
+import { decryptData } from "../Utility/encryptionUtils";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+const Index = (props) => {
+  document.title = "Change Password | scoreNode - React Admin & Dashboard Template";
 
   const dispatch = useDispatch();
-  const { isSaved, isLoading, error } = useSelector(
+  const [data, setData] = useState({
+    userId: "",
+    newPassword: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
+  const { isSaved, error } = useSelector(
     (state) => state.tabsData.changePassword
   );
-  const [showPassword, setShowPassword] = useState(false);
-  const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
-    initialValues: {
-      userId: "",
-      password: "",
-    },
-    validationSchema: Yup.object({
-      userId: Yup.string().required("Please Enter Your Username"),
-      password: Yup.string().required("Please Enter Your Password"),
-    }),
-  });
+  const changePassword = async () => {
+    setIsLoading(true);
+    await axiosInstance.post(`/admin/user/changePassword`,{...data})
+      .then((response) => {
+        setToastStatus(true);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  };
 
-  useEffect(() => {
-    // dispatch(apiError(""));
-  }, [dispatch]);
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((preValue) => {
+      return {
+        ...preValue,
+        [name]: value,
+      };
+    });
+  };
+  useEffect(()=>{
+    const authUser = localStorage.getItem('authUser')
+    const user = decryptData(authUser)
+  },[])
   return (
     <div className="mt-5" style={{}}>
       <div className="account-pages pt-5">
         <Container fluid={true}>
-        <Breadcrumbs title="ScoreCard" breadcrumbItem="Change Password" />
+          {isLoading && <SpinnerModel />}
+          <Toaster
+            toast={toast}
+            setToast={setToast}
+            toastStatus={toastStatus}
+            setToastStatus={setToastStatus}
+          />
           <Row className="justify-content-center">
             <Col lg={6} md={8} xl={4}>
               <Card className="mt-5">
                 <CardBody className="p-4">
-                  {/* <h4 className="font-size-18 text-muted text-center mt-2 mb-5">
+                  <h4 className="font-size-18 text-muted text-center mt-2 ">
                     Change Password
-                  </h4> */}
-                  {/* <p className="text-muted text-center mb-4">Get your free Upzet account now.</p> */}
-                  <Form
-                    className="form-horizontal"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      validation.handleSubmit();
-                      return false;
-                    }}
-                  >
+                  </h4>
+                  <p className="text-muted text-center mb-4">
+                    The change will not be revertible.
+                  </p>
+                  <div className="form-horizontal">
                     <Row>
                       <Col md={12}>
                         <div className="mb-4">
                           <Label className="form-label">User ID</Label>
                           <Input
-                            name="username"
+                            name="userId"
                             type="text"
                             placeholder="Enter UserId"
-                            invalid={
-                              validation.touched.username &&
-                              validation.errors.username
-                                ? true
-                                : false
-                            }
+                            onChange={handleChange}
                           />
-                          {validation.touched.username &&
-                          validation.errors.username ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.username}</div>
-                            </FormFeedback>
-                          ) : null}
                         </div>
                         <div className="mb-4">
                           <Label className="form-label">New Password</Label>
                           <Input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            id="password"
+                            type={showPassword ? "text" : "newPassword"}
+                            name="newPassword"
+                            id="newPassword"
                             placeholder="New Password"
-                            invalid={
-                              validation.touched.password &&
-                              validation.errors.password
-                            }
+                            onChange={handleChange}
                           />
-                          {validation.touched.password &&
-                          validation.errors.password ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.password}</div>
-                            </FormFeedback>
-                          ) : null}
                         </div>
                         <div className="d-grid mt-4">
                           <button
                             className="btn btn-primary waves-effect waves-light"
                             type="submit"
+                            onClick={()=>{changePassword()}}
                           >
                             Change Password
                           </button>
                         </div>
                       </Col>
                     </Row>
-                  </Form>
+                  </div>
                 </CardBody>
               </Card>
             </Col>
@@ -125,4 +124,4 @@ const Register = (props) => {
   );
 };
 
-export default Register;
+export default Index;

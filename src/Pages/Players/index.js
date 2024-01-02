@@ -44,6 +44,7 @@ const Index = () => {
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
+        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
@@ -100,12 +101,12 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true);
-    const response = await axiosInstance
+    await axiosInstance
       .post(`/admin/player/delete`, {
         playerId: singleCheck,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,

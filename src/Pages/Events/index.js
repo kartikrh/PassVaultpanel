@@ -46,6 +46,7 @@ const Index = () => {
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
+        setSingleCheck([]);
       })
       .catch((error) => {
         setIsLoading(false);

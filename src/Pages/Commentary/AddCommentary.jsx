@@ -288,6 +288,7 @@ function AddCommentary() {
                     });
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
+                
             });
         setMasterData((preData) => ({
             ...preData,
