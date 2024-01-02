@@ -180,6 +180,7 @@ const Index = () => {
     {
       title: "Image",
       dataIndex: "image",
+      printType: "ignore",
       render: (text, record) => (
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">

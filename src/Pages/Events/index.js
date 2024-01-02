@@ -255,7 +255,7 @@ const Index = () => {
     },
     {
       title: "Is Active",
-      key: "active",
+      key: "isActive",
       render: (text, record) => (
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
