@@ -77,9 +77,11 @@ const ProfileMenu = props => {
             {props.t("Settings")}
           </DropdownItem> */}
           <DropdownItem tag="a" href="#">
+            <Link to="/changePassword">
             <i className="bx bx-transfer align-middle me-2" />
             {/* {props.t("Change Password")} */}
             Change Password
+            </Link>
           </DropdownItem>
           <div className="dropdown-divider" />
           <Link to="/logout" className="dropdown-item">

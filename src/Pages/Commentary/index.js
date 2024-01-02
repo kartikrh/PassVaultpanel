@@ -280,6 +280,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={singleCheck}
+            reFetchData={fetchData}
             onAddNavigate={"/addCommentary"}
           />
           <DeleteTabModel
