@@ -252,7 +252,7 @@ const Index = () => {
       dataIndex: "parentName",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {record.parentId === "0" ? "Root" : null}
+          {record.parentId === "0" ? "Root" : (record?.parentName || null)}
         </span>
       ),
       key: "parentName",
