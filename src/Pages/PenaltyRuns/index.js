@@ -46,6 +46,7 @@ const Index = () => {
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
+        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
@@ -103,7 +104,7 @@ const Index = () => {
         paneltyId: singleCheck,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
           message: response?.message,

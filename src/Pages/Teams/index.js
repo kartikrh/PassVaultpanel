@@ -76,6 +76,7 @@ const Index = () => {
           color: "green",
           header: "Success",
         })
+        setSingleCheck([])
         setToastStatus(true)
       })
       .catch((error) => {

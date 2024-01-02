@@ -37,9 +37,9 @@ const Index = () => {
   const fetchData = async () => {
     await axiosInstance.post(`/admin/roles/all`)
       .then((response) => {
-        //   const tabsDataDB = validateTabResponse(response?.result);
         setData(response?.result);
         setIsLoading(false)
+        setSingleCheck([])
       }).catch((error) => {
         setIsLoading(false)
       });
@@ -118,6 +118,7 @@ const Index = () => {
         color: "red",
         header: "Warning",
       });
+    setIsLoading(false)
       setToastStatus(true);
     });
   }

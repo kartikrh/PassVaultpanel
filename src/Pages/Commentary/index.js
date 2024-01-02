@@ -40,6 +40,7 @@ const Index = () => {
       .post(`/admin/commentary/all`)
       .then((response) => {
         setData(response?.result);
+        setSingleCheck([])
         const eventTypes = Array.from(
           new Set(response?.result.map((item) => item.eventType))
         );
