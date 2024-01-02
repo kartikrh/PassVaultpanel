@@ -190,11 +190,11 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                 <div className="dropdown-divider"></div>
               </>
             }
-            <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"} mb-4`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
+            <Col className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"}`} xs={field.labelColspan?.xs || 3} md={field.labelColspan?.md || 2} lg={field.labelColspan?.lg || 2}>
               <div className="lablediv">
                 <label
                   htmlFor={field.name}
-                  className="col-form-label dynamic-label-right white-space-break"
+                  className="col-form-label dynamic-label-right form-label-class"
                 >
                   {field.isRequired && <span className="text-danger">*&nbsp;</span>}
                   {field.label}

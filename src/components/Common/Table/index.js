@@ -5,6 +5,7 @@ import { CSVLink } from "react-csv";
 // import Pdf from "react-to-pdf";
 import Pagination from "../../Pagination";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 // import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
 import { filterOrderChange } from "../../../helpers/helper";
@@ -58,6 +59,7 @@ const Index = ({
     color: "red",
     header: "Error",
   });
+  const [filteredData, setFilteredData] = useState([]);
   const [toastStatus, setToastStatus] = useState(false);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,6 +89,10 @@ const Index = ({
       resetJumpToChild()
     }
   }, [data])
+
+  useEffect(() => {
+    setData(filteredData);
+  }, [filteredData]);
 
   const OffsymbolStatus = () => {
     return (
@@ -158,6 +164,7 @@ const Index = ({
     }
   };
   const handleSearchFilter = () => {
+    console.log(tableElement.title)
     if (tableElement.title === "Tabs") {
       const updatedData = data.filter((val) => {
         const found = Object.values(val).some((value) => {
@@ -170,13 +177,15 @@ const Index = ({
       });
       if (searchTerm === "") {
         setTotal(dataSource.length);
-        setData(subData);
+        setFilteredData(subData);
         // setData(subData);
       } else {
-        setData(updatedData);
+        console.log(updatedData)
+        setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
     } else {
+      console.log(searchTerm)
       const updatedData = dataSource.filter((val) => {
         const found = Object.values(val).some((value) => {
           if (typeof value === "string" || value instanceof String) {
@@ -186,16 +195,17 @@ const Index = ({
         });
         return found === true;
       });
+      console.log(updatedData)
       if (searchTerm === "") {
         setTotal(dataSource.length);
         const sliced = dataSource.slice(
           currentPage * pageSize,
           currentPage * pageSize + pageSize
         );
-        setData(sliced);
+        setFilteredData(sliced);
       } else {
-        
-        setData(updatedData);
+        console.log(updatedData)
+        setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
     }
@@ -223,24 +233,37 @@ const Index = ({
     }
   };
   const generatePDF = () => {
-    const table = document.getElementById("myTable");
+    let pdfCols = [];
+    let colsDataKey = [];
+
+    columns?.forEach((item) => {
+      if (item.key !== "select" && item.key !== "edit" && item.key !== "image" && item.key !== "jersey" && item.key !== "tabName") {
+        pdfCols.push(item.title);
+        colsDataKey.push(item.key)
+      }
+    })
+
+    const colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+
     const pdf = new jsPDF({
-      orientation: "landscape", // or 'portrait'
+      orientation: "portrait", // or 'landscape'
       unit: "mm",
       format: "ledger", // or [width, height]
       fontSize: 3, // Set the font size
     });
-    // Use html method instead of fromHTML
-    pdf.html(table, {
-      callback: () => {
-        pdf.save("table.pdf");
-      },
-      html2canvas: {
-        scale: 0.5,
-        useCORS: true,
-      },
-    });
+
+    const headers = [pdfCols];
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: colsData
+    };
+
+    pdf.autoTable(content);
+    pdf.save(tableElement.title + ".pdf");
   };
+
   const downloadExcel = () => {
     // Get the table element by its ID (adjust the ID accordingly)
     const table = document.getElementById("myTable");
