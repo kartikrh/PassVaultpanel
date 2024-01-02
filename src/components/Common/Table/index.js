@@ -56,6 +56,7 @@ const Index = ({
     color: "red",
     header: "Error",
   });
+  const [filteredData, setFilteredData] = useState([]);
   const [toastStatus, setToastStatus] = useState(false);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
@@ -85,6 +86,10 @@ const Index = ({
       resetJumpToChild()
     }
   }, [data])
+
+  useEffect(() => {
+    setData(filteredData);
+  }, [filteredData]);
 
   const OffsymbolStatus = () => {
     return (
@@ -167,6 +172,7 @@ const Index = ({
     }
   };
   const handleSearchFilter = () => {
+    console.log(tableElement.title)
     if (tableElement.title === "Tabs") {
       const updatedData = data.filter((val) => {
         const found = Object.values(val).some((value) => {
@@ -179,13 +185,15 @@ const Index = ({
       });
       if (searchTerm === "") {
         setTotal(dataSource.length);
-        setData(subData);
+        setFilteredData(subData);
         // setData(subData);
       } else {
-        setData(updatedData);
+        console.log(updatedData)
+        setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
     } else {
+      console.log(searchTerm)
       const updatedData = dataSource.filter((val) => {
         const found = Object.values(val).some((value) => {
           if (typeof value === "string" || value instanceof String) {
@@ -195,15 +203,17 @@ const Index = ({
         });
         return found === true;
       });
+      console.log(updatedData)
       if (searchTerm === "") {
         setTotal(dataSource.length);
         const sliced = dataSource.slice(
           currentPage * pageSize,
           currentPage * pageSize + pageSize
         );
-        setData(sliced);
+        setFilteredData(sliced);
       } else {
-        setData(updatedData);
+        console.log(updatedData)
+        setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
     }
