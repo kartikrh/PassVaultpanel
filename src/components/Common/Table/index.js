@@ -232,18 +232,35 @@ const Index = ({
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  const generatePDF = () => {
-    let pdfCols = [];
+  
+  const generateSimplifiedData = () => {
+    let pdfCols = ["No."];
     let colsDataKey = [];
-
     columns?.forEach((item) => {
-      if (item.key !== "select" && item.key !== "edit" && item.key !== "image" && item.key !== "jersey" && item.key !== "tabName") {
+      if (item.key !== "select" && item.key !== "edit" && item.printType !== "ignore") {
         pdfCols.push(item.title);
         colsDataKey.push(item.key)
       }
     })
+    const headers = [pdfCols];
+    let colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+    colsData = colsData.map((value, index) => [index + 1, ...value]);
+    // const csvData = [...headers, ...colsData];
+    const csvData = colsData.map((value, i)=>{
+      let data = {};
+      value.forEach((v, i)=>{
+        data = {
+          ...data,
+          [pdfCols[i]]: v
+        }
+      })
+      return data;
+    });
+    return { headers, colsData, csvData }
+  }
 
-    const colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+  const generatePDF = () => {
+    const { headers, colsData } = generateSimplifiedData();
 
     const pdf = new jsPDF({
       orientation: "portrait", // or 'landscape'
@@ -251,8 +268,6 @@ const Index = ({
       format: "ledger", // or [width, height]
       fontSize: 3, // Set the font size
     });
-
-    const headers = [pdfCols];
 
     let content = {
       startY: 50,
@@ -265,19 +280,17 @@ const Index = ({
   };
 
   const downloadExcel = () => {
-    // Get the table element by its ID (adjust the ID accordingly)
-    const table = document.getElementById("myTable");
-
     // Create a worksheet
-    const ws = XLSX.utils.table_to_sheet(table);
+    const ws = XLSX.utils.json_to_sheet(generateSimplifiedData().csvData);
 
     // Create a workbook
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
 
     // Download the workbook
-    XLSX.writeFile(wb, `download.xlsx`);
+    XLSX.writeFile(wb, `${tableElement.title}.xlsx`);
   };
+  
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
       throw new Error(
@@ -537,7 +550,7 @@ const Index = ({
                 <Col className="col-sm">
                   <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
                     <div className="me-1 d-flex">
-                      <CSVLink data={data} filename="table_data.csv">
+                      <CSVLink data={generateSimplifiedData().csvData} filename={tableElement.title + ".csv"}>
                         <Button size="small" className="btn border">
                           <i className="fas fa-file-csv"></i>
                         </Button>
