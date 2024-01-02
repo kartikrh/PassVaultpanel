@@ -139,29 +139,6 @@ const Sidebar = (props) => {
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">
-              {/* {tabList.map((val, key) => (
-                <React.Fragment key={key}>
-                  <li className="menu-title" >{props.t(val.displayName)}</li>
-                  {val.children.map((val) => {
-                    return (
-                      <li>
-                        <Link
-                          to={val.webPage ? val.webPage : "/#"}
-                        >
-                          <i
-                            className="bx bx-circle"
-                            style={{ marginRight: "5px" }}
-                          ></i>
-                          <span
-                          >
-                            {" "}
-                          </span>
-                          <span>{props.t(val.displayName)}</span>
-                        </Link>
-                      </li>)
-                  })}
-                </React.Fragment>
-              ))} */}
               {(newTabList || sidebarData)
                 .slice() // Create a shallow copy
                 .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))

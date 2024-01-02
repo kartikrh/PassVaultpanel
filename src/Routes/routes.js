@@ -27,7 +27,7 @@ import AddCompetition from "../Pages/Competition/AddCompetition.jsx";
 import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
-
+import ChangePassword from '../Pages/ChangePassword'
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -71,6 +71,9 @@ const authProtectedRoutes = [
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
+  {
+    path: '/changePassword', component:<ChangePassword/>
+  },
   {
     path: "/",
     exact: true,

@@ -38,10 +38,11 @@ const Index = () => {
   const navigate = useNavigate();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (value) => {
     setIsLoading(true);
+    setIsActive(value)
     await axiosInstance
-      .post(`/admin/paneltyRun/all`, { isActive })
+      .post(`/admin/paneltyRun/all`, { ...value })
       .then((response) => {
         setData(response?.result);
         setIsLoading(false);
@@ -76,13 +77,13 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
+        fetchData(isActive);
         setToast({
           message: response?.message,
           color: "green",
           header: "Success",
         });
         setToastStatus(true);
-        fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
@@ -268,9 +269,9 @@ const Index = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading({isActive:true});
     fetchData();
-  }, [isActive]);
+  }, []);
 
   return (
     <React.Fragment>
@@ -293,6 +294,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
             setIsActive={setIsActive}
+            reFetchData={fetchData}
             onAddNavigate={"/addPenalty"}
           />
           <DeleteTabModel
