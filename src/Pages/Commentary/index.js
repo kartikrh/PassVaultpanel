@@ -228,6 +228,7 @@ const Index = () => {
     {
       title: "Commentary Details",
       key: "active",
+      printType: "ignore",
       render: (text, record) => (
         <Button
           color={"primary"}
