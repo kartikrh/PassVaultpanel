@@ -80,6 +80,5 @@ export const UserFields = [
         defaultValue: true,
         parentclassName: "",
         type: SWITCH,
-        defaultValue:true,
     },
 ]
