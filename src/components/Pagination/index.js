@@ -16,16 +16,16 @@ const Index = ({
   useEffect(() => {
 
     fetchData();
-  }, [currentPage, pageSize,total]);
+  }, [currentPage, pageSize]);
   return (
     <Pagination
-      showSizeChanger = {shouldShowSizeChanger}
+      showSizeChanger={shouldShowSizeChanger}
       onShowSizeChange={onShowSizeChange}
       onChange={onShowSizeChange}
       defaultCurrent={currentPage}
       total={total}
       pageSize={pageSize}
-      
+
     />
   );
 };
