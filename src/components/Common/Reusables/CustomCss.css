@@ -2,13 +2,18 @@
     .dynamic-label-right {
         float: left !important;
     }
+
     .ImageDropBox {
         /* padding-left: 10px;
         margin-top: 20px; */
     }
+
+    .form-label-class {
+        margin-bottom: 0rem !important;
+    }
 }
 
-.block{
+.block {
     display: block;
 }
 
@@ -82,4 +87,10 @@
     color: #908d8d;
     font-weight: bolder;
     /* padding: 5px; */
+}
+
+
+.form-label-class {
+    white-space: break-spaces;
+    word-break: break-all;
 }

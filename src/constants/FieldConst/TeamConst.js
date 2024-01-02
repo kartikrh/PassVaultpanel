@@ -2,10 +2,10 @@ import { IMAGE, MULTI_SELECT, SELECT, TEXT } from "../../components/Common/Const
 
 export const TeamFields = [
     {
+        type: SELECT,
         name: "eventTypeId",
         label: "Event Type",
         parentclassName: "",
-        type: SELECT,
         isRequired: true,
         requiredErrorMessage: "Please enter event type.",
         options: [{ label: "Select Event Type", value: "0" }],
@@ -14,54 +14,53 @@ export const TeamFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        type: TEXT,
         name: "teamName",
         label: "Team Name",
         parentclassName: "",
-        type: TEXT,
         isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         requiredErrorMessage: "Please enter team name.",
     },
     {
-        name: "jersey",
-        label: "Jersey Image",
-        parentclassName: "",
-        type: IMAGE,
-
-    },
-    {
-        name: "players",
-        label: "Select Players",
-        options: [],
-        defaultValue:"0",
-        showSelectAll: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: MULTI_SELECT,
-    },
-    {
-        name: "country",
-        label: "Country",
-        parentclassName: "",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
-    },
-    {
         name: "teamShortName",
         label: "Short Name",
         parentclassName: "",
-        type: TEXT,
         isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         requiredErrorMessage: "Please enter short name.",
     },
     {
+        type: TEXT,
+        name: "country",
+        label: "Country",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: IMAGE,
+        name: "jersey",
+        label: "Jersey Image",
+        parentclassName: "",
+
+    },
+    {
+        type: IMAGE,
         name: "image",
         label: "Team Image",
         parentclassName: "",
-        type: IMAGE,
+    },
+    {
+        type: MULTI_SELECT,
+        name: "playerId",
+        label: "Select Players",
+        options: [],
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
 ]
