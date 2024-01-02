@@ -155,7 +155,6 @@ const Index = ({
     }
   };
   const handleDropDown = (key,id) => {
-    console.log(`this is dropdown ${key} and id ${id}`)
     if(key==="eventTypeId"){
       reFetchData({[key]:id})
       reFetchCompetitionData(id)
@@ -164,7 +163,6 @@ const Index = ({
     }
   };
   const handleSearchFilter = () => {
-    console.log(tableElement.title)
     if (tableElement.title === "Tabs") {
       const updatedData = data.filter((val) => {
         const found = Object.values(val).some((value) => {
@@ -180,12 +178,10 @@ const Index = ({
         setFilteredData(subData);
         // setData(subData);
       } else {
-        console.log(updatedData)
         setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
     } else {
-      console.log(searchTerm)
       const updatedData = dataSource.filter((val) => {
         const found = Object.values(val).some((value) => {
           if (typeof value === "string" || value instanceof String) {
@@ -195,7 +191,6 @@ const Index = ({
         });
         return found === true;
       });
-      console.log(updatedData)
       if (searchTerm === "") {
         setTotal(dataSource.length);
         const sliced = dataSource.slice(
@@ -204,7 +199,6 @@ const Index = ({
         );
         setFilteredData(sliced);
       } else {
-        console.log(updatedData)
         setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
