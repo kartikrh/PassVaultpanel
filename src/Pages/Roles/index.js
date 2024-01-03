@@ -37,9 +37,9 @@ const Index = () => {
   const fetchData = async () => {
     await axiosInstance.post(`/admin/roles/all`)
       .then((response) => {
-        //   const tabsDataDB = validateTabResponse(response?.result);
         setData(response?.result);
         setIsLoading(false)
+        setSingleCheck([])
       }).catch((error) => {
         setIsLoading(false)
       });
@@ -118,6 +118,7 @@ const Index = () => {
         color: "red",
         header: "Warning",
       });
+    setIsLoading(false)
       setToastStatus(true);
     });
   }
@@ -215,7 +216,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck = {singleCheck}
-            // addModelFunction={setAddModelVisable}
+            reFetchData={fetchData}
             onAddNavigate={"/addRoles"}
           />
           <DeleteTabModel
@@ -227,7 +228,6 @@ const Index = () => {
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>

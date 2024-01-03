@@ -11,132 +11,109 @@ import {
   Form,
   FormFeedback,
 } from "reactstrap";
-
-// Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
-
-// action
-// import { registerUser, apiError } from "../../store/actions";
-
-//redux
+import axiosInstance from "../../Features/axios";
+import Toaster from "../../components/Toaster/index";
 import { useSelector, useDispatch } from "react-redux";
-
-import { Link } from "react-router-dom";
-
-// import images
-import logolight from "../../assets/images/logo-light.png";
-import logodark from "../../assets/images/logo-dark.png";
-
-const Register = (props) => {
-  document.title = "Register | Upzet - React Admin & Dashboard Template";
+import { decryptData } from "../Utility/encryptionUtils";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+const Index = (props) => {
+  document.title = "Change Password | scoreNode - React Admin & Dashboard Template";
 
   const dispatch = useDispatch();
-  const { isSaved, isLoading, error } = useSelector(
+  const [data, setData] = useState({
+    userId: "",
+    newPassword: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState({
+    message: "",
+    color: "",
+    header: "",
+  });
+  const [toastStatus, setToastStatus] = useState(false);
+  const { isSaved, error } = useSelector(
     (state) => state.tabsData.changePassword
   );
-  const [showPassword, setShowPassword] = useState(false);
-  const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
+  const changePassword = async () => {
+    setIsLoading(true);
+    await axiosInstance.post(`/admin/user/changePassword`,{...data})
+      .then((response) => {
+        setToastStatus(true);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  };
 
-    initialValues: {
-      email: "",
-      username: "",
-      password: "",
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
-      username: Yup.string().required("Please Enter Your Username"),
-      password: Yup.string().required("Please Enter Your Password"),
-    }),
-    onSubmit: (values) => {
-      //   dispatch(registerUser(values));
-    },
-  });
-
-  useEffect(() => {
-    // dispatch(apiError(""));
-  }, [dispatch]);
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((preValue) => {
+      return {
+        ...preValue,
+        [name]: value,
+      };
+    });
+  };
+  useEffect(()=>{
+    const authUser = localStorage.getItem('authUser')
+    const user = decryptData(authUser)
+  },[])
   return (
-    <div className="mt-5">
-      <div className="account-pages pt-5 ">
-        <Container>
+    <div className="mt-5" style={{}}>
+      <div className="account-pages pt-5">
+        <Container fluid={true}>
+          {isLoading && <SpinnerModel />}
+          <Toaster
+            toast={toast}
+            setToast={setToast}
+            toastStatus={toastStatus}
+            setToastStatus={setToastStatus}
+          />
           <Row className="justify-content-center">
             <Col lg={6} md={8} xl={4}>
               <Card className="mt-5">
                 <CardBody className="p-4">
-                  <h4 className="font-size-18 text-muted text-center mt-2 mb-5">
+                  <h4 className="font-size-18 text-muted text-center mt-2 ">
                     Change Password
                   </h4>
-                  {/* <p className="text-muted text-center mb-4">Get your free Upzet account now.</p> */}
-                  <Form
-                    className="form-horizontal"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      validation.handleSubmit();
-                      return false;
-                    }}
-                  >
+                  <p className="text-muted text-center mb-4">
+                    The change will not be revertible.
+                  </p>
+                  <div className="form-horizontal">
                     <Row>
                       <Col md={12}>
                         <div className="mb-4">
-                          <Label className="form-label">Current Password</Label>
+                          <Label className="form-label">User ID</Label>
                           <Input
-                            name="username"
+                            name="userId"
                             type="text"
-                            placeholder="Enter username"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.username || ""}
-                            invalid={
-                              validation.touched.username &&
-                              validation.errors.username
-                                ? true
-                                : false
-                            }
+                            placeholder="Enter UserId"
+                            onChange={handleChange}
                           />
-                          {validation.touched.username &&
-                          validation.errors.username ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.username}</div>
-                            </FormFeedback>
-                          ) : null}
                         </div>
                         <div className="mb-4">
                           <Label className="form-label">New Password</Label>
                           <Input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            id="password"
-                            placeholder="Enter Password"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.password || ""}
-                            invalid={
-                              validation.touched.password &&
-                              validation.errors.password
-                            }
+                            type={showPassword ? "text" : "newPassword"}
+                            name="newPassword"
+                            id="newPassword"
+                            placeholder="New Password"
+                            onChange={handleChange}
                           />
-                          {validation.touched.password &&
-                          validation.errors.password ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.password}</div>
-                            </FormFeedback>
-                          ) : null}
                         </div>
                         <div className="d-grid mt-4">
                           <button
                             className="btn btn-primary waves-effect waves-light"
                             type="submit"
+                            onClick={()=>{changePassword()}}
                           >
                             Change Password
                           </button>
                         </div>
                       </Col>
                     </Row>
-                  </Form>
+                  </div>
                 </CardBody>
               </Card>
             </Col>
@@ -147,4 +124,4 @@ const Register = (props) => {
   );
 };
 
-export default Register;
+export default Index;
