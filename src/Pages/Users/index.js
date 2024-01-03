@@ -104,7 +104,7 @@ const Index = () => {
         userId: checekedList,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,
@@ -132,9 +132,22 @@ const Index = () => {
         userId: userId,
       })
       .then((response) => {
+        setToast({
+          message: `${response.title} status updated successfully`,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
+        setIsLoading(false);
         fetchData();
       })
       .catch((error) => {
+        setToast({
+          message: error.error.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
         setIsLoading(false);
       });
   };

@@ -53,7 +53,6 @@ const Index = () => {
           }
           apiDataIdList.push(item?.tabId)
         });
-        console.log("this is the sorted data", sorted)
         setData(sorted);
         setDataIndexList(apiDataIdList)
         if (selectedTabId) {
@@ -98,7 +97,7 @@ const Index = () => {
           header: "Success",
         });
         setToastStatus(true);
-        fetchData();
+        fetchData(isActive);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -127,7 +126,7 @@ const Index = () => {
             header: "Success",
           });
           setToastStatus(true);
-          fetchData();
+          fetchData(isActive);
         })
         .catch((error) => {
           setToast({
