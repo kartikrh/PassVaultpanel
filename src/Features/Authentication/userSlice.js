@@ -53,6 +53,8 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        localStorage.removeItem("authUser");
+        localStorage.setItem('loggedIn', false);
       })
       .addCase(logoutUser.pending, (state) => {
         state.isLoading = true;
