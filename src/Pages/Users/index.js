@@ -163,10 +163,12 @@ const Index = () => {
           navigator.clipboard.writeText(password)
             .then(res => setClipboard({ [userId]: password }))
             .catch(err => oldSchoolCopy(password))
-            .finally(() => setTimeout(() => setClipboard(null), 2000))
         } else {
           setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
         }
+      }).finally(() => {
+        setTimeout(() => setClipboard(null), 2000);
+        setTimeout(() => setDecryptedPasswords(prev => ({ ...prev, [userId]: "" })), 3000);
       })
       .catch((error) => {
         setToast({
@@ -179,7 +181,7 @@ const Index = () => {
   }
 
   const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
-    <span onClick={() => getDecryptedPassword(userId)} >*******</span>
+    <span role="button" onClick={() => getDecryptedPassword(userId)} >*******</span>
     {clipboard?.[userId] ? <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
       <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
     </Tooltip> :
