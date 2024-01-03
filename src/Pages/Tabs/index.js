@@ -55,7 +55,6 @@ const Index = () => {
             item.children.sort((x, y) => x.displayOrder - y.displayOrder);
           }
         });
-        console.log("this is the sorted data", sorted)
         setData(sorted);
         if (selectedTabId) {
           setCurrentParentTab(sorted.filter((element) => {
@@ -109,7 +108,7 @@ const Index = () => {
           header: "Success",
         });
         setToastStatus(true);
-        fetchData();
+        fetchData(isActive);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -138,7 +137,7 @@ const Index = () => {
             header: "Success",
           });
           setToastStatus(true);
-          fetchData();
+          fetchData(isActive);
         })
         .catch((error) => {
           setToast({

@@ -88,7 +88,6 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        console.log("this is from permissions ===>>>>", isActive)
         fetchData(isActive);
         setToast({
           message: `${response.title} status updated successfully`,
