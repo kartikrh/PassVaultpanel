@@ -9,33 +9,24 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
-  const [isLoading, setIsLoading] = useState(false);
-  //isActive
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true);
-  // model state
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toast
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  //get Event Types
   const [eventTypes, setEventTypes] = useState([]);
-
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-  //redirect
   const navigate = useNavigate();
-  // fetch data
   const fetchData = async (value) => {
     setIsLoading(true);
     setIsActive(value)
@@ -44,8 +35,14 @@ const Index = () => {
         ...value
       })
       .then((response) => {
-        setData(response?.result);
-        setSingleCheck([])
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.competitionId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
       })
       .catch((error) => {
@@ -60,25 +57,19 @@ const Index = () => {
         setEventTypes(response.result);
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.competitionId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.competitionId);
     } else {
-      if (singleCheck.includes(e.competitionId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.competitionId));
-      } else {
-        setSingleCheck([...singleCheck, e.competitionId]);
-      }
+      updateSingleCheck = [...checekedList, e.competitionId];
     }
+    setCheckedList(updateSingleCheck)
   };
+
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -111,7 +102,7 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/competition/delete`, {
-        competitionId: singleCheck,
+        competitionId: checekedList,
       })
       .then((response) => {
         fetchData(isActive);
@@ -152,8 +143,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -165,9 +158,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.competitionId)}
+            checked={checekedList.includes(record.competitionId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -260,12 +253,12 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: true,
     isActive: true,
-    resetButton:true,
+    resetButton: true,
   };
 
 
   useEffect(() => {
-    setIsLoading({isActive:true});
+    setIsLoading({ isActive: true });
     fetchData();
     fetchEventTypeData();
   }, []);
@@ -290,7 +283,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             setIsActive={setIsActive}
             handleReset = {handleReset}
             reFetchData={fetchData}

@@ -11,28 +11,23 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  //isActive
   const [isActive, setIsActive] = useState();
-  // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toaster
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-
   const navigate = useNavigate();
 
   // fetch data
@@ -41,34 +36,32 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/eventType/all`, {
-      ...value,
+        ...value,
       })
       .then((response) => {
-        setData(response.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.eventTypeId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
-        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.eventTypeId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.eventTypeId);
     } else {
-      if (singleCheck.includes(e.eventTypeId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.eventTypeId));
-      } else {
-        setSingleCheck([...singleCheck, e.eventTypeId]);
-      }
+      updateSingleCheck = [...checekedList, e.eventTypeId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
   //permissions function
@@ -103,7 +96,7 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/eventType/delete`, {
-        eventTypeId: singleCheck,
+        eventTypeId: checekedList,
       })
       .then((response) => {
         fetchData(isActive);
@@ -141,8 +134,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -154,9 +149,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.eventTypeId)}
+            checked={checekedList.includes(record.eventTypeId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
           <i className="bx bx-move ms-1 mt-1"></i>
@@ -262,7 +257,7 @@ const Index = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchData({isActive:true});
+    fetchData({ isActive: true });
   }, []);
   return (
     <React.Fragment>
@@ -284,7 +279,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addEventType"}
@@ -293,7 +288,7 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}

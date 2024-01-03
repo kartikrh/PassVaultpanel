@@ -51,8 +51,11 @@ function AddPlayer() {
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/Players")
-            else if (currentSaveAction === SAVE_AND_NEW)
+            else if (currentSaveAction === SAVE_AND_NEW) {
+                setDisabledFields({})
+                setInitialEditData({})
                 finalizeRef.current.resetForm()
+            }
         }
     });
 

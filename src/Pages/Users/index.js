@@ -50,8 +50,9 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
-        setIsLoading(false);
         setChangPasswordModelVisible(false);
+        setCheckedList([])
+        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -200,7 +201,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
               setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
               )

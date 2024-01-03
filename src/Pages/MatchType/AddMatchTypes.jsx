@@ -33,8 +33,10 @@ function AddTabs() {
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/matchType")
-            else if (currentSaveAction === SAVE_AND_NEW)
+            else if (currentSaveAction === SAVE_AND_NEW) {
+                setInitialEditData({})
                 finalizeRef.current.resetForm()
+            }
         }
     });
 

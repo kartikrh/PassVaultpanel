@@ -9,33 +9,26 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
+import { isEqual } from "lodash";
 const Index = () => {
   document.title = "Events | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  //isActive
   const [isActive, setIsActive] = useState();
-  // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toast
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  //get Events Types
   const [eventTypes, setEventTypes] = useState([]);
-  // get competitions
   const [competitions, setCompetitions] = useState([]);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-  //redirect
   const navigate = useNavigate();
-  // fetch data
+
   const fetchData = async (value) => {
     setIsActive(value)
     setIsLoading(true);
@@ -44,24 +37,30 @@ const Index = () => {
         ...value
       })
       .then((response) => {
-        setData(response?.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.eventTypeId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
-        setSingleCheck([]);
       })
       .catch((error) => {
         setIsLoading(false);
       });
-   if(value?.eventTypeId){
-    await axiosInstance
-      .post(`/admin/competition/byeventTypeId`, {
-        eventTypeId: value?.eventTypeId
-      })
-      .then((response) => {
-        setCompetitions(response.result);
-        setIsLoading(false);
-      })
-      .catch((error) => {});
-   } 
+    if (value?.eventTypeId) {
+      await axiosInstance
+        .post(`/admin/competition/byeventTypeId`, {
+          eventTypeId: value?.eventTypeId
+        })
+        .then((response) => {
+          setCompetitions(response.result);
+          setIsLoading(false);
+        })
+        .catch((error) => { });
+    }
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -70,7 +69,7 @@ const Index = () => {
         setEventTypes(response.result);
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
@@ -81,25 +80,19 @@ const Index = () => {
         setCompetitions(response.result);
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.eventTypeId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.eventTypeId);
     } else {
-      if (singleCheck.includes(e.eventId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.eventId));
-      } else {
-        setSingleCheck([...singleCheck, e.eventId]);
-      }
+      updateSingleCheck = [...checekedList, e.eventTypeId];
     }
+    setCheckedList(updateSingleCheck)
   };
+
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -132,7 +125,7 @@ const Index = () => {
     setIsLoading(true);
     const response = await axiosInstance
       .post(`/admin/events/delete`, {
-        eventId: singleCheck,
+        eventId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -158,7 +151,7 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addEvents", { state: { userId: id } });
   };
-  const handleReset =() =>{
+  const handleReset = () => {
     fetchData()
     fetchCompetitionData()
     fetchEventTypeData()
@@ -173,8 +166,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -186,9 +181,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.eventId)}
+            checked={checekedList.includes(record.eventTypeId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
         </div>
@@ -290,11 +285,11 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsSelect: true,
     isActive: true,
-    resetButton:true,
+    resetButton: true,
   };
 
   useEffect(() => {
-    fetchData({isActive:true});
+    fetchData({ isActive: true });
     fetchEventTypeData();
     fetchCompetitionData();
   }, []);
@@ -325,15 +320,15 @@ const Index = () => {
             reFetchData={fetchData}
             reFetchEventTypeData={fetchEventTypeData}
             reFetchCompetitionData={fetchCompetitionData}
-            singleCheck={singleCheck}
-            handleReset = {handleReset}
+            singleCheck={checekedList}
+            handleReset={handleReset}
             onAddNavigate={"/addEvents"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}

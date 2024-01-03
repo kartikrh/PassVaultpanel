@@ -8,7 +8,6 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
-
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 
@@ -16,12 +15,12 @@ const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [run, setRun] = useState(null);
-  const [checekedList, setCheckedList] = useState([]);
   const [toast, setToast] = useState({
     message: "",
     color: "",
@@ -29,6 +28,7 @@ const Index = () => {
   });
   const [toastStatus, setToastStatus] = useState(false);
   const navigate = useNavigate();
+
   const fetchData = async (value) => {
     setIsLoading(true);
     setIsActive(value)
@@ -42,6 +42,7 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
       })
       .catch((error) => {
@@ -49,7 +50,6 @@ const Index = () => {
       });
   };
 
-  //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
     if (checekedList.includes(e.paneltyId)) {
@@ -60,7 +60,6 @@ const Index = () => {
     setCheckedList(updateSingleCheck)
   };
 
-  //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -153,7 +152,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
               setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
               )
