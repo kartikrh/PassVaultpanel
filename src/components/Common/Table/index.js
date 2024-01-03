@@ -357,7 +357,7 @@ const Index = ({
   };
 
   const handleTableReset = () => {
-
+    setSearchTerm("")
     setTableActions({
       isActive: true,
       // eventTypeId: 0,
@@ -445,7 +445,7 @@ const Index = ({
                         }}
                         value={tableActions?.displayType}
                       >
-                        <option value={0}>Select Display Type</option>
+                        <option value="">Select Display Type</option>
                         {displayTypes.map((val, index) => {
                           return (
                             <option value={val}>
@@ -599,6 +599,7 @@ const Index = ({
                         type="text"
                         className="form-control"
                         placeholder="Search Min. 2 characters"
+                        value={searchTerm}
                         onChange={(e) => {
                           setSearchTerm(e.target.value);
                         }}
