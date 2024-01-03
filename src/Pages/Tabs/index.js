@@ -30,10 +30,10 @@ const Index = () => {
   const [toastStatus, setToastStatus] = useState(false);
   const [displayTypes, setDisplayTypes] = useState([]);
   const [isActive, setIsActive] = useState(true)
-  const [checkedAll, setCheckedAll] = useState(false);
   let sorted = []
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+
   const fetchData = async (value) => {
     setIsLoading(true)
     setIsActive(value)
