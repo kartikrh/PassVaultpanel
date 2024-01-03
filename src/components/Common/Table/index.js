@@ -86,7 +86,6 @@ const Index = ({
     if (jumpToChild) {
       HandleSubTable(jumpToChild);
     }
-    console.log(singleCheck)
   })
   useEffect(() => {
     if (jumpToChild) {
