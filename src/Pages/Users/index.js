@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
@@ -12,24 +11,18 @@ import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
 import Toaster from "../../components/Toaster";
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [clipboard, setClipboard] = useState(null);
-
-  //password decryption
   const [decryptedPasswords, setDecryptedPasswords] = useState(null);
-
-  //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
-  //isActive
   const [isActive, setIsActive] = useState()
-  // password
   const [password, setPassword] = useState("");
-  //useId
   const [userId, setUserId] = useState("");
-  // model state
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   //toast
@@ -39,12 +32,9 @@ const Index = () => {
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-  //redirect
+  const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
-  // fetch data
+
   const fetchData = async (value) => {
     setIsActive(value)
     setIsLoading(true);
@@ -53,7 +43,13 @@ const Index = () => {
         ...value
       })
       .then((response) => {
-        setData(response.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.userId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
         setIsLoading(false);
         setChangPasswordModelVisible(false);
       })
@@ -62,22 +58,14 @@ const Index = () => {
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.userId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.userId);
     } else {
-      if (singleCheck.includes(e.userId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.userId));
-      } else {
-        setSingleCheck([...singleCheck, e.userId]);
-      }
+      updateSingleCheck = [...checekedList, e.userId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
   //permissions function
@@ -113,7 +101,7 @@ const Index = () => {
     // e.preventDefault()
     await axiosInstance
       .post(`/admin/user/delete`, {
-        userId: singleCheck,
+        userId: checekedList,
       })
       .then((response) => {
         fetchData(isActive);
@@ -212,8 +200,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -225,9 +215,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.userId)}
+            checked={checekedList.includes(record.userId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
         </div>
@@ -334,7 +324,7 @@ const Index = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchData({isActive:true});
+    fetchData({ isActive: true });
   }, []);
   //elements required
   const tableElement = {
@@ -365,13 +355,14 @@ const Index = () => {
             reFetchData={fetchData}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             onAddNavigate={"/addUsers"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={checekedList}
           />
           <ChangePasswordModel
             changePasswordVisible={changePasswordVisible}

@@ -1,66 +1,55 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
-import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from '../../components/Model/SpinnerModel';
-// import Model
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
-  // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toaster
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-
+  const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
 
-  // fetch data
   const fetchData = async () => {
     await axiosInstance.post(`/admin/roles/all`)
       .then((response) => {
-        setData(response?.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.roleId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
         setIsLoading(false)
-        setSingleCheck([])
       }).catch((error) => {
         setIsLoading(false)
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.roleId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.roleId);
     } else {
-      if (singleCheck.includes(e.roleId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.roleId));
-      } else {
-        setSingleCheck([...singleCheck, e.roleId]);
-      }
+      updateSingleCheck = [...checekedList, e.roleId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
   //permissions function
@@ -74,25 +63,25 @@ const Index = () => {
         parentId: record.parentId,
         [pType]: cState ? false : true,
       }).then((response) => {
-      const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
-      setToast({
-        message: response?.message,
-        color: "green",
-        header: "Success",
-      });
-      setToastStatus(true);
-      // setData(newArray)
-      // setIsLoading(false)
-      fetchData()
-    }).catch((error) => {
-      setIsLoading(false);
-      setToast({
-        message: error?.message,
-        color: "red",
-        header: "Warning",
-      });
-      setToastStatus(true);
-    })
+        const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
+        setToast({
+          message: response?.message,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
+        // setData(newArray)
+        // setIsLoading(false)
+        fetchData()
+      }).catch((error) => {
+        setIsLoading(false);
+        setToast({
+          message: error?.message,
+          color: "red",
+          header: "Warning",
+        });
+        setToastStatus(true);
+      })
   };
 
   const handleDelete = async (e) => {
@@ -101,26 +90,26 @@ const Index = () => {
     await axiosInstance.post(
       `/admin/roles/delete`,
       {
-        roleIds: singleCheck,
+        roleIds: checekedList,
       }).then((response) => {
-      setDeleteModelVisable(false);
-      fetchData();
-      setToast({
-        message: response?.message,
-        color: "green",
-        header: "Success",
+        setDeleteModelVisable(false);
+        fetchData();
+        setToast({
+          message: response?.message,
+          color: "green",
+          header: "Success",
+        });
+        setToastStatus(true);
+      }).catch((error) => {
+        setDeleteModelVisable(false);
+        setToast({
+          message: error?.message,
+          color: "red",
+          header: "Warning",
+        });
+        setIsLoading(false)
+        setToastStatus(true);
       });
-      setToastStatus(true);
-    }).catch((error) => {
-      setDeleteModelVisable(false);
-      setToast({
-        message: error?.message,
-        color: "red",
-        header: "Warning",
-      });
-    setIsLoading(false)
-      setToastStatus(true);
-    });
   }
 
   const handleEdit = (roleId) => {
@@ -137,8 +126,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -150,9 +141,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.roleId)}
+            checked={checekedList.includes(record.roleId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -215,19 +206,21 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck = {singleCheck}
+            singleCheck={checekedList}
             reFetchData={fetchData}
+            // addModelFunction={setAddModelVisable}
             onAddNavigate={"/addRoles"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
+
           />
         </Container>
       </div>

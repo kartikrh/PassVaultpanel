@@ -11,51 +11,50 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
+import { isEqual } from "lodash";
 const Index = () => {
   const location = useLocation();
   const selectedTabId = location.state?.selectedTabId
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const [currentParentTab, setCurrentParentTab] = useState(undefined)
   const [data, setData] = useState([]);
-  //handleSpinner
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
-  //toaster
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  //displyTypes
   const [displayTypes, setDisplayTypes] = useState([]);
   const [isActive, setIsActive] = useState(true)
-  // checkbox state
   const [checkedAll, setCheckedAll] = useState(false);
   let sorted = []
-  const [singleCheck, setSingleCheck] = useState([]);
+  const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
-  // fetch data
   const fetchData = async (value) => {
     setIsLoading(true)
     setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/byRoleId",{...value})
+      .post("/admin/tabs/byRoleId", { ...value })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
+        let apiDataIdList = []
         sorted = [...first].sort(
           (a, b) => a.displayOrder - b.displayOrder
         );
         sorted.forEach((item) => {
           if (item.children && Array.isArray(item.children)) {
+            apiDataIdList.push(item?.tabId)
             item.children.sort((x, y) => x.displayOrder - y.displayOrder);
           }
+          apiDataIdList.push(item?.tabId)
         });
         setData(sorted);
+        setDataIndexList(apiDataIdList)
         if (selectedTabId) {
           setCurrentParentTab(sorted.filter((element) => {
             return element?.tabId === selectedTabId
@@ -66,32 +65,22 @@ const Index = () => {
         );
         setDisplayTypes(displayType);
         setIsLoading(false);
-        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.tabId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.tabId);
     } else {
-      if (singleCheck.includes(e.tabId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.tabId));
-      } else {
-        setSingleCheck([...singleCheck, e.tabId]);
-      }
+      updateSingleCheck = [...checekedList, e.tabId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
-  //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -124,11 +113,11 @@ const Index = () => {
     setCurrentParentTab(undefined)
   }
   const handleDelete = async (e) => {
-    if (singleCheck.length > 0) {
+    if (checekedList.length > 0) {
       setIsLoading(true);
       await axiosInstance
         .post("/admin/tabs/delete", {
-          encryptedTabIds: singleCheck,
+          encryptedTabIds: checekedList,
         })
         .then((response) => {
           setToast({
@@ -163,8 +152,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -176,9 +167,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.tabId)}
+            checked={checekedList.includes(record.tabId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
           <i className="bx bx-move ms-1 mt-1"></i>
@@ -316,12 +307,12 @@ const Index = () => {
     displayTypeDropDown: true,
     switch: false,
     subTable: true,
-    resetButton:true,
-    isActive:true
+    resetButton: true,
+    isActive: true
   };
 
   useEffect(() => {
-    setIsLoading({isActive:true});
+    setIsLoading({ isActive: true });
     fetchData();
   }, []);
 
@@ -347,7 +338,7 @@ const Index = () => {
             onAddNavigate={"/addTabs"}
             changeOrderApiName="tabs"
             displayTypes={displayTypes}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             jumpToChild={currentParentTab}
             resetJumpToChild={resetJumpToChild}
             reFetchData={fetchData}
@@ -356,7 +347,7 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}

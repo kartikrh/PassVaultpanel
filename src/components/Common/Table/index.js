@@ -86,7 +86,7 @@ const Index = ({
     if (jumpToChild) {
       HandleSubTable(jumpToChild);
     }
-  });
+  })
   useEffect(() => {
     if (jumpToChild) {
       resetJumpToChild();
@@ -167,6 +167,7 @@ const Index = ({
       setData(updatedData);
     }
   };
+
   const handleTableActions = (key, id) => {
     setTableActions((preValue) => {
       return {
@@ -176,7 +177,6 @@ const Index = ({
     });
   };
   const handleSearchFilter = () => {
-    console.log(tableElement.title)
     if (tableElement.title === "Tabs") {
       const updatedData = data.filter((val) => {
         const found = Object.values(val).some((value) => {
@@ -192,12 +192,10 @@ const Index = ({
         setFilteredData(subData);
         // setData(subData);
       } else {
-        console.log(updatedData)
         setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
     } else {
-      console.log(searchTerm)
       const updatedData = dataSource.filter((val) => {
         const found = Object.values(val).some((value) => {
           if (typeof value === "string" || value instanceof String) {
@@ -207,7 +205,6 @@ const Index = ({
         });
         return found === true;
       });
-      console.log(updatedData)
       if (searchTerm === "") {
         setTotal(dataSource.length);
         const sliced = dataSource.slice(
@@ -216,7 +213,6 @@ const Index = ({
         );
         setFilteredData(sliced);
       } else {
-        console.log(updatedData)
         setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
@@ -357,6 +353,7 @@ const Index = ({
   };
 
   const handleTableReset = () => {
+
     setTableActions({
       isActive: true,
       eventTypeId: 0,

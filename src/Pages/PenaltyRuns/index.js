@@ -10,65 +10,56 @@ import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 
 import { useNavigate } from "react-router-dom";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  //isActive
   const [isActive, setIsActive] = useState(true);
-  // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
-  //handleRun
   const [run, setRun] = useState(null);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-  //toaster
+  const [checekedList, setCheckedList] = useState([]);
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-
   const navigate = useNavigate();
-
-  // fetch data
   const fetchData = async (value) => {
     setIsLoading(true);
     setIsActive(value)
     await axiosInstance
       .post(`/admin/paneltyRun/all`, { ...value })
       .then((response) => {
-        setData(response?.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.paneltyId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
         setIsLoading(false);
-        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
       });
   };
+
   //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.paneltyId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.paneltyId);
     } else {
-      if (singleCheck.includes(e.paneltyId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.paneltyId));
-      } else {
-        setSingleCheck([...singleCheck, e.paneltyId]);
-      }
+      updateSingleCheck = [...checekedList, e.paneltyId];
     }
+    setCheckedList(updateSingleCheck)
   };
+
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -101,7 +92,7 @@ const Index = () => {
     setIsLoading(true);
     const response = await axiosInstance
       .post(`/admin/paneltyRun/delete`, {
-        paneltyId: singleCheck,
+        paneltyId: checekedList,
       })
       .then((response) => {
         fetchData(isActive);
@@ -162,8 +153,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -175,9 +168,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.paneltyId)}
+            checked={checekedList.includes(record.paneltyId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -270,7 +263,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    setIsLoading({isActive:true});
+    setIsLoading({ isActive: true });
     fetchData();
   }, []);
 
@@ -293,7 +286,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addPenalty"}
@@ -302,7 +295,7 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}
