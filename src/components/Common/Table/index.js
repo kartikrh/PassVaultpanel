@@ -82,6 +82,7 @@ const Index = ({
     if (jumpToChild) {
       HandleSubTable(jumpToChild)
     }
+    console.log(singleCheck)
   })
 
   useEffect(() => {
@@ -154,12 +155,12 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleDropDown = (key,id) => {
-    if(key==="eventTypeId"){
-      reFetchData({[key]:id})
+  const handleDropDown = (key, id) => {
+    if (key === "eventTypeId") {
+      reFetchData({ [key]: id })
       reFetchCompetitionData(id)
-    }else if(key==="competitionId"){
-      reFetchData({[key]:id})
+    } else if (key === "competitionId") {
+      reFetchData({ [key]: id })
     }
   };
   const handleSearchFilter = () => {
@@ -336,7 +337,7 @@ const Index = ({
     changeDisplayOrder(tabOrders, changeOrderApiName);
   };
 
-  const handleTableReset = () =>{
+  const handleTableReset = () => {
 
   }
 
@@ -472,19 +473,19 @@ const Index = ({
                     </div>
                   ) : null}
                   {
-                    tableElement?.resetButton?(<div>
+                    tableElement?.resetButton ? (<div>
                       <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        handleReset();
-                        handleTableReset()
-                      }}
-                      id="create-btn"
-                    >
-                      Reset
-                      {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                    </button>
-                    </div>):null
+                        className="btn btn-primary"
+                        onClick={() => {
+                          handleReset();
+                          handleTableReset()
+                        }}
+                        id="create-btn"
+                      >
+                        Reset
+                        {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                      </button>
+                    </div>) : null
                   }
                 </div>
               </Col>

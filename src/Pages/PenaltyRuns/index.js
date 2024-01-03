@@ -52,20 +52,28 @@ const Index = () => {
   };
   //checkbox function
   const handleCheckedAll = (e) => {
+    let updateSingleCheck = []
     if (e === "all") {
       if (checkedAll) {
         setCheckedAll(false);
-        setSingleCheck([]);
+        const listToSet = []
+        data?.map(ele => {
+          listToSet.push(ele?.paneltyId)
+        })
+        updateSingleCheck = listToSet;
       } else {
         setCheckedAll(true);
+        updateSingleCheck = [];
       }
     } else {
+      setCheckedAll(false);
       if (singleCheck.includes(e.paneltyId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.paneltyId));
+        updateSingleCheck = singleCheck.filter((item) => item !== e.paneltyId);
       } else {
-        setSingleCheck([...singleCheck, e.paneltyId]);
+        updateSingleCheck = [...singleCheck, e.paneltyId];
       }
     }
+    setSingleCheck(updateSingleCheck)
   };
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
@@ -160,6 +168,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={checkedAll}
             onChange={() => {
               handleCheckedAll("all");
             }}
