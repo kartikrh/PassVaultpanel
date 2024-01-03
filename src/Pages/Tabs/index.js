@@ -53,7 +53,6 @@ const Index = () => {
           }
           apiDataIdList.push(item?.tabId)
         });
-        console.log("this is the sorted data", sorted)
         setData(sorted);
         setDataIndexList(apiDataIdList)
         if (selectedTabId) {
@@ -65,6 +64,7 @@ const Index = () => {
           new Set(response?.result.map((item) => item.displayType))
         );
         setDisplayTypes(displayType);
+        setCheckedList([])
         setIsLoading(false);
       })
       .catch((error) => {
@@ -98,7 +98,7 @@ const Index = () => {
           header: "Success",
         });
         setToastStatus(true);
-        fetchData();
+        fetchData(isActive);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -127,7 +127,7 @@ const Index = () => {
             header: "Success",
           });
           setToastStatus(true);
-          fetchData();
+          fetchData(isActive);
         })
         .catch((error) => {
           setToast({
