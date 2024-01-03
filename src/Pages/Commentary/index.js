@@ -10,64 +10,51 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from '../../components/Toaster'
+import { isEqual } from "lodash";
 const Index = () => {
   document.title = "Commentary | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
-  const [isLoading, setIsLoading] = useState(false);
-  // model state
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toast
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  //get Event Types
   const [eventTypes, setEventTypes] = useState([]);
-  //get Competition
-  const [competitions, setCompetitions] = useState([]);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
   const navigate = useNavigate();
 
-  // fetch data
   const fetchData = async () => {
     await axiosInstance
       .post(`/admin/commentary/all`)
       .then((response) => {
-        setData(response?.result);
-        setSingleCheck([])
-        const eventTypes = Array.from(
-          new Set(response?.result.map((item) => item.eventType))
-        );
-        setEventTypes(eventTypes);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.commentaryId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
+        setEventTypes(eventTypes);
       })
       .catch((error) => {
         setIsLoading(false);
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.commentaryId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.commentaryId);
     } else {
-      if (singleCheck.includes(e.commentaryId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.commentaryId));
-      } else {
-        setSingleCheck([...singleCheck, e.commentaryId]);
-      }
+      updateSingleCheck = [...checekedList, e.commentaryId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
   //permissions function
@@ -95,7 +82,7 @@ const Index = () => {
       .post(
         `/admin/commentary/delete`,
         {
-          commentaryId: singleCheck,
+          commentaryId: checekedList,
         }
       )
       .then((response) => {
@@ -125,7 +112,7 @@ const Index = () => {
 
   const handleBackClick = () => {
     navigate("/commentary");
-};
+  };
 
   //table columns
   const columns = [
@@ -137,8 +124,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -150,9 +139,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.commentaryId)}
+            checked={checekedList.includes(record.commentaryId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -166,8 +155,8 @@ const Index = () => {
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"
         onClick={() => {
-            handleEdit(record.commentaryId);
-          }}
+          handleEdit(record.commentaryId);
+        }}
       ></i>,
       style: { width: "2%", textAlign: "center" },
     },
@@ -280,7 +269,7 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             reFetchData={fetchData}
             onAddNavigate={"/addCommentary"}
           />
@@ -288,6 +277,7 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}

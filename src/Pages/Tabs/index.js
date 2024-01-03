@@ -65,6 +65,7 @@ const Index = () => {
           new Set(response?.result.map((item) => item.displayType))
         );
         setDisplayTypes(displayType);
+        setCheckedList([])
         setIsLoading(false);
       })
       .catch((error) => {

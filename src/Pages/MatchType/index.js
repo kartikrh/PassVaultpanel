@@ -4,73 +4,62 @@ import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
-import TabModel from "../../components/Model/AddTabModel";
 import CloneModel from "../../components/Model/CloneMatchType";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title = "Match Type | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
-  const [isLoading, setIsLoading] = useState(false);
-  // model state
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toaster
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
-
-  // cloneName
   const [cloneName, setCloneName] = useState("");
-
   const navigate = useNavigate();
 
-  // fetch data
   const fetchData = async () => {
     await axiosInstance
       .post(`/admin/matchType/all`)
       .then((response) => {
-        setData(response?.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.matchTypeId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
-        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.matchTypeId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.matchTypeId);
     } else {
-      if (singleCheck.includes(e.matchTypeId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.matchTypeId));
-      } else {
-        setSingleCheck([...singleCheck, e.matchTypeId]);
-      }
+      updateSingleCheck = [...checekedList, e.matchTypeId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
   const handleClone = async () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/matchType/clone`, {
-        matchTypeId: singleCheck[0],
+        matchTypeId: checekedList?.[0],
         matchType: cloneName,
       })
       .then((response) => {
@@ -97,7 +86,7 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/matchType/delete`, {
-        matchTypeId: singleCheck,
+        matchTypeId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -132,8 +121,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -145,9 +136,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.matchTypeId)}
+            checked={checekedList.includes(record.matchTypeId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
         </div>
@@ -159,9 +150,9 @@ const Index = () => {
       title: "Edit",
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"
-      onClick={() => {
-        handleEdit(record.matchTypeId);
-      }}
+        onClick={() => {
+          handleEdit(record.matchTypeId);
+        }}
       ></i>,
       style: { width: "2%", textAlign: "center" },
     },
@@ -208,21 +199,21 @@ const Index = () => {
             reFetchData={fetchData}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             onAddNavigate={"/addMatchType"}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
           <CloneModel
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
             setCloneName={setCloneName}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
           />
         </Container>
       </div>

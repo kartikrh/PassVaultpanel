@@ -50,8 +50,9 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
-        setIsLoading(false);
         setChangPasswordModelVisible(false);
+        setCheckedList([])
+        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
