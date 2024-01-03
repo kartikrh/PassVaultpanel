@@ -38,7 +38,7 @@ const Index = () => {
     setIsLoading(true)
     setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/byRoleId",{...value})
+      .post("/admin/tabs/byRoleId", { ...value })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
@@ -66,7 +66,6 @@ const Index = () => {
         );
         setDisplayTypes(displayType);
         setIsLoading(false);
-        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
@@ -309,12 +308,12 @@ const Index = () => {
     displayTypeDropDown: true,
     switch: false,
     subTable: true,
-    resetButton:true,
-    isActive:true
+    resetButton: true,
+    isActive: true
   };
 
   useEffect(() => {
-    setIsLoading({isActive:true});
+    setIsLoading({ isActive: true });
     fetchData();
   }, []);
 
