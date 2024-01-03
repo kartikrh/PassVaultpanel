@@ -36,9 +36,7 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
-
         setIsLoading(false)
-        setSingleCheck([])
       }).catch((error) => {
         setIsLoading(false)
       });
@@ -109,11 +107,9 @@ const Index = () => {
           color: "red",
           header: "Warning",
         });
+        setIsLoading(false)
         setToastStatus(true);
       });
-    setIsLoading(false)
-      setToastStatus(true);
-    });
   }
 
   const handleEdit = (roleId) => {
@@ -224,6 +220,7 @@ const Index = () => {
           <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
+
           />
         </Container>
       </div>
