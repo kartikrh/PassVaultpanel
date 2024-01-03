@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
 import { Container } from "reactstrap";
@@ -10,25 +9,21 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
+import { isEqual } from "lodash";
 
 const Index = () => {
   document.title = "Teams | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
-  //handleSpinner
-  const [isLoading, setIsLoading] = useState(false);
-  // model state
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toaster
   const [toast, setToast] = useState({
     message: "",
     color: "",
     header: "",
   });
   const [toastStatus, setToastStatus] = useState(false);
-  // checkbox state
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [singleCheck, setSingleCheck] = useState([]);
   const navigate = useNavigate();
 
   // fetch data
@@ -36,7 +31,14 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/team/all`)
       .then((response) => {
-        setData(response?.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.teamId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false);
       })
       .catch((error) => {
@@ -44,29 +46,21 @@ const Index = () => {
       });
   };
 
-  //checkbox function
-  const handleCheckedAll = (e) => {
-    if (e === "all") {
-      if (checkedAll) {
-        setCheckedAll(false);
-        setSingleCheck([]);
-      } else {
-        setCheckedAll(true);
-      }
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.teamId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.teamId);
     } else {
-      if (singleCheck.includes(e.teamId)) {
-        setSingleCheck(singleCheck.filter((item) => item !== e.teamId));
-      } else {
-        setSingleCheck([...singleCheck, e.teamId]);
-      }
+      updateSingleCheck = [...checekedList, e.teamId];
     }
+    setCheckedList(updateSingleCheck)
   };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/team/delete`, {
-        teamId: singleCheck,
+        teamId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -76,7 +70,7 @@ const Index = () => {
           color: "green",
           header: "Success",
         })
-        setSingleCheck([])
+        setCheckedList([])
         setToastStatus(true)
       })
       .catch((error) => {
@@ -104,8 +98,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              handleCheckedAll("all");
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
             }}
           />
         </div>
@@ -117,9 +113,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checkedAll || singleCheck.includes(record.teamId)}
+            checked={checekedList.includes(record.teamId)}
             onChange={() => {
-              handleCheckedAll(record);
+              handleSingleCheck(record);
             }}
           />
         </div>
@@ -131,9 +127,9 @@ const Index = () => {
       title: "Edit",
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"
-      onClick={() => {
-        handleEdit(record.teamId);
-      }}
+        onClick={() => {
+          handleEdit(record.teamId);
+        }}
       ></i>,
       style: { width: "2%", textAlign: "center" },
     },
@@ -238,7 +234,7 @@ const Index = () => {
             tableElement={tableElement}
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
-            singleCheck={singleCheck}
+            singleCheck={checekedList}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
           />

@@ -36,6 +36,7 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
+        setCheckedList([])
         setIsLoading(false)
       }).catch((error) => {
         setIsLoading(false)
