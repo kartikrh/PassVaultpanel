@@ -38,7 +38,7 @@ const Index = () => {
     setIsLoading(true)
     setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/byRoleId", { ...value })
+      .post("/admin/tabs/tablist", { ...value })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
@@ -120,6 +120,7 @@ const Index = () => {
           encryptedTabIds: checekedList,
         })
         .then((response) => {
+          setDeleteModelVisable(false);
           setToast({
             message: `${response.title} deleted successfully`,
             color: "green",
@@ -142,6 +143,9 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
+  const handleReset =() =>{
+    fetchData({})
+  }
   //table columns
   const columns = [
     {
@@ -342,6 +346,7 @@ const Index = () => {
             jumpToChild={currentParentTab}
             resetJumpToChild={resetJumpToChild}
             reFetchData={fetchData}
+            handleReset = {handleReset}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
