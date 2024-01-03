@@ -358,9 +358,10 @@ const Index = ({
       isActive: true,
       eventTypeId: 0,
       competitionId: 0,
+      displayType:0,
     });
-    handleReset();
     setStatusSwitch(true);
+    handleReset();
   };
 
   useEffect(() => {
@@ -429,7 +430,7 @@ const Index = ({
                       setToastStatus={setToastStatus}
                     />
                   ) : null}
-                  {tableElement?.headerSelect ? (
+                  {tableElement?.displayTypeDropDown ? (
                     <div className="">
                       <select
                         className="form-select"
@@ -437,8 +438,9 @@ const Index = ({
                         onChange={(e) => {
                           handleDropDownFilter(e.target.value);
                         }}
+                        value={tableActions?.displayType}
                       >
-                        <option value="">Select Display Type</option>
+                        <option value={0}>Select Display Type</option>
                         {displayTypes.map((val, index) => {
                           return (
                             <option value={val}>

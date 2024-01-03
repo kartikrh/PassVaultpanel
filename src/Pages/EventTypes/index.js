@@ -46,6 +46,7 @@ const Index = () => {
       .then((response) => {
         setData(response.result);
         setIsLoading(false);
+        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
@@ -100,13 +101,12 @@ const Index = () => {
 
   const handleDelete = async (e) => {
     setIsLoading(true);
-    // e.preventDefault()
     await axiosInstance
       .post(`/admin/eventType/delete`, {
         eventTypeId: singleCheck,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
           message: response?.message,

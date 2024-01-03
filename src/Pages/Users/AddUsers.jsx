@@ -77,7 +77,7 @@ function AddUsers() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post(`/admin/user/all`, {})
+      .post(`/admin/user/allWithCurrent`)
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -85,6 +85,13 @@ function AddUsers() {
             return { label: item.userName, value: item.userId };
           }),
         }));
+        if (userId === "0") {
+          setInitialEditData({
+            parentId: response.result.find(value => value?.current).userId,
+            roleId: "0",
+            isActive: true,
+          })
+        }
       })
       .catch((error) => {
         // setIsLoading(false)
@@ -108,7 +115,7 @@ function AddUsers() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        id: userId
+        userId: userId
       }
       setCurrentSaveAction(saveAction);
       dispatch(addUserToDb({ ...dataToSave, ...extraData }))

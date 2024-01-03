@@ -29,13 +29,16 @@ const Index = () => {
   });
   const [toastStatus, setToastStatus] = useState(false);
   const [displayTypes, setDisplayTypes] = useState([]);
+  const [isActive, setIsActive] = useState(true)
+  const [checkedAll, setCheckedAll] = useState(false);
   let sorted = []
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
-
-  const fetchData = async () => {
+  const fetchData = async (value) => {
+    setIsLoading(true)
+    setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/all")
+      .post("/admin/tabs/byRoleId",{...value})
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
@@ -50,6 +53,7 @@ const Index = () => {
           }
           apiDataIdList.push(item?.tabId)
         });
+        console.log("this is the sorted data", sorted)
         setData(sorted);
         setDataIndexList(apiDataIdList)
         if (selectedTabId) {
@@ -62,6 +66,7 @@ const Index = () => {
         );
         setDisplayTypes(displayType);
         setIsLoading(false);
+        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
@@ -226,6 +231,24 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Is Active",
+      key: "isActive",
+      dataIndex: "IsActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.IsActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.IsActive);
+          }}
+        >
+          <i className={`bx ${record.IsActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "Is Add",
       key: "IsAdd",
       render: (text, record) => (
@@ -283,13 +306,15 @@ const Index = () => {
   const tableElement = {
     title: "Tabs",
     dragDrop: true,
-    headerSelect: true,
+    displayTypeDropDown: true,
     switch: false,
     subTable: true,
+    resetButton:true,
+    isActive:true
   };
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading({isActive:true});
     fetchData();
   }, []);
 

@@ -43,6 +43,7 @@ const Index = () => {
         setData(apiData);
         setDataIndexList(apiDataIdList)
         setIsLoading(false);
+        setSingleCheck([])
       })
       .catch((error) => {
         setIsLoading(false);
@@ -95,7 +96,7 @@ const Index = () => {
         paneltyId: checekedList,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
           message: response?.message,
