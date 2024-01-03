@@ -50,8 +50,11 @@ function AddTabs() {
                 selectedTabId ?
                     navigate(navigateTo, { state: { selectedTabId } }) : navigate(navigateTo)
             }
-            else if (currentSaveAction === SAVE_AND_NEW)
+            else if (currentSaveAction === SAVE_AND_NEW) {
+                setDisabledFields({})
+                setInitialEditData({})
                 finalizeRef.current.resetForm()
+            }
         }
     });
     const fetchData = async (id) => {
