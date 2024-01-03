@@ -10,7 +10,7 @@ import eventSlice from "./eventsSlice"
 import roleSlice from './roleSlice';
 import CompetitionSlice from "./competitionSlice"
 import TeamSlice from "./teamSlice"
-
+import changePasswordSlice from './changePasswordSlice';
 const rootReducer = combineReducers({
     tab: TabSlice,
     commentary: CommentarySlice,
@@ -22,7 +22,8 @@ const rootReducer = combineReducers({
     event: eventSlice,
     competition: CompetitionSlice,
     team: TeamSlice,
-    role: roleSlice
+    role: roleSlice,
+    changePassword: changePasswordSlice,
 });
 
 export default rootReducer;

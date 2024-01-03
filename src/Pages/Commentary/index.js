@@ -228,6 +228,7 @@ const Index = () => {
     {
       title: "Commentary Details",
       key: "active",
+      printType: "ignore",
       render: (text, record) => (
         <Button
           color={"primary"}
@@ -279,6 +280,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={singleCheck}
+            reFetchData={fetchData}
             onAddNavigate={"/addCommentary"}
           />
           <DeleteTabModel

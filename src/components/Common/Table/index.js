@@ -19,41 +19,45 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
       `/admin/${apiName}/changeDisplayOrder`,
-      tabdisplayOrder, // Send the updated order data to the API
+      tabdisplayOrder // Send the updated order data to the API
     );
     return response?.result || [];
   } catch (error) {
     throw Error(error);
   }
-}
+};
 
 const Index = ({
   columns,
   dataSource,
   tableElement,
   cloneModelFunction,
-  setIsActive,
   deleteModelFunction,
   singleCheck,
+  setIsActive,
   displayTypes,
   eventTypes,
   reFetchData,
-  reFetchEventTypeData,
   handleReset,
-  reFetchCompetitionData,
   competitions,
   onAddNavigate,
   changeOrderApiName = "",
   jumpToChild = undefined,
-  resetJumpToChild
+  resetJumpToChild,
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
   const [currentParentId, setCurrentParentId] = useState(dataSource);
   const [subData, setSubData] = useState([]);
+  const [tableActions, setTableActions] = useState({
+    isActive: true,
+    eventTypeId: 0,
+    competitionId: 0,
+  });
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedEventType, setSelectedEventType] = useState(0);
   const [toast, setToast] = useState({
     message: "Select at least one (only One) row",
     color: "red",
@@ -63,6 +67,7 @@ const Index = ({
   const [toastStatus, setToastStatus] = useState(false);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedValue, setSelectedValue] = useState('');
   //sorting
   const [sortOrder, setSortOrder] = useState({
     sortOrder: "",
@@ -77,17 +82,15 @@ const Index = ({
       [tableElement?.title]: data,
     },
   ]);
-
   useEffect(() => {
     if (jumpToChild) {
-      HandleSubTable(jumpToChild)
+      HandleSubTable(jumpToChild);
     }
     console.log(singleCheck)
   })
-
   useEffect(() => {
     if (jumpToChild) {
-      resetJumpToChild()
+      resetJumpToChild();
     }
   }, [data])
 
@@ -133,11 +136,21 @@ const Index = ({
   };
   const handleStatusSwitch = () => {
     if (statusSwitch) {
-      setIsActive(false)
       setStatusSwitch(false);
+      setTableActions((preValue) => {
+        return {
+          ...preValue,
+          isActive: false,
+        };
+      });
     } else {
       setStatusSwitch(true);
-      setIsActive(true)
+      setTableActions((preValue) => {
+        return {
+          ...preValue,
+          isActive: true,
+        };
+      });
     }
   };
   const handleDropDownFilter = (e) => {
@@ -155,13 +168,14 @@ const Index = ({
       setData(updatedData);
     }
   };
-  const handleDropDown = (key, id) => {
-    if (key === "eventTypeId") {
-      reFetchData({ [key]: id })
-      reFetchCompetitionData(id)
-    } else if (key === "competitionId") {
-      reFetchData({ [key]: id })
-    }
+
+  const handleTableActions = (key, id) => {
+    setTableActions((preValue) => {
+      return {
+        ...preValue,
+        [key]: id,
+      };
+    });
   };
   const handleSearchFilter = () => {
     if (tableElement.title === "Tabs") {
@@ -221,24 +235,42 @@ const Index = ({
   const HandleSubTable = (record) => {
     setData(record.children);
     const isKeyPresent = subArray.some((obj) =>
-      obj.hasOwnProperty(record.displayName));
+      obj.hasOwnProperty(record.displayName)
+    );
     if (!isKeyPresent) {
-      setCurrentParentId(record?.tabId)
+      setCurrentParentId(record?.tabId);
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  const generatePDF = () => {
-    let pdfCols = [];
+  
+  const generateSimplifiedData = () => {
+    let pdfCols = ["No."];
     let colsDataKey = [];
-
     columns?.forEach((item) => {
-      if (item.key !== "select" && item.key !== "edit" && item.key !== "image" && item.key !== "jersey" && item.key !== "tabName") {
+      if (item.key !== "select" && item.key !== "edit" && item.printType !== "ignore") {
         pdfCols.push(item.title);
         colsDataKey.push(item.key)
       }
     })
+    const headers = [pdfCols];
+    let colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+    colsData = colsData.map((value, index) => [index + 1, ...value]);
+    // const csvData = [...headers, ...colsData];
+    const csvData = colsData.map((value, i)=>{
+      let data = {};
+      value.forEach((v, i)=>{
+        data = {
+          ...data,
+          [pdfCols[i]]: v
+        }
+      })
+      return data;
+    });
+    return { headers, colsData, csvData }
+  }
 
-    const colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+  const generatePDF = () => {
+    const { headers, colsData } = generateSimplifiedData();
 
     const pdf = new jsPDF({
       orientation: "portrait", // or 'landscape'
@@ -246,8 +278,6 @@ const Index = ({
       format: "ledger", // or [width, height]
       fontSize: 3, // Set the font size
     });
-
-    const headers = [pdfCols];
 
     let content = {
       startY: 50,
@@ -260,19 +290,17 @@ const Index = ({
   };
 
   const downloadExcel = () => {
-    // Get the table element by its ID (adjust the ID accordingly)
-    const table = document.getElementById("myTable");
-
     // Create a worksheet
-    const ws = XLSX.utils.table_to_sheet(table);
+    const ws = XLSX.utils.json_to_sheet(generateSimplifiedData().csvData);
 
     // Create a workbook
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
 
     // Download the workbook
-    XLSX.writeFile(wb, `download.xlsx`);
+    XLSX.writeFile(wb, `${tableElement.title}.xlsx`);
   };
+  
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
       throw new Error(
@@ -303,25 +331,13 @@ const Index = ({
   };
   // getting data for the table coming from the page && checking default status
   const fetchData = () => {
-    if (tableElement?.isActive) {
-      const switchData = dataSource.filter((val) => {
-        return val.isActive === statusSwitch;
-      });
-      const sliced = switchData.slice(
-        currentPage * pageSize,
-        currentPage * pageSize + pageSize
-      );
-      setTotal(switchData.length);
-      setData(switchData);
-      setData(sliced);
-    } else {
-      const sliced = dataSource.slice(
-        currentPage * pageSize,
-        currentPage * pageSize + pageSize
-      );
-      setTotal(dataSource.length);
-      setData(sliced);
-    }
+    const sliced = dataSource.slice(
+      currentPage * pageSize,
+      currentPage * pageSize + pageSize
+    );
+    setTotal(dataSource.length);
+    setData(sliced);
+    // }
   };
 
   const handleDragEnd = (result) => {
@@ -339,8 +355,18 @@ const Index = ({
 
   const handleTableReset = () => {
 
-  }
+    setTableActions({
+      isActive: true,
+      eventTypeId: 0,
+      competitionId: 0,
+    });
+    handleReset();
+    setStatusSwitch(true);
+  };
 
+  useEffect(() => {
+    reFetchData(tableActions);
+  }, [tableActions]);
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -363,8 +389,10 @@ const Index = ({
                     className="add-btn"
                     onClick={() => {
                       if (currentParentId)
-                        navigate(onAddNavigate, { state: { selectedTabId: currentParentId } })
-                      else navigate(onAddNavigate)
+                        navigate(onAddNavigate, {
+                          state: { selectedTabId: currentParentId },
+                        });
+                      else navigate(onAddNavigate);
                     }}
                     id="create-btn"
                   >
@@ -375,8 +403,9 @@ const Index = ({
                       color="warning"
                       className="btn"
                       onClick={() => {
-                        singleCheck.length === 1 ?
-                          cloneModelFunction(true) : setToastStatus(true)
+                        singleCheck.length === 1
+                          ? cloneModelFunction(true)
+                          : setToastStatus(true);
                       }}
                       id="create-btn"
                     >
@@ -417,8 +446,8 @@ const Index = ({
                               {val === 1
                                 ? "Admin"
                                 : val === 2
-                                  ? "Agent"
-                                  : "Vendor"}
+                                ? "Agent"
+                                : "Vendor"}
                             </option>
                           );
                         })}
@@ -431,12 +460,17 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleDropDown("eventTypeId", e.target.value);
+                          handleTableActions("eventTypeId", e.target.value);
                         }}
+                        value={tableActions?.eventTypeId}
                       >
-                        <option value="">Select Event Type</option>
+                        <option value={0}>Select Event Type</option>
                         {eventTypes?.map((val) => {
-                          return <option value={val?.eventTypeId}>{val?.eventType}</option>;
+                          return (
+                            <option value={val?.eventTypeId}>
+                              {val?.eventType}
+                            </option>
+                          );
                         })}
                       </select>
                     </div>
@@ -447,12 +481,17 @@ const Index = ({
                         className="form-select"
                         id="inlineFormSelectPref"
                         onChange={(e) => {
-                          handleDropDown("competitionId", e.target.value);
+                          handleTableActions("competitionId", e.target.value);
                         }}
+                        value={tableActions?.competitionId}
                       >
-                        <option value="">Select Competition</option>
+                        <option value={0}>Select Competition</option>
                         {competitions?.map((val) => {
-                          return <option value={val.competitionId}>{val.competition}</option>;
+                          return (
+                            <option value={val.competitionId}>
+                              {val.competition}
+                            </option>
+                          );
                         })}
                       </select>
                     </div>
@@ -472,21 +511,20 @@ const Index = ({
                       />
                     </div>
                   ) : null}
-                  {
-                    tableElement?.resetButton ? (<div>
+                  {tableElement?.resetButton ? (
+                    <div>
                       <button
                         className="btn btn-primary"
                         onClick={() => {
-                          handleReset();
-                          handleTableReset()
+                          handleTableReset();
                         }}
                         id="create-btn"
                       >
                         Reset
                         {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                       </button>
-                    </div>) : null
-                  }
+                    </div>
+                  ) : null}
                 </div>
               </Col>
               <Col className="d-flex justify-content-end">
@@ -532,7 +570,7 @@ const Index = ({
                 <Col className="col-sm">
                   <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
                     <div className="me-1 d-flex">
-                      <CSVLink data={data} filename="table_data.csv">
+                      <CSVLink data={generateSimplifiedData().csvData} filename={tableElement.title + ".csv"}>
                         <Button size="small" className="btn border">
                           <i className="fas fa-file-csv"></i>
                         </Button>
@@ -594,12 +632,13 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${sortOrder.key === column.key &&
+                                            color: `${
+                                              sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                              "ascending"
-                                              ? "gray"
-                                              : "lightGray"
-                                              }`,
+                                                "ascending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -614,12 +653,13 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${sortOrder.key === column.key &&
+                                            color: `${
+                                              sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                              "descending"
-                                              ? "gray"
-                                              : "lightGray"
-                                              }`,
+                                                "descending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -657,7 +697,7 @@ const Index = ({
                                           style={column.style}
                                           onClick={() => {
                                             record?.childrenCount > 0 &&
-                                              column?.key === "tabName"
+                                            column?.key === "tabName"
                                               ? HandleSubTable(record)
                                               : setData(data);
                                             record?.childrenCount > 0 &&
@@ -666,9 +706,9 @@ const Index = ({
                                         >
                                           {column.render
                                             ? column.render(
-                                              record[column.dataIndex],
-                                              record
-                                            )
+                                                record[column.dataIndex],
+                                                record
+                                              )
                                             : record[column.dataIndex]}
                                         </td>
                                       ))}
@@ -703,11 +743,12 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${sortOrder.key === column.key &&
+                                      color: `${
+                                        sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                        ? "gray"
-                                        : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -719,11 +760,12 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${sortOrder.key === column.key &&
+                                      color: `${
+                                        sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                        ? "gray"
-                                        : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -745,16 +787,16 @@ const Index = ({
                               style={column.style}
                               onClick={() => {
                                 record?.childrenCount > 0 &&
-                                  column?.key == "tabName"
+                                column?.key == "tabName"
                                   ? HandleSubTable(record)
                                   : setData(data);
                               }}
                             >
                               {column.render
                                 ? column.render(
-                                  record[column.dataIndex],
-                                  record
-                                )
+                                    record[column.dataIndex],
+                                    record
+                                  )
                                 : record[column.dataIndex]}
                             </td>
                           ))}

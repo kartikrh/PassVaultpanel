@@ -61,8 +61,9 @@ function AddTeams() {
     if (teamId !== "0") {
       fetchData(teamId);
       setDisabledFields({
-        parentId: true,
-        displayType: true,
+        // eventTypeId: true,
+        // teamName: true,
+        // teamShortName: true,
       });
     }
   }, [teamId]);

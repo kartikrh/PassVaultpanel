@@ -39,7 +39,7 @@ const ImageField = ({ field, handleImageChange, src }) => {
                         src={src}
                         alt={field.name}
                         className="preview-image"
-                        onClick={() => { fileInputRef.current.click() }}
+                        onClick={() => {fileInputRef.current.click()}}
                     />
                 </div>
             )}

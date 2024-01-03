@@ -139,6 +139,7 @@ const Index = () => {
     {
       title: "Image",
       dataIndex: "image",
+      printType: "ignore",
       render: (text, record) => (
         <div className="flex-shrink-0">
           {text ? (
@@ -162,6 +163,7 @@ const Index = () => {
     {
       title: "Jersey Image",
       dataIndex: "jersey",
+      printType: "ignore",
       render: (text, record) => (
         <div className="flex-shrink-0">
           {text ? (
@@ -237,6 +239,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={singleCheck}
             onAddNavigate={"/addTeams"}
+            reFetchData={fetchData}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

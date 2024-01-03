@@ -15,7 +15,7 @@ const Index = () => {
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
   //isActive
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState();
   // model state
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -37,12 +37,11 @@ const Index = () => {
   const navigate = useNavigate();
   // fetch data
   const fetchData = async (value) => {
+    setIsActive(value)
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/events/all`, {
-        isActive,
-        eventTypeId: value?.eventTypeId ? value.eventTypeId : 0,
-        competitionId: value?.competitionId ? value.competitionId : 0,
+        ...value
       })
       .then((response) => {
         setData(response?.result);
@@ -51,6 +50,17 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
+   if(value?.eventTypeId){
+    await axiosInstance
+      .post(`/admin/competition/byeventTypeId`, {
+        eventTypeId: value?.eventTypeId
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {});
+   } 
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -63,7 +73,7 @@ const Index = () => {
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
-      .post(`/admin/competition/${value === undefined? `all`: `byeventTypeId`}`, {
+      .post(`/admin/competition/all`, {
         eventTypeId: value
       })
       .then((response) => {
@@ -98,7 +108,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
@@ -255,7 +265,7 @@ const Index = () => {
     },
     {
       title: "Is Active",
-      key: "active",
+      key: "isActive",
       render: (text, record) => (
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
@@ -283,15 +293,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData({isActive:true});
     fetchEventTypeData();
     fetchCompetitionData();
   }, []);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchData();
-  }, [isActive]);
 
   return (
     <React.Fragment>
@@ -314,7 +320,6 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
-            setIsActive={setIsActive}
             competitions={competitions}
             reFetchData={fetchData}
             reFetchEventTypeData={fetchEventTypeData}

@@ -24,7 +24,7 @@ const Index = () => {
   //handleSpinner
   const [isLoading, setIsLoading] = useState(false);
   //isActive
-  const [isActive, setIsActive] = useState(true)
+  const [isActive, setIsActive] = useState()
   // password
   const [password, setPassword] = useState("");
   //useId
@@ -45,11 +45,12 @@ const Index = () => {
   //redirect
   const navigate = useNavigate();
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (value) => {
+    setIsActive(value)
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/user/all`, {
-        isActive
+        ...value
       })
       .then((response) => {
         setData(response.result);
@@ -88,7 +89,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData(false);
+        fetchData(isActive);
         setToast({
           message: `${response.title} status updated successfully`,
           color: "green",
@@ -276,6 +277,7 @@ const Index = () => {
       key: "password",
       sort: true,
       style: { width: "100%" },
+      printType: "ignore"
     },
     {
       title: "Change Password",
@@ -294,6 +296,7 @@ const Index = () => {
       key: "cPassword",
       sort: true,
       style: { width: "100%", textAlign: "center" },
+      printType: "ignore"
     },
     {
       title: "Is Active",
@@ -316,18 +319,16 @@ const Index = () => {
     },
   ];
 
-  
+  useEffect(() => {
+    setIsLoading(true);
+    fetchData({isActive:true});
+  }, []);
   //elements required
   const tableElement = {
     title: "Users",
     headerSelect: false,
     isActive: true,
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchData();
-  }, [isActive]);
 
   return (
     <React.Fragment>
