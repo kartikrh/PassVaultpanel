@@ -8,10 +8,10 @@ export const addPenaltyRunToDb = createAsyncThunk(
     async (paneltyRunData, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/paneltyRun/save', paneltyRunData);
-            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error.message, type: ERROR }));
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error);
         }
     }

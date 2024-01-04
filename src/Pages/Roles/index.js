@@ -73,7 +73,7 @@ const Index = () => {
         setToast({
           message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
         // setData(newArray)
@@ -84,7 +84,7 @@ const Index = () => {
         setToast({
           message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       })
@@ -103,7 +103,7 @@ const Index = () => {
         setToast({
           message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
       }).catch((error) => {
@@ -111,7 +111,7 @@ const Index = () => {
         setToast({
           message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setIsLoading(false)
         setToastStatus(true);

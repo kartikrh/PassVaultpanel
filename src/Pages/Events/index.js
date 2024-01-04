@@ -90,10 +90,10 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
-    if (checekedList.includes(e.eventTypeId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.eventTypeId);
+    if (checekedList.includes(e.eventId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.eventId);
     } else {
-      updateSingleCheck = [...checekedList, e.eventTypeId];
+      updateSingleCheck = [...checekedList, e.eventId];
     }
     setCheckedList(updateSingleCheck)
   };
@@ -109,18 +109,18 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setToast({
-          message: `${response.title} status updated successfully`,
+          message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       });
@@ -133,21 +133,21 @@ const Index = () => {
         eventId: checekedList,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
-          message: response?.result,
+          message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       });
@@ -186,7 +186,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.eventTypeId)}
+            checked={checekedList.includes(record.eventId)}
             onChange={() => {
               handleSingleCheck(record);
             }}

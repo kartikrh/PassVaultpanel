@@ -16,12 +16,14 @@ import Toaster from "../../components/Toaster/index";
 import { useSelector, useDispatch } from "react-redux";
 import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { useNavigate } from "react-router-dom";
+import { LOGOUT } from "../../components/Common/Const";
 const Index = (props) => {
   document.title = "Change Password | scoreNode - React Admin & Dashboard Template";
-
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const [data, setData] = useState({
-    userId: "",
+    oldPassword: "",
     newPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -39,9 +41,26 @@ const Index = (props) => {
     setIsLoading(true);
     await axiosInstance.post(`/admin/user/changePassword`,{...data})
       .then((response) => {
+        setToast({
+          message: response?.message,
+          color: "green",
+          header: response?.title || "Success",
+        });
         setToastStatus(true);
+        setIsLoading(false);
+        setData({
+          oldPassword: "",
+          newPassword: "",
+        })
+        navigate(LOGOUT)
       })
       .catch((error) => {
+        setToast({
+          message: error?.message,
+          color: "red",
+          header: error?.title || "Warning",
+        });
+        setToastStatus(true);
         setIsLoading(false);
       });
   };
@@ -84,21 +103,23 @@ const Index = (props) => {
                     <Row>
                       <Col md={12}>
                         <div className="mb-4">
-                          <Label className="form-label">User ID</Label>
+                          <Label className="form-label">Current Password</Label>
                           <Input
-                            name="userId"
+                            name="oldPassword"
                             type="text"
-                            placeholder="Enter UserId"
+                            placeholder="Enter Current Password"
+                            value={data.oldPassword}
                             onChange={handleChange}
                           />
                         </div>
                         <div className="mb-4">
                           <Label className="form-label">New Password</Label>
                           <Input
-                            type={showPassword ? "text" : "newPassword"}
+                            type={"password"}
                             name="newPassword"
                             id="newPassword"
                             placeholder="New Password"
+                            value={data.newPassword}
                             onChange={handleChange}
                           />
                         </div>

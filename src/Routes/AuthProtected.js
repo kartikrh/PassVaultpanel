@@ -5,6 +5,7 @@ import { useProfile } from "../Hooks/UserHooks";
 import { io } from "socket.io-client";
 import axiosInstance from "../Features/axios";
 import { useSelector } from "react-redux";
+import { LOGOUT } from "../components/Common/Const";
 
 
 const AuthProtected = (props) => {
@@ -18,7 +19,7 @@ const AuthProtected = (props) => {
     redirect is un-auth access protected routes via url
   */
 
-  const goToLogout = () => navigate("/logout");
+  const goToLogout = () => navigate(LOGOUT);
 
   const verifyToken = async () => {
     await axiosInstance

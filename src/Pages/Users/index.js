@@ -85,18 +85,18 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setToast({
-          message: `${response.title} status updated successfully`,
+          message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       });
@@ -110,21 +110,21 @@ const Index = () => {
         userId: checekedList,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
-          message: response?.result,
+          message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       });
@@ -138,9 +138,22 @@ const Index = () => {
         userId: userId,
       })
       .then((response) => {
+        setToast({
+          message: response?.message,
+          color: "green",
+          header: response?.title || "Success",
+        });
+        setToastStatus(true);
+        setIsLoading(false);
         fetchData();
       })
       .catch((error) => {
+        setToast({
+          message: error?.message,
+          color: "red",
+          header: error?.title || "Warning",
+        });
+        setToastStatus(true);
         setIsLoading(false);
       });
   };
@@ -156,23 +169,25 @@ const Index = () => {
           navigator.clipboard.writeText(password)
             .then(res => setClipboard({ [userId]: password }))
             .catch(err => oldSchoolCopy(password))
-            .finally(() => setTimeout(() => setClipboard(null), 2000))
         } else {
           setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
         }
+      }).finally(() => {
+        setTimeout(() => setClipboard(null), 2000);
+        setTimeout(() => setDecryptedPasswords(prev => ({ ...prev, [userId]: "" })), 3000);
       })
       .catch((error) => {
         setToast({
           message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       });
   }
 
   const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
-    <span onClick={() => getDecryptedPassword(userId)} >*******</span>
+    <span role="button" onClick={() => getDecryptedPassword(userId)} >*******</span>
     {clipboard?.[userId] ? <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
       <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
     </Tooltip> :
