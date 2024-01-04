@@ -12,8 +12,12 @@ import { Tooltip } from 'antd';
 import Toaster from "../../components/Toaster";
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_USERS } from "../../components/Common/Const";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { useSelector } from "react-redux";
 
 const Index = () => {
+  const pageName = TAB_USERS
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -34,6 +38,7 @@ const Index = () => {
   const [toastStatus, setToastStatus] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
   const fetchData = async (value) => {
     setIsActive(value)
@@ -105,7 +110,7 @@ const Index = () => {
         userId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,
@@ -133,22 +138,9 @@ const Index = () => {
         userId: userId,
       })
       .then((response) => {
-        setToast({
-          message: `${response.title} status updated successfully`,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
-        setIsLoading(false);
         fetchData();
       })
       .catch((error) => {
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
         setIsLoading(false);
       });
   };
@@ -164,12 +156,10 @@ const Index = () => {
           navigator.clipboard.writeText(password)
             .then(res => setClipboard({ [userId]: password }))
             .catch(err => oldSchoolCopy(password))
+            .finally(() => setTimeout(() => setClipboard(null), 2000))
         } else {
           setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
         }
-      }).finally(() => {
-        setTimeout(() => setClipboard(null), 2000);
-        setTimeout(() => setDecryptedPasswords(prev => ({ ...prev, [userId]: "" })), 3000);
       })
       .catch((error) => {
         setToast({
@@ -182,7 +172,7 @@ const Index = () => {
   }
 
   const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
-    <span role="button" onClick={() => getDecryptedPassword(userId)} >*******</span>
+    <span onClick={() => getDecryptedPassword(userId)} >*******</span>
     {clipboard?.[userId] ? <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
       <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
     </Tooltip> :
@@ -228,7 +218,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -326,6 +317,9 @@ const Index = () => {
   ];
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading(true);
     fetchData({ isActive: true });
   }, []);
@@ -360,6 +354,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addUsers"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

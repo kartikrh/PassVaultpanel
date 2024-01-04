@@ -44,13 +44,15 @@ const Index = ({
   changeOrderApiName = "",
   jumpToChild = undefined,
   resetJumpToChild,
+  isAddPermission,
+  isDeletePermission
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
   const [currentParentId, setCurrentParentId] = useState(dataSource);
   const [subData, setSubData] = useState([]);
   const [tableActions, setTableActions] = useState({
-    isActive:true
+    isActive: true,
   });
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
@@ -65,7 +67,7 @@ const Index = ({
   const [toastStatus, setToastStatus] = useState(false);
   // search filter
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
   //sorting
   const [sortOrder, setSortOrder] = useState({
     sortOrder: "",
@@ -84,12 +86,12 @@ const Index = ({
     if (jumpToChild) {
       HandleSubTable(jumpToChild);
     }
-  })
+  });
   useEffect(() => {
     if (jumpToChild) {
       resetJumpToChild();
     }
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     setData(filteredData);
@@ -167,11 +169,12 @@ const Index = ({
   };
 
   const handleTableActions = (key, id) => {
-    if(key === "isActive"){
-      setStatusSwitch(id)
+    if (key === "isActive") {
+      setStatusSwitch(id);
     }
     reFetchData({
-      ...tableActions, [key]: id,
+      ...tableActions,
+      [key]: id,
     });
     setTableActions((preValue) => {
       return {
@@ -245,32 +248,38 @@ const Index = ({
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  
+
   const generateSimplifiedData = () => {
     let pdfCols = ["No."];
     let colsDataKey = [];
     columns?.forEach((item) => {
-      if (item.key !== "select" && item.key !== "edit" && item.printType !== "ignore") {
+      if (
+        item.key !== "select" &&
+        item.key !== "edit" &&
+        item.printType !== "ignore"
+      ) {
         pdfCols.push(item.title);
-        colsDataKey.push(item.key)
+        colsDataKey.push(item.key);
       }
-    })
+    });
     const headers = [pdfCols];
-    let colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
+    let colsData = dataSource.map((dataItem) =>
+      colsDataKey.map((key) => dataItem[key])
+    );
     colsData = colsData.map((value, index) => [index + 1, ...value]);
     // const csvData = [...headers, ...colsData];
-    const csvData = colsData.map((value, i)=>{
+    const csvData = colsData.map((value, i) => {
       let data = {};
-      value.forEach((v, i)=>{
+      value.forEach((v, i) => {
         data = {
           ...data,
-          [pdfCols[i]]: v
-        }
-      })
+          [pdfCols[i]]: v,
+        };
+      });
       return data;
     });
-    return { headers, colsData, csvData }
-  }
+    return { headers, colsData, csvData };
+  };
 
   const generatePDF = () => {
     const { headers, colsData } = generateSimplifiedData();
@@ -285,7 +294,7 @@ const Index = ({
     let content = {
       startY: 50,
       head: headers,
-      body: colsData
+      body: colsData,
     };
 
     pdf.autoTable(content);
@@ -303,7 +312,7 @@ const Index = ({
     // Download the workbook
     XLSX.writeFile(wb, `${tableElement.title}.xlsx`);
   };
-  
+
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
       throw new Error(
@@ -357,7 +366,7 @@ const Index = ({
   };
 
   const handleTableReset = () => {
-    setSearchTerm("")
+    setSearchTerm("");
     setTableActions({
       isActive: true,
       // eventTypeId: 0,
@@ -386,179 +395,179 @@ const Index = ({
         <Card>
           <CardHeader>
             <form>
-            <Row className="g-2">
-              <Col className="col-sm-auto">
-                <div className="d-flex gap-2">
-                  <Button
-                    color="success"
-                    className="add-btn"
-                    onClick={() => {
-                      if (currentParentId)
-                        navigate(onAddNavigate, {
-                          state: { selectedTabId: currentParentId },
-                        });
-                      else navigate(onAddNavigate);
-                    }}
-                    id="create-btn"
-                  >
-                    <i className="ri-add-line align-bottom me-1"></i> Add
-                  </Button>
-                  {tableElement?.clone ? (
-                    <Button
-                      color="warning"
-                      className="btn"
+              <Row className="g-2">
+                <Col className="col-sm-auto">
+                  <div className="d-flex gap-2">
+                    {isAddPermission && <Button
+                      color="success"
+                      className="add-btn"
                       onClick={() => {
-                        singleCheck.length === 1
-                          ? cloneModelFunction(true)
-                          : setToastStatus(true);
+                        if (currentParentId)
+                          navigate(onAddNavigate, {
+                            state: { selectedTabId: currentParentId },
+                          });
+                        else navigate(onAddNavigate);
                       }}
                       id="create-btn"
                     >
-                      <i className="ri-add-line align-bottom me-1"></i> Clone
-                    </Button>
-                  ) : null}
-                  <Button
-                    color="soft-danger"
-                    onClick={() => {
-                      singleCheck.length > 0
-                        ? deleteModelFunction(true)
-                        : setToastStatus(true);
-                    }}
-                  >
-                    <i className="ri-delete-bin-2-line"></i>
-                  </Button>
-                  {toastStatus ? (
-                    <Toaster
-                      toast={toast}
-                      setToast={setToast}
-                      toastStatus={toastStatus}
-                      setToastStatus={setToastStatus}
-                    />
-                  ) : null}
-                  {tableElement?.displayTypeDropDown ? (
-                    <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleDropDownFilter(e.target.value);
-                        }}
-                        value={tableActions?.displayType}
-                      >
-                        <option value="">Select Display Type</option>
-                        {displayTypes.map((val, index) => {
-                          return (
-                            <option value={val}>
-                              {val === 1
-                                ? "Admin"
-                                : val === 2
-                                ? "Agent"
-                                : "Vendor"}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  ) : null}
-                  {tableElement?.eventTypeSelect ? (
-                    <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleTableActions("eventTypeId", e.target.value);
-                        }}
-                        value={tableActions?.eventTypeId}
-                      >
-                        <option value={0}>Select Event Type</option>
-                        {eventTypes?.map((val) => {
-                          return (
-                            <option value={val?.eventTypeId}>
-                              {val?.eventType}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  ) : null}
-                  {tableElement?.competitionsSelect ? (
-                    <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleTableActions("competitionId", e.target.value);
-                        }}
-                        value={tableActions?.competitionId}
-                      >
-                        <option value={0}>Select Competition</option>
-                        {competitions?.map((val) => {
-                          return (
-                            <option value={val.competitionId}>
-                              {val.competition}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  ) : null}
-                  {tableElement?.isActive ? (
-                    <div className="d-flex align-items-center">
-                      <Switch
-                        width={70}
-                        uncheckedIcon={<OffsymbolStatus />}
-                        checkedIcon={<OnSymbolStatus />}
-                        className="pe-0"
-                        onColor="#02a499"
-                        onChange={() => {
-                          handleTableActions("isActive", !statusSwitch);
-                        }}
-                        checked={statusSwitch}
-                      />
-                    </div>
-                  ) : null}
-                  {tableElement?.resetButton ? (
-                    <div>
-                      <button
-                        className="btn btn-primary"
+                      <i className="ri-add-line align-bottom me-1"></i> Add
+                    </Button>}
+                    {tableElement?.clone ? (
+                      <Button
+                        color="warning"
+                        className="btn"
                         onClick={() => {
-                          handleTableReset();
+                          singleCheck.length === 1
+                            ? cloneModelFunction(true)
+                            : setToastStatus(true);
                         }}
-                        type="reset"
                         id="create-btn"
                       >
-                        Reset
-                        {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-              </Col>
-              <Col className="d-flex justify-content-end">
-                {tableElement.subTable &&
-                  subArray.map((val, index) => {
-                    const arrayKey = Object.keys(val).find((key) =>
-                      Array.isArray(val[key])
-                    );
-                    return (
-                      <div className="d-flex flex-row align-items-center">
-                        <span
-                          className="cursor-pointer"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            moveBack(arrayKey);
+                        <i className="ri-add-line align-bottom me-1"></i> Clone
+                      </Button>
+                    ) : null}
+                    {isDeletePermission && <Button
+                      color="soft-danger"
+                      onClick={() => {
+                        singleCheck.length > 0
+                          ? deleteModelFunction(true)
+                          : setToastStatus(true);
+                      }}
+                    >
+                      <i className="ri-delete-bin-2-line"></i>
+                    </Button>}
+                    {toastStatus ? (
+                      <Toaster
+                        toast={toast}
+                        setToast={setToast}
+                        toastStatus={toastStatus}
+                        setToastStatus={setToastStatus}
+                      />
+                    ) : null}
+                    {tableElement?.displayTypeDropDown ? (
+                      <div className="">
+                        <select
+                          className="form-select"
+                          id="inlineFormSelectPref"
+                          onChange={(e) => {
+                            handleDropDownFilter(e.target.value);
                           }}
+                          value={tableActions?.displayType}
                         >
-                          {arrayKey}
-                        </span>
-                        {index !== subArray.length - 1 ? (
-                          <i className="bx bxs-chevron-right ms-3 me-3" />
-                        ) : null}
+                          <option value="">Select Display Type</option>
+                          {displayTypes.map((val, index) => {
+                            return (
+                              <option value={val}>
+                                {val === 1
+                                  ? "Admin"
+                                  : val === 2
+                                    ? "Agent"
+                                    : "Vendor"}
+                              </option>
+                            );
+                          })}
+                        </select>
                       </div>
-                    );
-                  })}
-              </Col>
-            </Row>
+                    ) : null}
+                    {tableElement?.eventTypeSelect ? (
+                      <div className="">
+                        <select
+                          className="form-select"
+                          id="inlineFormSelectPref"
+                          onChange={(e) => {
+                            handleTableActions("eventTypeId", e.target.value);
+                          }}
+                          value={tableActions?.eventTypeId}
+                        >
+                          <option value={0}>Select Event Type</option>
+                          {eventTypes?.map((val) => {
+                            return (
+                              <option value={val?.eventTypeId}>
+                                {val?.eventType}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                    ) : null}
+                    {tableElement?.competitionsSelect ? (
+                      <div className="">
+                        <select
+                          className="form-select"
+                          id="inlineFormSelectPref"
+                          onChange={(e) => {
+                            handleTableActions("competitionId", e.target.value);
+                          }}
+                          value={tableActions?.competitionId}
+                        >
+                          <option value={0}>Select Competition</option>
+                          {competitions?.map((val) => {
+                            return (
+                              <option value={val.competitionId}>
+                                {val.competition}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                    ) : null}
+                    {tableElement?.isActive ? (
+                      <div className="d-flex align-items-center">
+                        <Switch
+                          width={70}
+                          uncheckedIcon={<OffsymbolStatus />}
+                          checkedIcon={<OnSymbolStatus />}
+                          className="pe-0"
+                          onColor="#02a499"
+                          onChange={() => {
+                            handleTableActions("isActive", !statusSwitch);
+                          }}
+                          checked={statusSwitch}
+                        />
+                      </div>
+                    ) : null}
+                    {tableElement?.resetButton ? (
+                      <div>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            handleTableReset();
+                          }}
+                          type="reset"
+                          id="create-btn"
+                        >
+                          Reset
+                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </Col>
+                <Col className="d-flex justify-content-end">
+                  {tableElement.subTable &&
+                    subArray.map((val, index) => {
+                      const arrayKey = Object.keys(val).find((key) =>
+                        Array.isArray(val[key])
+                      );
+                      return (
+                        <div className="d-flex flex-row align-items-center">
+                          <span
+                            className="cursor-pointer"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              moveBack(arrayKey);
+                            }}
+                          >
+                            {arrayKey}
+                          </span>
+                          {index !== subArray.length - 1 ? (
+                            <i className="bx bxs-chevron-right ms-3 me-3" />
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                </Col>
+              </Row>
             </form>
           </CardHeader>
 
@@ -578,7 +587,10 @@ const Index = ({
                 <Col className="col-sm">
                   <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
                     <div className="me-1 d-flex">
-                      <CSVLink data={generateSimplifiedData().csvData} filename={tableElement.title + ".csv"}>
+                      <CSVLink
+                        data={generateSimplifiedData().csvData}
+                        filename={tableElement.title + ".csv"}
+                      >
                         <Button size="small" className="btn border">
                           <i className="fas fa-file-csv"></i>
                         </Button>
@@ -641,13 +653,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "ascending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "ascending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -662,13 +673,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "descending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "descending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -706,7 +716,7 @@ const Index = ({
                                           style={column.style}
                                           onClick={() => {
                                             record?.childrenCount > 0 &&
-                                            column?.key === "tabName"
+                                              column?.key === "tabName"
                                               ? HandleSubTable(record)
                                               : setData(data);
                                             record?.childrenCount > 0 &&
@@ -715,9 +725,9 @@ const Index = ({
                                         >
                                           {column.render
                                             ? column.render(
-                                                record[column.dataIndex],
-                                                record
-                                              )
+                                              record[column.dataIndex],
+                                              record
+                                            )
                                             : record[column.dataIndex]}
                                         </td>
                                       ))}
@@ -752,12 +762,11 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -769,12 +778,11 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -796,16 +804,16 @@ const Index = ({
                               style={column.style}
                               onClick={() => {
                                 record?.childrenCount > 0 &&
-                                column?.key == "tabName"
+                                  column?.key == "tabName"
                                   ? HandleSubTable(record)
                                   : setData(data);
                               }}
                             >
                               {column.render
                                 ? column.render(
-                                    record[column.dataIndex],
-                                    record
-                                  )
+                                  record[column.dataIndex],
+                                  record
+                                )
                                 : record[column.dataIndex]}
                             </td>
                           ))}
@@ -831,17 +839,22 @@ const Index = ({
                   </div>
                 </div>
               </div>
-
-              <div className="d-flex justify-content-end">
-                <Pagination
-                  total={total}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  fetchData={fetchData}
-                  setCurrentPage={setCurrentPage}
-                  setPageSize={setPageSize}
-                />
-              </div>
+              {data.length > 0 ? (
+                <div className="d-flex justify-content-end">
+                  <Pagination
+                    total={total}
+                    pageSize={pageSize}
+                    currentPage={currentPage}
+                    fetchData={fetchData}
+                    setCurrentPage={setCurrentPage}
+                    setPageSize={setPageSize}
+                  />
+                </div>
+              ) : (
+                <div className="d-flex justify-content-center">
+                  <span style={{ color: "gray", fontSize: "20px" }}>No Data Available</span>
+                </div>
+              )}
             </div>
           </CardBody>
         </Card>

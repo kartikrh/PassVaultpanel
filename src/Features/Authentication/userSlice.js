@@ -2,17 +2,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance, { setAuthToken } from '../axios';
 import { encryptData, removeStorageToken } from '../../Pages/Utility/encryptionUtils';
 import { getToken, isUserLogout } from '../../helpers/api_helper';
-import { updateToastData } from '../toasterSlice';
-import { ERROR } from '../../components/Common/Const';
 
 export const loginUser = createAsyncThunk(
   'user/login',
-  async (userData, { rejectWithValue, dispatch }) => {
+  async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/signin', userData);
       return response?.result; // Assuming this contains the token
     } catch (error) {
-      dispatch(updateToastData({ data: error.message, type: ERROR }));
       return rejectWithValue(error.response.data);
     }
   }
@@ -56,8 +53,6 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-        localStorage.removeItem("authUser");
-        localStorage.setItem('loggedIn', false);
       })
       .addCase(logoutUser.pending, (state) => {
         state.isLoading = true;

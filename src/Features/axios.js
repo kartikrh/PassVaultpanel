@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { getToken, isUserLogout } from '../helpers/api_helper';
 import { decryptData, encryptData } from '../Pages/Utility/encryptionUtils';
-import { LOGOUT } from '../components/Common/Const';
 
 const axiosInstance = axios.create({
     baseURL: `${process.env.REACT_APP_BASE_URL}`,
@@ -56,9 +55,8 @@ axiosInstance.interceptors.response.use(
                 break;
             case 401:
                 message = "Invalid credentials";
-                const ignoreMessage = ["SignIn", "SignOut"]
-                if (!ignoreMessage.includes(error?.response?.data?.title)) {
-                    window.location.href = LOGOUT
+                if (error?.response?.data?.title !== "signout") {
+                    window.location.href = "/logout"
                 }
                 break;
             case 404:

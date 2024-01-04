@@ -10,9 +10,13 @@ import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_COMPETITION } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 
 const Index = () => {
-  document.title =
+  const pageName = TAB_COMPETITION
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -105,7 +109,7 @@ const Index = () => {
         competitionId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,
@@ -128,11 +132,6 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addCompetition", { state: { userId: id } });
   };
-  //reset
-  const handleReset =() =>{
-    fetchData()
-    fetchEventTypeData()
-  }
   //table columns
   const columns = [
     {
@@ -169,7 +168,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -258,6 +258,9 @@ const Index = () => {
 
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading({ isActive: true });
     fetchData();
     fetchEventTypeData();
@@ -285,9 +288,10 @@ const Index = () => {
             eventTypes={eventTypes}
             singleCheck={checekedList}
             setIsActive={setIsActive}
-            handleReset = {handleReset}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

@@ -7,7 +7,7 @@ import withRouter from "../../components/Common/withRouter";
 import { Link } from "react-router-dom";
 import { withTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthorisedTabs } from "../../Features/Authentication/authorizationSlice";
+import { getAuthorisedTabs, getTabPermissions } from "../../Features/Authentication/authorizationSlice";
 import MetisMenu from "metismenujs";
 const Sidebar = (props) => {
   const ref = useRef();
@@ -16,6 +16,7 @@ const Sidebar = (props) => {
 
   useEffect(() => {
     dispatch(getAuthorisedTabs());
+    dispatch(getTabPermissions());
   }, []);
 
   const activateParentDropdown = useCallback((item) => {

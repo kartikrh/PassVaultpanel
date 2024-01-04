@@ -10,8 +10,13 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_EVENT } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+
 const Index = () => {
-  document.title = "Events | ScoreCard - React Admin & Dashboard Template";
+  const pageName = TAB_EVENT
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Events | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -128,7 +133,7 @@ const Index = () => {
         eventId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,
@@ -191,7 +196,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -289,6 +295,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     fetchData({ isActive: true });
     fetchEventTypeData();
     fetchCompetitionData();
@@ -323,6 +332,8 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addEvents"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
