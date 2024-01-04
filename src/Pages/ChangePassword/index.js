@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
+import { LOGOUT } from "../../components/Common/Const";
 const Index = (props) => {
   document.title = "Change Password | scoreNode - React Admin & Dashboard Template";
   const navigate = useNavigate()
@@ -51,7 +52,7 @@ const Index = (props) => {
           oldPassword: "",
           newPassword: "",
         })
-        navigate("/logout")
+        navigate(LOGOUT)
       })
       .catch((error) => {
         setToast({

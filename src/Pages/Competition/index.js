@@ -105,7 +105,7 @@ const Index = () => {
         competitionId: checekedList,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
           message: response?.result,
@@ -128,6 +128,11 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addCompetition", { state: { userId: id } });
   };
+  //reset
+  const handleReset =() =>{
+    fetchData()
+    fetchEventTypeData()
+  }
   //table columns
   const columns = [
     {
@@ -280,6 +285,7 @@ const Index = () => {
             eventTypes={eventTypes}
             singleCheck={checekedList}
             setIsActive={setIsActive}
+            handleReset = {handleReset}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
           />

@@ -50,9 +50,7 @@ const Index = ({
   const [currentParentId, setCurrentParentId] = useState(dataSource);
   const [subData, setSubData] = useState([]);
   const [tableActions, setTableActions] = useState({
-    isActive: true,
-    eventTypeId: 0,
-    competitionId: 0,
+    isActive:true
   });
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
@@ -169,6 +167,12 @@ const Index = ({
   };
 
   const handleTableActions = (key, id) => {
+    if(key === "isActive"){
+      setStatusSwitch(id)
+    }
+    reFetchData({
+      ...tableActions, [key]: id,
+    });
     setTableActions((preValue) => {
       return {
         ...preValue,
@@ -353,20 +357,20 @@ const Index = ({
   };
 
   const handleTableReset = () => {
-
+    setSearchTerm("")
     setTableActions({
       isActive: true,
-      eventTypeId: 0,
-      competitionId: 0,
-      displayType:0,
+      // eventTypeId: 0,
+      // competitionId: 0,
+      // displayType:0,
     });
     setStatusSwitch(true);
     handleReset();
   };
 
-  useEffect(() => {
-    reFetchData(tableActions);
-  }, [tableActions]);
+  // useEffect(() => {
+  //   reFetchData(tableActions);
+  // }, [tableActions]);
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -381,6 +385,7 @@ const Index = ({
       <Col lg={12}>
         <Card>
           <CardHeader>
+            <form>
             <Row className="g-2">
               <Col className="col-sm-auto">
                 <div className="d-flex gap-2">
@@ -440,7 +445,7 @@ const Index = ({
                         }}
                         value={tableActions?.displayType}
                       >
-                        <option value={0}>Select Display Type</option>
+                        <option value="">Select Display Type</option>
                         {displayTypes.map((val, index) => {
                           return (
                             <option value={val}>
@@ -506,7 +511,7 @@ const Index = ({
                         className="pe-0"
                         onColor="#02a499"
                         onChange={() => {
-                          handleStatusSwitch();
+                          handleTableActions("isActive", !statusSwitch);
                         }}
                         checked={statusSwitch}
                       />
@@ -519,6 +524,7 @@ const Index = ({
                         onClick={() => {
                           handleTableReset();
                         }}
+                        type="reset"
                         id="create-btn"
                       >
                         Reset
@@ -553,6 +559,7 @@ const Index = ({
                   })}
               </Col>
             </Row>
+            </form>
           </CardHeader>
 
           <CardBody>
@@ -592,6 +599,7 @@ const Index = ({
                         type="text"
                         className="form-control"
                         placeholder="Search Min. 2 characters"
+                        value={searchTerm}
                         onChange={(e) => {
                           setSearchTerm(e.target.value);
                         }}
