@@ -76,7 +76,7 @@ const Index = () => {
         setToast({
           message: response?.message,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
       })
@@ -85,7 +85,7 @@ const Index = () => {
         setToast({
           message: error?.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -103,7 +103,7 @@ const Index = () => {
         setToast({
           message: response?.message,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
       })
@@ -112,7 +112,7 @@ const Index = () => {
         setToast({
           message: error?.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -127,7 +127,7 @@ const Index = () => {
         setToast({
           message: response?.message,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
       })
@@ -136,7 +136,7 @@ const Index = () => {
         setToast({
           message: error?.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });

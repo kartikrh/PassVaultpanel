@@ -45,7 +45,6 @@ import Maintenance from "../Pages/Utility/Maintenance-Page.js";
 import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
-import { LOGOUT } from "../components/Common/Const.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -84,7 +83,7 @@ const authProtectedRoutes = [
 const publicRoutes = [
 
   // Authentication Page
-  { path: LOGOUT, component: <Logout /> },
+  { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
   // { path: "/forgot-password", component: <ForgetPasswordPage /> },
   // { path: "/register", component: <Register /> },

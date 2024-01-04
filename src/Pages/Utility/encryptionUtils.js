@@ -21,13 +21,8 @@ export const decryptData = (encryptedData) => {
 };
 
 export const removeStorageToken = () => {
-  try {
-    const authData = localStorage.getItem("authUser");
-    const data = decryptData(authData);
-    delete data?.token;
-    localStorage.setItem("authUser", encryptData(data))
-  } catch (err) {
-    localStorage.removeItem("authUser")
-    localStorage.removeItem('loggedIn');
-  }
+  const authData = localStorage.getItem("authUser");
+  const data = decryptData(authData);
+  delete data?.token;
+  localStorage.setItem("authUser", encryptData(data))
 }

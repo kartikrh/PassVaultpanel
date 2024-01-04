@@ -7,10 +7,10 @@ export const addTeamToDb = createAsyncThunk(
     async (teamData, { rejectWithValue,dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/team/save', teamData);
-            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            dispatch(updateToastData({ data: error.response.data, type: ERROR }));
             return rejectWithValue(error.response.data);
         }
     }

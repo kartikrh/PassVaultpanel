@@ -71,20 +71,20 @@ const Index = () => {
         fetchData();
         setDeleteModelVisable(false);
         setToast({
-          message: response?.message,
+          message: `${response.title} deleted successfully`,
           color: "green",
-          header: response?.title || "Success",
-        });
+          header: "Success",
+        })
         setCheckedList([])
         setToastStatus(true)
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
-        });
+          header: "Warning",
+        })
         setToastStatus(true)
       });
   };

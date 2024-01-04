@@ -82,18 +82,18 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setToast({
-          message: response?.message,
+          message: `${response.title} status updated successfully`,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -109,9 +109,9 @@ const Index = () => {
         fetchData(isActive);
         setDeleteModelVisable(false);
         setToast({
-          message: response?.message,
+          message: response?.result,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         checekedList([]);
         setToastStatus(true);
@@ -119,9 +119,9 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
         checekedList([]);

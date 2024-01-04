@@ -70,18 +70,18 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setToast({
-          message: response?.message,
+          message: `${response.title} cloned successfully`,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
         setCloneModelVisible(false);
       })
       .catch((error) => {
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -96,9 +96,9 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setToast({
-          message: response?.message,
+          message: `${response.title} deleted successfully`,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
         setDeleteModelVisable(false);
@@ -106,9 +106,9 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });

@@ -44,7 +44,7 @@ const Index = () => {
     setIsLoading(true)
     setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/tablist", { ...value })
+      .post("/admin/tabs/byRoleId", { ...value })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
@@ -59,6 +59,7 @@ const Index = () => {
           }
           apiDataIdList.push(item?.tabId)
         });
+        console.log("this is the sorted data", sorted)
         setData(sorted);
         setDataIndexList(apiDataIdList)
         if (selectedTabId) {
@@ -99,19 +100,19 @@ const Index = () => {
       })
       .then((response) => {
         setToast({
-          message: response?.message,
+          message: `${response.title} status updated successfully`,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
-        fetchData(isActive);
+        fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -128,20 +129,19 @@ const Index = () => {
           encryptedTabIds: checekedList,
         })
         .then((response) => {
-          setDeleteModelVisable(false);
           setToast({
-            message: response?.message,
+            message: `${response.title} deleted successfully`,
             color: "green",
-            header: response?.title || "Success",
+            header: "Success",
           });
           setToastStatus(true);
-          fetchData(isActive);
+          fetchData();
         })
         .catch((error) => {
           setToast({
-            message: error?.message,
+            message: error.error.message,
             color: "red",
-            header: error?.title || "Warning",
+            header: "Warning",
           });
           setToastStatus(true);
         });
@@ -151,9 +151,6 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
-  const handleReset = () => {
-    fetchData({})
-  }
   //table columns
   const columns = [
     {
@@ -360,7 +357,6 @@ const Index = () => {
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
-            handleReset={handleReset}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
