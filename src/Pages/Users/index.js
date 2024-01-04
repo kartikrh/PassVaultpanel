@@ -12,8 +12,12 @@ import { Tooltip } from 'antd';
 import Toaster from "../../components/Toaster";
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_USERS } from "../../components/Common/Const";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { useSelector } from "react-redux";
 
 const Index = () => {
+  const pageName = TAB_USERS
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -34,6 +38,7 @@ const Index = () => {
   const [toastStatus, setToastStatus] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
   const fetchData = async (value) => {
     setIsActive(value)
@@ -213,7 +218,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -311,6 +317,9 @@ const Index = () => {
   ];
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading(true);
     fetchData({ isActive: true });
   }, []);
@@ -345,6 +354,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addUsers"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

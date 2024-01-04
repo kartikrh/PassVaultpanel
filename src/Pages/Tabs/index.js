@@ -12,7 +12,13 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_TABS } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+
 const Index = () => {
+  const pageName = TAB_TABS
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const location = useLocation();
   const selectedTabId = location.state?.selectedTabId
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
@@ -111,6 +117,7 @@ const Index = () => {
         setToastStatus(true);
       });
   };
+
   const resetJumpToChild = () => {
     setCurrentParentTab(undefined)
   }
@@ -180,7 +187,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -314,6 +322,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading({ isActive: true });
     fetchData();
   }, []);
@@ -344,6 +355,8 @@ const Index = () => {
             jumpToChild={currentParentTab}
             resetJumpToChild={resetJumpToChild}
             reFetchData={fetchData}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

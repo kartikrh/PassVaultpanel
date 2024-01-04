@@ -44,6 +44,9 @@ const Index = ({
   changeOrderApiName = "",
   jumpToChild = undefined,
   resetJumpToChild,
+  isAddPermission,
+  isEditPermission,
+  isDeletePermission
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
@@ -241,7 +244,7 @@ const Index = ({
       setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
-  
+
   const generateSimplifiedData = () => {
     let pdfCols = ["No."];
     let colsDataKey = [];
@@ -255,9 +258,9 @@ const Index = ({
     let colsData = dataSource.map((dataItem) => colsDataKey.map((key) => dataItem[key]));
     colsData = colsData.map((value, index) => [index + 1, ...value]);
     // const csvData = [...headers, ...colsData];
-    const csvData = colsData.map((value, i)=>{
+    const csvData = colsData.map((value, i) => {
       let data = {};
-      value.forEach((v, i)=>{
+      value.forEach((v, i) => {
         data = {
           ...data,
           [pdfCols[i]]: v
@@ -299,7 +302,7 @@ const Index = ({
     // Download the workbook
     XLSX.writeFile(wb, `${tableElement.title}.xlsx`);
   };
-  
+
   const sortByProperty = (order, propName) => {
     if (order !== "ascending" && order !== "descending") {
       throw new Error(
@@ -358,7 +361,7 @@ const Index = ({
       isActive: true,
       eventTypeId: 0,
       competitionId: 0,
-      displayType:0,
+      displayType: 0,
     });
     setStatusSwitch(true);
     handleReset();
@@ -384,20 +387,21 @@ const Index = ({
             <Row className="g-2">
               <Col className="col-sm-auto">
                 <div className="d-flex gap-2">
-                  <Button
-                    color="success"
-                    className="add-btn"
-                    onClick={() => {
-                      if (currentParentId)
-                        navigate(onAddNavigate, {
-                          state: { selectedTabId: currentParentId },
-                        });
-                      else navigate(onAddNavigate);
-                    }}
-                    id="create-btn"
-                  >
-                    <i className="ri-add-line align-bottom me-1"></i> Add
-                  </Button>
+                  {isAddPermission &&
+                    <Button
+                      color="success"
+                      className="add-btn"
+                      onClick={() => {
+                        if (currentParentId)
+                          navigate(onAddNavigate, {
+                            state: { selectedTabId: currentParentId },
+                          });
+                        else navigate(onAddNavigate);
+                      }}
+                      id="create-btn"
+                    >
+                      <i className="ri-add-line align-bottom me-1"></i> Add
+                    </Button>}
                   {tableElement?.clone ? (
                     <Button
                       color="warning"
@@ -412,16 +416,17 @@ const Index = ({
                       <i className="ri-add-line align-bottom me-1"></i> Clone
                     </Button>
                   ) : null}
-                  <Button
-                    color="soft-danger"
-                    onClick={() => {
-                      singleCheck.length > 0
-                        ? deleteModelFunction(true)
-                        : setToastStatus(true);
-                    }}
-                  >
-                    <i className="ri-delete-bin-2-line"></i>
-                  </Button>
+                  {isDeletePermission &&
+                    <Button
+                      color="soft-danger"
+                      onClick={() => {
+                        singleCheck.length > 0
+                          ? deleteModelFunction(true)
+                          : setToastStatus(true);
+                      }}
+                    >
+                      <i className="ri-delete-bin-2-line"></i>
+                    </Button>}
                   {toastStatus ? (
                     <Toaster
                       toast={toast}
@@ -447,8 +452,8 @@ const Index = ({
                               {val === 1
                                 ? "Admin"
                                 : val === 2
-                                ? "Agent"
-                                : "Vendor"}
+                                  ? "Agent"
+                                  : "Vendor"}
                             </option>
                           );
                         })}
@@ -633,13 +638,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "ascending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "ascending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -654,13 +658,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "descending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "descending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -698,7 +701,7 @@ const Index = ({
                                           style={column.style}
                                           onClick={() => {
                                             record?.childrenCount > 0 &&
-                                            column?.key === "tabName"
+                                              column?.key === "tabName"
                                               ? HandleSubTable(record)
                                               : setData(data);
                                             record?.childrenCount > 0 &&
@@ -707,9 +710,9 @@ const Index = ({
                                         >
                                           {column.render
                                             ? column.render(
-                                                record[column.dataIndex],
-                                                record
-                                              )
+                                              record[column.dataIndex],
+                                              record
+                                            )
                                             : record[column.dataIndex]}
                                         </td>
                                       ))}
@@ -744,12 +747,11 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -761,12 +763,11 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -788,16 +789,16 @@ const Index = ({
                               style={column.style}
                               onClick={() => {
                                 record?.childrenCount > 0 &&
-                                column?.key == "tabName"
+                                  column?.key == "tabName"
                                   ? HandleSubTable(record)
                                   : setData(data);
                               }}
                             >
                               {column.render
                                 ? column.render(
-                                    record[column.dataIndex],
-                                    record
-                                  )
+                                  record[column.dataIndex],
+                                  record
+                                )
                                 : record[column.dataIndex]}
                             </td>
                           ))}

@@ -4,12 +4,13 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { PlayerFields } from '../../constants/FieldConst/PlayerConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
 import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
 import { convertObjtoFormData } from '../../components/Common/utilities';
+import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 
 const formatMultiSelectDataTeams = (inputList) => {
     const outputList = [];
@@ -20,6 +21,7 @@ const formatMultiSelectDataTeams = (inputList) => {
     return outputList.filter(element => element);
 };
 function AddPlayer() {
+    const pageName = TAB_TABS
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
@@ -27,12 +29,16 @@ function AddPlayer() {
     const [masterData, setMasterData] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.player);
+    const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
     const id = location.state?.userId || "0";
 
     useEffect(() => {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+            navigate("/dashboard")
+        }
         fetchMasterData()
     }, []);
 
@@ -155,15 +161,24 @@ function AddPlayer() {
                                             isOpen={drp_up}
                                             toggle={() => setDrp_up(!drp_up)}
                                         >
-                                            <Button id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
+                                            <Button
+                                                disabled={
+                                                    !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
+                                                        checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
+                                                id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
                                                 Save & Close
                                             </Button>
                                             <DropdownToggle caret color="primary">
                                                 <i className="mdi mdi-chevron-down" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                                <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
-                                                <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
+                                                {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
+                                                    checkPermission(permissionObj, pageName, PERMISSION_EDIT))
+                                                    && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
+                                                }
+                                                {checkPermission(permissionObj, pageName, PERMISSION_ADD)
+                                                    && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
+                                                }
                                             </DropdownMenu>
                                         </ButtonDropdown>
                                     </Col>
