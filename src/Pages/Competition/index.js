@@ -85,18 +85,18 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setToast({
-          message: response?.message,
+          message: `${response.title} status updated successfully`,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -109,21 +109,21 @@ const Index = () => {
         competitionId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
         setToast({
-          message: response?.message,
+          message: response?.result,
           color: "green",
-          header: response?.title || "Success",
+          header: "Success",
         });
         setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error?.message,
+          message: error.error.message,
           color: "red",
-          header: error?.title || "Warning",
+          header: "Warning",
         });
         setToastStatus(true);
       });
@@ -132,11 +132,6 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addCompetition", { state: { userId: id } });
   };
-  //reset
-  const handleReset =() =>{
-    fetchData()
-    fetchEventTypeData()
-  }
   //table columns
   const columns = [
     {
@@ -293,7 +288,6 @@ const Index = () => {
             eventTypes={eventTypes}
             singleCheck={checekedList}
             setIsActive={setIsActive}
-            handleReset = {handleReset}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}

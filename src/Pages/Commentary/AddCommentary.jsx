@@ -104,7 +104,7 @@ function AddCommentary() {
                             "competitionId": formattedData,
                         }));
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -129,7 +129,7 @@ function AddCommentary() {
                             "eventId": formattedData,
                         }));
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -163,7 +163,7 @@ function AddCommentary() {
                         }));
                         finalizeRef1.current.updateFormFromParent(updatedData)
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -191,7 +191,7 @@ function AddCommentary() {
                             "team1Players": formattedData
                         }));
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             }
             else {
@@ -217,7 +217,7 @@ function AddCommentary() {
                         }));
 
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             } else {
                 setMasterData((preData) => ({
@@ -251,7 +251,7 @@ function AddCommentary() {
                         })
                         newMasterData = { ...newMasterData, competitionId: formattedData }
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
                 // Fetch Events based on Competition
                 await axiosInstance.post('/admin/events/bycompetitionId', { competitionId: updateScreenData["competitionId"] })
@@ -262,7 +262,7 @@ function AddCommentary() {
                         })
                         newMasterData = { ...newMasterData, eventId: formattedData }
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
                 await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team1Id"] })
                     .then((response) => {
@@ -276,7 +276,7 @@ function AddCommentary() {
                             "team1Players": formattedData
                         };
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
                 await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team2Id"] })
                     .then((response) => {
@@ -290,7 +290,7 @@ function AddCommentary() {
                             "team2Players": formattedData
                         };
                     }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        dispatch(updateToastData({ data: error, type: ERROR }));
                     });
             }).catch((error) => {
                 dispatch(updateToastData({ data: error, type: ERROR }));
@@ -318,7 +318,7 @@ function AddCommentary() {
 
                 }));
             }).catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/team/all')
             .then((response) => {
@@ -332,7 +332,7 @@ function AddCommentary() {
                 }));
 
             }).catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
         axiosInstance.post('/admin/eventType/all', {})
             .then((response) => {
@@ -344,7 +344,7 @@ function AddCommentary() {
                     "eventTypeId": formattedData,
                 }));
             }).catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                dispatch(updateToastData({ data: error, type: ERROR }));
             });
     };
 

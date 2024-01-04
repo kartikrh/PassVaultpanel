@@ -18,7 +18,7 @@ function MyTable({ data, columns, isParent = true }) {
         // Iterate through rows and calculate padding based on nesting level
         rows.forEach((row) => {
             const parentId = row.original.parentId;
-            let padding = "15px";
+            let padding = "0px";
 
             if (parentId === "0") {
                 currentNestingLevel = 0; // Reset the nesting level to 0 for root rows
@@ -27,7 +27,7 @@ function MyTable({ data, columns, isParent = true }) {
                 padding = newPaddingMap.get(parentId);
             } else {
                 currentNestingLevel++;
-                padding = `${currentNestingLevel * 30}px`;
+                padding = `${currentNestingLevel * 20}px`;
                 newPaddingMap.set(parentId, padding);
             }
 

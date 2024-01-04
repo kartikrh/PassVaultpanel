@@ -8,10 +8,10 @@ export const addCommentaryToDb = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/save', data);
-            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            dispatch(updateToastData({ data: "Commentary data saved successfully.", type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            dispatch(updateToastData({ data: error.response.data, type: ERROR }));
             return rejectWithValue(error.response.data);
         }
     }

@@ -17,7 +17,6 @@ import withRouter from "../withRouter";
 
 // users
 import user1 from "../../../assets/images/users/avatar-1.jpg";
-import { LOGOUT } from "../Const";
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
@@ -85,7 +84,7 @@ const ProfileMenu = props => {
             </Link>
           </DropdownItem>
           <div className="dropdown-divider" />
-          <Link to={LOGOUT} className="dropdown-item">
+          <Link to="/logout" className="dropdown-item">
             <i className="ri-shut-down-line align-middle me-2 text-danger" />
             {/* <span>{props.t("Logout")}</span> */}
             <span>Logout</span>

@@ -45,7 +45,6 @@ const Index = ({
   jumpToChild = undefined,
   resetJumpToChild,
   isAddPermission,
-  isEditPermission,
   isDeletePermission
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
@@ -396,29 +395,10 @@ const Index = ({
         <Card>
           <CardHeader>
             <form>
-            <Row className="g-2">
-              <Col className="col-sm-auto">
-                <div className="d-flex gap-2">
-                  {isAddPermission &&
-                    <Button
-                      color="success"
-                      className="add-btn"
-                      onClick={() => {
-                        if (currentParentId)
-                          navigate(onAddNavigate, {
-                            state: { selectedTabId: currentParentId },
-                          });
-                        else navigate(onAddNavigate);
-                      }}
-                      id="create-btn"
-                    >
-                      <i className="ri-add-line align-bottom me-1"></i> Add
-                    </Button>}
-                  {tableElement?.clone ? (
               <Row className="g-2">
                 <Col className="col-sm-auto">
                   <div className="d-flex gap-2">
-                    <Button
+                    {isAddPermission && <Button
                       color="success"
                       className="add-btn"
                       onClick={() => {
@@ -431,113 +411,7 @@ const Index = ({
                       id="create-btn"
                     >
                       <i className="ri-add-line align-bottom me-1"></i> Add
-                    </Button>
-                  ) : null}
-                  {isDeletePermission &&
-                    <Button
-                      color="soft-danger"
-                      onClick={() => {
-                        singleCheck.length > 0
-                          ? deleteModelFunction(true)
-                          : setToastStatus(true);
-                      }}
-                    >
-                      <i className="ri-delete-bin-2-line"></i>
                     </Button>}
-                  {toastStatus ? (
-                    <Toaster
-                      toast={toast}
-                      setToast={setToast}
-                      toastStatus={toastStatus}
-                      setToastStatus={setToastStatus}
-                    />
-                  ) : null}
-                  {tableElement?.displayTypeDropDown ? (
-                    <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleDropDownFilter(e.target.value);
-                        }}
-                        value={tableActions?.displayType}
-                      >
-                        <option value={0}>Select Display Type</option>
-                        {displayTypes.map((val, index) => {
-                          return (
-                            <option value={val}>
-                              {val === 1
-                                ? "Admin"
-                                : val === 2
-                                  ? "Agent"
-                                  : "Vendor"}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  ) : null}
-                  {tableElement?.eventTypeSelect ? (
-                    <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleTableActions("eventTypeId", e.target.value);
-                        }}
-                        value={tableActions?.eventTypeId}
-                      >
-                        <option value={0}>Select Event Type</option>
-                        {eventTypes?.map((val) => {
-                          return (
-                            <option value={val?.eventTypeId}>
-                              {val?.eventType}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  ) : null}
-                  {tableElement?.competitionsSelect ? (
-                    <div className="">
-                      <select
-                        className="form-select"
-                        id="inlineFormSelectPref"
-                        onChange={(e) => {
-                          handleTableActions("competitionId", e.target.value);
-                        }}
-                        value={tableActions?.competitionId}
-                      >
-                        <option value={0}>Select Competition</option>
-                        {competitions?.map((val) => {
-                          return (
-                            <option value={val.competitionId}>
-                              {val.competition}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  ) : null}
-                  {tableElement?.isActive ? (
-                    <div className="d-flex align-items-center">
-                      <Switch
-                        width={70}
-                        uncheckedIcon={<OffsymbolStatus />}
-                        checkedIcon={<OnSymbolStatus />}
-                        className="pe-0"
-                        onColor="#02a499"
-                        onChange={() => {
-                          handleStatusSwitch();
-                        }}
-                        checked={statusSwitch}
-                      />
-                    </div>
-                  ) : null}
-                  {tableElement?.resetButton ? (
-                    <div>
-                      <button
-                        className="btn btn-primary"
                     {tableElement?.clone ? (
                       <Button
                         color="warning"
@@ -552,7 +426,7 @@ const Index = ({
                         <i className="ri-add-line align-bottom me-1"></i> Clone
                       </Button>
                     ) : null}
-                    <Button
+                    {isDeletePermission && <Button
                       color="soft-danger"
                       onClick={() => {
                         singleCheck.length > 0
@@ -561,7 +435,7 @@ const Index = ({
                       }}
                     >
                       <i className="ri-delete-bin-2-line"></i>
-                    </Button>
+                    </Button>}
                     {toastStatus ? (
                       <Toaster
                         toast={toast}
@@ -587,8 +461,8 @@ const Index = ({
                                 {val === 1
                                   ? "Admin"
                                   : val === 2
-                                  ? "Agent"
-                                  : "Vendor"}
+                                    ? "Agent"
+                                    : "Vendor"}
                               </option>
                             );
                           })}
@@ -978,7 +852,7 @@ const Index = ({
                 </div>
               ) : (
                 <div className="d-flex justify-content-center">
-                  <span style={{color:"gray", fontSize:"20px"}}>No Data Available</span>
+                  <span style={{ color: "gray", fontSize: "20px" }}>No Data Available</span>
                 </div>
               )}
             </div>

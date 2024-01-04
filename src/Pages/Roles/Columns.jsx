@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Checkbox } from "antd";
+
 export const Columns = ({ permissions, updatePagePermission }) => {
   // Initialize the checkbox state using a map
   const [checkboxStates, setCheckboxStates] = useState(new Map());
@@ -46,13 +46,13 @@ export const Columns = ({ permissions, updatePagePermission }) => {
       Header: "View",
       accessor: "isView",
       Cell: ({ row }) => (
-        <Checkbox
-          style={{ transform: "scale(1.3)" }}
-          onChange={() =>
-            togglePermission(row.original.tabId, "isViewPermission")
-          }
+        <input
+          type="checkbox"
           checked={
             checkboxStates.get(row.original.tabId)?.isViewPermission || false
+          }
+          onChange={() =>
+            togglePermission(row.original.tabId, "isViewPermission")
           }
         />
       ),
@@ -62,15 +62,15 @@ export const Columns = ({ permissions, updatePagePermission }) => {
       accessor: "isAdd",
       Cell: ({ row }) =>
         row.original.isAdd ? (
-          <Checkbox
-          style={{ transform: "scale(1.3)" }}
-          checked={
-            checkboxStates.get(row.original.tabId)?.isAddPermission || false
-          }
-          onChange={() =>
-            togglePermission(row.original.tabId, "isAddPermission")
-          }
-        />
+          <input
+            type="checkbox"
+            checked={
+              checkboxStates.get(row.original.tabId)?.isAddPermission || false
+            }
+            onChange={() =>
+              togglePermission(row.original.tabId, "isAddPermission")
+            }
+          />
         ) : (
           "N/A"
         ),
@@ -80,15 +80,15 @@ export const Columns = ({ permissions, updatePagePermission }) => {
       accessor: "isEdit",
       Cell: ({ row }) =>
         row.original.isEdit ? (
-          <Checkbox
-          style={{ transform: "scale(1.3)" }}
-          checked={
-            checkboxStates.get(row.original.tabId)?.isEditPermission || false
-          }
-          onChange={() =>
-            togglePermission(row.original.tabId, "isEditPermission")
-          }
-        />
+          <input
+            type="checkbox"
+            checked={
+              checkboxStates.get(row.original.tabId)?.isEditPermission || false
+            }
+            onChange={() =>
+              togglePermission(row.original.tabId, "isEditPermission")
+            }
+          />
         ) : (
           "N/A"
         ),
@@ -98,16 +98,16 @@ export const Columns = ({ permissions, updatePagePermission }) => {
       accessor: "isDelete",
       Cell: ({ row }) =>
         row.original.isDelete ? (
-          <Checkbox
-          style={{ transform: "scale(1.3)" }}
-          checked={
-            checkboxStates.get(row.original.tabId)?.isDeletePermission ||
-            false
-          }
-          onChange={() =>
-            togglePermission(row.original.tabId, "isDeletePermission")
-          }
-        />
+          <input
+            type="checkbox"
+            checked={
+              checkboxStates.get(row.original.tabId)?.isDeletePermission ||
+              false
+            }
+            onChange={() =>
+              togglePermission(row.original.tabId, "isDeletePermission")
+            }
+          />
         ) : (
           "N/A"
         ),
