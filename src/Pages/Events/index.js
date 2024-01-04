@@ -85,10 +85,10 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
-    if (checekedList.includes(e.eventTypeId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.eventTypeId);
+    if (checekedList.includes(e.eventId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.eventId);
     } else {
-      updateSingleCheck = [...checekedList, e.eventTypeId];
+      updateSingleCheck = [...checekedList, e.eventId];
     }
     setCheckedList(updateSingleCheck)
   };
@@ -181,7 +181,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.eventTypeId)}
+            checked={checekedList.includes(record.eventId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
