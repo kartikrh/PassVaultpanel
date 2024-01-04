@@ -44,6 +44,9 @@ const Index = ({
   changeOrderApiName = "",
   jumpToChild = undefined,
   resetJumpToChild,
+  isAddPermission,
+  isEditPermission,
+  isDeletePermission
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
@@ -393,6 +396,25 @@ const Index = ({
         <Card>
           <CardHeader>
             <form>
+            <Row className="g-2">
+              <Col className="col-sm-auto">
+                <div className="d-flex gap-2">
+                  {isAddPermission &&
+                    <Button
+                      color="success"
+                      className="add-btn"
+                      onClick={() => {
+                        if (currentParentId)
+                          navigate(onAddNavigate, {
+                            state: { selectedTabId: currentParentId },
+                          });
+                        else navigate(onAddNavigate);
+                      }}
+                      id="create-btn"
+                    >
+                      <i className="ri-add-line align-bottom me-1"></i> Add
+                    </Button>}
+                  {tableElement?.clone ? (
               <Row className="g-2">
                 <Col className="col-sm-auto">
                   <div className="d-flex gap-2">
@@ -410,6 +432,112 @@ const Index = ({
                     >
                       <i className="ri-add-line align-bottom me-1"></i> Add
                     </Button>
+                  ) : null}
+                  {isDeletePermission &&
+                    <Button
+                      color="soft-danger"
+                      onClick={() => {
+                        singleCheck.length > 0
+                          ? deleteModelFunction(true)
+                          : setToastStatus(true);
+                      }}
+                    >
+                      <i className="ri-delete-bin-2-line"></i>
+                    </Button>}
+                  {toastStatus ? (
+                    <Toaster
+                      toast={toast}
+                      setToast={setToast}
+                      toastStatus={toastStatus}
+                      setToastStatus={setToastStatus}
+                    />
+                  ) : null}
+                  {tableElement?.displayTypeDropDown ? (
+                    <div className="">
+                      <select
+                        className="form-select"
+                        id="inlineFormSelectPref"
+                        onChange={(e) => {
+                          handleDropDownFilter(e.target.value);
+                        }}
+                        value={tableActions?.displayType}
+                      >
+                        <option value={0}>Select Display Type</option>
+                        {displayTypes.map((val, index) => {
+                          return (
+                            <option value={val}>
+                              {val === 1
+                                ? "Admin"
+                                : val === 2
+                                  ? "Agent"
+                                  : "Vendor"}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                  ) : null}
+                  {tableElement?.eventTypeSelect ? (
+                    <div className="">
+                      <select
+                        className="form-select"
+                        id="inlineFormSelectPref"
+                        onChange={(e) => {
+                          handleTableActions("eventTypeId", e.target.value);
+                        }}
+                        value={tableActions?.eventTypeId}
+                      >
+                        <option value={0}>Select Event Type</option>
+                        {eventTypes?.map((val) => {
+                          return (
+                            <option value={val?.eventTypeId}>
+                              {val?.eventType}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                  ) : null}
+                  {tableElement?.competitionsSelect ? (
+                    <div className="">
+                      <select
+                        className="form-select"
+                        id="inlineFormSelectPref"
+                        onChange={(e) => {
+                          handleTableActions("competitionId", e.target.value);
+                        }}
+                        value={tableActions?.competitionId}
+                      >
+                        <option value={0}>Select Competition</option>
+                        {competitions?.map((val) => {
+                          return (
+                            <option value={val.competitionId}>
+                              {val.competition}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                  ) : null}
+                  {tableElement?.isActive ? (
+                    <div className="d-flex align-items-center">
+                      <Switch
+                        width={70}
+                        uncheckedIcon={<OffsymbolStatus />}
+                        checkedIcon={<OnSymbolStatus />}
+                        className="pe-0"
+                        onColor="#02a499"
+                        onChange={() => {
+                          handleStatusSwitch();
+                        }}
+                        checked={statusSwitch}
+                      />
+                    </div>
+                  ) : null}
+                  {tableElement?.resetButton ? (
+                    <div>
+                      <button
+                        className="btn btn-primary"
                     {tableElement?.clone ? (
                       <Button
                         color="warning"
@@ -651,13 +779,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "ascending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "ascending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -672,13 +799,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "descending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "descending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -716,7 +842,7 @@ const Index = ({
                                           style={column.style}
                                           onClick={() => {
                                             record?.childrenCount > 0 &&
-                                            column?.key === "tabName"
+                                              column?.key === "tabName"
                                               ? HandleSubTable(record)
                                               : setData(data);
                                             record?.childrenCount > 0 &&
@@ -725,9 +851,9 @@ const Index = ({
                                         >
                                           {column.render
                                             ? column.render(
-                                                record[column.dataIndex],
-                                                record
-                                              )
+                                              record[column.dataIndex],
+                                              record
+                                            )
                                             : record[column.dataIndex]}
                                         </td>
                                       ))}
@@ -762,12 +888,11 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -779,12 +904,11 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -806,16 +930,16 @@ const Index = ({
                               style={column.style}
                               onClick={() => {
                                 record?.childrenCount > 0 &&
-                                column?.key == "tabName"
+                                  column?.key == "tabName"
                                   ? HandleSubTable(record)
                                   : setData(data);
                               }}
                             >
                               {column.render
                                 ? column.render(
-                                    record[column.dataIndex],
-                                    record
-                                  )
+                                  record[column.dataIndex],
+                                  record
+                                )
                                 : record[column.dataIndex]}
                             </td>
                           ))}

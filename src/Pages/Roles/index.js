@@ -9,8 +9,12 @@ import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_ROLES } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 
 const Index = () => {
+  const pageName = TAB_ROLES
   document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -25,6 +29,7 @@ const Index = () => {
   const [toastStatus, setToastStatus] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
   const fetchData = async () => {
     await axiosInstance.post(`/admin/roles/all`)
@@ -153,7 +158,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => <i className="bx bx-edit" onClick={() => { handleEdit(record.roleId) }}></i>,
@@ -184,6 +190,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading(true)
     fetchData();
   }, []);
@@ -211,6 +220,8 @@ const Index = () => {
             reFetchData={fetchData}
             // addModelFunction={setAddModelVisable}
             onAddNavigate={"/addRoles"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

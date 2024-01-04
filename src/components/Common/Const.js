@@ -14,4 +14,24 @@ export const SAVE_AND_NEW = "SAVE_AND_NEW"
 export const DIVIDER = "DIVIDER"
 export const ERROR = "ERROR"
 export const SUCCESS = "SUCCESS"
+
+// Tab names
+export const TAB_TABS = "Tabs"
+export const TAB_ROLES = "Roles"
+export const TAB_USERS = "Users"
+export const TAB_EVENT_TYPES = "Event Types"
+export const TAB_PLAYERS = "Players"
+export const TAB_TEAMS = "Teams"
+export const TAB_MATCH_TYPE = "Match Types"
+export const TAB_PANELTY_RUNS = "Penalty Runs"
+export const TAB_COMMENTARY = "Commentary"
+export const TAB_COMPETITION = "Competition"
+export const TAB_EVENT = "Events"
+
+// Permission Type
+export const PERMISSION_ADD = "isAdd"
+export const PERMISSION_EDIT = "isEdit"
+export const PERMISSION_DELETE = "isDelete"
+export const PERMISSION_VIEW = "isView"
+
 export const LOGOUT = "/logout"

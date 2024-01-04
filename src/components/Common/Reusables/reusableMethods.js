@@ -16,6 +16,21 @@ export const sanitizeFormData = (data) => {
   return sanitizedData;
 };
 
+export const transformPermissionData = (data) => {
+  const transformedObject = {};
+  data.forEach(tab => {
+    const { tabName, isView, isEdit, isAdd, isDelete } = tab;
+    console.log(tabName)
+    transformedObject[tabName] = {
+      isView,
+      isEdit,
+      isAdd,
+      isDelete,
+    };
+  });
+  return transformedObject;
+}
+
 export const filterAutofillData = (autofill, data) => {
   return autofill.reduce((acc, key) => {
     if (data[key]) {
@@ -101,4 +116,8 @@ export function compareNumStringValues(value1, value2) {
   const numValue2 = parseFloat(value2);
 
   return !isNaN(numValue1) && !isNaN(numValue2) && numValue1 === numValue2;
+}
+
+export const checkPermission = (permissionObj, tabName, permissionType) => {
+  return permissionObj[tabName]?.[permissionType] || false;
 }

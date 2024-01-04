@@ -12,8 +12,13 @@ import axiosInstance from "../../Features/axios";
 import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
+import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_EVENT_TYPES } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 
 const Index = () => {
+  const pageName = TAB_EVENT_TYPES
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -160,7 +165,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -256,6 +262,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading(true);
     fetchData({ isActive: true });
   }, []);
@@ -283,6 +292,8 @@ const Index = () => {
             setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addEventType"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

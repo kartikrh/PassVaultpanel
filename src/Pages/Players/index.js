@@ -11,7 +11,13 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
+import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+
 const Index = () => {
+  const pageName = TAB_PLAYERS
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -160,7 +166,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"
@@ -246,6 +253,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading({ isActive: true });
     fetchData();
   }, []);
@@ -272,6 +282,8 @@ const Index = () => {
             singleCheck={checekedList}
             onAddNavigate={"/addPlayer"}
             reFetchData={fetchData}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
