@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
                 break;
             case 401:
                 message = "Invalid credentials";
-                const ignoreMessage = ["SignIn", "SignOut"]
+                const ignoreMessage = ["Sign In", "Sign Out"]
                 if (!ignoreMessage.includes(error?.response?.data?.title)) {
                     window.location.href = LOGOUT
                 }
