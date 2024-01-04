@@ -93,9 +93,9 @@ const Index = () => {
       })
       .then((response) => {
         setToast({
-          message: `${response.title} status updated successfully`,
+          message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
         fetchData(isActive);
@@ -103,9 +103,9 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
       });
@@ -123,18 +123,18 @@ const Index = () => {
         .then((response) => {
           setDeleteModelVisable(false);
           setToast({
-            message: `${response.title} deleted successfully`,
+            message: response?.message,
             color: "green",
-            header: "Success",
+            header: response?.title || "Success",
           });
           setToastStatus(true);
           fetchData(isActive);
         })
         .catch((error) => {
           setToast({
-            message: error.error.message,
+            message: error?.message,
             color: "red",
-            header: "Warning",
+            header: error?.title || "Warning",
           });
           setToastStatus(true);
         });
@@ -144,7 +144,7 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
-  const handleReset =() =>{
+  const handleReset = () => {
     fetchData({})
   }
   //table columns
@@ -347,7 +347,7 @@ const Index = () => {
             jumpToChild={currentParentTab}
             resetJumpToChild={resetJumpToChild}
             reFetchData={fetchData}
-            handleReset = {handleReset}
+            handleReset={handleReset}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

@@ -42,9 +42,9 @@ const Index = (props) => {
     await axiosInstance.post(`/admin/user/changePassword`,{...data})
       .then((response) => {
         setToast({
-          message: response.result,
+          message: response?.message,
           color: "green",
-          header: "Success",
+          header: response?.title || "Success",
         });
         setToastStatus(true);
         setIsLoading(false);
@@ -56,9 +56,9 @@ const Index = (props) => {
       })
       .catch((error) => {
         setToast({
-          message: error.error.message,
+          message: error?.message,
           color: "red",
-          header: "Warning",
+          header: error?.title || "Warning",
         });
         setToastStatus(true);
         setIsLoading(false);

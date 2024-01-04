@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
                 break;
             case 401:
                 message = "Invalid credentials";
-                const ignoreMessage = ["SignIn", "SignOut"]
+                const ignoreMessage = ["Sign In", "Sign Out"]
                 if (!ignoreMessage.includes(error?.response?.data?.title)) {
                     window.location.href = LOGOUT
                 }
@@ -65,7 +65,7 @@ axiosInstance.interceptors.response.use(
                 message = "Sorry! the data you are looking for could not be found";
                 break;
             default:
-                message = error.message || error;
+                message = error?.message || error;
         }
         if (error?.response?.data) error = error.response.data;
         return Promise.reject(error);

@@ -12,7 +12,7 @@ export const loginUser = createAsyncThunk(
       const response = await axiosInstance.post('/signin', userData);
       return response?.result; // Assuming this contains the token
     } catch (error) {
-      dispatch(updateToastData({ data: error.message, type: ERROR }));
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       return rejectWithValue(error.response.data);
     }
   }

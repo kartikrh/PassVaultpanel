@@ -41,7 +41,7 @@ const CommonToast = () => {
                 <ToastHeader toggle={() => {
                     handleToastClose()
                 }}>
-                    {toastData.type === SUCCESS ? "Success" : "Error"}
+                    {toastData.title || (toastData.type === SUCCESS ? "Success" : "Error")}
                 </ToastHeader>
                 <ToastBody color="danger">
                     <>{toastData.data}</>
