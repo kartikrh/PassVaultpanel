@@ -35,3 +35,5 @@ export const PERMISSION_DELETE = "isDelete"
 export const PERMISSION_VIEW = "isView"
 
 export const LOGOUT = "/logout"
+export const REMEMBER_ME_KEY = "rememberMe"
+export const USER_DATA_KEY = "userData"
