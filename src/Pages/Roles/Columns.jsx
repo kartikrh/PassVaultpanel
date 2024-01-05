@@ -48,6 +48,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
       Cell: ({ row }) => (
         <Checkbox
           type="checkbox"
+          style={{transform: "scale(1.3)"}}
           checked={
             checkboxStates.get(row.original.tabId)?.isViewPermission || false
           }
