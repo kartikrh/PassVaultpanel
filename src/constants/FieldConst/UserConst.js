@@ -40,6 +40,8 @@ export const UserFields = [
         parentclassName: "",
         type: TEXT,
         isRequired: true,
+        regex: /^[a-zA-Z0-9 ]{1,20}$/,
+        regexErrorMessage: "Max allowed Characters 20, No Spacial Character",
         requiredErrorMessage: "Please enter full name.",
     },
     {
@@ -49,6 +51,8 @@ export const UserFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter user name.",
+        regex: /^[a-zA-Z0-9 ]{1,10}$/,
+        regexErrorMessage: "Max allowed Characters 10, No Spacial Character",
     },
     {
         name: "password",
@@ -65,7 +69,7 @@ export const UserFields = [
         label: "Mobile",
         parentclassName: "",
         type: TEXT,
-        regex: /^$|(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+        regex:/^\d{12}$/,
         regexErrorMessage: "Invalid mobile number",
     },
     {

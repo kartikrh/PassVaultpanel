@@ -28,6 +28,8 @@ export const TabFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter Tab name.",
+        regex: /^.{1,20}$/,
+        regexErrorMessage: "Max allowed Characters 20",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -36,7 +38,9 @@ export const TabFields = [
         label: "Display Name",
         type: TEXT,
         isRequired: true,
+        regex: /^[a-zA-Z0-9 ]{1,10}$/,
         requiredErrorMessage: "Please enter Display name.",
+        regexErrorMessage: "Max allowed Characters 10, No Spacial Character",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -47,6 +51,8 @@ export const TabFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter web page route.",
+        regex: /^.{1,20}$/,
+        regexErrorMessage: "Max allowed Characters 20",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -54,6 +60,8 @@ export const TabFields = [
         name: "iconName",
         label: "Icon",
         type: TEXT,
+        regex: /^.{0,20}$/,
+        regexErrorMessage: "Max allowed Characters 20",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },

@@ -23,6 +23,8 @@ export const RoleFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter role name.",
+        regex: /^[a-zA-Z0-9 ]{1,20}$/,
+        regexErrorMessage: "Max allowed Characters 20, No Spacial Character",
     },
     {
         name: "description",
@@ -30,5 +32,7 @@ export const RoleFields = [
         parentclassName: "",
         type: TEXT_AREA,
         defaultRows: 3,
+        regex: /^.{0,80}$/,
+        regexErrorMessage: "Max allowed Characters 80",
     },
 ]
