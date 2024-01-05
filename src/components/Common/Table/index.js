@@ -854,7 +854,7 @@ const Index = ({
                 </div>
               ) : (
                 <div className="d-flex justify-content-center">
-                  <span style={{color:"gray", fontSize:"20px"}}>No Data Available</span>
+                  <span style={{color:"lightgray"}}>No Data Available</span>
                 </div>
               )}
             </div>
