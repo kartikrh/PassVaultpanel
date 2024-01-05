@@ -12,7 +12,7 @@ export const addCommentaryToDb = createAsyncThunk(
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error?.message);
         }
     }
 );

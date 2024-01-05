@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
-// import Pdf from "react-to-pdf";
 import Pagination from "../../Pagination";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-// import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
 import { filterOrderChange } from "../../../helpers/helper";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Toaster from "../../Toaster/index";
 import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 import Switch from "react-switch";
 import axiosInstance from "../../../Features/axios";
+import { ERROR } from "../Const";
+import { updateToastData } from "../../../Features/toasterSlice";
+import { useDispatch } from "react-redux";
 
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
@@ -44,6 +44,8 @@ const Index = ({
   changeOrderApiName = "",
   jumpToChild = undefined,
   resetJumpToChild,
+  isAddPermission,
+  isDeletePermission
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
@@ -55,26 +57,15 @@ const Index = ({
   const [total, setTotal] = useState(dataSource.length);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedEventType, setSelectedEventType] = useState(0);
-  const [toast, setToast] = useState({
-    message: "Select at least one (only One) row",
-    color: "red",
-    header: "Error",
-  });
   const [filteredData, setFilteredData] = useState([]);
-  const [toastStatus, setToastStatus] = useState(false);
-  // search filter
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedValue, setSelectedValue] = useState("");
-  //sorting
   const [sortOrder, setSortOrder] = useState({
     sortOrder: "",
     key: "",
   });
-  // handle statusSwitch
   const [statusSwitch, setStatusSwitch] = useState(true);
-  // handle data inside data
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [subArray, setSubArray] = useState([
     {
       [tableElement?.title]: data,
@@ -396,7 +387,7 @@ const Index = ({
               <Row className="g-2">
                 <Col className="col-sm-auto">
                   <div className="d-flex gap-2">
-                    <Button
+                    {isAddPermission && <Button
                       color="success"
                       className="add-btn"
                       onClick={() => {
@@ -409,7 +400,7 @@ const Index = ({
                       id="create-btn"
                     >
                       <i className="ri-add-line align-bottom me-1"></i> Add
-                    </Button>
+                    </Button>}
                     {tableElement?.clone ? (
                       <Button
                         color="warning"
@@ -417,31 +408,23 @@ const Index = ({
                         onClick={() => {
                           singleCheck.length === 1
                             ? cloneModelFunction(true)
-                            : setToastStatus(true);
+                            : dispatch(updateToastData({ data: "Select at least one (only One) row", title: "Error", type: ERROR }));
                         }}
                         id="create-btn"
                       >
                         <i className="ri-add-line align-bottom me-1"></i> Clone
                       </Button>
                     ) : null}
-                    <Button
+                    {isDeletePermission && <Button
                       color="soft-danger"
                       onClick={() => {
                         singleCheck.length > 0
                           ? deleteModelFunction(true)
-                          : setToastStatus(true);
+                          : dispatch(updateToastData({ data: "Select at least one (only One) row", title: "Error", type: ERROR }));
                       }}
                     >
                       <i className="ri-delete-bin-2-line"></i>
-                    </Button>
-                    {toastStatus ? (
-                      <Toaster
-                        toast={toast}
-                        setToast={setToast}
-                        toastStatus={toastStatus}
-                        setToastStatus={setToastStatus}
-                      />
-                    ) : null}
+                    </Button>}
                     {tableElement?.displayTypeDropDown ? (
                       <div className="">
                         <select
@@ -459,8 +442,8 @@ const Index = ({
                                 {val === 1
                                   ? "Admin"
                                   : val === 2
-                                  ? "Agent"
-                                  : "Vendor"}
+                                    ? "Agent"
+                                    : "Vendor"}
                               </option>
                             );
                           })}
@@ -651,13 +634,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "ascending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "ascending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -672,13 +654,12 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${
-                                              sortOrder.key === column.key &&
+                                            color: `${sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                                "descending"
-                                                ? "gray"
-                                                : "lightGray"
-                                            }`,
+                                              "descending"
+                                              ? "gray"
+                                              : "lightGray"
+                                              }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -716,7 +697,7 @@ const Index = ({
                                           style={column.style}
                                           onClick={() => {
                                             record?.childrenCount > 0 &&
-                                            column?.key === "tabName"
+                                              column?.key === "tabName"
                                               ? HandleSubTable(record)
                                               : setData(data);
                                             record?.childrenCount > 0 &&
@@ -725,9 +706,9 @@ const Index = ({
                                         >
                                           {column.render
                                             ? column.render(
-                                                record[column.dataIndex],
-                                                record
-                                              )
+                                              record[column.dataIndex],
+                                              record
+                                            )
                                             : record[column.dataIndex]}
                                         </td>
                                       ))}
@@ -762,12 +743,11 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -779,12 +759,11 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${
-                                        sortOrder.key === column.key &&
+                                      color: `${sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                          ? "gray"
-                                          : "lightGray"
-                                      }`,
+                                        ? "gray"
+                                        : "lightGray"
+                                        }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -806,16 +785,16 @@ const Index = ({
                               style={column.style}
                               onClick={() => {
                                 record?.childrenCount > 0 &&
-                                column?.key == "tabName"
+                                  column?.key == "tabName"
                                   ? HandleSubTable(record)
                                   : setData(data);
                               }}
                             >
                               {column.render
                                 ? column.render(
-                                    record[column.dataIndex],
-                                    record
-                                  )
+                                  record[column.dataIndex],
+                                  record
+                                )
                                 : record[column.dataIndex]}
                             </td>
                           ))}

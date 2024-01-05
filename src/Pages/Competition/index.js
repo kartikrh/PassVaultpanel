@@ -7,26 +7,26 @@ import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMPETITION } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-  document.title =
+  const pageName = TAB_COMPETITION
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const fetchData = async (value) => {
     setIsLoading(true);
     setIsActive(value)
@@ -80,21 +80,11 @@ const Index = () => {
       })
       .then((response) => {
         fetchData(isActive);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   //delete function
@@ -105,34 +95,19 @@ const Index = () => {
         competitionId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   //edit
   const handleEdit = (id) => {
     navigate("/addCompetition", { state: { userId: id } });
   };
-  //reset
-  const handleReset =() =>{
-    fetchData()
-    fetchEventTypeData()
-  }
   //table columns
   const columns = [
     {
@@ -169,7 +144,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -258,6 +234,9 @@ const Index = () => {
 
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading({ isActive: true });
     fetchData();
     fetchEventTypeData();
@@ -269,14 +248,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Competition" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}
@@ -285,9 +256,10 @@ const Index = () => {
             eventTypes={eventTypes}
             singleCheck={checekedList}
             setIsActive={setIsActive}
-            handleReset = {handleReset}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

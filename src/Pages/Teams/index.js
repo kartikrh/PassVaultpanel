@@ -8,23 +8,23 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster";
 import { isEqual } from "lodash";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TEAMS } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
+  const pageName = TAB_TEAMS
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Teams | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // fetch data
   const fetchData = async () => {
@@ -65,22 +65,12 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         setCheckedList([])
-        setToastStatus(true)
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -123,7 +113,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => <i className="bx bx-edit"
@@ -210,6 +201,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading(true);
     fetchData();
   }, []);
@@ -220,14 +214,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Teams" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}
@@ -237,6 +223,8 @@ const Index = () => {
             singleCheck={checekedList}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

@@ -10,9 +10,15 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster";
 import { isEqual } from "lodash";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TABS } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
+
 const Index = () => {
+  const pageName = TAB_TABS
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const location = useLocation();
   const selectedTabId = location.state?.selectedTabId
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
@@ -22,23 +28,18 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const [displayTypes, setDisplayTypes] = useState([]);
   const [isActive, setIsActive] = useState(true)
-  const [checkedAll, setCheckedAll] = useState(false);
-  let sorted = []
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  let sorted = []
   const fetchData = async (value) => {
     setIsLoading(true)
     setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/tablist", { ...value })
+      .post("/admin/tabs/byRoleId", { ...value })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
@@ -53,6 +54,7 @@ const Index = () => {
           }
           apiDataIdList.push(item?.tabId)
         });
+        console.log("this is the sorted data", sorted)
         setData(sorted);
         setDataIndexList(apiDataIdList)
         if (selectedTabId) {
@@ -92,24 +94,15 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
-        fetchData(isActive);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+
   const resetJumpToChild = () => {
     setCurrentParentTab(undefined)
   }
@@ -121,22 +114,11 @@ const Index = () => {
           encryptedTabIds: checekedList,
         })
         .then((response) => {
-          setDeleteModelVisable(false);
-          setToast({
-            message: response?.message,
-            color: "green",
-            header: response?.title || "Success",
-          });
-          setToastStatus(true);
-          fetchData(isActive);
+          dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+          fetchData();
         })
         .catch((error) => {
-          setToast({
-            message: error?.message,
-            color: "red",
-            header: error?.title || "Warning",
-          });
-          setToastStatus(true);
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         });
     }
   };
@@ -144,9 +126,6 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
-  const handleReset = () => {
-    fetchData({})
-  }
   //table columns
   const columns = [
     {
@@ -183,7 +162,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -317,6 +297,9 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading({ isActive: true });
     fetchData();
   }, []);
@@ -327,14 +310,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}
@@ -347,7 +322,8 @@ const Index = () => {
             jumpToChild={currentParentTab}
             resetJumpToChild={resetJumpToChild}
             reFetchData={fetchData}
-            handleReset={handleReset}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

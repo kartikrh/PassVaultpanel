@@ -96,7 +96,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
         errors[field.name] =
           field.requiredErrorMessage || `Please Enter ${field.label}`;
       }
-      if (field.regex && !field.regex.test(value)) {
+      if (field.regex && !field.regex.test(value || "")) {
         errors[field.name] = field.regexErrorMessage || "Invalid input.";
       }
     });

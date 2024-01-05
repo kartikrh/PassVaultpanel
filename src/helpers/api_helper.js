@@ -24,10 +24,10 @@ class APIClient {
   axiosInstance = axios.create({
     baseURL: `${process.env.REACT_APP_BASE_URL}`,
     headers: {
-        "Content-Type": "application/json",
+      "Content-Type": "application/json",
     }
   });
-  constructor(){
+  constructor() {
     this.axiosInstance.interceptors.response.use(
       function (response) {
         return response.data ? response.data : response;

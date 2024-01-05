@@ -12,7 +12,7 @@ export const addEventTypeToDb = createAsyncThunk(
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            return rejectWithValue(error);
+            return rejectWithValue(error?.message);
         }
     }
 );

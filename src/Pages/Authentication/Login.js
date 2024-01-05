@@ -8,7 +8,6 @@ import {
   Col,
   CardBody,
   Card,
-  Alert,
   Container,
   Form,
   Input,
@@ -37,22 +36,28 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 //Import config
 import { facebook, google } from "../../config";
 import { loginUser } from "../../Features/Authentication/userSlice";
+import { REMEMBER_ME_KEY, USER_DATA_KEY } from "../../components/Common/Const";
 
 const Login = (props) => {
-  const [rememberMe, setRememberMe] = useState(false)
+  const _rememberMe = JSON.parse(localStorage.getItem(REMEMBER_ME_KEY) || null);
+  const [rememberMe, setRememberMe] = useState(_rememberMe || false)
   document.title = "Login | Upzet - React Admin & Dashboard Template";
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {error, token, isUserLogout } = useSelector((state) => state.user);
-
+  const { error, token, isUserLogout } = useSelector((state) => state.user);
+  const getInitialValues = () => {
+    const userData = JSON.parse(localStorage.getItem(USER_DATA_KEY) || null);
+    if (userData) return userData
+    return {
+      userName: "",
+      password: "",
+    }
+  }
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
-    initialValues: {
-      userName: "",
-      password: "",
-    },
+    initialValues: getInitialValues(),
     validationSchema: Yup.object({
       userName: Yup.string().required("Please Enter Your Username"),
       password: Yup.string().required("Please Enter Your Password"),
@@ -71,10 +76,10 @@ const Login = (props) => {
 
   const handleRememberMe = () => {
     if (rememberMe === true) {
-      localStorage.setItem("rememberMe", false)
+      localStorage.setItem(REMEMBER_ME_KEY, false)
       setRememberMe(false)
     } else if (rememberMe === false) {
-      localStorage.setItem("rememberMe", true)
+      localStorage.setItem(REMEMBER_ME_KEY, true)
       setRememberMe(true)
     }
   };
@@ -129,6 +134,12 @@ const Login = (props) => {
     };
   }, []);
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    validation.handleSubmit();
+    return false;
+  }
+
   return (
     <React.Fragment>
       <div className="bg-overlay"></div>
@@ -163,17 +174,13 @@ const Login = (props) => {
                     </p>
                     <Form
                       className="form-horizontal"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
-                      }}
+                      onSubmit={handleFormSubmit}
                     >
-                      {error ? (
+                      {/* {error ? (
                         <Alert color="danger">
                           <div className="text-center">{error}</div>
                         </Alert>
-                      ) : null}
+                      ) : null} */}
                       <Row>
                         <Col md={12}>
                           <div className="mb-4">

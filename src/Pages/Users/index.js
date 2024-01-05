@@ -9,11 +9,15 @@ import ChangePasswordModel from "../../components/Model/changePassword";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
-import Toaster from "../../components/Toaster";
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
 import { isEqual } from "lodash";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_USERS } from "../../components/Common/Const";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { useDispatch, useSelector } from "react-redux";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
+  const pageName = TAB_USERS
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -24,16 +28,11 @@ const Index = () => {
   const [password, setPassword] = useState("");
   const [userId, setUserId] = useState("");
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toast
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
+  const [deleteModelVisable, setDeleteModelVisable] = useState(false)
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
   const fetchData = async (value) => {
     setIsActive(value)
@@ -79,21 +78,11 @@ const Index = () => {
       })
       .then((response) => {
         fetchData(isActive);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -105,23 +94,13 @@ const Index = () => {
         userId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -133,22 +112,9 @@ const Index = () => {
         userId: userId,
       })
       .then((response) => {
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
-        setIsLoading(false);
         fetchData();
       })
       .catch((error) => {
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
         setIsLoading(false);
       });
   };
@@ -164,20 +130,13 @@ const Index = () => {
           navigator.clipboard.writeText(password)
             .then(res => setClipboard({ [userId]: password }))
             .catch(err => oldSchoolCopy(password))
+            .finally(() => setTimeout(() => setClipboard(null), 2000))
         } else {
           setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
         }
-      }).finally(() => {
-        setTimeout(() => setClipboard(null), 2000);
-        setTimeout(() => setDecryptedPasswords(prev => ({ ...prev, [userId]: "" })), 3000);
       })
       .catch((error) => {
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   }
 
@@ -228,7 +187,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -326,6 +286,9 @@ const Index = () => {
   ];
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     setIsLoading(true);
     fetchData({ isActive: true });
   }, []);
@@ -342,14 +305,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Users" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}
@@ -360,6 +315,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addUsers"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

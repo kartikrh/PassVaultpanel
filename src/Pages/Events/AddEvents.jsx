@@ -15,17 +15,15 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  SAVE,
-  SAVE_AND_CLOSE,
-  SAVE_AND_NEW,
-} from "../../components/Common/Const";
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
 import { addEventToDb } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 
 function AddEvents() {
+  const pageName = TAB_TABS
   const finalizeRef = useRef(null);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [drp_up, setDrp_up] = useState(false);
@@ -36,12 +34,16 @@ function AddEvents() {
   const { isSaved, isLoading, error } = useSelector(
     (state) => state.tabsData.event
   );
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
   const eventId = location.state?.userId || "0";
 
   useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     fetchMasterData();
   }, []);
 
@@ -147,6 +149,9 @@ function AddEvents() {
                       toggle={() => setDrp_up(!drp_up)}
                     >
                       <Button
+                        disabled={
+                          !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
+                            checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
                         id="caret"
                         color="primary"
                         onClick={() => {
@@ -159,20 +164,13 @@ function AddEvents() {
                         <i className="mdi mdi-chevron-down" />
                       </DropdownToggle>
                       <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => {
-                            handleSaveClick(SAVE);
-                          }}
-                        >
-                          Save
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            handleSaveClick(SAVE_AND_NEW);
-                          }}
-                        >
-                          Save & New
-                        </DropdownItem>
+                        {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
+                          checkPermission(permissionObj, pageName, PERMISSION_EDIT))
+                          && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
+                        }
+                        {checkPermission(permissionObj, pageName, PERMISSION_ADD)
+                          && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
+                        }
                       </DropdownMenu>
                     </ButtonDropdown>
                   </Col>

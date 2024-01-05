@@ -4,63 +4,36 @@ import {
   Col,
   CardBody,
   Card,
-  Alert,
   Container,
   Input,
   Label,
-  Form,
-  FormFeedback,
 } from "reactstrap";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster/index";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { decryptData } from "../Utility/encryptionUtils";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { updateToastData } from "../../Features/toasterSlice";
+import { LOGOUT, ERROR, SUCCESS } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
-import { LOGOUT } from "../../components/Common/Const";
+
 const Index = (props) => {
   document.title = "Change Password | scoreNode - React Admin & Dashboard Template";
-  const navigate = useNavigate()
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [data, setData] = useState({
     oldPassword: "",
     newPassword: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
-  const { isSaved, error } = useSelector(
-    (state) => state.tabsData.changePassword
-  );
   const changePassword = async () => {
     setIsLoading(true);
-    await axiosInstance.post(`/admin/user/changePassword`,{...data})
+    await axiosInstance.post(`/admin/user/changePassword`, { ...data })
       .then((response) => {
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: response?.title || "Success",
-        });
-        setToastStatus(true);
-        setIsLoading(false);
-        setData({
-          oldPassword: "",
-          newPassword: "",
-        })
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         navigate(LOGOUT)
       })
       .catch((error) => {
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: error?.title || "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         setIsLoading(false);
       });
   };
@@ -74,21 +47,15 @@ const Index = (props) => {
       };
     });
   };
-  useEffect(()=>{
+  useEffect(() => {
     const authUser = localStorage.getItem('authUser')
     const user = decryptData(authUser)
-  },[])
+  }, [])
   return (
     <div className="mt-5" style={{}}>
       <div className="account-pages pt-5">
         <Container fluid={true}>
           {isLoading && <SpinnerModel />}
-          <Toaster
-            toast={toast}
-            setToast={setToast}
-            toastStatus={toastStatus}
-            setToastStatus={setToastStatus}
-          />
           <Row className="justify-content-center">
             <Col lg={6} md={8} xl={4}>
               <Card className="mt-5">
@@ -127,7 +94,7 @@ const Index = (props) => {
                           <button
                             className="btn btn-primary waves-effect waves-light"
                             type="submit"
-                            onClick={()=>{changePassword()}}
+                            onClick={() => { changePassword() }}
                           >
                             Change Password
                           </button>

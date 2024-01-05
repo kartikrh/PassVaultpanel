@@ -7,6 +7,7 @@ export const PaneltyRunConst = [
         parentclassName: "",
         type: TEXT,
         regex: /^\d+$/,
+        regexErrorMessage: "Invalid number of runs",
         isRequired: true,
         customStyle: {
             maxWidth: "200px",
