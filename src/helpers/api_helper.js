@@ -24,10 +24,10 @@ class APIClient {
   axiosInstance = axios.create({
     baseURL: `${process.env.REACT_APP_BASE_URL}`,
     headers: {
-        "Content-Type": "application/json",
+      "Content-Type": "application/json",
     }
   });
-  constructor(){
+  constructor() {
     this.axiosInstance.interceptors.response.use(
       function (response) {
         return response.data ? response.data : response;
@@ -46,7 +46,7 @@ class APIClient {
             message = "Sorry! the data you are looking for could not be found";
             break;
           default:
-            message = error.message || error;
+            message = error?.message || error;
         }
         return Promise.reject(message);
       }

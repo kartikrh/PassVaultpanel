@@ -65,7 +65,7 @@ export const UserFields = [
         label: "Mobile",
         parentclassName: "",
         type: TEXT,
-        regex: /^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+        regex: /^$|(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
         regexErrorMessage: "Invalid mobile number",
     },
     {

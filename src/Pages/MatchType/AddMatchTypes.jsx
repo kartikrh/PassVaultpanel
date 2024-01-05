@@ -54,7 +54,7 @@ function AddTabs() {
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                dispatch(updateToastData({ data: error, type: ERROR }));
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
 

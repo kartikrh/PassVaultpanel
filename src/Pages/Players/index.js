@@ -4,16 +4,16 @@ import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import Toaster from "../../components/Toaster";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
-import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
@@ -25,15 +25,10 @@ const Index = () => {
   const [isActive, setIsActive] = useState(true)
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // fetch data
   const fetchData = async (value) => {
@@ -81,21 +76,11 @@ const Index = () => {
       })
       .then((response) => {
         fetchData(isActive);
-        setToast({
-          message: `${response.title} status updated successfully`,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -108,22 +93,12 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setDeleteModelVisable(false);
-        setToast({
-          message: response?.result,
-          color: "green",
-          header: "Success",
-        });
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         checekedList([]);
-        setToastStatus(true);
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         checekedList([]);
       });
   };
@@ -266,12 +241,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
           {isLoading && <SpinnerModel />}
-          <Toaster
-            toast={toast}
-            setToast={setToast}
-            toastStatus={toastStatus}
-            setToastStatus={setToastStatus}
-          />
           <Table
             columns={columns}
             dataSource={data}
