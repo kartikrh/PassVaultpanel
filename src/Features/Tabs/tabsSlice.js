@@ -16,15 +16,33 @@ export const addTabToDb = createAsyncThunk(
         }
     }
 );
-
+const initialSliceState = {
+    isSaved: undefined,
+    isLoading: false,
+    error: null,
+    selectedTabId: "0",
+    selectedTabHistory: [{
+        label: "Tabs", value: "0"
+    }]
+}
 const tabSlice = createSlice({
     name: 'tab',
-    initialState: {
-        isSaved: undefined,
-        isLoading: false,
-        error: null,
+    initialState: initialSliceState,
+    reducers: {
+        setSelectedTabId: (state, action) => {
+            state.selectedTabId = action.payload.id
+        },
+        setSelectedTabHistory: (state, action) => {
+            state.selectedTabHistory = action.payload
+        },
+        resetTabSliceData: (state, action) => {
+            state.selectedTabId = initialSliceState.selectedTabId
+            state.selectedTabHistory = initialSliceState.selectedTabHistory
+            state.isSaved = initialSliceState.isSaved
+            state.isLoading = initialSliceState.isLoading
+            state.error = initialSliceState.error
+        }
     },
-    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(addTabToDb.pending, (state) => {
@@ -40,5 +58,5 @@ const tabSlice = createSlice({
             });
     }
 });
-
+export const { setSelectedTabId, setSelectedTabHistory, resetTabSliceData } = tabSlice.actions;
 export default tabSlice.reducer;

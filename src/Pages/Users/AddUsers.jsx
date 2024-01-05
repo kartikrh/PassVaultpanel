@@ -16,15 +16,15 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_USERS } from '../../components/Common/Const';
 import axiosInstance from "../../Features/axios";
 import { addUserToDb } from "../../Features/Tabs/usersSlice";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from "../../Features/toasterSlice";
 
 function AddUsers() {
-  const pageName = TAB_TABS
+  const pageName = TAB_USERS
   const finalizeRef = useRef(null);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -57,11 +57,12 @@ function AddUsers() {
 
   useEffect(() => {
     if (isSaved) {
-      if (currentSaveAction === SAVE)
-        setSnackbarMessage("Data saved successfully!");
-      else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/users");
-      else if (currentSaveAction === SAVE_AND_NEW)
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/users");
+      else if (currentSaveAction === SAVE_AND_NEW) {
+        setDisabledFields({})
+        setInitialEditData({})
         finalizeRef.current.resetForm();
+      }
     }
   });
 
@@ -72,7 +73,7 @@ function AddUsers() {
         setInitialEditData(response?.result);
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -95,7 +96,7 @@ function AddUsers() {
         }
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
     await axiosInstance
       .post("/admin/roles/all")
@@ -108,7 +109,7 @@ function AddUsers() {
         }));
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 

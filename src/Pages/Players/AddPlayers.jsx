@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { PlayerFields } from '../../constants/FieldConst/PlayerConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PLAYERS } from '../../components/Common/Const';
 import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -21,7 +21,7 @@ const formatMultiSelectDataTeams = (inputList) => {
     return outputList.filter(element => element);
 };
 function AddPlayer() {
-    const pageName = TAB_TABS
+    const pageName = TAB_PLAYERS
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);

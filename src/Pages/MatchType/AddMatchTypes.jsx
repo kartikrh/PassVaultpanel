@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_MATCH_TYPE } from '../../components/Common/Const';
 import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
@@ -12,7 +12,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 
 function AddTabs() {
-    const pageName = TAB_TABS
+    const pageName = TAB_MATCH_TYPE
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
