@@ -8,10 +8,10 @@ export const changePassword = createAsyncThunk(
     async (changePassword, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/user/changePassword', changePassword);
-            dispatch(updateToastData({ data: response.message, type: SUCCESS }));
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error.message, type: ERROR }));
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error);
         }
     }

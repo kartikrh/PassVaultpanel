@@ -8,7 +8,6 @@ import {
   Col,
   CardBody,
   Card,
-  Alert,
   Container,
   Form,
   Input,
@@ -44,7 +43,7 @@ const Login = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {error, token, isUserLogout } = useSelector((state) => state.user);
+  const { error, token, isUserLogout } = useSelector((state) => state.user);
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -169,11 +168,11 @@ const Login = (props) => {
                         return false;
                       }}
                     >
-                      {error ? (
+                      {/* {error ? (
                         <Alert color="danger">
                           <div className="text-center">{error}</div>
                         </Alert>
-                      ) : null}
+                      ) : null} */}
                       <Row>
                         <Col md={12}>
                           <div className="mb-4">

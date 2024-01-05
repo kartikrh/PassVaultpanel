@@ -33,3 +33,5 @@ export const PERMISSION_ADD = "isAdd"
 export const PERMISSION_EDIT = "isEdit"
 export const PERMISSION_DELETE = "isDelete"
 export const PERMISSION_VIEW = "isView"
+
+export const LOGOUT = "/logout"

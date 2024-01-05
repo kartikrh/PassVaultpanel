@@ -74,7 +74,7 @@ function AddPlayer() {
                     teamId: formatMultiSelectDataTeams(response?.result?.teams)
                 });
             }).catch((error) => {
-                dispatch(updateToastData({ data: error, type: ERROR }));
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
 
@@ -88,7 +88,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                dispatch(updateToastData({ data: error, type: ERROR }));
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
         axiosInstance.post('/admin/eventType/all', {})
             .then((response) => {
@@ -99,7 +99,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                dispatch(updateToastData({ data: error, type: ERROR }));
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
         axiosInstance.post('/admin/player/allPlayerTypes', {})
             .then((response) => {
@@ -111,7 +111,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                dispatch(updateToastData({ data: error, type: ERROR }));
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
         axiosInstance.post('admin/player/allBowlingTypes', {})
             .then((response) => {
@@ -123,7 +123,7 @@ function AddPlayer() {
                         })
                 }));
             }).catch((error) => {
-                dispatch(updateToastData({ data: error, type: ERROR }));
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
 

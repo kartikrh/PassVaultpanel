@@ -10,11 +10,11 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster";
 import { isEqual } from "lodash";
-import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_TABS } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TABS } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_TABS
@@ -28,18 +28,13 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const [displayTypes, setDisplayTypes] = useState([]);
   const [isActive, setIsActive] = useState(true)
-  let sorted = []
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  let sorted = []
   const fetchData = async (value) => {
     setIsLoading(true)
     setIsActive(value)
@@ -99,22 +94,12 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        setToast({
-          message: `${response.title} status updated successfully`,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -129,21 +114,11 @@ const Index = () => {
           encryptedTabIds: checekedList,
         })
         .then((response) => {
-          setToast({
-            message: `${response.title} deleted successfully`,
-            color: "green",
-            header: "Success",
-          });
-          setToastStatus(true);
+          dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
           fetchData();
         })
         .catch((error) => {
-          setToast({
-            message: error.error.message,
-            color: "red",
-            header: "Warning",
-          });
-          setToastStatus(true);
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         });
     }
   };
@@ -335,14 +310,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}

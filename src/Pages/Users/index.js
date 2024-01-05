@@ -9,12 +9,12 @@ import ChangePasswordModel from "../../components/Model/changePassword";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
-import Toaster from "../../components/Toaster";
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
 import { isEqual } from "lodash";
-import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_USERS } from "../../components/Common/Const";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_USERS } from "../../components/Common/Const";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_USERS
@@ -28,16 +28,10 @@ const Index = () => {
   const [password, setPassword] = useState("");
   const [userId, setUserId] = useState("");
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  //toast
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
+  const [deleteModelVisable, setDeleteModelVisable] = useState(false)
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
   const fetchData = async (value) => {
@@ -84,21 +78,11 @@ const Index = () => {
       })
       .then((response) => {
         fetchData(isActive);
-        setToast({
-          message: `${response.title} status updated successfully`,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -112,21 +96,11 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        setToast({
-          message: response?.result,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -162,12 +136,7 @@ const Index = () => {
         }
       })
       .catch((error) => {
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   }
 
@@ -336,14 +305,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Users" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}
