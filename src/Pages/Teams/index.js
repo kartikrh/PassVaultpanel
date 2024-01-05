@@ -8,11 +8,11 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster";
 import { isEqual } from "lodash";
-import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_TEAMS } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TEAMS } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_TEAMS
@@ -23,13 +23,8 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // fetch data
   const fetchData = async () => {
@@ -70,22 +65,12 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        setToast({
-          message: `${response.title} deleted successfully`,
-          color: "green",
-          header: "Success",
-        })
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         setCheckedList([])
-        setToastStatus(true)
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error.error.message,
-          color: "red",
-          header: "Warning",
-        })
-        setToastStatus(true)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -229,14 +214,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Teams" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}

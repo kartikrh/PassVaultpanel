@@ -7,12 +7,12 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import Toaster from "../../components/Toaster";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
-import { PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, TAB_PANELTY_RUNS } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_PANELTY_RUNS } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_PANELTY_RUNS
@@ -25,13 +25,8 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [run, setRun] = useState(null);
-  const [toast, setToast] = useState({
-    message: "",
-    color: "",
-    header: "",
-  });
-  const [toastStatus, setToastStatus] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const fetchData = async (value) => {
     setIsLoading(true);
@@ -73,21 +68,11 @@ const Index = () => {
       })
       .then((response) => {
         fetchData(isActive);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   //delete row
@@ -100,21 +85,11 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setDeleteModelVisable(false);
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   //chnage Penalty Run
@@ -124,21 +99,11 @@ const Index = () => {
       .post(`/admin/paneltyRun/save`, value)
       .then((response) => {
         fetchData();
-        setToast({
-          message: response?.message,
-          color: "green",
-          header: "Success",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
-        setToast({
-          message: error?.message,
-          color: "red",
-          header: "Warning",
-        });
-        setToastStatus(true);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -280,14 +245,6 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Penalty Runs" />
           {isLoading && <SpinnerModel />}
-          {toastStatus && (
-            <Toaster
-              toast={toast}
-              setToast={setToast}
-              toastStatus={toastStatus}
-              setToastStatus={setToastStatus}
-            />
-          )}
           <Table
             columns={columns}
             dataSource={data}
