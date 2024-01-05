@@ -20,13 +20,12 @@ function AddTabs() {
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.tab);
+    const { isSaved, isLoading, selectedTabId } = useSelector(state => state.tabsData.tab);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
     const id = location.state?.userId || "0";
-    const selectedTabId = location.state?.selectedTabId
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -43,7 +42,7 @@ function AddTabs() {
                 "displayType": true
             })
         }
-        if (selectedTabId && typeof (selectedTabId) === "string") {
+        if (selectedTabId) {
             setInitialEditData({
                 parentId: selectedTabId
             })
@@ -52,8 +51,7 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE) { }
-            else if (currentSaveAction === SAVE_AND_CLOSE) {
+            if (currentSaveAction === SAVE_AND_CLOSE) {
                 selectedTabId ?
                     navigate(navigateTo, { state: { selectedTabId } }) : navigate(navigateTo)
             }

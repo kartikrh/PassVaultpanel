@@ -15,23 +15,23 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMPETITION } from '../../components/Common/Const';
 import { addCompetitionToDb } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from "../../Features/toasterSlice";
 
 function AddCompetitions() {
-  const pageName = TAB_TABS
+  const pageName = TAB_COMPETITION
   const finalizeRef = useRef(null);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
-  const { isSaved, isLoading, error } = useSelector(
+  const { isSaved, isLoading } = useSelector(
     (state) => state.tabsData.competition
   );
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -59,11 +59,11 @@ function AddCompetitions() {
 
   useEffect(() => {
     if (isSaved) {
-      if (currentSaveAction === SAVE)
-        setSnackbarMessage("Data saved successfully!");
-      else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/competition");
-      else if (currentSaveAction === SAVE_AND_NEW)
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/competition");
+      else if (currentSaveAction === SAVE_AND_NEW) {
+        setInitialEditData({})
         finalizeRef.current.resetForm();
+      }
     }
   });
 
@@ -74,7 +74,7 @@ function AddCompetitions() {
         setInitialEditData(response?.result);
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -90,7 +90,7 @@ function AddCompetitions() {
         }));
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   const handleSaveClick = async (saveAction) => {
