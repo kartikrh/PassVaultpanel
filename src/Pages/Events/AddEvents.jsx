@@ -15,17 +15,17 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT } from '../../components/Common/Const';
 import { addEventToDb } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from "../../Features/toasterSlice";
 
 function AddEvents() {
-  const pageName = TAB_TABS
+  const pageName = TAB_EVENT
   const finalizeRef = useRef(null);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -59,11 +59,11 @@ function AddEvents() {
 
   useEffect(() => {
     if (isSaved) {
-      if (currentSaveAction === SAVE)
-        setSnackbarMessage("Data saved successfully!");
-      else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/events");
-      else if (currentSaveAction === SAVE_AND_NEW)
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/events");
+      else if (currentSaveAction === SAVE_AND_NEW) {
+        setInitialEditData({})
         finalizeRef.current.resetForm();
+      }
     }
   });
 
@@ -74,7 +74,7 @@ function AddEvents() {
         setInitialEditData({ ...response?.result, eventDate: convertDateString(response?.result.eventDate) });
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
@@ -90,10 +90,10 @@ function AddEvents() {
         }));
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
     await axiosInstance
-      .post("/admin/competition/all",{})
+      .post("/admin/competition/all", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -103,7 +103,7 @@ function AddEvents() {
         }));
       })
       .catch((error) => {
-        // setIsLoading(false)
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   const handleSaveClick = async (saveAction) => {
@@ -116,9 +116,11 @@ function AddEvents() {
       dispatch(addEventToDb({ ...dataToSave, ...extraData }))
     }
   };
+
   const handleBackClick = () => {
     navigate("/events");
   };
+
   return (
     <React.Fragment>
       <div className="page-content">

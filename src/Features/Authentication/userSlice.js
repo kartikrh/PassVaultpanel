@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance, { setAuthToken } from '../axios';
 import { encryptData, removeStorageToken } from '../../Pages/Utility/encryptionUtils';
 import { getToken, isUserLogout } from '../../helpers/api_helper';
-import { ERROR } from '../../components/Common/Const';
+import { ERROR, REMEMBER_ME_KEY, USER_DATA_KEY } from '../../components/Common/Const';
 import { updateToastData } from '../toasterSlice';
 
 export const loginUser = createAsyncThunk(
@@ -10,6 +10,12 @@ export const loginUser = createAsyncThunk(
   async (userData, { rejectWithValue, dispatch }) => {
     try {
       const response = await axiosInstance.post('/signin', userData);
+      const rememberMe = JSON.parse(localStorage.getItem(REMEMBER_ME_KEY) || null);
+      if (rememberMe) {
+        localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
+      } else {
+        localStorage.setItem(USER_DATA_KEY, null)
+      }
       return response?.result; // Assuming this contains the token
     } catch (error) {
       dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -38,7 +44,11 @@ const userSlice = createSlice({
     error: null,
     isUserLogout: isUserLogout
   },
-  reducers: {},
+  reducers: {
+    resetUserSlice: (state, action) => {
+      state = undefined
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
@@ -76,5 +86,5 @@ const userSlice = createSlice({
       });
   }
 });
-
+export const { resetUserSlice } = userSlice.actions;
 export default userSlice.reducer;

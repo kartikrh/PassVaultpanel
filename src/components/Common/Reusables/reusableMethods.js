@@ -20,7 +20,6 @@ export const transformPermissionData = (data) => {
   const transformedObject = {};
   data.forEach(tab => {
     const { tabName, isView, isEdit, isAdd, isDelete } = tab;
-    console.log(tabName)
     transformedObject[tabName] = {
       isView,
       isEdit,

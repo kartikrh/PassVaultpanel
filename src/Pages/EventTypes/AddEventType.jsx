@@ -4,21 +4,21 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { EventTypeFields } from '../../constants/FieldConst/EventTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT_TYPES } from '../../components/Common/Const';
 import { addEventTypeToDb } from '../../Features/Tabs/eventTypesSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from '../../components/Common/utilities';
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from '../../Features/toasterSlice';
 
 function AddEventType() {
-    const pageName = TAB_TABS
+    const pageName = TAB_EVENT_TYPES
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.eventType);
+    const { isSaved, isLoading } = useSelector(state => state.tabsData.eventType);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
@@ -40,12 +40,12 @@ function AddEventType() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
-            else if (currentSaveAction === SAVE_AND_CLOSE)
+            if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/eventType")
-            else if (currentSaveAction === SAVE_AND_NEW)
+            else if (currentSaveAction === SAVE_AND_NEW) {
+                setInitialEditData({})
                 finalizeRef.current.resetForm()
+            }
         }
     });
 
@@ -54,7 +54,7 @@ function AddEventType() {
             .then((response) => {
                 setInitialEditData(response?.result);
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
 

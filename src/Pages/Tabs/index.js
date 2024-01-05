@@ -5,24 +5,23 @@ import { apiGetTabCleaner } from "../../helpers/helper";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { isEqual } from "lodash";
+import _, { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TABS } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { resetTabSliceData, setSelectedTabHistory, setSelectedTabId } from "../../Features/Tabs/tabsSlice";
 
 const Index = () => {
   const pageName = TAB_TABS
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  const location = useLocation();
-  const selectedTabId = location.state?.selectedTabId
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
-  const [currentParentTab, setCurrentParentTab] = useState(undefined)
+  const { selectedTabId, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,45 +33,29 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  let sorted = []
-  const fetchData = async (value) => {
+  const fetchData = async () => {
     setIsLoading(true)
-    setIsActive(value)
     await axiosInstance
-      .post("/admin/tabs/byRoleId", { ...value })
+      .post("/admin/tabs/tablist", {
+        parentId: selectedTabId, displayType: 1, isActive
+      })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
-        let apiDataIdList = []
-        sorted = [...first].sort(
-          (a, b) => a.displayOrder - b.displayOrder
-        );
-        sorted.forEach((item) => {
-          if (item.children && Array.isArray(item.children)) {
-            apiDataIdList.push(item?.tabId)
-            item.children.sort((x, y) => x.displayOrder - y.displayOrder);
-          }
-          apiDataIdList.push(item?.tabId)
-        });
-        console.log("this is the sorted data", sorted)
+        const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
+        const apiDataIdList = sorted.map(item => item?.tabId).filter(Boolean);
         setData(sorted);
-        setDataIndexList(apiDataIdList)
-        if (selectedTabId) {
-          setCurrentParentTab(sorted.filter((element) => {
-            return element?.tabId === selectedTabId
-          })?.[0])
-        }
-        const displayType = Array.from(
-          new Set(response?.result.map((item) => item.displayType))
-        );
+        setDataIndexList(apiDataIdList);
+        const displayType = [...new Set(response?.result?.map(item => item?.displayType))];
         setDisplayTypes(displayType);
-        setCheckedList([])
+        setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         setIsLoading(false);
-      });
-  };
+      })
+  }
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -103,9 +86,6 @@ const Index = () => {
       });
   };
 
-  const resetJumpToChild = () => {
-    setCurrentParentTab(undefined)
-  }
   const handleDelete = async (e) => {
     if (checekedList.length > 0) {
       setIsLoading(true);
@@ -126,7 +106,13 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
-  //table columns
+  const handleBreadCrumbsClick = (value) => {
+    let historyList = _.clone(selectedTabHistory)
+    const index = historyList.findIndex(item => item.value === value);
+    historyList = index === -1 ? [] : historyList.slice(0, index + 1);
+    dispatch(setSelectedTabHistory(historyList))
+    dispatch(setSelectedTabId({ id: value }))
+  }
   const columns = [
     {
       title: (
@@ -180,7 +166,13 @@ const Index = () => {
       title: "Tab Name",
       dataIndex: "tabName",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span style={{ cursor: "pointer" }} onClick={() => {
+          let currentRecord = [{ label: record.tabName, value: record?.tabId }]
+          let historyList = selectedTabHistory ?
+            [].concat(selectedTabHistory, currentRecord) : currentRecord
+          dispatch(setSelectedTabHistory(historyList))
+          dispatch(setSelectedTabId({ id: record?.tabId }))
+        }}>{text}</span>
       ),
       key: "tabName",
       style: { width: "10%" },
@@ -285,7 +277,6 @@ const Index = () => {
     },
   ];
 
-  //elements required
   const tableElement = {
     title: "Tabs",
     dragDrop: true,
@@ -300,9 +291,16 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading({ isActive: true });
+    setIsActive(true);
     fetchData();
+    // return (() => {
+    //   dispatch(resetTabSliceData())
+    // })
   }, []);
+
+  useEffect(() => {
+    fetchData()
+  }, [selectedTabId])
 
   return (
     <React.Fragment>
@@ -319,11 +317,11 @@ const Index = () => {
             changeOrderApiName="tabs"
             displayTypes={displayTypes}
             singleCheck={checekedList}
-            jumpToChild={currentParentTab}
-            resetJumpToChild={resetJumpToChild}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            breadCrumbs={selectedTabHistory}
+            onBreadCrumbsClick={handleBreadCrumbsClick}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

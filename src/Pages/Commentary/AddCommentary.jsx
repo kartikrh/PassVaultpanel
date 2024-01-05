@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY } from '../../components/Common/Const';
 import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
@@ -28,7 +28,7 @@ const formatMultiSelectDataPlayers = (inputList) => {
     return outputList;
 };
 function AddCommentary() {
-    const pageName = TAB_TABS
+    const pageName = TAB_COMMENTARY
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
     const [savedFormState, setSavedFormState] = useState({});

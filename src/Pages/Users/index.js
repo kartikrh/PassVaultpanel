@@ -141,7 +141,7 @@ const Index = () => {
   }
 
   const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
-    <span onClick={() => getDecryptedPassword(userId)} >*******</span>
+    <span role="button" onClick={() => getDecryptedPassword(userId)} >*******</span>
     {clipboard?.[userId] ? <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
       <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
     </Tooltip> :

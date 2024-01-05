@@ -14,6 +14,7 @@ import axiosInstance from "../../../Features/axios";
 import { ERROR } from "../Const";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
+import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs"
 
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
@@ -34,7 +35,7 @@ const Index = ({
   cloneModelFunction,
   deleteModelFunction,
   singleCheck,
-  setIsActive,
+  // setIsActive,
   displayTypes,
   eventTypes,
   reFetchData,
@@ -42,15 +43,13 @@ const Index = ({
   competitions,
   onAddNavigate,
   changeOrderApiName = "",
-  jumpToChild = undefined,
-  resetJumpToChild,
   isAddPermission,
-  isDeletePermission
+  isDeletePermission,
+  breadCrumbs,
+  onBreadCrumbsClick
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
-  const [currentParentId, setCurrentParentId] = useState(dataSource);
-  const [subData, setSubData] = useState([]);
   const [tableActions, setTableActions] = useState({
     isActive: true,
   });
@@ -66,21 +65,7 @@ const Index = ({
   const [statusSwitch, setStatusSwitch] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [subArray, setSubArray] = useState([
-    {
-      [tableElement?.title]: data,
-    },
-  ]);
-  useEffect(() => {
-    if (jumpToChild) {
-      HandleSubTable(jumpToChild);
-    }
-  });
-  useEffect(() => {
-    if (jumpToChild) {
-      resetJumpToChild();
-    }
-  }, [data]);
+
 
   useEffect(() => {
     setData(filteredData);
@@ -122,39 +107,14 @@ const Index = ({
       </div>
     );
   };
-  const handleStatusSwitch = () => {
-    if (statusSwitch) {
-      setStatusSwitch(false);
-      setTableActions((preValue) => {
-        return {
-          ...preValue,
-          isActive: false,
-        };
-      });
-    } else {
-      setStatusSwitch(true);
-      setTableActions((preValue) => {
-        return {
-          ...preValue,
-          isActive: true,
-        };
-      });
-    }
-  };
+
   const handleDropDownFilter = (e) => {
-    if (e == "") {
-      setData(dataSource);
-      setSubArray([
-        {
-          Tabs: data,
-        },
-      ]);
-    } else {
+    if (e) {
       const updatedData = dataSource.filter((val) => {
-        return val.displayType == e;
+        return val.displayType === e;
       });
       setData(updatedData);
-    }
+    } else setData(dataSource);
   };
 
   const handleTableActions = (key, id) => {
@@ -172,6 +132,7 @@ const Index = ({
       };
     });
   };
+
   const handleSearchFilter = () => {
     if (tableElement.title === "Tabs") {
       const updatedData = data.filter((val) => {
@@ -183,13 +144,12 @@ const Index = ({
         });
         return found === true;
       });
-      if (searchTerm === "") {
-        setTotal(dataSource.length);
-        setFilteredData(subData);
-        // setData(subData);
-      } else {
+      if (searchTerm) {
         setFilteredData(updatedData);
         setTotal(updatedData.length);
+      } else {
+        setTotal(data.length);
+        setFilteredData(data);
       }
     } else {
       const updatedData = dataSource.filter((val) => {
@@ -212,29 +172,6 @@ const Index = ({
         setFilteredData(updatedData);
         setTotal(updatedData.length);
       }
-    }
-  };
-  const moveBack = (key) => {
-    if (key == "Tabs") {
-      setData(dataSource);
-      setSubArray([
-        {
-          Tabs: dataSource,
-        },
-      ]);
-      // const updatedData = subArray.filter((val)=>{
-      //   return !subArray.includes(key)
-      // })
-    }
-  };
-  const HandleSubTable = (record) => {
-    setData(record.children);
-    const isKeyPresent = subArray.some((obj) =>
-      obj.hasOwnProperty(record.displayName)
-    );
-    if (!isKeyPresent) {
-      setCurrentParentId(record?.tabId);
-      setSubArray([...subArray, { [record.displayName]: record.children }]);
     }
   };
 
@@ -338,7 +275,6 @@ const Index = ({
     );
     setTotal(dataSource.length);
     setData(sliced);
-    // }
   };
 
   const handleDragEnd = (result) => {
@@ -358,17 +294,11 @@ const Index = ({
     setSearchTerm("");
     setTableActions({
       isActive: true,
-      // eventTypeId: 0,
-      // competitionId: 0,
-      // displayType:0,
     });
     setStatusSwitch(true);
     handleReset();
   };
 
-  // useEffect(() => {
-  //   reFetchData(tableActions);
-  // }, [tableActions]);
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -391,11 +321,7 @@ const Index = ({
                       color="success"
                       className="add-btn"
                       onClick={() => {
-                        if (currentParentId)
-                          navigate(onAddNavigate, {
-                            state: { selectedTabId: currentParentId },
-                          });
-                        else navigate(onAddNavigate);
+                        navigate(onAddNavigate);
                       }}
                       id="create-btn"
                     >
@@ -524,36 +450,16 @@ const Index = ({
                     ) : null}
                   </div>
                 </Col>
-                <Col className="d-flex justify-content-end">
-                  {tableElement.subTable &&
-                    subArray.map((val, index) => {
-                      const arrayKey = Object.keys(val).find((key) =>
-                        Array.isArray(val[key])
-                      );
-                      return (
-                        <div className="d-flex flex-row align-items-center">
-                          <span
-                            className="cursor-pointer"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              moveBack(arrayKey);
-                            }}
-                          >
-                            {arrayKey}
-                          </span>
-                          {index !== subArray.length - 1 ? (
-                            <i className="bx bxs-chevron-right ms-3 me-3" />
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                </Col>
               </Row>
             </form>
           </CardHeader>
 
           <CardBody>
             <div id="customerList">
+              {breadCrumbs && <ReusableBreadcrumbs
+                listToRender={breadCrumbs}
+                updateClickedId={onBreadCrumbsClick}
+              />}
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
@@ -680,7 +586,7 @@ const Index = ({
                               // )
                               .map((record, index) => (
                                 <Draggable
-                                  key={record.tabId}
+                                  key={index}
                                   draggableId={`row-${index}`}
                                   index={index}
                                 >
@@ -692,25 +598,19 @@ const Index = ({
                                       className={`hover`}
                                     >
                                       {columns.map((column) => (
-                                        <td
-                                          key={column.key}
-                                          style={column.style}
-                                          onClick={() => {
-                                            record?.childrenCount > 0 &&
-                                              column?.key === "tabName"
-                                              ? HandleSubTable(record)
-                                              : setData(data);
-                                            record?.childrenCount > 0 &&
-                                              setSubData(record?.children);
-                                          }}
-                                        >
-                                          {column.render
-                                            ? column.render(
-                                              record[column.dataIndex],
-                                              record
-                                            )
-                                            : record[column.dataIndex]}
-                                        </td>
+                                        <>
+                                          < td
+                                            key={column.key}
+                                            style={column.style}
+                                          >
+                                            {column.render
+                                              ? column.render(
+                                                record[column.dataIndex],
+                                                record
+                                              )
+                                              : record[column.dataIndex]}
+                                          </td>
+                                        </>
                                       ))}
                                     </tr>
                                   )}
@@ -725,7 +625,6 @@ const Index = ({
                   </DragDropContext>
                 ) : (
                   <table
-                    // border={2}
                     className="table align-middle table-nowrap"
                     id="customerTable"
                   >
@@ -777,18 +676,12 @@ const Index = ({
                       </tr>
                     </thead>
                     <tbody className="list form-check-all">
-                      {data.map((record) => (
-                        <tr key={record.tabId} className={`hover`}>
+                      {data.map((record, index) => (
+                        <tr key={index} className={`hover`}>
                           {columns.map((column) => (
                             <td
                               key={column.key}
                               style={column.style}
-                              onClick={() => {
-                                record?.childrenCount > 0 &&
-                                  column?.key == "tabName"
-                                  ? HandleSubTable(record)
-                                  : setData(data);
-                              }}
                             >
                               {column.render
                                 ? column.render(
@@ -833,14 +726,14 @@ const Index = ({
                 </div>
               ) : (
                 <div className="d-flex justify-content-center">
-                  <span style={{ color: "gray", fontSize: "20px" }}>No Data Available</span>
+                  <span style={{color:"lightgray"}}>No Data Available</span>
                 </div>
               )}
             </div>
           </CardBody>
         </Card>
       </Col>
-    </Row>
+    </Row >
   );
 };
 
