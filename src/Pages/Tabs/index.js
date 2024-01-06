@@ -76,7 +76,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         setIsLoading(false);
         fetchData();
       })
@@ -94,7 +94,7 @@ const Index = () => {
           encryptedTabIds: checekedList,
         })
         .then((response) => {
-          dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+          dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
           fetchData();
         })
         .catch((error) => {

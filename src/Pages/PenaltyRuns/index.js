@@ -68,7 +68,7 @@ const Index = () => {
       })
       .then((response) => {
         fetchData(isActive);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -85,7 +85,7 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -99,7 +99,7 @@ const Index = () => {
       .post(`/admin/paneltyRun/save`, value)
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);

@@ -57,25 +57,6 @@ const Index = () => {
     setCheckedList(updateSingleCheck)
   };
 
-  //permissions function
-  const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(
-        `/admin/commentary/save`,
-        {
-          commentaryId: record.commentaryId,
-          [pType]: cState ? false : true,
-        }
-      )
-      .then((response) => {
-        fetchData();
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
-  };
-
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -88,7 +69,7 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);

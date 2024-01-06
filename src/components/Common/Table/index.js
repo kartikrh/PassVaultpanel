@@ -578,6 +578,7 @@ const Index = ({
                             </tr>
                           </thead>
                           <tbody className="list form-check-all">
+                            {console.log(data)}
                             {data
                               // .sort(
                               //   (a, b) =>
@@ -725,7 +726,7 @@ const Index = ({
                 </div>
               ) : (
                 <div className="d-flex justify-content-center">
-                  <span style={{color:"lightgray"}}>No Data Available</span>
+                  <span style={{ color: "lightgray" }}>No Data Available</span>
                 </div>
               )}
             </div>

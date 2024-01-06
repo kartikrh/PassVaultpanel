@@ -65,7 +65,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       }).then((response) => {
         // const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         fetchData()
       }).catch((error) => {
         setIsLoading(false);
@@ -83,7 +83,7 @@ const Index = () => {
       }).then((response) => {
         setDeleteModelVisable(false);
         fetchData();
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       }).catch((error) => {
         setDeleteModelVisable(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));

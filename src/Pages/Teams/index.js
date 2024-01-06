@@ -80,8 +80,8 @@ const Index = () => {
       .then((response) => {
         fetchData(isActive);
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         setCheckedList([])
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);

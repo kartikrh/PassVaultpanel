@@ -64,7 +64,7 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         setCloneModelVisible(false);
       })
       .catch((error) => {
@@ -80,7 +80,7 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         setDeleteModelVisable(false);
       })
       .catch((error) => {
