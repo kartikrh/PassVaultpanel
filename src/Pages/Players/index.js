@@ -20,6 +20,7 @@ const Index = () => {
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
+  const [eventTypes, setEventTypes] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true)
@@ -53,7 +54,15 @@ const Index = () => {
         setIsLoading(false);
       });
   };
-
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/eventType/all`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -105,6 +114,10 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addPlayer", { state: { userId: id } });
   };
+  const handleReset = () => {
+    fetchData()
+    fetchEventTypeData()
+  }
   //table columns
   const columns = [
     {
@@ -223,8 +236,9 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Players",
-    headerSelect: false,
     isActive: true,
+    eventTypeSelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {
@@ -233,6 +247,7 @@ const Index = () => {
     }
     setIsLoading({ isActive: true });
     fetchData();
+    fetchEventTypeData()
   }, []);
 
   return (
@@ -249,7 +264,9 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
+            eventTypes={eventTypes}
             onAddNavigate={"/addPlayer"}
+            handleReset={handleReset}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
