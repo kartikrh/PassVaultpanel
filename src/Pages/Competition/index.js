@@ -223,6 +223,10 @@ const Index = () => {
     },
   ];
 
+  const handleReset = () => {
+    fetchData()
+    fetchEventTypeData()
+  }
   //elements required
   const tableElement = {
     title: "Competition",
@@ -258,6 +262,7 @@ const Index = () => {
             setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
+            handleReset={handleReset}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />

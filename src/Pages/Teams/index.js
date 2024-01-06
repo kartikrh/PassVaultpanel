@@ -22,14 +22,20 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
+  const [isActive, setIsActive] = useState(true)
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (value) => {
+    setIsActive(value)
+    setIsLoading(true)
     await axiosInstance
-      .post(`/admin/team/all`)
+      .post(`/admin/team/all`,{
+        ...value
+      })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
@@ -46,6 +52,15 @@ const Index = () => {
       });
   };
 
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/eventType/all`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
     if (checekedList.includes(e.teamId)) {
@@ -63,7 +78,7 @@ const Index = () => {
         teamId: checekedList,
       })
       .then((response) => {
-        fetchData();
+        fetchData(isActive);
         setDeleteModelVisable(false);
         dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         setCheckedList([])
@@ -77,7 +92,10 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTeams", { state: { userId: id } });
   };
-
+  const handleReset = () => {
+    fetchData()
+    fetchEventTypeData()
+  }
   //table columns
   const columns = [
     {
@@ -198,6 +216,8 @@ const Index = () => {
     title: "Teams",
     headerSelect: false,
     switch: false,
+    eventTypeSelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {
@@ -206,6 +226,7 @@ const Index = () => {
     }
     setIsLoading(true);
     fetchData();
+    fetchEventTypeData()
   }, []);
 
   return (
@@ -221,6 +242,8 @@ const Index = () => {
             addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
+            handleReset={handleReset}
+            eventTypes={eventTypes}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
