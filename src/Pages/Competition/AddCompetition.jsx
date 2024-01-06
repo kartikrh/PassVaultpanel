@@ -64,6 +64,7 @@ function AddCompetitions() {
         setInitialEditData({})
         finalizeRef.current.resetForm();
       }
+      setCurrentSaveAction(undefined)
     }
   });
 

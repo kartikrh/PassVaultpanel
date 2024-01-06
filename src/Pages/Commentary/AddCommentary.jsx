@@ -83,6 +83,7 @@ function AddCommentary() {
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
     const handleFormADataChange = (newFormData) => {

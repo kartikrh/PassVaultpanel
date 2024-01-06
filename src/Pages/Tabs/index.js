@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import { apiGetTabCleaner } from "../../helpers/helper";
@@ -19,6 +19,7 @@ import { resetTabSliceData, setSelectedTabHistory, setSelectedTabId } from "../.
 
 const Index = () => {
   const pageName = TAB_TABS
+  const finalizeRef = useRef(null);
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const { selectedTabId, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -28,16 +29,18 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [displayTypes, setDisplayTypes] = useState([]);
-  const [isActive, setIsActive] = useState(true)
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true)
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post("/admin/tabs/tablist", {
-        parentId: selectedTabId, displayType: 1, isActive
+        parentId: selectedTabId, displayType: 1,
+        ...(latestValueFromTable || tableActions)
+
       })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
@@ -77,7 +80,8 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        setIsLoading(false);
         fetchData();
       })
       .catch((error) => {
@@ -94,7 +98,7 @@ const Index = () => {
           encryptedTabIds: checekedList,
         })
         .then((response) => {
-          dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+          dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
           fetchData();
         })
         .catch((error) => {
@@ -291,7 +295,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsActive(true);
     fetchData();
     // return (() => {
     //   dispatch(resetTabSliceData())
@@ -309,6 +312,7 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}

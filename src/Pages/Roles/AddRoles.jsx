@@ -59,6 +59,7 @@ function AddRoles() {
                 setInitialEditData({})
                 finalizeRef.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
 

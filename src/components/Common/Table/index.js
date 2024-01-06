@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
@@ -28,26 +28,25 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   }
 };
 
-const Index = ({
+const Index = forwardRef(({
   columns,
   dataSource,
   tableElement,
   cloneModelFunction,
   deleteModelFunction,
   singleCheck,
-  // setIsActive,
   displayTypes,
   eventTypes,
   reFetchData,
   handleReset,
   competitions,
   onAddNavigate,
-  changeOrderApiName = "",
+  changeOrderApiName,
   isAddPermission,
   isDeletePermission,
   breadCrumbs,
   onBreadCrumbsClick
-}) => {
+}, ref) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
   const [tableActions, setTableActions] = useState({
@@ -267,12 +266,23 @@ const Index = ({
     });
     setData(sortedData);
   };
-  // getting data for the table coming from the page && checking default status
+
   const fetchData = () => {
-    const sliced = dataSource.slice(
-      currentPage * pageSize,
-      currentPage * pageSize + pageSize
-    );
+    const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
+    let sliced;
+
+    if (currentPage < possibleNoOfPages) {
+      sliced = dataSource.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
+    } else {
+      const pageToJump = possibleNoOfPages - 1;
+      sliced = dataSource.slice(
+        pageToJump * pageSize,
+        pageToJump * pageSize + pageSize
+      );
+    }
     setTotal(dataSource.length);
     setData(sliced);
   };
@@ -286,8 +296,8 @@ const Index = ({
     const [movedRow] = newData.splice(result.source.index, 1);
     newData.splice(result.destination.index, 0, movedRow);
     setData(newData);
-    const tabOrders = filterOrderChange(newData, changeOrderApiName);
-    changeDisplayOrder(tabOrders, changeOrderApiName);
+    const tabOrders = filterOrderChange(newData, changeOrderApiName) || "";
+    changeDisplayOrder(tabOrders, changeOrderApiName || "");
   };
 
   const handleTableReset = () => {
@@ -296,8 +306,14 @@ const Index = ({
       isActive: true,
     });
     setStatusSwitch(true);
-    handleReset();
+    handleReset({
+      isActive: true,
+    });
   };
+
+  const getTableAction = () => {
+    return tableActions
+  }
 
   useEffect(() => {
     handleSearchFilter();
@@ -307,7 +323,7 @@ const Index = ({
     fetchData();
   }, [dataSource]);
 
-  // import { Link } from "react-router-dom";
+  useImperativeHandle(ref, () => ({ getTableAction }));
   return (
     <Row>
       <Col lg={12}>
@@ -463,7 +479,7 @@ const Index = ({
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
-                    Showing {data.length} of{" "}
+                    Showing {(currentPage * pageSize) + 1} - {(currentPage * pageSize) + data.length} of{" "}
                     {tableElement.title === "Tabs"
                       ? data?.length
                       : dataSource?.length}{" "}
@@ -726,7 +742,7 @@ const Index = ({
                 </div>
               ) : (
                 <div className="d-flex justify-content-center">
-                  <span style={{color:"lightgray"}}>No Data Available</span>
+                  <span style={{ color: "lightgray" }}>No Data Available</span>
                 </div>
               )}
             </div>
@@ -735,6 +751,6 @@ const Index = ({
       </Col>
     </Row >
   );
-};
+});
 
 export default Index;

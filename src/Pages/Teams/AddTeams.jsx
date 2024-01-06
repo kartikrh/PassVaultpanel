@@ -78,6 +78,7 @@ function AddTeams() {
         setInitialEditData({})
         finalizeRef.current.resetForm();
       }
+      setCurrentSaveAction(undefined)
     }
   });
 

@@ -63,6 +63,7 @@ function AddUsers() {
         setInitialEditData({})
         finalizeRef.current.resetForm();
       }
+      setCurrentSaveAction(undefined)
     }
   });
 

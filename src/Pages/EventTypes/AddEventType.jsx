@@ -46,6 +46,7 @@ function AddEventType() {
                 setInitialEditData({})
                 finalizeRef.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
 
