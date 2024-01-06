@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
@@ -16,23 +16,23 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_COMPETITION
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title =
     "Competitions | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState(true);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async (value) => {
+  const fetchData = async () => {
     setIsLoading(true);
-    setIsActive(value)
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/competition/all`, {
-        ...value
+        ...tableActions
       })
       .then((response) => {
         const apiData = response?.result
@@ -79,7 +79,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
@@ -241,7 +241,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading({ isActive: true });
     fetchData();
     fetchEventTypeData();
   }, []);
@@ -253,13 +252,13 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Competition" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={checekedList}
-            setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addCompetition"}
             handleReset={handleReset}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
@@ -17,25 +17,24 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_EVENT_TYPES
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState();
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // fetch data
-  const fetchData = async (value) => {
-    setIsActive(value)
+  const fetchData = async () => {
     setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/eventType/all`, {
-        ...value,
+        ...tableActions,
       })
       .then((response) => {
         const apiData = response?.result
@@ -73,7 +72,7 @@ const Index = () => {
       })
       .then((response) => {
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-        fetchData(isActive);
+        fetchData();
       })
       .catch((error) => {
         setIsLoading(false);
@@ -88,7 +87,7 @@ const Index = () => {
         eventTypeId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
@@ -239,9 +238,9 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading(true);
-    fetchData({ isActive: true });
+    fetchData();
   }, []);
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -249,13 +248,13 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Types" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
             singleCheck={checekedList}
-            setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addEventType"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}

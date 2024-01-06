@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
@@ -18,13 +18,13 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_USERS
+  const finalizeRef = useRef(null);
   document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [clipboard, setClipboard] = useState(null);
   const [decryptedPasswords, setDecryptedPasswords] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState()
   const [password, setPassword] = useState("");
   const [userId, setUserId] = useState("");
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
@@ -34,12 +34,12 @@ const Index = () => {
   const dispatch = useDispatch();
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
-  const fetchData = async (value) => {
-    setIsActive(value)
+  const fetchData = async () => {
     setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/user/all`, {
-        ...value
+        ...tableActions
       })
       .then((response) => {
         const apiData = response?.result
@@ -77,7 +77,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
@@ -309,10 +309,10 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Users" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            setIsActive={setIsActive}
             reFetchData={fetchData}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
 import { apiGetTabCleaner } from "../../helpers/helper";
@@ -19,6 +19,7 @@ import { resetTabSliceData, setSelectedTabHistory, setSelectedTabId } from "../.
 
 const Index = () => {
   const pageName = TAB_TABS
+  const finalizeRef = useRef(null);
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
   const { selectedTabId, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -32,8 +33,9 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async (tableActions) => {
+  const fetchData = async () => {
     setIsLoading(true)
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post("/admin/tabs/tablist", {
         parentId: selectedTabId, displayType: 1, ...tableActions
@@ -308,6 +310,7 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Tabs" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}

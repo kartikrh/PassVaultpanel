@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
@@ -15,6 +15,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_MATCH_TYPE
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Match Type | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -27,8 +28,10 @@ const Index = () => {
   const dispatch = useDispatch();
 
   const fetchData = async () => {
+    setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/matchType/all`)
+      .post(`/admin/matchType/all`, { ...tableActions })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
@@ -88,10 +91,11 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+
   const handleEdit = (id) => {
     navigate("/addMatchType", { state: { userId: id } });
   };
-  //table columns
+
   const columns = [
     {
       title: (
@@ -158,7 +162,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading(true);
     fetchData();
   }, []);
 
@@ -169,6 +172,7 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Match Type" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}

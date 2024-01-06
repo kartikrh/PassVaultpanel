@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
@@ -28,7 +28,7 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   }
 };
 
-const Index = ({
+const Index = forwardRef(({
   columns,
   dataSource,
   tableElement,
@@ -41,12 +41,12 @@ const Index = ({
   handleReset,
   competitions,
   onAddNavigate,
-  changeOrderApiName = "",
+  changeOrderApiName,
   isAddPermission,
   isDeletePermission,
   breadCrumbs,
   onBreadCrumbsClick
-}) => {
+}, ref) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
   const [tableActions, setTableActions] = useState({
@@ -285,8 +285,8 @@ const Index = ({
     const [movedRow] = newData.splice(result.source.index, 1);
     newData.splice(result.destination.index, 0, movedRow);
     setData(newData);
-    const tabOrders = filterOrderChange(newData, changeOrderApiName);
-    changeDisplayOrder(tabOrders, changeOrderApiName);
+    const tabOrders = filterOrderChange(newData, changeOrderApiName) || "";
+    changeDisplayOrder(tabOrders, changeOrderApiName || "");
   };
 
   const handleTableReset = () => {
@@ -298,6 +298,10 @@ const Index = ({
     handleReset();
   };
 
+  const getTableAction = () => {
+    return tableActions
+  }
+
   useEffect(() => {
     handleSearchFilter();
   }, [searchTerm]);
@@ -306,7 +310,7 @@ const Index = ({
     fetchData();
   }, [dataSource]);
 
-  // import { Link } from "react-router-dom";
+  useImperativeHandle(ref, () => ({ getTableAction }));
   return (
     <Row>
       <Col lg={12}>
@@ -735,6 +739,6 @@ const Index = ({
       </Col>
     </Row >
   );
-};
+});
 
 export default Index;

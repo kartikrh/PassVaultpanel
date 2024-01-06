@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from './functions'
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -17,19 +16,21 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Commentary | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
-  const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const fetchData = async () => {
+    setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/commentary/all`)
+      .post(`/admin/commentary/all`, { ...tableActions })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
@@ -219,7 +220,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading(true);
     fetchData();
   }, []);
 
@@ -230,10 +230,10 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={checekedList}
@@ -247,10 +247,6 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
-          />
-          <TabModel
-            addModelVisable={addModelVisable}
-            setAddModelVisable={setAddModelVisable}
           />
         </Container>
       </div>
