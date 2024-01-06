@@ -98,12 +98,12 @@ const Index = () => {
         fetchData();
         setDeleteModelVisable(false);
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-        checekedList([]);
+        setCheckedList([]);
       })
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        checekedList([]);
+        setCheckedList([]);
       });
   };
   const handleEdit = (id) => {

@@ -42,7 +42,7 @@ function AddTabs() {
                 "displayType": true
             })
         }
-        if (selectedTabId) {
+        else if (selectedTabId) {
             setInitialEditData({
                 parentId: selectedTabId
             })
@@ -51,15 +51,13 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE_AND_CLOSE) {
-                selectedTabId ?
-                    navigate(navigateTo, { state: { selectedTabId } }) : navigate(navigateTo)
-            }
+            if (currentSaveAction === SAVE_AND_CLOSE) navigate(navigateTo)
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
                 setInitialEditData({})
                 finalizeRef.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
 
@@ -95,8 +93,7 @@ function AddTabs() {
         }
     };
     const handleBackClick = () => {
-        selectedTabId ?
-            navigate(navigateTo, { state: { selectedTabId } }) : navigate(navigateTo)
+        navigate(navigateTo)
     };
 
     return (

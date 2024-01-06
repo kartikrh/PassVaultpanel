@@ -266,7 +266,7 @@ const Index = forwardRef(({
     });
     setData(sortedData);
   };
-  // getting data for the table coming from the page && checking default status
+
   const fetchData = () => {
     const sliced = dataSource.slice(
       currentPage * pageSize,
@@ -466,7 +466,7 @@ const Index = forwardRef(({
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
-                    Showing {data.length} of{" "}
+                    Showing {(currentPage * pageSize) + 1} - {(currentPage * pageSize) + data.length} of{" "}
                     {tableElement.title === "Tabs"
                       ? data?.length
                       : dataSource?.length}{" "}
@@ -582,7 +582,6 @@ const Index = forwardRef(({
                             </tr>
                           </thead>
                           <tbody className="list form-check-all">
-                            {console.log(data)}
                             {data
                               // .sort(
                               //   (a, b) =>
