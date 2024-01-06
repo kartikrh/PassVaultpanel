@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
@@ -16,23 +16,25 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_PANELTY_RUNS
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState(true);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [run, setRun] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async (value) => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
-    setIsActive(value)
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/paneltyRun/all`, { ...value })
+      .post(`/admin/paneltyRun/all`, {
+        ...(latestValueFromTable || tableActions)
+      })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
@@ -67,8 +69,8 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData(isActive);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -78,14 +80,14 @@ const Index = () => {
   //delete row
   const handleDelete = async (e) => {
     setIsLoading(true);
-    const response = await axiosInstance
+    await axiosInstance
       .post(`/admin/paneltyRun/delete`, {
         paneltyId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -99,7 +101,7 @@ const Index = () => {
       .post(`/admin/paneltyRun/save`, value)
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -235,7 +237,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading({ isActive: true });
     fetchData();
   }, []);
 
@@ -246,12 +247,12 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Penalty Runs" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            setIsActive={setIsActive}
             reFetchData={fetchData}
             onAddNavigate={"/addPenalty"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}

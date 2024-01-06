@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
@@ -16,13 +15,12 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_EVENT
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Events | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState();
-  const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
@@ -30,11 +28,11 @@ const Index = () => {
   const dispatch = useDispatch();
 
   const fetchData = async (value) => {
-    setIsActive(value)
     setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/events/all`, {
-        ...value
+        ...(value || tableActions)
       })
       .then((response) => {
         const apiData = response?.result
@@ -102,8 +100,8 @@ const Index = () => {
         [pType]: cState ? false : true,
       })
       .then((response) => {
-        fetchData(isActive);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -120,7 +118,7 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -131,12 +129,12 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addEvents", { state: { userId: id } });
   };
+
   const handleReset = () => {
     fetchData()
     fetchCompetitionData()
     fetchEventTypeData()
   }
-  //table columns
   const columns = [
     {
       title: (
@@ -286,16 +284,14 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Events" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             competitions={competitions}
             reFetchData={fetchData}
-            reFetchEventTypeData={fetchEventTypeData}
-            reFetchCompetitionData={fetchCompetitionData}
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addEvents"}
@@ -307,10 +303,6 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
-          />
-          <TabModel
-            addModelVisable={addModelVisable}
-            setAddModelVisable={setAddModelVisable}
           />
         </Container>
       </div>

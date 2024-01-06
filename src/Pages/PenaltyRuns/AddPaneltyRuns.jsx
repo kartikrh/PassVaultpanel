@@ -44,6 +44,7 @@ function AddPenaltyRuns() {
                 setInitialEditData({})
                 finalizeRef.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
 

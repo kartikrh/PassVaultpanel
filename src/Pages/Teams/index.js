@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
@@ -16,20 +15,25 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_TEAMS
+  const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Teams | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
-  const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // fetch data
-  const fetchData = async () => {
+  const fetchData = async (latestValueFromTable) => {
+    setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/team/all`)
+      .post(`/admin/team/all`, {
+        ...(latestValueFromTable || tableActions)
+      })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
@@ -46,6 +50,15 @@ const Index = () => {
       });
   };
 
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/eventType/all`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
     if (checekedList.includes(e.teamId)) {
@@ -65,8 +78,8 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
         setCheckedList([])
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -77,7 +90,10 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTeams", { state: { userId: id } });
   };
-
+  const handleReset = () => {
+    fetchData()
+    fetchEventTypeData()
+  }
   //table columns
   const columns = [
     {
@@ -198,14 +214,16 @@ const Index = () => {
     title: "Teams",
     headerSelect: false,
     switch: false,
+    eventTypeSelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading(true);
     fetchData();
+    fetchEventTypeData()
   }, []);
 
   return (
@@ -215,12 +233,14 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Teams" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            addModelFunction={setAddModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
+            handleReset={handleReset}
+            eventTypes={eventTypes}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
@@ -230,10 +250,6 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
-          />
-          <TabModel
-            addModelVisable={addModelVisable}
-            setAddModelVisable={setAddModelVisable}
           />
         </Container>
       </div>
