@@ -9,6 +9,7 @@ import { withTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuthorisedTabs, getTabPermissions } from "../../Features/Authentication/authorizationSlice";
 import MetisMenu from "metismenujs";
+
 const Sidebar = (props) => {
   const ref = useRef();
   const newTabList = useSelector((state) => state.auth.tabList);

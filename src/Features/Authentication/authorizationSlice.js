@@ -19,7 +19,6 @@ export const getTabPermissions = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('/admin/tabs/getUserWisePermission');
-            console.log(response)// Assuming this contains the token
             return response?.result;
         } catch (error) {
             return rejectWithValue(error.response);
@@ -37,7 +36,11 @@ const authSlice = createSlice({
         error: null,
         permissionError: null
     },
-    reducers: {},
+    reducers: {
+        resetAuthSlice: (state, action) => {
+            state = undefined
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAuthorisedTabs.pending, (state) => {
@@ -64,5 +67,5 @@ const authSlice = createSlice({
             });
     }
 });
-
+export const { resetAuthSlice } = authSlice.actions;
 export default authSlice.reducer;

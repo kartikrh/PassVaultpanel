@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { RoleFields } from '../../constants/FieldConst/RoleConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_ROLES } from '../../components/Common/Const';
 import { addRoleToDb } from '../../Features/Tabs/roleSlice';
 import axiosInstance from '../../Features/axios';
 import PermissionTable from './PermissionTable';
@@ -12,16 +12,16 @@ import { Columns } from './Columns';
 import { rearrangeTabs, transformData } from './helpers';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { updateToastData } from '../../Features/toasterSlice';
 
 function AddRoles() {
-    const pageName = TAB_TABS
+    const pageName = TAB_ROLES
     const finalizeRef = useRef(null);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [disabledFields, setDisabledFields] = useState({});
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.role);
+    const { isSaved, isLoading } = useSelector(state => state.tabsData.role);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
@@ -52,13 +52,12 @@ function AddRoles() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE)
-                setSnackbarMessage("Data saved successfully!");
-            else if (currentSaveAction === SAVE_AND_CLOSE)
+            if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/roles")
             else if (currentSaveAction === SAVE_AND_NEW) {
-                finalizeRef.current.resetForm()
                 setDisabledFields({})
+                setInitialEditData({})
+                finalizeRef.current.resetForm()
             }
         }
     });
@@ -71,7 +70,7 @@ function AddRoles() {
                 setPermissions(newPermission)
                 setNewPermissionValue(transformData(newPermission));
             }).catch((error) => {
-                // setIsLoading(false)
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
 
