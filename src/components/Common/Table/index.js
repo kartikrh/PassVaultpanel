@@ -268,10 +268,21 @@ const Index = forwardRef(({
   };
 
   const fetchData = () => {
-    const sliced = dataSource.slice(
-      currentPage * pageSize,
-      currentPage * pageSize + pageSize
-    );
+    const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
+    let sliced;
+
+    if (currentPage < possibleNoOfPages) {
+      sliced = dataSource.slice(
+        currentPage * pageSize,
+        currentPage * pageSize + pageSize
+      );
+    } else {
+      const pageToJump = possibleNoOfPages - 1;
+      sliced = dataSource.slice(
+        pageToJump * pageSize,
+        pageToJump * pageSize + pageSize
+      );
+    }
     setTotal(dataSource.length);
     setData(sliced);
   };
