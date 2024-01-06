@@ -28,11 +28,13 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/paneltyRun/all`, { ...tableActions })
+      .post(`/admin/paneltyRun/all`, {
+        ...(latestValueFromTable || tableActions)
+      })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];

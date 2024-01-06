@@ -25,10 +25,12 @@ const Index = () => {
   const dispatch = useDispatch();
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
-  const fetchData = async () => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
-    await axiosInstance.post(`/admin/roles/all`, { ...tableActions })
+    await axiosInstance.post(`/admin/roles/all`, {
+      ...(latestValueFromTable || tableActions)
+    })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];

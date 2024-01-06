@@ -33,12 +33,14 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true)
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post("/admin/tabs/tablist", {
-        parentId: selectedTabId, displayType: 1, ...tableActions
+        parentId: selectedTabId, displayType: 1,
+        ...(latestValueFromTable || tableActions)
+
       })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);

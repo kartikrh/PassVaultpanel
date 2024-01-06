@@ -32,7 +32,7 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/events/all`, {
-        ...tableActions
+        ...(value || tableActions)
       })
       .then((response) => {
         const apiData = response?.result

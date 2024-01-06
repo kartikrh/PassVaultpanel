@@ -26,11 +26,13 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/commentary/all`, { ...tableActions })
+      .post(`/admin/commentary/all`, {
+        ...(latestValueFromTable || tableActions)
+      })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
