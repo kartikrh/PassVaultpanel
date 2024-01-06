@@ -306,7 +306,9 @@ const Index = forwardRef(({
       isActive: true,
     });
     setStatusSwitch(true);
-    handleReset();
+    handleReset({
+      isActive: true,
+    });
   };
 
   const getTableAction = () => {

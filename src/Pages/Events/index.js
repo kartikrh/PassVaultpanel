@@ -116,7 +116,7 @@ const Index = () => {
         eventId: checekedList,
       })
       .then((response) => {
-        fetchData(isActive);
+        fetchData();
         setDeleteModelVisable(false);
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       })

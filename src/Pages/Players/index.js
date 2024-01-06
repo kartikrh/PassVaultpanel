@@ -109,9 +109,8 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addPlayer", { state: { userId: id } });
   };
-  const handleReset = () => {
-    fetchData()
-    fetchEventTypeData()
+  const handleReset = (value) => {
+    fetchData(value)
   }
   //table columns
   const columns = [
