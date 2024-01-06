@@ -28,16 +28,15 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [displayTypes, setDisplayTypes] = useState([]);
-  const [isActive, setIsActive] = useState(true)
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  const fetchData = async (tableActions) => {
     setIsLoading(true)
     await axiosInstance
       .post("/admin/tabs/tablist", {
-        parentId: selectedTabId, displayType: 1, isActive
+        parentId: selectedTabId, displayType: 1, ...tableActions
       })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
@@ -78,6 +77,7 @@ const Index = () => {
       })
       .then((response) => {
         dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        setIsLoading(false);
         fetchData();
       })
       .catch((error) => {
@@ -291,7 +291,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsActive(true);
     fetchData();
     // return (() => {
     //   dispatch(resetTabSliceData())

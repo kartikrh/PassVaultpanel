@@ -35,7 +35,6 @@ const Index = ({
   cloneModelFunction,
   deleteModelFunction,
   singleCheck,
-  // setIsActive,
   displayTypes,
   eventTypes,
   reFetchData,

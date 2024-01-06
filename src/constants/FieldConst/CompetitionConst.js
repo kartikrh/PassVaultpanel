@@ -1,4 +1,4 @@
-import { FILE_TYPE, IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const CompetitionFields = [
     {
@@ -36,7 +36,6 @@ export const CompetitionFields = [
         defaultValue: true,
         parentclassName: "",
         type: SWITCH,
-        defaultValue: true,
     },
     {
         name: "image",
