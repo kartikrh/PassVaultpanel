@@ -455,7 +455,9 @@ FormBuilder.propTypes = {
         SELECT,
         "radio",
         FILE_TYPE,
-        SWITCH
+        SWITCH,
+        MULTI_SELECT,
+        DATE_TIME_PICKER
       ]).isRequired,
       isRequired: PropTypes.bool.isRequired,
       regex: PropTypes.instanceOf(RegExp),
