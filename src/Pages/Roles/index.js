@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from '../../components/Model/SpinnerModel';
-import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
@@ -15,19 +14,23 @@ import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_ROLES
+  const finalizeRef = useRef(null);
   document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
-  const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
-  const fetchData = async () => {
-    await axiosInstance.post(`/admin/roles/all`)
+  const fetchData = async (latestValueFromTable) => {
+    setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
+    await axiosInstance.post(`/admin/roles/all`, {
+      ...(latestValueFromTable || tableActions)
+    })
       .then((response) => {
         const apiData = response?.result
         let apiDataIdList = [];
@@ -65,7 +68,7 @@ const Index = () => {
         [pType]: cState ? false : true,
       }).then((response) => {
         // const newArray = data.map(obj => (obj.roleId === record.roleId ? response.result : obj));
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         fetchData()
       }).catch((error) => {
         setIsLoading(false);
@@ -83,7 +86,7 @@ const Index = () => {
       }).then((response) => {
         setDeleteModelVisable(false);
         fetchData();
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
       }).catch((error) => {
         setDeleteModelVisable(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -165,7 +168,6 @@ const Index = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    setIsLoading(true)
     fetchData();
   }, []);
 
@@ -176,13 +178,13 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Roles" />
           {isLoading && <SpinnerModel />}
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
-            // addModelFunction={setAddModelVisable}
             onAddNavigate={"/addRoles"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
@@ -192,11 +194,6 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
-          />
-          <TabModel
-            addModelVisable={addModelVisable}
-            setAddModelVisable={setAddModelVisable}
-
           />
         </Container>
       </div>

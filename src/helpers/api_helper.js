@@ -1,5 +1,4 @@
 import axios from "axios";
-import config from "../config";
 import { decryptData } from '../Pages/Utility/encryptionUtils'
 
 // default

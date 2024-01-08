@@ -35,6 +35,27 @@ axiosInstance.interceptors.request.use(async config => {
 
 axiosInstance.interceptors.response.use(
     response => {
+        let message;
+        switch (response.data?.status) {
+            case 500:
+                message = "Internal Server Error";
+                break;
+            case 401:
+                message = "Invalid credentials";
+                const ignoreMessage = ["Sign In", "Sign Out"]
+                if (!ignoreMessage.includes(response?.data?.title)) {
+                    window.location.href = LOGOUT
+                }
+                break;
+            case 404:
+                message = "Sorry! the data you are looking for could not be found";
+                break;
+            default:
+                message = response.data?.message;
+        }
+        if (response?.data?.error){
+            return Promise.reject(response.data);
+        };
         if (response.data?.token) {
             const newToken = response.data.token;
             const encryptedAuth = localStorage.getItem("authUser");

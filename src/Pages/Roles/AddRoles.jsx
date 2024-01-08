@@ -26,7 +26,7 @@ function AddRoles() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const roleId = location.state?.roleId || "0";
+    const [roleId, setRoleId] = useState(location.state?.roleId || "0")
     const [permissions, setPermissions] = useState([]);
     const [newPermissionValue, setNewPermissionValue] = useState([]);
     const [displayType, setDisplayType] = useState("0")
@@ -37,6 +37,8 @@ function AddRoles() {
             setDisabledFields({
                 "displayType": true
             })
+        } else {
+            setDisabledFields({})
         }
     }, [roleId]);
 
@@ -56,16 +58,17 @@ function AddRoles() {
                 navigate("/roles")
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
-                setInitialEditData({})
+                setRoleId("0")
                 finalizeRef.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
 
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
-                if (storeInitialData) setInitialEditData(response?.result);
+                if (storeInitialData) setInitialEditData({ description: "", ...response?.result });
                 const newPermission = rearrangeTabs(response?.result?.permissions || []);
                 setPermissions(newPermission)
                 setNewPermissionValue(transformData(newPermission));
@@ -81,8 +84,12 @@ function AddRoles() {
                 roleId: roleId,
                 permissions: newPermissionValue
             }
-            dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
-            setCurrentSaveAction(saveAction);
+            if (newPermissionValue.length) {
+                dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
+                setCurrentSaveAction(saveAction);
+            } else{
+                dispatch(updateToastData({ data: "No Permission Found", title: "Roles", type: ERROR }));
+            }
         }
     };
 

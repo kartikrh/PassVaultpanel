@@ -29,7 +29,7 @@ const Index = (props) => {
     setIsLoading(true);
     await axiosInstance.post(`/admin/user/changePassword`, { ...data })
       .then((response) => {
-        dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         navigate(LOGOUT)
       })
       .catch((error) => {

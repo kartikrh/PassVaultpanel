@@ -62,6 +62,7 @@ function AddPlayer() {
                 setInitialEditData({})
                 finalizeRef.current.resetForm()
             }
+            setCurrentSaveAction(undefined)
         }
     });
 

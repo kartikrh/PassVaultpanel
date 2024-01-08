@@ -38,7 +38,6 @@ export const EventTypeFields = [
         label: "Is Active",
         defaultValue: true,
         parentclassName: "",
-        defaultValue: true,
         type: SWITCH
     },
     {

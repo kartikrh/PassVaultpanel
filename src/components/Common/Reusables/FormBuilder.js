@@ -1,9 +1,8 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState, useImperativeHandle } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
-import _, { capitalize, isEmpty, isEqual } from "lodash";
-import { useImperativeHandle } from "react";
+import { capitalize, isEmpty, isEqual } from "lodash";
 import { isValueEmpty, sanitizeFormData, compareNumStringValues } from "./reusableMethods.js";
 import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
 import "./CustomCss.css"
@@ -455,7 +454,9 @@ FormBuilder.propTypes = {
         SELECT,
         "radio",
         FILE_TYPE,
-        SWITCH
+        SWITCH,
+        MULTI_SELECT,
+        DATE_TIME_PICKER
       ]).isRequired,
       isRequired: PropTypes.bool.isRequired,
       regex: PropTypes.instanceOf(RegExp),
