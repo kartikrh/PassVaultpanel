@@ -110,9 +110,11 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
+
   const handleReset = (value) => {
     fetchData(value)
   }
+
   const handleBreadCrumbsClick = (value) => {
     let historyList = _.clone(selectedTabHistory)
     const index = historyList.findIndex(item => item.value === value);
@@ -120,6 +122,7 @@ const Index = () => {
     dispatch(setSelectedTabHistory(historyList))
     dispatch(setSelectedTabId({ id: value }))
   }
+
   const columns = [
     {
       title: (
