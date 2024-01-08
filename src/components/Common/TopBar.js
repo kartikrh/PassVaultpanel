@@ -12,7 +12,6 @@ import NotificationDropdown from "./TopbarDropdown/NotificationDropdown";
 import LanguageDropdown from "./TopbarDropdown/LanguageDropdown";
 
 import AppsDropdown from "./TopbarDropdown/AppsDropdown";
-import { useSelector } from "react-redux"; 
 const TopBar = () => {
 
   return (

@@ -20,7 +20,7 @@ const initialSliceState = {
     isSaved: undefined,
     isLoading: false,
     error: null,
-    selectedTabId: "0",
+    selectedTab: { id: "0", displayType: "0" },
     selectedTabHistory: [{
         label: "Tabs", value: "0"
     }]
@@ -29,14 +29,16 @@ const tabSlice = createSlice({
     name: 'tab',
     initialState: initialSliceState,
     reducers: {
-        setSelectedTabId: (state, action) => {
-            state.selectedTabId = action.payload.id
+        setSelectedTab: (state, action) => {
+            state.selectedTab.id = action.payload.id
+            state.selectedTab.displayType = action.payload.displayType
         },
         setSelectedTabHistory: (state, action) => {
             state.selectedTabHistory = action.payload
         },
         resetTabSliceData: (state, action) => {
-            state.selectedTabId = initialSliceState.selectedTabId
+            state.selectedTab = initialSliceState.selectedTab
+            state.selectedTab.displayType = initialSliceState.payload.displayType
             state.selectedTabHistory = initialSliceState.selectedTabHistory
             state.isSaved = initialSliceState.isSaved
             state.isLoading = initialSliceState.isLoading
@@ -58,5 +60,5 @@ const tabSlice = createSlice({
             });
     }
 });
-export const { setSelectedTabId, setSelectedTabHistory, resetTabSliceData } = tabSlice.actions;
+export const { setSelectedTab, setSelectedTabHistory, resetTabSliceData } = tabSlice.actions;
 export default tabSlice.reducer;

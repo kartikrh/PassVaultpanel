@@ -10,6 +10,7 @@ import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { isEqual } from 'lodash';
 const navigateTo = "/tabs"
 
 function AddTabs() {
@@ -19,8 +20,9 @@ function AddTabs() {
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
+    const [savedFormState, setSavedFormState] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
-    const { isSaved, isLoading, selectedTabId } = useSelector(state => state.tabsData.tab);
+    const { isSaved, isLoading, selectedTab } = useSelector(state => state.tabsData.tab);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
@@ -42,12 +44,21 @@ function AddTabs() {
                 "displayType": true
             })
         }
-        else if (selectedTabId) {
-            setInitialEditData({
-                parentId: selectedTabId
+        else if (selectedTab.id !== "0" && !isEqual(selectedTab.id, savedFormState.parentId)) {
+            const dataToUpdate = {
+                parentId: selectedTab.id,
+                displayType: selectedTab.displayType
+            }
+            setSavedFormState(dataToUpdate)
+            finalizeRef.current.updateFormFromParent({
+                ...savedFormState,
+                ...dataToUpdate
+            })
+            setDisabledFields({
+                "displayType": true
             })
         }
-    }, [id, selectedTabId]);
+    }, [id, selectedTab]);
 
     useEffect(() => {
         if (isSaved) {
@@ -69,19 +80,44 @@ function AddTabs() {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
+
     const fetchMasterData = async () => {
         await axiosInstance.post('/admin/tabs/all')
             .then((response) => {
                 setMasterData({
                     "parentId":
                         response?.result?.map(item => {
-                            return { label: item.tabName, value: item.encryptedTabId }
+                            return {
+                                label: item.tabName, value: item.encryptedTabId,
+                                displayType: item.displayType
+                            }
                         })
                 });
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
+
+    const handleFormDataChange = async (newFormData) => {
+        setSavedFormState(newFormData);
+        if (newFormData["parentId"] !== savedFormState["parentId"]) {
+            let dataToUpdate = {}
+            if (newFormData["parentId"] !== "0") {
+                let displayType
+                masterData["parentId"]?.forEach(element => {
+                    if (element.value === newFormData["parentId"]) {
+                        displayType = element.displayType
+                    }
+                });
+                dataToUpdate["displayType"] = displayType
+                setDisabledFields({ displayType: true })
+            } else {
+                dataToUpdate["displayType"] = undefined
+                setDisabledFields({})
+            }
+            finalizeRef.current.updateFormFromParent(dataToUpdate)
+        }
+    }
     const handleSaveClick = async (saveAction) => {
         const dataToSave = finalizeRef.current.finalizeData()
         if (dataToSave) {
@@ -142,6 +178,7 @@ function AddTabs() {
                                     editFormData={initialEditData}
                                     masterData={masterData}
                                     disabledFields={disabledFields}
+                                    onFormDataChange={handleFormDataChange}
                                 />
                             </CardBody>
                         </Card>
