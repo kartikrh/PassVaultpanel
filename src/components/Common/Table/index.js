@@ -6,6 +6,7 @@ import Pagination from "../../Pagination";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import Select from "react-select";
 import { filterOrderChange } from "../../../helpers/helper";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
@@ -14,7 +15,7 @@ import axiosInstance from "../../../Features/axios";
 import { ERROR } from "../Const";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
-import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs"
+import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
@@ -46,7 +47,7 @@ const Index = ({
   isAddPermission,
   isDeletePermission,
   breadCrumbs,
-  onBreadCrumbsClick
+  onBreadCrumbsClick,
 }) => {
   document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
   const [data, setData] = useState(dataSource);
@@ -65,7 +66,6 @@ const Index = ({
   const [statusSwitch, setStatusSwitch] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     setData(filteredData);
@@ -108,16 +108,8 @@ const Index = ({
     );
   };
 
-  const handleDropDownFilter = (e) => {
-    if (e) {
-      const updatedData = dataSource.filter((val) => {
-        return val.displayType === e;
-      });
-      setData(updatedData);
-    } else setData(dataSource);
-  };
-
   const handleTableActions = (key, id) => {
+    console.log(id)
     if (key === "isActive") {
       setStatusSwitch(id);
     }
@@ -317,16 +309,18 @@ const Index = ({
               <Row className="g-2">
                 <Col className="col-sm-auto">
                   <div className="d-flex gap-2">
-                    {isAddPermission && <Button
-                      color="success"
-                      className="add-btn"
-                      onClick={() => {
-                        navigate(onAddNavigate);
-                      }}
-                      id="create-btn"
-                    >
-                      <i className="ri-add-line align-bottom me-1"></i> Add
-                    </Button>}
+                    {isAddPermission && (
+                      <Button
+                        color="success"
+                        className="add-btn"
+                        onClick={() => {
+                          navigate(onAddNavigate);
+                        }}
+                        id="create-btn"
+                      >
+                        <i className="ri-add-line align-bottom me-1"></i> Add
+                      </Button>
+                    )}
                     {tableElement?.clone ? (
                       <Button
                         color="warning"
@@ -334,34 +328,48 @@ const Index = ({
                         onClick={() => {
                           singleCheck.length === 1
                             ? cloneModelFunction(true)
-                            : dispatch(updateToastData({ data: "Select at least one (only One) row", title: "Error", type: ERROR }));
+                            : dispatch(
+                                updateToastData({
+                                  data: "Select at least one (only One) row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
                         }}
                         id="create-btn"
                       >
                         <i className="ri-add-line align-bottom me-1"></i> Clone
                       </Button>
                     ) : null}
-                    {isDeletePermission && <Button
-                      color="soft-danger"
-                      onClick={() => {
-                        singleCheck.length > 0
-                          ? deleteModelFunction(true)
-                          : dispatch(updateToastData({ data: "Select at least one (only One) row", title: "Error", type: ERROR }));
-                      }}
-                    >
-                      <i className="ri-delete-bin-2-line"></i>
-                    </Button>}
+                    {isDeletePermission && (
+                      <Button
+                        color="soft-danger"
+                        onClick={() => {
+                          singleCheck.length > 0
+                            ? deleteModelFunction(true)
+                            : dispatch(
+                                updateToastData({
+                                  data: "Select at least one (only One) row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
+                        }}
+                      >
+                        <i className="ri-delete-bin-2-line"></i>
+                      </Button>
+                    )}
                     {tableElement?.displayTypeDropDown ? (
                       <div className="">
-                        <select
+                        {/* <select
                           className="form-select"
                           id="inlineFormSelectPref"
                           onChange={(e) => {
-                            handleDropDownFilter(e.target.value);
+                            handleTableActions("displayType",Number(e.target.value));
                           }}
                           value={tableActions?.displayType}
                         >
-                          <option value="">Select Display Type</option>
+                          <option value={0}>Select Display Type</option>
                           {displayTypes.map((val, index) => {
                             return (
                               <option value={val}>
@@ -373,7 +381,19 @@ const Index = ({
                               </option>
                             );
                           })}
-                        </select>
+                        </select> */}
+                        <Select
+                          // classNamePrefix="select2-selection"
+                          placeholder="Select Display Type"
+                          options={tableElement?.displayTypes}
+                          onChange={(e) => {
+                            handleTableActions(
+                              "displayType",
+                              e.value
+                            );
+                          }}
+                          defaultInputValue={tableActions?.displayType}
+                        />
                       </div>
                     ) : null}
                     {tableElement?.eventTypeSelect ? (
@@ -456,10 +476,12 @@ const Index = ({
 
           <CardBody>
             <div id="customerList">
-              {breadCrumbs && <ReusableBreadcrumbs
-                listToRender={breadCrumbs}
-                updateClickedId={onBreadCrumbsClick}
-              />}
+              {breadCrumbs && (
+                <ReusableBreadcrumbs
+                  listToRender={breadCrumbs}
+                  updateClickedId={onBreadCrumbsClick}
+                />
+              )}
               <Row className="g-2 d-flex align-items-center">
                 <Col className="col-sm-auto">
                   <span>
@@ -540,12 +562,13 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${sortOrder.key === column.key &&
+                                            color: `${
+                                              sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                              "ascending"
-                                              ? "gray"
-                                              : "lightGray"
-                                              }`,
+                                                "ascending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
                                             fontSize: "12px",
                                             marginTop: "2px",
                                             cursor: "pointer",
@@ -560,12 +583,13 @@ const Index = ({
                                             );
                                           }}
                                           style={{
-                                            color: `${sortOrder.key === column.key &&
+                                            color: `${
+                                              sortOrder.key === column.key &&
                                               sortOrder.sortOrder ===
-                                              "descending"
-                                              ? "gray"
-                                              : "lightGray"
-                                              }`,
+                                                "descending"
+                                                ? "gray"
+                                                : "lightGray"
+                                            }`,
                                             marginTop: "-5px",
                                             fontSize: "12px",
                                             cursor: "pointer",
@@ -599,15 +623,15 @@ const Index = ({
                                     >
                                       {columns.map((column) => (
                                         <>
-                                          < td
+                                          <td
                                             key={column.key}
                                             style={column.style}
                                           >
                                             {column.render
                                               ? column.render(
-                                                record[column.dataIndex],
-                                                record
-                                              )
+                                                  record[column.dataIndex],
+                                                  record
+                                                )
                                               : record[column.dataIndex]}
                                           </td>
                                         </>
@@ -642,11 +666,12 @@ const Index = ({
                                       sortByProperty("ascending", column.key);
                                     }}
                                     style={{
-                                      color: `${sortOrder.key === column.key &&
+                                      color: `${
+                                        sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "ascending"
-                                        ? "gray"
-                                        : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
                                       fontSize: "12px",
                                       marginTop: "2px",
                                       cursor: "pointer",
@@ -658,11 +683,12 @@ const Index = ({
                                       sortByProperty("descending", column.key);
                                     }}
                                     style={{
-                                      color: `${sortOrder.key === column.key &&
+                                      color: `${
+                                        sortOrder.key === column.key &&
                                         sortOrder.sortOrder === "descending"
-                                        ? "gray"
-                                        : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                      }`,
                                       marginTop: "-5px",
                                       fontSize: "12px",
                                       cursor: "pointer",
@@ -679,15 +705,12 @@ const Index = ({
                       {data.map((record, index) => (
                         <tr key={index} className={`hover`}>
                           {columns.map((column) => (
-                            <td
-                              key={column.key}
-                              style={column.style}
-                            >
+                            <td key={column.key} style={column.style}>
                               {column.render
                                 ? column.render(
-                                  record[column.dataIndex],
-                                  record
-                                )
+                                    record[column.dataIndex],
+                                    record
+                                  )
                                 : record[column.dataIndex]}
                             </td>
                           ))}
@@ -726,14 +749,14 @@ const Index = ({
                 </div>
               ) : (
                 <div className="d-flex justify-content-center">
-                  <span style={{color:"lightgray"}}>No Data Available</span>
+                  <span style={{ color: "lightgray" }}>No Data Available</span>
                 </div>
               )}
             </div>
           </CardBody>
         </Card>
       </Col>
-    </Row >
+    </Row>
   );
 };
 

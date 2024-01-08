@@ -66,7 +66,7 @@ export const MatchTypeFields = [
         max: 10,
         step: 1,
         defaultValue: 0,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "No Of Days Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -92,9 +92,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "over Should be Between 0 to 10",
-        isRequired: true,
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
     {
@@ -112,8 +111,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        isRequired: true,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "overs Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
@@ -132,8 +130,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        isRequired: true,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Power Play Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
@@ -144,7 +141,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Over Per Day Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -156,8 +153,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-9])$/,
-        regexErrorMessage: "1st Inning Overs Should be Between 0 to 10",
+        regex: /^(10|[0-1000])?$/,
+        regexErrorMessage: "1st Inning Overs Should be Between 0 to 1000",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -168,8 +165,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-9])$/,
-        regexErrorMessage: "2nd Innings Max Over Should be Between 0 to 10",
+        regex: /^(10|[0-1000])?$/,
+        regexErrorMessage: "2nd Innings Max Over Should be Between 0 to 1000",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -189,8 +186,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        isRequired: true,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Extra Per Over Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
@@ -201,7 +197,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Overs In Last Hours Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -213,7 +209,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "New Ball After Overs Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -252,7 +248,7 @@ export const MatchTypeFields = [
         max: 10,
         step: 1,
         defaultValue: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "No Ball Run Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 3 }
@@ -271,7 +267,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "No Ball Run[Last Over] Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 3 }
@@ -291,7 +287,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Wide Ball Run Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 3 }
@@ -310,7 +306,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Wide Ball Run[Last Over] Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 3 }
@@ -329,7 +325,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
-        regex: /^(10|[0-9])$/,
+        regex: /^(10|[0-9])?$/,
         regexErrorMessage: "No Ball Runs Should be Between 0 to 10",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 3 }

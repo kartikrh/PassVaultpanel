@@ -33,11 +33,11 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  const fetchData = async (value) => {
     setIsLoading(true)
     await axiosInstance
       .post("/admin/tabs/tablist", {
-        parentId: selectedTabId, displayType: 1, isActive
+        parentId: selectedTabId, ...value,
       })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
@@ -284,7 +284,12 @@ const Index = () => {
     switch: false,
     subTable: true,
     resetButton: true,
-    isActive: true
+    isActive: true,
+    displayTypes : [
+      // {label: "Select Display Type", value:0},
+      {label: "Admin", value: 1},
+      {label: "Agent", value: 2},
+  ]
   };
 
   useEffect(() => {
