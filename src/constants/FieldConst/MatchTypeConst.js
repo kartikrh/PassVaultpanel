@@ -92,6 +92,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
+        isRequired:true,
+        requiredErrorMessage:"Please enter value",
         regex: /^(10|[0-9])?$/,
         regexErrorMessage: "over Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
@@ -111,6 +113,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
+        isRequired:true,
+        requiredErrorMessage:"Please enter value",
         regex: /^(10|[0-9])?$/,
         regexErrorMessage: "overs Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
@@ -130,6 +134,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
+        isRequired:true,
+        requiredErrorMessage:"Please enter value",
         regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Power Play Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
@@ -186,6 +192,8 @@ export const MatchTypeFields = [
         min: 0,
         max: 10,
         step: 1,
+        isRequired:true,
+        requiredErrorMessage:"Please enter value",
         regex: /^(10|[0-9])?$/,
         regexErrorMessage: "Extra Per Over Should be Between 0 to 10",
         fieldColspan: { xs: 12, md: 3, lg: 3 }

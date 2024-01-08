@@ -338,7 +338,6 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             breadCrumbs={selectedTabHistory}
-            handleReset={handleReset}
             onBreadCrumbsClick={handleBreadCrumbsClick}
           />
           <DeleteTabModel
