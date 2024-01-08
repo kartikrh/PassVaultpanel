@@ -399,15 +399,9 @@ const Index = forwardRef(
                           value={tableActions?.displayType}
                         >
                           <option value={0}>Select Display Type</option>
-                          {displayTypes.map((val, index) => {
+                          {tableElement?.displayTypes.map((val, index) => {
                             return (
-                              <option value={val} style={{padding:"20px"}}>
-                                {val === 1
-                                  ? "Admin"
-                                  : val === 2
-                                    ? "Agent"
-                                    : "Vendor"}
-                              </option>
+                              <option value={val.value}>{val.label}</option>
                             );
                           })}
                         </select>
