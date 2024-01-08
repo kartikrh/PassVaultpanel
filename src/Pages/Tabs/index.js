@@ -110,6 +110,11 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTabs", { state: { userId: id } });
   };
+
+  const handleReset = (value) => {
+    fetchData(value)
+  }
+
   const handleBreadCrumbsClick = (value) => {
     let historyList = _.clone(selectedTabHistory)
     const index = historyList.findIndex(item => item.value === value);
@@ -117,10 +122,7 @@ const Index = () => {
     dispatch(setSelectedTabHistory(historyList))
     dispatch(setSelectedTab({ id: value, displayType: 1 }))
   }
-  const handleReset = (value) => {
-    fetchData(value)
-  }
-
+  
   const columns = [
     {
       title: (
@@ -326,6 +328,7 @@ const Index = () => {
             changeOrderApiName="tabs"
             displayTypes={displayTypes}
             singleCheck={checekedList}
+            handleReset={handleReset}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
