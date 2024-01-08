@@ -258,6 +258,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     style={field?.customStyle}
                     id={field.name}
                     name={field.name}
+                    
                     isDisabled={disabledFields?.[field.name]}
                     value={
                       [].concat(field.options, masterData?.[field.name] || [])
