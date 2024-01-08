@@ -294,7 +294,12 @@ const Index = () => {
     switch: false,
     subTable: true,
     resetButton: true,
-    isActive: true
+    isActive: true,
+    displayTypes : [
+      // {label: "Select Display Type", value:0},
+      {label: "Admin", value: 1},
+      {label: "Agent", value: 2},
+  ]
   };
 
   useEffect(() => {
