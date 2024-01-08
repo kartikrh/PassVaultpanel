@@ -90,9 +90,8 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addTeams", { state: { userId: id } });
   };
-  const handleReset = () => {
-    fetchData()
-    fetchEventTypeData()
+  const handleReset = (value) => {
+    fetchData(value)
   }
   //table columns
   const columns = [

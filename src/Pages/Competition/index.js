@@ -223,9 +223,8 @@ const Index = () => {
     },
   ];
 
-  const handleReset = () => {
-    fetchData()
-    fetchEventTypeData()
+  const handleReset = (value) => {
+    fetchData(value)
   }
   //elements required
   const tableElement = {

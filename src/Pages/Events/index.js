@@ -130,10 +130,8 @@ const Index = () => {
     navigate("/addEvents", { state: { userId: id } });
   };
 
-  const handleReset = () => {
-    fetchData()
-    fetchCompetitionData()
-    fetchEventTypeData()
+  const handleReset = (value) => {
+    fetchData(value)
   }
   const columns = [
     {
