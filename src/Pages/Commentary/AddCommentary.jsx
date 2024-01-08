@@ -321,7 +321,7 @@ function AddCommentary() {
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
-        axiosInstance.post('/admin/team/all')
+        axiosInstance.post('/admin/team/all', {})
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
                     return { label: item?.teamName, value: item?.teamId }

@@ -15,32 +15,32 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { resetTabSliceData, setSelectedTabHistory, setSelectedTabId } from "../../Features/Tabs/tabsSlice";
+import { resetTabSliceData, setSelectedTabHistory, setSelectedTab } from "../../Features/Tabs/tabsSlice";
 
 const Index = () => {
   const pageName = TAB_TABS
   const finalizeRef = useRef(null);
   document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
-  const { selectedTabId, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
+  const { selectedTab, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [displayTypes, setDisplayTypes] = useState([]);
+  // const [displayTypes, setDisplayTypes] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const displayTypes = [1, 2]
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true)
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post("/admin/tabs/tablist", {
-        parentId: selectedTabId, displayType: 1,
+        parentId: selectedTab.id,
         ...(latestValueFromTable || tableActions)
-
       })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
@@ -49,8 +49,8 @@ const Index = () => {
         const apiDataIdList = sorted.map(item => item?.tabId).filter(Boolean);
         setData(sorted);
         setDataIndexList(apiDataIdList);
-        const displayType = [...new Set(response?.result?.map(item => item?.displayType))];
-        setDisplayTypes(displayType);
+        // const displayType = [...new Set(response?.result?.map(item => item?.displayType))];
+        // setDisplayTypes(displayType);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -120,9 +120,9 @@ const Index = () => {
     const index = historyList.findIndex(item => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
     dispatch(setSelectedTabHistory(historyList))
-    dispatch(setSelectedTabId({ id: value }))
+    dispatch(setSelectedTab({ id: value, displayType: 1 }))
   }
-
+  
   const columns = [
     {
       title: (
@@ -181,7 +181,7 @@ const Index = () => {
           let historyList = selectedTabHistory ?
             [].concat(selectedTabHistory, currentRecord) : currentRecord
           dispatch(setSelectedTabHistory(historyList))
-          dispatch(setSelectedTabId({ id: record?.tabId }))
+          dispatch(setSelectedTab({ id: record?.tabId, displayType: record?.displayType }))
         }}>{text}</span>
       ),
       key: "tabName",
@@ -309,7 +309,8 @@ const Index = () => {
 
   useEffect(() => {
     fetchData()
-  }, [selectedTabId])
+  }, [selectedTab])
+
 
   return (
     <React.Fragment>
@@ -332,6 +333,7 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             breadCrumbs={selectedTabHistory}
+            handleReset={handleReset}
             onBreadCrumbsClick={handleBreadCrumbsClick}
           />
           <DeleteTabModel
