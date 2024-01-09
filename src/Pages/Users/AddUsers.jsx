@@ -35,7 +35,7 @@ function AddUsers() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const userId = location.state?.userId || "0";
+  const [userId, setUserId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -61,6 +61,7 @@ function AddUsers() {
       else if (currentSaveAction === SAVE_AND_NEW) {
         setDisabledFields({})
         setInitialEditData({})
+        setUserId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)

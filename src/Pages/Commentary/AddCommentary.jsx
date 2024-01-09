@@ -44,7 +44,7 @@ function AddCommentary() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const id = location.state?.userId || "0";
+    const [id, setId] = useState(location.state?.userId || "0");
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -80,6 +80,7 @@ function AddCommentary() {
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
                 setSavedFormState({})
+                setId("0");
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
             }

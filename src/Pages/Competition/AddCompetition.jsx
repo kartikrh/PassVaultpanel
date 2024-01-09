@@ -38,7 +38,7 @@ function AddCompetitions() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const competitionId = location.state?.userId || "0";
+  const [competitionId, setCompetitionId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -62,6 +62,7 @@ function AddCompetitions() {
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/competition");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
+        setCompetitionId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)

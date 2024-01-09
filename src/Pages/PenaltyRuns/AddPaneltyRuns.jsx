@@ -22,7 +22,7 @@ function AddPenaltyRuns() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const paneltyId = location.state?.paneltyId || "0";
+    const [paneltyId, setPaneltyId] = useState(location.state?.paneltyId || "0");
 
     useEffect(() => {
         if (paneltyId !== "0") {
@@ -42,6 +42,7 @@ function AddPenaltyRuns() {
                 navigate("/penalty")
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setInitialEditData({})
+                setPaneltyId("0")
                 finalizeRef.current.resetForm()
             }
             setCurrentSaveAction(undefined)
