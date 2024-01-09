@@ -45,6 +45,7 @@ import Maintenance from "../Pages/Utility/Maintenance-Page.js";
 import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
+import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -69,10 +70,11 @@ const authProtectedRoutes = [
   { path: '/addCompetition', component: <AddCompetition /> },
   { path: '/commentary', component: <Commentary /> },
   { path: '/addCommentary', component: <AddCommentary /> },
+  { path: '/commentaryMaster', component: <CommentaryMaster /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
   {
-    path: '/changePassword', component:<ChangePassword/>
+    path: '/changePassword', component: <ChangePassword />
   },
   {
     path: "/",
