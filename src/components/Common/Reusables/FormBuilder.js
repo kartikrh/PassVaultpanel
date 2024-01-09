@@ -18,6 +18,9 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [viewImage, setViewImage] = useState(null);
+  // useEffect(() => {
+  //   console.log(formData, editFormData)
+  // })
   const handleImageChange = (field, event) => {
     const file = event.target.files[0];
     setFormData((prevFormData) => ({
@@ -259,7 +262,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     style={field?.customStyle}
                     id={field.name}
                     name={field.name}
-                    
                     isDisabled={disabledFields?.[field.name]}
                     value={
                       [].concat(field.options, masterData?.[field.name] || [])
