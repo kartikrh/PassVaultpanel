@@ -68,7 +68,7 @@ function AddRoles() {
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
-                if (storeInitialData) setInitialEditData({ description: "", ...response?.result });
+                if (storeInitialData) setInitialEditData(response?.result);
                 const newPermission = rearrangeTabs(response?.result?.permissions || []);
                 setPermissions(newPermission)
                 setNewPermissionValue(transformData(newPermission));
@@ -84,8 +84,11 @@ function AddRoles() {
                 roleId: roleId,
                 permissions: newPermissionValue
             }
+            const defaultData = {
+                description: ""
+            }
             if (newPermissionValue.length) {
-                dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
+                dispatch(addRoleToDb({ ...defaultData, ...dataToSave, ...extraData }))
                 setCurrentSaveAction(saveAction);
             } else{
                 dispatch(updateToastData({ data: "No Permission Found", title: "Roles", type: ERROR }));

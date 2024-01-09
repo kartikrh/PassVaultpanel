@@ -111,10 +111,15 @@ function AddEvents() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        eventId,
+        eventId
+      }
+      const defaultData = {
+        countryCode: "",
+        timeZone: "",
+        venue: ""
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addEventToDb({ ...dataToSave, ...extraData }))
+      dispatch(addEventToDb({ ...defaultData, ...dataToSave, ...extraData }))
     }
   };
 
