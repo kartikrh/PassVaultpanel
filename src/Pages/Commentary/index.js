@@ -84,8 +84,8 @@ const Index = () => {
     navigate("/addCommentary", { state: { userId: id } });
   };
 
-  const handleBackClick = () => {
-    navigate("/commentary");
+  const handleDetailsClick = (id) => {
+    navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
 
   //table columns
@@ -200,7 +200,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-
+            handleDetailsClick(record.commentaryId);
           }}
         >
           <i className="bx bx-plus"></i>

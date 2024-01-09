@@ -119,7 +119,6 @@ const Index = forwardRef(
       menu: ({ width, ...css }) => ({ ...css }),
     };
     const handleTableActions = (key, id) => {
-      console.log(id);
       if (key === "isActive") {
         setStatusSwitch(id);
       }
