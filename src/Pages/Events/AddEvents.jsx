@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT } from '../../components/Common/Const';
-import { addEventToDb } from "../../Features/Tabs/eventsSlice";
+import { addEventToDb, updateSavedState } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -38,7 +38,7 @@ function AddEvents() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const eventId = location.state?.userId || "0";
+  const [eventId, setEventId] = useState(location.state?.userId || "0")
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -59,14 +59,16 @@ function AddEvents() {
 
   useEffect(() => {
     if (isSaved) {
+      dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/events");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
+        setEventId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)
     }
-  });
+  }, [isSaved]);
 
   const fetchData = async (id) => {
     await axiosInstance
@@ -111,10 +113,15 @@ function AddEvents() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        eventId,
+        eventId
+      }
+      const defaultData = {
+        countryCode: "",
+        timeZone: "",
+        venue: ""
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addEventToDb({ ...dataToSave, ...extraData }))
+      dispatch(addEventToDb({ ...defaultData, ...dataToSave, ...extraData }))
     }
   };
 

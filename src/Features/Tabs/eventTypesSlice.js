@@ -24,7 +24,11 @@ const eventTypeSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addEventTypeToDb.pending, (state) => {
@@ -41,4 +45,5 @@ const eventTypeSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = eventTypeSlice.actions;
 export default eventTypeSlice.reducer;

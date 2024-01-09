@@ -5,7 +5,7 @@ import { RoleFields } from '../../constants/FieldConst/RoleConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_ROLES } from '../../components/Common/Const';
-import { addRoleToDb } from '../../Features/Tabs/roleSlice';
+import { addRoleToDb, updateSavedState } from '../../Features/Tabs/roleSlice';
 import axiosInstance from '../../Features/axios';
 import PermissionTable from './PermissionTable';
 import { Columns } from './Columns';
@@ -54,6 +54,7 @@ function AddRoles() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/roles")
             else if (currentSaveAction === SAVE_AND_NEW) {
@@ -63,12 +64,12 @@ function AddRoles() {
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
-                if (storeInitialData) setInitialEditData({ description: "", ...response?.result });
+                if (storeInitialData) setInitialEditData(response?.result);
                 const newPermission = rearrangeTabs(response?.result?.permissions || []);
                 setPermissions(newPermission)
                 setNewPermissionValue(transformData(newPermission));
@@ -84,8 +85,11 @@ function AddRoles() {
                 roleId: roleId,
                 permissions: newPermissionValue
             }
+            const defaultData = {
+                description: ""
+            }
             if (newPermissionValue.length) {
-                dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
+                dispatch(addRoleToDb({ ...defaultData, ...dataToSave, ...extraData }))
                 setCurrentSaveAction(saveAction);
             } else{
                 dispatch(updateToastData({ data: "No Permission Found", title: "Roles", type: ERROR }));

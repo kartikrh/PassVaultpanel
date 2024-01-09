@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMPETITION } from '../../components/Common/Const';
-import { addCompetitionToDb } from "../../Features/Tabs/competitionSlice";
+import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
@@ -38,7 +38,7 @@ function AddCompetitions() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const competitionId = location.state?.userId || "0";
+  const [competitionId, setCompetitionId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -59,14 +59,16 @@ function AddCompetitions() {
 
   useEffect(() => {
     if (isSaved) {
+      dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/competition");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
+        setCompetitionId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)
     }
-  });
+  }, [isSaved]);
 
   const fetchData = async (id) => {
     await axiosInstance

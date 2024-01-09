@@ -24,7 +24,11 @@ const penaltyRunSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addRoleToDb.pending, (state) => {
@@ -41,4 +45,5 @@ const penaltyRunSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = penaltyRunSlice.actions;
 export default penaltyRunSlice.reducer;

@@ -5,7 +5,7 @@ import { TabFields } from '../../constants/FieldConst/TabConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
-import { addTabToDb } from '../../Features/Tabs/tabsSlice';
+import { addTabToDb, updateSavedState } from '../../Features/Tabs/tabsSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
@@ -27,7 +27,7 @@ function AddTabs() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const id = location.state?.userId || "0";
+    const [id, setId] = useState(location.state?.userId || "0");
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -62,15 +62,17 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE_AND_CLOSE) navigate(navigateTo)
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
                 setInitialEditData({})
+                setId("0")
                 finalizeRef.current.resetForm()
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/tabs/byId', { id })
