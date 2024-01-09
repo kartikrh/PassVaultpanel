@@ -5,7 +5,7 @@ import { PaneltyRunConst } from '../../constants/FieldConst/PaneltyConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PANELTY_RUNS } from '../../components/Common/Const';
-import { addPenaltyRunToDb } from '../../Features/Tabs/penaltyRunsSlice';
+import { addPenaltyRunToDb, updateSavedState } from '../../Features/Tabs/penaltyRunsSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
@@ -38,6 +38,7 @@ function AddPenaltyRuns() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/penalty")
             else if (currentSaveAction === SAVE_AND_NEW) {
@@ -46,7 +47,7 @@ function AddPenaltyRuns() {
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async (paneltyId) => {
         await axiosInstance.post('/admin/paneltyRun/byId', { paneltyId })

@@ -5,7 +5,7 @@ import { EventTypeFields } from '../../constants/FieldConst/EventTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT_TYPES } from '../../components/Common/Const';
-import { addEventTypeToDb } from '../../Features/Tabs/eventTypesSlice';
+import { addEventTypeToDb, updateSavedState } from '../../Features/Tabs/eventTypesSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from '../../components/Common/utilities';
@@ -40,6 +40,7 @@ function AddEventType() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/eventType")
             else if (currentSaveAction === SAVE_AND_NEW) {
@@ -48,7 +49,7 @@ function AddEventType() {
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async (eventTypeId) => {
         await axiosInstance.post('/admin/eventType/byId', { eventTypeId })

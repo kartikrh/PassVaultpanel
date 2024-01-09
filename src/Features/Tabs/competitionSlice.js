@@ -24,7 +24,11 @@ const competitionSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addCompetitionToDb.pending, (state) => {
@@ -41,4 +45,5 @@ const competitionSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = competitionSlice.actions;
 export default competitionSlice.reducer;
