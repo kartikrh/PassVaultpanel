@@ -23,7 +23,7 @@ function AddTabs() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const id = location.state?.userId || "0";
+    const [id, setId] = useState(location.state?.userId || "0")
 
     useEffect(() => {
         if (id !== "0") {
@@ -45,6 +45,7 @@ function AddTabs() {
                 navigate("/matchType")
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setInitialEditData({})
+                setId("0")
                 finalizeRef.current.resetForm()
             }
             setCurrentSaveAction(undefined)

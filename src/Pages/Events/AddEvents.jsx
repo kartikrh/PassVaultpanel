@@ -38,7 +38,7 @@ function AddEvents() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const eventId = location.state?.userId || "0";
+  const [eventId, setEventId] = useState(location.state?.userId || "0")
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -63,6 +63,7 @@ function AddEvents() {
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/events");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
+        setEventId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)
@@ -112,10 +113,15 @@ function AddEvents() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        eventId,
+        eventId
+      }
+      const defaultData = {
+        countryCode: "",
+        timeZone: "",
+        venue: ""
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addEventToDb({ ...dataToSave, ...extraData }))
+      dispatch(addEventToDb({ ...defaultData, ...dataToSave, ...extraData }))
     }
   };
 

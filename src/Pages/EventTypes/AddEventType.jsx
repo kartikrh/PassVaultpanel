@@ -23,8 +23,7 @@ function AddEventType() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const eventTypeId = location.state?.eventTypeId || "0";
-
+    const [eventTypeId, setEventTypeId] = useState(location.state?.eventTypeId || "0");
 
     useEffect(() => {
         if (eventTypeId !== "0") {
@@ -45,6 +44,7 @@ function AddEventType() {
                 navigate("/eventType")
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setInitialEditData({})
+                setEventTypeId("0")
                 finalizeRef.current.resetForm()
             }
             setCurrentSaveAction(undefined)
