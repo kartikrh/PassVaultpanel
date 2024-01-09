@@ -140,14 +140,14 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {new Intl.DateTimeFormat("en-US", {
+          {new Intl.DateTimeFormat("en-GB", {
             year: "2-digit",
             month: "numeric",
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            second: "numeric",
             hour12: true,
+            timeZone: 'UTC'
           }).format(new Date(text))}
         </span>
       ),
