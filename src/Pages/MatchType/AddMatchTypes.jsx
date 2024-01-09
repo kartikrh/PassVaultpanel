@@ -5,7 +5,7 @@ import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_MATCH_TYPE } from '../../components/Common/Const';
-import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
+import { addMatchTypeToDb, updateSavedState } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -39,6 +39,7 @@ function AddTabs() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/matchType")
@@ -48,7 +49,7 @@ function AddTabs() {
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/matchType/byId', { matchTypeId: id })

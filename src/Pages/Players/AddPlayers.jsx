@@ -5,7 +5,7 @@ import { PlayerFields } from '../../constants/FieldConst/PlayerConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PLAYERS } from '../../components/Common/Const';
-import { addPlayerToDb } from '../../Features/Tabs/playerSlice';
+import { addPlayerToDb, updateSavedState } from '../../Features/Tabs/playerSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
@@ -54,6 +54,7 @@ function AddPlayer() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/Players")
@@ -64,7 +65,7 @@ function AddPlayer() {
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
 
     const fetchData = async (id) => {

@@ -43,6 +43,9 @@ const tabSlice = createSlice({
             state.isSaved = initialSliceState.isSaved
             state.isLoading = initialSliceState.isLoading
             state.error = initialSliceState.error
+        },
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -60,5 +63,5 @@ const tabSlice = createSlice({
             });
     }
 });
-export const { setSelectedTab, setSelectedTabHistory, resetTabSliceData } = tabSlice.actions;
+export const { setSelectedTab, setSelectedTabHistory, resetTabSliceData, updateSavedState } = tabSlice.actions;
 export default tabSlice.reducer;

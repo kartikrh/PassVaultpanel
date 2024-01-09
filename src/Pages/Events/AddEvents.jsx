@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT } from '../../components/Common/Const';
-import { addEventToDb } from "../../Features/Tabs/eventsSlice";
+import { addEventToDb, updateSavedState } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -59,6 +59,7 @@ function AddEvents() {
 
   useEffect(() => {
     if (isSaved) {
+      dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/events");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
@@ -66,7 +67,7 @@ function AddEvents() {
       }
       setCurrentSaveAction(undefined)
     }
-  });
+  }, [isSaved]);
 
   const fetchData = async (id) => {
     await axiosInstance

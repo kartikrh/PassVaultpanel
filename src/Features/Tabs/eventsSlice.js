@@ -6,7 +6,7 @@ import { ERROR, SUCCESS } from '../../components/Common/Const';
 
 export const addEventToDb = createAsyncThunk(
     'events/addEvent',
-    async (userData, { rejectWithValue,dispatch }) => {
+    async (userData, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/events/save', userData);
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
@@ -25,7 +25,11 @@ const eventSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addEventToDb.pending, (state) => {
@@ -42,4 +46,5 @@ const eventSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = eventSlice.actions;
 export default eventSlice.reducer;
