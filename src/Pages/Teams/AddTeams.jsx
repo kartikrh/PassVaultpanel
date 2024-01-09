@@ -50,7 +50,7 @@ function AddTeams() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const teamId = location.state?.userId || "0";
+  const [teamId, setTeamId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -77,6 +77,7 @@ function AddTeams() {
       else if (currentSaveAction === SAVE_AND_NEW) {
         setDisabledFields({})
         setInitialEditData({})
+        setTeamId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)
