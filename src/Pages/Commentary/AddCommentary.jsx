@@ -59,7 +59,6 @@ function AddCommentary() {
             setDisabledFields({
                 "eventTypeId": true,
                 "competitionId": true,
-                "eventDate": true,
                 "eventId": true,
                 "team1Id": true,
                 "team2Id": true,
