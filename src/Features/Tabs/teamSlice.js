@@ -23,7 +23,11 @@ const teamSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addTeamToDb.pending, (state) => {
@@ -40,4 +44,5 @@ const teamSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = teamSlice.actions;
 export default teamSlice.reducer;

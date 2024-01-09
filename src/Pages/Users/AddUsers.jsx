@@ -18,7 +18,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_USERS } from '../../components/Common/Const';
 import axiosInstance from "../../Features/axios";
-import { addUserToDb } from "../../Features/Tabs/usersSlice";
+import { addUserToDb, updateSavedState } from "../../Features/Tabs/usersSlice";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 
@@ -57,6 +57,7 @@ function AddUsers() {
 
   useEffect(() => {
     if (isSaved) {
+      dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/users");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setDisabledFields({})
@@ -66,7 +67,7 @@ function AddUsers() {
       }
       setCurrentSaveAction(undefined)
     }
-  });
+  }, [isSaved]);
 
   const fetchData = async (id) => {
     await axiosInstance

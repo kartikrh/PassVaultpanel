@@ -24,7 +24,11 @@ const changePassWord = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(changePassword.pending, (state) => {
@@ -41,4 +45,5 @@ const changePassWord = createSlice({
     }
 });
 
+export const { updateSavedState } = changePassWord.actions;
 export default changePassWord.reducer;

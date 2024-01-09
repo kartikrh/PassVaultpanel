@@ -294,7 +294,12 @@ const Index = () => {
     switch: false,
     subTable: true,
     resetButton: true,
-    isActive: true
+    isActive: true,
+    displayTypes : [
+      // {label: "Select Display Type", value:0},
+      {label: "Admin", value: 1},
+      {label: "Agent", value: 2},
+  ]
   };
 
   useEffect(() => {
@@ -333,7 +338,6 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             breadCrumbs={selectedTabHistory}
-            handleReset={handleReset}
             onBreadCrumbsClick={handleBreadCrumbsClick}
           />
           <DeleteTabModel

@@ -24,7 +24,11 @@ const commentarySlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addCommentaryToDb.pending, (state) => {
@@ -41,4 +45,5 @@ const commentarySlice = createSlice({
     }
 });
 
+export const { updateSavedState } = commentarySlice.actions;
 export default commentarySlice.reducer;
