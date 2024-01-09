@@ -247,6 +247,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     id={field.name}
                     rows={field?.defaultRows || 2}
                     name={field.name}
+                    disabled={disabledFields?.[field.name]}
                     value={formData[field.name] || formData[field.dataKey] || ""}
                     onChange={(e) => handleChange(field, e.target.value)}
                     required={field.isRequired}
@@ -408,6 +409,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     className="form-control"
                     style={field?.customStyle}
                     type="datetime-local"
+                    disabled={disabledFields?.[field.name]}
                     value={formData[field.name] || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
@@ -418,6 +420,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     className="form-control"
                     style={field?.customStyle}
                     type="number"
+                    disabled={disabledFields?.[field.name]}
                     value={formData[field.name] || field.defaultValue || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
