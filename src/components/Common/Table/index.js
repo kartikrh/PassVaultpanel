@@ -2,6 +2,7 @@ import React, {
   useState,
   useEffect,
   forwardRef,
+  useRef,
   useImperativeHandle,
 } from "react";
 import "./style.css";
@@ -74,6 +75,7 @@ const Index = forwardRef(
     const [statusSwitch, setStatusSwitch] = useState(true);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const selectInputRef = useRef(null);
 
     useEffect(() => {
       setData(filteredData);
@@ -303,10 +305,14 @@ const Index = forwardRef(
     };
 
     const handleTableReset = () => {
+      // setTimeout(()=>{
+      //   selectInputRef.current.select.clearValue();
+      // },2000)
       setSearchTerm("");
 
       setTableActions({
         isActive: true,
+        // displayType: null
       });
       setStatusSwitch(true);
       handleReset({
@@ -405,19 +411,32 @@ const Index = forwardRef(
                           })}
                         </select>
                           {/* <Col>
-                          <Select
-                            classNamePrefix="select2-selection"
-                            placeholder="Select Display Type"
-                            options={tableElement?.displayTypes}
-                            defaultValue={{
-                              value: 0,
-                              label: "Select Display Type",
-                            }}
-                            onChange={(e) => {
-                              handleTableActions("displayType", e.value);
-                            }}
-                            defaultInputValue={tableActions?.displayType}
-                          />
+                            <Select
+                              classNamePrefix="select2-selection"
+                              placeholder="Select Display Type"
+                              options={tableElement?.displayTypes}
+                              ref={selectInputRef}
+                              onChange={(e) => {
+                                handleTableActions("displayType", e.value);
+                              }}
+                              isClearable={true}
+                              styles={{
+                                option: (provided, state) => ({
+                                  ...provided,
+                                  whiteSpace: 'nowrap', // Prevents text from wrapping
+                                  overflow: 'hidden',   // Hides any overflowing text
+                                  textOverflow: 'ellipsis', // Adds an ellipsis (...) for overflow
+                                }),
+                                menu: (provided, state) => ({
+                                  whiteSpace: "nowrap", // Prevents text from wrapping
+                                  overflow: "hidden", // Hides any overflowing text
+                                  textOverflow: "ellipsis", // Adds an ellipsis (...) for overflow
+                                  ...provided,
+                                  width: "200px", // Set a specific width for the dropdown menu
+                                }),
+                              }}
+                              defaultInputValue={tableActions?.displayType}
+                            />
                           </Col> */}
                         </div>
                       ) : null}

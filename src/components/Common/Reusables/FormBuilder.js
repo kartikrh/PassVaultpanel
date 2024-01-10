@@ -86,7 +86,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const validateAllFields = (doNotValidateFields) => {
     const errors = {};
-
     fields.forEach((field) => {
       const value = formData[field.name];
       const shouldValidate =
@@ -112,6 +111,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     for (const key in data) {
       if (imageFields.includes(key)) {
         typeof data[key] === "string" && delete data[key];
+        data[key] === null && delete data[key];
       }
     }
     return data
