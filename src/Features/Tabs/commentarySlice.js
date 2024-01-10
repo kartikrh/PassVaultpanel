@@ -16,6 +16,21 @@ export const addCommentaryToDb = createAsyncThunk(
         }
     }
 );
+export const addCommentaryDetailsToDb = createAsyncThunk(
+    'commentary/addCommentaryDetails',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
+
+
 
 const commentarySlice = createSlice({
     name: 'commentary',
@@ -39,6 +54,17 @@ const commentarySlice = createSlice({
                 state.isLoading = false;
             })
             .addCase(addCommentaryToDb.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(addCommentaryDetailsToDb.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addCommentaryDetailsToDb.fulfilled, (state, action) => {
+                state.isSaved = true
+                state.isLoading = false;
+            })
+            .addCase(addCommentaryDetailsToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
