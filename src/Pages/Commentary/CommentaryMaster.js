@@ -10,7 +10,7 @@ import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
-import { Toss } from './Toss';
+import Toss from './Toss';
 import { PlayerSelection } from './Playerselection';
 import { Commentary } from './Commentary';
 
