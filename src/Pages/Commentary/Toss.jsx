@@ -3,6 +3,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Avatar } from "antd";
 import {
+  Button,
   Card,
   CardBody,
   CardText,
@@ -20,10 +21,10 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import classnames from "classnames";
 
-const Index = (props) => {
+const Index = ({data, next, save,exit,previous}) => {
   const finalizeRef = useRef(null);
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,37 +35,35 @@ const Index = (props) => {
       setactiveTab1(tab);
     }
   };
-  // fetch data
-  const fetchData = async () => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/detailsById`, {
-        commentaryId: "adb399ae69ad081848002bd9b928e4ad",
-      })
-      .then((response) => {
-        const apiData = response?.result;
-        const commentaryDetails = response?.result.commentaryDetails;
-        const commentaryTeams = response?.result.commentaryTeams;
-        setData(apiData);
-        setCommentaryDetails(commentaryDetails);
-        setCommentaryTeams(commentaryTeams);
-        console.log("this is commentary details ====>>>", apiData);
-        console.log("this is commentary Teams ====>>>", commentaryTeams);
-        console.log(
-          "this is commentary commentaryDetails ====>>>",
-          commentaryDetails
-        );
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
-  };
 
+  const handleWinBy = (shortName, teamId) =>{
+    console.log(shortName ,"-", teamId)
+    setCommentaryDetails((preValue)=>{
+      return{
+        ...preValue,
+        tossWonBy : teamId,
+        displayStatus: `Toss Won by ${shortName} choose to bat`,
+      }
+    })
+  }
+
+  const handleChoseTo = (val) =>{
+    setCommentaryDetails((preValue)=>{
+      return{
+        ...preValue,
+        choseTo: val
+      }
+    })
+  }
   useEffect(() => {
-    fetchData();
-  }, []);
-
+    setCommentaryDetails(data?.commentaryDetails)
+    setCommentaryTeams(data?.commentaryTeams);
+    console.log("this is data", data)
+    // fetchData()
+  }, [data, next, save,]);
+  useEffect(()=>{
+console.log("this is after click data", commentaryDetails)
+  },[commentaryDetails])
   return (
     <React.Fragment>
       <button onClick={() => { props.next() }}>Next </button>
@@ -115,7 +114,7 @@ const Index = (props) => {
                   <TabPane tabId="5">
                     <Row className="">
                       <Col xs="12" sm="6" className="">
-                        <div className="bg-primary m-1 py-5 rounded">
+                        <div className="bg-info m-1 py-5 rounded">
                           <div className="form-check mb-2 d-flex align-items-center">
                             <input
                               type="radio"
@@ -123,7 +122,7 @@ const Index = (props) => {
                               style={{ transform: "scale(1.5)" }}
                               id="exampleRadios1"
                               defaultValue="option1"
-                              defaultChecked
+                              onClick={()=>{handleWinBy(commentaryTeams && commentaryTeams[0]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId)}}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -139,13 +138,13 @@ const Index = (props) => {
                                 height={40}
                                 src="CommentaryIcons/CricketTeam.png"
                               /> {" "}
-                              {commentaryTeams[0]?.shortName}
+                              {commentaryTeams && commentaryTeams[0]?.shortName}
                             </label>
                           </div>
                         </div>
                       </Col>
                       <Col xs="12" sm="6" className="">
-                        <div className="bg-primary m-1 py-5 rounded">
+                        <div className="bg-info m-1 py-5 rounded">
                           <div className="form-check mb-2">
                             <input
                               type="radio"
@@ -154,7 +153,7 @@ const Index = (props) => {
                               id="exampleRadios1"
                               style={{ transform: "scale(1.5)" }}
                               defaultValue="option1"
-                              defaultChecked
+                              onClick={()=>{handleWinBy(commentaryTeams && commentaryTeams[1]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId)}}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -170,7 +169,7 @@ const Index = (props) => {
                                 height={40}
                                 src="CommentaryIcons/CricketTeam.png"
                               />{" "}
-                              {commentaryTeams[1]?.shortName}
+                              {commentaryTeams && commentaryTeams[1]?.shortName}
                             </label>
                           </div>
                         </div>
@@ -184,7 +183,7 @@ const Index = (props) => {
                               id="exampleRadios1"
                               style={{ transform: "scale(1.5)" }}
                               defaultValue="option1"
-                              defaultChecked
+                              onClick={()=>{handleChoseTo(1)}}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -206,7 +205,7 @@ const Index = (props) => {
                         </div>
                       </Col>
                       <Col xs="12" sm="6" className="">
-                        <div className="bg-success m-1 py-5 rounded">
+                        <div className="bg-warning m-1 py-5 rounded">
                           <div className="form-check mb-2">
                             <input
                               type="radio"
@@ -214,7 +213,7 @@ const Index = (props) => {
                               id="exampleRadios1"
                               defaultValue="option1"
                               style={{ transform: "scale(1.5)" }}
-                              defaultChecked
+                              onClick={()=>{handleChoseTo(2)}}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -257,6 +256,8 @@ const Index = (props) => {
               </CardBody>
             </Card>
           </Col>
+          <button className="btn btn-primary" onClick={() => { next() }}>Next</button> {" "}
+          <button className="btn btn-success" onClick={() => { previous() }}>Previous</button>
         </Container>
       </div>
     </React.Fragment>
