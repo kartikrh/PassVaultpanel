@@ -20,7 +20,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import classnames from "classnames";
 
-const Index = () => {
+const Index = (props) => {
   const finalizeRef = useRef(null);
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
@@ -67,6 +67,8 @@ const Index = () => {
 
   return (
     <React.Fragment>
+      <button onClick={() => { props.next() }}>Next </button>
+      <button onClick={() => { props.previous() }}>Previous </button>
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
