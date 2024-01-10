@@ -28,6 +28,7 @@ import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
 import ChangePassword from '../Pages/ChangePassword'
+import Toss from '../Pages/Commentary/Toss.jsx'
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -71,6 +72,7 @@ const authProtectedRoutes = [
   { path: '/commentary', component: <Commentary /> },
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/commentaryMaster', component: <CommentaryMaster /> },
+  { path: '/Toss', component: <Toss /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
   {
