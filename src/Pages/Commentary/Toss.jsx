@@ -66,8 +66,6 @@ console.log("this is after click data", commentaryDetails)
   },[commentaryDetails])
   return (
     <React.Fragment>
-      <button onClick={() => { props.next() }}>Next </button>
-      <button onClick={() => { props.previous() }}>Previous </button>
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
