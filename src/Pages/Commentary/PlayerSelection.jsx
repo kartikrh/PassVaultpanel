@@ -1,11 +1,14 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import { Button, Card, CardBody, Col, Container, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, Row, Table } from 'reactstrap'
+import { Button, Card, CardBody, CardTitle, Col, Container, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, Row, TabContent, Table } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR } from '../../components/Common/Const'
+import Breadcrumbs from '../../components/Common/Breadcrumb'
 
 const PlayerSelection = forwardRef((props, ref) => {
-  const { data } = props;
+  document.title = "Player Selection | ScoreCard - React Admin & Dashboard Template";
+
+  const { data, next, previous } = props;
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
@@ -102,9 +105,9 @@ const PlayerSelection = forwardRef((props, ref) => {
     } else if (teamListStatus === 2) {
       setSelectedBowler(bowlingteamplayer.find(i => i.playerId === playerId))
       updatedData = {
-        isPlay: false,
+        isPlay: true,
+        bowlerOver: 1,
         bowlerStatus: 1,
-        onStrike: false,
       }
     }
     const updatedStrikerPlayerDetails = commentaryTeamsPlayersDetails.map(
@@ -124,103 +127,141 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   return (
     <React.Fragment>
-      <button onClick={() => { props.next() }}>Next </button>
-      <button onClick={() => { props.previous() }}>Previous </button>
       <div className="page-content">
-        <Nav pills className="nav nav-pills mt-4">
-          <NavItem style={{ cursor: "pointer", width: "50%" }}>
-            <NavLink
-              style={{ textAlign: "center" }}
-              onClick={() => { props.previous() }}
-            >
-              <i className="dripicons-home me-1 align-middle"> </i>{" "}
-              Select Toss
-            </NavLink>
-          </NavItem>
-          <NavItem style={{ cursor: "pointer", width: "50%" }}>
-            <NavLink
-              style={{ textAlign: "center" }}
-              className="active"
-            >
-              <i className="dripicons-user me-1 align-middle"></i>{" "}
-              Batter - Bowler
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <Container fluid={true}>
-          <Row>
+        <Container className="p-0" >
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Player Selection" />
+
+          <Col xl={12}>
             <Card>
-              <CardBody>
-                <Row>
-                  <Col sm="6">
-                    <Card inverse>
-                      <Button className="d-flex align-items-center p-3 border-0" style={{ backgroundColor: "#F1556C", height: "150px" }} onClick={() => openModel(1)}>
+
+              <CardBody className="p-0" >
+                <CardTitle className="h4">
+                  Player Selection For Current Innings
+                </CardTitle>
+
+                <Nav pills className="nav nav-pills mt-4">
+                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
+                    <NavLink
+                      style={{ textAlign: "center" }}
+                    >
+                      <i className="dripicons-home me-1 align-middle"> </i>{" "}
+                      Select Toss
+                    </NavLink>
+                  </NavItem>
+                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
+                    <NavLink
+                      style={{ textAlign: "center" }}
+                      className="active"
+                    >
+                      <i className="dripicons-user me-1 align-middle"></i>{" "}
+                      Batter - Bowler
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                <TabContent className="p-3">
+                  <Row>
+                    <Col xs="12" sm="6">
+                      <div className="bg-info m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1)}>
                         <div className='d-flex flex-column' >
-                          <img
-                            src="https://cdn-icons-png.flaticon.com/128/2865/2865157.png"
-                            data-src="https://cdn-icons-png.flaticon.com/128/2865/2865157.png"
-                            alt="Cricketbatter "
-                            title="Cricket batter "
-                            className='mb-2'
-                            width="64"
-                            height="64"
-                            class="lzy lazyload--done"
-                            srcset="https://cdn-icons-png.flaticon.com/128/2865/2865157.png"
-                          />
-                          <div>
-                            Select Striker {selectedStriker && `>> ${selectedStriker.playerName}`}
+                          <div className='d-flex align-items-center' >
+                            <img
+                              src="CommentaryIcons/CricketTeam.png"
+                              alt="Cricketbatter "
+                              title="Cricket batter "
+                              className='mb-2'
+                              width={40}
+                              height={40}
+                              class="lzy lazyload--done"
+                            />
+                            <span
+                              style={{
+                                fontSize: "20px",
+                                marginLeft: "10px",
+                                color: "white",
+                              }}>
+                              Select Striker
+                            </span>
+                          </div>
+                          <div
+                            className='mt-2'
+                            style={{
+                              fontSize: "20px",
+                              marginLeft: "10px",
+                              color: "white",
+                            }}>
+                            {selectedStriker?.playerName}
                           </div>
                         </div>
-                      </Button>
-                    </Card>
-                  </Col>
-                  <Col sm="6">
-                    <Card inverse>
-                      <Button className="d-flex align-items-center p-3 border-0" style={{ backgroundColor: "#F672A7", height: "150px" }} onClick={() => openModel(1, false)}>
+                      </div>
+                    </Col>
+                    <Col xs="12" sm="6">
+                      <div className="bg-danger m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1, false)}>
                         <div className='d-flex flex-column' >
-                          <img
-                            src="https://cdn-icons-png.flaticon.com/128/2865/2865157.png"
-                            data-src="https://cdn-icons-png.flaticon.com/128/2865/2865157.png"
-                            alt="Cricketbatter "
-                            title="Cricket batter "
-                            className='mb-2'
-                            width="64"
-                            height="64"
-                            class="lzy lazyload--done"
-                            srcset="https://cdn-icons-png.flaticon.com/128/2865/2865157.png"
-                          />
-                          <div>
-                            Select NonStriker {selectedNonStriker && `>> ${selectedNonStriker.playerName}`}
+                          <div className='d-flex align-items-center' >
+                            <img
+                              src="CommentaryIcons/CricketTeam.png"
+                              alt="Cricketbatter"
+                              width={40}
+                              height={40}
+                            />
+                            <span
+                              style={{
+                                fontSize: "20px",
+                                marginLeft: "10px",
+                                color: "white",
+                              }}>
+                              Select NonStriker
+                            </span>
+                          </div>
+                          <div
+                            className='mt-2'
+                            style={{
+                              fontSize: "20px",
+                              marginLeft: "10px",
+                              color: "white",
+                            }}>
+                            {selectedNonStriker?.playerName}
                           </div>
                         </div>
-                      </Button>
-                    </Card>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Card inverse>
-                      <Button className="d-flex align-items-center p-3 border-0" style={{ backgroundColor: "#F7B84B", height: "150px" }} onClick={() => openModel(2)}>
-                        <div className='d-flex flex-column'>
-                          <img
-                            srcset="https://cdn-icons-png.flaticon.com/128/5140/5140351.png 1x, https://cdn-icons-png.flaticon.com/128/5140/5140351.png 2x"
-                            width="30"
-                            height="30"
-                            alt="Cricketer icon"
-                            className='mb-2'
-                            data-v-b4b8095a=""
-                          />
-                          <div>
-                            Bowler {selectedBowler && `>> ${selectedBowler.playerName}`}
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
+                        <div className='d-flex flex-column' >
+                          <div className='d-flex align-items-center' >
+                            <img
+                              src="CommentaryIcons/ball.png"
+                              width={40}
+                              height={40}
+                            />
+                            <span
+                              style={{
+                                fontSize: "20px",
+                                marginLeft: "10px",
+                                color: "white",
+                              }}>
+                              Bowler
+                            </span>
+                          </div>
+                          <div
+                            className='mt-2'
+                            style={{
+                              fontSize: "20px",
+                              marginLeft: "10px",
+                              color: "white",
+                            }}>
+                            {selectedBowler?.playerName}
                           </div>
                         </div>
-                      </Button>
-                    </Card>
-                  </Col>
-                </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </TabContent>
               </CardBody>
             </Card>
-          </Row>
+          </Col>
+          <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
+          <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
         </Container>
         <Modal style={{ marginTop: "80px" }} zIndex={1000} isOpen={modal} toggle={toggle} scrollable>
           <ModalHeader toggle={toggle}>
