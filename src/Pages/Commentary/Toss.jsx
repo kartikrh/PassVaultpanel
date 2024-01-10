@@ -21,7 +21,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import classnames from "classnames";
 
-const Index = ({data, next, save,exit,previous}) => {
+const Index = ({ data, next, save, exit, previous }) => {
   const finalizeRef = useRef(null);
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
   // const [data, setData] = useState([]);
@@ -36,20 +36,20 @@ const Index = ({data, next, save,exit,previous}) => {
     }
   };
 
-  const handleWinBy = (shortName, teamId) =>{
-    console.log(shortName ,"-", teamId)
-    setCommentaryDetails((preValue)=>{
-      return{
+  const handleWinBy = (shortName, teamId) => {
+    console.log(shortName, "-", teamId)
+    setCommentaryDetails((preValue) => {
+      return {
         ...preValue,
-        tossWonBy : teamId,
+        tossWonBy: teamId,
         displayStatus: `Toss Won by ${shortName} choose to bat`,
       }
     })
   }
 
-  const handleChoseTo = (val) =>{
-    setCommentaryDetails((preValue)=>{
-      return{
+  const handleChoseTo = (val) => {
+    setCommentaryDetails((preValue) => {
+      return {
         ...preValue,
         choseTo: val
       }
@@ -61,32 +61,27 @@ const Index = ({data, next, save,exit,previous}) => {
     console.log("this is data", data)
     // fetchData()
   }, [data, next, save,]);
-  useEffect(()=>{
-console.log("this is after click data", commentaryDetails)
-  },[commentaryDetails])
+  useEffect(() => {
+    console.log("this is after click data", commentaryDetails)
+  }, [commentaryDetails])
   return (
     <React.Fragment>
       <div className="page-content">
-        <Container fluid={true}>
+        <Container className="p-0" >
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
           {isLoading && <SpinnerModel />}
           <Col xl={12}>
             <Card>
-              <CardBody>
+              <CardBody className="p-0" >
                 <CardTitle className="h4">
-                  Toss And Player Selection For Current Innings
+                  Toss For Current Innings
                 </CardTitle>
 
                 <Nav pills className="nav nav-pills mt-4">
                   <NavItem style={{ cursor: "pointer", width: "50%" }}>
                     <NavLink
                       style={{ textAlign: "center" }}
-                      className={classnames({
-                        active: activeTab1 === "5",
-                      })}
-                      onClick={() => {
-                        toggle1("5");
-                      }}
+                      className="active"
                     >
                       <i className="dripicons-home me-1 align-middle"> </i>{" "}
                       Select Toss
@@ -95,12 +90,6 @@ console.log("this is after click data", commentaryDetails)
                   <NavItem style={{ cursor: "pointer", width: "50%" }}>
                     <NavLink
                       style={{ textAlign: "center" }}
-                      className={classnames({
-                        active: activeTab1 === "6",
-                      })}
-                      onClick={() => {
-                        toggle1("6");
-                      }}
                     >
                       <i className="dripicons-user me-1 align-middle"></i>{" "}
                       Batter - Bowler
@@ -108,8 +97,7 @@ console.log("this is after click data", commentaryDetails)
                   </NavItem>
                 </Nav>
 
-                <TabContent activeTab={activeTab1} className="p-3 ">
-                  <TabPane tabId="5">
+                <TabContent className="p-3 ">
                     <Row className="">
                       <Col xs="12" sm="6" className="">
                         <div className="bg-info m-1 py-5 rounded">
@@ -120,7 +108,7 @@ console.log("this is after click data", commentaryDetails)
                               style={{ transform: "scale(1.5)" }}
                               id="exampleRadios1"
                               defaultValue="option1"
-                              onClick={()=>{handleWinBy(commentaryTeams && commentaryTeams[0]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId)}}
+                              onClick={() => { handleWinBy(commentaryTeams && commentaryTeams[0]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId) }}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -151,7 +139,7 @@ console.log("this is after click data", commentaryDetails)
                               id="exampleRadios1"
                               style={{ transform: "scale(1.5)" }}
                               defaultValue="option1"
-                              onClick={()=>{handleWinBy(commentaryTeams && commentaryTeams[1]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId)}}
+                              onClick={() => { handleWinBy(commentaryTeams && commentaryTeams[1]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId) }}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -181,7 +169,7 @@ console.log("this is after click data", commentaryDetails)
                               id="exampleRadios1"
                               style={{ transform: "scale(1.5)" }}
                               defaultValue="option1"
-                              onClick={()=>{handleChoseTo(1)}}
+                              onClick={() => { handleChoseTo(1) }}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -211,7 +199,7 @@ console.log("this is after click data", commentaryDetails)
                               id="exampleRadios1"
                               defaultValue="option1"
                               style={{ transform: "scale(1.5)" }}
-                              onClick={()=>{handleChoseTo(2)}}
+                              onClick={() => { handleChoseTo(2) }}
                             />{" "}
                             <label
                               className="form-check-label"
@@ -233,29 +221,12 @@ console.log("this is after click data", commentaryDetails)
                         </div>
                       </Col>
                     </Row>
-                  </TabPane>
-                  <TabPane tabId="6">
-                    <Row>
-                      <Col sm="12">
-                        <CardText className="mb-0">
-                          Raw denim you probably haven't heard of them jean
-                          shorts Austin. Nesciunt tofu stumptown aliqua, retro
-                          synth master cleanse. Mustache cliche tempor,
-                          williamsburg carles vegan helvetica. Reprehenderit
-                          butcher retro synth. Cosby sweater eu banh mi, qui
-                          irure terry richardson ex squid. Aliquip placeat
-                          salvia cillum iphone. Seitan aliquip quis cardigan
-                          american apparel, butcher voluptate nisi qui.
-                        </CardText>
-                      </Col>
-                    </Row>
-                  </TabPane>
                 </TabContent>
               </CardBody>
             </Card>
           </Col>
-          <button className="btn btn-primary" onClick={() => { next() }}>Next</button> {" "}
-          <button className="btn btn-success" onClick={() => { previous() }}>Previous</button>
+          <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
+          <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
         </Container>
       </div>
     </React.Fragment>
