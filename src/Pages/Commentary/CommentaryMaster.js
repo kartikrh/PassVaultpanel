@@ -1,24 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY } from '../../components/Common/Const';
+import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, TAB_COMMENTARY } from '../../components/Common/Const';
 import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { Toss } from './Toss';
+import { PlayerSelection } from './Playerselection';
+import { Commentary } from './Commentary';
 
 const navigateTo = "/commentary"
 function CommentaryMaster() {
     const pageName = TAB_COMMENTARY
-    const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
-    const [initialEditData, setInitialEditData] = useState(undefined);
+    const [commentaryData, setCommentaryData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-    const [masterData, setMasterData] = useState({});
+    const [matchTypeData, setMatchTypeData] = useState({});
+    const [currentScreen, setCurrentScreen] = useState(COMMENTARY_TOSS_SCREEN)
     const [isDataLoading, setIsDataLoading] = useState(false)
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -45,20 +48,29 @@ function CommentaryMaster() {
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate(navigateTo)
-            else if (currentSaveAction === SAVE_AND_NEW) {
-                setInitialEditData({})
-                finalizeRef.current.resetForm()
+            else if (currentSaveAction === SAVE_AND_NEXT) {
+                setCurrentScreen(currentScreen + 1)
             }
             setCurrentSaveAction(undefined)
         }
     });
 
-    const fetchData = async (id) => {
+    const fetchData = async () => {
         setIsDataLoading(true)
         await axiosInstance.post('/admin/commentary/detailsById', { commentaryId })
-            .then((response) => {
-                console.log(response)
-                setInitialEditData(response?.result);
+            .then(async (response) => {
+                const commentaryData = response?.result
+                console.log("Commentary Data and MatchTypeId",
+                    commentaryData, commentaryData?.commentaryDetails?.matchTypeId)
+                setCommentaryData(commentaryData);
+                await axiosInstance.post('/admin/matchType/byId', { matchTypeId: commentaryData?.commentaryDetails?.matchTypeId })
+                    .then((response) => {
+                        setMatchTypeData(response?.result);
+                        setIsDataLoading(false)
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsDataLoading(false)
+                    });
                 setIsDataLoading(false)
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -66,8 +78,7 @@ function CommentaryMaster() {
             });
     };
 
-    const handleSaveClick = async (saveAction) => {
-        const dataToSave = finalizeRef.current.finalizeData()
+    const handleSaveClick = async (dataToSave, saveAction) => {
         if (dataToSave) {
             setCurrentSaveAction(saveAction);
             dispatch(addMatchTypeToDb(dataToSave))
@@ -96,27 +107,41 @@ function CommentaryMaster() {
                                         >
                                             <Button
                                                 disabled={!isSaveOrEditPermission}
-                                                id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>
+                                                id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_NEXT) }}>
                                                 Save & Next
                                             </Button>
                                             <DropdownToggle caret color="primary">
                                                 <i className="mdi mdi-chevron-down" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                                {isSaveOrEditPermission && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
-                                                }
-                                                {isSaveOrEditPermission && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>Save & Close</DropdownItem>
-                                                }
+                                                {isSaveOrEditPermission && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>}
+                                                {isSaveOrEditPermission && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>Save & Close</DropdownItem>}
                                             </DropdownMenu>
                                         </ButtonDropdown>
                                     </Col>
                                 </Row>
-                                <FormBuilder
-                                    ref={finalizeRef}
-                                    fields={MatchTypeFields}
-                                    editFormData={initialEditData}
-                                    masterData={masterData}
-                                />
+                                {currentScreen === COMMENTARY_TOSS_SCREEN &&
+                                    <Toss
+                                        data={commentaryData}
+                                        save={handleSaveClick}
+                                        next={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
+                                        exit={handleBackClick}
+                                    />}
+                                {currentScreen === COMMENTARY_PLAYER_SELECTION_SCREEN &&
+                                    <PlayerSelection
+                                        data={commentaryData}
+                                        save={handleSaveClick}
+                                        previous={() => { setCurrentScreen(COMMENTARY_TOSS_SCREEN) }}
+                                        next={() => { setCurrentScreen(COMMENTARY_MAIN_SCREEN) }}
+                                        exit={handleBackClick}
+                                    />}
+                                {currentScreen === COMMENTARY_MAIN_SCREEN &&
+                                    <Commentary
+                                        data={{ commentaryData, matchTypeData }}
+                                        save={handleSaveClick}
+                                        previous={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
+                                        exit={handleBackClick}
+                                    />}
                             </CardBody>
                         </Card>
                     </Row>
