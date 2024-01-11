@@ -47,11 +47,11 @@ const Index = ({ data, next, save }) => {
   }, [data, next, save]);
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="mt-5">
         <Container>
           <Card className="shadow-none">
             <div>
-              <h4 className={{fontWeight:600}}>Toss Selection</h4>
+              <h4 className={{fontWeight:700}}>Toss Selection</h4>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
                 <h5>Toss Won by?</h5>
