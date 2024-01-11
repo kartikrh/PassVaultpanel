@@ -70,7 +70,6 @@ function CommentaryMaster() {
                 console.log("Commentary Data and MatchTypeId",
                     commentaryData, commentaryData?.commentaryDetails?.matchTypeId)
                 setCommentaryData(commentaryData);
-                console.log("commentaryData?.commentaryDetails?.commentaryStatus", commentaryData?.commentaryDetails?.commentaryStatus, typeof commentaryData?.commentaryDetails?.commentaryStatus);
                 setCurrentScreen(commentaryData?.commentaryDetails?.commentaryStatus || 1)
                 await axiosInstance.post('/admin/matchType/byId', { matchTypeId: commentaryData?.commentaryDetails?.matchTypeId })
                     .then((response) => {
