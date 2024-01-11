@@ -35,11 +35,9 @@ const Index = ({ data, next, save }) => {
   };
 
 
-  const onClick = () => {};
   useEffect(() => {
     setCommentaryDetails(data?.commentaryDetails);
     setCommentaryTeams(data?.commentaryTeams);
-    console.log("this is data", commentaryDetails);
   }, [data, next, save]);
   return (
     <React.Fragment>
@@ -47,7 +45,7 @@ const Index = ({ data, next, save }) => {
         <Container>
           <Card className="shadow-none">
             <div>
-              <h4 className={{ fontWeight: 600 }}>Toss Selection</h4>
+              <h4 className={{fontWeight:600}}>Toss Selection</h4>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
                 <h5>Toss Won by?</h5>
@@ -89,7 +87,6 @@ const Index = ({ data, next, save }) => {
                         onClickColor={"#099680"}
                         bgColor={"#43a899"}
                         check={commentaryDetails?.choseTo === 1}
-                        onClick={onClick}
                       />
                     </Col>
                     <Col
@@ -106,7 +103,6 @@ const Index = ({ data, next, save }) => {
                         onClickColor={"#099680"}
                         bgColor={"#43a899"}
                         check={commentaryDetails?.choseTo === 2}
-                        onClick={onClick}
                       />
                     </Col>
                   </Row>
