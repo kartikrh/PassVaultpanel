@@ -1,18 +1,18 @@
 import React from "react";
 import { CardBody } from "reactstrap";
 
-const CardComponent = ({ title, titleIcon, name, icon, bgColor, onClickColor, onClick, check, isPlayerName= false }) => {
+const CardComponent = ({ title, titleIcon, name, bgColor, onClickColor, onClick, check, isPlayerName = false }) => {
   return (
-    <div className="card">
+    <div role="button" className="card">
       <CardBody
         className="rounded"
         onClick={onClick}
-        style={{ backgroundColor: check ? onClickColor : bgColor }}
+        style={{ backgroundColor: check ? onClickColor : bgColor, border: `2px solid ${onClickColor}` }}
       >
         <div className="">
           <div className="d-flex flex-column justify-content-center align-items-center">
             <i
-              className={ check ? "bx bxs-check-circle" : "bx bx-circle"}
+              className={check ? "bx bxs-check-circle" : "bx bx-circle"}
               style={{ fontSize: "25px", color: "white" }}
             ></i>
             <span
@@ -25,18 +25,19 @@ const CardComponent = ({ title, titleIcon, name, icon, bgColor, onClickColor, on
                 display:"flex", alignItems:"center"
               }}
             >
-             {titleIcon && <img src={titleIcon} style={{marginRight:"10px"}} width={25} height={25} alt="icon"/>} {" "} {title}
+              {titleIcon && <img src={titleIcon} style={{ marginRight: "10px" }} width={25} height={25} alt="icon" />} {" "}
+              {title}
             </span>
             {isPlayerName && (<span
               className=""
               style={{
                 fontWeight: 600,
-                fontSize: "20px",
+                fontSize: "22px",
                 marginLeft: "15px",
                 color: "white",
               }}
             >
-              {name || "Player Name"}
+              {name || "Select Player"}
             </span>)}
           </div>
         </div>

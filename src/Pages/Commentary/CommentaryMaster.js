@@ -98,11 +98,9 @@ function CommentaryMaster() {
                         <Card>
                             <CardBody>
                                 {(isLoading || isDataLoading) && <SpinnerModel />}
-                                <Row>
-                                    <Col className='mb-3'>
-                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
-                                    </Col>
-                                </Row>
+                                <Container className="d-flex justify-content-end">
+                                    <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
+                                </Container>
                                 {currentScreen === COMMENTARY_TOSS_SCREEN &&
                                     <Toss
                                         data={commentaryData}
