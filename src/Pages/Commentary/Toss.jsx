@@ -22,7 +22,9 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import classnames from "classnames";
 import CardComponent from "./CardComponent";
-
+import { useDispatch } from "react-redux";
+import { updateToastData } from "../../Features/toasterSlice";
+import { ERROR } from "../../components/Common/Const";
 const Index = ({ data, next, save, exit, previous }) => {
   const finalizeRef = useRef(null);
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
@@ -31,7 +33,8 @@ const Index = ({ data, next, save, exit, previous }) => {
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab1, setactiveTab1] = useState("5");
-  const [check, setCheck] = useState(false)
+  const [check, setCheck] = useState(false);
+  const dispatch = useDispatch();
   const [toss, setToss] = useState({
     wonBy: "",
     chooseTo: "",
@@ -61,9 +64,8 @@ const Index = ({ data, next, save, exit, previous }) => {
       };
     });
   };
-  const onClick = () =>{
-    setCheck(!check)
-  }
+
+  const onClick = () => {};
   useEffect(() => {
     setCommentaryDetails(data?.commentaryDetails);
     setCommentaryTeams(data?.commentaryTeams);
@@ -77,76 +79,101 @@ const Index = ({ data, next, save, exit, previous }) => {
         <Container>
           <Card className="shadow-none">
             <div>
-              <h4 className={{fontWeight:600}}>Toss Selection</h4>
+              <h4 className={{ fontWeight: 600 }}>Toss Selection</h4>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
                 <h5>Toss Won by?</h5>
                 <Row>
-                  <Col xs={6}>
-                    <CardComponent
-                      title={commentaryTeams && commentaryTeams[0]?.teamName}
-                      selectIcon={"bx bxs-check-circle"}
-                      onClickColor={"#099680"}
-                      bgColor={"#43a899"}
-                      check={check}
-                      onClick = {onClick}
-                    />
-                  </Col>
-                  <Col xs={6}>
-                    <CardComponent
-                      title={commentaryTeams && commentaryTeams[1]?.teamName}
-                      selectIcon={"bx bx-circle"}
-                      onClickColor={"#099680"}
-                      bgColor={"#43a899"}
-                      check={check}
-                      onClick = {onClick}
-                    />
-                  </Col>
+                  {commentaryTeams?.map((val, index) => (
+                    <Col
+                      key={index}
+                      xs={6}
+                      onClick={() => {
+                        setToss({ ...toss, wonBy: val?.teamId });
+                      }}
+                    >
+                      <CardComponent
+                        title={val.teamName}
+                        selectIcon={"bx bxs-check-circle"}
+                        onClickColor={"#099680"}
+                        bgColor={"#43a899"}
+                        check={val.teamId === toss.wonBy}
+                        setToss={setToss}
+                      />
+                    </Col>
+                  ))}
                 </Row>
               </div>
-              {
-                toss.wonBy !== "" && 
+              {toss.wonBy !== "" && (
                 <div className="mt-2">
-                <h5>Choose To?</h5>
-                <Row>
-                  <Col xl="12" sm="6">
-                    <CardComponent
-                      title="Batting"
-                      titleIcon = "CommentaryIcons/bat1.png"
-                      selectIcon={"bx bxs-check-circle"}
-                      onClickColor={"#099680"}
-                      bgColor={"#43a899"}
-                      check={check}
-                      onClick = {onClick}
-                    />
-                  </Col>
-                  <Col xl="12" sm="6">
-                    <CardComponent
-                      title="Bowling"
-                      titleIcon = "CommentaryIcons/ball1.png"
-                      selectIcon={"bx bx-circle"}
-                      onClickColor={"#099680"}
-                      bgColor={"#43a899"}
-                      check={check}
-                      onClick = {onClick}
-                    />
-                  </Col>
-                </Row>
-              </div>
-              }
+                  <h5>Choose To?</h5>
+                  <Row>
+                    <Col
+                      xl="12"
+                      sm="6"
+                      onClick={() => {
+                        setToss({ ...toss, chooseTo: 1 });
+                      }}
+                    >
+                      <CardComponent
+                        title="Batting"
+                        titleIcon="CommentaryIcons/bat1.png"
+                        selectIcon={"bx bxs-check-circle"}
+                        onClickColor={"#099680"}
+                        bgColor={"#43a899"}
+                        check={toss?.chooseTo === 1}
+                        setToss={setToss}
+                        onClick={onClick}
+                      />
+                    </Col>
+                    <Col
+                      xl="12"
+                      sm="6"
+                      onClick={() => {
+                        setToss({ ...toss, chooseTo: 2 });
+                      }}
+                    >
+                      <CardComponent
+                        title="Bowling"
+                        titleIcon="CommentaryIcons/ball1.png"
+                        selectIcon={"bx bx-circle"}
+                        onClickColor={"#099680"}
+                        bgColor={"#43a899"}
+                        check={toss?.chooseTo === 2}
+                        setToss={setToss}
+                        onClick={onClick}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              )}
             </div>
           </Card>
-            <Button
-              className="d-flex align-items-center"
-              id="caret"
-              color="primary"
-              onClick={() => {
-                next();
-              }}
-            >
-              <span>Save & Next</span>
-              <i class="bx bxs-right-arrow ms-1"></i>
-            </Button>
+          {toss?.wonBy && (
+            <div className="d-flex align-items-center justify-content-end">
+              <Button
+                className="d-flex align-items-center"
+                id="caret"
+                color="primary"
+                onClick={() => {
+                  if ((toss.chooseTo != "") & (toss.wonBy != "")) {
+                    next();
+                  } else {
+                    return dispatch(
+                      updateToastData({
+                        data: `Check The Required Fields`,
+                        title: "Toss Selection",
+                        type: ERROR,
+                      })
+                    );
+                  }
+                }}
+              >
+                <span>Save & Next</span>
+                <i class="bx bxs-right-arrow ms-1"></i>
+              </Button>
+            </div>
+          )}
         </Container>
       </div>
     </React.Fragment>
