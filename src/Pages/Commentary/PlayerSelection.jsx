@@ -80,7 +80,7 @@ const PlayerSelection = forwardRef((props, ref) => {
   }
 
   const onPrevious = () => {
-    const newData = {...data};
+    const newData = { ...data };
     previous()
   }
 
@@ -153,12 +153,23 @@ const PlayerSelection = forwardRef((props, ref) => {
             <CardBody>
               <CardTitle className="h4">
                 <h3>
-                  India Selects Opening Batsmen
+                  Please Select India Selects Opening Batsmen
                 </h3>
               </CardTitle>
               <Row className='p-1 my-3'>
                 <Col xs="12" sm="6">
-                  <div className="bg-info m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1)}>
+                  <CardComponent
+                    title={"Striker"}
+                    check={selectedStriker?.playerName}
+                    name={selectedStriker?.playerName}
+                    onClick={() => openModel(1)}
+                    icon={"bx bxs-check-circle"}
+                    bgColor={"#24B9A2"}
+                    onClickColor={"#0BB197"}
+                    isPlayerName={true}
+                  />
+
+                  {/* <div className="bg-info m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1)}>
                     <div className='d-flex flex-column' >
                       <div className='d-flex align-items-center' >
                         <img
@@ -189,10 +200,21 @@ const PlayerSelection = forwardRef((props, ref) => {
                         {selectedStriker?.playerName}
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </Col>
                 <Col xs="12" sm="6">
-                  <div className="bg-danger m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1, false)}>
+                  <CardComponent
+                    title={"Non-Striker"}
+                    check={selectedNonStriker?.playerName}
+                    name={selectedNonStriker?.playerName}
+                    onClick={() => openModel(1, false)}
+                    icon={"bx bxs-check-circle"}
+                    bgColor={"#FF5170"}
+                    onClickColor={"#FF3D60"}
+                    isPlayerName={true}
+                  />
+
+                  {/* <div className="bg-danger m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1, false)}>
                     <div className='d-flex flex-column' >
                       <div className='d-flex align-items-center' >
                         <img
@@ -220,17 +242,26 @@ const PlayerSelection = forwardRef((props, ref) => {
                         {selectedNonStriker?.playerName}
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </Col>
               </Row>
               <CardTitle className="h4">
                 <h3>
-                  Australia Selects Opening Bowler
+                  Please Select Australia Selects Opening Bowler
                 </h3>
               </CardTitle>
               <Row className='p-1 my-3'>
                 <Col xs="12" sm="6">
-                <CardComponent name={"Bowler"} icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
+                  <CardComponent
+                    title={"Bowler"}
+                    check={selectedBowler?.playerName}
+                    name={selectedBowler?.playerName}
+                    onClick={() => openModel(2)}
+                    icon={"bx bxs-check-circle"}
+                    bgColor={"#FCC042"}
+                    onClickColor={"#FCB92C"}
+                    isPlayerName={true}
+                  />
 
                   {/* <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
                     <div className='d-flex flex-column' >

@@ -1,7 +1,7 @@
 import React from "react";
 import { CardBody } from "reactstrap";
 
-const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, check }) => {
+const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, check, isPlayerName= false }) => {
   return (
     <div className="card">
       <CardBody
@@ -13,7 +13,7 @@ const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, chec
           <div className="d-flex flex-column justify-content-center align-items-center">
             <i
 
-              className={icon && icon}
+              className={ check ? "bx bxs-check-circle" : "bx bx-circle"}
               style={{ fontSize: "25px", color: "white" }}
             ></i>
             <span
@@ -27,7 +27,7 @@ const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, chec
             >
               {title}
             </span>
-            {name && (<span
+            {isPlayerName && (<span
               className=""
               style={{
                 fontWeight: 600,
@@ -36,7 +36,7 @@ const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, chec
                 color: "white",
               }}
             >
-              {name}
+              {name || "Player Name"}
             </span>)}
           </div>
         </div>
