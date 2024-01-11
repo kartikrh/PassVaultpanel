@@ -44,11 +44,11 @@ function CommentaryMaster() {
         }
     }, [commentaryId]);
 
-    useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-            navigate("/dashboard")
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    //         navigate("/dashboard")
+    //     }
+    // }, []);
 
     useEffect(() => {
         if (isSaved) {
