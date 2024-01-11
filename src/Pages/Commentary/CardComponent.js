@@ -1,7 +1,7 @@
 import React from "react";
 import { CardBody } from "reactstrap";
 
-const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, check, isPlayerName= false }) => {
+const CardComponent = ({ title, titleIcon, name, icon, bgColor, onClickColor, onClick, check, isPlayerName= false }) => {
   return (
     <div className="card">
       <CardBody
@@ -22,9 +22,10 @@ const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, chec
                 fontSize: "18px",
                 marginLeft: "15px",
                 color: "white",
+                display:"flex", alignItems:"center"
               }}
             >
-              {title}
+             {titleIcon && <img src={titleIcon} style={{marginRight:"10px"}} width={25} height={25} alt="icon"/>} {" "} {title}
             </span>
             {isPlayerName && (<span
               className=""
