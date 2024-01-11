@@ -32,47 +32,26 @@ const Index = ({ data, next, save, exit, previous }) => {
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab1, setactiveTab1] = useState("5");
-  const [check, setCheck] = useState(false);
   const dispatch = useDispatch();
-  const [toss, setToss] = useState({
-    wonBy: "",
-    chooseTo: "",
-  });
-  const toggle1 = (tab) => {
-    if (activeTab1 !== tab) {
-      setactiveTab1(tab);
-    }
+  // const [commentaryDetails, setCommentaryDetails] = useState({
+  //   tossWonBy: "",
+  //   choseTo: "",
+  // });
+
+  const handleSave = () => {
+    save(commentaryDetails)
   };
 
-  const handleWinBy = (shortName, teamId) => {
-    console.log(shortName, "-", teamId);
-    setCommentaryDetails((preValue) => {
-      return {
-        ...preValue,
-        tossWonBy: teamId,
-        displayStatus: `Toss Won by ${shortName} choose to bat`,
-      };
-    });
-  };
-
-  const handleChoseTo = (val) => {
-    setCommentaryDetails((preValue) => {
-      return {
-        ...preValue,
-        choseTo: val,
-      };
-    });
-  };
 
   const onClick = () => {};
   useEffect(() => {
     setCommentaryDetails(data?.commentaryDetails);
     setCommentaryTeams(data?.commentaryTeams);
+    console.log("this is data", commentaryDetails);
   }, [data, next, save]);
-  useEffect(() => {
-    console.log("this is after click data", commentaryDetails);
-  }, [commentaryDetails]);
+  // useEffect(() => {
+  //   console.log("this is after click data", commentaryDetails);
+  // }, [commentaryDetails]);
   return (
     <React.Fragment>
       <div className="page-content">
@@ -89,7 +68,7 @@ const Index = ({ data, next, save, exit, previous }) => {
                       key={index}
                       xs={6}
                       onClick={() => {
-                        setToss({ ...toss, wonBy: val?.teamId });
+                        setCommentaryDetails({ ...commentaryDetails, tossWonBy: val?.teamId });
                       }}
                     >
                       <CardComponent
@@ -97,14 +76,13 @@ const Index = ({ data, next, save, exit, previous }) => {
                         selectIcon={"bx bxs-check-circle"}
                         onClickColor={"#099680"}
                         bgColor={"#43a899"}
-                        check={val.teamId === toss.wonBy}
-                        setToss={setToss}
+                        check={val.teamId === commentaryDetails?.tossWonBy}
                       />
                     </Col>
                   ))}
                 </Row>
               </div>
-              {toss.wonBy !== "" && (
+              {commentaryDetails?.tossWonBy !== "" && (
                 <div className="mt-2">
                   <h5>Choose To?</h5>
                   <Row>
@@ -112,7 +90,7 @@ const Index = ({ data, next, save, exit, previous }) => {
                       xl="12"
                       sm="6"
                       onClick={() => {
-                        setToss({ ...toss, chooseTo: 1 });
+                        setCommentaryDetails({ ...commentaryDetails, choseTo: 1 });
                       }}
                     >
                       <CardComponent
@@ -121,8 +99,7 @@ const Index = ({ data, next, save, exit, previous }) => {
                         selectIcon={"bx bxs-check-circle"}
                         onClickColor={"#099680"}
                         bgColor={"#43a899"}
-                        check={toss?.chooseTo === 1}
-                        setToss={setToss}
+                        check={commentaryDetails?.choseTo === 1}
                         onClick={onClick}
                       />
                     </Col>
@@ -130,7 +107,7 @@ const Index = ({ data, next, save, exit, previous }) => {
                       xl="12"
                       sm="6"
                       onClick={() => {
-                        setToss({ ...toss, chooseTo: 2 });
+                        setCommentaryDetails({ ...commentaryDetails, choseTo: 2 });
                       }}
                     >
                       <CardComponent
@@ -139,8 +116,7 @@ const Index = ({ data, next, save, exit, previous }) => {
                         selectIcon={"bx bx-circle"}
                         onClickColor={"#099680"}
                         bgColor={"#43a899"}
-                        check={toss?.chooseTo === 2}
-                        setToss={setToss}
+                        check={commentaryDetails?.choseTo === 2}
                         onClick={onClick}
                       />
                     </Col>
@@ -149,15 +125,15 @@ const Index = ({ data, next, save, exit, previous }) => {
               )}
             </div>
           </Card>
-          {toss?.wonBy && (
+          {commentaryDetails?.tossWonBy && (
             <div className="d-flex align-items-center justify-content-end">
               <Button
                 className="d-flex align-items-center"
                 id="caret"
                 color="primary"
                 onClick={() => {
-                  if ((toss.chooseTo != "") & (toss.wonBy != "")) {
-                    next();
+                  if ((commentaryDetails.choseTo != "") & (commentaryDetails.tossWonBy != "")) {
+                    handleSave();
                   } else {
                     return dispatch(
                       updateToastData({
