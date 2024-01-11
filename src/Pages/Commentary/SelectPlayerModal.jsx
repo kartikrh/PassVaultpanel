@@ -1,16 +1,19 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input, Modal, ModalBody, ModalHeader, Table } from 'reactstrap';
 
 const SelectPlayerModal = ({ playerList, toggle, modal, selectPlayer }) => {
     const [players, setPlayers] = useState(playerList);
     const [search, setSearch] = useState("");
 
-    const onSearch = (e) => {
-        const query = e.target.value;
-        setSearch(query);
-        // const filteredPlayers = players.filter(value=>value.playerName.toLowerCase().includes(query));
-        // setPlayers(filteredPlayers)
-    }
+    useEffect(() => {
+        setSearch("");
+        setPlayers(playerList);
+    }, [modal, playerList]);
+
+    useEffect(() => {
+        const filteredPlayers = playerList.filter(value => value.playerName.toLowerCase().includes(search.toLowerCase()));
+        setPlayers(filteredPlayers)
+    }, [search])
 
     return (
         <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={modal} toggle={toggle} scrollable>
@@ -25,7 +28,7 @@ const SelectPlayerModal = ({ playerList, toggle, modal, selectPlayer }) => {
                             type="text"
                             placeholder='Player Name'
                             value={search}
-                            onChange={onSearch}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                     </thead>
                     <tbody>

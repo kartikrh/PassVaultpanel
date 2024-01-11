@@ -1,15 +1,15 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Input, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, Row, TabContent, Table } from 'reactstrap'
+import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
-import { ERROR } from '../../components/Common/Const'
+import { ERROR, SAVE_AND_NEXT } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
 import SelectPlayerModal from './SelectPlayerModal'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection | ScoreCard - React Admin & Dashboard Template";
 
-  const { data, next, previous } = props;
+  const { data, next, previous, save } = props;
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
@@ -81,16 +81,25 @@ const PlayerSelection = forwardRef((props, ref) => {
   }
 
   const onPrevious = () => {
-    const newData = { ...data };
+    if (data) {
+      const newData = { ...data };
+      newData.commentaryDetails.commentaryStatus = 1;
+      save(newData)
+    }
     previous()
   }
 
   const onNext = () => {
-    const newData = { ...data };
+    if (data) {
+      const newData = { ...data };
+      newData.commentaryDetails.commentaryStatus = 3;
+      newData.commentaryTeamsPlayersDetails = commentaryTeamsPlayersDetails;
+      save(newData, SAVE_AND_NEXT)
+    }
     next()
   }
 
-  const getTeamList = () => {
+  const getTeamList = (teamListStatus) => {
     let team = [];
     if (teamListStatus === 1 && battingteamplayer.length) { team = battingteamplayer }
     else if (teamListStatus === 2 && bowlingteamplayer.length) { team = bowlingteamplayer }
@@ -244,13 +253,13 @@ const PlayerSelection = forwardRef((props, ref) => {
             </Button>
             {isNext && (<Button
               className='m-2 d-flex align-items-center'
-              id="caret" color="primary" onClick={() => { next() }}>
+              id="caret" color="primary" onClick={onNext}>
               <span>Save & Next</span>
               <i class='bx bxs-right-arrow ms-1'></i>
             </Button>)}
           </Container>
         </Container>
-        <SelectPlayerModal modal={modal} toggle={toggle} playerList={getTeamList()} selectPlayer={selectPlayer} />
+        <SelectPlayerModal modal={modal} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} />
       </div>
     </React.Fragment>
   )
