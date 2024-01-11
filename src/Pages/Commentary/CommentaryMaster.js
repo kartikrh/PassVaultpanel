@@ -13,6 +13,7 @@ import { checkPermission } from '../../components/Common/Reusables/reusableMetho
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
 import { Commentary } from './Commentary';
+import { addCommentaryDetailsToDb } from '../../Features/Tabs/commentarySlice';
 
 const navigateTo = "/commentary"
 function CommentaryMaster() {
@@ -81,7 +82,7 @@ function CommentaryMaster() {
     const handleSaveClick = async (dataToSave, saveAction) => {
         if (dataToSave) {
             setCurrentSaveAction(saveAction);
-            dispatch(addMatchTypeToDb(dataToSave))
+            dispatch(addCommentaryDetailsToDb(dataToSave))
         }
     };
 
@@ -98,26 +99,8 @@ function CommentaryMaster() {
                             <CardBody>
                                 {(isLoading || isDataLoading) && <SpinnerModel />}
                                 <Row>
-                                    <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
-                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
-                                        <ButtonDropdown
-                                            direction="down"
-                                            isOpen={drp_up}
-                                            toggle={() => setDrp_up(!drp_up)}
-                                        >
-                                            <Button
-                                                disabled={!isSaveOrEditPermission}
-                                                id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_NEXT) }}>
-                                                Save & Next
-                                            </Button>
-                                            <DropdownToggle caret color="primary">
-                                                <i className="mdi mdi-chevron-down" />
-                                            </DropdownToggle>
-                                            <DropdownMenu>
-                                                {isSaveOrEditPermission && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>}
-                                                {isSaveOrEditPermission && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>Save & Close</DropdownItem>}
-                                            </DropdownMenu>
-                                        </ButtonDropdown>
+                                    <Col className='mb-3'>
+                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
                                     </Col>
                                 </Row>
                                 {currentScreen === COMMENTARY_TOSS_SCREEN &&
@@ -125,7 +108,6 @@ function CommentaryMaster() {
                                         data={commentaryData}
                                         save={handleSaveClick}
                                         next={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
-                                        exit={handleBackClick}
                                     />}
                                 {currentScreen === COMMENTARY_PLAYER_SELECTION_SCREEN &&
                                     <PlayerSelection
@@ -133,14 +115,12 @@ function CommentaryMaster() {
                                         save={handleSaveClick}
                                         previous={() => { setCurrentScreen(COMMENTARY_TOSS_SCREEN) }}
                                         next={() => { setCurrentScreen(COMMENTARY_MAIN_SCREEN) }}
-                                        exit={handleBackClick}
                                     />}
                                 {currentScreen === COMMENTARY_MAIN_SCREEN &&
                                     <Commentary
                                         data={{ commentaryData, matchTypeData }}
                                         save={handleSaveClick}
                                         previous={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
-                                        exit={handleBackClick}
                                     />}
                             </CardBody>
                         </Card>

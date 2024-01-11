@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import { Button, Card, CardBody, CardTitle, Col, Container, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, Row, TabContent, Table } from 'reactstrap'
+import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, Row, TabContent, Table } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR } from '../../components/Common/Const'
@@ -128,140 +128,139 @@ const PlayerSelection = forwardRef((props, ref) => {
   return (
     <React.Fragment>
       <div className="page-content">
-        <Container className="p-0" >
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Player Selection" />
-
-          <Col xl={12}>
-            <Card>
-
-              <CardBody className="p-0" >
-                <CardTitle className="h4">
-                  Player Selection For Current Innings
-                </CardTitle>
-
-                <Nav pills className="nav nav-pills mt-4">
-                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
-                    <NavLink
-                      style={{ textAlign: "center" }}
-                    >
-                      <i className="dripicons-home me-1 align-middle"> </i>{" "}
-                      Select Toss
-                    </NavLink>
-                  </NavItem>
-                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
-                    <NavLink
-                      style={{ textAlign: "center" }}
-                      className="active"
-                    >
-                      <i className="dripicons-user me-1 align-middle"></i>{" "}
-                      Batter - Bowler
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-                <TabContent className="p-3">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <div className="bg-info m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1)}>
-                        <div className='d-flex flex-column' >
-                          <div className='d-flex align-items-center' >
-                            <img
-                              src="CommentaryIcons/CricketTeam.png"
-                              alt="Cricketbatter "
-                              title="Cricket batter "
-                              className='mb-2'
-                              width={40}
-                              height={40}
-                              class="lzy lazyload--done"
-                            />
-                            <span
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}>
-                              Select Striker
-                            </span>
-                          </div>
-                          <div
-                            className='mt-2'
-                            style={{
-                              fontSize: "20px",
-                              marginLeft: "10px",
-                              color: "white",
-                            }}>
-                            {selectedStriker?.playerName}
-                          </div>
-                        </div>
+        <Container >
+          <Card className='shadow-none' >
+            <CardHeader>
+              <h3>
+                Player Selection
+              </h3>
+            </CardHeader>
+            <CardBody>
+              <CardTitle className="h4">
+                <h3>
+                  India Selects Opening Batsmen
+                </h3>
+              </CardTitle>
+              <Row className='p-1 my-3'>
+                <Col xs="12" sm="6">
+                  <div className="bg-info m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1)}>
+                    <div className='d-flex flex-column' >
+                      <div className='d-flex align-items-center' >
+                        <img
+                          src="CommentaryIcons/CricketTeam.png"
+                          alt="Cricketbatter "
+                          title="Cricket batter "
+                          className='mb-2'
+                          width={40}
+                          height={40}
+                          class="lzy lazyload--done"
+                        />
+                        <span
+                          style={{
+                            fontSize: "20px",
+                            marginLeft: "10px",
+                            color: "white",
+                          }}>
+                          Select Striker
+                        </span>
                       </div>
-                    </Col>
-                    <Col xs="12" sm="6">
-                      <div className="bg-danger m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1, false)}>
-                        <div className='d-flex flex-column' >
-                          <div className='d-flex align-items-center' >
-                            <img
-                              src="CommentaryIcons/CricketTeam.png"
-                              alt="Cricketbatter"
-                              width={40}
-                              height={40}
-                            />
-                            <span
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}>
-                              Select NonStriker
-                            </span>
-                          </div>
-                          <div
-                            className='mt-2'
-                            style={{
-                              fontSize: "20px",
-                              marginLeft: "10px",
-                              color: "white",
-                            }}>
-                            {selectedNonStriker?.playerName}
-                          </div>
-                        </div>
+                      <div
+                        className='mt-2'
+                        style={{
+                          fontSize: "20px",
+                          marginLeft: "10px",
+                          color: "white",
+                        }}>
+                        {selectedStriker?.playerName}
                       </div>
-                    </Col>
-                    <Col>
-                      <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
-                        <div className='d-flex flex-column' >
-                          <div className='d-flex align-items-center' >
-                            <img
-                              src="CommentaryIcons/ball.png"
-                              width={40}
-                              height={40}
-                            />
-                            <span
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}>
-                              Bowler
-                            </span>
-                          </div>
-                          <div
-                            className='mt-2'
-                            style={{
-                              fontSize: "20px",
-                              marginLeft: "10px",
-                              color: "white",
-                            }}>
-                            {selectedBowler?.playerName}
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                </Col>
+                <Col xs="12" sm="6">
+                  <div className="bg-danger m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1, false)}>
+                    <div className='d-flex flex-column' >
+                      <div className='d-flex align-items-center' >
+                        <img
+                          src="CommentaryIcons/CricketTeam.png"
+                          alt="Cricketbatter"
+                          width={40}
+                          height={40}
+                        />
+                        <span
+                          style={{
+                            fontSize: "20px",
+                            marginLeft: "10px",
+                            color: "white",
+                          }}>
+                          Select NonStriker
+                        </span>
                       </div>
-                    </Col>
-                  </Row>
-                </TabContent>
-              </CardBody>
-            </Card>
-          </Col>
-          <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
-          <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
+                      <div
+                        className='mt-2'
+                        style={{
+                          fontSize: "20px",
+                          marginLeft: "10px",
+                          color: "white",
+                        }}>
+                        {selectedNonStriker?.playerName}
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <CardTitle className="h4">
+                <h3>
+                  Australia Selects Opening Bowler
+                </h3>
+              </CardTitle>
+              <Row className='p-1 my-3'>
+                <Col xs="12" sm="6">
+                  <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
+                    <div className='d-flex flex-column' >
+                      <div className='d-flex align-items-center' >
+                        <img
+                          src="CommentaryIcons/ball.png"
+                          width={40}
+                          height={40}
+                        />
+                        <span
+                          style={{
+                            fontSize: "20px",
+                            marginLeft: "10px",
+                            color: "white",
+                          }}>
+                          Bowler
+                        </span>
+                      </div>
+                      <div
+                        className='mt-2'
+                        style={{
+                          fontSize: "20px",
+                          marginLeft: "10px",
+                          color: "white",
+                        }}>
+                        {selectedBowler?.playerName}
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+          <Container className='d-flex justify-content-between flex-wrap' >
+            <Button
+              className='m-2'
+              id="caret" color="primary" onClick={() => { previous() }}>
+              <i class='bx bxs-left-arrow me-1'></i>
+              <span>Previous</span>
+            </Button>
+            <Button
+              className='m-2 d-flex align-items-center'
+              id="caret" color="primary" onClick={() => { next() }}>
+              <span>Save & Next</span>
+              <i class='bx bxs-right-arrow ms-1'></i>
+            </Button>
+          </Container>
         </Container>
         <Modal style={{ marginTop: "80px" }} zIndex={1000} isOpen={modal} toggle={toggle} scrollable>
           <ModalHeader toggle={toggle}>
