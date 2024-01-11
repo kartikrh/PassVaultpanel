@@ -1,6 +1,7 @@
 import React from "react";
 import { CardBody } from "reactstrap";
 
+
 const CardComponent = ({ title, titleIcon, name, bgColor, onClickColor, onClick, check, isPlayerName = false }) => {
   return (
     <div role="button" className="card">
