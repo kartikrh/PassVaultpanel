@@ -105,7 +105,7 @@ function CommentaryMaster() {
                         <Card>
                             <CardBody>
                                 {(isLoading || isDataLoading) && <SpinnerModel />}
-                                <Container className="d-flex justify-content-end">
+                                <Container className="d-flex justify-content-end border">
                                     <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
                                 </Container>
                                 {screens[currentScreen] === COMMENTARY_TOSS_SCREEN &&
