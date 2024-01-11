@@ -12,7 +12,6 @@ const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, chec
         <div className="">
           <div className="d-flex flex-column justify-content-center align-items-center">
             <i
-
               className={ check ? "bx bxs-check-circle" : "bx bx-circle"}
               style={{ fontSize: "25px", color: "white" }}
             ></i>
@@ -20,7 +19,7 @@ const CardComponent = ({ title, name, icon, bgColor, onClickColor, onClick, chec
               className=""
               style={{
                 fontWeight: 600,
-                fontSize: "20px",
+                fontSize: "18px",
                 marginLeft: "15px",
                 color: "white",
               }}

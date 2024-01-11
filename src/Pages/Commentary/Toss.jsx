@@ -16,7 +16,7 @@ import {
   Row,
   TabContent,
   TabPane,
-  CardHeader
+  CardHeader,
 } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -34,7 +34,7 @@ const Index = ({ data, next, save, exit, previous }) => {
   const [Toss, setToss] = useState({
     wonBy: "",
     chooseTo: "",
-  })
+  });
   const toggle1 = (tab) => {
     if (activeTab1 !== tab) {
       setactiveTab1(tab);
@@ -42,33 +42,33 @@ const Index = ({ data, next, save, exit, previous }) => {
   };
 
   const handleWinBy = (shortName, teamId) => {
-    console.log(shortName, "-", teamId)
+    console.log(shortName, "-", teamId);
     setCommentaryDetails((preValue) => {
       return {
         ...preValue,
         tossWonBy: teamId,
         displayStatus: `Toss Won by ${shortName} choose to bat`,
-      }
-    })
-  }
+      };
+    });
+  };
 
   const handleChoseTo = (val) => {
     setCommentaryDetails((preValue) => {
       return {
         ...preValue,
-        choseTo: val
-      }
-    })
-  }
+        choseTo: val,
+      };
+    });
+  };
   useEffect(() => {
-    setCommentaryDetails(data?.commentaryDetails)
+    setCommentaryDetails(data?.commentaryDetails);
     setCommentaryTeams(data?.commentaryTeams);
-    console.log("this is data", data)
+    console.log("this is data", data);
     // fetchData()
-  }, [data, next, save,]);
+  }, [data, next, save]);
   useEffect(() => {
-    console.log("this is after click data", commentaryDetails)
-  }, [commentaryDetails])
+    console.log("this is after click data", commentaryDetails);
+  }, [commentaryDetails]);
   return (
     // <React.Fragment>
     //   <div className="page-content">
@@ -157,62 +157,79 @@ const Index = ({ data, next, save, exit, previous }) => {
     //   </div>
     // </React.Fragment>
     <React.Fragment>
-    <div className="page-content">
-      <Container >
-        <Card className='shadow-none' >
-          <CardHeader>
-            <h3>
-            Toss Selection 
-            </h3>
-          </CardHeader>
-          <CardBody>
-            <CardTitle className="">
-              <h3>
-                Toss Won By ?
-              </h3>
-            </CardTitle>
-            <Row className=''>
-              <Col xl="12" sm="6">
-              <CardComponent name={commentaryTeams && commentaryTeams[0]?.teamName } icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
-              </Col>
-              <Col xl="12" sm="6">
-              <CardComponent name={commentaryTeams && commentaryTeams[1]?.teamName } icon = {"bx bxs-check-circle"} bgColor = {"#43a899"}/>
-              </Col>
-            </Row>
-          </CardBody>
-          <CardBody>
-            <CardTitle className="">
-              <h3>
-                Choose To ?
-              </h3>
-            </CardTitle>
-            <Row className=''>
-              <Col xl="12" sm="6">
-              <CardComponent name={"Batting"} icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
-              </Col>
-              <Col xl="12" sm="6">
-              <CardComponent name={"Bowling"} icon = {"bx bxs-check-circle"} bgColor = {"#43a899"}/>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-        <Container className='d-flex justify-content-between flex-wrap' >
-          <Button
-            className='m-2'
-            id="caret" color="primary" onClick={() => { previous() }}>
-            <i class='bx bxs-left-arrow me-1'></i>
-            <span>Previous</span>
-          </Button>
-          <Button
-            className='m-2 d-flex align-items-center'
-            id="caret" color="primary" onClick={() => { next() }}>
-            <span>Save & Next</span>
-            <i class='bx bxs-right-arrow ms-1'></i>
-          </Button>
+      <div className="page-content">
+        <Container>
+          <Card className="shadow-none">
+            <div>
+              <h4>Toss Selection</h4>
+              <div style={{ borderBottom: "solid gray 2px" }}></div>
+              <div className="mt-5">
+                <h5>Toss Won by?</h5>
+                <Row>
+                  <Col xs={6}>
+                    <CardComponent
+                      name={commentaryTeams && commentaryTeams[0].teamName}
+                      icon={"bx bxs-check-circle"}
+                      bgColor={"#099680"}
+                    />
+                  </Col>
+                  <Col xs={6}>
+                    <CardComponent
+                      name={commentaryTeams && commentaryTeams[1].teamName}
+                      icon={"bx bx-circle"}
+                      bgColor={"#43a899"}
+                    />
+                  </Col>
+                </Row>
+              </div>
+              <div className="mt-2">
+                <h5>Choose To?</h5>
+                <Row>
+                  <Col xl="12" sm="6">
+                    <CardComponent
+                      name={"Batting"}
+                      icon={"bx bxs-check-circle"}
+                      bgColor={"#099680"}
+                    />
+                  </Col>
+                  <Col xl="12" sm="6">
+                    <CardComponent
+                      name={"Bowling"}
+                      icon={"bx bx-circle"}
+                      bgColor={"#43a899"}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            </div>
+          </Card>
+          <Container className="d-flex justify-content-between flex-wrap">
+            <Button
+              className="m-2"
+              id="caret"
+              color="primary"
+              onClick={() => {
+                previous();
+              }}
+            >
+              <i class="bx bxs-left-arrow me-1"></i>
+              <span>Previous</span>
+            </Button>
+            <Button
+              className="m-2 d-flex align-items-center"
+              id="caret"
+              color="primary"
+              onClick={() => {
+                next();
+              }}
+            >
+              <span>Save & Next</span>
+              <i class="bx bxs-right-arrow ms-1"></i>
+            </Button>
+          </Container>
         </Container>
-      </Container>
-    </div>
-  </React.Fragment>
+      </div>
+    </React.Fragment>
   );
 };
 
