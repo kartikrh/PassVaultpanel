@@ -3,7 +3,7 @@ import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Modal, M
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR } from '../../components/Common/Const'
-import Breadcrumbs from '../../components/Common/Breadcrumb'
+import CardComponent from './CardComponent'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection | ScoreCard - React Admin & Dashboard Template";
@@ -29,6 +29,8 @@ const PlayerSelection = forwardRef((props, ref) => {
   const [selectedStriker, setSelectedStriker] = useState(null);
   const [selectedNonStriker, setSelectedNonStriker] = useState(null);
 
+  const [isNext, setIsNext] = useState(false);
+
   useEffect(() => {
     if (data) {
       const commentaryDetails = data.commentaryDetails
@@ -37,6 +39,12 @@ const PlayerSelection = forwardRef((props, ref) => {
       setCommentaryTeamsPlayersDetails(data.commentaryPlayers);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (selectedBowler && selectedStriker && selectedNonStriker) {
+      setIsNext(true);
+    }
+  }, [selectedBowler, selectedStriker, selectedNonStriker])
 
   useEffect(() => {
     if (commentaryTeamsDetails) {
@@ -71,6 +79,11 @@ const PlayerSelection = forwardRef((props, ref) => {
     setModal(true)
   }
 
+  const onPrevious = () => {
+    const newData = {...data};
+    previous()
+  }
+
   const getTeamList = () => {
     let team = [];
     if (teamListStatus === 1 && battingteamplayer.length) { team = battingteamplayer }
@@ -82,6 +95,7 @@ const PlayerSelection = forwardRef((props, ref) => {
     const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.playerId === playerId);
     const selectedPlayer = commentaryTeamsPlayersDetails[selectedPlayerIndex];
     let updatedData = {};
+
     if (teamListStatus === 1 && isSelectingStriker) {
       if (selectedPlayer.playerId === selectedNonStriker?.playerId) {
         return dispatch(updateToastData({ data: `${selectedPlayer.playerName} is already selected as Non-Striker`, title: "Player Selection", type: ERROR }));
@@ -110,6 +124,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         bowlerStatus: 1,
       }
     }
+
     const updatedStrikerPlayerDetails = commentaryTeamsPlayersDetails.map(
       (player) => {
         if (player.playerId === selectedPlayer.playerId) {
@@ -215,7 +230,9 @@ const PlayerSelection = forwardRef((props, ref) => {
               </CardTitle>
               <Row className='p-1 my-3'>
                 <Col xs="12" sm="6">
-                  <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
+                <CardComponent name={"Bowler"} icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
+
+                  {/* <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
                     <div className='d-flex flex-column' >
                       <div className='d-flex align-items-center' >
                         <img
@@ -242,7 +259,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                         {selectedBowler?.playerName}
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </Col>
               </Row>
             </CardBody>
@@ -250,16 +267,16 @@ const PlayerSelection = forwardRef((props, ref) => {
           <Container className='d-flex justify-content-between flex-wrap' >
             <Button
               className='m-2'
-              id="caret" color="primary" onClick={() => { previous() }}>
+              id="caret" color="primary" onClick={onPrevious}>
               <i class='bx bxs-left-arrow me-1'></i>
               <span>Previous</span>
             </Button>
-            <Button
+            {isNext && (<Button
               className='m-2 d-flex align-items-center'
               id="caret" color="primary" onClick={() => { next() }}>
               <span>Save & Next</span>
               <i class='bx bxs-right-arrow ms-1'></i>
-            </Button>
+            </Button>)}
           </Container>
         </Container>
         <Modal style={{ marginTop: "80px" }} zIndex={1000} isOpen={modal} toggle={toggle} scrollable>

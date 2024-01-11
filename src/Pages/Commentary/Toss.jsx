@@ -173,10 +173,10 @@ const Index = ({ data, next, save, exit, previous }) => {
             </CardTitle>
             <Row className=''>
               <Col xl="12" sm="6">
-              <CardComponent name={commentaryTeams && commentaryTeams[0].teamName } icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
+              <CardComponent name={commentaryTeams && commentaryTeams[0]?.teamName } icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
               </Col>
               <Col xl="12" sm="6">
-              <CardComponent name={commentaryTeams && commentaryTeams[1].teamName } icon = {"bx bxs-check-circle"} bgColor = {"#43a899"}/>
+              <CardComponent name={commentaryTeams && commentaryTeams[1]?.teamName } icon = {"bx bxs-check-circle"} bgColor = {"#43a899"}/>
               </Col>
             </Row>
           </CardBody>
