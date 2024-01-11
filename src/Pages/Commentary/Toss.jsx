@@ -33,21 +33,25 @@ const Index = ({ data, next, save, exit, previous }) => {
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  // const [commentaryDetails, setCommentaryDetails] = useState({
-  //   tossWonBy: "",
-  //   choseTo: "",
-  // });
 
   const handleSave = () => {
     save(commentaryDetails)
   };
 
-
-  const onClick = () => {};
+  const handleChoseTo = (val) => {
+    setCommentaryDetails((preValue) => {
+      return {
+        ...preValue,
+        choseTo: val,
+      };
+    });
+  };
+  const onClick = () =>{
+    setCheck(!check)
+  }
   useEffect(() => {
     setCommentaryDetails(data?.commentaryDetails);
     setCommentaryTeams(data?.commentaryTeams);
-    console.log("this is data", commentaryDetails);
   }, [data, next, save]);
   // useEffect(() => {
   //   console.log("this is after click data", commentaryDetails);
@@ -58,7 +62,7 @@ const Index = ({ data, next, save, exit, previous }) => {
         <Container>
           <Card className="shadow-none">
             <div>
-              <h4 className={{ fontWeight: 600 }}>Toss Selection</h4>
+              <h4 className={{fontWeight:600}}>Toss Selection</h4>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
                 <h5>Toss Won by?</h5>

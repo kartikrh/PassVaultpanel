@@ -15,6 +15,12 @@ import PlayerSelection from './PlayerSelection';
 import { Commentary } from './Commentary';
 import { addCommentaryDetailsToDb } from '../../Features/Tabs/commentarySlice';
 
+const screens = {
+    1: COMMENTARY_TOSS_SCREEN,
+    2: COMMENTARY_PLAYER_SELECTION_SCREEN,
+    3: COMMENTARY_MAIN_SCREEN
+}
+
 const navigateTo = "/commentary"
 function CommentaryMaster() {
     const pageName = TAB_COMMENTARY
@@ -64,6 +70,8 @@ function CommentaryMaster() {
                 console.log("Commentary Data and MatchTypeId",
                     commentaryData, commentaryData?.commentaryDetails?.matchTypeId)
                 setCommentaryData(commentaryData);
+                console.log("commentaryData?.commentaryDetails?.commentaryStatus", commentaryData?.commentaryDetails?.commentaryStatus, typeof commentaryData?.commentaryDetails?.commentaryStatus);
+                setCurrentScreen(commentaryData?.commentaryDetails?.commentaryStatus || 1)
                 await axiosInstance.post('/admin/matchType/byId', { matchTypeId: commentaryData?.commentaryDetails?.matchTypeId })
                     .then((response) => {
                         setMatchTypeData(response?.result);
@@ -79,9 +87,9 @@ function CommentaryMaster() {
             });
     };
 
-    const handleSaveClick = async (dataToSave, saveAction) => {
+    const handleSaveClick = async (dataToSave, saveAction = null) => {
         if (dataToSave) {
-            setCurrentSaveAction(saveAction);
+            if (saveAction) setCurrentSaveAction(saveAction);
             dispatch(addCommentaryDetailsToDb(dataToSave))
         }
     };
@@ -98,25 +106,23 @@ function CommentaryMaster() {
                         <Card>
                             <CardBody>
                                 {(isLoading || isDataLoading) && <SpinnerModel />}
-                                <Row>
-                                    <Col className='mb-3'>
-                                        <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
-                                    </Col>
-                                </Row>
-                                {currentScreen === COMMENTARY_TOSS_SCREEN &&
+                                <Container className="d-flex justify-content-end">
+                                    <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
+                                </Container>
+                                {screens[currentScreen] === COMMENTARY_TOSS_SCREEN &&
                                     <Toss
                                         data={commentaryData}
                                         save={handleSaveClick}
                                         next={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
                                     />}
-                                {currentScreen === COMMENTARY_PLAYER_SELECTION_SCREEN &&
+                                {screens[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN &&
                                     <PlayerSelection
                                         data={commentaryData}
                                         save={handleSaveClick}
                                         previous={() => { setCurrentScreen(COMMENTARY_TOSS_SCREEN) }}
                                         next={() => { setCurrentScreen(COMMENTARY_MAIN_SCREEN) }}
                                     />}
-                                {currentScreen === COMMENTARY_MAIN_SCREEN &&
+                                {screens[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                     <Commentary
                                         data={{ commentaryData, matchTypeData }}
                                         save={handleSaveClick}

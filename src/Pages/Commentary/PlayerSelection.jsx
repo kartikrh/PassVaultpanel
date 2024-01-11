@@ -1,14 +1,15 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, Row, TabContent, Table } from 'reactstrap'
+import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
-import { ERROR } from '../../components/Common/Const'
+import { ERROR, SAVE_AND_NEXT } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
+import SelectPlayerModal from './SelectPlayerModal'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection | ScoreCard - React Admin & Dashboard Template";
 
-  const { data, next, previous } = props;
+  const { data, next, previous, save } = props;
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
@@ -17,11 +18,11 @@ const PlayerSelection = forwardRef((props, ref) => {
   const [commentaryTeamsDetails, setCommentaryTeamsDetails] = useState([]);
   const [commentaryTeamsPlayersDetails, setCommentaryTeamsPlayersDetails] = useState([]);
 
-  const [battingteam, setBattingtema] = useState("");
-  const [bowlingteam, setBowlingingtema] = useState("");
+  const [battingteam, setBattingteam] = useState(null);
+  const [bowlingteam, setBowlingingteam] = useState(null);
 
   const [battingteamplayer, setBattingtemaplayer] = useState([]);
-  const [bowlingteamplayer, setBowlingingtemaplayer] = useState([]);
+  const [bowlingteamplayer, setBowlingtemaplayer] = useState([]);
   const [teamListStatus, setTeamListStatus] = useState([]);
   const [isSelectingStriker, setIsSelectingStriker] = useState(true);
 
@@ -48,27 +49,27 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (commentaryTeamsDetails) {
-      const battingteam = commentaryTeamsDetails.filter(
+      const battingteam = commentaryTeamsDetails.find(
         (team) => team.teamStatus === 1
       );
-      const bowlingteam = commentaryTeamsDetails.filter(
+      const bowlingteam = commentaryTeamsDetails.find(
         (team) => team.teamStatus === 2
       );
-      if (battingteam.length > 0) setBattingtema(battingteam[0].teamId)
-      if (bowlingteam.length > 0) setBowlingingtema(bowlingteam[0].teamId)
+      if (battingteam) setBattingteam(battingteam)
+      if (bowlingteam) setBowlingingteam(bowlingteam)
     }
   }, [commentaryTeamsDetails]);
 
   useEffect(() => {
-    const bowlingingTeamPlayers = commentaryTeamsPlayersDetails.filter(
-      (team) => team.teamId === bowlingteam
+    const bowlingTeamPlayers = commentaryTeamsPlayersDetails.filter(
+      (team) => team.teamId === bowlingteam?.teamId
     );
-    setBowlingingtemaplayer(bowlingingTeamPlayers);
+    setBowlingtemaplayer(bowlingTeamPlayers);
   }, [bowlingteam]);
 
   useEffect(() => {
     const battingTeamPlayers = commentaryTeamsPlayersDetails.filter(
-      (team) => team.teamId === battingteam
+      (team) => team.teamId === battingteam?.teamId
     );
     setBattingtemaplayer(battingTeamPlayers);
   }, [battingteam]);
@@ -80,11 +81,25 @@ const PlayerSelection = forwardRef((props, ref) => {
   }
 
   const onPrevious = () => {
-    const newData = { ...data };
+    if (data) {
+      const newData = { ...data };
+      newData.commentaryDetails.commentaryStatus = 1;
+      save(newData)
+    }
     previous()
   }
 
-  const getTeamList = () => {
+  const onNext = () => {
+    if (data) {
+      const newData = { ...data };
+      newData.commentaryDetails.commentaryStatus = 3;
+      newData.commentaryTeamsPlayersDetails = commentaryTeamsPlayersDetails;
+      save(newData, SAVE_AND_NEXT)
+    }
+    next()
+  }
+
+  const getTeamList = (teamListStatus) => {
     let team = [];
     if (teamListStatus === 1 && battingteamplayer.length) { team = battingteamplayer }
     else if (teamListStatus === 2 && bowlingteamplayer.length) { team = bowlingteamplayer }
@@ -146,15 +161,15 @@ const PlayerSelection = forwardRef((props, ref) => {
         <Container >
           <Card className='shadow-none' >
             <CardHeader>
-              <h3>
+              <h2>
                 Player Selection
-              </h3>
+              </h2>
             </CardHeader>
             <CardBody>
               <CardTitle className="h4">
-                <h3>
-                  Please Select India Selects Opening Batsmen
-                </h3>
+                <h4>
+                  Please Select {battingteam?.teamName} Opening Batter
+                </h4>
               </CardTitle>
               <Row className='p-1 my-3'>
                 <Col xs="12" sm="6">
@@ -163,44 +178,10 @@ const PlayerSelection = forwardRef((props, ref) => {
                     check={selectedStriker?.playerName}
                     name={selectedStriker?.playerName}
                     onClick={() => openModel(1)}
-                    icon={"bx bxs-check-circle"}
-                    bgColor={"#24B9A2"}
-                    onClickColor={"#0BB197"}
+                    bgColor={"#0BB197"}
+                    onClickColor={"#007B64"}
                     isPlayerName={true}
                   />
-
-                  {/* <div className="bg-info m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1)}>
-                    <div className='d-flex flex-column' >
-                      <div className='d-flex align-items-center' >
-                        <img
-                          src="CommentaryIcons/CricketTeam.png"
-                          alt="Cricketbatter "
-                          title="Cricket batter "
-                          className='mb-2'
-                          width={40}
-                          height={40}
-                          class="lzy lazyload--done"
-                        />
-                        <span
-                          style={{
-                            fontSize: "20px",
-                            marginLeft: "10px",
-                            color: "white",
-                          }}>
-                          Select Striker
-                        </span>
-                      </div>
-                      <div
-                        className='mt-2'
-                        style={{
-                          fontSize: "20px",
-                          marginLeft: "10px",
-                          color: "white",
-                        }}>
-                        {selectedStriker?.playerName}
-                      </div>
-                    </div>
-                  </div> */}
                 </Col>
                 <Col xs="12" sm="6">
                   <CardComponent
@@ -209,46 +190,16 @@ const PlayerSelection = forwardRef((props, ref) => {
                     name={selectedNonStriker?.playerName}
                     onClick={() => openModel(1, false)}
                     icon={"bx bxs-check-circle"}
-                    bgColor={"#FF5170"}
-                    onClickColor={"#FF3D60"}
+                    bgColor={"#0BB197"}
+                    onClickColor={"#007B64"}
                     isPlayerName={true}
                   />
-
-                  {/* <div className="bg-danger m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(1, false)}>
-                    <div className='d-flex flex-column' >
-                      <div className='d-flex align-items-center' >
-                        <img
-                          src="CommentaryIcons/CricketTeam.png"
-                          alt="Cricketbatter"
-                          width={40}
-                          height={40}
-                        />
-                        <span
-                          style={{
-                            fontSize: "20px",
-                            marginLeft: "10px",
-                            color: "white",
-                          }}>
-                          Select NonStriker
-                        </span>
-                      </div>
-                      <div
-                        className='mt-2'
-                        style={{
-                          fontSize: "20px",
-                          marginLeft: "10px",
-                          color: "white",
-                        }}>
-                        {selectedNonStriker?.playerName}
-                      </div>
-                    </div>
-                  </div> */}
                 </Col>
               </Row>
               <CardTitle className="h4">
-                <h3>
-                  Please Select Australia Selects Opening Bowler
-                </h3>
+                <h4>
+                  Please Select {bowlingteam?.teamName} Opening Bowler
+                </h4>
               </CardTitle>
               <Row className='p-1 my-3'>
                 <Col xs="12" sm="6">
@@ -257,12 +208,10 @@ const PlayerSelection = forwardRef((props, ref) => {
                     check={selectedBowler?.playerName}
                     name={selectedBowler?.playerName}
                     onClick={() => openModel(2)}
-                    icon={"bx bxs-check-circle"}
                     bgColor={"#FCC042"}
-                    onClickColor={"#FCB92C"}
+                    onClickColor={"#CB8F00"}
                     isPlayerName={true}
                   />
-
                   {/* <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
                     <div className='d-flex flex-column' >
                       <div className='d-flex align-items-center' >
@@ -304,33 +253,13 @@ const PlayerSelection = forwardRef((props, ref) => {
             </Button>
             {isNext && (<Button
               className='m-2 d-flex align-items-center'
-              id="caret" color="primary" onClick={() => { next() }}>
+              id="caret" color="primary" onClick={onNext}>
               <span>Save & Next</span>
               <i class='bx bxs-right-arrow ms-1'></i>
             </Button>)}
           </Container>
         </Container>
-        <Modal style={{ marginTop: "80px" }} zIndex={1000} isOpen={modal} toggle={toggle} scrollable>
-          <ModalHeader toggle={toggle}>
-            Select Player
-          </ModalHeader>
-          <ModalBody>
-            <Table responsive>
-              <thead>
-                <tr className="table-secondary">
-                  <th>
-                    Player Name
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {getTeamList().map(value => <tr>
-                  <td role='button' onClick={() => selectPlayer(value.playerId)} >{value.playerName}</td>
-                </tr>)}
-              </tbody>
-            </Table>
-          </ModalBody>
-        </Modal>
+        <SelectPlayerModal modal={modal} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} />
       </div>
     </React.Fragment>
   )
