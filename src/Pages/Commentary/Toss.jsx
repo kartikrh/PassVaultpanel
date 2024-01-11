@@ -25,19 +25,11 @@ import CardComponent from "./CardComponent";
 import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR } from "../../components/Common/Const";
-const Index = ({ data, next, save, exit, previous }) => {
-  const finalizeRef = useRef(null);
+const Index = ({ data, next, save }) => {
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
-  // const [data, setData] = useState([]);
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  // const [commentaryDetails, setCommentaryDetails] = useState({
-  //   tossWonBy: "",
-  //   choseTo: "",
-  // });
-
   const handleSave = () => {
     save(commentaryDetails)
   };
@@ -49,9 +41,6 @@ const Index = ({ data, next, save, exit, previous }) => {
     setCommentaryTeams(data?.commentaryTeams);
     console.log("this is data", commentaryDetails);
   }, [data, next, save]);
-  // useEffect(() => {
-  //   console.log("this is after click data", commentaryDetails);
-  // }, [commentaryDetails]);
   return (
     <React.Fragment>
       <div className="page-content">
@@ -82,7 +71,7 @@ const Index = ({ data, next, save, exit, previous }) => {
                   ))}
                 </Row>
               </div>
-              {commentaryDetails?.tossWonBy !== "" && (
+              {commentaryDetails?.tossWonBy !== null && (
                 <div className="mt-2">
                   <h5>Choose To?</h5>
                   <Row>
@@ -125,14 +114,14 @@ const Index = ({ data, next, save, exit, previous }) => {
               )}
             </div>
           </Card>
-          {commentaryDetails?.tossWonBy && (
+          {(commentaryDetails?.choseTo != null) & (commentaryDetails?.tossWonBy != null) && (
             <div className="d-flex align-items-center justify-content-end">
               <Button
                 className="d-flex align-items-center"
                 id="caret"
                 color="primary"
                 onClick={() => {
-                  if ((commentaryDetails.choseTo != "") & (commentaryDetails.tossWonBy != "")) {
+                  if ((commentaryDetails.choseTo != null) & (commentaryDetails.tossWonBy != null)) {
                     handleSave();
                   } else {
                     return dispatch(
