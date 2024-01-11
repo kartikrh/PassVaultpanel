@@ -70,7 +70,6 @@ function CommentaryMaster() {
                 console.log("Commentary Data and MatchTypeId",
                     commentaryData, commentaryData?.commentaryDetails?.matchTypeId)
                 setCommentaryData(commentaryData);
-                console.log("commentaryData?.commentaryDetails?.commentaryStatus", commentaryData?.commentaryDetails?.commentaryStatus, typeof commentaryData?.commentaryDetails?.commentaryStatus);
                 setCurrentScreen(commentaryData?.commentaryDetails?.commentaryStatus || 1)
                 await axiosInstance.post('/admin/matchType/byId', { matchTypeId: commentaryData?.commentaryDetails?.matchTypeId })
                     .then((response) => {
@@ -113,20 +112,20 @@ function CommentaryMaster() {
                                     <Toss
                                         data={commentaryData}
                                         save={handleSaveClick}
-                                        next={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
+                                        next={() => { setCurrentScreen(2) }}
                                     />}
                                 {screens[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN &&
                                     <PlayerSelection
                                         data={commentaryData}
                                         save={handleSaveClick}
-                                        previous={() => { setCurrentScreen(COMMENTARY_TOSS_SCREEN) }}
-                                        next={() => { setCurrentScreen(COMMENTARY_MAIN_SCREEN) }}
+                                        previous={() => { setCurrentScreen(1) }}
+                                        next={() => { setCurrentScreen(3) }}
                                     />}
                                 {screens[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                     <Commentary
                                         data={{ commentaryData, matchTypeData }}
                                         save={handleSaveClick}
-                                        previous={() => { setCurrentScreen(COMMENTARY_PLAYER_SELECTION_SCREEN) }}
+                                        previous={() => { setCurrentScreen(2) }}
                                     />}
                             </CardBody>
                         </Card>

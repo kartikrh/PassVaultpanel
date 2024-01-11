@@ -5,6 +5,7 @@ import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR, SAVE_AND_NEXT } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
 import SelectPlayerModal from './SelectPlayerModal'
+import axiosInstance from '../../Features/axios'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection | ScoreCard - React Admin & Dashboard Template";
@@ -80,7 +81,7 @@ const PlayerSelection = forwardRef((props, ref) => {
     setModal(true)
   }
 
-  const onPrevious = () => {
+  const onPrevious = async () => {
     if (data) {
       const newData = { ...data };
       newData.commentaryDetails.commentaryStatus = 1;
@@ -89,14 +90,107 @@ const PlayerSelection = forwardRef((props, ref) => {
     previous()
   }
 
-  const onNext = () => {
+  const onNext = async () => {
     if (data) {
-      const newData = { ...data };
-      newData.commentaryDetails.commentaryStatus = 3;
-      newData.commentaryTeamsPlayersDetails = commentaryTeamsPlayersDetails;
-      save(newData, SAVE_AND_NEXT)
+      const isPlayPlayers = commentaryTeamsPlayersDetails.filter((player) => player.isPlay === true);
+
+      if (isPlayPlayers.length !== 3) {
+        return dispatch(updateToastData({ data: "Please Select Players", title: "Commentary", type: ERROR }));
+      }
+      const _bowlerPlayer = isPlayPlayers.find(
+        (player) => player.isPlay === true && player.bowlerStatus === 1
+      );
+      const _strikerplayer = isPlayPlayers.find(
+        (player) => player.isPlay === true && player.onStrike === true
+      );
+      const _nonstriker = isPlayPlayers.find(
+        (player) => player.isPlay === true && player.onStrike === false
+      );
+      const commentaryOvers = {
+        overId: "0",
+        commentaryId: data?.commentaryDetails?.commentaryId,
+        teamId: bowlingteam?.teamId,
+        over: 0,
+        ballCount: 0,
+        bowlerId: _bowlerPlayer?.commentaryPlayerId,
+        totalRun: 0,
+        totalFour: 0,
+        totalSix: 0,
+        totalWideBall: 0,
+        totalWideRun: 0,
+        totalNoball: 0,
+        totalNoBallRun: 0,
+        totalByesRun: 0,
+        totalLegByesRun: 0,
+        totalPanelty: 0,
+        totalWicket: 0,
+        dotBall: 0,
+        isComplete: false,
+        powerplay: false,
+        isOverInPowerplay: false,
+        powerplayType: 1,
+        isMaiden: false,
+        date: "",
+        isDelete: false,
+        currentInnings: data?.commentaryDetails?.currentInnings,
+      };
+      axiosInstance
+        .post(`/admin/commentary/saveDetails`, {
+          commentaryOvers
+        })
+        .then((response) => {
+          console.log("response", response);
+          const overId = response?.result?.overdetails?.overId;
+          if (overId) {
+            const commentaryBallByBall = {
+              commentaryBallByBallId: "0",
+              commentaryId: data?.commentaryDetails?.commentaryId,
+              teamId: bowlingteam.teamId,
+              overId: overId,
+              overCount: 0,
+              currentOverBalls: 0,
+              bowlerId: _bowlerPlayer.commentaryPlayerId,
+              batStrikeId: _strikerplayer?.commentaryPlayerId,
+              batNonStrikeId: _nonstriker?.commentaryPlayerId,
+              ballIsCount: true,
+              ballType: 0,
+              ballIsDot: false,
+              ballRun: 0,
+              ballExtraRun: 0,
+              ballIsBoundry: false,
+              ballFour: 0,
+              ballSix: 0,
+              ballIsWicket: false,
+              ballWicketType: 0,
+              ballPlayerId: "0",
+              ballBowlerId: 0,
+              ballFielderId1: 0,
+              ballFielderId2: 0,
+              overIsMaiden: false,
+              nextBatStrikeId: _strikerplayer?.commentaryPlayerId,
+              nextBatNonStrikeId: _nonstriker?.commentaryPlayerId,
+              currentInnings: data?.commentaryDetails?.currentInnings,
+            };
+            const value = {
+              commentaryDetails: data?.commentaryDetails,
+              commentaryPlayers: isPlayPlayers,
+              commentaryBallByBall,
+            };
+            value.commentaryDetails.commentaryStatus = 3;
+            axiosInstance
+              .post(`/admin/commentary/saveDetails`, value)
+              .then((response) => {
+                next()
+              })
+              .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+              });
+          }
+        })
+        .catch((error) => {
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        });
     }
-    next()
   }
 
   const getTeamList = (teamListStatus) => {
