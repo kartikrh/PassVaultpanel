@@ -101,7 +101,6 @@ const Index = ({ data, next, save, exit, previous }) => {
                       check={check}
                       onClick = {onClick}
                     />
-
                   </Col>
                 </Row>
               </div>
