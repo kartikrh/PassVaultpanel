@@ -16,10 +16,12 @@ import {
   Row,
   TabContent,
   TabPane,
+  CardHeader
 } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import classnames from "classnames";
+import CardComponent from "./CardComponent";
 
 const Index = ({ data, next, save, exit, previous }) => {
   const finalizeRef = useRef(null);
@@ -68,92 +70,149 @@ const Index = ({ data, next, save, exit, previous }) => {
     console.log("this is after click data", commentaryDetails)
   }, [commentaryDetails])
   return (
+    // <React.Fragment>
+    //   <div className="page-content">
+    //     <Container className="p-0" >
+    //       <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
+    //       {isLoading && <SpinnerModel />}
+    //       <Col xl={12}>
+    //         <div>
+    //           <h4>Toss Selection</h4>
+    //           <div style={{borderBottom:"solid gray 2px"}}></div>
+    //           <div className="mt-5">
+    //             <h5>Toss Won by?</h5>
+    //             <Row>
+    //             <Col xs={6}>
+    //                 <div className="card">
+    //                   <CardBody className="border border-primary rounded" style={{backgroundColor:"#099680"}}>
+    //                     <div className="">
+    //                       <div className="d-flex flex-column justify-content-center align-items-center">
+    //                         <i className="bx bxs-check-circle" style={{fontSize:"25px", color:"white"}}></i>
+    //                         <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Pakistan</span>
+    //                       </div>
+    //                     </div>
+    //                   </CardBody>
+    //                 </div>
+    //               </Col>
+    //               <Col xs={6}>
+    //                 <div className="card">
+    //                   <CardBody className="border border-primary rounded" style={{backgroundColor:"#43a899"}}>
+    //                     <div className="">
+    //                       <div className="d-flex flex-column justify-content-center align-items-center">
+    //                         <i className="bx bx-circle" style={{fontSize:"25px", color:"white"}}></i>
+    //                         <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>India</span>
+    //                       </div>
+    //                     </div>
+    //                   </CardBody>
+    //                 </div>
+    //               </Col>
+    //               {/* <Col xs={5}>
+    //                 <div className="card text-center">
+    //                   <CardBody>
+    //                   </CardBody>
+    //                 </div>
+    //               </Col> */}
+    //             </Row>
+    //           </div>
+    //           <div className="mt-2">
+    //             <h5>Choose To?</h5>
+    //             <Row>
+    //             <Col xs={6}>
+    //                 <div className="card">
+    //                   <CardBody className="border border-primary rounded" style={{backgroundColor:"#099680"}}>
+    //                     <div className="">
+    //                       <div className="d-flex flex-column justify-content-center align-items-center">
+    //                         <i className="bx bxs-check-circle" style={{fontSize:"25px", color:"white"}}></i>
+    //                         <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Batting</span>
+    //                       </div>
+    //                     </div>
+    //                   </CardBody>
+    //                 </div>
+    //               </Col>
+    //               <Col xs={6}>
+    //                 <div className="card">
+    //                   <CardBody className="border border-primary rounded" style={{backgroundColor:"#43a899"}}>
+    //                     <div className="">
+    //                       <div className="d-flex flex-column justify-content-center align-items-center">
+    //                         <i className="bx bx-circle" style={{fontSize:"25px", color:"white"}}></i>
+    //                         <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Bowling</span>
+    //                       </div>
+    //                     </div>
+    //                   </CardBody>
+    //                 </div>
+    //               </Col>
+    //               {/* <Col xs={5}>
+    //                 <div className="card text-center">
+    //                   <CardBody>
+    //                   </CardBody>
+    //                 </div>
+    //               </Col> */}
+    //             </Row>
+    //           </div>
+    //         </div>
+    //       </Col>
+    //       <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
+    //       <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
+    //     </Container>
+    //   </div>
+    // </React.Fragment>
     <React.Fragment>
-      <div className="page-content">
-        <Container className="p-0" >
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
-          {isLoading && <SpinnerModel />}
-          <Col xl={12}>
-            <div>
-              <h4>Toss Selection</h4>
-              <div style={{borderBottom:"solid gray 2px"}}></div>
-              <div className="mt-5">
-                <h5>Toss Won by?</h5>
-                <Row>
-                <Col xs={6}>
-                    <div className="card">
-                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#099680"}}>
-                        <div className="">
-                          <div className="d-flex flex-column justify-content-center align-items-center">
-                            <i className="bx bxs-check-circle" style={{fontSize:"25px", color:"white"}}></i>
-                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Pakistan</span>
-                          </div>
-                        </div>
-                      </CardBody>
-                    </div>
-                  </Col>
-                  <Col xs={6}>
-                    <div className="card">
-                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#43a899"}}>
-                        <div className="">
-                          <div className="d-flex flex-column justify-content-center align-items-center">
-                            <i className="bx bx-circle" style={{fontSize:"25px", color:"white"}}></i>
-                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>India</span>
-                          </div>
-                        </div>
-                      </CardBody>
-                    </div>
-                  </Col>
-                  {/* <Col xs={5}>
-                    <div className="card text-center">
-                      <CardBody>
-                      </CardBody>
-                    </div>
-                  </Col> */}
-                </Row>
-              </div>
-              <div className="mt-2">
-                <h5>Choose To?</h5>
-                <Row>
-                <Col xs={6}>
-                    <div className="card">
-                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#099680"}}>
-                        <div className="">
-                          <div className="d-flex flex-column justify-content-center align-items-center">
-                            <i className="bx bxs-check-circle" style={{fontSize:"25px", color:"white"}}></i>
-                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Batting</span>
-                          </div>
-                        </div>
-                      </CardBody>
-                    </div>
-                  </Col>
-                  <Col xs={6}>
-                    <div className="card">
-                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#43a899"}}>
-                        <div className="">
-                          <div className="d-flex flex-column justify-content-center align-items-center">
-                            <i className="bx bx-circle" style={{fontSize:"25px", color:"white"}}></i>
-                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Bowling</span>
-                          </div>
-                        </div>
-                      </CardBody>
-                    </div>
-                  </Col>
-                  {/* <Col xs={5}>
-                    <div className="card text-center">
-                      <CardBody>
-                      </CardBody>
-                    </div>
-                  </Col> */}
-                </Row>
-              </div>
-            </div>
-          </Col>
-          <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
-          <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
+    <div className="page-content">
+      <Container >
+        <Card className='shadow-none' >
+          <CardHeader>
+            <h3>
+            Toss Selection 
+            </h3>
+          </CardHeader>
+          <CardBody>
+            <CardTitle className="">
+              <h3>
+                Toss Won By ?
+              </h3>
+            </CardTitle>
+            <Row className=''>
+              <Col xl="12" sm="6">
+              <CardComponent name={commentaryTeams && commentaryTeams[0].teamName } icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
+              </Col>
+              <Col xl="12" sm="6">
+              <CardComponent name={commentaryTeams && commentaryTeams[1].teamName } icon = {"bx bxs-check-circle"} bgColor = {"#43a899"}/>
+              </Col>
+            </Row>
+          </CardBody>
+          <CardBody>
+            <CardTitle className="">
+              <h3>
+                Choose To ?
+              </h3>
+            </CardTitle>
+            <Row className=''>
+              <Col xl="12" sm="6">
+              <CardComponent name={"Batting"} icon = {"bx bxs-check-circle"} bgColor = {"#099680"}/>
+              </Col>
+              <Col xl="12" sm="6">
+              <CardComponent name={"Bowling"} icon = {"bx bxs-check-circle"} bgColor = {"#43a899"}/>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+        <Container className='d-flex justify-content-between flex-wrap' >
+          <Button
+            className='m-2'
+            id="caret" color="primary" onClick={() => { previous() }}>
+            <i class='bx bxs-left-arrow me-1'></i>
+            <span>Previous</span>
+          </Button>
+          <Button
+            className='m-2 d-flex align-items-center'
+            id="caret" color="primary" onClick={() => { next() }}>
+            <span>Save & Next</span>
+            <i class='bx bxs-right-arrow ms-1'></i>
+          </Button>
         </Container>
-      </div>
-    </React.Fragment>
+      </Container>
+    </div>
+  </React.Fragment>
   );
 };
 
