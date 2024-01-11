@@ -31,6 +31,7 @@ const Index = ({ data, next, save, exit, previous }) => {
   // const [data, setData] = useState([]);
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
+  const [check, setCheck] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 

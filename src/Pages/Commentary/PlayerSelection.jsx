@@ -95,7 +95,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       const isPlayPlayers = commentaryTeamsPlayersDetails.filter((player) => player.isPlay === true);
 
       if (isPlayPlayers.length !== 3) {
-        return alert("Please Select Players");
+        return dispatch(updateToastData({ data: "Please Select Players", title: "Commentary", type: ERROR }));
       }
       const _bowlerPlayer = isPlayPlayers.find(
         (player) => player.isPlay === true && player.bowlerStatus === 1
@@ -139,7 +139,7 @@ const PlayerSelection = forwardRef((props, ref) => {
           commentaryOvers
         })
         .then((response) => {
-          console.log("response",response);
+          console.log("response", response);
           const overId = response?.result?.overdetails?.overId;
           if (overId) {
             const commentaryBallByBall = {
@@ -177,7 +177,14 @@ const PlayerSelection = forwardRef((props, ref) => {
               commentaryBallByBall,
             };
             value.commentaryDetails.commentaryStatus = 3;
-            save(value, SAVE_AND_NEXT)
+            axiosInstance
+              .post(`/admin/commentary/saveDetails`, value)
+              .then((response) => {
+                next()
+              })
+              .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+              });
           }
         })
         .catch((error) => {
