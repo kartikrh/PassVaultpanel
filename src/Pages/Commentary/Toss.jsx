@@ -29,7 +29,10 @@ const Index = ({ data, next, save, exit, previous }) => {
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab1, setactiveTab1] = useState("5");
-
+  const [Toss, setToss] = useState({
+    wonBy: "",
+    chooseTo: "",
+  })
   const toggle1 = (tab) => {
     if (activeTab1 !== tab) {
       setactiveTab1(tab);
@@ -71,159 +74,80 @@ const Index = ({ data, next, save, exit, previous }) => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
           {isLoading && <SpinnerModel />}
           <Col xl={12}>
-            <Card>
-              <CardBody className="p-0" >
-                <CardTitle className="h4">
-                  Toss For Current Innings
-                </CardTitle>
-
-                <Nav pills className="nav nav-pills mt-4">
-                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
-                    <NavLink
-                      style={{ textAlign: "center" }}
-                      className="active"
-                    >
-                      <i className="dripicons-home me-1 align-middle"> </i>{" "}
-                      Select Toss
-                    </NavLink>
-                  </NavItem>
-                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
-                    <NavLink
-                      style={{ textAlign: "center" }}
-                    >
-                      <i className="dripicons-user me-1 align-middle"></i>{" "}
-                      Batter - Bowler
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-
-                <TabContent className="p-3 ">
-                    <Row className="">
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-info m-1 py-5 rounded">
-                          <div className="form-check mb-2 d-flex align-items-center">
-                            <input
-                              type="radio"
-                              name="teams"
-                              style={{ transform: "scale(1.5)" }}
-                              id="exampleRadios1"
-                              defaultValue="option1"
-                              onClick={() => { handleWinBy(commentaryTeams && commentaryTeams[0]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/CricketTeam.png"
-                              /> {" "}
-                              {commentaryTeams && commentaryTeams[0]?.shortName}
-                            </label>
+            <div>
+              <h4>Toss Selection</h4>
+              <div style={{borderBottom:"solid gray 2px"}}></div>
+              <div className="mt-5">
+                <h5>Toss Won by?</h5>
+                <Row>
+                <Col xs={6}>
+                    <div className="card">
+                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#099680"}}>
+                        <div className="">
+                          <div className="d-flex flex-column justify-content-center align-items-center">
+                            <i className="bx bxs-check-circle" style={{fontSize:"25px", color:"white"}}></i>
+                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Pakistan</span>
                           </div>
                         </div>
-                      </Col>
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-info m-1 py-5 rounded">
-                          <div className="form-check mb-2">
-                            <input
-                              type="radio"
-                              name="teams"
-                              className="mr-4"
-                              id="exampleRadios1"
-                              style={{ transform: "scale(1.5)" }}
-                              defaultValue="option1"
-                              onClick={() => { handleWinBy(commentaryTeams && commentaryTeams[1]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/CricketTeam.png"
-                              />{" "}
-                              {commentaryTeams && commentaryTeams[1]?.shortName}
-                            </label>
+                      </CardBody>
+                    </div>
+                  </Col>
+                  <Col xs={6}>
+                    <div className="card">
+                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#43a899"}}>
+                        <div className="">
+                          <div className="d-flex flex-column justify-content-center align-items-center">
+                            <i className="bx bx-circle" style={{fontSize:"25px", color:"white"}}></i>
+                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>India</span>
                           </div>
                         </div>
-                      </Col>
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-danger m-1 py-5 rounded">
-                          <div className="form-check mb-2">
-                            <input
-                              type="radio"
-                              name="tossRadio"
-                              id="exampleRadios1"
-                              style={{ transform: "scale(1.5)" }}
-                              defaultValue="option1"
-                              onClick={() => { handleChoseTo(1) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/bat.png"
-                              /> {" "}
-                              Select Batting
-                            </label>
+                      </CardBody>
+                    </div>
+                  </Col>
+                  {/* <Col xs={5}>
+                    <div className="card text-center">
+                      <CardBody>
+                      </CardBody>
+                    </div>
+                  </Col> */}
+                </Row>
+              </div>
+              <div className="mt-2">
+                <h5>Choose To?</h5>
+                <Row>
+                <Col xs={6}>
+                    <div className="card">
+                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#099680"}}>
+                        <div className="">
+                          <div className="d-flex flex-column justify-content-center align-items-center">
+                            <i className="bx bxs-check-circle" style={{fontSize:"25px", color:"white"}}></i>
+                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Batting</span>
                           </div>
                         </div>
-                      </Col>
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-warning m-1 py-5 rounded">
-                          <div className="form-check mb-2">
-                            <input
-                              type="radio"
-                              name="tossRadio"
-                              id="exampleRadios1"
-                              defaultValue="option1"
-                              style={{ transform: "scale(1.5)" }}
-                              onClick={() => { handleChoseTo(2) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/ball.png"
-                              />{" "}
-                              Select Bowling
-                            </label>
+                      </CardBody>
+                    </div>
+                  </Col>
+                  <Col xs={6}>
+                    <div className="card">
+                      <CardBody className="border border-primary rounded" style={{backgroundColor:"#43a899"}}>
+                        <div className="">
+                          <div className="d-flex flex-column justify-content-center align-items-center">
+                            <i className="bx bx-circle" style={{fontSize:"25px", color:"white"}}></i>
+                            <span className="" style={{fontWeight:600, fontSize:"20px", marginLeft:"15px", color:"white"}}>Bowling</span>
                           </div>
                         </div>
-                      </Col>
-                    </Row>
-                </TabContent>
-              </CardBody>
-            </Card>
+                      </CardBody>
+                    </div>
+                  </Col>
+                  {/* <Col xs={5}>
+                    <div className="card text-center">
+                      <CardBody>
+                      </CardBody>
+                    </div>
+                  </Col> */}
+                </Row>
+              </div>
+            </div>
           </Col>
           <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
           <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
