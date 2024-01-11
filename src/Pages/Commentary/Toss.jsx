@@ -16,11 +16,15 @@ import {
   Row,
   TabContent,
   TabPane,
+  CardHeader,
 } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import classnames from "classnames";
-
+import CardComponent from "./CardComponent";
+import { useDispatch } from "react-redux";
+import { updateToastData } from "../../Features/toasterSlice";
+import { ERROR } from "../../components/Common/Const";
 const Index = ({ data, next, save, exit, previous }) => {
   const finalizeRef = useRef(null);
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
@@ -28,205 +32,128 @@ const Index = ({ data, next, save, exit, previous }) => {
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab1, setactiveTab1] = useState("5");
+  const dispatch = useDispatch();
 
-  const toggle1 = (tab) => {
-    if (activeTab1 !== tab) {
-      setactiveTab1(tab);
-    }
+  const handleSave = () => {
+    save(commentaryDetails)
   };
-
-  const handleWinBy = (shortName, teamId) => {
-    console.log(shortName, "-", teamId)
-    setCommentaryDetails((preValue) => {
-      return {
-        ...preValue,
-        tossWonBy: teamId,
-        displayStatus: `Toss Won by ${shortName} choose to bat`,
-      }
-    })
-  }
 
   const handleChoseTo = (val) => {
     setCommentaryDetails((preValue) => {
       return {
         ...preValue,
-        choseTo: val
-      }
-    })
+        choseTo: val,
+      };
+    });
+  };
+  const onClick = () =>{
+    setCheck(!check)
   }
   useEffect(() => {
-    setCommentaryDetails(data?.commentaryDetails)
+    setCommentaryDetails(data?.commentaryDetails);
     setCommentaryTeams(data?.commentaryTeams);
-    console.log("this is data", data)
-    // fetchData()
-  }, [data, next, save,]);
-  useEffect(() => {
-    console.log("this is after click data", commentaryDetails)
-  }, [commentaryDetails])
+  }, [data, next, save]);
+  // useEffect(() => {
+  //   console.log("this is after click data", commentaryDetails);
+  // }, [commentaryDetails]);
   return (
     <React.Fragment>
       <div className="page-content">
-        <Container className="p-0" >
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Toss" />
-          {isLoading && <SpinnerModel />}
-          <Col xl={12}>
-            <Card>
-              <CardBody className="p-0" >
-                <CardTitle className="h4">
-                  Toss For Current Innings
-                </CardTitle>
-
-                <Nav pills className="nav nav-pills mt-4">
-                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
-                    <NavLink
-                      style={{ textAlign: "center" }}
-                      className="active"
+        <Container>
+          <Card className="shadow-none">
+            <div>
+              <h4 className={{fontWeight:600}}>Toss Selection</h4>
+              <div style={{ borderBottom: "solid gray 2px" }}></div>
+              <div className="mt-5">
+                <h5>Toss Won by?</h5>
+                <Row>
+                  {commentaryTeams?.map((val, index) => (
+                    <Col
+                      key={index}
+                      xs={6}
+                      onClick={() => {
+                        setCommentaryDetails({ ...commentaryDetails, tossWonBy: val?.teamId });
+                      }}
                     >
-                      <i className="dripicons-home me-1 align-middle"> </i>{" "}
-                      Select Toss
-                    </NavLink>
-                  </NavItem>
-                  <NavItem style={{ cursor: "pointer", width: "50%" }}>
-                    <NavLink
-                      style={{ textAlign: "center" }}
+                      <CardComponent
+                        title={val.teamName}
+                        selectIcon={"bx bxs-check-circle"}
+                        onClickColor={"#099680"}
+                        bgColor={"#43a899"}
+                        check={val.teamId === commentaryDetails?.tossWonBy}
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+              {commentaryDetails?.tossWonBy !== "" && (
+                <div className="mt-2">
+                  <h5>Choose To?</h5>
+                  <Row>
+                    <Col
+                      xl="12"
+                      sm="6"
+                      onClick={() => {
+                        setCommentaryDetails({ ...commentaryDetails, choseTo: 1 });
+                      }}
                     >
-                      <i className="dripicons-user me-1 align-middle"></i>{" "}
-                      Batter - Bowler
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-
-                <TabContent className="p-3 ">
-                    <Row className="">
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-info m-1 py-5 rounded">
-                          <div className="form-check mb-2 d-flex align-items-center">
-                            <input
-                              type="radio"
-                              name="teams"
-                              style={{ transform: "scale(1.5)" }}
-                              id="exampleRadios1"
-                              defaultValue="option1"
-                              onClick={() => { handleWinBy(commentaryTeams && commentaryTeams[0]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/CricketTeam.png"
-                              /> {" "}
-                              {commentaryTeams && commentaryTeams[0]?.shortName}
-                            </label>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-info m-1 py-5 rounded">
-                          <div className="form-check mb-2">
-                            <input
-                              type="radio"
-                              name="teams"
-                              className="mr-4"
-                              id="exampleRadios1"
-                              style={{ transform: "scale(1.5)" }}
-                              defaultValue="option1"
-                              onClick={() => { handleWinBy(commentaryTeams && commentaryTeams[1]?.shortName, commentaryTeams && commentaryTeams[0]?.teamId) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/CricketTeam.png"
-                              />{" "}
-                              {commentaryTeams && commentaryTeams[1]?.shortName}
-                            </label>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-danger m-1 py-5 rounded">
-                          <div className="form-check mb-2">
-                            <input
-                              type="radio"
-                              name="tossRadio"
-                              id="exampleRadios1"
-                              style={{ transform: "scale(1.5)" }}
-                              defaultValue="option1"
-                              onClick={() => { handleChoseTo(1) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/bat.png"
-                              /> {" "}
-                              Select Batting
-                            </label>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col xs="12" sm="6" className="">
-                        <div className="bg-warning m-1 py-5 rounded">
-                          <div className="form-check mb-2">
-                            <input
-                              type="radio"
-                              name="tossRadio"
-                              id="exampleRadios1"
-                              defaultValue="option1"
-                              style={{ transform: "scale(1.5)" }}
-                              onClick={() => { handleChoseTo(2) }}
-                            />{" "}
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleRadios1"
-                              style={{
-                                fontSize: "20px",
-                                marginLeft: "10px",
-                                color: "white",
-                              }}
-                            >
-                              <img
-                                width={40}
-                                height={40}
-                                src="CommentaryIcons/ball.png"
-                              />{" "}
-                              Select Bowling
-                            </label>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-                </TabContent>
-              </CardBody>
-            </Card>
-          </Col>
-          <button className="btn btn-success m-2" onClick={() => { previous() }}>Previous</button>
-          <button className="btn btn-primary m-2" onClick={() => { next() }}>Next</button> {" "}
+                      <CardComponent
+                        title="Batting"
+                        titleIcon="CommentaryIcons/bat1.png"
+                        selectIcon={"bx bxs-check-circle"}
+                        onClickColor={"#099680"}
+                        bgColor={"#43a899"}
+                        check={commentaryDetails?.choseTo === 1}
+                        onClick={onClick}
+                      />
+                    </Col>
+                    <Col
+                      xl="12"
+                      sm="6"
+                      onClick={() => {
+                        setCommentaryDetails({ ...commentaryDetails, choseTo: 2 });
+                      }}
+                    >
+                      <CardComponent
+                        title="Bowling"
+                        titleIcon="CommentaryIcons/ball1.png"
+                        selectIcon={"bx bx-circle"}
+                        onClickColor={"#099680"}
+                        bgColor={"#43a899"}
+                        check={commentaryDetails?.choseTo === 2}
+                        onClick={onClick}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              )}
+            </div>
+          </Card>
+          {commentaryDetails?.tossWonBy && (
+            <div className="d-flex align-items-center justify-content-end">
+              <Button
+                className="d-flex align-items-center"
+                id="caret"
+                color="primary"
+                onClick={() => {
+                  if ((commentaryDetails.choseTo != "") & (commentaryDetails.tossWonBy != "")) {
+                    handleSave();
+                  } else {
+                    return dispatch(
+                      updateToastData({
+                        data: `Check The Required Fields`,
+                        title: "Toss Selection",
+                        type: ERROR,
+                      })
+                    );
+                  }
+                }}
+              >
+                <span>Save & Next</span>
+                <i class="bx bxs-right-arrow ms-1"></i>
+              </Button>
+            </div>
+          )}
         </Container>
       </div>
     </React.Fragment>
