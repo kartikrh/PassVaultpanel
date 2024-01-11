@@ -24,14 +24,20 @@ import classnames from "classnames";
 import CardComponent from "./CardComponent";
 import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR } from "../../components/Common/Const";
+import { ERROR, SAVE_AND_NEXT } from "../../components/Common/Const";
 const Index = ({ data, next, save }) => {
   document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const dispatch = useDispatch();
   const handleSave = () => {
-    save(commentaryDetails)
+    save({
+      commentaryDetails: {
+        ...commentaryDetails,
+        commentaryStatus: "2"
+      }
+    })
+    next();
   };
 
 
@@ -74,7 +80,7 @@ const Index = ({ data, next, save }) => {
                   <h5>Choose To?</h5>
                   <Row>
                     <Col
-                      xl="12"
+                      // xl="12"
                       sm="6"
                       onClick={() => {
                         setCommentaryDetails({ ...commentaryDetails, choseTo: 1 });
@@ -90,7 +96,7 @@ const Index = ({ data, next, save }) => {
                       />
                     </Col>
                     <Col
-                      xl="12"
+                      // xl="12"
                       sm="6"
                       onClick={() => {
                         setCommentaryDetails({ ...commentaryDetails, choseTo: 2 });
@@ -110,7 +116,7 @@ const Index = ({ data, next, save }) => {
               )}
             </div>
           </Card>
-          {(commentaryDetails?.choseTo != null) & (commentaryDetails?.tossWonBy != null) && (
+          {(commentaryDetails?.choseTo != null) && (
             <div className="d-flex align-items-center justify-content-end">
               <Button
                 className="d-flex align-items-center"
