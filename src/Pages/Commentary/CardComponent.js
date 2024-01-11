@@ -10,7 +10,6 @@ const CardComponent = ({name, icon, bgColor}) => {
         <div className="">
           <div className="d-flex flex-column justify-content-center align-items-center">
             <i
-            
               className={icon && icon}
               style={{ fontSize: "25px", color: "white" }}
             ></i>
@@ -18,7 +17,7 @@ const CardComponent = ({name, icon, bgColor}) => {
               className=""
               style={{
                 fontWeight: 600,
-                fontSize: "20px",
+                fontSize: "18px",
                 marginLeft: "15px",
                 color: "white",
               }}
