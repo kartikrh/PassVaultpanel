@@ -122,7 +122,7 @@ export const MatchDetailFields = [
         label: "Display Status",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
-        regex: /^[a-zA-Z0-9 ]{0,20}$/,
+        regex: /^[a-zA-Z0-9 ]{0,100}$/,
         regexErrorMessage: "Max allowed Characters 20, No Spacial Character",
         type: TEXT,
     },

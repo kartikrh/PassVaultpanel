@@ -22,6 +22,7 @@ import { convertDateString } from '../../components/Common/Reusables/reusableMet
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import moment from "moment";
 
 function AddEvents() {
   const pageName = TAB_EVENT
@@ -113,7 +114,8 @@ function AddEvents() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        eventId
+        eventId,
+        eventDate: moment(dataToSave.eventDate).utc().format()
       }
       const defaultData = {
         countryCode: "",
