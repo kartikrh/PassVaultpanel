@@ -1,5 +1,5 @@
 import React from "react"
-import { Col, Row, Tooltip } from "reactstrap"
+import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 
 export const Commentary = (props) => {
