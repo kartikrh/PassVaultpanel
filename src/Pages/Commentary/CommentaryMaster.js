@@ -15,7 +15,7 @@ import PlayerSelection from './PlayerSelection';
 import { Commentary } from './Commentary';
 import { addCommentaryDetailsToDb } from '../../Features/Tabs/commentarySlice';
 
-const screens = {
+const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
     2: COMMENTARY_PLAYER_SELECTION_SCREEN,
     3: COMMENTARY_MAIN_SCREEN
@@ -24,12 +24,12 @@ const screens = {
 const navigateTo = "/commentary"
 function CommentaryMaster() {
     const pageName = TAB_COMMENTARY
-    const [drp_up, setDrp_up] = useState(false);
     const [commentaryData, setCommentaryData] = useState(undefined);
-    const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [matchTypeData, setMatchTypeData] = useState({});
     const [currentScreen, setCurrentScreen] = useState(1)
     const [isDataLoading, setIsDataLoading] = useState(false)
+    const [nextScreen, setNextScreen] = useState(undefined);
+    const [nextData, setNextData] = useState(undefined);
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
@@ -52,13 +52,8 @@ function CommentaryMaster() {
 
     useEffect(() => {
         if (isSaved) {
-            if (currentSaveAction === SAVE) { }
-            else if (currentSaveAction === SAVE_AND_CLOSE)
-                navigate(navigateTo)
-            else if (currentSaveAction === SAVE_AND_NEXT) {
-                setCurrentScreen(currentScreen + 1)
-            }
-            setCurrentSaveAction(undefined)
+            setCurrentScreen(nextScreen);
+            setCommentaryData(nextData)
         }
     });
 
@@ -86,10 +81,11 @@ function CommentaryMaster() {
             });
     };
 
-    const handleSaveClick = async (dataToSave, saveAction = null) => {
+    const handleSaveClick = async (dataToSave, nextScreen, nextData) => {
         if (dataToSave) {
-            if (saveAction) setCurrentSaveAction(saveAction);
             dispatch(addCommentaryDetailsToDb(dataToSave))
+            setNextData(nextData)
+            setNextScreen(nextScreen)
         }
     };
 
@@ -108,20 +104,20 @@ function CommentaryMaster() {
                                 <Container className="d-flex justify-content-end">
                                     <button className="btn btn-danger mx-1" onClick={handleBackClick}>Exit</button>
                                 </Container>
-                                {screens[currentScreen] === COMMENTARY_TOSS_SCREEN &&
+                                {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN &&
                                     <Toss
                                         data={commentaryData}
                                         save={handleSaveClick}
                                         next={() => { setCurrentScreen(2) }}
                                     />}
-                                {screens[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN &&
+                                {ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN &&
                                     <PlayerSelection
                                         data={commentaryData}
                                         save={handleSaveClick}
                                         previous={() => { setCurrentScreen(1) }}
                                         next={() => { setCurrentScreen(3) }}
                                     />}
-                                {screens[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                                {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                     <Commentary
                                         data={{ commentaryData, matchTypeData }}
                                         save={handleSaveClick}
