@@ -13,6 +13,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import moment from "moment";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY
@@ -139,17 +140,7 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {new Intl.DateTimeFormat("en-GB", {
-            year: "2-digit",
-            month: "numeric",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-            timeZone: 'UTC'
-          }).format(new Date(text))}
-        </span>
+        <span style={{ cursor: "pointer" }}>{moment(text).local().format("DD/MM/YY, h:mm:ss a")}</span>
       ),
       key: "eventDate",
       sort: true,
