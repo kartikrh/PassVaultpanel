@@ -13,7 +13,7 @@ import { checkPermission } from '../../components/Common/Reusables/reusableMetho
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
 import { Commentary } from './Commentary';
-import { addCommentaryDetailsToDb } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryDetailsToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -26,11 +26,11 @@ function CommentaryMaster() {
     const pageName = TAB_COMMENTARY
     const [commentaryData, setCommentaryData] = useState(undefined);
     const [matchTypeData, setMatchTypeData] = useState({});
-    const [currentScreen, setCurrentScreen] = useState(1)
+    const [currentScreen, setCurrentScreen] = useState(undefined)
     const [isDataLoading, setIsDataLoading] = useState(false)
     const [nextScreen, setNextScreen] = useState(undefined);
     const [nextData, setNextData] = useState(undefined);
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
+    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.commentary);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
@@ -52,10 +52,11 @@ function CommentaryMaster() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             setCurrentScreen(nextScreen);
             setCommentaryData(nextData)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async () => {
         setIsDataLoading(true)
