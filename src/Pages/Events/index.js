@@ -132,6 +132,7 @@ const Index = () => {
 
   const handleReset = (value) => {
     fetchData(value)
+    fetchCompetitionData()
   }
   const columns = [
     {
