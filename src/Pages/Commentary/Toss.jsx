@@ -30,6 +30,7 @@ const Index = ({ data, next, save }) => {
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [winnerTeam, setWinnerTeam] = useState({});
+  const [restTeams, setRestTeams] = useState([])
   const [currentInningTeams, setCurrentInningTeams] = useState([]);
   const [values, setValues] = useState({
     choseTo: null,
@@ -80,6 +81,10 @@ const Index = ({ data, next, save }) => {
     const currentInningTeams = data?.commentaryTeams.filter((val) => {
       return val.currentInnings === currentInning;
     });
+    const restTeams = data?.commentaryTeams.filter((val) => {
+      return val.currentInnings !== currentInning;
+    });
+    setRestTeams(restTeams)
     setCurrentInningTeams(currentInningTeams);
     setCommentaryTeams(data?.commentaryTeams);
     //setting values with the data comming from DB
