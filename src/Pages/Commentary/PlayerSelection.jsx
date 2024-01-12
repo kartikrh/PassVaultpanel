@@ -12,12 +12,13 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   const { data, next, previous, save } = props;
   const dispatch = useDispatch();
-  const [modal, setModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggle = () => setModal(!modal);
+  const toggle = () => setIsOpen(!isOpen);
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeamsDetails, setCommentaryTeamsDetails] = useState([]);
   const [commentaryTeamsPlayersDetails, setCommentaryTeamsPlayersDetails] = useState([]);
+  const [currentInnings, setCurrentInnings] = useState(undefined)
 
   const [battingteam, setBattingteam] = useState(null);
   const [bowlingteam, setBowlingingteam] = useState(null);
@@ -37,6 +38,7 @@ const PlayerSelection = forwardRef((props, ref) => {
     if (data) {
       const commentaryDetails = data.commentaryDetails
       setCommentaryDetails(commentaryDetails);
+      setCurrentInnings(commentaryDetails?.currentInnings)
       setCommentaryTeamsDetails(data.commentaryTeams);
       setCommentaryTeamsPlayersDetails(data.commentaryPlayers);
     }
@@ -51,10 +53,10 @@ const PlayerSelection = forwardRef((props, ref) => {
   useEffect(() => {
     if (commentaryTeamsDetails) {
       const battingteam = commentaryTeamsDetails.find(
-        (team) => team.teamStatus === 1 && team.currentInnings === commentaryDetails?.currentInnings
+        (team) => team.teamStatus === 1 && team.currentInnings === currentInnings
       );
       const bowlingteam = commentaryTeamsDetails.find(
-        (team) => team.teamStatus === 2 && team.currentInnings === commentaryDetails?.currentInnings
+        (team) => team.teamStatus === 2 && team.currentInnings === currentInnings
       );
       if (battingteam) setBattingteam(battingteam)
       if (bowlingteam) setBowlingingteam(bowlingteam)
@@ -63,14 +65,14 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   useEffect(() => {
     const bowlingTeamPlayers = commentaryTeamsPlayersDetails.filter(
-      (player) => player.teamId === bowlingteam?.teamId && player.currentInnings === commentaryDetails?.currentInnings
+      (player) => player.teamId === bowlingteam?.teamId && player.currentInnings === currentInnings
     );
     setBowlingtemaplayer(bowlingTeamPlayers);
   }, [bowlingteam]);
 
   useEffect(() => {
     const battingTeamPlayers = commentaryTeamsPlayersDetails.filter(
-      (player) => player.teamId === battingteam?.teamId && player.currentInnings === commentaryDetails?.currentInnings
+      (player) => player.teamId === battingteam?.teamId && player.currentInnings === currentInnings
     );
     setBattingtemaplayer(battingTeamPlayers);
   }, [battingteam]);
@@ -78,7 +80,7 @@ const PlayerSelection = forwardRef((props, ref) => {
   const openModel = (teamStatus, striker = true) => {
     setIsSelectingStriker(striker)
     setTeamListStatus(teamStatus)
-    setModal(true)
+    setIsOpen(true)
   }
 
   const onPrevious = async () => {
@@ -107,7 +109,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       );
       const commentaryOvers = {
         overId: "0",
-        commentaryId: data?.commentaryDetails?.commentaryId,
+        commentaryId: commentaryDetails?.commentaryId,
         teamId: bowlingteam?.teamId,
         over: 0,
         ballCount: 0,
@@ -131,7 +133,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         isMaiden: false,
         date: "",
         isDelete: false,
-        currentInnings: data?.commentaryDetails?.currentInnings,
+        currentInnings: currentInnings,
       };
       axiosInstance
         .post(`/admin/commentary/saveDetails`, {
@@ -142,7 +144,7 @@ const PlayerSelection = forwardRef((props, ref) => {
           if (overId) {
             const commentaryBallByBall = {
               commentaryBallByBallId: "0",
-              commentaryId: data?.commentaryDetails?.commentaryId,
+              commentaryId: commentaryDetails?.commentaryId,
               teamId: bowlingteam.teamId,
               overId: overId,
               overCount: 0,
@@ -167,15 +169,16 @@ const PlayerSelection = forwardRef((props, ref) => {
               overIsMaiden: false,
               nextBatStrikeId: _strikerplayer?.commentaryPlayerId,
               nextBatNonStrikeId: _nonstriker?.commentaryPlayerId,
-              currentInnings: data?.commentaryDetails?.currentInnings,
+              currentInnings: currentInnings,
             };
             const newData = {
-              commentaryDetails: data?.commentaryDetails,
+              commentaryDetails: commentaryDetails,
               commentaryPlayers: isPlayPlayers,
               commentaryBallByBall,
             };
-            newData.commentaryDetails.commentaryStatus = 3;
-            save(newData, 3, {
+            const commentaryStatus = 3;
+            newData.commentaryDetails.commentaryStatus = commentaryStatus;
+            save(newData, commentaryStatus, {
               ...data,
               ...newData,
               commentaryPlayers: [
@@ -199,13 +202,17 @@ const PlayerSelection = forwardRef((props, ref) => {
   }
 
   const selectPlayer = (playerId) => {
-    const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.playerId === playerId);
+    const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.playerId === playerId && i.currentInnings === currentInnings);
     const selectedPlayer = commentaryTeamsPlayersDetails[selectedPlayerIndex];
     let updatedData = {};
 
     if (teamListStatus === 1 && isSelectingStriker) {
       if (selectedPlayer.playerId === selectedNonStriker?.playerId) {
-        return dispatch(updateToastData({ data: `${selectedPlayer.playerName} is already selected as Non-Striker`, title: "Player Selection", type: ERROR }));
+        return dispatch(updateToastData({
+          data: `${selectedPlayer.playerName} is already selected as Non-Striker`,
+          title: "Player Selection",
+          type: ERROR
+        }));
       }
       setSelectedStriker(selectedPlayer)
       updatedData = {
@@ -215,7 +222,11 @@ const PlayerSelection = forwardRef((props, ref) => {
       }
     } else if (teamListStatus === 1 && !isSelectingStriker) {
       if (selectedPlayer.playerId === selectedStriker?.playerId) {
-        return dispatch(updateToastData({ data: `${selectedPlayer.playerName} is already selected as Striker`, title: "Player Selection", type: ERROR }));
+        return dispatch(updateToastData({
+          data: `${selectedPlayer.playerName} is already selected as Striker`,
+          title: "Player Selection",
+          type: ERROR
+        }));
       }
       setSelectedNonStriker(selectedPlayer)
       updatedData = {
@@ -234,7 +245,7 @@ const PlayerSelection = forwardRef((props, ref) => {
 
     const updatedStrikerPlayerDetails = commentaryTeamsPlayersDetails.map(
       (player) => {
-        if (player.playerId === selectedPlayer.playerId) {
+        if (player.playerId === selectedPlayer.playerId && player.currentInnings === currentInnings) {
           return {
             ...player,
             ...updatedData
@@ -244,7 +255,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       }
     );
     setCommentaryTeamsPlayersDetails(updatedStrikerPlayerDetails);
-    setModal(false);
+    setIsOpen(false);
   }
 
   return (
@@ -304,34 +315,6 @@ const PlayerSelection = forwardRef((props, ref) => {
                     onClickColor={"#CB8F00"}
                     isPlayerName={true}
                   />
-                  {/* <div className="bg-warning m-1 py-5 rounded d-flex align-items-center p-3" style={{ height: "150px" }} onClick={() => openModel(2)}>
-                    <div className='d-flex flex-column' >
-                      <div className='d-flex align-items-center' >
-                        <img
-                          src="CommentaryIcons/ball.png"
-                          width={40}
-                          height={40}
-                        />
-                        <span
-                          style={{
-                            fontSize: "20px",
-                            marginLeft: "10px",
-                            color: "white",
-                          }}>
-                          Bowler
-                        </span>
-                      </div>
-                      <div
-                        className='mt-2'
-                        style={{
-                          fontSize: "20px",
-                          marginLeft: "10px",
-                          color: "white",
-                        }}>
-                        {selectedBowler?.playerName}
-                      </div>
-                    </div>
-                  </div> */}
                 </Col>
               </Row>
             </CardBody>
@@ -351,7 +334,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             </Button>)}
           </Container>
         </Container>
-        <SelectPlayerModal modal={modal} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} />
+        <SelectPlayerModal isOpen={isOpen} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} />
       </div>
     </React.Fragment>
   )
