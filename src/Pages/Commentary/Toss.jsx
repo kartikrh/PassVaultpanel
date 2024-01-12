@@ -99,7 +99,7 @@ const Index = ({ data, next, save }) => {
               <div className="mt-5">
                 <h5>Toss Won by?</h5>
                 <Row>
-                  {commentaryTeams?.map((val, index) => (
+                  {currentInningTeams?.map((val, index) => (
                     <Col
                       key={index}
                       xs={6}
