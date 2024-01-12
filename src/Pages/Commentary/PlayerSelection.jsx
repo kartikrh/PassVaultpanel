@@ -51,10 +51,10 @@ const PlayerSelection = forwardRef((props, ref) => {
   useEffect(() => {
     if (commentaryTeamsDetails) {
       const battingteam = commentaryTeamsDetails.find(
-        (team) => team.teamStatus === 1
+        (team) => team.teamStatus === 1 && team.currentInnings === commentaryDetails?.currentInnings
       );
       const bowlingteam = commentaryTeamsDetails.find(
-        (team) => team.teamStatus === 2
+        (team) => team.teamStatus === 2 && team.currentInnings === commentaryDetails?.currentInnings
       );
       if (battingteam) setBattingteam(battingteam)
       if (bowlingteam) setBowlingingteam(bowlingteam)
@@ -63,14 +63,14 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   useEffect(() => {
     const bowlingTeamPlayers = commentaryTeamsPlayersDetails.filter(
-      (team) => team.teamId === bowlingteam?.teamId
+      (player) => player.teamId === bowlingteam?.teamId && player.currentInnings === commentaryDetails?.currentInnings
     );
     setBowlingtemaplayer(bowlingTeamPlayers);
   }, [bowlingteam]);
 
   useEffect(() => {
     const battingTeamPlayers = commentaryTeamsPlayersDetails.filter(
-      (team) => team.teamId === battingteam?.teamId
+      (player) => player.teamId === battingteam?.teamId && player.currentInnings === commentaryDetails?.currentInnings
     );
     setBattingtemaplayer(battingTeamPlayers);
   }, [battingteam]);
@@ -82,24 +82,17 @@ const PlayerSelection = forwardRef((props, ref) => {
   }
 
   const onPrevious = async () => {
-    if (data) {
-      let newData = { commentaryDetails: data?.commentaryDetails };
-      newData.commentaryDetails.commentaryStatus = 1;
-      axiosInstance
-        .post(`/admin/commentary/saveDetails`, newData)
-        .then((response) => {
-          previous()
-        })
-        .catch((error) => {
-          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        });
-    }
+    previous()
   }
 
   const onNext = async () => {
     if (data) {
-      const isPlayPlayers = commentaryTeamsPlayersDetails.filter((player) => player.isPlay === true);
-
+      const isPlayPlayers = [];
+      const otherPlayers = []
+      commentaryTeamsPlayersDetails.forEach((player) => {
+        if (player.isPlay === true) isPlayPlayers.push(player)
+        else otherPlayers.push(player)
+      })
       if (isPlayPlayers.length !== 3) {
         return dispatch(updateToastData({ data: "Please Select Players", title: "Commentary", type: ERROR }));
       }
@@ -145,7 +138,6 @@ const PlayerSelection = forwardRef((props, ref) => {
           commentaryOvers
         })
         .then((response) => {
-          console.log("response", response);
           const overId = response?.result?.overdetails?.overId;
           if (overId) {
             const commentaryBallByBall = {
@@ -177,20 +169,20 @@ const PlayerSelection = forwardRef((props, ref) => {
               nextBatNonStrikeId: _nonstriker?.commentaryPlayerId,
               currentInnings: data?.commentaryDetails?.currentInnings,
             };
-            const value = {
+            const newData = {
               commentaryDetails: data?.commentaryDetails,
               commentaryPlayers: isPlayPlayers,
               commentaryBallByBall,
             };
-            value.commentaryDetails.commentaryStatus = 3;
-            axiosInstance
-              .post(`/admin/commentary/saveDetails`, value)
-              .then((response) => {
-                next()
-              })
-              .catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-              });
+            newData.commentaryDetails.commentaryStatus = 3;
+            save(newData, 3, {
+              ...data,
+              ...newData,
+              commentaryPlayers: [
+                ...isPlayPlayers,
+                ...otherPlayers
+              ]
+            })
           }
         })
         .catch((error) => {
