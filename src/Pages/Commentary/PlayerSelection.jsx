@@ -205,7 +205,14 @@ const PlayerSelection = forwardRef((props, ref) => {
     const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.playerId === playerId && i.currentInnings === currentInnings);
     const selectedPlayer = commentaryTeamsPlayersDetails[selectedPlayerIndex];
     let updatedData = {};
-
+    let oldPlayerId = "";
+    const defaultValue = {
+      isPlay : null,
+      isBatterOut : null,
+      onStrike : null,
+      bowlerOver: null,
+      bowlerStatus: null,
+    }
     if (teamListStatus === 1 && isSelectingStriker) {
       if (selectedPlayer.playerId === selectedNonStriker?.playerId) {
         return dispatch(updateToastData({
@@ -220,6 +227,12 @@ const PlayerSelection = forwardRef((props, ref) => {
         isBatterOut: false,
         onStrike: true,
       }
+
+      oldPlayerId = commentaryTeamsPlayersDetails.find(i => (i.isPlay === true &&
+        i.isBatterOut === false &&
+        i.onStrike === true &&
+        i.currentInnings === currentInnings))?.playerId || "";
+
     } else if (teamListStatus === 1 && !isSelectingStriker) {
       if (selectedPlayer.playerId === selectedStriker?.playerId) {
         return dispatch(updateToastData({
@@ -234,6 +247,12 @@ const PlayerSelection = forwardRef((props, ref) => {
         isBatterOut: false,
         onStrike: false,
       }
+
+      oldPlayerId = commentaryTeamsPlayersDetails.find(i => (i.isPlay === true &&
+        i.isBatterOut === false &&
+        i.onStrike === false &&
+        i.currentInnings === currentInnings))?.playerId || "";
+
     } else if (teamListStatus === 2) {
       setSelectedBowler(bowlingteamplayer.find(i => i.playerId === playerId))
       updatedData = {
@@ -241,6 +260,11 @@ const PlayerSelection = forwardRef((props, ref) => {
         bowlerOver: 1,
         bowlerStatus: 1,
       }
+
+      oldPlayerId = commentaryTeamsPlayersDetails.find(i => (i.isPlay === true &&
+        i.bowlerOver === 1 &&
+        i.bowlerStatus === 1 &&
+        i.currentInnings === currentInnings))?.playerId || "";
     }
 
     const updatedStrikerPlayerDetails = commentaryTeamsPlayersDetails.map(
@@ -249,6 +273,11 @@ const PlayerSelection = forwardRef((props, ref) => {
           return {
             ...player,
             ...updatedData
+          };
+        } else if (player.playerId === oldPlayerId) {
+          return {
+            ...player,
+            ...defaultValue
           };
         }
         return player;
