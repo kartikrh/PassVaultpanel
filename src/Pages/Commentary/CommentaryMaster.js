@@ -28,7 +28,7 @@ function CommentaryMaster() {
     const [commentaryData, setCommentaryData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [matchTypeData, setMatchTypeData] = useState({});
-    const [currentScreen, setCurrentScreen] = useState(COMMENTARY_TOSS_SCREEN)
+    const [currentScreen, setCurrentScreen] = useState(1)
     const [isDataLoading, setIsDataLoading] = useState(false)
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
