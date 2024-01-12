@@ -12,6 +12,7 @@ import { convertDateString } from '../../components/Common/Reusables/reusableMet
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import moment from 'moment';
 
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -360,6 +361,7 @@ function AddCommentary() {
         if (dataToSave1 && dataToSave2) {
             const extraData = {
                 commentaryId: id,
+                eventDate: moment(dataToSave1.eventDate).utc().format()
                 // marketId: "0", tpId: "0", matchTypeId: "0"
                 // , currentInnings: 0
             }
