@@ -70,8 +70,7 @@ const Index = ({ data, next, save }) => {
         commentaryStatus: "2",
       },
       commentaryTeams: UpdatedCurrentInningTeams,
-    });
-    next();
+    },2,data)
   };
 
   useEffect(() => {
