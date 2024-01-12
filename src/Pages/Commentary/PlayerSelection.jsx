@@ -83,11 +83,17 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   const onPrevious = async () => {
     if (data) {
-      const newData = { ...data };
+      let newData = { commentaryDetails: data?.commentaryDetails };
       newData.commentaryDetails.commentaryStatus = 1;
-      save(newData)
+      axiosInstance
+        .post(`/admin/commentary/saveDetails`, newData)
+        .then((response) => {
+          previous()
+        })
+        .catch((error) => {
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        });
     }
-    previous()
   }
 
   const onNext = async () => {
