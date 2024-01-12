@@ -475,20 +475,20 @@ function AddCommentary() {
                                         </TabPane>
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
-                                        <li className={activeTab === 1 ? "previous disabled me-2" : "previous me-2"} >
+                                        {activeTab !== 1 && <li className="previous me-2" >
                                             <Link to="#"
                                                 onClick={() => {
                                                     toggleTab(activeTab - 1);
                                                 }}>Previous</Link>
-                                        </li>
-                                        <li className={activeTab === 2 ? "next disabled" : "next"}>
+                                        </li>}
+                                        {activeTab !== 2 && <li className="next">
                                             <Link to="#"
                                                 onClick={() => {
                                                     toggleTab(activeTab + 1);
                                                 }}>
                                                 Next
                                             </Link>
-                                        </li>
+                                        </li>}
                                     </ul>
                                 </div>
                             </CardBody>
