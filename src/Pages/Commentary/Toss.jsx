@@ -56,8 +56,7 @@ const Index = ({ data, next, save }) => {
         ? updatedTeam
         : { ...team, teamStatus: alternateStatus }
     );
-    save({
-      // ...data,
+    const newData = {
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
@@ -70,7 +69,12 @@ const Index = ({ data, next, save }) => {
         commentaryStatus: "2",
       },
       commentaryTeams: UpdatedCurrentInningTeams,
-    },2,data)
+    }
+    save(newData, 2,{
+      ...data,
+      ...newData,
+      commentaryTeams: [...restTeams, ...UpdatedCurrentInningTeams],
+    })
   };
 
   useEffect(() => {
