@@ -30,6 +30,7 @@ const Index = ({ data, next, save }) => {
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [winnerTeam, setWinnerTeam] = useState({});
+  const [restTeams, setRestTeams] = useState([])
   const [currentInningTeams, setCurrentInningTeams] = useState([]);
   const [values, setValues] = useState({
     choseTo: null,
@@ -55,8 +56,7 @@ const Index = ({ data, next, save }) => {
         ? updatedTeam
         : { ...team, teamStatus: alternateStatus }
     );
-    save({
-      // ...data,
+    const newData = {
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
@@ -69,8 +69,12 @@ const Index = ({ data, next, save }) => {
         commentaryStatus: "2",
       },
       commentaryTeams: UpdatedCurrentInningTeams,
-    });
-    next();
+    }
+    save(newData, 2,{
+      ...data,
+      ...newData,
+      commentaryTeams: [...restTeams, ...UpdatedCurrentInningTeams],
+    })
   };
 
   useEffect(() => {
@@ -81,13 +85,23 @@ const Index = ({ data, next, save }) => {
       return val.currentInnings === currentInning;
     });
     setCurrentInningTeams(currentInningTeams);
+    const restTeams = data?.commentaryTeams.filter((val) => {
+      return val.currentInnings !== currentInning;
+    });
+    setRestTeams(restTeams)
     setCommentaryTeams(data?.commentaryTeams);
     //setting values with the data comming from DB
     setValues({
       choseTo: data?.commentaryDetails?.choseTo,
       tossWonBy: data?.commentaryDetails?.tossWonBy,
     });
-  }, [data, next, save]);
+    if(data?.commentaryDetails?.tossWonBy !==null){
+      const winnerTeam = currentInningTeams.find((val)=>{
+        return data?.commentaryDetails?.tossWonBy === val?.teamId 
+      })
+      setWinnerTeam(winnerTeam)
+    }
+  }, []);
   return (
     <React.Fragment>
       <div className="mt-5">
