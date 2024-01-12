@@ -84,18 +84,24 @@ const Index = ({ data, next, save }) => {
     const currentInningTeams = data?.commentaryTeams.filter((val) => {
       return val.currentInnings === currentInning;
     });
+    setCurrentInningTeams(currentInningTeams);
     const restTeams = data?.commentaryTeams.filter((val) => {
       return val.currentInnings !== currentInning;
     });
     setRestTeams(restTeams)
-    setCurrentInningTeams(currentInningTeams);
     setCommentaryTeams(data?.commentaryTeams);
     //setting values with the data comming from DB
     setValues({
       choseTo: data?.commentaryDetails?.choseTo,
       tossWonBy: data?.commentaryDetails?.tossWonBy,
     });
-  }, [data, next, save]);
+    if(data?.commentaryDetails?.tossWonBy !==null){
+      const winnerTeam = currentInningTeams.find((val)=>{
+        return data?.commentaryDetails?.tossWonBy === val?.teamId 
+      })
+      setWinnerTeam(winnerTeam)
+    }
+  }, []);
   return (
     <React.Fragment>
       <div className="mt-5">
