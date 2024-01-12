@@ -23,7 +23,11 @@ const userSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addUserToDb.pending, (state) => {
@@ -40,4 +44,5 @@ const userSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = userSlice.actions;
 export default userSlice.reducer;

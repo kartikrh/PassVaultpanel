@@ -24,7 +24,11 @@ const matchTypeSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addMatchTypeToDb.pending, (state) => {
@@ -41,4 +45,5 @@ const matchTypeSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = matchTypeSlice.actions;
 export default matchTypeSlice.reducer;

@@ -5,7 +5,7 @@ import { RoleFields } from '../../constants/FieldConst/RoleConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_ROLES } from '../../components/Common/Const';
-import { addRoleToDb } from '../../Features/Tabs/roleSlice';
+import { addRoleToDb, updateSavedState } from '../../Features/Tabs/roleSlice';
 import axiosInstance from '../../Features/axios';
 import PermissionTable from './PermissionTable';
 import { Columns } from './Columns';
@@ -26,7 +26,7 @@ function AddRoles() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const roleId = location.state?.roleId || "0";
+    const [roleId, setRoleId] = useState(location.state?.roleId || "0")
     const [permissions, setPermissions] = useState([]);
     const [newPermissionValue, setNewPermissionValue] = useState([]);
     const [displayType, setDisplayType] = useState("0")
@@ -37,6 +37,8 @@ function AddRoles() {
             setDisabledFields({
                 "displayType": true
             })
+        } else {
+            setDisabledFields({})
         }
     }, [roleId]);
 
@@ -52,16 +54,17 @@ function AddRoles() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/roles")
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
-                setInitialEditData({})
+                setRoleId("0")
                 finalizeRef.current.resetForm()
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
 
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
@@ -82,8 +85,15 @@ function AddRoles() {
                 roleId: roleId,
                 permissions: newPermissionValue
             }
-            dispatch(addRoleToDb({ ...dataToSave, ...extraData }))
-            setCurrentSaveAction(saveAction);
+            const defaultData = {
+                description: ""
+            }
+            if (newPermissionValue.length) {
+                dispatch(addRoleToDb({ ...defaultData, ...dataToSave, ...extraData }))
+                setCurrentSaveAction(saveAction);
+            } else{
+                dispatch(updateToastData({ data: "No Permission Found", title: "Roles", type: ERROR }));
+            }
         }
     };
 

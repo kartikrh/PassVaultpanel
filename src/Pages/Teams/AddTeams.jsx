@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TEAMS } from '../../components/Common/Const';
-import { addTeamToDb } from "../../Features/Tabs/teamSlice";
+import { addTeamToDb, updateSavedState } from "../../Features/Tabs/teamSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
@@ -50,7 +50,7 @@ function AddTeams() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const teamId = location.state?.userId || "0";
+  const [teamId, setTeamId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -72,15 +72,17 @@ function AddTeams() {
 
   useEffect(() => {
     if (isSaved) {
+      dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/teams");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setDisabledFields({})
         setInitialEditData({})
+        setTeamId("0")
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined)
     }
-  });
+  }, [isSaved]);
 
   const fetchData = async (id) => {
     await axiosInstance

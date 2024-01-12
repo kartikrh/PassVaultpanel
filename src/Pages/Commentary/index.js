@@ -84,8 +84,8 @@ const Index = () => {
     navigate("/addCommentary", { state: { userId: id } });
   };
 
-  const handleBackClick = () => {
-    navigate("/commentary");
+  const handleDetailsClick = (id) => {
+    navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
 
   //table columns
@@ -140,14 +140,14 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {new Intl.DateTimeFormat("en-US", {
+          {new Intl.DateTimeFormat("en-GB", {
             year: "2-digit",
             month: "numeric",
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            second: "numeric",
             hour12: true,
+            timeZone: 'UTC'
           }).format(new Date(text))}
         </span>
       ),
@@ -200,7 +200,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-
+            handleDetailsClick(record.commentaryId);
           }}
         >
           <i className="bx bx-plus"></i>

@@ -18,7 +18,9 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [viewImage, setViewImage] = useState(null);
-
+  // useEffect(() => {
+  //   console.log(formData, editFormData)
+  // })
   const handleImageChange = (field, event) => {
     const file = event.target.files[0];
     setFormData((prevFormData) => ({
@@ -84,7 +86,6 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
 
   const validateAllFields = (doNotValidateFields) => {
     const errors = {};
-
     fields.forEach((field) => {
       const value = formData[field.name];
       const shouldValidate =
@@ -110,6 +111,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     for (const key in data) {
       if (imageFields.includes(key)) {
         typeof data[key] === "string" && delete data[key];
+        data[key] === null && delete data[key];
       }
     }
     return data
@@ -248,6 +250,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     id={field.name}
                     rows={field?.defaultRows || 2}
                     name={field.name}
+                    disabled={disabledFields?.[field.name]}
                     value={formData[field.name] || formData[field.dataKey] || ""}
                     onChange={(e) => handleChange(field, e.target.value)}
                     required={field.isRequired}
@@ -408,6 +411,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     className="form-control"
                     style={field?.customStyle}
                     type="datetime-local"
+                    disabled={disabledFields?.[field.name]}
                     value={formData[field.name] || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
@@ -418,6 +422,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     className="form-control"
                     style={field?.customStyle}
                     type="number"
+                    disabled={disabledFields?.[field.name]}
                     value={formData[field.name] || field.defaultValue || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}

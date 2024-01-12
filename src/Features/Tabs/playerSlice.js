@@ -24,7 +24,11 @@ const playerSlice = createSlice({
         isLoading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addPlayerToDb.pending, (state) => {
@@ -41,4 +45,5 @@ const playerSlice = createSlice({
     }
 });
 
+export const { updateSavedState } = playerSlice.actions;
 export default playerSlice.reducer;

@@ -5,7 +5,7 @@ import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY } from '../../components/Common/Const';
-import { addCommentaryToDb } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
 import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
@@ -44,7 +44,7 @@ function AddCommentary() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const id = location.state?.userId || "0";
+    const [id, setId] = useState(location.state?.userId || "0");
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -74,18 +74,21 @@ function AddCommentary() {
 
     useEffect(() => {
         if (isSaved) {
+            dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)
                 navigate("/commentary")
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
                 setSavedFormState({})
+                setId("0");
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
             }
             setCurrentSaveAction(undefined)
         }
-    });
+    }, [isSaved]);
+    
     const handleFormADataChange = (newFormData) => {
         setSavedFormState(newFormData);
         if (newFormData["eventTypeId"] !== savedFormState["eventTypeId"]) {

@@ -28,6 +28,7 @@ import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
 import ChangePassword from '../Pages/ChangePassword'
+import Toss from '../Pages/Commentary/Toss.jsx'
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -45,6 +46,7 @@ import Maintenance from "../Pages/Utility/Maintenance-Page.js";
 import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
+import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -69,10 +71,12 @@ const authProtectedRoutes = [
   { path: '/addCompetition', component: <AddCompetition /> },
   { path: '/commentary', component: <Commentary /> },
   { path: '/addCommentary', component: <AddCommentary /> },
+  { path: '/commentaryMaster', component: <CommentaryMaster /> },
+  { path: '/Toss', component: <Toss /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
   {
-    path: '/changePassword', component:<ChangePassword/>
+    path: '/changePassword', component: <ChangePassword />
   },
   {
     path: "/",
