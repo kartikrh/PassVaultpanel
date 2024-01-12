@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
-import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
+import { Card, CardBody, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, TAB_COMMENTARY } from '../../components/Common/Const';
-import { addMatchTypeToDb } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -44,11 +41,11 @@ function CommentaryMaster() {
         }
     }, [commentaryId]);
 
-    // useEffect(() => {
-    //     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-    //         navigate("/dashboard")
-    //     }
-    // }, []);
+    useEffect(() => {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+            navigate("/dashboard")
+        }
+    }, []);
 
     useEffect(() => {
         if (isSaved) {
