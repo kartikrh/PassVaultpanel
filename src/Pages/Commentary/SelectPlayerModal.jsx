@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Input, Modal, ModalBody, ModalHeader, Table } from 'reactstrap';
 
-const SelectPlayerModal = ({ playerList, toggle, modal, selectPlayer }) => {
+const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     const [players, setPlayers] = useState(playerList);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
         setSearch("");
         setPlayers(playerList);
-    }, [modal, playerList]);
+    }, [isOpen, playerList]);
 
     useEffect(() => {
         const filteredPlayers = playerList.filter(value => value.playerName.toLowerCase().includes(search.toLowerCase()));
@@ -16,7 +16,7 @@ const SelectPlayerModal = ({ playerList, toggle, modal, selectPlayer }) => {
     }, [search])
 
     return (
-        <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={modal} toggle={toggle} scrollable>
+        <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
                 Select Player
             </ModalHeader>
