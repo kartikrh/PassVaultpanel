@@ -44,7 +44,11 @@ export const BOWLING_TEAM = "BOWLING_TEAM"
 
 export const FOUR = "FOUR"
 export const SIX = "SIX"
-export const EXTRAS = "EXTRAS"
+export const BALL_EXTRAS = "BALL_EXTRAS"
+export const BALL_WIDE = "BALL_WIDE"
+export const NO_BALL = "NO_BALL"
+export const BALL_BYE = "BALL_BYE"
+export const BALL_LEG_BYE = "BALL_LEG_BYE"
 
 export const EXTRA_WIDE = [
     { label: "1 Run", value: 1 },

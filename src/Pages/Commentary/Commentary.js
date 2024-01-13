@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import { isEqual } from "lodash"
-import { BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, ON_STRIKE, SIX } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, SIX } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 
@@ -12,17 +12,21 @@ const Commentary = (props) => {
     const [onPitchPlayers, setOnPitchPlayers] = useState({})
     const [changePlayerList, setChangePlayerList] = useState(undefined)
     const [extrasList, setExtrasList] = useState(undefined)
+    const [extraRunValue, setExtraRunValue] = useState(undefined)
     const [playerToChange, setPlayerToChange] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
 
     const checkForOverSwitch = (currentOver) => {
+        console.log(matchTypeDetails)
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
             changePlayer(CURRENT_BOWLER)
             return true
         }
         return false
     }
-
+    useEffect(() => {
+        console.log(onPitchPlayers)
+    })
     useEffect(() => {
         if (props.data) {
             const commentaryDetails = props.data.commentaryData.commentaryDetails
@@ -60,16 +64,37 @@ const Commentary = (props) => {
         }
     }, [props.data])
 
-    const updateRuns = (run, ball, batter, bowler, type, switchBatter) => {
+    const updateRuns = ({ run, ball, batter, bowler, type, switchBatter }) => {
         const updateBattingTeam = {}
         let updateBatter = {}
         let updateBowler = {}
         let isChangeStrike = undefined
         let updateOnPitchPlayer = {}
         let isOverSwitch = undefined
-        
-        if (ball === 0) {
 
+        if (ball === 0) {
+            if (type === BALL_WIDE) {
+                const runToUpdate = (+matchTypeDetails["valueOfWideBall"] || 0)
+                console.log(matchTypeDetails, (+matchTypeDetails["valueOfWideBall"] || 0))
+                updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) + 1
+                updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) + runToUpdate
+                updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
+            }
+            if (type === NO_BALL) {
+                const runToUpdate = (+matchTypeDetails["valueOfNoBall"] || 0)
+                updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
+                updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runToUpdate
+                updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
+            }
+            if (type === BALL_BYE) {
+                updateBowler["bowlerByeBall"] = (bowler.bowlerByeBall || 0) + 1
+                updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) + extraRunValue
+            }
+            if (type === BALL_LEG_BYE) {
+                updateBowler["bowlerLegByeBall"] = (bowler.bowlerLegByeBall || 0) + 1
+                updateBowler["bowlerLegByeBallRun"] = (bowler.bowlerLegByeBallRun || 0) + extraRunValue
+            }
+            setExtraRunValue(undefined)
         } else {
             const updatedBowlerOver = ((+bowler.bowlerOver || 0) + 0.1).toFixed(1)
             isOverSwitch = checkForOverSwitch(updatedBowlerOver)
@@ -115,8 +140,10 @@ const Commentary = (props) => {
     // useEffect(() => {
     //     console.log(changePlayerList)
     // })
-    const onExtrasChange = (extraRun) => {
 
+    const onExtrasChange = (extraRun) => {
+        setExtraRunValue(extraRun)
+        setExtrasList(undefined)
     }
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM

@@ -1,14 +1,19 @@
 import React from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
-import { BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, ON_STRIKE, SIX } from "./CommentartConst"
+import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, SIX } from "./CommentartConst"
 
 export const CommentaryScreen = ({
     teamDetails,
     // playerDetails,
     onPitchPlayers, updateRuns, changePlayer }) => {
     const handleRuns = (run, ball, type = "") => {
-        updateRuns(run, ball, onPitchPlayers[ON_STRIKE], onPitchPlayers[CURRENT_BOWLER], type)
+        updateRuns(
+            {
+                run: run, ball: ball, batter: onPitchPlayers[ON_STRIKE],
+                bowler: onPitchPlayers[CURRENT_BOWLER], type: type, switchBatter: false
+            }
+        )
     }
     return <React.Fragment>
         <Row className="width-full">
@@ -91,19 +96,19 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/5.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={() => handleRuns(0, 0, BALL_WIDE)}>
                         <img className="button-icon" src="icons/wide-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={() => handleRuns(0, 0, NO_BALL)}>
                         <img className="button-icon" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={() => handleRuns(0, 0, BALL_BYE)}>
                         <img className="button-icon" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={() => handleRuns(0, 0, BALL_LEG_BYE)}>
                         <img className="button-icon" src="icons/leg-by.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
