@@ -126,7 +126,7 @@ const Index = ({ data, next, save }) => {
                         title={val.teamName}
                         selectIcon={"bx bxs-check-circle"}
                         onClickColor={"#099680"}
-                        bgColor={"#43a899"}
+                        bgColor={"#55c6b4"}
                         check={val.teamId === values?.tossWonBy}
                       />
                     </Col>
@@ -148,8 +148,8 @@ const Index = ({ data, next, save }) => {
                         title="Batting"
                         titleIcon="CommentaryIcons/bat1.png"
                         selectIcon={"bx bxs-check-circle"}
-                        onClickColor={"#099680"}
-                        bgColor={"#43a899"}
+                        onClickColor={"#FCB92C"}
+                        bgColor={"#ffcd6b"}
                         check={values?.choseTo === 1}
                       />
                     </Col>
@@ -164,8 +164,8 @@ const Index = ({ data, next, save }) => {
                         title="Bowling"
                         titleIcon="CommentaryIcons/ball1.png"
                         selectIcon={"bx bx-circle"}
-                        onClickColor={"#099680"}
-                        bgColor={"#43a899"}
+                        onClickColor={"#FCB92C"}
+                        bgColor={"#ffcd6b"}
                         check={values?.choseTo === 2}
                       />
                     </Col>
