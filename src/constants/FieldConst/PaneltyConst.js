@@ -24,8 +24,8 @@ export const PaneltyRunConst = [
         defaultRows: 3,
         isRequired: true,
         requiredErrorMessage: "Please enter description.",
-        regex: /^.{0,50}$/,
-        regexErrorMessage: "Max allowed Characters 50",
+        regex: /^.{0,500}$/,
+        regexErrorMessage: "Max allowed Characters 500",
         labelColspan: { xs: 12, md: 3, lg: 3 },
         fieldColspan: { xs: 12, md: 9, lg: 9 }
     },

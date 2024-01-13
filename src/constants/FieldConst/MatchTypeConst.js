@@ -94,7 +94,7 @@ export const MatchTypeFields = [
         step: 1,
         isRequired: true,
         requiredErrorMessage: "Please enter value",
-        regex: /^(10|[0-1000])?$/,
+        regex: /^(10|[0-9]|[1-9][0-9]{0,2}|1000)?$/,
         regexErrorMessage: "over Should be Between 0 to 1000",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
@@ -147,7 +147,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-1000])?$/,
+        regex: /^(10|[0-9]|[1-9][0-9]{0,2}|1000)?$/,
         regexErrorMessage: "Over Per Day Should be Between 0 to 1000",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -159,7 +159,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-1000])?$/,
+        regex: /^(10|[0-9]|[1-9][0-9]{0,2}|1000)?$/,
         regexErrorMessage: "1st Inning Overs Should be Between 0 to 1000",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -171,7 +171,7 @@ export const MatchTypeFields = [
         min: 0,
         max: 1000,
         step: 1,
-        regex: /^(10|[0-1000])?$/,
+        regex: /^(10|[0-9]|[1-9][0-9]{0,2}|1000)?$/,
         regexErrorMessage: "2nd Innings Max Over Should be Between 0 to 1000",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
