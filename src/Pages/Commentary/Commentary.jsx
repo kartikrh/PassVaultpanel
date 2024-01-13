@@ -1,9 +1,10 @@
 import React from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
-import { BATTING_TEAM, BOWLING_TEAM } from "./CommentartConst"
+import { BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst"
 
-export const CommentaryScreen = ({ teamDetails, playerDetails }) => {
+export const CommentaryScreen = ({ teamDetails, playerDetails, onPitchPlayers }) => {
+    console.log(onPitchPlayers)
     return <React.Fragment>
         <Row className="width-full">
             {/* {isLoading && <SpinnerModel />} */}
@@ -26,22 +27,23 @@ export const CommentaryScreen = ({ teamDetails, playerDetails }) => {
                 </Col></Row>
                 <Row>
                     <Col className="striker-end" xs={12} md={6} lg={6}>
-                        Rohit Sharma&nbsp;
-                        <span>97</span>
-                        <span>(60) &nbsp;</span>
+                        {onPitchPlayers[ON_STRIKE]?.playerName}&nbsp;
+                        <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
+                        <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
                         <button className="change-button text-right">C</button>
                     </Col>
                     <Col className="non-striker-end" xs={12} md={6} lg={6}>
-                        Ishan Kisan&nbsp;
-                        <span>70</span>
-                        <span>(52) &nbsp;</span>
+                        {onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;
+                        <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
+                        <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
                         <button className="change-button text-right ">C</button>
                     </Col>
                 </Row>
                 <Row className="Bowler-header">
                     <Col xs={12} md={12} lg={12}>
-                        Chris Jordan &nbsp;
-                        <span>3.4-2-24-0</span>
+                        {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
+                        <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 2}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
+                            -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
                         <button className=" text-right change-button">C</button>
                     </Col>
                     < Col xs={12} md={12} lg={12}>
