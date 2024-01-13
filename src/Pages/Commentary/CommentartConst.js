@@ -44,3 +44,16 @@ export const BOWLING_TEAM = "BOWLING_TEAM"
 
 export const FOUR = "FOUR"
 export const SIX = "SIX"
+export const EXTRAS = "EXTRAS"
+
+export const EXTRA_WIDE = [
+    { label: "1 Run", value: 1 },
+    { label: "2 Runs", value: 2 },
+    { label: "3 Runs", value: 3 },
+    { label: "4 Runs", value: 4 },
+    { label: "5 Runs", value: 5 },
+    { label: "6 Runs", value: 6 },
+    { label: "7 Runs", value: 7 },
+    { label: "8 Runs", value: 8 },
+    { label: "9 Runs", value: 9 },
+]

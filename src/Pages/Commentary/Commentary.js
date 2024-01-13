@@ -3,6 +3,7 @@ import { CommentaryScreen } from "./Commentary.jsx"
 import { isEqual } from "lodash"
 import { BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, ON_STRIKE, SIX } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
+import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 
 const Commentary = (props) => {
     const [currentInnings, setCurrentInnings] = useState(undefined)
@@ -10,8 +11,17 @@ const Commentary = (props) => {
     const [players, setPlayers] = useState(undefined)
     const [onPitchPlayers, setOnPitchPlayers] = useState({})
     const [changePlayerList, setChangePlayerList] = useState(undefined)
+    const [extrasList, setExtrasList] = useState(undefined)
     const [playerToChange, setPlayerToChange] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
+
+    const checkForOverSwitch = (currentOver) => {
+        if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
+            changePlayer(CURRENT_BOWLER)
+            return true
+        }
+        return false
+    }
 
     useEffect(() => {
         if (props.data) {
@@ -50,25 +60,32 @@ const Commentary = (props) => {
         }
     }, [props.data])
 
-    const updateRuns = (run, batter, bowler, type = "") => {
+    const updateRuns = (run, ball, batter, bowler, type, switchBatter) => {
         const updateBattingTeam = {}
         let updateBatter = {}
         let updateBowler = {}
         let isChangeStrike = undefined
         let updateOnPitchPlayer = {}
-        updateBatter["batRun"] = (batter.batRun || 0) + run
-        updateBatter["batBall"] = (batter.batBall || 0) + 1
-        updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + run
-        updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + 1
-        updateBowler["bowlerOver"] = ((+bowler.bowlerOver || 0) + 0.1).toFixed(1)
-        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + run
-        updateBattingTeam["teamOver"] = ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
+        let isOverSwitch = undefined
+        
+        if (ball === 0) {
 
-        if (run === 0) {
-            updateBatter["batDotBall"] = (batter.batDotBall || 0) + 1
-            updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) + 1
-        }
-        else
+        } else {
+            const updatedBowlerOver = ((+bowler.bowlerOver || 0) + 0.1).toFixed(1)
+            isOverSwitch = checkForOverSwitch(updatedBowlerOver)
+            updateBatter["batRun"] = (batter.batRun || 0) + run
+            updateBatter["batBall"] = (batter.batBall || 0) + ball
+            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + run
+            updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + ball
+            updateBowler["bowlerOver"] = isOverSwitch ? Math.ceil((+bowler.bowlerOver || 0)) : updatedBowlerOver
+            updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + run
+            updateBattingTeam["teamOver"] =
+                isOverSwitch ? Math.ceil(+teams[BATTING_TEAM].teamOver || 0) :
+                    ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
+            if (run === 0) {
+                updateBatter["batDotBall"] = (batter.batDotBall || 0) + 1
+                updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) + 1
+            }
             if (run % 2 === 0) {
                 if (type === FOUR) {
                     updateBatter["batFour"] = (batter.batFour || 0) + 1
@@ -79,11 +96,13 @@ const Commentary = (props) => {
                     updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
                 }
             } else isChangeStrike = true
+        }
+
         updateBatter = { ...onPitchPlayers[ON_STRIKE], ...updateBatter }
         updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
         updateOnPitchPlayer = {
-            [ON_STRIKE]: isChangeStrike ? onPitchPlayers[NON_STRIKE] : updateBatter,
-            [NON_STRIKE]: isChangeStrike ? updateBatter : onPitchPlayers[NON_STRIKE],
+            [ON_STRIKE]: (isChangeStrike || isOverSwitch) ? onPitchPlayers[NON_STRIKE] : updateBatter,
+            [NON_STRIKE]: (isChangeStrike || isOverSwitch) ? updateBatter : onPitchPlayers[NON_STRIKE],
             [CURRENT_BOWLER]: updateBowler
         }
         setOnPitchPlayers(updateOnPitchPlayer)
@@ -92,13 +111,13 @@ const Commentary = (props) => {
             [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam }
         })
     }
-    const checkForOverSwitch = (currentOver) => {
-        console.log(currentOver, matchTypeDetails)
-    }
+
     // useEffect(() => {
     //     console.log(changePlayerList)
     // })
+    const onExtrasChange = (extraRun) => {
 
+    }
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         let newPlayer = undefined
@@ -142,6 +161,7 @@ const Commentary = (props) => {
 
         />
         <SelectPlayerModal isOpen={changePlayerList} toggle={() => { setChangePlayerList(undefined) }} playerList={changePlayerList} selectPlayer={onPlayerChange} />
+        <ExtrasModal isOpen={extrasList} toggle={() => { setExtrasList(undefined) }} playerList={extrasList} selectPlayer={onExtrasChange} />
     </>
 }
 
