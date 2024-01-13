@@ -1,48 +1,39 @@
 import React from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
+import { BATTING_TEAM, BOWLING_TEAM } from "./CommentartConst"
 
-export const Commentary = (props) => {
-    const data = {
-        eventName: "CWC T20",
-        team1Name: "India",
-        team1ShortName: "Ind",
-        team2Name: "Australia",
-        team2ShortName: "Aus",
-        team1Players: [],
-        team2Players: [],
-        currentBowler: { name: "Chris Jordan", }
-    }
+export const CommentaryScreen = ({ teamDetails, playerDetails }) => {
     return <React.Fragment>
         <Row className="width-full">
             {/* {isLoading && <SpinnerModel />} */}
             <Col xs={12} md={6} lg={6}>
-                <Row><Col className="event-name-header" xs={12} md={12} lg={12}>
-                    Event : {data.eventName}
-                </Col></Row>
                 <Row>
                     <Col className="team-name team-1" xs={6} md={6} lg={6}>
-                        {data.team1Name}
+                        {teamDetails?.[BATTING_TEAM].teamName}
                     </Col>
                     <Col className="team-name team-2" xs={6} md={6} lg={6}>
-                        {data.team2Name}
+                        {teamDetails?.[BOWLING_TEAM].teamName}
                     </Col>
                 </Row>
                 <Row><Col className="current-score-header" xs={12} md={12} lg={12}>
-                    <span className="current-team-name">{data.team1ShortName.toUpperCase()}&nbsp;</span>
-                    <span className="current-team-score">173/0 (18.4) &nbsp;</span>
+                    <span className="current-team-name">{teamDetails?.[BATTING_TEAM].shortName?.toUpperCase()}&nbsp;</span>
+                    <span className="current-team-score">
+                        {teamDetails?.[BOWLING_TEAM].teamScore || 0}/{teamDetails?.[BOWLING_TEAM].teamWicket || 0}
+                        &nbsp;({teamDetails?.[BOWLING_TEAM].teamOver || 0})
+                        &nbsp;</span>
                     <button className="change-button">C</button>
                 </Col></Row>
                 <Row>
                     <Col className="striker-end" xs={12} md={6} lg={6}>
                         Rohit Sharma&nbsp;
-                        <spam>97</spam>
+                        <span>97</span>
                         <span>(60) &nbsp;</span>
                         <button className="change-button text-right">C</button>
                     </Col>
                     <Col className="non-striker-end" xs={12} md={6} lg={6}>
                         Ishan Kisan&nbsp;
-                        <spam>70</spam>
+                        <span>70</span>
                         <span>(52) &nbsp;</span>
                         <button className="change-button text-right ">C</button>
                     </Col>

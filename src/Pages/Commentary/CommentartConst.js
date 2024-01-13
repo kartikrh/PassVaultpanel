@@ -36,4 +36,7 @@ export const TimedOut = 8;
 export const HitBallZTwice = 9;
 export const ObstractingTheField = 10;
 
-// export const ScoreButtons
+export const TEAM_A = "TEAM_A"
+export const TEAM_B = "TEAM_B"
+export const BATTING_TEAM = "BATTING_TEAM"
+export const BOWLING_TEAM = "BOWLING_TEAM"
