@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment";
 
 export const sanitizeFormData = (data) => {
   let sanitizedData = { ...data }; // Copy the original formData
@@ -92,6 +93,22 @@ export const transformApiDataToSidebarData = (apiData) => {
   return SidebarData;
 };
 
+export const convertDateLocalToUTC = (localDate) => {
+  if (localDate) {
+    return moment(localDate).utc().format();
+  }
+  return "";
+}
+
+export const convertDateUTCToLocal = (UTCDate,page) => {
+  if (UTCDate) {
+    if(page==='ind') {
+      return moment(UTCDate).local().format("DD/MM/YY, h:mm:ss a");
+    }
+    return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm:ss");
+  }
+  return "";
+}
 
 export const convertDateString = (dateString) => {
   if (dateString) {

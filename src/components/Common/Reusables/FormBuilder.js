@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
 import { capitalize, isEmpty, isEqual } from "lodash";
-import { isValueEmpty, sanitizeFormData, compareNumStringValues } from "./reusableMethods.js";
+import { isValueEmpty, sanitizeFormData, compareNumStringValues, convertDateUTCToLocal } from "./reusableMethods.js";
 import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
 import "./CustomCss.css"
 import {
@@ -412,7 +412,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     style={field?.customStyle}
                     type="datetime-local"
                     disabled={disabledFields?.[field.name]}
-                    value={formData[field.name] || ""}
+                    value={convertDateUTCToLocal(formData[field.name],'fet') || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
                   />
