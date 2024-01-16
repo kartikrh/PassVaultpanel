@@ -115,7 +115,6 @@ function AddEvents() {
     if (dataToSave) {
       const extraData = {
         eventId,
-        // eventDate: moment(dataToSave.eventDate).utc().format()
         eventDate: convertDateLocalToUTC(dataToSave.eventDate)
       }
       const defaultData = {
