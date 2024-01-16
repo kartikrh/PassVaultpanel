@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "antd";
-export const Columns = ({ permissions, updatePagePermission, updateAllPermission }) => {
+export const Columns = ({
+  permissions,
+  updatePagePermission,
+  updateAllPermission,
+}) => {
   // Initialize the checkbox state using a map
-  const [checkboxStates, setCheckboxStates] = useState(new Map());
+  const [checkboxStates, setCheckboxStates] = useState([]);
   const [allCheckBoxes, setAllCheckBoxes] = useState({
-    isEdit: false,
-    isAdd: false,
-    isDelete: false,
-    isView: false,
-  })
+    isViewPermission: false,
+    isAddPermission: false,
+    isEditPermission: false,
+    isDeletePermission: false,
+  });
 
   // Initialize checkbox states for each item in permissions
   useEffect(() => {
@@ -21,9 +25,9 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
         isDeletePermission: item.isDeletePermission,
       });
     });
-    console.log("1", initialCheckboxStates)
+    console.log("1", initialCheckboxStates);
     setCheckboxStates(initialCheckboxStates);
-    console.log("PROPS PERMISSION 2:: ", permissions)
+    console.log("PROPS PERMISSION 2:: ", permissions);
   }, [permissions]);
 
   // Function to toggle permission for a specific tabId and permissionType
@@ -40,8 +44,8 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
         isEdit: tabPermissions.isEditPermission,
         isDelete: tabPermissions.isDeletePermission,
       };
-      console.log("this is updated Row", updatedRow)
-      console.log("this is total", permissions)
+      console.log("this is updated Row", updatedRow);
+      console.log("this is total", permissions);
       updatePagePermission(updatedRow);
       return newStates;
     });
@@ -51,16 +55,32 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
     setAllCheckBoxes((preValue) => {
       return {
         ...preValue,
-        [name]: !allCheckBoxes[name]
-      }
-    })
-    updateAllPermission(name, !allCheckBoxes[name])
-  }
+        [name]: !allCheckBoxes[name],
+      };
+    });
+    updateAllPermission(name, !allCheckBoxes[name]);
+  };
 
   useEffect(() => {
-    console.log("check", checkboxStates);
-  }, [checkboxStates])
+    let isViewPermission = true;
+    let isAddPermission= true;
+    let isDeletePermission = true;
+    let isEditPermission = true
 
+    Array.from(checkboxStates)?.map((val, i)=>{
+      isAddPermission = isAddPermission && val[1].isAddPermission
+      isDeletePermission = isDeletePermission && val[1].isDeletePermission
+      isViewPermission = isViewPermission && val[1].isViewPermission
+      isEditPermission = isEditPermission && val[1].isEditPermission
+    })
+
+    setAllCheckBoxes({
+      isAddPermission,
+      isDeletePermission,
+      isViewPermission,
+      isEditPermission,
+    })
+  }, [checkboxStates]);
 
   const columns = [
     {
@@ -74,8 +94,10 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={() => { handleAllPermissions("isViewPermission") }}
-            checked={allCheckBoxes.isView}
+            onChange={() => {
+              handleAllPermissions("isViewPermission");
+            }}
+            checked={allCheckBoxes.isViewPermission}
           />
         </div>
       ),
@@ -100,8 +122,10 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={() => { handleAllPermissions("isAddPermission") }}
-            checked={allCheckBoxes.isAdd}
+            onChange={() => {
+              handleAllPermissions("isAddPermission");
+            }}
+            checked={allCheckBoxes.isAddPermission}
           />
         </div>
       ),
@@ -129,8 +153,10 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={() => { handleAllPermissions("isEditPermission") }}
-            checked={allCheckBoxes.isEdit}
+            onChange={() => {
+              handleAllPermissions("isEditPermission");
+            }}
+            checked={allCheckBoxes.isEditPermission}
           />
         </div>
       ),
@@ -158,8 +184,10 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={() => { handleAllPermissions("isDeletePermission") }}
-            checked={allCheckBoxes.isDelete}
+            onChange={() => {
+              handleAllPermissions("isDeletePermission");
+            }}
+            checked={allCheckBoxes.isDeletePermission}
           />
         </div>
       ),
@@ -186,8 +214,5 @@ export const Columns = ({ permissions, updatePagePermission, updateAllPermission
 };
 
 export const colRender = () => {
-
-  return {
-
-  }
-}
+  return {};
+};
