@@ -205,7 +205,7 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text,'ind')}</span>
+        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, 'index')}</span>
       ),
       key: "eventDate",
       style: { width: "10%" },

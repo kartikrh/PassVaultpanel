@@ -412,7 +412,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     style={field?.customStyle}
                     type="datetime-local"
                     disabled={disabledFields?.[field.name]}
-                    value={convertDateUTCToLocal(formData[field.name],'fet') || ""}
+                    value={convertDateUTCToLocal(formData[field.name]) || ""}
                     id={field.name}
                     onChange={(e) => handleChange(field, e.target.value)}
                   />
