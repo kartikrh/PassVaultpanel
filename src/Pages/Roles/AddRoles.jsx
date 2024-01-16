@@ -30,7 +30,12 @@ function AddRoles() {
     const [permissions, setPermissions] = useState([]);
     const [newPermissionValue, setNewPermissionValue] = useState([]);
     const [displayType, setDisplayType] = useState("0")
-
+    const [allCheckBoxes, setAllCheckBoxes] = useState({
+        isEdit:true,
+        isAdd: true,
+        isDelete: true,
+        isView: true,
+      })
     useEffect(() => {
         fetchData(roleId, true);
         if (roleId !== "0") {
@@ -79,6 +84,7 @@ function AddRoles() {
     };
 
     const handleSaveClick = async (saveAction) => {
+        console.log("this is newPermissions", newPermissionValue)
         const dataToSave = finalizeRef.current.finalizeData();
         if (dataToSave) {
             const extraData = {
@@ -106,14 +112,30 @@ function AddRoles() {
         const updatedValue = newPermissionValue.map((val) =>
             val.tabId === value.tabId ? value : val
         );
+        console.log("this is updatedValue system", updatedValue)
         setNewPermissionValue(updatedValue);
     };
-
+    const handlePermissionChangeAll = (key) =>{
+        setAllCheckBoxes((preValue)=>{
+            return{
+              ...preValue,
+              [key] : !allCheckBoxes[key]
+            }
+          })
+        const newPermissionValuesUpdated = newPermissionValue.map((val)=>{
+            return {...val, [key] : !allCheckBoxes[key]}
+        })
+        console.log("this is all updated value",newPermissionValuesUpdated)
+        setNewPermissionValue(newPermissionValuesUpdated)
+    }
     const handleBackClick = () => {
         navigate("/roles");
     };
     const { columns } = Columns({ permissions, updatePagePermission });
 
+    useEffect(()=>{
+        console.log("this is all checkboxes", allCheckBoxes)
+    },[allCheckBoxes])
     return (
         <React.Fragment>
             <div className="page-content">
@@ -121,6 +143,7 @@ function AddRoles() {
                     <Row>
                         <Col xs={12} md={8} lg={9}>
                             <h3>Role</h3>
+                            <Button onClick={()=>{handlePermissionChangeAll("isAdd")}}>Change</Button>
                         </Col>
                         <Card>
                             <CardBody>
