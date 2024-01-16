@@ -11,7 +11,7 @@ import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import moment from "moment";
 
@@ -140,7 +140,7 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{moment(text).local().format("DD/MM/YY, h:mm:ss a")}</span>
+        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, 'index')}</span>
       ),
       key: "eventDate",
       sort: true,
