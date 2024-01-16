@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "antd";
-export const Columns = ({ permissions, updatePagePermission }) => {
+export const Columns = ({ permissions, updatePagePermission, updateAllPermission }) => {
   // Initialize the checkbox state using a map
   const [checkboxStates, setCheckboxStates] = useState(new Map());
   const [allCheckBoxes, setAllCheckBoxes] = useState({
-    isEdit:true,
-    isAdd: true,
-    isDelete: true,
-    isView: true,
+    isEdit: false,
+    isAdd: false,
+    isDelete: false,
+    isView: false,
   })
 
   // Initialize checkbox states for each item in permissions
@@ -23,7 +23,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
     });
     console.log("1", initialCheckboxStates)
     setCheckboxStates(initialCheckboxStates);
-    console.log("PROPS PERMISSION 2:: ",permissions)
+    console.log("PROPS PERMISSION 2:: ", permissions)
   }, [permissions]);
 
   // Function to toggle permission for a specific tabId and permissionType
@@ -47,14 +47,20 @@ export const Columns = ({ permissions, updatePagePermission }) => {
     });
   };
 
-  const handleAllPermissions = (name) =>{
-    setAllCheckBoxes((preValue)=>{
-      return{
+  const handleAllPermissions = (name) => {
+    setAllCheckBoxes((preValue) => {
+      return {
         ...preValue,
-        [name] : !allCheckBoxes[name]
+        [name]: !allCheckBoxes[name]
       }
     })
+    updateAllPermission(name, !allCheckBoxes[name])
   }
+
+  useEffect(() => {
+    console.log("check", checkboxStates);
+  }, [checkboxStates])
+
 
   const columns = [
     {
@@ -68,7 +74,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={()=>{handleAllPermissions("isView")}}
+            onChange={() => { handleAllPermissions("isViewPermission") }}
             checked={allCheckBoxes.isView}
           />
         </div>
@@ -94,7 +100,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={()=>{handleAllPermissions("isAdd")}}
+            onChange={() => { handleAllPermissions("isAddPermission") }}
             checked={allCheckBoxes.isAdd}
           />
         </div>
@@ -123,7 +129,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={()=>{handleAllPermissions("isEdit")}}
+            onChange={() => { handleAllPermissions("isEditPermission") }}
             checked={allCheckBoxes.isEdit}
           />
         </div>
@@ -152,7 +158,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
           <Checkbox
             type="checkbox"
             style={{ transform: "scale(1.2)" }}
-            onChange={()=>{handleAllPermissions("isDelete")}}
+            onChange={() => { handleAllPermissions("isDeletePermission") }}
             checked={allCheckBoxes.isDelete}
           />
         </div>
@@ -179,7 +185,7 @@ export const Columns = ({ permissions, updatePagePermission }) => {
   return { columns };
 };
 
-export const colRender = () =>{
+export const colRender = () => {
 
   return {
 

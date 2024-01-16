@@ -31,11 +31,11 @@ function AddRoles() {
     const [newPermissionValue, setNewPermissionValue] = useState([]);
     const [displayType, setDisplayType] = useState("0")
     const [allCheckBoxes, setAllCheckBoxes] = useState({
-        isEdit:true,
+        isEdit: true,
         isAdd: true,
         isDelete: true,
         isView: true,
-      })
+    })
     useEffect(() => {
         fetchData(roleId, true);
         if (roleId !== "0") {
@@ -71,13 +71,19 @@ function AddRoles() {
         }
     }, [isSaved]);
 
+    useEffect(() => {
+        if (permissions.length) {
+            setNewPermissionValue(transformData(permissions));
+        }
+    }, [permissions])
+
+
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
                 if (storeInitialData) setInitialEditData(response?.result);
                 const newPermission = rearrangeTabs(response?.result?.permissions || []);
                 setPermissions(newPermission)
-                setNewPermissionValue(transformData(newPermission));
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
@@ -97,7 +103,7 @@ function AddRoles() {
             if (newPermissionValue.length) {
                 dispatch(addRoleToDb({ ...defaultData, ...dataToSave, ...extraData }))
                 setCurrentSaveAction(saveAction);
-            } else{
+            } else {
                 dispatch(updateToastData({ data: "No Permission Found", title: "Roles", type: ERROR }));
             }
         }
@@ -115,27 +121,38 @@ function AddRoles() {
         console.log("this is updatedValue system", updatedValue)
         setNewPermissionValue(updatedValue);
     };
-    const handlePermissionChangeAll = (key) =>{
-        setAllCheckBoxes((preValue)=>{
-            return{
-              ...preValue,
-              [key] : !allCheckBoxes[key]
+
+    const updateAllPermission = (name, data) => {
+        const newData = permissions.map(value => {
+            return {
+                ...value,
+                [name]: data
             }
-          })
-        const newPermissionValuesUpdated = newPermissionValue.map((val)=>{
-            return {...val, [key] : !allCheckBoxes[key]}
         })
-        console.log("this is all updated value",newPermissionValuesUpdated)
+        setPermissions(newData)
+    }
+
+    const handlePermissionChangeAll = (key) => {
+        setAllCheckBoxes((preValue) => {
+            return {
+                ...preValue,
+                [key]: !allCheckBoxes[key]
+            }
+        })
+        const newPermissionValuesUpdated = newPermissionValue.map((val) => {
+            return { ...val, [key]: !allCheckBoxes[key] }
+        })
+        console.log("this is all updated value", newPermissionValuesUpdated)
         setNewPermissionValue(newPermissionValuesUpdated)
     }
     const handleBackClick = () => {
         navigate("/roles");
     };
-    const { columns } = Columns({ permissions, updatePagePermission });
+    const { columns } = Columns({ permissions, updatePagePermission, updateAllPermission });
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log("this is all checkboxes", allCheckBoxes)
-    },[allCheckBoxes])
+    }, [allCheckBoxes])
     return (
         <React.Fragment>
             <div className="page-content">
@@ -143,7 +160,7 @@ function AddRoles() {
                     <Row>
                         <Col xs={12} md={8} lg={9}>
                             <h3>Role</h3>
-                            <Button onClick={()=>{handlePermissionChangeAll("isAdd")}}>Change</Button>
+                            <Button onClick={() => { handlePermissionChangeAll("isAdd") }}>Change</Button>
                         </Col>
                         <Card>
                             <CardBody>
