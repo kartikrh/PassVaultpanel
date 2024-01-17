@@ -3,6 +3,7 @@ export const BAT = 1;
 export const BOWL = 2;
 
 // Ball Type
+export const BallType_Over_complete = 0;
 export const BallType_Regular = 1;
 export const BallType_Wide = 2;
 export const BallType_Bye = 3;
@@ -50,14 +51,49 @@ export const NO_BALL = "NO_BALL"
 export const BALL_BYE = "BALL_BYE"
 export const BALL_LEG_BYE = "BALL_LEG_BYE"
 
-export const EXTRA_WIDE = [
-    { label: "1 Run", value: 1 },
-    { label: "2 Runs", value: 2 },
-    { label: "3 Runs", value: 3 },
-    { label: "4 Runs", value: 4 },
-    { label: "5 Runs", value: 5 },
-    { label: "6 Runs", value: 6 },
-    { label: "7 Runs", value: 7 },
-    { label: "8 Runs", value: 8 },
-    { label: "9 Runs", value: 9 },
-]
+export const EXTRAS_LIST = {
+    [BALL_WIDE]: [
+        { label: "1 Run", value: 1 },
+        { label: "2 Runs", value: 2 },
+        { label: "3 Runs", value: 3 },
+        { label: "4 Runs", value: 4 },
+        { label: "5 Runs", value: 5 },
+        { label: "6 Runs", value: 6 },
+        { label: "7 Runs", value: 7 },
+        { label: "8 Runs", value: 8 },
+        { label: "9 Runs", value: 9 },
+    ],
+    [NO_BALL]: [
+        { label: "1 Run", value: 1 },
+        { label: "2 Runs", value: 2 },
+        { label: "3 Runs", value: 3 },
+        { label: "4 Runs", value: 4 },
+        { label: "5 Runs", value: 5 },
+        { label: "6 Runs", value: 6 },
+        { label: "7 Runs", value: 7 },
+        { label: "8 Runs", value: 8 },
+        { label: "9 Runs", value: 9 },
+    ],
+    [BALL_BYE]: [
+        { label: "1 Run", value: 1 },
+        { label: "2 Runs", value: 2 },
+        { label: "3 Runs", value: 3 },
+        { label: "4 Runs", value: 4 },
+        { label: "5 Runs", value: 5 },
+        { label: "6 Runs", value: 6 },
+        { label: "7 Runs", value: 7 },
+        { label: "8 Runs", value: 8 },
+        { label: "9 Runs", value: 9 },
+    ],
+    [BALL_LEG_BYE]: [
+        { label: "1 Run", value: 1 },
+        { label: "2 Runs", value: 2 },
+        { label: "3 Runs", value: 3 },
+        { label: "4 Runs", value: 4 },
+        { label: "5 Runs", value: 5 },
+        { label: "6 Runs", value: 6 },
+        { label: "7 Runs", value: 7 },
+        { label: "8 Runs", value: 8 },
+        { label: "9 Runs", value: 9 },
+    ]
+}

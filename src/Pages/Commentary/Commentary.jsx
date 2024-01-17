@@ -6,7 +6,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 export const CommentaryScreen = ({
     teamDetails,
     // playerDetails,
-    onPitchPlayers, updateRuns, changePlayer }) => {
+    onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {
@@ -96,23 +96,23 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/5.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0, 0, BALL_WIDE)}>
+                        onClick={() => updateExtras(BALL_WIDE)}>
                         <img className="button-icon" src="icons/wide-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0, 0, NO_BALL)}>
+                        onClick={() => updateExtras(NO_BALL)}>
                         <img className="button-icon" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0, 0, BALL_BYE)}>
+                        onClick={() => updateExtras(BALL_BYE)}>
                         <img className="button-icon" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0, 0, BALL_LEG_BYE)}>
+                        onClick={() => updateExtras(BALL_LEG_BYE)}>
                         <img className="button-icon" src="icons/leg-by.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={changeOver}>
                         <img className="button-icon" src="icons/end-over.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
