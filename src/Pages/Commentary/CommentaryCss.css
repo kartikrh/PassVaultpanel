@@ -79,14 +79,14 @@
 
 .striker-end {
     /* text-align: center; */
-    background-color: rgba(253, 206, 117, 0.473);
+    background-color: rgba(247, 189, 81, 0.798);
     font-size: 16px;
     padding: 0.25rem !important;
 }
 
 .non-striker-end {
     /* text-align: center; */
-    background-color: rgba(247, 189, 81, 0.798);
+    background-color: rgba(253, 206, 117, 0.473);
     font-size: 16px;
     padding: 0.25rem !important;
 }
