@@ -18,10 +18,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT } from '../../components/Common/Const';
 import { addEventToDb, updateSavedState } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
-import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
+import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import moment from "moment";
 
 function AddEvents() {
   const pageName = TAB_EVENT
@@ -74,7 +75,7 @@ function AddEvents() {
     await axiosInstance
       .post("/admin/events/byId", { eventId })
       .then((response) => {
-        setInitialEditData({ ...response?.result, eventDate: convertDateString(response?.result.eventDate) });
+        setInitialEditData({ ...response?.result });
       })
       .catch((error) => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -113,7 +114,8 @@ function AddEvents() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        eventId
+        eventId,
+        eventDate: convertDateLocalToUTC(dataToSave.eventDate)
       }
       const defaultData = {
         countryCode: "",

@@ -11,8 +11,9 @@ import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import moment from "moment";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY
@@ -139,17 +140,7 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {new Intl.DateTimeFormat("en-GB", {
-            year: "2-digit",
-            month: "numeric",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-            timeZone: 'UTC'
-          }).format(new Date(text))}
-        </span>
+        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, 'index')}</span>
       ),
       key: "eventDate",
       sort: true,

@@ -8,10 +8,11 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addCommentaryToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
-import { convertDateString } from '../../components/Common/Reusables/reusableMethods';
+import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import moment from 'moment';
 
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -88,7 +89,7 @@ function AddCommentary() {
             setCurrentSaveAction(undefined)
         }
     }, [isSaved]);
-    
+
     const handleFormADataChange = (newFormData) => {
         setSavedFormState(newFormData);
         if (newFormData["eventTypeId"] !== savedFormState["eventTypeId"]) {
@@ -158,7 +159,7 @@ function AddCommentary() {
                         const updatedData = {
                             "eventRefId": response?.result?.refId,
                             "eventName": response?.result?.eventName,
-                            "eventDate": convertDateString(response?.result?.eventDate),
+                            "eventDate": convertDateLocalToUTC(response?.result?.eventDate),
                             "location": response?.result?.venue,
                         }
                         setMasterData((preData) => ({
@@ -244,7 +245,7 @@ function AddCommentary() {
                     ...response?.result,
                     team1Players: formatMultiSelectDataPlayers(response?.result?.team1Players),
                     team2Players: formatMultiSelectDataPlayers(response?.result?.team2Players),
-                    eventDate: convertDateString(response?.result?.eventDate)
+                    eventDate: convertDateLocalToUTC(response?.result?.eventDate)
                 }
                 // Fetch Competition Options based on EventTypeId
                 await axiosInstance.post('/admin/competition/byeventTypeId', { eventTypeId: updateScreenData["eventTypeId"] })
@@ -358,13 +359,25 @@ function AddCommentary() {
         const dataToSave1 = finalizeRef1.current.finalizeData()
         const dataToSave2 = finalizeRef2.current.finalizeData()
         if (dataToSave1 && dataToSave2) {
+            const dataToSave = {
+                ...dataToSave1,
+                "team1Id": dataToSave2.team1Id,
+                "team2Id": dataToSave2.team2Id,
+                "team1Captain": dataToSave2.team1Captain,
+                "team2Captain": dataToSave2.team2Captain,
+                "team1Kipper": dataToSave2.team1Kipper,
+                "team2Kipper": dataToSave2.team2Kipper,
+                "team1Players": dataToSave2.team1Players,
+                "team2Players": dataToSave2.team2Players,
+            }
             const extraData = {
                 commentaryId: id,
+                eventDate: convertDateLocalToUTC(dataToSave1.eventDate)
                 // marketId: "0", tpId: "0", matchTypeId: "0"
                 // , currentInnings: 0
             }
             setCurrentSaveAction(saveAction);
-            dispatch(addCommentaryToDb({ ...dataToSave1, ...dataToSave2, ...extraData }))
+            dispatch(addCommentaryToDb({ ...dataToSave, ...extraData }))
         }
     };
 
