@@ -189,14 +189,11 @@ const Commentary = (props) => {
         const isOnStrikeWicket = isEqual(wicketData.batterId, onPitchPlayers[ON_STRIKE].playerId)
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) + 1
+        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + +wicketData.runs
+        updateBattingTeam["teamOver"] =
+            ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
-        updateRuns({ run: wicketData.runs, ball: 1, batter: wicketPlayerDetails, bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
-        updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
-        const updateOnPitchPlayer = {
-            [ON_STRIKE]: isOnStrikeWicket ? undefined : (wicketData.switchBatter ? onPitchPlayers[NON_STRIKE] : onPitchPlayers[ON_STRIKE]),
-            [NON_STRIKE]: !isOnStrikeWicket ? undefined : (wicketData.switchBatter ? onPitchPlayers[ON_STRIKE] : onPitchPlayers[NON_STRIKE]),
-            [CURRENT_BOWLER]: updateBowler
-        }
+        updateRuns({ run: +wicketData.runs, ball: 1, batter: wicketPlayerDetails, bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
         setPlayers({
             ...players,
             [BATTING_TEAM]: players[BATTING_TEAM]?.map((player) => {
@@ -212,11 +209,20 @@ const Commentary = (props) => {
                 return player
             })
         })
-        console.log(updateOnPitchPlayer)
-        setOnPitchPlayers(updateOnPitchPlayer)
-        setTeams({
-            ...teams,
-            [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam }
+        setOnPitchPlayers((prevValue) => {
+            const updateStriker = isOnStrikeWicket ? undefined : prevValue[ON_STRIKE]
+            const udpateNonStriker = !isOnStrikeWicket ? undefined : prevValue[NON_STRIKE]
+            return {
+                [ON_STRIKE]: wicketData.switchBatter ? udpateNonStriker : updateStriker,
+                [NON_STRIKE]: wicketData.switchBatter ? updateStriker : udpateNonStriker,
+                [CURRENT_BOWLER]: { ...prevValue[CURRENT_BOWLER], ...updateBowler }
+            }
+        })
+        setTeams((prevValue) => {
+            return {
+                ...teams,
+                [BATTING_TEAM]: { ...prevValue[BATTING_TEAM], ...updateBattingTeam }
+            }
         })
         changePlayer(isOnStrikeWicket === wicketData.switchBatter ? NON_STRIKE : ON_STRIKE)
         setShowWicketModal(undefined)
