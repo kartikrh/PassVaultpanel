@@ -2,9 +2,9 @@ import React, { forwardRef, useEffect, useState, useImperativeHandle } from "rea
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from 'react-select/creatable';
-import { capitalize, isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { isValueEmpty, sanitizeFormData, compareNumStringValues, convertDateUTCToLocal } from "./reusableMethods.js";
-import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE, RADIO_BUTTON } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
@@ -19,7 +19,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
   const [fieldErrors, setFieldErrors] = useState({});
   const [viewImage, setViewImage] = useState(null);
   // useEffect(() => {
-  //   console.log(formData, editFormData)
+  //   console.log(formData, editFormData, masterData)
   // })
   const handleImageChange = (field, event) => {
     const file = event.target.files[0];
@@ -356,21 +356,21 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     isMulti={field.isMulti}
                   />
                 )}
-                {field.type === "radio" && (
+                {field.type === RADIO_BUTTON && (
                   <div className="radio-button-styling radio_options_list">
-                    {field.options.map((option) => (
-                      <label key={option.value} className="radio_option_label">
+                    {[].concat(field.options, masterData?.[field.name] || []).map((option) => (
+                      < label key={option.value} className="radio_option_label" >
                         <input
                           className="inputtag normal_input"
                           style={field?.customStyle}
                           type="radio"
                           name={field.name}
-                          value={option.value}
-                          checked={
-                            (formData[field.name] &&
-                              capitalize(formData[field.name]) === option.value) ||
-                            capitalize(formData[field.dataKey]) === option.value
-                          }
+                          value={[].concat(field.options, masterData?.[field.name] || [])
+                            .filter(e => {
+                              if (formData[field.name])
+                                return compareNumStringValues(e?.value, formData[field.name])
+                              else return compareNumStringValues(e?.value, formData[field.name])
+                            })}
                           onChange={() => handleChange(field, option.value)}
                           required={field.isRequired}
                         />
@@ -458,7 +458,7 @@ FormBuilder.propTypes = {
         "password",
         TEXT_AREA,
         SELECT,
-        "radio",
+        RADIO_BUTTON,
         FILE_TYPE,
         SWITCH,
         MULTI_SELECT,

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR, SAVE_AND_NEXT } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
-import SelectPlayerModal from './SelectPlayerModal'
+import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
 
 const PlayerSelection = forwardRef((props, ref) => {
