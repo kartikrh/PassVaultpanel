@@ -5,8 +5,8 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 
 export const CommentaryScreen = ({
     teamDetails,
-    // playerDetails,
-    onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras }) => {
+    onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras,
+    onWicketClick }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {

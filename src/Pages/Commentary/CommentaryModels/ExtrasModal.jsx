@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, ModalBody, ModalHeader, Table } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Table } from 'reactstrap';
 
 const ExtrasModal = ({ runList, toggle, isOpen, selectExtraRun }) => {
     return (
@@ -16,6 +16,9 @@ const ExtrasModal = ({ runList, toggle, isOpen, selectExtraRun }) => {
                     </tbody>
                 </Table>
             </ModalBody>
+            <ModalFooter>
+                <Button color="danger" className="decision-Button text-right " onClick={toggle}>Close</Button>
+            </ModalFooter>
         </Modal>
     )
 }

@@ -27,15 +27,25 @@ export const END = 4;
 
 // Out Type
 export const BOLD = 1;
+export const BOLD_LABEL = "Bold";
 export const CATCH = 2;
+export const CATCH_LABEL = "Catch";
 export const STUMP = 3;
+export const STUMP_LABEL = "Stump";
 export const HIT_WICKET = 4;
+export const HIT_WICKET_LABEL = "Hit Wicket";
 export const LBW = 5;
+export const LBW_LABEL = "LBW";
 export const RUN_OUT = 6;
-export const RetiredOut = 7;
-export const TimedOut = 8;
-export const HitBallZTwice = 9;
-export const ObstractingTheField = 10;
+export const RUN_OUT_LABEL = "Run Out";
+export const RETIRED_OUT = 7;
+export const RETIRED_OUT_LABEL = "Retired Out";
+export const TIMED_OUT = 8;
+export const TIMED_OUT_LABEL = "Timed Out";
+export const HIT_BALL_TWICE = 9;
+export const HIT_BALL_TWICE_LABEL = "Hit Ball Twice";
+export const OBSTRACT_THE_FIELDING = 10;
+export const OBSTRACT_THE_FIELDING_LABEL = "Obstract the Fielding";
 
 export const ON_STRIKE = "ON_STRIKE"
 export const NON_STRIKE = "NON_STRIKE"

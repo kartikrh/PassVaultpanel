@@ -5,6 +5,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CUR
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
+import WicketModal from "./CommentaryModels/WicketModal.jsx"
 
 const Commentary = (props) => {
     const [currentInnings, setCurrentInnings] = useState(undefined)
@@ -17,6 +18,7 @@ const Commentary = (props) => {
     const [playerToChange, setPlayerToChange] = useState(undefined)
     const [changeOverOnPopupClick, setChangeOverOnPopupClick] = useState(undefined)
     const [showChangeOverModal, setShowChangeOverModal] = useState(undefined)
+    const [showWicketModal, setShowWicketModal] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
 
     useEffect(() => {
@@ -183,6 +185,10 @@ const Commentary = (props) => {
         })
     }
 
+    const handleWicket = () => {
+
+    }
+
     const onExtrasChange = (runFromModal) => {
         updateExtras(extrasType, runFromModal)
         setExtrasList(undefined)
@@ -226,7 +232,6 @@ const Commentary = (props) => {
     return <>
         <CommentaryScreen
             teamDetails={teams}
-            // playerDetails={players}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
             changePlayer={changePlayer}
@@ -237,6 +242,7 @@ const Commentary = (props) => {
                 setExtrasType(extraType)
                 setExtrasList(EXTRAS_LIST[extraType])
             }}
+            onWicketClick={() => { showWicketModal(true) }}
         />
         <SelectPlayerModal isOpen={changePlayerList}
             toggle={() => { setChangePlayerList(undefined) }}
@@ -253,8 +259,8 @@ const Commentary = (props) => {
             onYesClick={() => {
                 setShowChangeOverModal(undefined);
                 setChangeOverOnPopupClick(true)
-            }}
-        />
+            }} />
+        <WicketModal isOpen={showWicketModal} toggle={() => { setShowWicketModal(undefined) }} onSubmit={handleWicket} />
     </>
 }
 
