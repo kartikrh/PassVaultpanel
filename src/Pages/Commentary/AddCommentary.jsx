@@ -12,7 +12,6 @@ import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusabl
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
-import moment from 'moment';
 
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
