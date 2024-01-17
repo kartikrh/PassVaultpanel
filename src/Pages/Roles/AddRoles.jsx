@@ -160,7 +160,6 @@ function AddRoles() {
                     <Row>
                         <Col xs={12} md={8} lg={9}>
                             <h3>Role</h3>
-                            <Button onClick={() => { handlePermissionChangeAll("isAdd") }}>Change</Button>
                         </Col>
                         <Card>
                             <CardBody>
