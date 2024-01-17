@@ -3,6 +3,7 @@ export const EMAIL = "EMAIL"
 export const SWITCH = "SWITCH"
 export const COUNTER = "COUNTER"
 export const SELECT = "SELECT"
+export const RADIO_BUTTON = "RADIO_BUTTON"
 export const MULTI_SELECT = "MULTI_SELECT"
 export const TEXT_AREA = "TEXT_AREA"
 export const FILE_TYPE = "FILE_TYPE"
@@ -15,6 +16,7 @@ export const SAVE_AND_NEXT = "SAVE_AND_NEXT"
 export const DIVIDER = "DIVIDER"
 export const ERROR = "ERROR"
 export const SUCCESS = "SUCCESS"
+
 
 // Tab names
 export const TAB_TABS = "Tabs"

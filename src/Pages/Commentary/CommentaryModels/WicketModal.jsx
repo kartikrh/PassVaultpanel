@@ -1,9 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import FormBuilder from '../../../components/Common/Reusables/FormBuilder';
 import { WICKET_FIELDS } from './WicketModalFieldConst';
-const WicketModal = ({ toggle, isOpen, onSubmit }) => {
+import { NON_STRIKE, ON_STRIKE } from '../CommentartConst';
+const WicketModal = ({ onPitchPlayers, bowlingTeam, toggle, isOpen, onSubmit }) => {
     const finalizeRef = useRef(null);
+    const bowlingPlayerList = []
+    const battersOptions = []
+    useEffect(() => {
+        bowlingTeam?.map(element => {
+            bowlingPlayerList.push({ label: element.playerName, value: element.playerId })
+        })
+    }, [bowlingTeam])
+    useEffect(() => {
+        battersOptions.push({ label: onPitchPlayers?.[ON_STRIKE]?.playerName, value: onPitchPlayers?.[ON_STRIKE]?.playerId })
+        battersOptions.push({ label: onPitchPlayers?.[NON_STRIKE]?.playerName, value: onPitchPlayers?.[NON_STRIKE]?.playerId })
+    }, [onPitchPlayers])
     const handleSubmit = () => {
         const dataToSave = finalizeRef.current.finalizeData()
         if (dataToSave) {
@@ -19,6 +31,8 @@ const WicketModal = ({ toggle, isOpen, onSubmit }) => {
                 <FormBuilder
                     ref={finalizeRef}
                     fields={WICKET_FIELDS}
+                    masterData={{ fielder: bowlingPlayerList, batterId: battersOptions }}
+                    editFormData={{}}
                 />
             </ModalBody>
             <ModalFooter>
