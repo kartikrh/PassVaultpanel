@@ -257,7 +257,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       setSelectedBowler(bowlingteamplayer.find(i => i.playerId === playerId))
       updatedData = {
         isPlay: true,
-        bowlerOver: 1,
+        bowlerOver: 0,
         bowlerStatus: 1,
       }
 
