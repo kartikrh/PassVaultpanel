@@ -23,7 +23,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, toggle, isOpen, onSubmit }) 
         }
     }
     return (
-        <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
                 Wicket
             </ModalHeader>

@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useState } from 'react'
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
-import { ERROR, SAVE_AND_NEXT } from '../../components/Common/Const'
+import { ERROR, BATTING_STATUS, BALLING_STATUS, SAVE_AND_NEXT } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
 import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
@@ -309,7 +309,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                     title={"Striker"}
                     check={selectedStriker?.playerName}
                     name={selectedStriker?.playerName}
-                    onClick={() => openModel(1)}
+                    onClick={() => openModel(BATTING_STATUS)}
                     bgColor={"#0BB197"}
                     onClickColor={"#007B64"}
                     isPlayerName={true}
@@ -320,7 +320,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                     title={"Non-Striker"}
                     check={selectedNonStriker?.playerName}
                     name={selectedNonStriker?.playerName}
-                    onClick={() => openModel(1, false)}
+                    onClick={() => openModel(BATTING_STATUS, false)}
                     icon={"bx bxs-check-circle"}
                     bgColor={"#0BB197"}
                     onClickColor={"#007B64"}
@@ -339,7 +339,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                     title={"Bowler"}
                     check={selectedBowler?.playerName}
                     name={selectedBowler?.playerName}
-                    onClick={() => openModel(2)}
+                    onClick={() => openModel(BALLING_STATUS)}
                     bgColor={"#FCC042"}
                     onClickColor={"#CB8F00"}
                     isPlayerName={true}

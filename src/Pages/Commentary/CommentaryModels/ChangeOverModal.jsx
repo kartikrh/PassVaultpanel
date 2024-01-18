@@ -3,7 +3,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import "../CommentaryCss.css"
 const ChangeOverModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
     return (
-        <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={isOpen} toggle={toggle} >
+        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
                 Change Over
             </ModalHeader>
