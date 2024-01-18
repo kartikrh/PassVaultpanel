@@ -16,6 +16,7 @@ import Competition from '../Pages/Competition'
 import Events from '../Pages/Events'
 import Commentary from '../Pages/Commentary'
 import Users from '../Pages/Users'
+import ImportMarket from "../Pages/ImportMarket";
 import AddTabs from "../Pages/Tabs/AddTabs.jsx";
 import AddRoles from "../Pages/Roles/AddRoles.jsx";
 import AddEventTypes from "../Pages/EventTypes/AddEventType.jsx";
@@ -73,6 +74,7 @@ const authProtectedRoutes = [
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/commentaryMaster', component: <CommentaryMaster /> },
   { path: '/Toss', component: <Toss /> },
+  { path: '/importMarket', component: <ImportMarket /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
   {
