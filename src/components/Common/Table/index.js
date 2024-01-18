@@ -63,7 +63,7 @@ const Index = forwardRef(
     const [tableActions, setTableActions] = useState({
       isActive: true,
     });
-    const [total, setTotal] = useState(dataSource?.length);
+    const [total, setTotal] = useState(dataSource.length);
     const [pageSize, setPageSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState([]);
@@ -122,6 +122,9 @@ const Index = forwardRef(
     };
     const handleTableActions = (key, id) => {
       if (key === "isActive") {
+        setStatusSwitch(id);
+      }
+      if (key === "isShowContent") {
         setStatusSwitch(id);
       }
       reFetchData({
@@ -192,12 +195,12 @@ const Index = forwardRef(
         }
       });
       const headers = [pdfCols];
-      let colsData = dataSource?.map((dataItem) =>
-        colsDataKey?.map((key) => dataItem[key])
+      let colsData = dataSource.map((dataItem) =>
+        colsDataKey.map((key) => dataItem[key])
       );
-      colsData = colsData?.map((value, index) => [index + 1, ...value]);
+      colsData = colsData.map((value, index) => [index + 1, ...value]);
       // const csvData = [...headers, ...colsData];
-      const csvData = colsData?.map((value, i) => {
+      const csvData = colsData.map((value, i) => {
         let data = {};
         value.forEach((v, i) => {
           data = {
@@ -404,12 +407,40 @@ const Index = forwardRef(
                           value={tableActions?.displayType}
                         >
                           <option value={0}>Select Display Type</option>
-                          {tableElement?.displayTypes?.map((val, index) => {
+                          {tableElement?.displayTypes.map((val, index) => {
                             return (
                               <option value={val.value}>{val.label}</option>
                             );
                           })}
                         </select>
+                          {/* <Col>
+                            <Select
+                              classNamePrefix="select2-selection"
+                              placeholder="Select Display Type"
+                              options={tableElement?.displayTypes}
+                              ref={selectInputRef}
+                              onChange={(e) => {
+                                handleTableActions("displayType", e.value);
+                              }}
+                              isClearable={true}
+                              styles={{
+                                option: (provided, state) => ({
+                                  ...provided,
+                                  whiteSpace: 'nowrap', // Prevents text from wrapping
+                                  overflow: 'hidden',   // Hides any overflowing text
+                                  textOverflow: 'ellipsis', // Adds an ellipsis (...) for overflow
+                                }),
+                                menu: (provided, state) => ({
+                                  whiteSpace: "nowrap", // Prevents text from wrapping
+                                  overflow: "hidden", // Hides any overflowing text
+                                  textOverflow: "ellipsis", // Adds an ellipsis (...) for overflow
+                                  ...provided,
+                                  width: "200px", // Set a specific width for the dropdown menu
+                                }),
+                              }}
+                              defaultInputValue={tableActions?.displayType}
+                            />
+                          </Col> */}
                         </div>
                       ) : null}
                       {tableElement?.eventTypeSelect ? (
@@ -472,6 +503,23 @@ const Index = forwardRef(
                           />
                         </div>
                       ) : null}
+
+{tableElement?.isShowContent ? (
+                        <div className="d-flex align-items-center">
+                          <Switch
+                            width={70}
+                            uncheckedIcon={<OffsymbolStatus />}
+                            checkedIcon={<OnSymbolStatus />}
+                            className="pe-0"
+                            onColor="#02a499"
+                            onChange={() => {
+                              handleTableActions("isShowContent", !statusSwitch);
+                            }}
+                            checked={statusSwitch}
+                          />
+                        </div>
+                      ) : null}
+
                       {tableElement?.resetButton ? (
                         <div>
                           <button
@@ -517,8 +565,8 @@ const Index = forwardRef(
                     <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
                       <div className="me-1 d-flex">
                         <CSVLink
-                          data={generateSimplifiedData()?.csvData}
-                          filename={tableElement?.title + ".csv"}
+                          data={generateSimplifiedData().csvData}
+                          filename={tableElement.title + ".csv"}
                         >
                           <Button size="small" className="btn border">
                             <i className="fas fa-file-csv"></i>
@@ -567,7 +615,7 @@ const Index = forwardRef(
                           >
                             <thead className="table-light">
                               <tr>
-                                {columns?.map((column) => (
+                                {columns.map((column) => (
                                   <th key={column.key} style={column.style}>
                                     <div className="d-flex">
                                       <span>{column.title}</span>
@@ -628,7 +676,7 @@ const Index = forwardRef(
                                 //   (a, b) =>
                                 //     (a.displayOrder || 0) - (b.displayOrder || 0)
                                 // )
-                                ?.map((record, index) => (
+                                .map((record, index) => (
                                   <Draggable
                                     key={index}
                                     draggableId={`row-${index}`}
@@ -641,7 +689,7 @@ const Index = forwardRef(
                                         {...provided.dragHandleProps}
                                         className={`hover`}
                                       >
-                                        {columns?.map((column) => (
+                                        {columns.map((column) => (
                                           <>
                                             <td
                                               key={column.key}
@@ -674,7 +722,7 @@ const Index = forwardRef(
                     >
                       <thead className="table-light">
                         <tr>
-                          {columns?.map((column) => (
+                          {columns.map((column) => (
                             <th key={column.key} style={column.style}>
                               <div className="d-flex">
                                 <span>{column.title}</span>
@@ -725,9 +773,9 @@ const Index = forwardRef(
                         </tr>
                       </thead>
                       <tbody className="list form-check-all">
-                        {data?.map((record, index) => (
+                        {data.map((record, index) => (
                           <tr key={index} className={`hover`}>
-                            {columns?.map((column) => (
+                            {columns.map((column) => (
                               <td key={column.key} style={column.style}>
                                 {column.render
                                   ? column.render(

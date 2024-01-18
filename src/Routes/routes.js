@@ -16,7 +16,6 @@ import Competition from '../Pages/Competition'
 import Events from '../Pages/Events'
 import Commentary from '../Pages/Commentary'
 import Users from '../Pages/Users'
-import ImportMarket from "../Pages/ImportMarket";
 import AddTabs from "../Pages/Tabs/AddTabs.jsx";
 import AddRoles from "../Pages/Roles/AddRoles.jsx";
 import AddEventTypes from "../Pages/EventTypes/AddEventType.jsx";
@@ -48,6 +47,10 @@ import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
+import AddBlock from "../Pages/Blocks/AddBlock.jsx";
+import Blocks from "../Pages/Blocks";
+import AddConfig from "../Pages/Config/AddConfig.js";
+import Config from "../Pages/Config";
 
 const authProtectedRoutes = [
   //dashboard
@@ -74,9 +77,12 @@ const authProtectedRoutes = [
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/commentaryMaster', component: <CommentaryMaster /> },
   { path: '/Toss', component: <Toss /> },
-  { path: '/importMarket', component: <ImportMarket /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
+  { path: '/blocks', component: <Blocks /> },
+  { path: '/addblocks', component: <AddBlock /> },
+  { path: '/config', component: <Config /> },
+  { path: '/addConfig', component: <AddConfig /> },
   {
     path: '/changePassword', component: <ChangePassword />
   },
