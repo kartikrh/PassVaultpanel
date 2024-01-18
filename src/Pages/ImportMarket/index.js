@@ -53,7 +53,7 @@ const Index = () => {
   const columns = [
     {
       title: "EventTypeId",
-      dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "events" : "eventType"}`,
+      dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <span>
             {text?.id}
@@ -71,6 +71,7 @@ const Index = () => {
             let currentRecord = [{ label: text?.name, value: text?.id }]
             let historyList = selectedMarketHistory ?
               [].concat(selectedMarketHistory, currentRecord) : currentRecord
+              console.log("this is market history", historyList)
             dispatch(setSelectedMarketHistory(historyList))
             dispatch(
               setSelectedMarket({
@@ -86,7 +87,7 @@ const Index = () => {
       ),
       key: "eventTypeName",
       sort: true,
-      style: { width: "100%" },
+      style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
       title: "Date",
@@ -98,7 +99,7 @@ const Index = () => {
       ),
       key: "eventTypeId",
       sort: true,
-      style: { width: "80%" },
+      style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
       title: "Add",
@@ -108,9 +109,6 @@ const Index = () => {
         color={"primary"}
         size="sm"
         className="btn"
-        onClick={() => {
-         alert(text?.id)
-        }}
       >
         <i className="bx bx-plus"></i>
       </Button>
@@ -147,6 +145,9 @@ const Index = () => {
     fetchData();
   }, [selectedMarket]);
 
+  useEffect(()=>{
+    console.log({selectedMarketHistory})
+  })
   return (
     <React.Fragment>
       <div className="page-content">
