@@ -108,3 +108,8 @@
 .decision-Button {
     min-width: 5rem;
 }
+
+.commentary-modal {
+    margin-top: 80px !important;
+    max-height: 90vh !important;
+}
