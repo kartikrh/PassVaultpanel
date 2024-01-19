@@ -28,7 +28,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  
+  const [status, setStatus] = useState(false)
+  const [dataToDB, setDataToDB] = useState({})
   const {selectedMarket, selectedMarketHistory } = useSelector(state => state.tabsData?.importMarket);
 
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ const Index = () => {
       .post(`/admin/ImportMarket/marketList`,{...selectedMarket})
       .then((response) => {
         const apiData = response?.responseData?.appdata;
-        console.log("this is apiData ",apiData)
         setData(apiData);
         setIsLoading(false);
       })
@@ -49,10 +49,26 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
+  const addData = async (latestValueFromTable) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction()
+    await axiosInstance
+      .post(`/admin/ImportMarket/importMarketToDB`,{...dataToDB})
+      .then((response) => {
+        const apiData = response;
+       console.log("this is add response +++ ",apiData);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  };
+
   //table columns
   const columns = [
     {
-      title: "EventTypeId",
+      title: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}Id`,
       dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <span>
@@ -64,14 +80,13 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
-      title: "Event Type Name",
+      title: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"} Name`,
       dataIndex: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <div onClick={() => {
             let currentRecord = [{ label: text?.name, value: text?.id }]
             let historyList = selectedMarketHistory ?
               [].concat(selectedMarketHistory, currentRecord) : currentRecord
-              console.log("this is market history", historyList)
             dispatch(setSelectedMarketHistory(historyList))
             dispatch(
               setSelectedMarket({
@@ -81,6 +96,12 @@ const Index = () => {
               isCompitition: !selectedMarket?.isCompitition
             })
             )
+            setDataToDB({
+              ...dataToDB, 
+              [`${selectedMarket?.isCompitition ? "competitionID" :selectedMarket?.isEvent ? "eventID" : "eventTypeID"}`]: text?.id,
+              [`${selectedMarket?.isCompitition ? "competitionName" :selectedMarket?.isEvent ? "eventName" : "eventTypeName"}`]: text?.name,
+
+            })
           }}><span>
           {text?.name}
         </span></div>
@@ -105,13 +126,26 @@ const Index = () => {
       title: "Add",
       dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
-        <Button
+        <button
         color={"primary"}
         size="sm"
-        className="btn"
+        className="btn-primary"
+        onClick={()=>{
+          setDataToDB({
+            ...dataToDB, 
+          eventName: text?.name,
+          eventID: text?.id,
+          timeZone: text?.timezone,
+          countryCode: text?.countryCode || "",
+          openDate: text?.openDate,
+          venue: text?.venue || ""
+          })
+          setStatus(!status)
+        }
+        }
       >
         <i className="bx bx-plus"></i>
-      </Button>
+      </button>
       ),
       key: "eventTypeId",
       sort: true,
@@ -119,6 +153,7 @@ const Index = () => {
     }
   ];
 
+  
 
   //elements required
   const tableElement = {
@@ -128,6 +163,7 @@ const Index = () => {
     dragDrop: false,
     subTable: true,
   };
+
   const handleBreadCrumbsClick = (value) => {
     let historyList = _.clone(selectedMarketHistory)
     const index = historyList.findIndex(item => item.value === value);
@@ -138,6 +174,7 @@ const Index = () => {
       isEvent: false,
       isCompitition: 0}))
   }
+
   useEffect(() => {
     // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
     //   navigate("/dashboard")
@@ -146,8 +183,8 @@ const Index = () => {
   }, [selectedMarket]);
 
   useEffect(()=>{
-    console.log({selectedMarketHistory})
-  })
+    addData()
+  },[status])
   return (
     <React.Fragment>
       <div className="page-content">

@@ -27,7 +27,6 @@ export const Columns = ({
     });
     console.log("1", initialCheckboxStates);
     setCheckboxStates(initialCheckboxStates);
-    console.log("PROPS PERMISSION 2:: ", permissions);
   }, [permissions]);
 
   // Function to toggle permission for a specific tabId and permissionType
@@ -44,8 +43,6 @@ export const Columns = ({
         isEdit: tabPermissions.isEditPermission,
         isDelete: tabPermissions.isDeletePermission,
       };
-      console.log("this is updated Row", updatedRow);
-      console.log("this is total", permissions);
       updatePagePermission(updatedRow);
       return newStates;
     });
