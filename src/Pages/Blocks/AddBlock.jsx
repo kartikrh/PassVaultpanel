@@ -56,11 +56,9 @@ const AddBlock = () => {
     if (isSaved) {
       dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE){
-        alert("block")
         navigate("/blocks")
       }
       else if (currentSaveAction === SAVE_AND_NEW) {
-        alert("check")
         setInitialEditData({})
         setBlockId("0")
         finalizeRef.current.resetForm()

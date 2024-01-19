@@ -111,7 +111,6 @@ const Index = () => {
   };
 
   const handleEdit = (blockId) => {
-    alert(blockId);
    // navigate("/addblocks", { state: { userId: blockId } });
     navigate("/addblocks", { state: { blockId } });
   };
