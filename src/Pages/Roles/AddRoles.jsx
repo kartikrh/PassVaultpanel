@@ -114,10 +114,10 @@ function AddRoles() {
 
     const updatePagePermission = (value) => {
         // Update the data using map and find the item by tabId
-        const updatedValue = newPermissionValue.map((val) =>
-            val.tabId === value.tabId ? value : val
+        const updatedValue = permissions.map((val) =>
+            val.tabId === value.tabId ? { ...val, ...value } : val
         );
-        setNewPermissionValue(updatedValue);
+        setPermissions(updatedValue);
     };
 
     const updateAllPermission = (name, data) => {
@@ -142,6 +142,7 @@ function AddRoles() {
         })
         setNewPermissionValue(newPermissionValuesUpdated)
     }
+
     const handleBackClick = () => {
         navigate("/roles");
     };
