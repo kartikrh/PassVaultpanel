@@ -49,7 +49,7 @@ import Error500 from "../Pages/Utility/Error500-Page.js";
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
 import AddBlock from "../Pages/Blocks/AddBlock.jsx";
 import Blocks from "../Pages/Blocks";
-import AddConfig from "../Pages/Config/AddConfig.js";
+import AddConfig from "../Pages/Config/AddConfig.jsx";
 import Config from "../Pages/Config";
 
 const authProtectedRoutes = [
