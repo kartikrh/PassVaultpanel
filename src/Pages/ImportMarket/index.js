@@ -18,7 +18,7 @@ import { resetTabSliceData, setSelectedMarketHistory, setSelectedMarket } from "
 
 
 const Index = () => {
-  const pageName = "Import Market"
+  const pageName = "Import Events"
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Import Market | ScoreCard - React Admin & Dashboard Template";
@@ -58,17 +58,19 @@ const Index = () => {
       .then((response) => {
         const apiData = response;
        console.log("this is add response +++ ",apiData);
+       dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
 
   //table columns
   const columns = [
     {
-      title: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}Id`,
+      title: `Id`,
       dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <span>
@@ -80,7 +82,7 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
-      title: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"} Name`,
+      title: `${selectedMarket?.isCompitition ? "Competition" :selectedMarket?.isEvent ? "Event" : "Event Type"}`,
       dataIndex: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <div onClick={() => {
@@ -93,7 +95,7 @@ const Index = () => {
               refID: text?.id,
               isAustralian: false,
               isEvent: Boolean(selectedMarket?.isCompitition),
-              isCompitition: !selectedMarket?.isCompitition
+              isCompitition: Boolean(!selectedMarket?.isCompitition),
             })
             )
             setDataToDB({
@@ -118,12 +120,12 @@ const Index = () => {
             {text?.openDate}
           </span>
       ),
-      key: "eventTypeId",
       sort: true,
+      key: "eventTypeId",
       style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
-      title: "Add",
+      title: "Import",
       dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
         <button
@@ -148,7 +150,6 @@ const Index = () => {
       </button>
       ),
       key: "eventTypeId",
-      sort: true,
       style: { width: "80%" },
     }
   ];
@@ -157,7 +158,7 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title: "Import Market",
+    title: "Import Events",
     headerSelect: false,
     isActive: false,
     dragDrop: false,
@@ -172,7 +173,7 @@ const Index = () => {
     dispatch(setSelectedMarket({ refID: 0,
       isAustralian: false,
       isEvent: false,
-      isCompitition: 0}))
+      isCompitition: false}))
   }
 
   useEffect(() => {
@@ -189,7 +190,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Import Market" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Import Events" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
