@@ -118,7 +118,11 @@ function CommentaryMaster() {
             setNextScreen(nextScreen)
         }
     };
-
+    const handleCommentaryDataSave = async (dataToSave, nextScreen, nextData) => {
+        if (dataToSave) {
+            dispatch(addCommentaryDetailsToDb(dataToSave))
+        }
+    };
     const handleBackClick = () => {
         navigate(navigateTo);
     };
@@ -156,8 +160,7 @@ function CommentaryMaster() {
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
                                             data={{ commentaryData, matchTypeData }}
-                                            save={handleSaveClick}
-                                            previous={() => { setCurrentScreen(getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)) }}
+                                            save={handleCommentaryDataSave}
                                         />}
                                 </Row>
                             </CardBody>

@@ -31,7 +31,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, toggle, isOpen, onSubmit }) 
                 <FormBuilder
                     ref={finalizeRef}
                     fields={WICKET_FIELDS}
-                    masterData={{ fielder: bowlingPlayerList, batterId: battersOptions }}
+                    masterData={{ fielder1: bowlingPlayerList, fielder2: bowlingPlayerList, batterId: battersOptions }}
                     editFormData={{}}
                 />
             </ModalBody>

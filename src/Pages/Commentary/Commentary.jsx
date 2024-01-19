@@ -6,7 +6,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {
@@ -75,7 +75,7 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/2.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                    // onClick={() => handleRuns(3)}
+                        onClick={onUndoClick}
                     >
                         <img className="button-icon" src="icons/undo.png" alt="Icon" />
                     </Col>

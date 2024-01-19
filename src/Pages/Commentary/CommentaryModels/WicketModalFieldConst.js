@@ -42,8 +42,17 @@ export const WICKET_FIELDS = [
         fieldColspan: { xs: 12, md: 6, lg: 6 }
     },
     {
-        name: "fielder",
-        label: "Fielder",
+        name: "fielder1",
+        label: "Fielder 1",
+        type: SELECT,
+        defaultValue: "0",
+        options: [],
+        labelColspan: { xs: 12, md: 4, lg: 4 },
+        fieldColspan: { xs: 12, md: 6, lg: 6 }
+    },
+    {
+        name: "fielder2",
+        label: "Fielder 2",
         type: SELECT,
         defaultValue: "0",
         options: [],
