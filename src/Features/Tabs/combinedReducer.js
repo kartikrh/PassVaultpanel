@@ -12,6 +12,7 @@ import CompetitionSlice from "./competitionSlice"
 import TeamSlice from "./teamSlice"
 import changePasswordSlice from './changePasswordSlice';
 import importMarketSlice from './importMarketSlice';
+import BlockSlice from './BlockSlice';
 const rootReducer = combineReducers({
     tab: TabSlice,
     commentary: CommentarySlice,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
     role: roleSlice,
     changePassword: changePasswordSlice,
     importMarket : importMarketSlice,
+    block:BlockSlice
 
 });
 
