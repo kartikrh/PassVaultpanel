@@ -29,7 +29,7 @@ const marketSlice = createSlice({
             state.selectedMarket.isCompitition = action.payload.isCompitition
         },
         setSelectedMarketHistory: (state, action) => {
-            state.selectedTabHistory = action.payload
+            state.selectedMarketHistory = action.payload
         },
         updateSavedState: (state, action) => {
             state.isSaved = action.payload;

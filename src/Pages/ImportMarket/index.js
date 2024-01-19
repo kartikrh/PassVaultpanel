@@ -18,7 +18,7 @@ import { resetTabSliceData, setSelectedMarketHistory, setSelectedMarket } from "
 
 
 const Index = () => {
-  const pageName = "Import Market"
+  const pageName = "Import Events"
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Import Market | ScoreCard - React Admin & Dashboard Template";
@@ -28,7 +28,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  
+  const [status, setStatus] = useState(false)
+  const [dataToDB, setDataToDB] = useState({})
   const {selectedMarket, selectedMarketHistory } = useSelector(state => state.tabsData?.importMarket);
 
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ const Index = () => {
       .post(`/admin/ImportMarket/marketList`,{...selectedMarket})
       .then((response) => {
         const apiData = response?.responseData?.appdata;
-        console.log("this is apiData ",apiData)
         setData(apiData);
         setIsLoading(false);
       })
@@ -49,11 +49,29 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
+  const addData = async (latestValueFromTable) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction()
+    await axiosInstance
+      .post(`/admin/ImportMarket/importMarketToDB`,{...dataToDB})
+      .then((response) => {
+        const apiData = response;
+       console.log("this is add response +++ ",apiData);
+       dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   //table columns
   const columns = [
     {
-      title: "EventTypeId",
-      dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "events" : "eventType"}`,
+      title: `Id`,
+      dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <span>
             {text?.id}
@@ -64,7 +82,7 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
-      title: "Event Type Name",
+      title: `${selectedMarket?.isCompitition ? "Competition" :selectedMarket?.isEvent ? "Event" : "Event Type"}`,
       dataIndex: `${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
           <div onClick={() => {
@@ -77,16 +95,22 @@ const Index = () => {
               refID: text?.id,
               isAustralian: false,
               isEvent: Boolean(selectedMarket?.isCompitition),
-              isCompitition: !selectedMarket?.isCompitition
+              isCompitition: Boolean(!selectedMarket?.isCompitition),
             })
             )
+            setDataToDB({
+              ...dataToDB, 
+              [`${selectedMarket?.isCompitition ? "competitionID" :selectedMarket?.isEvent ? "eventID" : "eventTypeID"}`]: text?.id,
+              [`${selectedMarket?.isCompitition ? "competitionName" :selectedMarket?.isEvent ? "eventName" : "eventTypeName"}`]: text?.name,
+
+            })
           }}><span>
           {text?.name}
         </span></div>
       ),
       key: "eventTypeName",
       sort: true,
-      style: { width: "100%" },
+      style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
       title: "Date",
@@ -96,40 +120,51 @@ const Index = () => {
             {text?.openDate}
           </span>
       ),
-      key: "eventTypeId",
       sort: true,
-      style: { width: "80%" },
+      key: "eventTypeId",
+      style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
-      title: "Add",
+      title: "Import",
       dataIndex:`${selectedMarket?.isCompitition ? "competition" :selectedMarket?.isEvent ? "event" : "eventType"}`,
       render: (text, record) => (
-        <Button
+        <button
         color={"primary"}
         size="sm"
-        className="btn"
-        onClick={() => {
-         alert(text?.id)
-        }}
+        className="btn-primary"
+        onClick={()=>{
+          setDataToDB({
+            ...dataToDB, 
+          eventName: text?.name,
+          eventID: text?.id,
+          timeZone: text?.timezone,
+          countryCode: text?.countryCode || "",
+          openDate: text?.openDate,
+          venue: text?.venue || ""
+          })
+          setStatus(!status)
+        }
+        }
       >
         <i className="bx bx-plus"></i>
-      </Button>
+      </button>
       ),
       key: "eventTypeId",
-      sort: true,
       style: { width: "80%" },
     }
   ];
 
+  
 
   //elements required
   const tableElement = {
-    title: "Import Market",
+    title: "Import Events",
     headerSelect: false,
     isActive: false,
     dragDrop: false,
     subTable: true,
   };
+
   const handleBreadCrumbsClick = (value) => {
     let historyList = _.clone(selectedMarketHistory)
     const index = historyList.findIndex(item => item.value === value);
@@ -138,8 +173,9 @@ const Index = () => {
     dispatch(setSelectedMarket({ refID: 0,
       isAustralian: false,
       isEvent: false,
-      isCompitition: 0}))
+      isCompitition: false}))
   }
+
   useEffect(() => {
     // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
     //   navigate("/dashboard")
@@ -147,11 +183,14 @@ const Index = () => {
     fetchData();
   }, [selectedMarket]);
 
+  useEffect(()=>{
+    addData()
+  },[status])
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Import Market" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Import Events" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
