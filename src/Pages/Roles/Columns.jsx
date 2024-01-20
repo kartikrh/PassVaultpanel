@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "antd";
+import './Columns.css';
+
 export const Columns = ({
   permissions,
   updatePagePermission,
@@ -25,7 +27,6 @@ export const Columns = ({
         isDeletePermission: item.isDeletePermission,
       });
     });
-    console.log("1", initialCheckboxStates);
     setCheckboxStates(initialCheckboxStates);
   }, [permissions]);
 
@@ -36,14 +37,14 @@ export const Columns = ({
       const tabPermissions = { ...newStates.get(tabId) }; // Create a copy
       tabPermissions[permissionType] = !tabPermissions[permissionType];
       newStates.set(tabId, tabPermissions);
-      const updatedRow = {
-        tabId,
-        isView: tabPermissions.isViewPermission,
-        isAdd: tabPermissions.isAddPermission,
-        isEdit: tabPermissions.isEditPermission,
-        isDelete: tabPermissions.isDeletePermission,
-      };
-      updatePagePermission(updatedRow);
+      // const updatedRow = {
+      //   tabId,
+      //   isView: tabPermissions.isViewPermission,
+      //   isAdd: tabPermissions.isAddPermission,
+      //   isEdit: tabPermissions.isEditPermission,
+      //   isDelete: tabPermissions.isDeletePermission,
+      // };
+      updatePagePermission({ tabId, ...tabPermissions });
       return newStates;
     });
   };
@@ -60,11 +61,11 @@ export const Columns = ({
 
   useEffect(() => {
     let isViewPermission = true;
-    let isAddPermission= true;
+    let isAddPermission = true;
     let isDeletePermission = true;
     let isEditPermission = true
 
-    Array.from(checkboxStates)?.map((val, i)=>{
+    Array.from(checkboxStates)?.map((val, i) => {
       isAddPermission = isAddPermission && val[1].isAddPermission
       isDeletePermission = isDeletePermission && val[1].isDeletePermission
       isViewPermission = isViewPermission && val[1].isViewPermission
@@ -90,7 +91,7 @@ export const Columns = ({
           <span>View</span>{" "}
           <Checkbox
             type="checkbox"
-            style={{ transform: "scale(1.2)" }}
+            className="header-checkbox"
             onChange={() => {
               handleAllPermissions("isViewPermission");
             }}
@@ -102,7 +103,7 @@ export const Columns = ({
       Cell: ({ row }) => (
         <Checkbox
           type="checkbox"
-          style={{ transform: "scale(1.3)" }}
+          className="cell-checkbox"
           checked={
             checkboxStates.get(row.original.tabId)?.isViewPermission || false
           }
@@ -118,7 +119,7 @@ export const Columns = ({
           <span>Add</span>{" "}
           <Checkbox
             type="checkbox"
-            style={{ transform: "scale(1.2)" }}
+            className="header-checkbox"
             onChange={() => {
               handleAllPermissions("isAddPermission");
             }}
@@ -131,7 +132,7 @@ export const Columns = ({
         row.original.isAdd ? (
           <Checkbox
             type="checkbox"
-            style={{ transform: "scale(1.3)" }}
+            className="cell-checkbox"
             checked={
               checkboxStates.get(row.original.tabId)?.isAddPermission || false
             }
@@ -149,7 +150,7 @@ export const Columns = ({
           <span>Edit</span>{" "}
           <Checkbox
             type="checkbox"
-            style={{ transform: "scale(1.2)" }}
+            className="header-checkbox"
             onChange={() => {
               handleAllPermissions("isEditPermission");
             }}
@@ -165,7 +166,7 @@ export const Columns = ({
             checked={
               checkboxStates.get(row.original.tabId)?.isEditPermission || false
             }
-            style={{ transform: "scale(1.3)" }}
+            className="cell-checkbox"
             onChange={() =>
               togglePermission(row.original.tabId, "isEditPermission")
             }
@@ -180,7 +181,7 @@ export const Columns = ({
           <span>Delete</span>{" "}
           <Checkbox
             type="checkbox"
-            style={{ transform: "scale(1.2)" }}
+            className="header-checkbox"
             onChange={() => {
               handleAllPermissions("isDeletePermission");
             }}
@@ -193,7 +194,7 @@ export const Columns = ({
         row.original.isDelete ? (
           <Checkbox
             type="checkbox"
-            style={{ transform: "scale(1.3)" }}
+            className="cell-checkbox"
             checked={
               checkboxStates.get(row.original.tabId)?.isDeletePermission ||
               false

@@ -1,0 +1,115 @@
+.change-button {
+    border-radius: 1rem;
+    box-shadow: none;
+    border-style: none;
+    background-color: inherit;
+    filter: brightness(80%);
+}
+
+
+.score-button {
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.999);
+    color: black !important;
+    transition: filter 0.3s;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-style: solid;
+    border-color: rgba(143, 226, 253, 0.588);
+    border-width: 1px;
+}
+
+.color-out {
+    background-color: rgba(255, 160, 160, 0.47);
+    border-color: rgba(251, 138, 109, 0.727);
+}
+
+.score-button:hover {
+    filter: brightness(95%);
+    /* background-color: green !important; */
+}
+
+.color-red {
+    background-color: rgb(241, 89, 89) !important;
+}
+
+.event-name-header {
+    font-size: 26px;
+    font-weight: bolder;
+    background-color: rgb(58, 199, 255);
+    padding: 0.3rem;
+    color: white;
+}
+
+.team-name {
+    font-weight: bold;
+    /* color: white; */
+    text-align: center;
+    padding: 0.4rem;
+    font-size: 22px;
+}
+
+.team-1 {
+    background-color: rgba(253, 206, 117, 0.473);
+    color: darkgoldenrod;
+}
+
+.team-2 {
+    background-color: #64ff1689;
+    color: darkgreen;
+}
+
+.current-score-header {
+    text-align: center;
+    background-color: rgba(168, 224, 243, 0.47);
+    padding: 0.5rem;
+}
+
+.current-team-name {
+    font-size: 30px;
+    font-weight: bolder;
+}
+
+.current-team-score {
+    font-size: 26px;
+}
+
+.striker-end {
+    /* text-align: center; */
+    background-color: rgba(247, 189, 81, 0.798);
+    font-size: 16px;
+    padding: 0.25rem !important;
+}
+
+.non-striker-end {
+    /* text-align: center; */
+    background-color: rgba(253, 206, 117, 0.473);
+    font-size: 16px;
+    padding: 0.25rem !important;
+}
+
+.Bowler-header>div {
+    font-size: 16px;
+    padding: 0.25rem !important;
+    background-color: lightgreen !important;
+}
+
+.text-right {
+    float: right;
+}
+
+.button-icon {
+    height: 40%;
+}
+
+.decision-Button {
+    min-width: 5rem;
+}
+
+.commentary-modal {
+    margin-top: 80px !important;
+    max-height: 90vh !important;
+}

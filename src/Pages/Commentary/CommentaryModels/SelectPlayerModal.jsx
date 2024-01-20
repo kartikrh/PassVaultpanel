@@ -11,12 +11,12 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     }, [isOpen, playerList]);
 
     useEffect(() => {
-        const filteredPlayers = playerList.filter(value => value.playerName.toLowerCase().includes(search.toLowerCase()));
+        const filteredPlayers = playerList?.filter(value => value.playerName.toLowerCase().includes(search.toLowerCase()));
         setPlayers(filteredPlayers)
     }, [search])
 
     return (
-        <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
                 Select Player
             </ModalHeader>
@@ -32,7 +32,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                         />
                     </thead>
                     <tbody>
-                        {players.map(value => <tr key={value.playerId}>
+                        {players?.map(value => <tr key={value.playerId}>
                             <td role='button' onClick={() => selectPlayer(value.playerId)} >{value.playerName}</td>
                         </tr>)}
                     </tbody>

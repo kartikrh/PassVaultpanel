@@ -3,6 +3,7 @@ export const EMAIL = "EMAIL"
 export const SWITCH = "SWITCH"
 export const COUNTER = "COUNTER"
 export const SELECT = "SELECT"
+export const RADIO_BUTTON = "RADIO_BUTTON"
 export const MULTI_SELECT = "MULTI_SELECT"
 export const TEXT_AREA = "TEXT_AREA"
 export const FILE_TYPE = "FILE_TYPE"
@@ -16,6 +17,7 @@ export const DIVIDER = "DIVIDER"
 export const ERROR = "ERROR"
 export const SUCCESS = "SUCCESS"
 
+
 // Tab names
 export const TAB_TABS = "Tabs"
 export const TAB_ROLES = "Roles"
@@ -28,6 +30,7 @@ export const TAB_PANELTY_RUNS = "Penalty Runs"
 export const TAB_COMMENTARY = "Commentary"
 export const TAB_COMPETITION = "Competition"
 export const TAB_EVENT = "Events"
+export const TAB_CONFIG = "Config"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"
@@ -44,3 +47,6 @@ export const COMMENTARY_TOSS_SCREEN = "COMMENTARY_TOSS_SCREEN"
 export const COMMENTARY_PLAYER_SELECTION_SCREEN = "COMMENTARY_PLAYER_SELECTION_SCREEN"
 export const COMMENTARY_MAIN_SCREEN = "COMMENTARY_MAIN_SCREEN"
 // export const COMMENTARY_TOSS = "COMMENTARY_TOSS"
+
+export const BATTING_STATUS = 1
+export const BALLING_STATUS = 2
