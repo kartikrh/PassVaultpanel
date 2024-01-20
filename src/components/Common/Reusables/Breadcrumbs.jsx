@@ -3,6 +3,9 @@ export const ReusableBreadcrumbs = ({ listToRender = [], updateClickedId }) => {
     return (
         <nav aria-label="breadcrumb">
             <ol className="breadcrumb bg-light rounded">
+                {
+                    console.log(listToRender)
+                }
                 {listToRender.map((tab, index) => (
                     <li
                         key={index}
