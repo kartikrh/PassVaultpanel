@@ -44,7 +44,6 @@ function CommentaryMaster() {
 
     useEffect(() => {
         if (commentaryId !== "0") {
-            console.log(commentaryId)
             fetchData(commentaryId);
         }
     }, [commentaryId]);
@@ -101,7 +100,6 @@ function CommentaryMaster() {
                     });
                 commentaryDataToUpdate.commentaryDetails = { ...commentaryDataToUpdate.commentaryDetails, ...commentaryDetailsToUpdate }
                 setCurrentScreen(commentaryDataToUpdate?.commentaryDetails?.commentaryStatus || 1)
-                console.log(commentaryDataToUpdate)
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
             }).catch((error) => {

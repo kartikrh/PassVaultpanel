@@ -83,9 +83,8 @@ const commentarySlice = createSlice({
                 // state.isLoading = true;
             })
             .addCase(addCommentaryScreenData.fulfilled, (state, action) => {
-                console.log(action.payload)
                 state.commentaryDataToUpdate = action.payload
-                state.isSaved = true
+                // state.isSaved = true
                 // state.isLoading = false;
             })
             .addCase(addCommentaryScreenData.rejected, (state, action) => {
