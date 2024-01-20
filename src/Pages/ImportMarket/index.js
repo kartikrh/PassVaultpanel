@@ -17,7 +17,7 @@ import {
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
-  TAB_EVENT_TYPES,
+  TAB_IMPORT_MARKET,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -29,7 +29,7 @@ import {
 } from "../../Features/Tabs/importMarketSlice";
 
 const Index = () => {
-  const pageName = "Import Events";
+  const pageName = TAB_IMPORT_MARKET;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =

@@ -31,6 +31,7 @@ export const TAB_COMMENTARY = "Commentary"
 export const TAB_COMPETITION = "Competition"
 export const TAB_EVENT = "Events"
 export const TAB_CONFIG = "Config"
+export const TAB_IMPORT_MARKET = "Import Market"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"
