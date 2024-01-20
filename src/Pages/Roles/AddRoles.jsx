@@ -90,7 +90,6 @@ function AddRoles() {
     };
 
     const handleSaveClick = async (saveAction) => {
-        console.log("this is newPermissions", newPermissionValue)
         const dataToSave = finalizeRef.current.finalizeData();
         if (dataToSave) {
             const extraData = {
@@ -115,11 +114,10 @@ function AddRoles() {
 
     const updatePagePermission = (value) => {
         // Update the data using map and find the item by tabId
-        const updatedValue = newPermissionValue.map((val) =>
-            val.tabId === value.tabId ? value : val
+        const updatedValue = permissions.map((val) =>
+            val.tabId === value.tabId ? { ...val, ...value } : val
         );
-        console.log("this is updatedValue system", updatedValue)
-        setNewPermissionValue(updatedValue);
+        setPermissions(updatedValue);
     };
 
     const updateAllPermission = (name, data) => {
@@ -142,16 +140,15 @@ function AddRoles() {
         const newPermissionValuesUpdated = newPermissionValue.map((val) => {
             return { ...val, [key]: !allCheckBoxes[key] }
         })
-        console.log("this is all updated value", newPermissionValuesUpdated)
         setNewPermissionValue(newPermissionValuesUpdated)
     }
+
     const handleBackClick = () => {
         navigate("/roles");
     };
     const { columns } = Columns({ permissions, updatePagePermission, updateAllPermission });
 
     useEffect(() => {
-        console.log("this is all checkboxes", allCheckBoxes)
     }, [allCheckBoxes])
     return (
         <React.Fragment>

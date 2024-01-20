@@ -30,6 +30,7 @@ export const TAB_PANELTY_RUNS = "Penalty Runs"
 export const TAB_COMMENTARY = "Commentary"
 export const TAB_COMPETITION = "Competition"
 export const TAB_EVENT = "Events"
+export const TAB_CONFIG = "Config"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"
@@ -46,3 +47,6 @@ export const COMMENTARY_TOSS_SCREEN = "COMMENTARY_TOSS_SCREEN"
 export const COMMENTARY_PLAYER_SELECTION_SCREEN = "COMMENTARY_PLAYER_SELECTION_SCREEN"
 export const COMMENTARY_MAIN_SCREEN = "COMMENTARY_MAIN_SCREEN"
 // export const COMMENTARY_TOSS = "COMMENTARY_TOSS"
+
+export const BATTING_STATUS = 1
+export const BALLING_STATUS = 2

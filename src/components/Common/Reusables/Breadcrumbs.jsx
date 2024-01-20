@@ -6,11 +6,11 @@ export const ReusableBreadcrumbs = ({ listToRender = [], updateClickedId }) => {
                 {listToRender.map((tab, index) => (
                     <li
                         key={index}
-                        className={`breadcrumb-item ${index === listToRender.length - 1 ? 'active' : ''}`}
+                        className={`breadcrumb-item ${index === listToRender.length - 1 ? 'active' : 'disabled'}`}
                         aria-current={index === listToRender.length - 1 ? 'page' : ''}
                         onClick={() => updateClickedId(tab.value)}
                     >
-                        <span className="clickable">
+                        <span className="clickable" style={{cursor:"pointer"}}>
                             {tab.label}
                         </span>
                     </li>

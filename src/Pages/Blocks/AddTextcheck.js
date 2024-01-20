@@ -1,0 +1,299 @@
+import React, { useState, useEffect, useRef } from "react";
+import Breadcrumbs from "../../components/Common/Breadcrumb";
+import Table from "../../components/Common/Table";
+import { Button } from "reactstrap";
+import { Container } from "reactstrap";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { useNavigate } from "react-router-dom";
+import ChangePasswordModel from "../../components/Model/changePassword";
+import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
+import { Tooltip } from 'antd';
+import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
+import { isEqual } from "lodash";
+import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_USERS } from "../../components/Common/Const";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { useDispatch, useSelector } from "react-redux";
+import { updateToastData } from "../../Features/toasterSlice";
+
+const Index = () => {
+    const pageName = TAB_USERS
+    const finalizeRef = useRef(null);
+    document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
+    const [data, setData] = useState([]);
+    const [dataIndexList, setDataIndexList] = useState([]);
+    const [clipboard, setClipboard] = useState(null);
+    const [decryptedPasswords, setDecryptedPasswords] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [password, setPassword] = useState("");
+    const [userId, setUserId] = useState("");
+    const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
+    const [deleteModelVisable, setDeleteModelVisable] = useState(false)
+    const [checekedList, setCheckedList] = useState([]);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+
+    
+
+  const fetchData = async (latestValueFromTable) => {
+    setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction()
+   // console.log(tableActions,"tableActions");
+    await axiosInstance
+      .post(`/admin/block/all`, {
+        ...(latestValueFromTable || {...tableActions})
+      })
+      .then((response) => {
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          apiDataIdList.push(ele?.userId)
+        })
+        setData(apiData);
+        setDataIndexList(apiDataIdList)
+        setChangPasswordModelVisible(false);
+        setCheckedList([])
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  };
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = []
+    if (checekedList.includes(e.userId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.userId);
+    } else {
+      updateSingleCheck = [...checekedList, e.userId];
+    }
+    setCheckedList(updateSingleCheck)
+  };
+
+  //permissions function
+  const handlePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/block/save`, {
+       // blockId: record.blockId,
+        ...record,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleDelete = async (e) => {
+    setIsLoading(true);
+    // e.preventDefault()
+    await axiosInstance
+      .post(`/admin/user/delete`, {
+        userId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setDeleteModelVisable(false);
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleChangePassword = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/user/save`, {
+        password: password,
+        userId: userId,
+      })
+      .then((response) => {
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        setIsLoading(false);
+        fetchData();
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        setIsLoading(false);
+      });
+  };
+
+  const getDecryptedPassword = async (userId, copy = false) => {
+    await axiosInstance
+      .post(`/admin/user/decryptPassword`, {
+        userId: userId,
+      })
+      .then((response) => {
+        const password = response?.result?.password || "";
+        if (copy) {
+          navigator.clipboard.writeText(password)
+            .then(res => setClipboard({ [userId]: password }))
+            .catch(err => oldSchoolCopy(password))
+            .finally(() => setTimeout(() => setClipboard(null), 2000))
+        } else {
+          setDecryptedPasswords(prev => ({ ...prev, [userId]: password }));
+        }
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  }
+
+  const passwordRecord = (userId) => (<div className="d-flex align-items-center justify-content-between me-1">
+    <span role="button" onClick={() => getDecryptedPassword(userId)} >*******</span>
+    {clipboard?.[userId] ? <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
+      <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
+    </Tooltip> :
+      <i role="button" onClick={() => getDecryptedPassword(userId, true)} className='bx bxs-copy'></i>
+    }
+  </div>)
+
+  const handleEdit = (id) => {
+    navigate("/addUsers", { state: { userId: id } });
+  };
+  //table columns
+  const columns = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            onChange={() => {
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              )
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.userId)}
+            onChange={() => {
+              handleSingleCheck(record);
+            }}
+          />
+        </div>
+      ), // Use 'select' as a placeholder key for the checkbox column
+      key: "select",
+      style: { width: "2%" },
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
+      title: "Edit",
+      key: "edit",
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.userId);
+          }}
+        ></i>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Block Name",
+      dataIndex: "blockName",
+      render: (text, record) => (
+        <span>
+          {text} 
+        </span>
+      ),
+      key: "userName",
+      sort: true,
+      style: { width: "100%" },
+    },
+    {
+      title: "Container Id",
+      dataIndex: "containerId",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }}>
+    //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
+    //     </span>
+    //   ),
+      key: "parentName",
+      sort: true,
+      style: { width: "100%" },
+    },
+  
+    {
+      title: "Is Show Content",
+      key: "isShowContent",
+      dataIndex: "isShowContent",
+      render: (text, record) => (
+        <Button
+          color={`${text ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isShowContent", record, record.isShowContent);
+          }}
+        >
+          {" "}
+          <i className={`bx ${record.isShowContent ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+  ];
+
+  useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
+    setIsLoading(true);
+    fetchData();
+  }, []);
+  //elements required
+  const tableElement = {
+    title: "Block",
+  //  headerSelect: false,
+  isShowContent: true,
+  };
+
+
+  return (
+    <React.Fragment>
+      <div className="page-content">
+        <Container fluid={true}>
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Blocks" />
+          {isLoading && <SpinnerModel />}
+
+          <Table
+           ref={finalizeRef}
+           columns={columns}
+            dataSource={data}
+           tableElement={tableElement}
+            reFetchData={fetchData}
+           setChangPasswordModelVisible={setChangPasswordModelVisible}
+           deleteModelFunction={setDeleteModelVisable}
+           singleCheck={checekedList}
+           onAddNavigate={"/addblocks"}
+           isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+          />
+          
+        </Container>
+      </div>
+    </React.Fragment>
+  )
+}
+
+export default Index

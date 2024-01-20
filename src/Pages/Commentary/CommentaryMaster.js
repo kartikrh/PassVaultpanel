@@ -9,7 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
-import { addCommentaryDetailsToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryDetailsToDb, addCommentaryScreenData, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
 
@@ -17,6 +17,13 @@ const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
     2: COMMENTARY_PLAYER_SELECTION_SCREEN,
     3: COMMENTARY_MAIN_SCREEN
+}
+
+const getScreenNumber = (screen) => {
+    for (const key in ALL_SCREENS) {
+        if (ALL_SCREENS[key] === screen) return key;
+    }
+    return undefined
 }
 
 const navigateTo = "/commentary"
@@ -111,7 +118,11 @@ function CommentaryMaster() {
             setNextScreen(nextScreen)
         }
     };
-
+    const handleCommentaryDataSave = async (dataToSave, nextScreen, nextData) => {
+        if (dataToSave) {
+            dispatch(addCommentaryScreenData(dataToSave))
+        }
+    };
     const handleBackClick = () => {
         navigate(navigateTo);
     };
@@ -137,20 +148,19 @@ function CommentaryMaster() {
                                         <Toss
                                             data={commentaryData}
                                             save={handleSaveClick}
-                                            next={() => { setCurrentScreen(2) }}
+                                            next={() => { setCurrentScreen(getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)) }}
                                         />}
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN &&
                                         <PlayerSelection
                                             data={commentaryData}
                                             save={handleSaveClick}
-                                            previous={() => { setCurrentScreen(1) }}
-                                            next={() => { setCurrentScreen(3) }}
+                                            previous={() => { setCurrentScreen(getScreenNumber(COMMENTARY_TOSS_SCREEN)) }}
+                                            next={() => { setCurrentScreen(getScreenNumber(COMMENTARY_MAIN_SCREEN)) }}
                                         />}
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
                                             data={{ commentaryData, matchTypeData }}
-                                            save={handleSaveClick}
-                                            previous={() => { setCurrentScreen(2) }}
+                                            save={handleCommentaryDataSave}
                                         />}
                                 </Row>
                             </CardBody>

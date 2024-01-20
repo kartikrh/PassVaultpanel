@@ -16,7 +16,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     }, [search])
 
     return (
-        <Modal style={{ marginTop: "80px", maxHeight: "90vh" }} zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
                 Select Player
             </ModalHeader>
@@ -32,8 +32,8 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                         />
                     </thead>
                     <tbody>
-                        {players?.map(value => <tr key={value.playerId}>
-                            <td role='button' onClick={() => selectPlayer(value.playerId)} >{value.playerName}</td>
+                        {players?.map(value => <tr key={value.commentaryPlayerId}>
+                            <td role='button' onClick={() => selectPlayer(value.commentaryPlayerId)} >{value.playerName}</td>
                         </tr>)}
                     </tbody>
                 </Table>
