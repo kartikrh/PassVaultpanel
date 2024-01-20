@@ -30,9 +30,8 @@ export function mapCommentaryStatus(status) {
 }
 
 export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPlayers, currentBall }) => {
-  console.log(currentBall)
   return {
-    "commentaryBallByBallId": "0",
+    "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
     "commentaryId": commentaryDetails.commentaryId,
     "teamId": teams[BATTING_TEAM].teamId,
     "overId": currentOver.overId,
@@ -62,27 +61,45 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
   }
 }
 
-export const generateWicket = ({ commentaryDetails, wicketDetails, currentOver, teams }) => {
-  console.log(wicketDetails)
+export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, teams, currentBall }) => {
   return {
-    "commentaryWicketId": "0",
+    "commentaryWicketId": currentWicket.commentaryWicketId || "0",
     "commentaryId": commentaryDetails.commentaryId,
-    "bowlerId": wicketDetails.bowlerId,
-    "bowlerName": wicketDetails.bowlerName,
-    "wicketType": wicketDetails.wicketType,
-    "batterId": wicketDetails.batterId,
-    "batterName": wicketDetails.batterName,
-    "fieldPlayerId": wicketDetails.fieldPlayerId,
-    "fieldPlayerName": wicketDetails.fieldPlayerId,
+    "bowlerId": currentWicket.bowlerId,
+    "bowlerName": currentWicket.bowlerName,
+    "wicketType": currentWicket.wicketType,
+    "batterId": currentWicket.batterId,
+    "batterName": currentWicket.batterName,
+    "fieldPlayerId": currentWicket.fieldPlayerId,
+    "fieldPlayerName": currentWicket.fieldPlayerId,
     "overId": currentOver.overId,
     "overCount": currentOver.over,
-    "commentaryBallByBallId": "0",
+    "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
     "teamId": teams[BATTING_TEAM].teamId,
     "teamScore": teams[BATTING_TEAM].teamScore,
-    "playerRun": wicketDetails.batterRun,
-    "playerBalls": wicketDetails.batterBalls,
+    "playerRun": currentWicket.batterRuns || 0,
+    "playerBalls": currentWicket.batterBalls || 0,
     "wicketCount": (+teams[BATTING_TEAM] || 0) + 1,
     "ballCount": "",
     "currentInnings": commentaryDetails.currentInnings,
   }
 }
+
+export const generatePartnership = ({ currentPartnership, commentaryDetails, teams, currentBall }) => {
+  console.log(currentPartnership)
+  return {
+    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || "0",
+    "commentaryId": commentaryDetails.commentaryId,
+    "teamId": teams[BATTING_TEAM].teamId,
+    "batter1Id": currentPartnership.batter1Id,
+    "batter1Name": currentPartnership.batter1Name,
+    "batter2Id": currentPartnership.batter2Id,
+    "batter2Name": currentPartnership.batter2Name,
+    "totalRuns": currentPartnership.totalRuns || 0,
+    "totalBalls": currentPartnership.totalBalls || 0,
+    "extras": currentPartnership.extras || 0,
+    "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
+    "currentInnings": commentaryDetails.currentInnings,
+  };
+}
+

@@ -9,7 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
-import { addCommentaryDetailsToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryDetailsToDb, addCommentaryScreenData, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
 
@@ -120,7 +120,7 @@ function CommentaryMaster() {
     };
     const handleCommentaryDataSave = async (dataToSave, nextScreen, nextData) => {
         if (dataToSave) {
-            dispatch(addCommentaryDetailsToDb(dataToSave))
+            dispatch(addCommentaryScreenData(dataToSave))
         }
     };
     const handleBackClick = () => {
