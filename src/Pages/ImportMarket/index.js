@@ -292,7 +292,6 @@ const Index = () => {
   };
 
   const handleBreadCrumbsClick = (value) => {
-    setData([])
     let historyList = _.clone(selectedMarketHistory);
     const index = historyList.findIndex((item) => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
@@ -305,9 +304,10 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-    //   navigate("/dashboard")
-    // }
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
+    setData([])
     fetchData();
   }, [selectedMarket]);
 
