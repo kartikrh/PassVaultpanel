@@ -50,11 +50,11 @@ const Index = () => {
       });
   };
 
-  const addData = async (latestValueFromTable) => {
+  const addData = async (val) => {
     setIsLoading(true);
     finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/ImportMarket/importMarketToDB`,{...dataToDB})
+      .post(`/admin/ImportMarket/importEvent`,{...val})
       .then((response) => {
         const apiData = response;
        console.log("this is add response +++ ",apiData);
@@ -100,7 +100,7 @@ const Index = () => {
             )
             setDataToDB({
               ...dataToDB, 
-              [`${selectedMarket?.isCompitition ? "competitionID" :selectedMarket?.isEvent ? "eventID" : "eventTypeID"}`]: text?.id,
+              [`${selectedMarket?.isCompitition ? "competitionId" :selectedMarket?.isEvent ? "eventId" : "eventTypeId"}`]: text?.id,
               [`${selectedMarket?.isCompitition ? "competitionName" :selectedMarket?.isEvent ? "eventName" : "eventTypeName"}`]: text?.name,
 
             })
@@ -136,13 +136,21 @@ const Index = () => {
           setDataToDB({
             ...dataToDB, 
           eventName: text?.name,
-          eventID: text?.id,
+          eventId: text?.id,
           timeZone: text?.timezone,
           countryCode: text?.countryCode || "",
           openDate: text?.openDate,
           venue: text?.venue || ""
           })
-          setStatus(!status)
+          addData({
+            ...dataToDB, 
+          eventName: text?.name,
+          eventId: text?.id,
+          timeZone: text?.timezone,
+          countryCode: text?.countryCode || "",
+          openDate: text?.openDate,
+          venue: text?.venue || ""
+          })
         }
         }
       >
@@ -184,8 +192,10 @@ const Index = () => {
   }, [selectedMarket]);
 
   useEffect(()=>{
-    addData()
-  },[status])
+    dispatch(setSelectedMarketHistory([{
+      label: "Import market", value: "0"
+  }]))
+  },[])
   return (
     <React.Fragment>
       <div className="page-content">
