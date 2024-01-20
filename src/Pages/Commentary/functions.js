@@ -86,7 +86,6 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
 }
 
 export const generatePartnership = ({ currentPartnership, commentaryDetails, teams, currentBall }) => {
-  console.log(currentPartnership)
   return {
     "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || "0",
     "commentaryId": commentaryDetails.commentaryId,
@@ -104,7 +103,6 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
 }
 
 export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
-  console.log(onPitchPlayers)
   return {
     "overId": "0",
     "commentaryId": commentaryDetails.commentaryId,
