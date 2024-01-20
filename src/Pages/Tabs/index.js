@@ -117,6 +117,7 @@ const Index = () => {
 
   const handleBreadCrumbsClick = (value) => {
     let historyList = _.clone(selectedTabHistory)
+    console.log()
     const index = historyList.findIndex(item => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
     dispatch(setSelectedTabHistory(historyList))

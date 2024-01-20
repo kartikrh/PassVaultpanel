@@ -17,7 +17,7 @@ import {
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
-  TAB_EVENT_TYPES,
+  TAB_IMPORT_MARKET,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -29,7 +29,7 @@ import {
 } from "../../Features/Tabs/importMarketSlice";
 
 const Index = () => {
-  const pageName = "Import Events";
+  const pageName = TAB_IMPORT_MARKET;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =
@@ -40,7 +40,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
   const { selectedMarket, selectedMarketHistory } = useSelector(
     (state) => state.tabsData?.importMarket
@@ -70,6 +70,8 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
       .then((response) => {
+        const apiData = response;
+        console.log("this is add response +++ ", apiData);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -98,12 +100,10 @@ const Index = () => {
       dataIndex: `${
         selectedMarket?.isCompitition
           ? "competition"
-          : selectedMarket?.isEvent
-          ? "event"
           : "eventType"
       }`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId",
+      key: "eventTypeId1",
       sort: true,
       style: { width: "20%" },
     },
@@ -121,7 +121,13 @@ const Index = () => {
       render: (text, record) => (
         <div
           onClick={() => {
-            let currentRecord = [{ label: text?.name, value: text?.id }];
+            setData([])
+            let currentRecord = [{ label: text?.name, value: {
+              refID: text?.id,
+              isAustralian: false,
+              isEvent: Boolean(selectedMarket?.isCompitition),
+              isCompitition: Boolean(!selectedMarket?.isCompitition),
+            } }];
             let historyList = selectedMarketHistory
               ? [].concat(selectedMarketHistory, currentRecord)
               : currentRecord;
@@ -134,6 +140,11 @@ const Index = () => {
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
               })
             );
+            setStatus(
+              selectedMarket?.isCompitition
+              ? 2
+              : 1
+            )
             setDataToDB({
               ...dataToDB,
               [`${
@@ -158,29 +169,23 @@ const Index = () => {
       ),
       key: "eventTypeName",
       sort: true,
-      style: { width: "30%" },
+      style: { width: "80%" },
     },
   ];
   const columnsB = [
    {
       title: "Date",
-      dataIndex: `${
-        selectedMarket?.isCompitition
-          ? "competition"
-          : selectedMarket?.isEvent
-          ? "event"
-          : "eventType"
-      }`,
+      dataIndex: `event`,
       render: (text, record) => <span>{text?.openDate}</span>,
       sort: true,
-      key: "eventTypeId",
+      key: "date",
       style: { width: "30%" },
     },
     {
       title: `Id`,
       dataIndex: `event`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId",
+      key: "eventTypeId2",
       sort: true,
       style: { width: "20%" },
     },
@@ -190,7 +195,12 @@ const Index = () => {
       render: (text, record) => (
         <div
           onClick={() => {
-            let currentRecord = [{ label: text?.name, value: text?.id }];
+            let currentRecord = [{ label: text?.name, value: {
+              refID: text?.id,
+              isAustralian: false,
+              isEvent: Boolean(selectedMarket?.isCompitition),
+              isCompitition: Boolean(!selectedMarket?.isCompitition),
+            } }];
             let historyList = selectedMarketHistory
               ? [].concat(selectedMarketHistory, currentRecord)
               : currentRecord;
@@ -288,18 +298,16 @@ const Index = () => {
     dispatch(setSelectedMarketHistory(historyList));
     dispatch(
       setSelectedMarket({
-        refID: 0,
-        isAustralian: false,
-        isEvent: false,
-        isCompitition: false,
+        ...value
       })
     );
   };
 
   useEffect(() => {
-    // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-    //   navigate("/dashboard")
-    // }
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
+    setData([])
     fetchData();
   }, [selectedMarket]);
 
@@ -308,7 +316,12 @@ const Index = () => {
       setSelectedMarketHistory([
         {
           label: "Import market",
-          value: "0",
+          value: {
+            refID: 0,
+            isAustralian: false,
+            isEvent: false,
+            isCompitition: false,
+          }
         },
       ])
     );
