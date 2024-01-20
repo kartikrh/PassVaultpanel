@@ -1,4 +1,4 @@
-import { BATTING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
+import { BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -108,8 +108,28 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
   return {
     "overId": "0",
     "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BATTING_TEAM].teamId,
+    "teamId": teams[BOWLING_TEAM].teamId,
     "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings,
+    "over": +teams[BATTING_TEAM].teamOver?.toFixed(0),
+    "ballCount": 0,
+    "totalRun": 0,
+    "totalFour": 0,
+    "totalSix": 0,
+    "totalWideBall": 0,
+    "totalWideRun": 0,
+    "totalNoball": 0,
+    "totalNoBallRun": 0,
+    "totalByesRun": 0,
+    "totalLegByesRun": 0,
+    "totalPanelty": 0,
+    "totalWicket": 0,
+    "dotBall": 0,
+    "isComplete": false,
+    "powerplay": null,
+    "isOverInPowerplay": false,
+    "powerplayType": 1,
+    "isMaiden": false,
+    "isDelete": null,
   }
 }
