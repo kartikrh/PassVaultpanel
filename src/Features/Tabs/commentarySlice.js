@@ -42,9 +42,6 @@ export const addCommentaryScreenData = createAsyncThunk(
         }
     }
 );
-
-
-
 const commentarySlice = createSlice({
     name: 'commentary',
     initialState: {

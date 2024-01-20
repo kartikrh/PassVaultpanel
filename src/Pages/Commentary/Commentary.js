@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { generateBall, generatePartnership, generateWicket } from "./functions.js"
+import { generateBall, generateOver, generatePartnership, generateWicket } from "./functions.js"
 import { useDispatch } from "react-redux"
 import { addCommentaryScreenData } from "../../Features/Tabs/commentarySlice.js"
 
@@ -32,6 +32,8 @@ const Commentary = (props) => {
     const [showChangeOverModal, setShowChangeOverModal] = useState(undefined)
     const [showWicketModal, setShowWicketModal] = useState(undefined)
     const [saveToDb, setSaveToDb] = useState(undefined)
+    const [isOverChange, setIsOverChange] = useState(undefined)
+    const [isWicketChange, setIsWicketChange] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
     // useEffect(() => {
@@ -66,6 +68,18 @@ const Commentary = (props) => {
             setSaveToDb(false)
         }
     }, [saveToDb])
+
+    useEffect(() => {
+        if (isOverChange) {
+            const objToSave = {
+                "commentaryDetails": commentaryDetails,
+                "commentaryOvers": generateOver({ commentaryDetails, currentOver, onPitchPlayers, teams }),
+            }
+            dispatch(addCommentaryScreenData(objToSave))
+            setIsOverChange(undefined)
+        }
+    }, [isOverChange])
+
     useEffect(() => {
         if (props.data) {
             const currentInningsTeams = {}
@@ -380,6 +394,8 @@ const Commentary = (props) => {
         setOnPitchPlayers({ ...onPitchPlayers, [playerToChange]: newPlayer })
         setChangePlayerList(undefined)
         setPlayerToChange(undefined)
+        if (playerToChange === CURRENT_BOWLER) setIsOverChange(true)
+
     }
     const changePlayer = (type) => {
         setPlayerToChange(type)

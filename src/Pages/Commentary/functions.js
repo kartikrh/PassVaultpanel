@@ -103,3 +103,12 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
   };
 }
 
+export const generateOver = ({ currentOver, commentaryDetails, teams, onPitchPlayers }) => {
+  return {
+    "overId": "0",
+    "commentaryId": commentaryDetails.commentaryId,
+    "teamId": teams[BATTING_TEAM].teamId,
+    "bowlerId": onPitchPlayers[CURRENT_BOWLER].playerId,
+    "currentInnings": commentaryDetails.currentInnings,
+  }
+}
