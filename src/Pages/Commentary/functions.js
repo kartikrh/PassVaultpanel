@@ -37,9 +37,9 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "overId": currentOver.overId,
     "overCount": currentOver.over,
     "currentOverBalls": currentOver.ballCount,
-    "bowlerId": onPitchPlayers[CURRENT_BOWLER].playerId,
-    "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].playerId,
-    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].playerId,
+    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
+    "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId,
     "ballIsCount": currentBall.ballIsCount,
     "ballType": currentBall.ballType,
     "ballIsDot": currentBall.ballIsDot || false,
@@ -50,13 +50,13 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "ballSix": currentBall.ballSix || 0,
     "ballIsWicket": currentBall.ballIsWicket,
     "ballWicketType": currentBall.ballWicketType,
-    "ballPlayerId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].playerId,
-    "ballBowlerId": onPitchPlayers[CURRENT_BOWLER].playerId,
+    "ballPlayerId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+    "ballBowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
     "ballFielderId1": currentBall.ballFielderId1,
     "ballFielderId2": currentBall.ballFielderId2,
     "overIsMaiden": currentBall.overIsMaiden,
-    "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.playerId,
-    "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.playerId,
+    "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
+    "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings
   }
 }
@@ -103,12 +103,13 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
   };
 }
 
-export const generateOver = ({ currentOver, commentaryDetails, teams, onPitchPlayers }) => {
+export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
+  console.log(onPitchPlayers)
   return {
     "overId": "0",
     "commentaryId": commentaryDetails.commentaryId,
     "teamId": teams[BATTING_TEAM].teamId,
-    "bowlerId": onPitchPlayers[CURRENT_BOWLER].playerId,
+    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings,
   }
 }

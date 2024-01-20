@@ -61,7 +61,6 @@ const Commentary = (props) => {
                 "commentaryPlayers": [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]],
                 "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall, currentPartnership, teams }),
                 "commentaryTeams": [teams[BATTING_TEAM]],
-                "commentaryWicket": generateWicket({ commentaryDetails, currentOver, teams, currentWicket, currentBall })
             }
             console.log(objToSave)
             dispatch(addCommentaryScreenData(objToSave))
@@ -73,12 +72,27 @@ const Commentary = (props) => {
         if (isOverChange) {
             const objToSave = {
                 "commentaryDetails": commentaryDetails,
-                "commentaryOvers": generateOver({ commentaryDetails, currentOver, onPitchPlayers, teams }),
+                "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams }),
             }
             dispatch(addCommentaryScreenData(objToSave))
             setIsOverChange(undefined)
         }
     }, [isOverChange])
+    useEffect(() => {
+        if (isWicketChange) {
+            const updatedPartnership = generatePartnership({ commentaryDetails, currentBall, currentPartnership, teams })
+            const updatedBallByBall = generateBall({ currentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
+            const updatedWicket = generateWicket({ commentaryDetails, currentOver, teams, currentWicket, currentBall })
+            const objToSave = {
+                "commentaryDetails": commentaryDetails,
+                "commentaryPartnership": updatedPartnership,
+                "commentaryBallByBall": updatedBallByBall,
+                "commentaryWicket": updatedWicket
+            }
+            dispatch(addCommentaryScreenData(objToSave))
+            setIsWicketChange(undefined)
+        }
+    }, [isWicketChange])
 
     useEffect(() => {
         if (props.data) {
@@ -113,8 +127,8 @@ const Commentary = (props) => {
                 }
             });
             props.data.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
-                if (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE].playerId) &&
-                    isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE].playerId)) {
+                if (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE].commentaryPlayerId) &&
+                    isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) {
                     console.log(partnershipDetails)
                     currentPartnership = partnershipDetails
                 }
@@ -125,9 +139,9 @@ const Commentary = (props) => {
                 }
             });
             const partnershipDetails = {
-                "batter1Id": onPitchPlayers[ON_STRIKE].playerId,
+                "batter1Id": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
                 "batter1Name": onPitchPlayers[ON_STRIKE].playerName,
-                "batter2Id": onPitchPlayers[NON_STRIKE].playerId,
+                "batter2Id": onPitchPlayers[NON_STRIKE].commentaryPlayerId,
                 "batter2Name": onPitchPlayers[NON_STRIKE].playerName,
             }
             setTeams(currentInningsTeams)
@@ -308,13 +322,13 @@ const Commentary = (props) => {
         updateBall["ballWicketType"] = wicketData.wicketType
         updateBall["ballFielderId1"] = wicketData.fielder1
         updateBall["ballFielderId2"] = wicketData.fielder2
-        updateBall["batStrikeId"] = onPitchPlayers[ON_STRIKE].playerId
-        updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].playerId
-        updateWicket["bowlerId"] = onPitchPlayers[CURRENT_BOWLER].playerId
+        updateBall["batStrikeId"] = onPitchPlayers[ON_STRIKE].commentaryPlayerId
+        updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
+        updateWicket["bowlerId"] = onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId
         updateWicket["bowlerName"] = onPitchPlayers[CURRENT_BOWLER].playerName
         updateWicket["wicketType"] = wicketData.wicketType
         updateWicket["fieldPlayerId"] = wicketData.fielder1
-        const isOnStrikeWicket = isEqual(wicketData.batterId, onPitchPlayers[ON_STRIKE].playerId)
+        const isOnStrikeWicket = isEqual(wicketData.batterId, onPitchPlayers[ON_STRIKE].commentaryPlayerId)
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateOver["totalWicket"] = (currentOver.totalWicket || 0) + 1
         updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) + 1
@@ -323,9 +337,9 @@ const Commentary = (props) => {
             ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
         const updatedBattingPlayers = players[BATTING_TEAM]?.map((player) => {
-            if (isEqual(player.playerId, wicketData.batterId)) {
-                updateBall["ballPlayerId"] = player.playerId
-                updateWicket["batterId"] = player.playerId
+            if (isEqual(player.commentaryPlayerId, wicketData.batterId)) {
+                updateBall["ballPlayerId"] = player.commentaryPlayerId
+                updateWicket["batterId"] = player.commentaryPlayerId
                 updateWicket["batterName"] = player.playerName
                 updateWicket["batterRuns"] = wicketPlayerDetails.batRun + +wicketData.runs
                 updateWicket["batterBalls"] = wicketPlayerDetails.batBall + 1
@@ -334,7 +348,7 @@ const Commentary = (props) => {
                     "isBatterOut": true,
                     "isBatterRetir": wicketData.wicketType === RETIRED_OUT,
                     "wicketType": wicketData.wicketType,
-                    "bowlerId": onPitchPlayers[CURRENT_BOWLER].playerId,
+                    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
                     "fielderId1": wicketData.fielder1,
                     "fielderId2": wicketData.fielder2,
                 }
@@ -371,17 +385,17 @@ const Commentary = (props) => {
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         let newPlayer = undefined
-        const playerToChangeId = onPitchPlayers[playerToChange]?.playerId
+        const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
         setPlayers({
             ...players,
             [teamType]: players[teamType]?.map((player) => {
-                if (isEqual(player.playerId, playerToChangeId))
+                if (isEqual(player.commentaryPlayerId, playerToChangeId))
                     return {
                         ...onPitchPlayers[playerToChange],
                         "isPlay": null,
                         "onStrike": null
                     }
-                if (isEqual(player.playerId, newPlayerId)) {
+                if (isEqual(player.commentaryPlayerId, newPlayerId)) {
                     newPlayer = player
                     return {
                         ...player,
