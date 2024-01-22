@@ -9,7 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
-import { addCommentaryDetailsToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryDetailsToDb, addCommentaryScreenData, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
 
@@ -100,7 +100,6 @@ function CommentaryMaster() {
                     });
                 commentaryDataToUpdate.commentaryDetails = { ...commentaryDataToUpdate.commentaryDetails, ...commentaryDetailsToUpdate }
                 setCurrentScreen(commentaryDataToUpdate?.commentaryDetails?.commentaryStatus || 1)
-                console.log(commentaryDataToUpdate)
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
             }).catch((error) => {
@@ -117,7 +116,11 @@ function CommentaryMaster() {
             setNextScreen(nextScreen)
         }
     };
-
+    const handleCommentaryDataSave = async (dataToSave, nextScreen, nextData) => {
+        if (dataToSave) {
+            dispatch(addCommentaryScreenData(dataToSave))
+        }
+    };
     const handleBackClick = () => {
         navigate(navigateTo);
     };
@@ -155,8 +158,7 @@ function CommentaryMaster() {
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
                                             data={{ commentaryData, matchTypeData }}
-                                            save={handleSaveClick}
-                                            previous={() => { setCurrentScreen(getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)) }}
+                                            save={handleCommentaryDataSave}
                                         />}
                                 </Row>
                             </CardBody>

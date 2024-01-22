@@ -9,12 +9,12 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, toggle, isOpen, onSubmit }) 
     const battersOptions = []
     useEffect(() => {
         bowlingTeam?.map(element => {
-            bowlingPlayerList.push({ label: element.playerName, value: element.playerId })
+            bowlingPlayerList.push({ label: element.playerName, value: element.commentaryPlayerId })
         })
     }, [bowlingTeam])
     useEffect(() => {
-        battersOptions.push({ label: onPitchPlayers?.[ON_STRIKE]?.playerName, value: onPitchPlayers?.[ON_STRIKE]?.playerId })
-        battersOptions.push({ label: onPitchPlayers?.[NON_STRIKE]?.playerName, value: onPitchPlayers?.[NON_STRIKE]?.playerId })
+        battersOptions.push({ label: onPitchPlayers?.[ON_STRIKE]?.playerName, value: onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId })
+        battersOptions.push({ label: onPitchPlayers?.[NON_STRIKE]?.playerName, value: onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId })
     }, [onPitchPlayers])
     const handleSubmit = () => {
         const dataToSave = finalizeRef.current.finalizeData()
@@ -31,7 +31,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, toggle, isOpen, onSubmit }) 
                 <FormBuilder
                     ref={finalizeRef}
                     fields={WICKET_FIELDS}
-                    masterData={{ fielder: bowlingPlayerList, batterId: battersOptions }}
+                    masterData={{ fielder1: bowlingPlayerList, fielder2: bowlingPlayerList, batterId: battersOptions }}
                     editFormData={{}}
                 />
             </ModalBody>
