@@ -157,7 +157,32 @@ const Index = forwardRef(
           setTotal(data.length);
           setFilteredData(data);
         }
-      } else {
+      } 
+      else if(tableElement.title === "Import Events"){
+        const updatedData = dataSource.filter((val) => {
+          const first = Object.values(val);
+          const firstObject = first[0];
+          const found = Object.values(firstObject).some((value) => {
+            if (typeof value === "string" || value instanceof String) {
+              return value.toLowerCase().includes(searchTerm.toLowerCase());
+            }
+            return false;
+          });
+          return found === true;
+        });
+        if (searchTerm === "") {
+          setTotal(dataSource.length);
+          const sliced = dataSource.slice(
+            currentPage * pageSize,
+            currentPage * pageSize + pageSize
+          );
+          setFilteredData(sliced);
+        } else {
+          setFilteredData(updatedData);
+          setTotal(updatedData.length);
+        }
+      }
+      else {
         const updatedData = dataSource.filter((val) => {
           const found = Object.values(val).some((value) => {
             if (typeof value === "string" || value instanceof String) {
@@ -246,7 +271,6 @@ const Index = forwardRef(
     };
 
     const sortByProperty = (order, propName) => {
-      console.log({order, propName})
       if (order !== "ascending" && order !== "descending") {
         throw new Error(
           "Invalid sorting order. Use 'ascending' or 'descending'."
@@ -259,9 +283,7 @@ const Index = forwardRef(
 
       const sortedData = data.slice().sort((a, b) => {
         const valueA =
-          typeof a[propName] === "string"
-            ? a[propName].toLowerCase()
-            : a[propName];
+          typeof a[propName] === "string" ? a[propName] : a[propName];
         const valueB =
           typeof b[propName] === "string"
             ? b[propName].toLowerCase()
@@ -272,6 +294,55 @@ const Index = forwardRef(
           return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
         }
       });
+      setData(sortedData);
+    };
+    const sortByPropertyB = (order, propName) => {
+      if (order !== "ascending" && order !== "descending") {
+        throw new Error(
+          "Invalid sorting order. Use 'ascending' or 'descending'."
+        );
+      }
+      setSortOrder({
+        sortOrder: order,
+        key: propName,
+      });
+      const sortedData = data.slice().sort((a, b) => {
+        if(propName == "eventTypeId" || propName == "competitionId" || propName == "eventId"){
+          const first = Object.values(a);
+          const second = Object.values(b);
+          const firstObject = first[0]?.id;
+          const secondObject = second[0]?.id;
+          const valueA =
+          typeof firstObject === "string"
+            ? Number(firstObject)
+            : Number(firstObject);
+        const valueB =
+          typeof secondObject === "string"
+            ? Number(secondObject)
+            : Number(secondObject);
+        if (order === "ascending") {
+          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+        } else {
+          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+        }
+        }else{
+          alert(1)
+          const valueA =
+          typeof a[propName].name === "string"
+            ? a[propName]?.id
+            : a[propName]?.id;
+        const valueB =
+          typeof b[propName] === "string"
+            ? b[propName]?.id
+            : b[propName]?.id;
+        if (order === "ascending") {
+          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+        } else {
+          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+        }
+        }
+      });
+
       setData(sortedData);
     };
 
@@ -341,7 +412,7 @@ const Index = forwardRef(
       <Row>
         <Col lg={12}>
           <Card>
-            <CardHeader>
+            {tableElement?.title !== "Import Events" && <CardHeader>
               <form>
                 <Row className="g-2">
                   <Col className="col-sm-auto">
@@ -400,20 +471,23 @@ const Index = forwardRef(
                       {tableElement?.displayTypeDropDown ? (
                         <div className="">
                           <select
-                          className="form-select"
-                          id="inlineFormSelectPref"
-                          onChange={(e) => {
-                            handleTableActions("displayType",Number(e.target.value));
-                          }}
-                          value={tableActions?.displayType}
-                        >
-                          <option value={0}>Select Display Type</option>
-                          {tableElement?.displayTypes.map((val, index) => {
-                            return (
-                              <option value={val.value}>{val.label}</option>
-                            );
-                          })}
-                        </select>
+                            className="form-select"
+                            id="inlineFormSelectPref"
+                            onChange={(e) => {
+                              handleTableActions(
+                                "displayType",
+                                Number(e.target.value)
+                              );
+                            }}
+                            value={tableActions?.displayType}
+                          >
+                            <option value={0}>Select Display Type</option>
+                            {tableElement?.displayTypes.map((val, index) => {
+                              return (
+                                <option value={val.value}>{val.label}</option>
+                              );
+                            })}
+                          </select>
                           {/* <Col>
                             <Select
                               classNamePrefix="select2-selection"
@@ -505,7 +579,7 @@ const Index = forwardRef(
                         </div>
                       ) : null}
 
-{tableElement?.isShowContent ? (
+                      {tableElement?.isShowContent ? (
                         <div className="d-flex align-items-center">
                           <Switch
                             width={70}
@@ -514,7 +588,10 @@ const Index = forwardRef(
                             className="pe-0"
                             onColor="#02a499"
                             onChange={() => {
-                              handleTableActions("isShowContent", !statusSwitch);
+                              handleTableActions(
+                                "isShowContent",
+                                !statusSwitch
+                              );
                             }}
                             checked={statusSwitch}
                           />
@@ -540,7 +617,7 @@ const Index = forwardRef(
                   </Col>
                 </Row>
               </form>
-            </CardHeader>
+            </CardHeader>}
 
             <CardBody>
               <div id="customerList">
@@ -564,7 +641,7 @@ const Index = forwardRef(
                   </Col>
                   <Col className="col-sm">
                     <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                      <div className="me-1 d-flex">
+                     {tableElement.title !== "Import Events" && <div className="me-1 d-flex">
                         <CSVLink
                           data={generateSimplifiedData().csvData}
                           filename={tableElement.title + ".csv"}
@@ -583,7 +660,7 @@ const Index = forwardRef(
                         <Button onClick={generatePDF} className="btn border">
                           <i className="bx bxs-file-pdf"></i>
                         </Button>
-                      </div>
+                      </div>}
                       <div className="">
                         <input
                           type="text"
@@ -732,7 +809,15 @@ const Index = forwardRef(
                                     <i
                                       className="bx bx-caret-up"
                                       onClick={() => {
-                                        sortByProperty("ascending", column.key);
+                                        tableElement.title == "Import Events"
+                                          ? sortByPropertyB(
+                                              "ascending",
+                                              column.key
+                                            )
+                                          : sortByProperty(
+                                              "ascending",
+                                              column.key
+                                            );
                                       }}
                                       style={{
                                         color: `${
@@ -749,10 +834,15 @@ const Index = forwardRef(
                                     <i
                                       className="bx bx-caret-down"
                                       onClick={() => {
-                                        sortByProperty(
-                                          "descending",
-                                          column.key
-                                        );
+                                        tableElement.title == "Import Events"
+                                          ? sortByPropertyB(
+                                              "descending",
+                                              column.key
+                                            )
+                                          : sortByProperty(
+                                              "descending",
+                                              column.key
+                                            );
                                       }}
                                       style={{
                                         color: `${

@@ -20,7 +20,7 @@ import {
   TAB_IMPORT_MARKET,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {
   resetTabSliceData,
@@ -94,7 +94,7 @@ const Index = () => {
   //table columns
   const columnsA = [
     {
-      title: `Id`,
+      title: `Ref Id`,
       dataIndex: `${
         selectedMarket?.isCompitition
           ? "competition"
@@ -106,7 +106,7 @@ const Index = () => {
           ? "competitionId"
           : "eventTypeId"
       }`,
-      sort: true,
+      sort:true,
       style: { width: "20%" },
     },
     {
@@ -174,7 +174,6 @@ const Index = () => {
           ? "competition"
           : "eventType"
       }`,
-      sort: true,
       style: { width: "80%" },
     },
   ];
@@ -182,13 +181,13 @@ const Index = () => {
    {
       title: "Date",
       dataIndex: `event`,
-      render: (text, record) => <span>{text?.openDate}</span>,
-      sort: true,
+      render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
+      // sort: true,
       key: "date",
       style: { width: "30%" },
     },
     {
-      title: `Id`,
+      title: `Ref Id`,
       dataIndex: `event`,
       render: (text, record) => <span>{text?.id}</span>,
       key: 'eventId',
@@ -242,7 +241,7 @@ const Index = () => {
         </div>
       ),
       key: "event",
-      sort: true,
+      // sort: true,
       style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
