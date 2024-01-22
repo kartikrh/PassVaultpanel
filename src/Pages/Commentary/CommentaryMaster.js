@@ -44,7 +44,6 @@ function CommentaryMaster() {
 
     useEffect(() => {
         if (commentaryId !== "0") {
-            console.log(commentaryId)
             fetchData(commentaryId);
         }
     }, [commentaryId]);

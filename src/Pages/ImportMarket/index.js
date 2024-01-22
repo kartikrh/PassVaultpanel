@@ -70,8 +70,6 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
       .then((response) => {
-        const apiData = response;
-        console.log("this is add response +++ ", apiData);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -103,7 +101,11 @@ const Index = () => {
           : "eventType"
       }`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId1",
+      key: `${
+        selectedMarket?.isCompitition
+          ? "competitionId"
+          : "eventTypeId"
+      }`,
       sort: true,
       style: { width: "20%" },
     },
@@ -167,7 +169,11 @@ const Index = () => {
           <span>{text?.name}</span>
         </div>
       ),
-      key: "eventTypeName",
+      key: `${
+        selectedMarket?.isCompitition
+          ? "competition"
+          : "eventType"
+      }`,
       sort: true,
       style: { width: "80%" },
     },
@@ -185,7 +191,7 @@ const Index = () => {
       title: `Id`,
       dataIndex: `event`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId2",
+      key: 'eventId',
       sort: true,
       style: { width: "20%" },
     },
@@ -235,7 +241,7 @@ const Index = () => {
           <span>{text?.name}</span>
         </div>
       ),
-      key: "eventTypeName",
+      key: "event",
       sort: true,
       style: { width: "30%" },
     },
