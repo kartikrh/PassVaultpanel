@@ -80,7 +80,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
     "playerRun": currentWicket.batterRuns || 0,
     "playerBalls": currentWicket.batterBalls || 0,
     "wicketCount": (+teams[BATTING_TEAM] || 0) + 1,
-    "ballCount": "",
+    "ballCount": 0, //Change in future
     "currentInnings": commentaryDetails.currentInnings,
   }
 }
