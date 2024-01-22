@@ -3,21 +3,21 @@ export const BAT = 1;
 export const BOWL = 2;
 
 // Ball Type
-export const BallType_Over_complete = 0;
-export const BallType_Regular = 1;
-export const BallType_Wide = 2;
-export const BallType_Bye = 3;
-export const BallType_LegBye = 4;
-export const BallType_NoBall = 5;
-export const BallType_NoBallBye = 6;
-export const BallType_NoBallLegBye = 7;
-export const BallType_PaneltyRun = 8;
+export const BALL_TYPE_OVER_COMPLETE = 0;
+export const BALL_TYPE_REGULAR = 1;
+export const BALL_TYPE_WIDE = 2;
+export const BALL_TYPE_BYE = 3;
+export const BALL_TYPE_LEG_BYE = 4;
+export const BALL_TYPE_NO_BALL = 5;
+export const BALL_TYPE_NO_BALL_BYE = 6;
+export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
+export const BALL_TYPE_PANELTY_RUN = 8;
 
 // Ball Status
-export const BatterStatusNon = 0;
-export const BatterStatusOnPich = 1;
-export const BatterStatusWicket = 2;
-export const BatterStatusRetired = 3;
+export const BATTER_STATUS_NONE = 0;
+export const BATTER_STATUS_ON_PITCH = 1;
+export const BATTER_STATUS_WICKET = 2;
+export const BATTER_STATUS_RETIRE = 3;
 
 // Innings
 export const OPEN = 1;
