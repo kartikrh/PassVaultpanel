@@ -1,10 +1,12 @@
 import React, { forwardRef, useEffect, useState, useImperativeHandle } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Creatable from 'react-select/creatable';
 import { isEmpty, isEqual } from "lodash";
 import { isValueEmpty, sanitizeFormData, compareNumStringValues, convertDateUTCToLocal } from "./reusableMethods.js";
-import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE, RADIO_BUTTON } from "../Const.js";
+import { COUNTER, DATE_TIME_PICKER, DIVIDER, EMAIL, FILE_TYPE, MULTI_SELECT, SELECT, SWITCH, TEXT, TEXT_AREA, IMAGE, RADIO_BUTTON, TEXT_EDITOR } from "../Const.js";
 import "./CustomCss.css"
 import {
   Row,
@@ -142,7 +144,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }))
   }
 
+  const handleEditorChange = (event, editor) => {
+    const data = editor.getData();
+    console.log(data); // This will log the content of the editor
+  };
+
   const handleChange = (field, value) => {
+    console.log(value,"value");
     const errors = { ...fieldErrors };
     const dependentFieldValue = formData[field.dependsOnField];
     if (
@@ -406,6 +414,18 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                     />
                   </div>
                 )}
+
+
+                {field.type === TEXT_EDITOR && (
+                  <CKEditor
+                    editor={ClassicEditor}
+                    data="<p>Hello from CKEditor&nbsp;5!</p>"
+                   // style={{height:"300px"}}
+                    onChange={(event, editor)=>handleChange(field, editor.getData())}
+                  />
+                )}
+
+
                 {field.type === DATE_TIME_PICKER && (
                   <input
                     className="form-control"
@@ -462,7 +482,8 @@ FormBuilder.propTypes = {
         FILE_TYPE,
         SWITCH,
         MULTI_SELECT,
-        DATE_TIME_PICKER
+        DATE_TIME_PICKER,
+        TEXT_EDITOR
       ]).isRequired,
       isRequired: PropTypes.bool.isRequired,
       regex: PropTypes.instanceOf(RegExp),
