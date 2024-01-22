@@ -20,7 +20,7 @@ import {
   TAB_IMPORT_MARKET,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {
   resetTabSliceData,
@@ -70,8 +70,6 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
       .then((response) => {
-        const apiData = response;
-        console.log("this is add response +++ ", apiData);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -96,15 +94,19 @@ const Index = () => {
   //table columns
   const columnsA = [
     {
-      title: `Id`,
+      title: `Ref Id`,
       dataIndex: `${
         selectedMarket?.isCompitition
           ? "competition"
           : "eventType"
       }`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId1",
-      sort: true,
+      key: `${
+        selectedMarket?.isCompitition
+          ? "competitionId"
+          : "eventTypeId"
+      }`,
+      sort:true,
       style: { width: "20%" },
     },
     {
@@ -167,8 +169,11 @@ const Index = () => {
           <span>{text?.name}</span>
         </div>
       ),
-      key: "eventTypeName",
-      sort: true,
+      key: `${
+        selectedMarket?.isCompitition
+          ? "competition"
+          : "eventType"
+      }`,
       style: { width: "80%" },
     },
   ];
@@ -176,16 +181,16 @@ const Index = () => {
    {
       title: "Date",
       dataIndex: `event`,
-      render: (text, record) => <span>{text?.openDate}</span>,
-      sort: true,
+      render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
+      // sort: true,
       key: "date",
       style: { width: "30%" },
     },
     {
-      title: `Id`,
+      title: `Ref Id`,
       dataIndex: `event`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId2",
+      key: 'eventId',
       sort: true,
       style: { width: "20%" },
     },
@@ -235,8 +240,8 @@ const Index = () => {
           <span>{text?.name}</span>
         </div>
       ),
-      key: "eventTypeName",
-      sort: true,
+      key: "event",
+      // sort: true,
       style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
