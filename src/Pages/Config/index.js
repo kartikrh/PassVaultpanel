@@ -39,7 +39,7 @@ const Index = () => {
         const apiData = response?.result
         let apiDataIdList = [];
         apiData.forEach(ele => {
-          apiDataIdList.push(ele?.paneltyId)
+          apiDataIdList.push(ele?.id)
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
