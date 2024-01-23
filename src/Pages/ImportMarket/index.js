@@ -174,6 +174,7 @@ const Index = () => {
           ? "competition"
           : "eventType"
       }`,
+      sort:true,
       style: { width: "80%" },
     },
   ];
@@ -182,7 +183,7 @@ const Index = () => {
       title: "Date",
       dataIndex: `event`,
       render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
-      // sort: true,
+      sort: true,
       key: "date",
       style: { width: "30%" },
     },
@@ -241,7 +242,7 @@ const Index = () => {
         </div>
       ),
       key: "event",
-      // sort: true,
+      sort: true,
       style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
@@ -320,7 +321,7 @@ const Index = () => {
     dispatch(
       setSelectedMarketHistory([
         {
-          label: "Import market",
+          label: "Home",
           value: {
             refID: 0,
             isAustralian: false,

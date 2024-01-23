@@ -276,27 +276,28 @@ const Index = forwardRef(
           "Invalid sorting order. Use 'ascending' or 'descending'."
         );
       }
+    
       setSortOrder({
         sortOrder: order,
         key: propName,
       });
-
+    
       const sortedData = data.slice().sort((a, b) => {
-        const valueA =
-          typeof a[propName] === "string" ? a[propName] : a[propName];
-        const valueB =
-          typeof b[propName] === "string"
-            ? b[propName].toLowerCase()
-            : b[propName];
+        const valueA = typeof a[propName] === "string" ? a[propName] : a[propName];
+        const valueB = typeof b[propName] === "string" ? b[propName] : b[propName];
+    
         if (order === "ascending") {
-          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+          return valueA.localeCompare(valueB);
         } else {
-          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+          return valueB.localeCompare(valueA);
         }
       });
+    
       setData(sortedData);
     };
+    
     const sortByPropertyB = (order, propName) => {
+      console.log(propName)
       if (order !== "ascending" && order !== "descending") {
         throw new Error(
           "Invalid sorting order. Use 'ascending' or 'descending'."
@@ -325,21 +326,48 @@ const Index = forwardRef(
         } else {
           return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
         }
-        }else{
-          alert(1)
+        }
+        else if(propName == "date"){
+          const first = Object.values(a);
+          const second = Object.values(b);
+          const firstObject = first[0]?.openDate;
+          const secondObject = second[0]?.openDate;
           const valueA =
-          typeof a[propName].name === "string"
-            ? a[propName]?.id
-            : a[propName]?.id;
+          typeof firstObject === "string"
+            ? firstObject
+            : firstObject;
         const valueB =
-          typeof b[propName] === "string"
-            ? b[propName]?.id
-            : b[propName]?.id;
+          typeof secondObject === "string"
+            ? secondObject
+            : secondObject;
         if (order === "ascending") {
           return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
         } else {
           return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
         }
+        }
+        else{
+        //   const valueA =
+        //   typeof a[propName].name === "string"
+        //     ? a[propName]?.name
+        //     : a[propName]?.name;
+        // const valueB =
+        //   typeof b[propName] === "string"
+        //     ? b[propName]?.name
+        //     : b[propName]?.name;
+        // if (order === "ascending") {
+        //   return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+        // } else {
+        //   return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+        // }
+
+          const valueA = typeof a[propName]?.name === "string" ? a[propName]?.name : a[propName]?.name;
+          const valueB = typeof b[propName]?.name === "string" ? b[propName]?.name : b[propName]?.name;
+          if (order === "ascending") {
+            return valueA.localeCompare(valueB);
+          } else {
+            return valueB.localeCompare(valueA);
+          }
         }
       });
 
