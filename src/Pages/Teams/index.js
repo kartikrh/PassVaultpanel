@@ -150,7 +150,7 @@ const Index = () => {
               <img
                 className="avatar-xs rounded-circle"
                 alt=""
-                src={process.env.REACT_APP_BASE_URL + text}
+                src={text}
               />
             </div>
           ) : (
@@ -174,7 +174,7 @@ const Index = () => {
               <img
                 className="avatar-xs rounded-circle"
                 alt=""
-                src={process.env.REACT_APP_BASE_URL + text}
+                src={text}
               />
             </div>
           ) : (
