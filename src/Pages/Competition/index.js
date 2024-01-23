@@ -163,14 +163,14 @@ const Index = () => {
       dataIndex: "image",
       printType: "ignore",
       render: (text, record) => (
-        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        // <img src={text}/>
         <div className="flex-shrink-0">
           {text ? (
             <div>
               <img
                 className="avatar-xs rounded-circle"
                 alt=""
-                src={process.env.REACT_APP_BASE_URL + text}
+                src={text}
               />
             </div>
           ) : (
