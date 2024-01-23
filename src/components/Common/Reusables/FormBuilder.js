@@ -52,7 +52,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
       (isEmpty(formData) || isEqual(formData, defaultValueObj))) {
       fields.forEach(async (element) => {
         if (element.type === IMAGE && editFormData[element.name]) {
-          fetch(process.env.REACT_APP_BASE_URL + editFormData[element.name])
+          fetch(editFormData[element.name])
             .then((response) => response.blob())
             .then((blob) => {
               // Convert the image data to base64
