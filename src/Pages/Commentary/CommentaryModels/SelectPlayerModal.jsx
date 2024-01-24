@@ -32,8 +32,8 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                         />
                     </thead>
                     <tbody>
-                        {players?.map(value => <tr key={value.playerId}>
-                            <td role='button' onClick={() => selectPlayer(value.playerId)} >{value.playerName}</td>
+                        {players?.map(value => <tr key={value.commentaryPlayerId}>
+                            <td role='button' onClick={() => selectPlayer(value.commentaryPlayerId)} >{value.playerName}</td>
                         </tr>)}
                     </tbody>
                 </Table>

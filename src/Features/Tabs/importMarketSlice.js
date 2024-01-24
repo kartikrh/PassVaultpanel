@@ -15,7 +15,13 @@ const initialSliceState = {
         isCompitition: false,
      },
     selectedMarketHistory: [{
-        label: "Import market", value: "0"
+        label: "Home", 
+        value:{ 
+            refID: 0,
+            isAustralian: false,
+            isEvent: false,
+            isCompitition: false,
+         }
     }]
 }
 const marketSlice = createSlice({

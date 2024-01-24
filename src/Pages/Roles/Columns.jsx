@@ -27,7 +27,6 @@ export const Columns = ({
         isDeletePermission: item.isDeletePermission,
       });
     });
-    console.log("1", initialCheckboxStates);
     setCheckboxStates(initialCheckboxStates);
   }, [permissions]);
 
@@ -38,14 +37,14 @@ export const Columns = ({
       const tabPermissions = { ...newStates.get(tabId) }; // Create a copy
       tabPermissions[permissionType] = !tabPermissions[permissionType];
       newStates.set(tabId, tabPermissions);
-      const updatedRow = {
-        tabId,
-        isView: tabPermissions.isViewPermission,
-        isAdd: tabPermissions.isAddPermission,
-        isEdit: tabPermissions.isEditPermission,
-        isDelete: tabPermissions.isDeletePermission,
-      };
-      updatePagePermission(updatedRow);
+      // const updatedRow = {
+      //   tabId,
+      //   isView: tabPermissions.isViewPermission,
+      //   isAdd: tabPermissions.isAddPermission,
+      //   isEdit: tabPermissions.isEditPermission,
+      //   isDelete: tabPermissions.isDeletePermission,
+      // };
+      updatePagePermission({ tabId, ...tabPermissions });
       return newStates;
     });
   };
@@ -62,11 +61,11 @@ export const Columns = ({
 
   useEffect(() => {
     let isViewPermission = true;
-    let isAddPermission= true;
+    let isAddPermission = true;
     let isDeletePermission = true;
     let isEditPermission = true
 
-    Array.from(checkboxStates)?.map((val, i)=>{
+    Array.from(checkboxStates)?.map((val, i) => {
       isAddPermission = isAddPermission && val[1].isAddPermission
       isDeletePermission = isDeletePermission && val[1].isDeletePermission
       isViewPermission = isViewPermission && val[1].isViewPermission
