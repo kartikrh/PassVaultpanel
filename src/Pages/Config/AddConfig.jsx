@@ -141,8 +141,7 @@ const AddConfig = () => {
                         <i className="mdi mdi-chevron-down" />
                       </DropdownToggle>
                       <DropdownMenu>
-                        {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
-                          checkPermission(permissionObj, pageName, PERMISSION_EDIT))
+                        {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
                           && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
                         }
                         {checkPermission(permissionObj, pageName, PERMISSION_ADD)
