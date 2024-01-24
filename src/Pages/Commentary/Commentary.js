@@ -40,7 +40,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate } = useSelector(state => state.tabsData.commentary);
 
     useEffect(() => {
-        console.log(currentBall)
+        console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
     })
     const checkForOverSwitch = (currentOver) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
@@ -57,10 +57,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (saveToDb) {
             // setting commentary ball by ball id to 0 in order to make sure that every time new ball is created
-            const newCurrentBall = {
-                ...currentBall,
-                commentaryBallByBallId: "0"
-            }
+            const newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
             const objToSave = {
                 "commentaryBallByBall": generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams }),
                 "commentaryDetails": commentaryDetails,
@@ -78,6 +75,7 @@ const Commentary = (props) => {
             const objToSave = {
                 "commentaryDetails": commentaryDetails,
                 "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams }),
+                "commentaryBallByBall": generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver, onPitchPlayers, teams }),
                 "commentaryPlayers": [].concat([onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]], playerUpdateList).filter(x => x),
             }
             dispatch(addCommentaryScreenData(objToSave))
@@ -91,7 +89,7 @@ const Commentary = (props) => {
             const bowlingTeam = []
             const onPitchPlayers = {}
             let currentPartnership = {}
-            let currentOver = {}
+            let currentOver = 0
             props.data.commentaryData.commentaryTeams.forEach(teamDetails => {
                 if (isEqual(teamDetails.currentInnings, commentaryDetails.currentInnings)) {
                     const isBattingTeam = teamDetails.teamStatus === BAT
@@ -117,12 +115,14 @@ const Commentary = (props) => {
                 }
             });
             props.data.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
+                console.log(partnershipDetails)
                 if (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) &&
                     isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)) {
                     currentPartnership = partnershipDetails
                 }
             });
             props.data.commentaryData.commentaryOvers.forEach(overDetails => {
+                console.log(+overDetails.over, +currentOver)
                 if (isEqual(+overDetails.over, +currentOver)) {
                     currentOver = overDetails
                 }
@@ -136,7 +136,6 @@ const Commentary = (props) => {
             setTeams(currentInningsTeams)
             setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
             setOnPitchPlayers(onPitchPlayers)
-            setCurrentPartnership(partnershipDetails)
             setBallHistory(props.data.commentaryDatacommentaryBallByBall || [])
             setOverHistory(props.data.commentaryData.commentaryOvers || [])
             setPartnershipHistory(props.data.commentaryData.commentaryPartnership)
@@ -145,10 +144,7 @@ const Commentary = (props) => {
             setCurrentOver(currentOver)
             setCurrentInnings(commentaryDetails.currentInnings)
             if (isEmpty(currentPartnership))
-                props.save({
-                    "commentaryDetails": commentaryDetails,
-                    "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall, currentPartnership: partnershipDetails, teams: currentInningsTeams }),
-                })
+                dispatch(addCommentaryScreenData({ "commentaryDetails": commentaryDetails, "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall, currentPartnership: partnershipDetails, teams: currentInningsTeams }), }))
         }
     }, [])
     useEffect(() => {
@@ -156,13 +152,15 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.overdetails)) {
                 // setOverHistory(overHistory.push(currentOver))
                 setCurrentOver(commentaryDataToUpdate.overdetails)
+                setPlayerUpdateList(undefined)
             }
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)) {
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
             }
-            // if (!isEmpty(commentaryDataToUpdate.overdetails)) {
-            //     setCurrentOver(commentaryDataToUpdate.overdetails)
-            // }
+            if (!isEmpty(commentaryDataToUpdate.commentaryPartnershipDetails) && !currentPartnership.commentaryPartnershipId) {
+                console.log(commentaryDataToUpdate.commentaryPartnershipDetails, currentPartnership)
+                setCurrentPartnership(commentaryDataToUpdate.commentaryPartnershipDetails)
+            }
         }
     }, [commentaryDataToUpdate])
 
@@ -180,10 +178,13 @@ const Commentary = (props) => {
             }
             dispatch(addCommentaryScreenData(objToSave))
             setIsWicketChange(undefined)
+            setCurrentWicket(undefined)
+            setCurrentPartnership(undefined)
         }
     }
 
     const updateRuns = ({ run, ball, batter, bowler, type, freezePlayers = false }) => {
+        if (!freezePlayers) setCurrentBall({})
         const updateBattingTeam = {}
         let updateBatter = {}
         let updateBowler = {}
@@ -206,6 +207,7 @@ const Commentary = (props) => {
         updatePartnership["totalBalls"] = currentPartnership.totalBalls + ball
         updateOver["ballCount"] = (currentOver.ballCount || 0) + ball
         updateOver["totalRun"] = (currentOver.totalRun || 0) + run
+        updateBattingTeam["teamWicket"] = (+teams[BATTING_TEAM].teamWicket || 0)
         updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + run
         updateBattingTeam["teamOver"] =
             ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
@@ -249,6 +251,7 @@ const Commentary = (props) => {
         const updatePartnership = {}
         const updateBowler = {}
         const updatedBowlerOver = ((+bowler.bowlerOver || 0) + 0.1).toFixed(1)
+        updateBattingTeam["teamWicket"] = (+teams[BATTING_TEAM].teamWicket || 0)
         if (type === BALL_WIDE) {
             const runToUpdate = (+matchTypeDetails["valueOfWideBall"] || 0) + runs
             updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) + 1
@@ -412,13 +415,17 @@ const Commentary = (props) => {
             [teamType]: players[teamType]?.map((player) => {
                 if (isEqual(player.commentaryPlayerId, playerToChangeId)) {
                     const updatedPlayer = { ...onPitchPlayers[playerToChange], "isPlay": null, "onStrike": null }
+                    if (playerToChange === CURRENT_BOWLER) {
+                        updatedPlayer["bowlerOver"] = Math.ceil(+updatedPlayer.bowlerOver || 0)
+                        updatedPlayer["bowlerMaidenOver"] = currentOver.totalRun < 1 ? 1 : 0
+                    }
                     setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
                     return updatedPlayer
                 }
                 if (isEqual(player.commentaryPlayerId, newPlayerId)) {
                     const updatedPlayer = { ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : playerToChange === NON_STRIKE ? false : null }
                     newPlayer = updatedPlayer
-                    setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
+                    // setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
                     return updatedPlayer
                 } return player
             })

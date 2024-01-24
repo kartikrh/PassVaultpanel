@@ -141,13 +141,7 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
     }))
   }
 
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    console.log(data); // This will log the content of the editor
-  };
-
   const handleChange = (field, value) => {
-    console.log(value,"value");
     const errors = { ...fieldErrors };
     const dependentFieldValue = formData[field.dependsOnField];
     if (
@@ -417,8 +411,8 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                   <CKEditor
                     editor={ClassicEditor}
                     data="<p>Hello from CKEditor&nbsp;5!</p>"
-                   // style={{height:"300px"}}
-                    onChange={(event, editor)=>handleChange(field, editor.getData())}
+                    // style={{height:"300px"}}
+                    onChange={(event, editor) => handleChange(field, editor.getData())}
                   />
                 )}
 

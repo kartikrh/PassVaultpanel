@@ -17,32 +17,31 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-    const pageName = TAB_USERS
-    const finalizeRef = useRef(null);
-    document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
-    const [data, setData] = useState([]);
-    const [dataIndexList, setDataIndexList] = useState([]);
-    const [clipboard, setClipboard] = useState(null);
-    const [decryptedPasswords, setDecryptedPasswords] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [password, setPassword] = useState("");
-    const [userId, setUserId] = useState("");
-    const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
-    const [deleteModelVisable, setDeleteModelVisable] = useState(false)
-    const [checekedList, setCheckedList] = useState([]);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+  const pageName = TAB_USERS
+  const finalizeRef = useRef(null);
+  document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
+  const [data, setData] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [clipboard, setClipboard] = useState(null);
+  const [decryptedPasswords, setDecryptedPasswords] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [userId, setUserId] = useState("");
+  const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
+  const [deleteModelVisable, setDeleteModelVisable] = useState(false)
+  const [checekedList, setCheckedList] = useState([]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
 
-    
+
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
-   // console.log(tableActions,"tableActions");
     await axiosInstance
       .post(`/admin/block/all`, {
-        ...(latestValueFromTable || {...tableActions})
+        ...(latestValueFromTable || { ...tableActions })
       })
       .then((response) => {
         const apiData = response?.result
@@ -76,7 +75,7 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/block/save`, {
-       // blockId: record.blockId,
+        // blockId: record.blockId,
         ...record,
         [pType]: cState ? false : true,
       })
@@ -213,7 +212,7 @@ const Index = () => {
       dataIndex: "blockName",
       render: (text, record) => (
         <span>
-          {text} 
+          {text}
         </span>
       ),
       key: "userName",
@@ -223,16 +222,16 @@ const Index = () => {
     {
       title: "Container Id",
       dataIndex: "containerId",
-    //   render: (text, record) => (
-    //     <span style={{ cursor: "pointer" }}>
-    //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
-    //     </span>
-    //   ),
+      //   render: (text, record) => (
+      //     <span style={{ cursor: "pointer" }}>
+      //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
+      //     </span>
+      //   ),
       key: "parentName",
       sort: true,
       style: { width: "100%" },
     },
-  
+
     {
       title: "Is Show Content",
       key: "isShowContent",
@@ -264,8 +263,8 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Block",
-  //  headerSelect: false,
-  isShowContent: true,
+    //  headerSelect: false,
+    isShowContent: true,
   };
 
 
@@ -277,19 +276,19 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
 
           <Table
-           ref={finalizeRef}
-           columns={columns}
+            ref={finalizeRef}
+            columns={columns}
             dataSource={data}
-           tableElement={tableElement}
+            tableElement={tableElement}
             reFetchData={fetchData}
-           setChangPasswordModelVisible={setChangPasswordModelVisible}
-           deleteModelFunction={setDeleteModelVisable}
-           singleCheck={checekedList}
-           onAddNavigate={"/addblocks"}
-           isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            setChangPasswordModelVisible={setChangPasswordModelVisible}
+            deleteModelFunction={setDeleteModelVisable}
+            singleCheck={checekedList}
+            onAddNavigate={"/addblocks"}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
-          
+
         </Container>
       </div>
     </React.Fragment>
