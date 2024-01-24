@@ -102,7 +102,7 @@ function AddUsers() {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
     await axiosInstance
-      .post("/admin/roles/all")
+      .post("/admin/user/roleList")
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,

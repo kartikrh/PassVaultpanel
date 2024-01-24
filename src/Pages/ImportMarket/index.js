@@ -55,7 +55,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/marketList`, { ...selectedMarket })
       .then((response) => {
-        const apiData = response?.responseData?.appdata;
+        const apiData = response?.result?.appdata;
         setData(apiData);
         setIsLoading(false);
       })
@@ -70,6 +70,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
       .then((response) => {
+        console.log("this is response", response)
         dispatch(
           updateToastData({
             data: response?.message,

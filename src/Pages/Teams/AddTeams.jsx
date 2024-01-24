@@ -100,7 +100,7 @@ function AddTeams() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all", {})
+      .post("/admin/team/eventTypeList", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -114,7 +114,7 @@ function AddTeams() {
       });
 
     await axiosInstance
-      .post("/admin/player/all", {})
+      .post("/admin/team/playerList", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
