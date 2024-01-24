@@ -53,6 +53,7 @@ const Index = () => {
         // setDisplayTypes(displayType);
         setCheckedList([]);
         setIsLoading(false);
+        setDeleteModelVisable(false)
       })
       .catch((error) => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -296,7 +297,6 @@ const Index = () => {
     resetButton: true,
     isActive: true,
     displayTypes : [
-      {label: "Select Display Type", value:0},
       {label: "Admin", value: 1},
       {label: "Agent", value: 2},
   ]

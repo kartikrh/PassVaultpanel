@@ -44,7 +44,7 @@ const AuthProtected = (props) => {
   useEffect(() => {
     let socket;
     if (token) {
-      socket = io.connect(process.env.REACT_APP_BASE_URL, {
+      socket = io.connect(process.env.REACT_APP_SOCKET_URL, {
         auth: {
           token: token
         }

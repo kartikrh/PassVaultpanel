@@ -171,7 +171,7 @@ const Index = () => {
               <img
                 className="avatar-sm rounded-circle"
                 alt=""
-                src={process.env.REACT_APP_BASE_URL + text}
+                src={text}
               />
             </div>
           ) : (
@@ -182,7 +182,7 @@ const Index = () => {
         </div>
       ),
       key: "tabName",
-      style: { width: "10%" },
+      style: { width: "10%", textAlign:"left" },
     },
     {
       title: "Player Name",
@@ -192,13 +192,13 @@ const Index = () => {
       ),
       key: "playerName",
       sort: true,
-      style: { width: "10%" },
+      style: { width: "30%" },
     },
     {
       title: "Display Name",
       dataIndex: "displayName",
       key: "displayName",
-      style: { width: "10%" },
+      style: { width: "30%" },
       sort: true,
     },
     {
@@ -206,7 +206,7 @@ const Index = () => {
       dataIndex: "eventType",
       key: "eventType",
 
-      style: { width: "10%" },
+      style: { width: "30%" },
     },
     {
       title: "Is Active",
