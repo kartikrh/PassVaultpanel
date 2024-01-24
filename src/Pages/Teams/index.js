@@ -161,7 +161,7 @@ const Index = () => {
         </div>
       ),
       key: "image",
-      style: { width: "5%" },
+      style: { width: "10%" },
     },
     {
       title: "Jersey Image",
@@ -185,33 +185,33 @@ const Index = () => {
         </div>
       ),
       key: "jersey",
-      style: { width: "15%", textAlign: "left" },
+      style: { width: "10%", textAlign: "left" },
     },
     {
       title: "Team Name",
       dataIndex: "teamName",
       key: "teamName",
-      style: { width: "40%" },
+      style: { width: "20%" },
       sort: true,
     },
     {
       title: "eventType",
       dataIndex: "eventType",
       key: "eventType",
-      style: { width: "40%" },
+      style: { width: "20%" },
       sort: true,
     },
     {
       title: "Short Name",
       dataIndex: "teamShortName",
       key: "teamShortName",
-      style: { width: "10%" },
+      style: { width: "20%" },
     },
     {
       title: "Country",
       dataIndex: "country",
       key: "country",
-      style: { width: "10%" },
+      style: { width: "20%" },
     },
   ];
 
