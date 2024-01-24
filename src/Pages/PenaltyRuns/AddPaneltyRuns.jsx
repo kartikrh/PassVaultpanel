@@ -104,7 +104,7 @@ function AddPenaltyRuns() {
                                                 <i className="mdi mdi-chevron-down" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                                {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
+                                                {(checkPermission(permissionObj, pageName, PERMISSION_ADD) &&
                                                     checkPermission(permissionObj, pageName, PERMISSION_EDIT))
                                                     && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
                                                 }
