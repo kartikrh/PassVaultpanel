@@ -52,7 +52,7 @@ const Index = () => {
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
-      .post(`/admin/eventType/all`, {})
+      .post(`/admin/player/eventTypeList`, {})
       .then((response) => {
         setEventTypes(response.result);
         setIsLoading(false);

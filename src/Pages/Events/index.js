@@ -63,7 +63,7 @@ const Index = () => {
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
-      .post(`/admin/eventType/all`, {})
+      .post(`/admin/events/eventTypeList`, {})
       .then((response) => {
         setEventTypes(response.result);
         setIsLoading(false);
@@ -72,7 +72,7 @@ const Index = () => {
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
-      .post(`/admin/competition/all`, {
+      .post(`/admin/events/competitionList`, {
         eventTypeId: value
       })
       .then((response) => {
