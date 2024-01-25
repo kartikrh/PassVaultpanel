@@ -70,7 +70,6 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
       .then((response) => {
-        console.log("this is response", response)
         dispatch(
           updateToastData({
             data: response?.message,
@@ -96,41 +95,39 @@ const Index = () => {
   const columnsA = [
     {
       title: `Ref Id`,
-      dataIndex: `${
-        selectedMarket?.isCompitition
+      dataIndex: `${selectedMarket?.isCompitition
           ? "competition"
           : "eventType"
-      }`,
+        }`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: `${
-        selectedMarket?.isCompitition
+      key: `${selectedMarket?.isCompitition
           ? "competitionId"
           : "eventTypeId"
-      }`,
-      sort:true,
+        }`,
+      sort: true,
       style: { width: "20%" },
     },
     {
-      title: `${
-        selectedMarket?.isCompitition
+      title: `${selectedMarket?.isCompitition
           ? "Competition"
           : "Event Type"
-      }`,
-      dataIndex: `${
-        selectedMarket?.isCompitition
+        }`,
+      dataIndex: `${selectedMarket?.isCompitition
           ? "competition"
           : "eventType"
-      }`,
+        }`,
       render: (text, record) => (
         <div
           onClick={() => {
             setData([])
-            let currentRecord = [{ label: text?.name, value: {
-              refID: text?.id,
-              isAustralian: false,
-              isEvent: Boolean(selectedMarket?.isCompitition),
-              isCompitition: Boolean(!selectedMarket?.isCompitition),
-            } }];
+            let currentRecord = [{
+              label: text?.name, value: {
+                refID: text?.id,
+                isAustralian: false,
+                isEvent: Boolean(selectedMarket?.isCompitition),
+                isCompitition: Boolean(!selectedMarket?.isCompitition),
+              }
+            }];
             let historyList = selectedMarketHistory
               ? [].concat(selectedMarketHistory, currentRecord)
               : currentRecord;
@@ -145,42 +142,39 @@ const Index = () => {
             );
             setStatus(
               selectedMarket?.isCompitition
-              ? 2
-              : 1
+                ? 2
+                : 1
             )
             setDataToDB({
               ...dataToDB,
-              [`${
-                selectedMarket?.isCompitition
+              [`${selectedMarket?.isCompitition
                   ? "competitionId"
                   : selectedMarket?.isEvent
-                  ? "eventId"
-                  : "eventTypeId"
-              }`]: text?.id,
-              [`${
-                selectedMarket?.isCompitition
+                    ? "eventId"
+                    : "eventTypeId"
+                }`]: text?.id,
+              [`${selectedMarket?.isCompitition
                   ? "competitionName"
                   : selectedMarket?.isEvent
-                  ? "eventName"
-                  : "eventTypeName"
-              }`]: text?.name,
+                    ? "eventName"
+                    : "eventTypeName"
+                }`]: text?.name,
             });
           }}
         >
           <span>{text?.name}</span>
         </div>
       ),
-      key: `${
-        selectedMarket?.isCompitition
+      key: `${selectedMarket?.isCompitition
           ? "competition"
           : "eventType"
-      }`,
-      sort:true,
+        }`,
+      sort: true,
       style: { width: "80%" },
     },
   ];
   const columnsB = [
-   {
+    {
       title: "Date",
       dataIndex: `event`,
       render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
@@ -202,12 +196,14 @@ const Index = () => {
       render: (text, record) => (
         <div
           onClick={() => {
-            let currentRecord = [{ label: text?.name, value: {
-              refID: text?.id,
-              isAustralian: false,
-              isEvent: Boolean(selectedMarket?.isCompitition),
-              isCompitition: Boolean(!selectedMarket?.isCompitition),
-            } }];
+            let currentRecord = [{
+              label: text?.name, value: {
+                refID: text?.id,
+                isAustralian: false,
+                isEvent: Boolean(selectedMarket?.isCompitition),
+                isCompitition: Boolean(!selectedMarket?.isCompitition),
+              }
+            }];
             let historyList = selectedMarketHistory
               ? [].concat(selectedMarketHistory, currentRecord)
               : currentRecord;
@@ -222,20 +218,18 @@ const Index = () => {
             );
             setDataToDB({
               ...dataToDB,
-              [`${
-                selectedMarket?.isCompitition
+              [`${selectedMarket?.isCompitition
                   ? "competitionId"
                   : selectedMarket?.isEvent
-                  ? "eventId"
-                  : "eventTypeId"
-              }`]: text?.id,
-              [`${
-                selectedMarket?.isCompitition
+                    ? "eventId"
+                    : "eventTypeId"
+                }`]: text?.id,
+              [`${selectedMarket?.isCompitition
                   ? "competitionName"
                   : selectedMarket?.isEvent
-                  ? "eventName"
-                  : "eventTypeName"
-              }`]: text?.name,
+                    ? "eventName"
+                    : "eventTypeName"
+                }`]: text?.name,
             });
           }}
         >
@@ -248,13 +242,12 @@ const Index = () => {
     },
     selectedMarket?.isEvent && {
       title: "Import",
-      dataIndex: `${
-        selectedMarket?.isCompitition
+      dataIndex: `${selectedMarket?.isCompitition
           ? "competition"
           : selectedMarket?.isEvent
-          ? "event"
-          : "eventType"
-      }`,
+            ? "event"
+            : "eventType"
+        }`,
       render: (text, record) => (
         <button
           color={"primary"}
@@ -349,7 +342,7 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={selectedMarket?.isEvent?columnsB : columnsA}
+            columns={selectedMarket?.isEvent ? columnsB : columnsA}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
