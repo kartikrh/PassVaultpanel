@@ -42,7 +42,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate } = useSelector(state => state.tabsData.commentary);
 
     useEffect(() => {
-        console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
+        // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         // console.log(matchTypeDetails)
     })
     const checkForOverSwitch = (currentOver) => {
@@ -56,13 +56,9 @@ const Commentary = (props) => {
         if (matchTypeDetails.isLimitedOvers) {
             if (Math.ceil(+currentOver.over || 0) >= matchTypeDetails.oversPerInings) {
                 setShowInningsChangePopup(true)
-                console.log("Yes change the over")
             }
         } else if (teams[BATTING_TEAM]?.teamWicket >= maxNoOfWicket) {
-            console.log("Yes change the over")
             setShowInningsChangePopup(true)
-        } else {
-            console.log("No Innings Change")
         }
     }
     useEffect(() => {

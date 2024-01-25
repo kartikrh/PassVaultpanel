@@ -297,7 +297,6 @@ const Index = forwardRef(
     };
     
     const sortByPropertyB = (order, propName) => {
-      console.log(propName)
       if (order !== "ascending" && order !== "descending") {
         throw new Error(
           "Invalid sorting order. Use 'ascending' or 'descending'."
