@@ -129,10 +129,13 @@ function AddTeams() {
   };
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
+
     if (dataToSave) {
       const extraData = {
         teamId
       }
+      console.log("data to save :::: ", dataToSave)
+      const test = convertObjtoFormData({ ...dataToSave, ...extraData });
       setCurrentSaveAction(saveAction);
       dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
