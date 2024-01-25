@@ -427,95 +427,54 @@ const FormBuilder = forwardRef(
                       required={field.isRequired}
                       isMulti={field.isMulti}
                     />
-                  )}
-                  {field.type === RADIO_BUTTON && (
-                    <div className="radio-button-styling radio_options_list">
-                      {[]
-                        .concat(field.options, masterData?.[field.name] || [])
-                        .map((option) => (
-                          <label
-                            key={option.value}
-                            className="radio_option_label"
-                          >
-                            <input
-                              className="inputtag normal_input"
-                              style={field?.customStyle}
-                              type="radio"
-                              name={field.name}
-                              value={[]
-                                .concat(
-                                  field.options,
-                                  masterData?.[field.name] || []
-                                )
-                                .filter((e) => {
-                                  if (formData[field.name])
-                                    return compareNumStringValues(
-                                      e?.value,
-                                      formData[field.name]
-                                    );
-                                  else
-                                    return compareNumStringValues(
-                                      e?.value,
-                                      formData[field.name]
-                                    );
-                                })}
-                              onChange={() => handleChange(field, option.value)}
-                              required={field.isRequired}
-                            />
-                            {option.label}
-                          </label>
-                        ))}
-                    </div>
-                  )}
-                  {field.type === FILE_TYPE && (
-                    <input
-                      className="file_input"
-                      style={field?.customStyle}
-                      type="file"
-                      name={field.name}
-                      multiple={field.isMulti}
-                      onChange={(e) => handleChange(field, e.target.files)}
-                      accept={field?.acceptedFileTypes}
-                    />
-                  )}
-                  {field.type === SWITCH && (
-                    <div className="form-check form-switch form-switch-lg mb-3">
-                      <input
-                        className="form-check-input"
-                        style={field?.customStyle}
-                        type="checkbox"
-                        id="customSwitchsizelg"
-                        // defaultChecked
-                        checked={formData[field.name]}
-                        onChange={(e) => {
-                          handleChange(field, !formData[field.name]);
-                        }}
-                        value={formData[field.name]}
-                      />
-                    </div>
-                  )}
+                  </div>
+                )}
 
-                  {field.type === TEXT_EDITOR && (
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data="<p>Hello from CKEditor&nbsp;5!</p>"
-                      // style={{height:"300px"}}
-                      onChange={(event, editor) =>
-                        handleChange(field, editor.getData())
-                      }
-                    />
-                  )}
+                {field.type === TEXT_EDITOR && (
+                  <CKEditor
+                    editor={ClassicEditor}
+                    data={formData?.[field.name]}
+                    onChange={(event, editor) => handleChange(field, editor.getData())}
+                  />
+                )}
 
-                  {field.type === TEXT_EDITOR_IMG && (
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data="<p>Hello from CKEditor&nbsp;5!</p>"
-                      // style={{height:"300px"}}
-                      onChange={(event, editor) =>
-                        handleChange(field, editor.getData())
-                      }
-                    />
-                  )}
+                {field.type === DATE_TIME_PICKER && (
+                  <input
+                    className="form-control"
+                    style={field?.customStyle}
+                    type="datetime-local"
+                    disabled={disabledFields?.[field.name]}
+                    value={convertDateUTCToLocal(formData[field.name]) || ""}
+                    id={field.name}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                )}
+                {field.type === COUNTER && (
+                  <input
+                    className="form-control"
+                    style={field?.customStyle}
+                    type="number"
+                    disabled={disabledFields?.[field.name]}
+                    value={formData[field.name] || field.defaultValue || ""}
+                    id={field.name}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                  />
+                )}
+                {field.type === IMAGE && (
+                  <ImageField field={field} handleImageChange={handleImageChange} src={viewImage?.[field.name]} />
+                )}
+              </div>
+              <span className="text-danger">
+                {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
+              </span>
+            </Col>
+          </React.Fragment>
+        ))}
+      </Row>
+    </Form >
 
                   {field.type === DATE_TIME_PICKER && (
                     <input

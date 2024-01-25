@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { BlockFields } from "../../constants/FieldConst/BlockConst";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PANELTY_RUNS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_BLOCKS } from '../../components/Common/Const';
 import { addBlockToDB, updateSavedState } from "../../Features/Tabs/BlockSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -30,7 +30,7 @@ const AddBlock = () => {
     navigate("/blocks");
   };
 
-  const pageName = TAB_PANELTY_RUNS
+  const pageName = TAB_BLOCKS
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
