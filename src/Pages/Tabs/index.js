@@ -206,6 +206,7 @@ const Index = () => {
     {
       title: "WebPage Route",
       dataIndex: "webPage",
+      render: (text, record) => text !== null ? text : "N/A",
       key: "webPage",
       style: { width: "10%" },
     },
@@ -214,6 +215,7 @@ const Index = () => {
       dataIndex: "childrenCount",
       key: "childrenCount",
       style: { width: "10%" },
+      render: (text, record) => text !== null ? text : "N/A",
       sort: true,
     },
     {
