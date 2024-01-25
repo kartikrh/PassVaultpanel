@@ -34,16 +34,16 @@ export const BlockFields=[
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 10 }
     },
-    {
-        name: "content",
-        label: "Content_Test",
-        parentclassName: "",
-        type: TEXT_EDITOR_IMG,
-        isRequired: true,
-        requiredErrorMessage: "Please enter Content.",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 10 }
-    },
+    // {
+    //     name: "content",
+    //     label: "Content_Test",
+    //     parentclassName: "",
+    //     type: TEXT_EDITOR_IMG,
+    //     isRequired: true,
+    //     requiredErrorMessage: "Please enter Content.",
+    //     labelColspan: { xs: 12, md: 2, lg: 2 },
+    //     fieldColspan: { xs: 12, md: 4, lg: 10 }
+    // },
     {
         name: "isShowContent",
         label: "Is Show Contain",
