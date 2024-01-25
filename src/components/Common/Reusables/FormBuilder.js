@@ -15,6 +15,17 @@ import {
   Form,
 } from "reactstrap";
 import ImageField from "./ImageField.jsx";
+import { SimpleUploadAdapter } from "@ckeditor/ckeditor5-upload";
+
+ClassicEditor
+  .create(document.querySelector('#editor'), {
+    plugins: [SimpleUploadAdapter],
+    // toolbar: [ /* ... */ ],
+    simpleUpload: {
+      uploadUrl: 'https://contentscore.cloudd.live/save',
+
+    }
+  })
 
 const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFields, onFormDataChange }, ref) => {
   const [formData, setFormData] = useState({});
@@ -406,16 +417,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                   </div>
                 )}
 
-
                 {field.type === TEXT_EDITOR && (
                   <CKEditor
                     editor={ClassicEditor}
-                    data="<p>Hello from CKEditor&nbsp;5!</p>"
-                    // style={{height:"300px"}}
+                    data={formData?.[field.name]}
                     onChange={(event, editor) => handleChange(field, editor.getData())}
                   />
                 )}
-
 
                 {field.type === DATE_TIME_PICKER && (
                   <input
