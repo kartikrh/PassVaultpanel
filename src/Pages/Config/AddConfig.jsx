@@ -39,19 +39,19 @@ const AddConfig = () => {
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   const location = useLocation();
-  const [id, setid] = useState(location.state?.id || "0");
+  const [configId, setconfigId] = useState(location.state?.configId || "0");
 
   useEffect(() => {
     // if (id !== "0") {
     //   fetchData(id);
     // }
-    if (id !== "0") {
-        fetchData(id);
+    if (configId !== "0") {
+        fetchData(configId);
         setDisabledFields({
             key: true,
         });
       }
-  }, [id]);
+  }, [configId]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -68,15 +68,15 @@ const AddConfig = () => {
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
         setDisabledFields({})
-        setid("0")
+        setconfigId("0")
         finalizeRef.current.resetForm()
       }
       setCurrentSaveAction(undefined)
     }
   }, [isSaved]);
 
-  const fetchData = async (id) => {
-    await axiosInstance.post('/admin/config/byId', { id })
+  const fetchData = async (configId) => {
+    await axiosInstance.post('/admin/config/byId', { configId })
       .then((response) => {
         setInitialEditData(response?.result);
       }).catch((error) => {
@@ -88,7 +88,7 @@ const AddConfig = () => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        id: id
+        configId: configId
       }
       dispatch(addConfigToDB({ ...dataToSave, ...extraData }))
       setCurrentSaveAction(saveAction);
