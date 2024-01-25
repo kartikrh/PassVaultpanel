@@ -1,4 +1,4 @@
-import { BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
+import { BALL_TYPE_OVER_COMPLETE, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -33,30 +33,30 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
   return {
     "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
     "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BATTING_TEAM].teamId,
+    "teamId": teams?.[BATTING_TEAM].teamId,
     "overId": currentOver.overId,
-    "overCount": currentOver.over,
-    "currentOverBalls": currentOver.ballCount,
-    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
-    "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId,
-    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId,
-    "ballIsCount": currentBall.ballIsCount,
-    "ballType": currentBall.ballType,
+    "overCount": teams[BATTING_TEAM].teamOver || "0",
+    "currentOverBalls": currentOver.ballCount || 0,
+    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || "0",
+    "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || "0",
+    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId || "0",
+    "ballIsCount": currentBall.ballIsCount || false,
+    "ballType": currentBall.ballType || BALL_TYPE_OVER_COMPLETE,
     "ballIsDot": currentBall.ballIsDot || false,
-    "ballRun": currentBall.ballRun,
-    "ballExtraRun": currentBall.ballExtraRun,
-    "ballIsBoundry": currentBall.ballIsBoundry,
+    "ballRun": currentBall.ballRun || 0,
+    "ballExtraRun": currentBall.ballExtraRun || 0,
+    "ballIsBoundry": currentBall.ballIsBoundry || false,
     "ballFour": currentBall.ballFour || 0,
     "ballSix": currentBall.ballSix || 0,
-    "ballIsWicket": currentBall.ballIsWicket,
-    "ballWicketType": currentBall.ballWicketType,
-    "ballPlayerId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId,
-    "ballBowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
-    "ballFielderId1": currentBall.ballFielderId1,
-    "ballFielderId2": currentBall.ballFielderId2,
-    "overIsMaiden": currentBall.overIsMaiden,
-    "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
-    "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
+    "ballIsWicket": currentBall.ballIsWicket || false,
+    "ballWicketType": currentBall.ballWicketType || "0",
+    "ballPlayerId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || "0",
+    "ballBowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || "0",
+    "ballFielderId1": currentBall.ballFielderId1 || "0",
+    "ballFielderId2": currentBall.ballFielderId2 || "0",
+    "overIsMaiden": currentBall.overIsMaiden || false,
+    "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId || "0",
+    "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || "0",
     "currentInnings": commentaryDetails.currentInnings
   }
 }
@@ -80,7 +80,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
     "playerRun": currentWicket.batterRuns || 0,
     "playerBalls": currentWicket.batterBalls || 0,
     "wicketCount": (+teams[BATTING_TEAM] || 0) + 1,
-    "ballCount": "",
+    "ballCount": 0, //Change in future
     "currentInnings": commentaryDetails.currentInnings,
   }
 }

@@ -20,7 +20,7 @@ import {
   TAB_IMPORT_MARKET,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {
   resetTabSliceData,
@@ -55,7 +55,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/marketList`, { ...selectedMarket })
       .then((response) => {
-        const apiData = response?.responseData?.appdata;
+        const apiData = response?.result?.appdata;
         setData(apiData);
         setIsLoading(false);
       })
@@ -70,8 +70,6 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
       .then((response) => {
-        const apiData = response;
-        console.log("this is add response +++ ", apiData);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -96,38 +94,40 @@ const Index = () => {
   //table columns
   const columnsA = [
     {
-      title: `Id`,
-      dataIndex: `${
-        selectedMarket?.isCompitition
+      title: `Ref Id`,
+      dataIndex: `${selectedMarket?.isCompitition
           ? "competition"
           : "eventType"
-      }`,
+        }`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId1",
+      key: `${selectedMarket?.isCompitition
+          ? "competitionId"
+          : "eventTypeId"
+        }`,
       sort: true,
       style: { width: "20%" },
     },
     {
-      title: `${
-        selectedMarket?.isCompitition
+      title: `${selectedMarket?.isCompitition
           ? "Competition"
           : "Event Type"
-      }`,
-      dataIndex: `${
-        selectedMarket?.isCompitition
+        }`,
+      dataIndex: `${selectedMarket?.isCompitition
           ? "competition"
           : "eventType"
-      }`,
+        }`,
       render: (text, record) => (
         <div
           onClick={() => {
             setData([])
-            let currentRecord = [{ label: text?.name, value: {
-              refID: text?.id,
-              isAustralian: false,
-              isEvent: Boolean(selectedMarket?.isCompitition),
-              isCompitition: Boolean(!selectedMarket?.isCompitition),
-            } }];
+            let currentRecord = [{
+              label: text?.name, value: {
+                refID: text?.id,
+                isAustralian: false,
+                isEvent: Boolean(selectedMarket?.isCompitition),
+                isCompitition: Boolean(!selectedMarket?.isCompitition),
+              }
+            }];
             let historyList = selectedMarketHistory
               ? [].concat(selectedMarketHistory, currentRecord)
               : currentRecord;
@@ -142,50 +142,51 @@ const Index = () => {
             );
             setStatus(
               selectedMarket?.isCompitition
-              ? 2
-              : 1
+                ? 2
+                : 1
             )
             setDataToDB({
               ...dataToDB,
-              [`${
-                selectedMarket?.isCompitition
+              [`${selectedMarket?.isCompitition
                   ? "competitionId"
                   : selectedMarket?.isEvent
-                  ? "eventId"
-                  : "eventTypeId"
-              }`]: text?.id,
-              [`${
-                selectedMarket?.isCompitition
+                    ? "eventId"
+                    : "eventTypeId"
+                }`]: text?.id,
+              [`${selectedMarket?.isCompitition
                   ? "competitionName"
                   : selectedMarket?.isEvent
-                  ? "eventName"
-                  : "eventTypeName"
-              }`]: text?.name,
+                    ? "eventName"
+                    : "eventTypeName"
+                }`]: text?.name,
             });
           }}
         >
           <span>{text?.name}</span>
         </div>
       ),
-      key: "eventTypeName",
+      key: `${selectedMarket?.isCompitition
+          ? "competition"
+          : "eventType"
+        }`,
       sort: true,
       style: { width: "80%" },
     },
   ];
   const columnsB = [
-   {
+    {
       title: "Date",
       dataIndex: `event`,
-      render: (text, record) => <span>{text?.openDate}</span>,
+      render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
       sort: true,
       key: "date",
       style: { width: "30%" },
     },
     {
-      title: `Id`,
+      title: `Ref Id`,
       dataIndex: `event`,
       render: (text, record) => <span>{text?.id}</span>,
-      key: "eventTypeId2",
+      key: 'eventId',
       sort: true,
       style: { width: "20%" },
     },
@@ -195,12 +196,14 @@ const Index = () => {
       render: (text, record) => (
         <div
           onClick={() => {
-            let currentRecord = [{ label: text?.name, value: {
-              refID: text?.id,
-              isAustralian: false,
-              isEvent: Boolean(selectedMarket?.isCompitition),
-              isCompitition: Boolean(!selectedMarket?.isCompitition),
-            } }];
+            let currentRecord = [{
+              label: text?.name, value: {
+                refID: text?.id,
+                isAustralian: false,
+                isEvent: Boolean(selectedMarket?.isCompitition),
+                isCompitition: Boolean(!selectedMarket?.isCompitition),
+              }
+            }];
             let historyList = selectedMarketHistory
               ? [].concat(selectedMarketHistory, currentRecord)
               : currentRecord;
@@ -215,39 +218,36 @@ const Index = () => {
             );
             setDataToDB({
               ...dataToDB,
-              [`${
-                selectedMarket?.isCompitition
+              [`${selectedMarket?.isCompitition
                   ? "competitionId"
                   : selectedMarket?.isEvent
-                  ? "eventId"
-                  : "eventTypeId"
-              }`]: text?.id,
-              [`${
-                selectedMarket?.isCompitition
+                    ? "eventId"
+                    : "eventTypeId"
+                }`]: text?.id,
+              [`${selectedMarket?.isCompitition
                   ? "competitionName"
                   : selectedMarket?.isEvent
-                  ? "eventName"
-                  : "eventTypeName"
-              }`]: text?.name,
+                    ? "eventName"
+                    : "eventTypeName"
+                }`]: text?.name,
             });
           }}
         >
           <span>{text?.name}</span>
         </div>
       ),
-      key: "eventTypeName",
+      key: "event",
       sort: true,
       style: { width: "30%" },
     },
     selectedMarket?.isEvent && {
       title: "Import",
-      dataIndex: `${
-        selectedMarket?.isCompitition
+      dataIndex: `${selectedMarket?.isCompitition
           ? "competition"
           : selectedMarket?.isEvent
-          ? "event"
-          : "eventType"
-      }`,
+            ? "event"
+            : "eventType"
+        }`,
       render: (text, record) => (
         <button
           color={"primary"}
@@ -315,7 +315,7 @@ const Index = () => {
     dispatch(
       setSelectedMarketHistory([
         {
-          label: "Import market",
+          label: "Home",
           value: {
             refID: 0,
             isAustralian: false,
@@ -342,7 +342,7 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={selectedMarket?.isEvent?columnsB : columnsA}
+            columns={selectedMarket?.isEvent ? columnsB : columnsA}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}

@@ -33,9 +33,7 @@ const Sidebar = (props) => {
         // }
         // if (window.screen.width <= 998) {
         //     //body.classList.toggle("sidebar-enable");
-        //     console.log("sidebar-enable");
         //   } else {
-        //     console.log("vertical-collpsed");
         //    // setShowAllOptions(true);
         //     //body.classList.toggle("vertical-collpsed");
         //    // body.classList.toggle("sidebar-enable");
@@ -46,9 +44,7 @@ const Sidebar = (props) => {
         setShowAllOptions(false);
         // if (window.screen.width <= 998) {
         //     //body.classList.toggle("sidebar-enable");
-        //     console.log("sidebar-enable1");
         //   } else {
-        //     console.log("vertical-collpsed1");
         //    // setShowAllOptions(false);
         //     //body.classList.toggle("vertical-collpsed");
         //    // body.classList.toggle("sidebar-enable");
@@ -56,12 +52,9 @@ const Sidebar = (props) => {
     };
 
     const activateParentDropdown = useCallback((item) => {
-        //console.log(item,"actitem");
         item.classList.add("active");
         const parent = item.parentElement;
-        //console.log(parent,"actparent");
         const parent2El = parent.childNodes[1];
-        //console.log(parent2El,"actp2e1");
         if (parent2El && parent2El.id !== "side-menu") {
             parent2El.classList.add("mm-show");
         }
@@ -93,11 +86,9 @@ const Sidebar = (props) => {
     }, []);
 
     const removeActivation = (items) => {
-        //console.log(items,"itemsitems");
         for (var i = 0; i < items.length; ++i) {
             var item = items[i];
             const parent = items[i].parentElement;
-            //console.log(parent,"parent");
             if (item && item.classList.contains("active")) {
                 item.classList.remove("active");
             }
@@ -134,16 +125,11 @@ const Sidebar = (props) => {
 
     const activeMenu = useCallback(() => {
         const pathName = props.router.location.pathname;
-        //console.log(pathName,"pathname");
         const fullPath = pathName;
-        //console.log(fullPath,"fullPath");
         let matchingMenuItem = null;
         const ul = document.getElementById("side-menu-item");
-        //console.log(ul,"ul");
         const items = ul.getElementsByTagName("a");
-        //console.log(items,"itemsctmenu");
         removeActivation(items);
-        //console.log(items,"items");
         for (let i = 0; i < items.length; ++i) {
             if (fullPath === items[i].pathname) {
                 matchingMenuItem = items[i];
@@ -157,7 +143,7 @@ const Sidebar = (props) => {
 
     function tToggle() {
         var body = document.body;
-       // alert("alert")
+        // alert("alert")
         if (window.screen.width <= 998) {
             body.classList.toggle("sidebar-enable");
         }
@@ -167,10 +153,8 @@ const Sidebar = (props) => {
         activeMenu();
     }, [activeMenu]);
     function scrollElement(item) {
-        //console.log(item,"item");
         if (item) {
             const currentPosition = item.offsetTop;
-           // console.log(currentPosition,"curr");
             if (currentPosition > window.innerHeight) {
                 ref.current.getScrollElement().scrollTop = currentPosition - 300;
             }
@@ -180,10 +164,10 @@ const Sidebar = (props) => {
     useEffect(() => {
         ref.current.recalculate();
         new MetisMenu("#side-menu-item");
-    //    handleIconHover()
-    //     handleIconLeave()
+        //    handleIconHover()
+        //     handleIconLeave()
         activeMenu();
-    }, [newTabList,sidebarData]);
+    }, [newTabList, sidebarData]);
 
     return (
         <React.Fragment>
@@ -199,9 +183,9 @@ const Sidebar = (props) => {
                                         {item.isMainMenu ? (
                                             <li className="menu-title">{props.t(item.label)}</li>
                                         ) : (
-                                            <li key={key} 
-                                           
-                                            onClick={() => toggleDropdown(key)}>
+                                            <li key={key}
+
+                                                onClick={() => toggleDropdown(key)}>
                                                 <Link
                                                     to={item.url ? item.url : "/#"}
                                                     //    onClick={() => toggleDropdown(item.id)}
@@ -212,9 +196,9 @@ const Sidebar = (props) => {
                                                     }
                                                 >
                                                     <i
-                                                     onMouseEnter={handleIconHover}
-                                                     onMouseLeave={handleIconLeave}
-                                                         className={item.icon}
+                                                        onMouseEnter={handleIconHover}
+                                                        onMouseLeave={handleIconLeave}
+                                                        className={item.icon}
                                                         style={{ marginRight: "5px" }}
                                                     ></i>
                                                     {item.issubMenubadge && (
@@ -230,7 +214,7 @@ const Sidebar = (props) => {
                                                     <span>{props.t(item.label)}</span>
                                                 </Link>
                                                 {
-                                                    item.subItem &&(showAllOptions || openDropdownId === key )&& (
+                                                    item.subItem && (showAllOptions || openDropdownId === key) && (
                                                         <ul
                                                         >
                                                             {item.subItem

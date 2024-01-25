@@ -97,7 +97,7 @@ function AddCommentary() {
                 "competitionId": [],
             }));
             if (newFormData["eventTypeId"] !== "0") {
-                axiosInstance.post('/admin/competition/byeventTypeId', { eventTypeId: newFormData["eventTypeId"] })
+                axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId: newFormData["eventTypeId"] })
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
@@ -122,7 +122,7 @@ function AddCommentary() {
                 "eventId": [],
             }));
             if (newFormData["competitionId"] !== "0") {
-                axiosInstance.post('/admin/events/bycompetitionId', { competitionId: newFormData["competitionId"] })
+                axiosInstance.post('/admin/commentary/eventListByCompetitionId', { competitionId: newFormData["competitionId"] })
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
@@ -153,7 +153,7 @@ function AddCommentary() {
                 ...resetData
             }));
             if (newFormData["eventId"] !== "0") {
-                axiosInstance.post('/admin/events/byId', { eventId: newFormData["eventId"] })
+                axiosInstance.post('/admin/commentary/eventDataById', { eventId: newFormData["eventId"] })
                     .then((response) => {
                         const updatedData = {
                             "eventRefId": response?.result?.refId,
@@ -247,7 +247,7 @@ function AddCommentary() {
                     eventDate: convertDateLocalToUTC(response?.result?.eventDate)
                 }
                 // Fetch Competition Options based on EventTypeId
-                await axiosInstance.post('/admin/competition/byeventTypeId', { eventTypeId: updateScreenData["eventTypeId"] })
+                await axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId: updateScreenData["eventTypeId"] })
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
@@ -258,7 +258,7 @@ function AddCommentary() {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
                 // Fetch Events based on Competition
-                await axiosInstance.post('/admin/events/bycompetitionId', { competitionId: updateScreenData["competitionId"] })
+                await axiosInstance.post('/admin/commentary/eventListByCompetitionId', { competitionId: updateScreenData["competitionId"] })
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
@@ -268,7 +268,7 @@ function AddCommentary() {
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
-                await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team1Id"] })
+                await axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: updateScreenData["team1Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -282,7 +282,7 @@ function AddCommentary() {
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
-                await axiosInstance.post('/admin/player/byTeamId', { teamId: updateScreenData["team2Id"] })
+                await axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: updateScreenData["team2Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -311,7 +311,7 @@ function AddCommentary() {
     };
 
     const fetchMasterData = async () => {
-        axiosInstance.post('/admin/matchType/all')
+        axiosInstance.post('/admin/commentary/matchTypeList')
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
                     return { label: item?.matchType, value: item?.matchTypeId }
@@ -324,7 +324,7 @@ function AddCommentary() {
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
-        axiosInstance.post('/admin/team/all', {})
+        axiosInstance.post('/admin/commentary/teamList', {})
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
                     return { label: item?.teamName, value: item?.teamId }
@@ -338,7 +338,7 @@ function AddCommentary() {
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
-        axiosInstance.post('/admin/eventType/all', {})
+        axiosInstance.post('/admin/commentary/eventTypeList', {})
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
                     return { label: item?.eventType, value: item?.eventTypeId }
@@ -426,8 +426,7 @@ function AddCommentary() {
                                                 <i className="mdi mdi-chevron-down" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                                {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
-                                                    checkPermission(permissionObj, pageName, PERMISSION_EDIT))
+                                                {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
                                                     && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
                                                 }
                                                 {checkPermission(permissionObj, pageName, PERMISSION_ADD)

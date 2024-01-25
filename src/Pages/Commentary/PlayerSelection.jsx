@@ -184,7 +184,8 @@ const PlayerSelection = forwardRef((props, ref) => {
               commentaryPlayers: [
                 ...isPlayPlayers,
                 ...otherPlayers
-              ]
+              ],
+              commentaryOvers: [{ ...commentaryOvers, overId }]
             })
           }
         })
@@ -201,20 +202,20 @@ const PlayerSelection = forwardRef((props, ref) => {
     return team
   }
 
-  const selectPlayer = (playerId) => {
-    const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.playerId === playerId && i.currentInnings === currentInnings);
+  const selectPlayer = (commentaryPlayerId) => {
+    const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.commentaryPlayerId === commentaryPlayerId && i.currentInnings === currentInnings);
     const selectedPlayer = commentaryTeamsPlayersDetails[selectedPlayerIndex];
     let updatedData = {};
-    let oldPlayerId = "";
+    let oldCommentaryPlayerIds = [];
     const defaultValue = {
-      isPlay : null,
-      isBatterOut : null,
-      onStrike : null,
+      isPlay: null,
+      isBatterOut: null,
+      onStrike: null,
       bowlerOver: null,
       bowlerStatus: null,
     }
     if (teamListStatus === 1 && isSelectingStriker) {
-      if (selectedPlayer.playerId === selectedNonStriker?.playerId) {
+      if (selectedPlayer.commentaryPlayerId === selectedNonStriker?.commentaryPlayerId) {
         return dispatch(updateToastData({
           data: `${selectedPlayer.playerName} is already selected as Non-Striker`,
           title: "Player Selection",
@@ -228,13 +229,13 @@ const PlayerSelection = forwardRef((props, ref) => {
         onStrike: true,
       }
 
-      oldPlayerId = commentaryTeamsPlayersDetails.find(i => (i.isPlay === true &&
+      oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
         i.isBatterOut === false &&
         i.onStrike === true &&
-        i.currentInnings === currentInnings))?.playerId || "";
+        i.currentInnings === currentInnings)).map(i => i.commentaryPlayerId);
 
     } else if (teamListStatus === 1 && !isSelectingStriker) {
-      if (selectedPlayer.playerId === selectedStriker?.playerId) {
+      if (selectedPlayer.commentaryPlayerId === selectedStriker?.commentaryPlayerId) {
         return dispatch(updateToastData({
           data: `${selectedPlayer.playerName} is already selected as Striker`,
           title: "Player Selection",
@@ -248,33 +249,33 @@ const PlayerSelection = forwardRef((props, ref) => {
         onStrike: false,
       }
 
-      oldPlayerId = commentaryTeamsPlayersDetails.find(i => (i.isPlay === true &&
+      oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
         i.isBatterOut === false &&
         i.onStrike === false &&
-        i.currentInnings === currentInnings))?.playerId || "";
+        i.currentInnings === currentInnings)).map(i => i.commentaryPlayerId);
 
     } else if (teamListStatus === 2) {
-      setSelectedBowler(bowlingteamplayer.find(i => i.playerId === playerId))
+      setSelectedBowler(bowlingteamplayer.find(i => i.commentaryPlayerId === commentaryPlayerId))
       updatedData = {
         isPlay: true,
         bowlerOver: 0,
         bowlerStatus: 1,
       }
 
-      oldPlayerId = commentaryTeamsPlayersDetails.find(i => (i.isPlay === true &&
-        i.bowlerOver === 1 &&
+      oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
+        i.bowlerOver === 0 &&
         i.bowlerStatus === 1 &&
-        i.currentInnings === currentInnings))?.playerId || "";
+        i.currentInnings === currentInnings)).map(i => i.commentaryPlayerId);
     }
 
     const updatedStrikerPlayerDetails = commentaryTeamsPlayersDetails.map(
       (player) => {
-        if (player.playerId === selectedPlayer.playerId && player.currentInnings === currentInnings) {
+        if (player.commentaryPlayerId === selectedPlayer.commentaryPlayerId && player.currentInnings === currentInnings) {
           return {
             ...player,
             ...updatedData
           };
-        } else if (player.playerId === oldPlayerId) {
+        } else if (oldCommentaryPlayerIds.includes(player.commentaryPlayerId)) {
           return {
             ...player,
             ...defaultValue

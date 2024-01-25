@@ -83,7 +83,7 @@ function AddCompetitions() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all", {})
+      .post("/admin/competition/eventTypeList", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -154,8 +154,7 @@ function AddCompetitions() {
                         <i className="mdi mdi-chevron-down" />
                       </DropdownToggle>
                       <DropdownMenu>
-                        {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
-                          checkPermission(permissionObj, pageName, PERMISSION_EDIT))
+                        {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
                           && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
                         }
                         {checkPermission(permissionObj, pageName, PERMISSION_ADD)

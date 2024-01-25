@@ -102,7 +102,7 @@ function AddUsers() {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
     await axiosInstance
-      .post("/admin/roles/all")
+      .post("/admin/user/roleList")
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -175,8 +175,7 @@ function AddUsers() {
                         <i className="mdi mdi-chevron-down" />
                       </DropdownToggle>
                       <DropdownMenu>
-                        {(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
-                          checkPermission(permissionObj, pageName, PERMISSION_EDIT))
+                        {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
                           && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
                         }
                         {checkPermission(permissionObj, pageName, PERMISSION_ADD)

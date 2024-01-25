@@ -15,7 +15,7 @@ const initialSliceState = {
         isCompitition: false,
      },
     selectedMarketHistory: [{
-        label: "Import market", 
+        label: "Home", 
         value:{ 
             refID: 0,
             isAustralian: false,
