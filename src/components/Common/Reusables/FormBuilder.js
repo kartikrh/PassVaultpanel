@@ -406,16 +406,13 @@ const FormBuilder = forwardRef(({ fields, editFormData, masterData, disabledFiel
                   </div>
                 )}
 
-
                 {field.type === TEXT_EDITOR && (
                   <CKEditor
                     editor={ClassicEditor}
-                    data="<p>Hello from CKEditor&nbsp;5!</p>"
-                    // style={{height:"300px"}}
+                    data={formData?.[field.name]}
                     onChange={(event, editor) => handleChange(field, editor.getData())}
                   />
                 )}
-
 
                 {field.type === DATE_TIME_PICKER && (
                   <input
