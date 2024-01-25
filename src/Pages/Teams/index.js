@@ -210,6 +210,7 @@ const Index = () => {
     {
       title: "Country",
       dataIndex: "country",
+      render: (text, record) => text !== null?text : "N/A",
       key: "country",
       style: { width: "20%" },
     },

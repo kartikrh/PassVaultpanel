@@ -18,6 +18,7 @@ const formatMultiSelectDataTeams = (inputList) => {
     inputList.forEach((item) =>
         outputList.push(item.teamId)
     );
+    console.log(outputList.filter(element => element))
     return outputList.filter(element => element);
 };
 function AddPlayer() {
