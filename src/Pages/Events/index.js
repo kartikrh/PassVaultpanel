@@ -214,6 +214,7 @@ const Index = () => {
       title: "Venue",
       dataIndex: "venue",
       key: "venue",
+      render: (text, record) => text?text:"N/A",
       style: { width: "10%" },
     },
     {

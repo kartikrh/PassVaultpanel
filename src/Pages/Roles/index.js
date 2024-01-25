@@ -152,6 +152,7 @@ const Index = () => {
       dataIndex: "description",
       key: "description",
       sort: true,
+      render:(text,render)=>text?text:"N/A",
       style: { width: "90%" },
     },
 
