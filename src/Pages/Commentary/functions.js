@@ -1,4 +1,4 @@
-import { BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
+import { BALL_TYPE_OVER_COMPLETE, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -33,15 +33,15 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
   return {
     "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
     "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BATTING_TEAM].teamId,
+    "teamId": teams?.[BATTING_TEAM].teamId,
     "overId": currentOver.overId,
     "overCount": teams[BATTING_TEAM].teamOver || "0",
     "currentOverBalls": currentOver.ballCount || 0,
     "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || "0",
     "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || "0",
     "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId || "0",
-    "ballIsCount": currentBall.ballIsCount,
-    "ballType": currentBall.ballType,
+    "ballIsCount": currentBall.ballIsCount || false,
+    "ballType": currentBall.ballType || BALL_TYPE_OVER_COMPLETE,
     "ballIsDot": currentBall.ballIsDot || false,
     "ballRun": currentBall.ballRun || 0,
     "ballExtraRun": currentBall.ballExtraRun || 0,

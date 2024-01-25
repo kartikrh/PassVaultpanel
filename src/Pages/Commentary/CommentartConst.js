@@ -63,6 +63,7 @@ export const BALL_LEG_BYE = "BALL_LEG_BYE"
 
 export const EXTRAS_LIST = {
     [BALL_WIDE]: [
+        { label: "No Run", value: 0 },
         { label: "1 Run", value: 1 },
         { label: "2 Runs", value: 2 },
         { label: "3 Runs", value: 3 },
@@ -74,6 +75,7 @@ export const EXTRAS_LIST = {
         { label: "9 Runs", value: 9 },
     ],
     [NO_BALL]: [
+        { label: "No Run", value: 0 },
         { label: "1 Run", value: 1 },
         { label: "2 Runs", value: 2 },
         { label: "3 Runs", value: 3 },
@@ -85,6 +87,7 @@ export const EXTRAS_LIST = {
         { label: "9 Runs", value: 9 },
     ],
     [BALL_BYE]: [
+        { label: "No Run", value: 0 },
         { label: "1 Run", value: 1 },
         { label: "2 Runs", value: 2 },
         { label: "3 Runs", value: 3 },
@@ -96,6 +99,7 @@ export const EXTRAS_LIST = {
         { label: "9 Runs", value: 9 },
     ],
     [BALL_LEG_BYE]: [
+        { label: "No Run", value: 0 },
         { label: "1 Run", value: 1 },
         { label: "2 Runs", value: 2 },
         { label: "3 Runs", value: 3 },
