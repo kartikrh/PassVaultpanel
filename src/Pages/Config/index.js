@@ -39,7 +39,7 @@ const Index = () => {
         const apiData = response?.result
         let apiDataIdList = [];
         apiData.forEach(ele => {
-          apiDataIdList.push(ele?.id)
+          apiDataIdList.push(ele?.configId)
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
@@ -53,10 +53,10 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
-    if (checekedList.includes(e.id)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.id);
+    if (checekedList.includes(e.configId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.configId);
     } else {
-      updateSingleCheck = [...checekedList, e.id];
+      updateSingleCheck = [...checekedList, e.configId];
     }
     setCheckedList(updateSingleCheck)
   };
@@ -83,7 +83,7 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/config/delete`, {
-        id: checekedList,
+        configId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -110,9 +110,9 @@ const Index = () => {
       });
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = (configId) => {
    // navigate("/addblocks", { state: { userId: blockId } });
-    navigate("/addConfig", { state: { id } });
+    navigate("/addConfig", { state: { configId } });
   };
 
   //table columns
@@ -140,7 +140,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.id)}
+            checked={checekedList.includes(record.configId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -158,7 +158,7 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.id);
+            handleEdit(record.configId);
           }}
         ></i>
       ),

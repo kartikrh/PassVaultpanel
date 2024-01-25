@@ -184,7 +184,8 @@ const PlayerSelection = forwardRef((props, ref) => {
               commentaryPlayers: [
                 ...isPlayPlayers,
                 ...otherPlayers
-              ]
+              ],
+              commentaryOvers: [{ ...commentaryOvers, overId }]
             })
           }
         })
