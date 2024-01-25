@@ -18,6 +18,7 @@ export const validateTabResponse = (tabs, parentId = "0") => {
       IsMenu: tab.isMenu,
       IconName: tab.iconName,
       DisplayOrder: tab.displayOrder,
+      childCount: tab.childCount
     };
     result.push(tabData);
   }
