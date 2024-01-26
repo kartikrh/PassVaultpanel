@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { ConfigFields } from "../../constants/FieldConst/ConfigConst";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PANELTY_RUNS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_CONFIG } from '../../components/Common/Const';
 import { addConfigToDB, updateSavedState } from "../../Features/Tabs/ConfigSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -30,7 +30,7 @@ const AddConfig = () => {
     navigate("/config");
   };
 
-  const pageName = TAB_PANELTY_RUNS
+  const pageName = TAB_CONFIG
   const [drp_up, setDrp_up] = useState(false);
   const [disabledFields, setDisabledFields] = useState({});
   const [initialEditData, setInitialEditData] = useState(undefined);
