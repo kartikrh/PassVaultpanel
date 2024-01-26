@@ -10,11 +10,11 @@ export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleC
     <div className="tablelist-form">
         <ModalBody>
             {singleCheck.length===1?<div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-center text-lg">Cloning the Selected Match Type</h4>
-                <h6 className='text-center mt-4'>Please Enter the Clone Name</h6>
+                <h4 className="form-label text-left text-lg">Clone New Match Type as Title</h4>
+                <h6 className='text-left mt-4'>Match Type Name</h6>
                 <input type="text" onChange={(e)=>{setCloneName(e.target.value)}} className="form-control text-center" required />
             </div>:singleCheck.length>1?<h4 className="text-danger text-center p-4">Select Only One Match Type</h4>:<h4 className="text-danger text-center p-4">Select One MatchTyp To Clone</h4>}
-            <div className="hstack gap-2 justify-content-center">
+            <div className="hstack gap-2 justify-content-end">
                 <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
                 {singleCheck.length===1?
                 <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Clone Match Type</button>
@@ -40,13 +40,13 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
     <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-center text-lg">Cloning the Selected Match Type</h4>
-                <h6 className='text-center mt-4'>Enter The Event Name</h6>
+                <h4 className="form-label text-left text-lg">Clone New Commentary as Title</h4>
+                <h6 className='text-left mt-4'>Event Name</h6>
                 <input type="text" onChange={handleCloneValues} name="eventName" className="form-control text-center" required />
-                <h6 className='text-center mt-4'>Enter The Event Ref Id</h6>
+                <h6 className='text-left mt-4'>Ref Id</h6>
                 <input type="text" onChange={handleCloneValues} name="eventRefId" className="form-control text-center" required />
             </div>
-            <div className="hstack gap-2 justify-content-center">
+            <div className="hstack gap-2 justify-content-end">
                 <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
                 {singleCheck.length===1?
                 <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Clone Commentary</button>
