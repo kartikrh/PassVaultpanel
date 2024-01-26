@@ -61,6 +61,11 @@ export const NO_BALL = "NO_BALL"
 export const BALL_BYE = "BALL_BYE"
 export const BALL_LEG_BYE = "BALL_LEG_BYE"
 
+export const OVER = "OVER"
+export const WICKET = "WICKET"
+export const RUN = "RUN"
+export const ALL = "ALL"
+
 export const EXTRAS_LIST = {
     [BALL_WIDE]: [
         { label: "No Run", value: 0 },
