@@ -212,9 +212,10 @@ const Index = () => {
     },
     {
       title: "No. of Child",
-      dataIndex: "childCount",
-      key: "childCount",
+      dataIndex: "childrenCount",
+      key: "childrenCount",
       style: { width: "10%" },
+      render: (text, record) => text !== null ? text : "N/A",
       sort: true,
     },
     {
