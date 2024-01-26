@@ -41,9 +41,9 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
                 <h4 className="form-label text-center text-lg">Cloning the Selected Match Type</h4>
-                <h6 className='text-center mt-4'>Please Enter the Event Name</h6>
+                <h6 className='text-center mt-4'>Enter The Event Name</h6>
                 <input type="text" onChange={handleCloneValues} name="eventName" className="form-control text-center" required />
-                <h6 className='text-center mt-4'>Please Enter the Ref Id</h6>
+                <h6 className='text-center mt-4'>Enter The Event Ref Id</h6>
                 <input type="text" onChange={handleCloneValues} name="eventRefId" className="form-control text-center" required />
             </div>
             <div className="hstack gap-2 justify-content-center">
