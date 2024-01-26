@@ -117,14 +117,15 @@ function CommentaryMaster() {
             setNextScreen(nextScreen)
         }
     };
-    const handleCommentaryDataSave = async (dataToSave, nextScreen, nextData) => {
-        if (dataToSave) {
-            dispatch(addCommentaryScreenData(dataToSave))
+    const handleInningsChange = () => {
+        if (commentaryId !== "0") {
+            fetchData(commentaryId);
         }
     };
     const handleBackClick = () => {
         navigate(navigateTo);
     };
+
     const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
     return (
         <React.Fragment>
@@ -159,7 +160,7 @@ function CommentaryMaster() {
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
                                             data={{ commentaryData, matchTypeData }}
-                                            save={handleCommentaryDataSave}
+                                            onInningsChange={handleInningsChange}
                                         />}
                                 </Row>
                             </CardBody>

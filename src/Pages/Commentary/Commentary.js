@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { generateBall, generateOver, generatePartnership, generateWicket } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, clearAddCommentaryScreenData } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 
 const Commentary = (props) => {
@@ -37,11 +37,13 @@ const Commentary = (props) => {
     const [isWicketChange, setIsWicketChange] = useState(undefined)
     const [playerUpdateList, setPlayerUpdateList] = useState(undefined)
     const [inningsChangePopup, setShowInningsChangePopup] = useState(undefined)
+    const [redirectOnScreenChange, setRedirectOnScreenChange] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
-    const { commentaryDataToUpdate } = useSelector(state => state.tabsData.commentary);
+    const { commentaryDataToUpdate, isCommentaryDataUpdated } = useSelector(state => state.tabsData.commentary);
 
     useEffect(() => {
+        console.log(props.data)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         // console.log(matchTypeDetails)
     })
@@ -49,20 +51,46 @@ const Commentary = (props) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
             setShowChangeOverModal(true)
         }
-
     }
     const checkInningsSwitch = () => {
         const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1)
         if (matchTypeDetails.isLimitedOvers) {
-            if (Math.ceil(+currentOver.over || 0) >= matchTypeDetails.oversPerInings) {
+            if ((Math.ceil(+currentOver.over || 0) + 1) >= matchTypeDetails.oversPerInings) {
                 setShowInningsChangePopup(true)
             }
         } else if (teams[BATTING_TEAM]?.teamWicket >= maxNoOfWicket) {
             setShowInningsChangePopup(true)
         }
     }
+    const onInningsChange = () => {
+        let objToSave = {
+            "commentaryDetails": {
+                ...commentaryDetails,
+                commentaryStatus: 2,
+                target: (teams[BATTING_TEAM]?.teamScore || 0) + 1,
+                displayStatus: "Innings Break"
+            },
+            "commentaryTeams": [
+                { ...teams[BATTING_TEAM], isBattingComplete: true, teamStatus: 2 },
+                { ...teams[BOWLING_TEAM], teamStatus: 1 }],
+            "commentaryPlayers": [
+                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
+                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
+            ],
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setRedirectOnScreenChange(true)
+        setShowInningsChangePopup(undefined)
+    }
+    useEffect(() => {
+        if (redirectOnScreenChange && isCommentaryDataUpdated) {
+            props.onInningsChange()
+        }
+    }, [redirectOnScreenChange, isCommentaryDataUpdated])
     useEffect(() => {
         if (changeOverOnPopupClick) {
+            checkInningsSwitch()
             changePlayer(CURRENT_BOWLER)
             changeOver()
             dispatch(addCommentaryScreenData({ "commentaryDetails": commentaryDetails, "commentaryOvers": { ...currentOver, "isComplete": true }, }))
@@ -178,6 +206,7 @@ const Commentary = (props) => {
                 // console.log(commentaryDataToUpdate.commentaryPartnershipDetails, currentPartnership)
                 setCurrentPartnership(commentaryDataToUpdate.commentaryPartnershipDetails)
             }
+            dispatch(clearAddCommentaryScreenData())
         }
     }, [commentaryDataToUpdate])
 
@@ -504,7 +533,6 @@ const Commentary = (props) => {
             toggle={() => { setShowChangeOverModal(undefined) }}
             onNoClick={() => { setShowChangeOverModal(undefined) }}
             onYesClick={() => {
-                checkInningsSwitch()
                 setShowChangeOverModal(undefined);
                 setChangeOverOnPopupClick(true)
             }} />
@@ -512,9 +540,7 @@ const Commentary = (props) => {
             isOpen={inningsChangePopup}
             toggle={() => { setShowInningsChangePopup(undefined) }}
             onNoClick={() => { setShowInningsChangePopup(undefined) }}
-            onYesClick={() => {
-                console.log("Navigate to Previous Screen")
-            }} />
+            onYesClick={onInningsChange} />
         {showWicketModal &&
             <WicketModal
                 isOpen={showWicketModal}
