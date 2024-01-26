@@ -10,7 +10,7 @@ export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleC
     <div className="tablelist-form">
         <ModalBody>
             {singleCheck.length===1?<div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg">Clone New Match Type as Title</h4>
+                <h4 className="form-label text-left text-lg">Clone New Match Type</h4>
                 <h6 className='text-left mt-4'>Match Type Name</h6>
                 <input type="text" onChange={(e)=>{setCloneName(e.target.value)}} className="form-control text-center" required />
             </div>:singleCheck.length>1?<h4 className="text-danger text-center p-4">Select Only One Match Type</h4>:<h4 className="text-danger text-center p-4">Select One MatchTyp To Clone</h4>}
@@ -40,7 +40,7 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
     <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg">Clone New Commentary as Title</h4>
+                <h4 className="form-label text-left text-lg">Clone New Commentary</h4>
                 <h6 className='text-left mt-4'>Event Name</h6>
                 <input type="text" onChange={handleCloneValues} name="eventName" className="form-control text-center" required />
                 <h6 className='text-left mt-4'>Ref Id</h6>
