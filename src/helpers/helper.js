@@ -32,7 +32,7 @@ export const apiGetTabCleaner = (apiGetTab) => {
       displayName: e?.displayName,
       displayType: e?.displayType,
       webPage: e?.webPage,
-      childCount: e?.childCount,
+      childrenCount: e?.childrenCount,
       IsAdd: e?.IsAdd,
       IsEdit: e?.IsEdit, //
       IsDelete: e?.IsDelete, //
