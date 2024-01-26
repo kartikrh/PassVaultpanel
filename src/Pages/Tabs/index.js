@@ -44,15 +44,11 @@ const Index = () => {
       })
       .then((response) => {
         const tabsDataDB = validateTabResponse(response?.result);
-        console.log("this is first time", response?.result)
         const first = apiGetTabCleaner(tabsDataDB);
-        console.log("this is tab data", tabsDataDB)
         const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
         const apiDataIdList = sorted.map(item => item?.tabId).filter(Boolean);
         setData(sorted);
         setDataIndexList(apiDataIdList);
-        console.log("this is apiDataIdList", apiDataIdList)
-        console.log("this is sorted data", sorted)
         // const displayType = [...new Set(response?.result?.map(item => item?.displayType))];
         // setDisplayTypes(displayType);
         setCheckedList([]);
@@ -216,9 +212,10 @@ const Index = () => {
     },
     {
       title: "No. of Child",
-      dataIndex: "childCount",
-      key: "childCount",
+      dataIndex: "childrenCount",
+      key: "childrenCount",
       style: { width: "10%" },
+      render: (text, record) => text !== null ? text : "N/A",
       sort: true,
     },
     {
