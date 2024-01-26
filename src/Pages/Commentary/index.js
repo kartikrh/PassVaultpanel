@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
+import {CommentaryClone} from "../../components/Model/Clone";
 import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +22,11 @@ const Index = () => {
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Commentary | ScoreCard - React Admin & Dashboard Template";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
+  const [cloneModelVisible, setCloneModelVisible] = useState(false);
+  const [cloneValues, setCloneValues] = useState({
+    name:"",
+    refrenceId:"",
+  });
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
@@ -89,6 +95,13 @@ const Index = () => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
 
+  const handleClone = async () => {
+    if(cloneValues.name !=="" && cloneValues.refrenceId !== ""){
+      console.log(cloneValues)
+    }else{
+      dispatch(updateToastData({ data: "Name and Reference Id is required", title: "Required" }))
+    }
+  };
   //table columns
   const columns = [
     {
@@ -207,6 +220,7 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: false,
     switch: false,
+    clone:true
   };
 
   useEffect(() => {
@@ -228,6 +242,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
@@ -239,6 +254,14 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={checekedList}
+          />
+          <CommentaryClone
+            cloneModelVisible={cloneModelVisible}
+            setCloneModelVisible={setCloneModelVisible}
+            handleClone={handleClone}
+            setCloneValues={setCloneValues}
+            cloneValues = {cloneValues}
             singleCheck={checekedList}
           />
         </Container>

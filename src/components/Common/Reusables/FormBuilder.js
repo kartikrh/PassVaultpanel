@@ -427,8 +427,73 @@ const FormBuilder = forwardRef(
                       required={field.isRequired}
                       isMulti={field.isMulti}
                     />
-                  </div>
-                )}
+                  )}
+                  {field.type === RADIO_BUTTON && (
+                    <div className="radio-button-styling radio_options_list">
+                      {[]
+                        .concat(field.options, masterData?.[field.name] || [])
+                        .map((option) => (
+                          <label
+                            key={option.value}
+                            className="radio_option_label"
+                          >
+                            <input
+                              className="inputtag normal_input"
+                              style={field?.customStyle}
+                              type="radio"
+                              name={field.name}
+                              value={[]
+                                .concat(
+                                  field.options,
+                                  masterData?.[field.name] || []
+                                )
+                                .filter((e) => {
+                                  if (formData[field.name])
+                                    return compareNumStringValues(
+                                      e?.value,
+                                      formData[field.name]
+                                    );
+                                  else
+                                    return compareNumStringValues(
+                                      e?.value,
+                                      formData[field.name]
+                                    );
+                                })}
+                              onChange={() => handleChange(field, option.value)}
+                              required={field.isRequired}
+                            />
+                            {option.label}
+                          </label>
+                        ))}
+                    </div>
+                  )}
+                  {field.type === FILE_TYPE && (
+                    <input
+                      className="file_input"
+                      style={field?.customStyle}
+                      type="file"
+                      name={field.name}
+                      multiple={field.isMulti}
+                      onChange={(e) => handleChange(field, e.target.files)}
+                      accept={field?.acceptedFileTypes}
+                    />
+                  )}
+                  {field.type === SWITCH && (
+                    <div className="form-check form-switch form-switch-lg mb-3">
+                      <input
+                        className="form-check-input"
+                        style={field?.customStyle}
+                        type="checkbox"
+                        id="customSwitchsizelg"
+                        // defaultChecked
+                        checked={formData[field.name]}
+                        onChange={(e) => {
+                          handleChange(field, !formData[field.name]);
+                        }}
+                        value={formData[field.name]}
+                      />
+                    </div>
+                  )}
 
                   {field.type === TEXT_EDITOR && (
                     <CKEditor
