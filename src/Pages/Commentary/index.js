@@ -24,8 +24,8 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [cloneValues, setCloneValues] = useState({
-    name:"",
-    refrenceId:"",
+    eventName:"",
+    eventRefId:"",
   });
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -97,7 +97,20 @@ const Index = () => {
 
   const handleClone = async () => {
     if(cloneValues.name !=="" && cloneValues.refrenceId !== ""){
-      console.log(cloneValues, checekedList?.[0])
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/commentary/clone`, {
+          commentaryId: checekedList?.[0],
+          ...cloneValues,
+        })
+        .then((response) => {
+          fetchData();
+          dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+          setCloneModelVisible(false);
+        })
+        .catch((error) => {
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        });
     }else{
       dispatch(updateToastData({ data: "Name and Reference Id are required", title: "Required", type: ERROR }))
     }
