@@ -506,17 +506,6 @@ const FormBuilder = forwardRef(
                     />
                   )}
 
-                  {field.type === TEXT_EDITOR_IMG && (
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data="<p>Hello from CKEditor&nbsp;5!</p>"
-                      // style={{height:"300px"}}
-                      onChange={(event, editor) =>
-                        handleChange(field, editor.getData())
-                      }
-                    />
-                  )}
-
                   {field.type === DATE_TIME_PICKER && (
                     <input
                       className="form-control"
