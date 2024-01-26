@@ -97,9 +97,9 @@ const Index = () => {
 
   const handleClone = async () => {
     if(cloneValues.name !=="" && cloneValues.refrenceId !== ""){
-      console.log(cloneValues)
+      console.log(cloneValues, checekedList?.[0])
     }else{
-      dispatch(updateToastData({ data: "Name and Reference Id is required", title: "Required" }))
+      dispatch(updateToastData({ data: "Name and Reference Id are required", title: "Required", type: ERROR }))
     }
   };
   //table columns

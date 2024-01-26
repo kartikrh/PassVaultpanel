@@ -39,13 +39,13 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
     <Modal isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
     <div className="tablelist-form">
         <ModalBody>
-            {singleCheck.length===1?<div className="d-flex flex-column justify-content-center p-4">
+          <div className="d-flex flex-column justify-content-center p-4">
                 <h4 className="form-label text-center text-lg">Cloning the Selected Match Type</h4>
                 <h6 className='text-center mt-4'>Please Enter the Event Name</h6>
                 <input type="text" onChange={handleCloneValues} name="name" className="form-control text-center" required />
                 <h6 className='text-center mt-4'>Please Enter the Ref Id</h6>
                 <input type="text" onChange={handleCloneValues} name="refrenceId" className="form-control text-center" required />
-            </div>:singleCheck.length>1?<h4 className="text-danger text-center p-4">Select Only One Commentary</h4>:<h4 className="text-danger text-center p-4">Select One MatchTyp To Clone</h4>}
+            </div>
             <div className="hstack gap-2 justify-content-center">
                 <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
                 {singleCheck.length===1?
