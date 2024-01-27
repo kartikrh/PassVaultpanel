@@ -4,7 +4,7 @@ import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
-import CloneModel from "../../components/Model/CloneMatchType";
+import {MatchTypeClone} from "../../components/Model/Clone";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
@@ -192,7 +192,7 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          <CloneModel
+          <MatchTypeClone
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}

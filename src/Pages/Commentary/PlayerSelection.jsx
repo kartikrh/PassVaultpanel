@@ -353,14 +353,14 @@ const PlayerSelection = forwardRef((props, ref) => {
             <Button
               className='m-2'
               id="caret" color="primary" onClick={onPrevious}>
-              <i class='bx bxs-left-arrow me-1'></i>
+              <i className='bx bxs-left-arrow me-1'></i>
               <span>Previous</span>
             </Button>
             {isNext && (<Button
               className='m-2 d-flex align-items-center'
               id="caret" color="primary" onClick={onNext}>
               <span>Save & Next</span>
-              <i class='bx bxs-right-arrow ms-1'></i>
+              <i className='bx bxs-right-arrow ms-1'></i>
             </Button>)}
           </Container>
         </Container>
