@@ -113,3 +113,13 @@
     margin-top: 80px !important;
     max-height: 90vh !important;
 }
+
+.wicket-section-header {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.modal-header-style {
+    font-size: 22px;
+    font-weight: bolder;
+}

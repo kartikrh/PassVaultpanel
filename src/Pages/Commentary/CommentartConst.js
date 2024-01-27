@@ -66,6 +66,18 @@ export const WICKET = "WICKET"
 export const RUN = "RUN"
 export const ALL = "ALL"
 
+export const WICKET_TYPE_LIST = [
+    { label: BOLD_LABEL, value: BOLD },
+    { label: CATCH_LABEL, value: CATCH },
+    { label: STUMP_LABEL, value: STUMP },
+    { label: HIT_WICKET_LABEL, value: HIT_WICKET },
+    { label: LBW_LABEL, value: LBW },
+    { label: RUN_OUT_LABEL, value: RUN_OUT },
+    { label: RETIRED_OUT_LABEL, value: RETIRED_OUT },
+    { label: TIMED_OUT_LABEL, value: TIMED_OUT },
+    { label: HIT_BALL_TWICE_LABEL, value: HIT_BALL_TWICE },
+    { label: OBSTRACT_THE_FIELDING_LABEL, value: OBSTRACT_THE_FIELDING },
+]
 export const EXTRAS_LIST = {
     [BALL_WIDE]: [
         { label: "No Run", value: 0 },

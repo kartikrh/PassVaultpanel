@@ -17,7 +17,8 @@ import { over } from 'lodash';
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
     2: COMMENTARY_PLAYER_SELECTION_SCREEN,
-    3: COMMENTARY_MAIN_SCREEN
+    3: COMMENTARY_MAIN_SCREEN,
+    4: COMMENTARY_MAIN_SCREEN
 }
 
 const getScreenNumber = (screen) => {

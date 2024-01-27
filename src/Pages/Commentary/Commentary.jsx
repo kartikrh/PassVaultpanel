@@ -6,7 +6,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {
@@ -33,17 +33,17 @@ export const CommentaryScreen = ({
                         {teamDetails?.[BATTING_TEAM].teamScore || 0}/{teamDetails?.[BATTING_TEAM].teamWicket || 0}
                         &nbsp;({teamDetails?.[BATTING_TEAM].teamOver || 0})
                         &nbsp;</span>
-                    <button className="change-button">C</button>
+                    {/* <button className="change-button">C</button> */}
                 </Col></Row>
                 <Row>
                     <Col className="striker-end" xs={12} md={6} lg={6}>
-                        {onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;
+                        <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
                         <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
                         <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
                         <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
                     </Col>
                     <Col className="non-striker-end" xs={12} md={6} lg={6}>
-                        {onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;
+                        <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
                         <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
                         <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
                         <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right ">C</button>
