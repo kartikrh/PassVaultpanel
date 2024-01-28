@@ -5,7 +5,7 @@ const WinnerModal = ({ isOpen, toggle, winnerAnnouncement, onExitClick }) => {
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
-                Change Over
+                Winner Announcement
             </ModalHeader>
             <ModalBody>
                 {winnerAnnouncement}

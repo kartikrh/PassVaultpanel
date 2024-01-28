@@ -100,11 +100,12 @@ export const convertDateLocalToUTC = (localDate) => {
   return "";
 }
 
-export const convertDateUTCToLocal = (UTCDate, page) => {
+export const convertDateUTCToLocal = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {
       return moment(UTCDate).local().format("DD/MM/YY, h:mm:ss a");
     }
+    if (format) return moment(UTCDate).local().format(format);
     return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm:ss");
   }
   return "";

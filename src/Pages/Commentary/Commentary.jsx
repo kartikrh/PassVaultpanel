@@ -6,7 +6,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {
@@ -35,9 +35,9 @@ export const CommentaryScreen = ({
                             &nbsp;({teamDetails?.[BATTING_TEAM].teamOver || 0})
                             &nbsp;</span>
                     </Col>
-                    <Col className="current-score-header" xs={6} md={6} lg={6}>
-                        <span className="current-team-name">{teamDetails?.[BOWLING_TEAM].shortName?.toUpperCase()}&nbsp;</span>
-                        <span className="current-team-score">
+                    <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
+                        <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM].shortName?.toUpperCase()}&nbsp;</span>
+                        <span className="bowling-team-score">
                             {teamDetails?.[BOWLING_TEAM].teamScore || 0}/{teamDetails?.[BOWLING_TEAM].teamWicket || 0}
                             &nbsp;({teamDetails?.[BOWLING_TEAM].teamOver || 0})
                             &nbsp;</span>
@@ -124,7 +124,7 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/end-over.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={endInnings}>
                         <img className="button-icon" src="icons/end-innings.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}

@@ -52,7 +52,7 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log(matchTypeDetails)
+        // console.log(commentaryDetails, matchTypeDetails)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         // console.log(matchTypeDetails)
     })
@@ -70,12 +70,11 @@ const Commentary = (props) => {
         };
 
         const isWicketLimitReached = () => {
-            return teams?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 1;
+            return teams?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 2;
         };
 
         const isRunTargetAchieved = () => {
-            return commentaryDetails.target &&
-                commentaryDetails.target !== 0 &&
+            return isLastInnigs && commentaryDetails.target && commentaryDetails.target !== 0 &
                 teams?.[BATTING_TEAM]?.teamScore >= commentaryDetails.target;
         };
 
@@ -92,14 +91,17 @@ const Commentary = (props) => {
             default: break;
         }
         if (conditionsToCheck.some(condition => condition)) {
-            if (teams[BOWLING_TEAM].isBattingComplete && isLastInnigs) checkWinner()
+            if (
+                teams[BOWLING_TEAM].isBattingComplete && isLastInnigs) checkWinner()
             else setShowInningsChangePopup(true);
         }
     }
     const checkWinner = () => {
+        const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === commentaryDetails.target - 1
         const isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= commentaryDetails.target
         const WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
-        const WINNING_MESSAGE = "Match won by " + teams?.[WINNING_TEAM].teamName
+        const WINNING_MESSAGE = isMatchTie ? `Match Between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName} is Tied.`
+            : "Match won by " + teams?.[WINNING_TEAM].teamName
         const teamUpdates = [
             { ...teams?.[BATTING_TEAM], isBattingComplete: true, isWin: isBattingTeamWon },
             { ...teams?.[BOWLING_TEAM], isWin: !isBattingTeamWon }]
@@ -639,12 +641,14 @@ const Commentary = (props) => {
             }}
             onWicketClick={() => { setShowWicketModal(true) }}
             changeStrike={changeOnStrikePlayer}
+            endInnings={() => setShowInningsChangePopup(true)}
         // onUndoClick={handleUndoClick}
         />
-        {!inningsChangePopup && <SelectPlayerModal isOpen={changePlayerList ? true : false}
-            toggle={() => { setChangePlayerList(undefined) }}
-            playerList={changePlayerList}
-            selectPlayer={onPlayerChange} />}
+        {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings) &&
+            <SelectPlayerModal isOpen={changePlayerList ? true : false}
+                toggle={() => { setChangePlayerList(undefined) }}
+                playerList={changePlayerList}
+                selectPlayer={onPlayerChange} />}
         <ExtrasModal isOpen={extrasList}
             toggle={() => { setExtrasList(undefined) }}
             runList={extrasList}
