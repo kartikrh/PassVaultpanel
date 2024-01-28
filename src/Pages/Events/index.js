@@ -17,7 +17,7 @@ import moment from "moment";
 const Index = () => {
   const pageName = TAB_EVENT
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Events | ScoreCard - React Admin & Dashboard Template";
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Events";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -214,7 +214,7 @@ const Index = () => {
       title: "Venue",
       dataIndex: "venue",
       key: "venue",
-      render: (text, record) => text?text:"N/A",
+      render: (text, record) => text ? text : "N/A",
       style: { width: "10%" },
     },
     {

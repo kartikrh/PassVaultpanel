@@ -51,11 +51,11 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    // useEffect(() => {
-    //     console.log(props.data)
-    //     // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
-    //     // console.log(matchTypeDetails)
-    // })
+    useEffect(() => {
+        console.log(matchTypeDetails)
+        // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
+        // console.log(matchTypeDetails)
+    })
 
     const checkForOverSwitch = (currentOver) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
@@ -64,14 +64,13 @@ const Commentary = (props) => {
     }
     const checkInningsSwitch = (checkFor) => {
         const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
-
         const isOverLimitReached = () => {
             return matchTypeDetails.isLimitedOvers &&
                 (Math.ceil(+currentOver.over || 0) + 1) >= matchTypeDetails.oversPerInings;
         };
 
         const isWicketLimitReached = () => {
-            return teams?.[BATTING_TEAM]?.teamWicket >= maxNoOfWicket;
+            return teams?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 1;
         };
 
         const isRunTargetAchieved = () => {
@@ -334,7 +333,6 @@ const Commentary = (props) => {
             // setCurrentWicket(undefined)
             setCurrentPartnership(undefined)
             checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
-            checkInningsSwitch(WICKET)
         }
     }
     const updateRuns = ({ run, ball, batter, bowler, type, freezePlayers = false }) => {
@@ -490,6 +488,7 @@ const Commentary = (props) => {
     }
     const handleWicket = (wicketData) => {
         setCurrentBall({})
+        setIsWicketChange(true)
         const updateBattingTeam = {}
         const updateBall = {}
         const updateWicket = {}
@@ -559,7 +558,7 @@ const Commentary = (props) => {
         changePlayer(isOnStrikeWicket ? ON_STRIKE : NON_STRIKE)
         setCurrentWicket((prevValue) => { return { ...prevValue, ...updateWicket } })
         setShowWicketModal(undefined)
-        setIsWicketChange(true)
+        checkInningsSwitch(WICKET)
     }
     const onExtrasChange = (runFromModal) => {
         updateExtras(extrasType, runFromModal)

@@ -40,7 +40,7 @@ const UiCards = () => {
     700: 2,
     500: 1
   };
-  document.title = "Cards | Upzet - React Admin & Dashboard Template";
+  document.title = "Cards ";
 
   return (
     <React.Fragment>
@@ -382,7 +382,7 @@ const UiCards = () => {
           <Row>
             <Col lg={4}>
               <Card color="primary" className="card-primary">
-              <h6 className="card-header">Primary Card</h6>
+                <h6 className="card-header">Primary Card</h6>
                 <CardBody>
                   <CardText>
                     Some quick example text to build on the card title and make
@@ -394,10 +394,10 @@ const UiCards = () => {
 
             <Col lg={4}>
               <Card color="success" className="card-success">
-              <h6 className="card-header">Success Card</h6>
+                <h6 className="card-header">Success Card</h6>
 
                 <CardBody>
-                  
+
                   <CardText>
                     Some quick example text to build on the card title and make
                     up the bulk of the card&apos;s content.
@@ -408,10 +408,10 @@ const UiCards = () => {
 
             <Col lg={4}>
               <Card color="info" className="card-info">
-              <h6 className="card-header">Info Card</h6>
+                <h6 className="card-header">Info Card</h6>
 
                 <CardBody>
-                  
+
                   <CardText>
                     Some quick example text to build on the card title and make
                     up the bulk of the card&apos;s content.
@@ -424,7 +424,7 @@ const UiCards = () => {
           <Row>
             <Col lg={4}>
               <Card color="warning" className="card-warning">
-              <h6 className="card-header">Warning Card</h6>
+                <h6 className="card-header">Warning Card</h6>
 
                 <CardBody>
                   <CardText>
@@ -437,10 +437,10 @@ const UiCards = () => {
 
             <Col lg={4}>
               <Card color="danger" className="card-danger">
-              <h6 className="card-header">Danger Card</h6>
+                <h6 className="card-header">Danger Card</h6>
 
                 <CardBody>
-                  
+
                   <CardText>
                     Some quick example text to build on the card title and make
                     up the bulk of the card&apos;s content.
@@ -451,10 +451,10 @@ const UiCards = () => {
 
             <Col lg={4}>
               <Card color="dark" className="card-dark">
-              <h6 className="card-header"> Dark Card</h6>
+                <h6 className="card-header"> Dark Card</h6>
 
                 <CardBody>
-                  
+
                   <CardText>
                     Some quick example text to build on the card title and make
                     up the bulk of the card&apos;s content.
@@ -469,7 +469,7 @@ const UiCards = () => {
               <Card outline color="primary" className="border card-border-primary">
                 <CardHeader className="bg-transparent">
                   <h5 className="my-0 text-primary">
-                  Header
+                    Header
                   </h5>
                 </CardHeader>
                 <CardBody>
@@ -487,7 +487,7 @@ const UiCards = () => {
               <Card outline color="danger" className="border card-border-danger">
                 <CardHeader className="bg-transparent">
                   <h5 className="my-0 text-danger">
-                  Header
+                    Header
                   </h5>
                 </CardHeader>
                 <CardBody>
@@ -505,7 +505,7 @@ const UiCards = () => {
               <Card outline color="success" className="border card-border-success">
                 <CardHeader className="bg-transparent">
                   <h5 className="my-0 text-success">
-                  Header
+                    Header
                   </h5>
                 </CardHeader>
                 <CardBody>

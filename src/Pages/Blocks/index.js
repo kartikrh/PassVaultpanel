@@ -17,7 +17,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_BLOCKS
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players | ScoreCard - React Admin & Dashboard Template";
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -33,7 +33,7 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/block/all`, {
-        ...(latestValueFromTable || {...tableActions})
+        ...(latestValueFromTable || { ...tableActions })
       })
       .then((response) => {
         const apiData = response?.result
@@ -65,8 +65,8 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/block/save`, {
-      // blockId: record.blockId,
-      ...record,
+        // blockId: record.blockId,
+        ...record,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -111,7 +111,7 @@ const Index = () => {
   };
 
   const handleEdit = (blockId) => {
-   // navigate("/addblocks", { state: { userId: blockId } });
+    // navigate("/addblocks", { state: { userId: blockId } });
     navigate("/addblocks", { state: { blockId } });
   };
 
@@ -169,7 +169,7 @@ const Index = () => {
       dataIndex: "blockName",
       render: (text, record) => (
         <span>
-          {text} 
+          {text}
         </span>
       ),
       key: "blockName",
@@ -179,16 +179,16 @@ const Index = () => {
     {
       title: "Container Id",
       dataIndex: "containerId",
-    //   render: (text, record) => (
-    //     <span style={{ cursor: "pointer" }}>
-    //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
-    //     </span>
-    //   ),
+      //   render: (text, record) => (
+      //     <span style={{ cursor: "pointer" }}>
+      //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
+      //     </span>
+      //   ),
       key: "containerId",
       sort: true,
       style: { width: "100%" },
     },
-  
+
     {
       title: "Is Show Content",
       key: "isShowContent",
@@ -213,9 +213,9 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Block",
-   // headerSelect: false,
+    // headerSelect: false,
     isShowContent: true,
-   // clone: false,
+    // clone: false,
   };
 
   useEffect(() => {

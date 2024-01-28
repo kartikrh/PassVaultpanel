@@ -15,7 +15,7 @@ import {
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const FormElements = () => {
-  document.title = "Form Elements | Upzet - React Admin & Dashboard Template";
+  document.title = "Form Elements ";
   const [toggleSwitch, settoggleSwitch] = useState(true);
 
   return (
@@ -840,298 +840,298 @@ const FormElements = () => {
               </Card>
             </Col>
           </Row>
-            <Row>
-              <Col lg={12}>
-                <Card>
-                  <CardBody>
-                    <CardTitle className="h4">Inline Forms</CardTitle>
-                    <p className="card-title-desc">
-                      Use the <code>.form-inline</code> class to display a
-                      series of labels, form controls, and buttons on a single
-                      horizontal row.
-                    </p>
+          <Row>
+            <Col lg={12}>
+              <Card>
+                <CardBody>
+                  <CardTitle className="h4">Inline Forms</CardTitle>
+                  <p className="card-title-desc">
+                    Use the <code>.form-inline</code> class to display a
+                    series of labels, form controls, and buttons on a single
+                    horizontal row.
+                  </p>
 
-                    <form className="row row-cols-lg-auto g-3 align-items-center">
-                      <div className="col-12">
-                        <label
-                          className="visually-hidden"
-                          htmlFor="inlineFormInputGroupUsername"
-                        >
-                          Username
-                        </label>
-                        <div className="input-group">
-                          <div className="input-group-text">@</div>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inlineFormInputGroupUsername"
-                            placeholder="Username"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="col-12">
-                        <label
-                          className=""
-                          htmlFor="inlineFormSelectPref"
-                        >
-                          Preference
-                        </label>
-                        <select
-                          className="form-select"
-                          id="inlineFormSelectPref"
-                        >
-                          <option defaultValue>Choose...</option>
-                          <option defaultValue="1">One</option>
-                          <option defaultValue="2">Two</option>
-                          <option defaultValue="3">Three</option>
-                        </select>
-                      </div>
-
-                      <div className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="inlineFormCheck"
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="inlineFormCheck"
-                          >
-                            Remember me
-                          </label>
-                        </div>
-                      </div>
-
-                      <div className="col-12">
-                        <button type="submit" className="btn btn-primary">
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col lg={12}>
-                <Card>
-                  <CardBody>
-                    <CardTitle className="h4">Auto sizing</CardTitle>
-                    <p className="card-title-desc">
-                      The example below uses a flexbox utility to vertically
-                      center the contents and changes <code>.col</code> to{" "}
-                      <code>.col-auto</code> so that your columns only take up
-                      as much space as needed. Put another way, the column sizes
-                      itself based on the contents.
-                    </p>
-
-                    <form className="row gy-2 gx-3 align-items-center">
-                      <div className="col-auto">
-                        <label
-                          className="visually-hidden"
-                          htmlFor="autoSizingInput"
-                        >
-                          Name
-                        </label>
+                  <form className="row row-cols-lg-auto g-3 align-items-center">
+                    <div className="col-12">
+                      <label
+                        className="visually-hidden"
+                        htmlFor="inlineFormInputGroupUsername"
+                      >
+                        Username
+                      </label>
+                      <div className="input-group">
+                        <div className="input-group-text">@</div>
                         <input
                           type="text"
                           className="form-control"
-                          id="autoSizingInput"
-                          placeholder="Jane Doe"
+                          id="inlineFormInputGroupUsername"
+                          placeholder="Username"
                         />
                       </div>
-                      <div className="col-auto">
+                    </div>
+
+                    <div className="col-12">
+                      <label
+                        className=""
+                        htmlFor="inlineFormSelectPref"
+                      >
+                        Preference
+                      </label>
+                      <select
+                        className="form-select"
+                        id="inlineFormSelectPref"
+                      >
+                        <option defaultValue>Choose...</option>
+                        <option defaultValue="1">One</option>
+                        <option defaultValue="2">Two</option>
+                        <option defaultValue="3">Three</option>
+                      </select>
+                    </div>
+
+                    <div className="col-12">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="inlineFormCheck"
+                        />
                         <label
-                          className="visually-hidden"
-                          htmlFor="autoSizingInputGroup"
+                          className="form-check-label"
+                          htmlFor="inlineFormCheck"
                         >
-                          Username
+                          Remember me
                         </label>
-                        <div className="input-group">
-                          <div className="input-group-text">@</div>
+                      </div>
+                    </div>
+
+                    <div className="col-12">
+                      <button type="submit" className="btn btn-primary">
+                        Submit
+                      </button>
+                    </div>
+                  </form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col lg={12}>
+              <Card>
+                <CardBody>
+                  <CardTitle className="h4">Auto sizing</CardTitle>
+                  <p className="card-title-desc">
+                    The example below uses a flexbox utility to vertically
+                    center the contents and changes <code>.col</code> to{" "}
+                    <code>.col-auto</code> so that your columns only take up
+                    as much space as needed. Put another way, the column sizes
+                    itself based on the contents.
+                  </p>
+
+                  <form className="row gy-2 gx-3 align-items-center">
+                    <div className="col-auto">
+                      <label
+                        className="visually-hidden"
+                        htmlFor="autoSizingInput"
+                      >
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="autoSizingInput"
+                        placeholder="Jane Doe"
+                      />
+                    </div>
+                    <div className="col-auto">
+                      <label
+                        className="visually-hidden"
+                        htmlFor="autoSizingInputGroup"
+                      >
+                        Username
+                      </label>
+                      <div className="input-group">
+                        <div className="input-group-text">@</div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="autoSizingInputGroup"
+                          placeholder="Username"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <label
+                        className="visually-hidden"
+                        htmlFor="autoSizingSelect"
+                      >
+                        Preference
+                      </label>
+                      <select className="form-select" id="autoSizingSelect">
+                        <option defaultValue>Choose...</option>
+                        <option defaultValue="1">One</option>
+                        <option defaultValue="2">Two</option>
+                        <option defaultValue="3">Three</option>
+                      </select>
+                    </div>
+                    <div className="col-auto">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="autoSizingCheck"
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="autoSizingCheck"
+                        >
+                          Remember me
+                        </label>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <button type="submit" className="btn btn-primary">
+                        Submit
+                      </button>
+                    </div>
+                  </form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col xl={12}>
+              <Card>
+                <CardBody>
+                  <h5 className="card-title">Floating labels</h5>
+                  <p className="card-title-desc">
+                    Create beautifully simple form labels that float over your
+                    input fields.
+                  </p>
+
+                  <form>
+                    <Row>
+                      <Col md={6}>
+                        <div className="form-floating mb-3">
                           <input
                             type="text"
                             className="form-control"
-                            id="autoSizingInputGroup"
-                            placeholder="Username"
+                            id="floatingFirstnameInput"
+                            placeholder="Enter Your First Name"
                           />
-                        </div>
-                      </div>
-                      <div className="col-auto">
-                        <label
-                          className="visually-hidden"
-                          htmlFor="autoSizingSelect"
-                        >
-                          Preference
-                        </label>
-                        <select className="form-select" id="autoSizingSelect">
-                          <option defaultValue>Choose...</option>
-                          <option defaultValue="1">One</option>
-                          <option defaultValue="2">Two</option>
-                          <option defaultValue="3">Three</option>
-                        </select>
-                      </div>
-                      <div className="col-auto">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="autoSizingCheck"
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="autoSizingCheck"
-                          >
-                            Remember me
+                          <label htmlFor="floatingFirstnameInput">
+                            First Name
                           </label>
                         </div>
-                      </div>
-                      <div className="col-auto">
-                        <button type="submit" className="btn btn-primary">
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col xl={12}>
-                <Card>
-                  <CardBody>
-                    <h5 className="card-title">Floating labels</h5>
-                    <p className="card-title-desc">
-                      Create beautifully simple form labels that float over your
-                      input fields.
-                    </p>
-
-                    <form>
-                      <Row>
-                        <Col md={6}>
-                          <div className="form-floating mb-3">
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="floatingFirstnameInput"
-                              placeholder="Enter Your First Name"
-                            />
-                            <label htmlFor="floatingFirstnameInput">
-                              First Name
-                            </label>
-                          </div>
-                        </Col>
-                        <Col md={6}>
-                          <div className="form-floating mb-3">
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="floatingLastnameInput"
-                              placeholder="Enter Your Last Name"
-                            />
-                            <label htmlFor="floatingLastnameInput">
-                              Last Name
-                            </label>
-                          </div>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={6}>
-                          <div className="form-floating mb-3">
-                            <input
-                              type="email"
-                              className="form-control"
-                              id="floatingemailInput"
-                              placeholder="Enter Email address"
-                            />
-                            <label htmlFor="floatingemailInput">
-                              Email address
-                            </label>
-                          </div>
-                        </Col>
-                        <Col md={6}>
-                          <div className="form-floating mb-3">
-                            <select
-                              className="form-select"
-                              id="floatingSelectGrid"
-                              aria-label="Floating label select example"
-                            >
-                              <option defaultValue>
-                                Open this select menu
-                              </option>
-                              <option defaultValue="1">One</option>
-                              <option defaultValue="2">Two</option>
-                              <option defaultValue="3">Three</option>
-                            </select>
-                            <label htmlFor="floatingSelectGrid">
-                              Works with selects
-                            </label>
-                          </div>
-                        </Col>
-                      </Row>
-
-                      <div className="mb-3">
-                        <div className="form-check">
+                      </Col>
+                      <Col md={6}>
+                        <div className="form-floating mb-3">
                           <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="floatingCheck"
+                            type="text"
+                            className="form-control"
+                            id="floatingLastnameInput"
+                            placeholder="Enter Your Last Name"
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="floatingCheck"
-                          >
-                            Check me out
+                          <label htmlFor="floatingLastnameInput">
+                            Last Name
                           </label>
                         </div>
-                      </div>
-                      <div>
-                        <button type="submit" className="btn btn-primary w-md">
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-            <Row>
-              <Col lg={12}>
-                <Card>
-                  <CardBody>
-                    <CardTitle className="h4">Inline Form With Stack</CardTitle>
-                    <p className="card-title-desc">
-                      Create an inline form with <code>.hstack</code>:
-                    </p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>
+                        <div className="form-floating mb-3">
+                          <input
+                            type="email"
+                            className="form-control"
+                            id="floatingemailInput"
+                            placeholder="Enter Email address"
+                          />
+                          <label htmlFor="floatingemailInput">
+                            Email address
+                          </label>
+                        </div>
+                      </Col>
+                      <Col md={6}>
+                        <div className="form-floating mb-3">
+                          <select
+                            className="form-select"
+                            id="floatingSelectGrid"
+                            aria-label="Floating label select example"
+                          >
+                            <option defaultValue>
+                              Open this select menu
+                            </option>
+                            <option defaultValue="1">One</option>
+                            <option defaultValue="2">Two</option>
+                            <option defaultValue="3">Three</option>
+                          </select>
+                          <label htmlFor="floatingSelectGrid">
+                            Works with selects
+                          </label>
+                        </div>
+                      </Col>
+                    </Row>
 
-                    <div className="w-50">
-                      <div className="hstack gap-3">
+                    <div className="mb-3">
+                      <div className="form-check">
                         <input
-                          className="form-control me-auto"
-                          type="text"
-                          placeholder="Add your item here..."
-                          aria-label="Add your item here..."
+                          className="form-check-input"
+                          type="checkbox"
+                          id="floatingCheck"
                         />
-                        <button type="button" className="btn btn-secondary">
-                          Submit
-                        </button>
-                        <div className="vr"></div>
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger"
+                        <label
+                          className="form-check-label"
+                          htmlFor="floatingCheck"
                         >
-                          Reset
-                        </button>
+                          Check me out
+                        </label>
                       </div>
                     </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+                    <div>
+                      <button type="submit" className="btn btn-primary w-md">
+                        Submit
+                      </button>
+                    </div>
+                  </form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={12}>
+              <Card>
+                <CardBody>
+                  <CardTitle className="h4">Inline Form With Stack</CardTitle>
+                  <p className="card-title-desc">
+                    Create an inline form with <code>.hstack</code>:
+                  </p>
+
+                  <div className="w-50">
+                    <div className="hstack gap-3">
+                      <input
+                        className="form-control me-auto"
+                        type="text"
+                        placeholder="Add your item here..."
+                        aria-label="Add your item here..."
+                      />
+                      <button type="button" className="btn btn-secondary">
+                        Submit
+                      </button>
+                      <div className="vr"></div>
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
         </Container>
       </div>
     </React.Fragment>

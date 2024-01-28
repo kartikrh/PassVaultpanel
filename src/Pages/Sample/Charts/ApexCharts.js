@@ -18,118 +18,118 @@ import { Card, CardBody, CardTitle, Col, Row, Container } from "reactstrap"
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 
 const ApexCharts = () => {
-    document.title = "Apex Charts | Upzet - React Admin & Dashboard Template";
+    document.title = "Apex Charts ";
     return (
         <React.Fragment>
-                <div className="page-content">
+            <div className="page-content">
 
-                    <Container fluid>
-                        <Breadcrumbs title="Charts" breadcrumbItem="Apex Charts" />
+                <Container fluid>
+                    <Breadcrumbs title="Charts" breadcrumbItem="Apex Charts" />
 
-                        <Row>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">
-                                            Line with Data Labels
-                                        </CardTitle>
-                                        <LineApexChart />
-                                    </CardBody>
-                                </Card>
-                            </Col>
+                    <Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">
+                                        Line with Data Labels
+                                    </CardTitle>
+                                    <LineApexChart />
+                                </CardBody>
+                            </Card>
+                        </Col>
 
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">Dashed Line</CardTitle>
-                                        <DashedLine />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">Dashed Line</CardTitle>
+                                    <DashedLine />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
 
-                        <Row>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4"> Spline Area </CardTitle>
-                                        <SplineArea />
-                                    </CardBody>
-                                </Card>
-                            </Col>
+                    <Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4"> Spline Area </CardTitle>
+                                    <SplineArea />
+                                </CardBody>
+                            </Card>
+                        </Col>
 
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4"> Column Chart </CardTitle>
-                                        <Apaexlinecolumn />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4"> Column Chart </CardTitle>
+                                    <Apaexlinecolumn />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
 
-                        <Row>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">
-                                            Column with Data Labels{" "}
-                                        </CardTitle>
-                                        <ColumnWithDataLabels />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">Bar Chart</CardTitle>
-                                        <BarChart />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
+                    <Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">
+                                        Column with Data Labels{" "}
+                                    </CardTitle>
+                                    <ColumnWithDataLabels />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">Bar Chart</CardTitle>
+                                    <BarChart />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
 
-                        <Row>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">
-                                            Line, Column & Area Chart{" "}
-                                        </CardTitle>
-                                        <LineColumnArea />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">Radial Chart</CardTitle>
-                                        <RadialChart />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
+                    <Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">
+                                        Line, Column & Area Chart{" "}
+                                    </CardTitle>
+                                    <LineColumnArea />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">Radial Chart</CardTitle>
+                                    <RadialChart />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
 
-                        <Row>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">Pie Chart </CardTitle>
-                                        <PieChart />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col lg={6}>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">Donut Chart</CardTitle>
-                                        <DonutChart />
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
+                    <Row>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">Pie Chart </CardTitle>
+                                    <PieChart />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        <Col lg={6}>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle className="mb-4">Donut Chart</CardTitle>
+                                    <DonutChart />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
         </React.Fragment>
     );
 }

@@ -3,7 +3,7 @@ import { Container, Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 
 const Error500 = () => {
-  document.title = "Error-500  | Upzet - React Admin & Dashboard Template";
+  document.title = "Error-500  ";
 
   return (
     <React.Fragment>
@@ -26,7 +26,7 @@ const Error500 = () => {
                     </p>
                     <div className="mt-4">
                       <Link to="/" className="btn btn-primary">
-                      Back to Home
+                        Back to Home
                         <i className="ri-arrow-right-line align-bottom ms-2"></i>
                       </Link>
                     </div>

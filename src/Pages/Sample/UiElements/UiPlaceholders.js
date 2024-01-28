@@ -9,13 +9,13 @@ import smallImage from "../../assets/images/small/img-1.jpg";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const UiPlaceholders = () => {
-    document.title = "Placeholders | Upzet - React Admin & Dashboard Template";
+    document.title = "Placeholders ";
 
     return (
         <React.Fragment>
             <div className="page-content">
                 <Container fluid={true}>
-                <Breadcrumbs title="UI Elements" breadcrumbItem="Placeholders" />
+                    <Breadcrumbs title="UI Elements" breadcrumbItem="Placeholders" />
                     <Row>
                         <Col xl={6}>
                             <Card>

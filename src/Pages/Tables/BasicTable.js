@@ -4,7 +4,7 @@ import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const BasicTable = () => {
-  document.title = "Basic Tables | Upzet - React Admin & Dashboard Template";
+  document.title = "Basic Tables ";
 
   return (
     <React.Fragment>

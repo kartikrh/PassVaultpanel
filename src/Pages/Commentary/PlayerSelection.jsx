@@ -8,7 +8,7 @@ import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
 
 const PlayerSelection = forwardRef((props, ref) => {
-  document.title = "Player Selection | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Player Selection";
 
   const { data, next, previous, save } = props;
   const dispatch = useDispatch();

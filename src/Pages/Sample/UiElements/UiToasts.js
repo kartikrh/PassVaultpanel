@@ -19,7 +19,7 @@ import logo from "../../assets/images/logo-sm.png";
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 const UiToasts = () => {
-  document.title = "Toast | Upzet - React Admin & Dashboard Template";
+  document.title = "Toast ";
 
   const [toast, settoast] = useState(false);
   const [toast1, settoast1] = useState(false);
@@ -125,7 +125,7 @@ const UiToasts = () => {
                     dismiss button.
                   </p>
 
-                  <div style={{minHeight: "110px"}}>
+                  <div style={{ minHeight: "110px" }}>
                     <Toast>
                       <ToastHeader>
                         <img src={logo} alt="" className="me-2" height="18" />
@@ -150,7 +150,7 @@ const UiToasts = () => {
                     the <code>backdrop-filter</code> CSS property, we'll also
                     attempt to blur the elements under a toast.
                   </p>
-                  <div style={{minHeight: "110px"}}>
+                  <div style={{ minHeight: "110px" }}>
                     <Toast isOpen={toast5}>
                       <ToastHeader toggle={toggleToast5}>
                         <img src={logo} alt="" className="me-2" height="18" />

@@ -58,7 +58,7 @@ const Index = forwardRef(
     },
     ref
   ) => {
-    document.title = `${tableElement?.title} | ScoreCard - React Admin & Dashboard Template`;
+    document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
@@ -157,8 +157,8 @@ const Index = forwardRef(
           setTotal(data.length);
           setFilteredData(data);
         }
-      } 
-      else if(tableElement.title === "Import Events"){
+      }
+      else if (tableElement.title === "Import Events") {
         const updatedData = dataSource.filter((val) => {
           const first = Object.values(val);
           const firstObject = first[0];
@@ -276,26 +276,26 @@ const Index = forwardRef(
           "Invalid sorting order. Use 'ascending' or 'descending'."
         );
       }
-    
+
       setSortOrder({
         sortOrder: order,
         key: propName,
       });
-    
+
       const sortedData = data.slice().sort((a, b) => {
         const valueA = typeof a[propName] === "string" ? a[propName] : a[propName];
         const valueB = typeof b[propName] === "string" ? b[propName] : b[propName];
-    
+
         if (order === "ascending") {
           return valueA.localeCompare(valueB);
         } else {
           return valueB.localeCompare(valueA);
         }
       });
-    
+
       setData(sortedData);
     };
-    
+
     const sortByPropertyB = (order, propName) => {
       if (order !== "ascending" && order !== "descending") {
         throw new Error(
@@ -307,58 +307,58 @@ const Index = forwardRef(
         key: propName,
       });
       const sortedData = data.slice().sort((a, b) => {
-        if(propName == "eventTypeId" || propName == "competitionId" || propName == "eventId"){
+        if (propName == "eventTypeId" || propName == "competitionId" || propName == "eventId") {
           const first = Object.values(a);
           const second = Object.values(b);
           const firstObject = first[0]?.id;
           const secondObject = second[0]?.id;
           const valueA =
-          typeof firstObject === "string"
-            ? Number(firstObject)
-            : Number(firstObject);
-        const valueB =
-          typeof secondObject === "string"
-            ? Number(secondObject)
-            : Number(secondObject);
-        if (order === "ascending") {
-          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
-        } else {
-          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+            typeof firstObject === "string"
+              ? Number(firstObject)
+              : Number(firstObject);
+          const valueB =
+            typeof secondObject === "string"
+              ? Number(secondObject)
+              : Number(secondObject);
+          if (order === "ascending") {
+            return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+          } else {
+            return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+          }
         }
-        }
-        else if(propName == "date"){
+        else if (propName == "date") {
           const first = Object.values(a);
           const second = Object.values(b);
           const firstObject = first[0]?.openDate;
           const secondObject = second[0]?.openDate;
           const valueA =
-          typeof firstObject === "string"
-            ? firstObject
-            : firstObject;
-        const valueB =
-          typeof secondObject === "string"
-            ? secondObject
-            : secondObject;
-        if (order === "ascending") {
-          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
-        } else {
-          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+            typeof firstObject === "string"
+              ? firstObject
+              : firstObject;
+          const valueB =
+            typeof secondObject === "string"
+              ? secondObject
+              : secondObject;
+          if (order === "ascending") {
+            return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+          } else {
+            return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+          }
         }
-        }
-        else{
-        //   const valueA =
-        //   typeof a[propName].name === "string"
-        //     ? a[propName]?.name
-        //     : a[propName]?.name;
-        // const valueB =
-        //   typeof b[propName] === "string"
-        //     ? b[propName]?.name
-        //     : b[propName]?.name;
-        // if (order === "ascending") {
-        //   return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
-        // } else {
-        //   return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
-        // }
+        else {
+          //   const valueA =
+          //   typeof a[propName].name === "string"
+          //     ? a[propName]?.name
+          //     : a[propName]?.name;
+          // const valueB =
+          //   typeof b[propName] === "string"
+          //     ? b[propName]?.name
+          //     : b[propName]?.name;
+          // if (order === "ascending") {
+          //   return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+          // } else {
+          //   return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+          // }
 
           const valueA = typeof a[propName]?.name === "string" ? a[propName]?.name : a[propName]?.name;
           const valueB = typeof b[propName]?.name === "string" ? b[propName]?.name : b[propName]?.name;
@@ -464,12 +464,12 @@ const Index = forwardRef(
                             singleCheck.length === 1
                               ? cloneModelFunction(true)
                               : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
+                                updateToastData({
+                                  data: "Select at least one (only One) row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
                           }}
                           id="create-btn"
                         >
@@ -484,12 +484,12 @@ const Index = forwardRef(
                             singleCheck.length > 0
                               ? deleteModelFunction(true)
                               : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
+                                updateToastData({
+                                  data: "Select at least one (only One) row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
                           }}
                         >
                           <i className="ri-delete-bin-2-line"></i>
@@ -668,7 +668,7 @@ const Index = forwardRef(
                   </Col>
                   <Col className="col-sm">
                     <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                     {tableElement.title !== "Import Events" && <div className="me-1 d-flex">
+                      {tableElement.title !== "Import Events" && <div className="me-1 d-flex">
                         <CSVLink
                           data={generateSimplifiedData().csvData}
                           filename={tableElement.title + ".csv"}
@@ -735,13 +735,12 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${
-                                                sortOrder.key === column.key &&
-                                                sortOrder.sortOrder ===
+                                              color: `${sortOrder.key === column.key &&
+                                                  sortOrder.sortOrder ===
                                                   "ascending"
                                                   ? "gray"
                                                   : "lightGray"
-                                              }`,
+                                                }`,
                                               fontSize: "12px",
                                               marginTop: "2px",
                                               cursor: "pointer",
@@ -756,13 +755,12 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${
-                                                sortOrder.key === column.key &&
-                                                sortOrder.sortOrder ===
+                                              color: `${sortOrder.key === column.key &&
+                                                  sortOrder.sortOrder ===
                                                   "descending"
                                                   ? "gray"
                                                   : "lightGray"
-                                              }`,
+                                                }`,
                                               marginTop: "-5px",
                                               fontSize: "12px",
                                               cursor: "pointer",
@@ -802,9 +800,9 @@ const Index = forwardRef(
                                             >
                                               {column.render
                                                 ? column.render(
-                                                    record[column.dataIndex],
-                                                    record
-                                                  )
+                                                  record[column.dataIndex],
+                                                  record
+                                                )
                                                 : record[column.dataIndex]}
                                             </td>
                                           </>
@@ -838,21 +836,20 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                              "ascending",
-                                              column.key
-                                            )
+                                            "ascending",
+                                            column.key
+                                          )
                                           : sortByProperty(
-                                              "ascending",
-                                              column.key
-                                            );
+                                            "ascending",
+                                            column.key
+                                          );
                                       }}
                                       style={{
-                                        color: `${
-                                          sortOrder.key === column.key &&
-                                          sortOrder.sortOrder === "ascending"
+                                        color: `${sortOrder.key === column.key &&
+                                            sortOrder.sortOrder === "ascending"
                                             ? "gray"
                                             : "lightGray"
-                                        }`,
+                                          }`,
                                         fontSize: "12px",
                                         marginTop: "2px",
                                         cursor: "pointer",
@@ -863,21 +860,20 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                              "descending",
-                                              column.key
-                                            )
+                                            "descending",
+                                            column.key
+                                          )
                                           : sortByProperty(
-                                              "descending",
-                                              column.key
-                                            );
+                                            "descending",
+                                            column.key
+                                          );
                                       }}
                                       style={{
-                                        color: `${
-                                          sortOrder.key === column.key &&
-                                          sortOrder.sortOrder === "descending"
+                                        color: `${sortOrder.key === column.key &&
+                                            sortOrder.sortOrder === "descending"
                                             ? "gray"
                                             : "lightGray"
-                                        }`,
+                                          }`,
                                         marginTop: "-5px",
                                         fontSize: "12px",
                                         cursor: "pointer",
@@ -897,9 +893,9 @@ const Index = forwardRef(
                               <td key={column.key} style={column.style}>
                                 {column.render
                                   ? column.render(
-                                      record[column.dataIndex],
-                                      record
-                                    )
+                                    record[column.dataIndex],
+                                    record
+                                  )
                                   : record[column.dataIndex]}
                               </td>
                             ))}

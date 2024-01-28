@@ -10,12 +10,12 @@ import { Link } from 'react-router-dom';
 
 
 const Maintenance = () => {
-    document.title = "Maintenance  | Upzet - React Admin & Dashboard Template";
+    document.title = "Maintenance  ";
 
     return (
         <React.Fragment>
             <div className="py-5">
-            
+
                 <Container>
                     <Row className="justify-content-center">
                         <Col lg={6} md={8} xl={5}>

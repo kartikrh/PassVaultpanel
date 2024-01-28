@@ -36,7 +36,7 @@ const Layout = (props) => {
     const title = props.router.location.pathname;
     let currentage = title.charAt(1).toUpperCase() + title.slice(2);
 
-    document.title = currentage + " | Upzet - React Admin & Dashboard Template";
+    document.title = currentage + " ";
   }, [props.router.location.pathname]);
 
   useEffect(() => {

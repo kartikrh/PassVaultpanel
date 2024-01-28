@@ -81,6 +81,8 @@
     /* text-align: center; */
     background-color: rgba(247, 189, 81, 0.798);
     font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
     padding: 0.25rem !important;
 }
 
@@ -88,6 +90,8 @@
     /* text-align: center; */
     background-color: rgba(253, 206, 117, 0.473);
     font-size: 16px;
+    /* font-weight: bold; */
+    letter-spacing: 1px;
     padding: 0.25rem !important;
 }
 

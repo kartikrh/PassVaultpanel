@@ -8,7 +8,7 @@ import { Container, Row, Col, Card, CardBody } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 const RecoverPassword = () => {
-    document.title = "Recover Password | Upzet - React Admin & Dashboard Template";
+    document.title = "Recover Password ";
     return (
         <React.Fragment>
             <div className="bg-pattern" style={{ height: "100vh" }}>

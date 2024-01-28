@@ -38,7 +38,7 @@ const images = [img1, img2, img3, img4, img5, img6];
 const imageZoom = [img3, img7];
 
 const UiLightbox = () => {
-    document.title = "Lightbox | Upzet - React Admin & Dashboard Template";
+    document.title = "Lightbox ";
 
     const [photoIndex, setphotoIndex] = useState(0);
     const [isFits, setisFits] = useState(false);
@@ -313,7 +313,7 @@ const UiLightbox = () => {
                                                 color="light"
                                                 className="popup-gmaps btn btn-light"
                                                 href="https://maps.google.com/maps?q=221B+Baker+Street,+London,+United+Kingdom&amp;hl=en&amp;t=v&amp;hnear=221B+Baker+St,+London+NW1+6XE,+United+Kingdom"
-                                               
+
                                             >
                                                 Open Google Map
                                             </Button>{" "}

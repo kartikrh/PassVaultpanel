@@ -13,7 +13,7 @@ import {
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const UiModals = () => {
-  document.title = "Modals | Upzet - React Admin & Dashboard Template";
+  document.title = "Modals ";
 
   const [modal_standard, setmodal_standard] = useState(false);
   const [modal_large, setmodal_large] = useState(false);
@@ -961,7 +961,7 @@ const UiModals = () => {
                         toggle={() => {
                           tog_backdrop1();
                         }}
-                        
+
                       >
                         <div className="modal-header">
                           <h5 className="modal-title">New message to @mdo</h5>
@@ -1039,7 +1039,7 @@ const UiModals = () => {
                         toggle={() => {
                           tog_backdrop2();
                         }}
-                        
+
                       >
                         <div className="modal-header">
                           <h5 className="modal-title">New message to @fat</h5>
@@ -1117,7 +1117,7 @@ const UiModals = () => {
                         toggle={() => {
                           tog_backdrop3();
                         }}
-                        
+
                       >
                         <div className="modal-header">
                           <h5 className="modal-title">
