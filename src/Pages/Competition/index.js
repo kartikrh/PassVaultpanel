@@ -18,7 +18,7 @@ const Index = () => {
   const pageName = TAB_COMPETITION
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title =
-    "Competitions | ScoreCard - React Admin & Dashboard Template";
+    "Competitions";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);

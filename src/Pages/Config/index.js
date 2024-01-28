@@ -17,7 +17,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_CONFIG
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players | ScoreCard - React Admin & Dashboard Template";
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -33,7 +33,7 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/config/all`, {
-        ...(latestValueFromTable || {...tableActions})
+        ...(latestValueFromTable || { ...tableActions })
       })
       .then((response) => {
         const apiData = response?.result
@@ -65,8 +65,8 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/config/save`, {
-      // blockId: record.blockId,
-      ...record,
+        // blockId: record.blockId,
+        ...record,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -111,7 +111,7 @@ const Index = () => {
   };
 
   const handleEdit = (configId) => {
-   // navigate("/addblocks", { state: { userId: blockId } });
+    // navigate("/addblocks", { state: { userId: blockId } });
     navigate("/addConfig", { state: { configId } });
   };
 
@@ -169,7 +169,7 @@ const Index = () => {
       dataIndex: "key",
       render: (text, record) => (
         <span>
-          {text} 
+          {text}
         </span>
       ),
       key: "key",
@@ -179,11 +179,11 @@ const Index = () => {
     {
       title: "Value",
       dataIndex: "value",
-    //   render: (text, record) => (
-    //     <span style={{ cursor: "pointer" }}>
-    //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
-    //     </span>
-    //   ),
+      //   render: (text, record) => (
+      //     <span style={{ cursor: "pointer" }}>
+      //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
+      //     </span>
+      //   ),
       key: "value",
       sort: true,
       style: { width: "100%" },
@@ -192,16 +192,16 @@ const Index = () => {
     {
       title: "Description",
       dataIndex: "desc",
-    //   render: (text, record) => (
-    //     <span style={{ cursor: "pointer" }}>
-    //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
-    //     </span>
-    //   ),
+      //   render: (text, record) => (
+      //     <span style={{ cursor: "pointer" }}>
+      //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
+      //     </span>
+      //   ),
       key: "desc",
       sort: true,
       style: { width: "100%" },
     },
-  
+
     {
       title: "Is Active",
       key: "isActive",
@@ -246,9 +246,9 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Config",
-   // headerSelect: false,
-   isActive: true,
-   // clone: false,
+    // headerSelect: false,
+    isActive: true,
+    // clone: false,
   };
 
   useEffect(() => {

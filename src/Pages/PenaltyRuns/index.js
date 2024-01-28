@@ -17,7 +17,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_PANELTY_RUNS
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players | ScoreCard - React Admin & Dashboard Template";
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Players";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);

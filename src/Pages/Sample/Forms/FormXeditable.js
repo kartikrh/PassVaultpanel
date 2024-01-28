@@ -16,7 +16,7 @@ import Editable from "react-bootstrap-editable"
 import Breadcrumbs from "../../../components/Common/Breadcrumb"
 
 const FormXeditable = () => {
-  document.title = "Form Xeditable | Upzet - React Admin & Dashboard Template";
+  document.title = "Form Xeditable ";
   /** Confirm button */
   const confirmElement = (
     <button type="submit" className="btn btn-success editable-submit btn-sm me-1"><i className="mdi mdi-check"></i></button>

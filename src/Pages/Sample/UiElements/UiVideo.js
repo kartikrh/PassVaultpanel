@@ -6,7 +6,7 @@ import { Card, CardBody, CardSubtitle, CardTitle, Col, Container, Row } from "re
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const UiVideo = () => {
-    document.title = "Video | Upzet - React Admin & Dashboard Template";
+    document.title = "Video ";
 
     return (
         <React.Fragment>

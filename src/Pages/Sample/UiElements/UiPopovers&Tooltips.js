@@ -21,7 +21,7 @@ import {
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const UiPopovers = () => {
-    document.title = "Popovers & Tooltip | Upzet - React Admin & Dashboard Template";
+    document.title = "Popovers & Tooltip ";
 
     const [popovertop, setpopovertop] = useState(false);
     const [popoverleft, setpopoverleft] = useState(false);
@@ -71,7 +71,7 @@ const UiPopovers = () => {
                                             }}
                                         >
                                             <PopoverBody>
-                                            Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
+                                                Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
                                             </PopoverBody>
                                         </Popover>{" "}
                                         &nbsp;
@@ -93,7 +93,7 @@ const UiPopovers = () => {
                                             }}
                                         >
                                             <PopoverBody>
-                                            Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
+                                                Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
                                             </PopoverBody>
                                         </Popover>{" "}
                                         &nbsp;
@@ -115,7 +115,7 @@ const UiPopovers = () => {
                                             }}
                                         >
                                             <PopoverBody>
-                                            Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
+                                                Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
                                             </PopoverBody>
                                         </Popover>{" "}
                                         &nbsp;
@@ -137,7 +137,7 @@ const UiPopovers = () => {
                                             }}
                                         >
                                             <PopoverBody>
-                                            Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
+                                                Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
                                             </PopoverBody>
                                         </Popover>{" "}
                                         &nbsp;

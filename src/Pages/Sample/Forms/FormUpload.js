@@ -17,7 +17,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb"
 import { Link } from "react-router-dom"
 
 const FormUpload = () => {
-  document.title = "Form File Upload | Upzet - React Admin & Dashboard Template";
+  document.title = "Form File Upload ";
   const [selectedFiles, setselectedFiles] = useState([])
 
   function handleAcceptedFiles(files) {
@@ -60,7 +60,7 @@ const FormUpload = () => {
                     drag'n'drop file uploads with image previews.
                   </CardSubtitle>
                   <Form
-                   className="dropzone"
+                    className="dropzone"
                   >
                     <Dropzone
                       onDrop={acceptedFiles => {
@@ -68,14 +68,14 @@ const FormUpload = () => {
                       }}
                     >
                       {({ getRootProps, getInputProps }) => (
-                        <div style={{textAlign:"center"}}>
+                        <div style={{ textAlign: "center" }}>
                           <div
                             className="dz-message needsclick"
                             {...getRootProps()}
                           >
                             <input {...getInputProps()} />
                             <div className="mb-3">
-                            <i className="display-4 text-muted mdi mdi-cloud-upload-outline"></i>
+                              <i className="display-4 text-muted mdi mdi-cloud-upload-outline"></i>
                             </div>
                             <h4>Drop files here to upload</h4>
                           </div>

@@ -19,36 +19,36 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const FormEditors = () => {
-  document.title = "Form Editors | Upzet - React Admin & Dashboard Template";
+  document.title = "Form Editors ";
   return (
     <React.Fragment>
-        <div className="page-content">
-          <Container fluid={true}>
-            <Breadcrumbs title="Forms" breadcrumbItem="Form Editors" />
+      <div className="page-content">
+        <Container fluid={true}>
+          <Breadcrumbs title="Forms" breadcrumbItem="Form Editors" />
 
-            <Row>
-              <Col>
-                <Card>
-                  <CardBody  style={{height:"500px"}}>
-                    <CardTitle className="h4">Forms Editors</CardTitle>
-                    <p className="card-title-desc">
-                      Your powerful rich text editor
-                    </p>
+          <Row>
+            <Col>
+              <Card>
+                <CardBody style={{ height: "500px" }}>
+                  <CardTitle className="h4">Forms Editors</CardTitle>
+                  <p className="card-title-desc">
+                    Your powerful rich text editor
+                  </p>
 
-                    <Form method="post">
-                      <Editor
-                        toolbarClassName="toolbarClassName"
-                        wrapperClassName="wrapperClassName"
-                        editorClassName="editorClassName"
-                        placeholder="Start From Here..."
-                      />
-                    </Form>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          </Container>
-        </div>
+                  <Form method="post">
+                    <Editor
+                      toolbarClassName="toolbarClassName"
+                      wrapperClassName="wrapperClassName"
+                      editorClassName="editorClassName"
+                      placeholder="Start From Here..."
+                    />
+                  </Form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </React.Fragment>
   );
 };

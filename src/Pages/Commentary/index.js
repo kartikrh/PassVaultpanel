@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import {CommentaryClone} from "../../components/Model/Clone";
+import { CommentaryClone } from "../../components/Model/Clone";
 import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,13 +19,13 @@ import moment from "moment";
 const Index = () => {
   const pageName = TAB_COMMENTARY
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Commentary | ScoreCard - React Admin & Dashboard Template";
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Commentary";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [cloneValues, setCloneValues] = useState({
-    eventName:"",
-    eventRefId:"",
+    eventName: "",
+    eventRefId: "",
   });
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -96,7 +96,7 @@ const Index = () => {
   };
 
   const handleClone = async () => {
-    if(cloneValues.name !=="" && cloneValues.refrenceId !== ""){
+    if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
       await axiosInstance
         .post(`/admin/commentary/clone`, {
@@ -111,7 +111,7 @@ const Index = () => {
         .catch((error) => {
           dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         });
-    }else{
+    } else {
       dispatch(updateToastData({ data: "Name and Reference Id are required", title: "Required", type: ERROR }))
     }
   };
@@ -233,7 +233,7 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: false,
     switch: false,
-    clone:true
+    clone: true
   };
 
   useEffect(() => {
@@ -274,7 +274,7 @@ const Index = () => {
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
             setCloneValues={setCloneValues}
-            cloneValues = {cloneValues}
+            cloneValues={cloneValues}
             singleCheck={checekedList}
           />
         </Container>

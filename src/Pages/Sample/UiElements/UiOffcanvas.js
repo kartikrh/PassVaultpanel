@@ -20,7 +20,7 @@ import {
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const UiOffcanvas = () => {
-    document.title = "Offcanvas | Upzet - React Admin & Dashboard Template";
+    document.title = "Offcanvas ";
 
     const [open, setOpen] = useState(false);
     const [isTop, setIsTop] = useState(false);
@@ -65,8 +65,8 @@ const UiOffcanvas = () => {
                                 <CardBody>
                                     <CardTitle className="h4">Demo</CardTitle>
                                     <p className="card-title-desc">Use the buttons below to show and hide an offcanvas element via
-                                            JavaScript that toggles the <code>.show</code> class on an element with the
-                                            {" "}<code>.offcanvas</code> class.</p>
+                                        JavaScript that toggles the <code>.show</code> class on an element with the
+                                        {" "}<code>.offcanvas</code> class.</p>
                                     <div>
                                         <Button
                                             color="primary"
@@ -199,9 +199,9 @@ const UiOffcanvas = () => {
                                 <CardBody>
                                     <CardTitle className="h4">Backdrop</CardTitle>
                                     <p className="card-title-desc">Scrolling the <code>&lt;body&gt;</code> element is disabled when an
-                                            offcanvas and its backdrop are visible. Use the <code>data-bs-scroll</code> attribute to toggle
-                                            {" "} <code>&lt;body&gt;</code> scrolling and <code>data-bs-backdrop</code> to toggle the backdrop.
-                                        </p>
+                                        offcanvas and its backdrop are visible. Use the <code>data-bs-scroll</code> attribute to toggle
+                                        {" "} <code>&lt;body&gt;</code> scrolling and <code>data-bs-backdrop</code> to toggle the backdrop.
+                                    </p>
                                     <div className="d-flex flex-wrap gap-2">
                                         <Button
                                             color="primary"
