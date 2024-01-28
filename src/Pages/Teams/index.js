@@ -17,7 +17,7 @@ const Index = () => {
   const pageName = TAB_TEAMS
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = "Teams | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Teams";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
@@ -210,7 +210,7 @@ const Index = () => {
     {
       title: "Country",
       dataIndex: "country",
-      render: (text, record) => text !== null?text : "N/A",
+      render: (text, record) => text !== null ? text : "N/A",
       key: "country",
       style: { width: "20%" },
     },

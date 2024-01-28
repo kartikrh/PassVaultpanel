@@ -26,7 +26,7 @@ import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SAVE_AND_NEXT } from "../../components/Common/Const";
 const Index = ({ data, next, save }) => {
-  document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Toss";
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [winnerTeam, setWinnerTeam] = useState({});

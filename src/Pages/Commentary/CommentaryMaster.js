@@ -6,13 +6,12 @@ import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { checkPermission, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
 import { addCommentaryDetailsToDb, addCommentaryScreenData, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
-import { over } from 'lodash';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -139,8 +138,8 @@ function CommentaryMaster() {
                                 <Row className='mb-3'>
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Col>
-                                            {`${commentaryData.commentaryDetails.eventType} > ${commentaryData.commentaryDetails.competition} >
-                                        ${commentaryData.commentaryDetails.eventName} [${commentaryData.commentaryDetails.eventRefId}] `}
+                                            <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.eventType}/ ${commentaryData.commentaryDetails.competition}/ ${commentaryData.commentaryDetails.eventName}`}</div>
+                                            <div>{`Ref: ${commentaryData.commentaryDetails.eventRefId} [ ${convertDateUTCToLocal(commentaryData.commentaryDetails.eventDate, "", "DD/MM/YY HH:mm")} ]`}</div>
                                         </Col>}
                                     <Col>  <button className="btn btn-danger mx-1 text-right " onClick={handleBackClick}>Exit</button></Col>
                                 </Row>
@@ -162,6 +161,7 @@ function CommentaryMaster() {
                                         <Commentary
                                             data={{ commentaryData, matchTypeData }}
                                             onInningsChange={handleInningsChange}
+                                            isDataLoading={isDataLoading}
                                         />}
                                 </Row>
                             </CardBody>

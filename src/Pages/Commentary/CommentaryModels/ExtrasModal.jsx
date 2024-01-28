@@ -3,7 +3,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Table } from 'react
 
 const ExtrasModal = ({ runList, toggle, isOpen, selectExtraRun }) => {
     return (
-        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
                 Select Extra Runs
             </ModalHeader>

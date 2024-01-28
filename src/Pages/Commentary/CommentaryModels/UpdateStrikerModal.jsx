@@ -6,7 +6,7 @@ import { NON_STRIKE, ON_STRIKE } from '../CommentartConst';
 const UpdateStrikeModal = ({ isOpen, toggle, onsubmit, players }) => {
     const [batterId, setBatterId] = useState({});
     return (
-        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
                 Update On Strike Player
             </ModalHeader>

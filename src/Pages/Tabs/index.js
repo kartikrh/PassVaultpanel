@@ -20,7 +20,7 @@ import { resetTabSliceData, setSelectedTabHistory, setSelectedTab } from "../../
 const Index = () => {
   const pageName = TAB_TABS
   const finalizeRef = useRef(null);
-  document.title = "Tabs | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Tabs";
   const { selectedTab, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const [data, setData] = useState([]);
@@ -123,7 +123,7 @@ const Index = () => {
     dispatch(setSelectedTabHistory(historyList))
     dispatch(setSelectedTab({ id: value, displayType: 1 }))
   }
-  
+
   const columns = [
     {
       title: (
@@ -298,10 +298,10 @@ const Index = () => {
     subTable: true,
     resetButton: true,
     isActive: true,
-    displayTypes : [
-      {label: "Admin", value: 1},
-      {label: "Agent", value: 2},
-  ]
+    displayTypes: [
+      { label: "Admin", value: 1 },
+      { label: "Agent", value: 2 },
+    ]
   };
 
   useEffect(() => {

@@ -19,7 +19,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_USERS
   const finalizeRef = useRef(null);
-  document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Event Types";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [clipboard, setClipboard] = useState(null);

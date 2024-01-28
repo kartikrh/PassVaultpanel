@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { BOLD, CATCH, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, TIMED_OUT, WICKET_TYPE_LIST } from '../CommentartConst';
+import { BOLD, CATCH, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, TIMED_OUT, WICKET_TYPE_LIST } from '../CommentartConst';
 import CardComponent from '../CardComponent';
 import { compareNumStringValues } from '../../../components/Common/Reusables/reusableMethods';
 import Select from "react-select";
@@ -43,13 +43,13 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
             wicketType: wicketData.wicketType,
             batterId: showFields["batterId"] ? wicketData.batterId : onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId,
             runs: showFields["runs"] ? wicketData.runs : 0,
-            fielder1: showFields["fielder1"] ? wicketData.fielder1 : undefined,
-            fielder2: showFields["fielder2"] ? wicketData.fielder2 : undefined,
+            fielder1: showFields["fielder1"] ? wicketData.fielder1 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
+            fielder2: showFields["fielder2"] ? wicketData.fielder2 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
         }
         onSubmit(dataToSend)
     }
     return (
-        <Modal size='xl' className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}> <div className='modal-header-style'>Wicket</div> </ModalHeader>
             <ModalBody>
                 <Row>

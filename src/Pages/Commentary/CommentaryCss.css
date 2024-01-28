@@ -64,7 +64,7 @@
 
 .current-score-header {
     text-align: center;
-    background-color: rgba(168, 224, 243, 0.47);
+    /* background-color: rgba(168, 224, 243, 0.47); */
     padding: 0.5rem;
 }
 
@@ -81,6 +81,8 @@
     /* text-align: center; */
     background-color: rgba(247, 189, 81, 0.798);
     font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
     padding: 0.25rem !important;
 }
 
@@ -88,6 +90,8 @@
     /* text-align: center; */
     background-color: rgba(253, 206, 117, 0.473);
     font-size: 16px;
+    /* font-weight: bold; */
+    letter-spacing: 1px;
     padding: 0.25rem !important;
 }
 
@@ -122,4 +126,25 @@
 .modal-header-style {
     font-size: 22px;
     font-weight: bolder;
+}
+
+.bowling-team-score-header {
+    text-align: center;
+    /* background-color: rgba(142, 169, 178, 0.47); */
+    padding: 0.5rem;
+}
+
+.bowling-team-name {
+    font-size: 30px;
+    color: rgba(199, 196, 196, 0.415);
+    /* font-weight: bolder; */
+}
+
+.bowling-team-score {
+    color: rgba(199, 196, 196, 0.415);
+    font-size: 26px;
+}
+
+.match-details-breadcrumbs {
+    font-size: 16px;
 }

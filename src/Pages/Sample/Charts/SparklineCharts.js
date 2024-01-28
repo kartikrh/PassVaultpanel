@@ -8,7 +8,7 @@ import { Sparklines, SparklinesLine, SparklinesBars } from "react-sparklines";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const Sparklinechart = () => {
-  document.title = "Sparkline Charts | Upzet - React Admin & Dashboard Template";
+  document.title = "Sparkline Charts ";
   return (
     <React.Fragment>
       <div className="page-content">

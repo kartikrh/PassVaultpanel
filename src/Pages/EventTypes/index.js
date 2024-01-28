@@ -19,7 +19,7 @@ const Index = () => {
   const pageName = TAB_EVENT_TYPES
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = "Event Types | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Event Types";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);

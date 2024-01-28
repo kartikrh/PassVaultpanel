@@ -13,7 +13,7 @@ import { Row, Container } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const Dashboard = () => {
-  document.title = "Dashboard | Upzet - React Admin & Dashboard Template";
+  document.title = "Dashboard ";
 
 
   return (

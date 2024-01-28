@@ -9,7 +9,7 @@ import Countdown from "react-countdown";
 import { Link } from "react-router-dom";
 
 const ComingSoon = () => {
-  document.title = "Cooming Soon  | Upzet - React Admin & Dashboard Template";
+  document.title = "Cooming Soon  ";
   // const renderer = ({ days, hours, minutes, seconds, completed }) => {
   //   if (completed) {
   //     // Render a completed state
@@ -50,7 +50,7 @@ const ComingSoon = () => {
   // };
 
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
-    
+
 
     if (completed) {
       // Render a completed state

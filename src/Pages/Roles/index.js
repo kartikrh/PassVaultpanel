@@ -15,7 +15,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_ROLES
   const finalizeRef = useRef(null);
-  document.title = "Roles | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Roles";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
@@ -152,7 +152,7 @@ const Index = () => {
       dataIndex: "description",
       key: "description",
       sort: true,
-      render:(text,render)=>text?text:"N/A",
+      render: (text, render) => text ? text : "N/A",
       style: { width: "90%" },
     },
 

@@ -8,7 +8,7 @@ import "react-rangeslider/lib/index.css";
 
 
 const UiRangeSlider = () => {
-    document.title = "Range Slider | Upzet - React Admin & Dashboard Template";
+    document.title = "Range Slider ";
 
     const formatkg = value => "$ " + value;
     const formatdollar = value => value + " kg";

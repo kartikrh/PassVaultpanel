@@ -32,7 +32,7 @@ import avatar from "../../assets/images/users/avatar-1.jpg";
 import { editProfile, resetProfileFlag } from "../../store/actions";
 
 const UserProfile = () => {
-  document.title = "Profile | Upzet - React Admin & Dashboard Template";
+  document.title = "Profile ";
 
   const dispatch = useDispatch();
 

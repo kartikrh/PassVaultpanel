@@ -7,11 +7,11 @@ import { Container, Row, Col, Card, CardBody } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 const Register = () => {
-    document.title = "Register | Upzet - React Admin & Dashboard Template";
+    document.title = "Register ";
     return (
         <React.Fragment>
 
-            <div className="bg-pattern" style={{height:"100vh"}}>
+            <div className="bg-pattern" style={{ height: "100vh" }}>
                 <div className="bg-overlay"></div>
                 <div className="account-pages pt-5">
                     <Container>

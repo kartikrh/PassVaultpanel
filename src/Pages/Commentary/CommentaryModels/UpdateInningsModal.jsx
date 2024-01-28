@@ -5,7 +5,7 @@ import CardComponent from '../CardComponent';
 const UpdateInningsModal = ({ isOpen, toggle, onsubmit, currentInningTeams }) => {
     const [battingTeamId, setBattingTeamId] = useState({});
     return (
-        <Modal className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
                 Update Innigns
             </ModalHeader>
