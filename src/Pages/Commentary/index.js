@@ -14,6 +14,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import {ChnageMatchTypeModel} from '../../components/Model/ChangeMatchType'
 import moment from "moment";
 
 const Index = () => {
@@ -23,6 +24,9 @@ const Index = () => {
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
+  const [changeModelVisible, setChangeModelVisible] = useState(false);
+  const [matchType, setMatchType] = useState("")
+  const [selectedCommentary, setSelectedCommentary] = useState({})
   const [cloneValues, setCloneValues] = useState({
     eventName:"",
     eventRefId:"",
@@ -114,6 +118,22 @@ const Index = () => {
     }else{
       dispatch(updateToastData({ data: "Name and Reference Id are required", title: "Required", type: ERROR }))
     }
+  };
+  const handleChange = async () => {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/commentary/changeMatchType`, {
+         ...selectedCommentary
+        })
+        .then((response) => {
+          fetchData();
+          dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+          setChangeModelVisible(false);
+        })
+        .catch((error) => {
+          setChangeModelVisible(false);
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        });
   };
   //table columns
   const columns = [
@@ -208,6 +228,16 @@ const Index = () => {
       style: { width: "40%" },
     },
     {
+      title: "Match Type",
+      dataIndex: "matchType",
+      render: (text, record) => (
+        <span onClick={()=>{setChangeModelVisible(true); setSelectedCommentary(record)}} style={{ cursor: "pointer" }}>{text}{" "} {<a className="bx bx-edit-alt"></a>}</span>
+      ),
+      key: "matchType",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Commentary Details",
       key: "active",
       printType: "ignore",
@@ -242,7 +272,6 @@ const Index = () => {
     }
     fetchData();
   }, []);
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -277,6 +306,16 @@ const Index = () => {
             cloneValues = {cloneValues}
             singleCheck={checekedList}
           />
+          {changeModelVisible && 
+          <ChnageMatchTypeModel
+           changeModelVisible={changeModelVisible}
+           setChangeModelVisible={setChangeModelVisible}
+           handleChange={handleChange}
+           setMatchType={setMatchType}
+           singleCheck={checekedList}
+           selectedCommentary={selectedCommentary}
+           setSelectedCommentary = {setSelectedCommentary}
+          />}
         </Container>
       </div>
     </React.Fragment>
