@@ -68,6 +68,7 @@ function AddCommentary() {
                 "team2Kipper": true,
                 "team1Players": true,
                 "team2Players": true,
+                "matchTypeId":true,
             })
         }
     }, [id]);
