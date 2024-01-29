@@ -35,6 +35,7 @@ import {
 import "./CustomCss.css";
 import { Row, Col, Input, Form } from "reactstrap";
 import ImageField from "./ImageField.jsx";
+import MyUploadAdapter from "./MyUploadAdapter.js"
 
 const FormBuilder = forwardRef(
   (
@@ -213,8 +214,17 @@ const FormBuilder = forwardRef(
         }}
       >
         <Row>
-          {fields?.map((field, key) => (
-            <React.Fragment key={key}>
+          {fields?.map((field, key) => {
+            function MyCustomUploadAdapterPlugin(editor) {
+              if (field?.type === TEXT_EDITOR && field?.imageType) {
+                editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                  const newAdapter = new MyUploadAdapter(loader);
+                  newAdapter.url = `${process.env.REACT_APP_BASE_URL}/ckUpload?type=${field.imageType}`;
+                  return newAdapter;
+                };
+              }
+            }
+            return (<React.Fragment key={key}>
               {field.type === DIVIDER && (
                 <>
                   <h5>{field.sectionLabel}</h5>
@@ -497,9 +507,11 @@ const FormBuilder = forwardRef(
 
                   {field.type === TEXT_EDITOR && (
                     <CKEditor
+                      config={{
+                        extraPlugins: [MyCustomUploadAdapterPlugin],
+                      }}
                       editor={ClassicEditor}
-                      data="<p>Hello from CKEditor&nbsp;5!</p>"
-                      // style={{height:"300px"}}
+                      data={formData[field.name]}
                       onChange={(event, editor) =>
                         handleChange(field, editor.getData())
                       }
@@ -543,8 +555,8 @@ const FormBuilder = forwardRef(
                   {fieldErrors[field.name] && <p>{fieldErrors[field.name]}</p>}
                 </span>
               </Col>
-            </React.Fragment>
-          ))}
+            </React.Fragment>)
+          })}
         </Row>
       </Form>
     );
