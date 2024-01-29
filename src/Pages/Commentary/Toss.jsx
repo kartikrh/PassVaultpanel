@@ -26,7 +26,7 @@ import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SAVE_AND_NEXT } from "../../components/Common/Const";
 const Index = ({ data, next, save }) => {
-  document.title = "Toss | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Toss";
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [winnerTeam, setWinnerTeam] = useState({});
@@ -60,17 +60,15 @@ const Index = ({ data, next, save }) => {
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
-        rmk: `Toss won by ${winnerTeam?.teamName} and choose to ${
-          values.choseTo == 1 ? "Bat" : "Ball"
-        }`,
-        displayStatus: `Toss won by ${winnerTeam?.teamName} and choose to ${
-          values.choseTo == 1 ? "Bat" : "Ball"
-        }`,
+        rmk: `Toss won by ${winnerTeam?.teamName} and choose to ${values.choseTo == 1 ? "Bat" : "Ball"
+          }`,
+        displayStatus: `Toss won by ${winnerTeam?.teamName} and choose to ${values.choseTo == 1 ? "Bat" : "Ball"
+          }`,
         commentaryStatus: "2",
       },
       commentaryTeams: UpdatedCurrentInningTeams,
     }
-    save(newData, 2,{
+    save(newData, 2, {
       ...data,
       ...newData,
       commentaryTeams: [...restTeams, ...UpdatedCurrentInningTeams],
@@ -95,9 +93,9 @@ const Index = ({ data, next, save }) => {
       choseTo: data?.commentaryDetails?.choseTo,
       tossWonBy: data?.commentaryDetails?.tossWonBy,
     });
-    if(data?.commentaryDetails?.tossWonBy !==null){
-      const winnerTeam = currentInningTeams.find((val)=>{
-        return data?.commentaryDetails?.tossWonBy === val?.teamId 
+    if (data?.commentaryDetails?.tossWonBy !== null) {
+      const winnerTeam = currentInningTeams.find((val) => {
+        return data?.commentaryDetails?.tossWonBy === val?.teamId
       })
       setWinnerTeam(winnerTeam)
     }
@@ -195,7 +193,7 @@ const Index = ({ data, next, save }) => {
                 }}
               >
                 <span>Save & Next</span>
-                <i class="bx bxs-right-arrow ms-1"></i>
+                <i className="bx bxs-right-arrow ms-1"></i>
               </Button>
             </div>
           )}

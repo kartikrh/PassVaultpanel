@@ -41,7 +41,7 @@ import { REMEMBER_ME_KEY, USER_DATA_KEY } from "../../components/Common/Const";
 const Login = (props) => {
   const _rememberMe = JSON.parse(localStorage.getItem(REMEMBER_ME_KEY) || null);
   const [rememberMe, setRememberMe] = useState(_rememberMe || false)
-  document.title = "Login | Upzet - React Admin & Dashboard Template";
+  document.title = "Login ";
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -117,7 +117,7 @@ const Login = (props) => {
   };
 
   useEffect(() => {
-    // const AuthUser = localStorage.getItem("rememberMe");
+    // const AuthUse  r = localStorage.getItem("rememberMe");
     // if (AuthUser == "true") {
     //   setRememberMe(true)
     //   const userAuth = decryptData(localStorage.getItem("authUser"));
@@ -151,7 +151,7 @@ const Login = (props) => {
                 <CardBody className="p-4">
                   <div>
                     <div className="text-center">
-                      <Link to="/">
+                      {/* <Link to="/">
                         <img
                           src={logodark}
                           alt=""
@@ -164,13 +164,13 @@ const Login = (props) => {
                           height="24"
                           className="auth-logo logo-light mx-auto"
                         />
-                      </Link>
+                      </Link> */}
                     </div>
                     <h4 className="font-size-18 text-muted mt-2 text-center">
                       Welcome Back !
                     </h4>
                     <p className="mb-5 text-center">
-                      Sign in to continue to Upzet.
+                      Sign in to continue to Scorepanel.
                     </p>
                     <Form
                       className="form-horizontal"

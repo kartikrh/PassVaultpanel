@@ -6,7 +6,7 @@ import { Container, Row, Col, Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 
 const PricingData = [
-  
+
   {
     title: "Starter",
     caption: "Neque quis est",
@@ -58,7 +58,7 @@ const PricingData = [
 ];
 
 const Pricing = () => {
-  document.title = "Pricing  | Upzet - React Admin & Dashboard Template";
+  document.title = "Pricing  ";
   return (
     <React.Fragment>
       <div className="page-content">

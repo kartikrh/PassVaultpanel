@@ -6,18 +6,18 @@ import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { checkPermission, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
 import { addCommentaryDetailsToDb, addCommentaryScreenData, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
-import { over } from 'lodash';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
     2: COMMENTARY_PLAYER_SELECTION_SCREEN,
-    3: COMMENTARY_MAIN_SCREEN
+    3: COMMENTARY_MAIN_SCREEN,
+    4: COMMENTARY_MAIN_SCREEN
 }
 
 const getScreenNumber = (screen) => {
@@ -117,14 +117,15 @@ function CommentaryMaster() {
             setNextScreen(nextScreen)
         }
     };
-    const handleCommentaryDataSave = async (dataToSave, nextScreen, nextData) => {
-        if (dataToSave) {
-            dispatch(addCommentaryScreenData(dataToSave))
+    const handleInningsChange = () => {
+        if (commentaryId !== "0") {
+            fetchData(commentaryId);
         }
     };
     const handleBackClick = () => {
         navigate(navigateTo);
     };
+
     const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
     return (
         <React.Fragment>
@@ -137,8 +138,8 @@ function CommentaryMaster() {
                                 <Row className='mb-3'>
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Col>
-                                            {`${commentaryData.commentaryDetails.eventType} > ${commentaryData.commentaryDetails.competition} >
-                                        ${commentaryData.commentaryDetails.eventName} [${commentaryData.commentaryDetails.eventRefId}] `}
+                                            <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.eventType}/ ${commentaryData.commentaryDetails.competition}/ ${commentaryData.commentaryDetails.eventName}`}</div>
+                                            <div>{`Ref: ${commentaryData.commentaryDetails.eventRefId} [ ${convertDateUTCToLocal(commentaryData.commentaryDetails.eventDate, "", "DD/MM/YY HH:mm")} ]`}</div>
                                         </Col>}
                                     <Col>  <button className="btn btn-danger mx-1 text-right " onClick={handleBackClick}>Exit</button></Col>
                                 </Row>
@@ -159,7 +160,8 @@ function CommentaryMaster() {
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
                                             data={{ commentaryData, matchTypeData }}
-                                            save={handleCommentaryDataSave}
+                                            onInningsChange={handleInningsChange}
+                                            isDataLoading={isDataLoading}
                                         />}
                                 </Row>
                             </CardBody>

@@ -25,7 +25,7 @@ import InboxSidebar from "./Sidebar";
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 
 const Inbox = () => {
-  document.title = "Inbox  | Upzet - React Admin & Dashboard Template";
+  document.title = "Inbox  ";
 
   const [customActiveTab, setcustomActiveTab] = useState("1");
 

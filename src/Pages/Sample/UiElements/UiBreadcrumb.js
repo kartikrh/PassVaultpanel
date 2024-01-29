@@ -7,7 +7,7 @@ import { Container, Col, Row, Card, CardBody, CardTitle } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 const UiBreadcrumb = () => {
-  document.title = "Breadcrumb | Upzet - React Admin & Dashboard Template";
+  document.title = "Breadcrumb ";
 
   return (
     <React.Fragment>

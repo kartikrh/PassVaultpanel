@@ -18,7 +18,7 @@ const Index = () => {
   const pageName = TAB_PLAYERS
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = "Players | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Players";
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -182,7 +182,7 @@ const Index = () => {
         </div>
       ),
       key: "tabName",
-      style: { width: "10%", textAlign:"left" },
+      style: { width: "10%", textAlign: "left" },
     },
     {
       title: "Player Name",

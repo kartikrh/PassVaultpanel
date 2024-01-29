@@ -49,11 +49,16 @@ const commentarySlice = createSlice({
         isSaved: undefined,
         isLoading: false,
         error: null,
+        isCommentaryDataUpdated: undefined
     },
     reducers: {
         updateSavedState: (state, action) => {
             state.isSaved = action.payload;
-        }
+        },
+        clearAddCommentaryScreenData: (state, action) => {
+            state.commentaryDataToUpdate = {}
+            state.isCommentaryDataUpdated = undefined
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -84,6 +89,7 @@ const commentarySlice = createSlice({
             })
             .addCase(addCommentaryScreenData.fulfilled, (state, action) => {
                 state.commentaryDataToUpdate = action.payload
+                state.isCommentaryDataUpdated = true
                 // state.isSaved = true
                 // state.isLoading = false;
             })
@@ -94,5 +100,5 @@ const commentarySlice = createSlice({
     }
 });
 
-export const { updateSavedState } = commentarySlice.actions;
+export const { updateSavedState, clearAddCommentaryScreenData } = commentarySlice.actions;
 export default commentarySlice.reducer;

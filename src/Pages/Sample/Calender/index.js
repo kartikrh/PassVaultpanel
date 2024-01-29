@@ -263,7 +263,7 @@ const Calender = (props) => {
     }
   };
 
-  document.title = "Calendar | Upzet - React Admin & Dashboard Template";
+  document.title = "Calendar ";
   return (
     <React.Fragment>
       <DeleteModal

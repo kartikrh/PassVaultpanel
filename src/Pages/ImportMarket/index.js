@@ -33,7 +33,7 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =
-    "Import Market | ScoreCard - React Admin & Dashboard Template";
+    "Import Market";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -96,25 +96,25 @@ const Index = () => {
     {
       title: `Ref Id`,
       dataIndex: `${selectedMarket?.isCompitition
-          ? "competition"
-          : "eventType"
+        ? "competition"
+        : "eventType"
         }`,
       render: (text, record) => <span>{text?.id}</span>,
       key: `${selectedMarket?.isCompitition
-          ? "competitionId"
-          : "eventTypeId"
+        ? "competitionId"
+        : "eventTypeId"
         }`,
       sort: true,
       style: { width: "20%" },
     },
     {
       title: `${selectedMarket?.isCompitition
-          ? "Competition"
-          : "Event Type"
+        ? "Competition"
+        : "Event Type"
         }`,
       dataIndex: `${selectedMarket?.isCompitition
-          ? "competition"
-          : "eventType"
+        ? "competition"
+        : "eventType"
         }`,
       render: (text, record) => (
         <div
@@ -148,16 +148,16 @@ const Index = () => {
             setDataToDB({
               ...dataToDB,
               [`${selectedMarket?.isCompitition
-                  ? "competitionId"
-                  : selectedMarket?.isEvent
-                    ? "eventId"
-                    : "eventTypeId"
+                ? "competitionId"
+                : selectedMarket?.isEvent
+                  ? "eventId"
+                  : "eventTypeId"
                 }`]: text?.id,
               [`${selectedMarket?.isCompitition
-                  ? "competitionName"
-                  : selectedMarket?.isEvent
-                    ? "eventName"
-                    : "eventTypeName"
+                ? "competitionName"
+                : selectedMarket?.isEvent
+                  ? "eventName"
+                  : "eventTypeName"
                 }`]: text?.name,
             });
           }}
@@ -166,8 +166,8 @@ const Index = () => {
         </div>
       ),
       key: `${selectedMarket?.isCompitition
-          ? "competition"
-          : "eventType"
+        ? "competition"
+        : "eventType"
         }`,
       sort: true,
       style: { width: "80%" },
@@ -219,16 +219,16 @@ const Index = () => {
             setDataToDB({
               ...dataToDB,
               [`${selectedMarket?.isCompitition
-                  ? "competitionId"
-                  : selectedMarket?.isEvent
-                    ? "eventId"
-                    : "eventTypeId"
+                ? "competitionId"
+                : selectedMarket?.isEvent
+                  ? "eventId"
+                  : "eventTypeId"
                 }`]: text?.id,
               [`${selectedMarket?.isCompitition
-                  ? "competitionName"
-                  : selectedMarket?.isEvent
-                    ? "eventName"
-                    : "eventTypeName"
+                ? "competitionName"
+                : selectedMarket?.isEvent
+                  ? "eventName"
+                  : "eventTypeName"
                 }`]: text?.name,
             });
           }}
@@ -243,10 +243,10 @@ const Index = () => {
     selectedMarket?.isEvent && {
       title: "Import",
       dataIndex: `${selectedMarket?.isCompitition
-          ? "competition"
-          : selectedMarket?.isEvent
-            ? "event"
-            : "eventType"
+        ? "competition"
+        : selectedMarket?.isEvent
+          ? "event"
+          : "eventType"
         }`,
       render: (text, record) => (
         <button

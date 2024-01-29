@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 
 const Error404 = () => {
-    document.title = "Error-404  | Upzet - React Admin & Dashboard Template";
+    document.title = "Error-404  ";
     return (
         <React.Fragment>
             <div className="my-5 pt-5">

@@ -4,7 +4,7 @@ import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
-import {MatchTypeClone} from "../../components/Model/Clone";
+import { MatchTypeClone } from "../../components/Model/Clone";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
@@ -17,7 +17,7 @@ const Index = () => {
   const pageName = TAB_MATCH_TYPE
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = "Match Type | ScoreCard - React Admin & Dashboard Template";
+  document.title = "Match Type";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
