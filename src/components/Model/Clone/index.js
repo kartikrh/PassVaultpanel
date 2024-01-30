@@ -4,7 +4,6 @@ import Flatpickr from "react-flatpickr";
 
 
 export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleClone, setCloneName, singleCheck}) => {
-    
     return (
     <Modal isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
     <div className="tablelist-form">

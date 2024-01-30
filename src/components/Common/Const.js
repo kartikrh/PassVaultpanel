@@ -53,3 +53,7 @@ export const COMMENTARY_MAIN_SCREEN = "COMMENTARY_MAIN_SCREEN"
 
 export const BATTING_STATUS = 1
 export const BALLING_STATUS = 2
+
+export const CONTENT_IMAGE_TYPE = {
+    BLOCKS: "Blocks"
+}
