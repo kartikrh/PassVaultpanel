@@ -51,12 +51,6 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => {
-        // console.log(commentaryDetails, matchTypeDetails)
-        // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
-        // console.log(matchTypeDetails)
-    })
-
     const checkForOverSwitch = (currentOver) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
             setShowChangeOverModal(true)
@@ -260,14 +254,12 @@ const Commentary = (props) => {
                 }
             });
             props.data.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
-                // console.log(partnershipDetails)
                 if (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) &&
                     isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)) {
                     currentPartnership = partnershipDetails
                 }
             });
             props.data.commentaryData.commentaryOvers.forEach(overDetails => {
-                // console.log(+overDetails.over, +currentOver)
                 if (isEqual(+overDetails.over, +currentOver)) {
                     currentOver = overDetails
                 }
@@ -305,7 +297,6 @@ const Commentary = (props) => {
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
             }
             if (!isEmpty(commentaryDataToUpdate.commentaryPartnershipDetails) && !currentPartnership?.commentaryPartnershipId) {
-                // console.log(commentaryDataToUpdate.commentaryPartnershipDetails, currentPartnership)
                 setCurrentPartnership(commentaryDataToUpdate.commentaryPartnershipDetails)
             }
             dispatch(clearAddCommentaryScreenData())

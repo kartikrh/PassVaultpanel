@@ -45,6 +45,8 @@ export const PlayerFields = [
         type: TEXT,
         name: "batsmanAverage",
         label: "Batsman Average",
+        regex: /^[0-9]*\.?[0-9]*$/,
+        regexErrorMessage: "Only Numbers are allowed",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -52,6 +54,8 @@ export const PlayerFields = [
         type: TEXT,
         name: "bowlerAverage",
         label: "Bowler Average",
+        regex: /^[0-9]*\.?[0-9]*$/,
+        regexErrorMessage: "Only Number are allowed",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -59,6 +63,8 @@ export const PlayerFields = [
         type: TEXT,
         name: "bowlerEconomy",
         label: "Bowler Economy",
+        regex: /^[0-9]*\.?[0-9]*$/,
+        regexErrorMessage: "Only Number are allowed",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -84,6 +90,8 @@ export const PlayerFields = [
         type: TEXT,
         name: "batsmanStrikeRate",
         label: "Batsman Strike Rate",
+        regex: /^[0-9]*\.?[0-9]*$/,
+        regexErrorMessage: "Only Number are allowed",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
