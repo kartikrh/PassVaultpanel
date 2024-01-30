@@ -30,18 +30,21 @@ import {
   IMAGE,
   RADIO_BUTTON,
   TEXT_EDITOR,
-  TEXT_EDITOR_IMG,
+  ERROR,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form } from "reactstrap";
 import ImageField from "./ImageField.jsx";
 import MyUploadAdapter from "./MyUploadAdapter.js"
+import { updateToastData } from "../../../Features/toasterSlice.js";
+import { useDispatch } from "react-redux";
 
 const FormBuilder = forwardRef(
   (
     { fields, editFormData, masterData, disabledFields, onFormDataChange },
     ref
   ) => {
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
@@ -219,9 +222,14 @@ const FormBuilder = forwardRef(
               if (field?.type === TEXT_EDITOR && field?.imageType) {
                 editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
                   const newAdapter = new MyUploadAdapter(loader);
-                  newAdapter.url = `${process.env.REACT_APP_BASE_URL}/ckUpload?type=${field.imageType}`;
+                  newAdapter.url = `/ckUpload?type=${field.imageType}`;
                   return newAdapter;
                 };
+                const notifications = editor.plugins.get("Notification");
+                notifications.on("show:warning", (evt, error) => {
+                  dispatch(updateToastData({ data: error.message, title: error.title, type: ERROR }));
+                  evt.stop();
+                });
               }
             }
             return (<React.Fragment key={key}>
@@ -409,9 +417,9 @@ const FormBuilder = forwardRef(
                         (formData[field.name] &&
                           (typeof formData[field.name] === "string"
                             ? {
-                                label: formData[field.name],
-                                value: formData[field.name],
-                              }
+                              label: formData[field.name],
+                              value: formData[field.name],
+                            }
                             : formData[field.name])) ||
                         field.defaultOption
                       }
