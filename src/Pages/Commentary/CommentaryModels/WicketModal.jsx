@@ -10,9 +10,6 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     const [wicketData, setWicketData] = useState({ runs: 0 });
     const [showFields, setShowFields] = useState({});
     const [bowlingPlayerList, setBowlingPlayerList] = useState([]);
-    // useEffect(() => {
-    //     console.log(wicketData)
-    // })
     useEffect(() => {
         const formattedBowlerData = []
         bowlingTeam?.forEach(element => {

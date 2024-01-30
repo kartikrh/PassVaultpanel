@@ -2,11 +2,14 @@ import React,{useState, useEffect} from 'react'
 import {Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import Flatpickr from "react-flatpickr";
 import axiosInstance from "../../../Features/axios";
+import { updateToastData } from "../../../Features/toasterSlice";
+import { useDispatch, useSelector } from "react-redux";
 import ReactSelect from 'react-select';
-
+import { ERROR } from "../../../components/Common/Const";
 
 export const ChnageMatchTypeModel = ({changeModelVisible, setChangeModelVisible, selectedCommentary,setSelectedCommentary, handleChange, setMatchType, singleCheck}) => {
     const [matchTypeList, setMatchTypeList] = useState([])
+    const dispatch = useDispatch();
     const fetchData = async (latestValueFromTable) => {
         await axiosInstance
           .post(`/admin/commentary/getMatchTypeListByCommentary`, {
@@ -14,7 +17,6 @@ export const ChnageMatchTypeModel = ({changeModelVisible, setChangeModelVisible,
           })
           .then((response) => {
             const apiData = response?.result
-            console.log(apiData)
             let apiDataIdList = [];
             apiData.forEach(ele => {
               apiDataIdList.push({label: ele?.matchType, value : ele?.matchTypeId})
@@ -22,22 +24,19 @@ export const ChnageMatchTypeModel = ({changeModelVisible, setChangeModelVisible,
             setMatchTypeList(apiDataIdList)
           })
           .catch((error) => {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
           });
       };
       useEffect(()=>{
         fetchData()
-        console.log("this is selectedCommenraty ===>>>",selectedCommentary)
       },[])
-      useEffect(()=>{
-        console.log("B",selectedCommentary)
-      },[selectedCommentary])
     return (
     <Modal isOpen={changeModelVisible} toggle={() => {setChangeModelVisible(false)}} centered >
     <div className="tablelist-form">
         <ModalBody>
             <div className="d-flex flex-column justify-content-center p-4">
                 <h4 className="form-label text-left text-lg">Change Match Type</h4>
-                <div className="d-flex mt-4">
+                <div className="d-flex my-4">
                 <div style={{marginRight:"20px"}}>
                     <span style={{marginRight:"10px", fontWeight:"700"}}>Event Name:</span>
                     <span >{selectedCommentary?.eventName}</span>
@@ -47,7 +46,7 @@ export const ChnageMatchTypeModel = ({changeModelVisible, setChangeModelVisible,
                     <span>{selectedCommentary?.eventRefId}</span>
                 </div>
                 </div>
-                <h6 className='text-left mt-4'>Match Type</h6>
+                {/* <h6 className='text-left mt-4'>Match Type</h6> */}
                 <ReactSelect
                       classNamePrefix="select2-selection"
                       id="matchType"
