@@ -37,7 +37,7 @@ class MyUploadAdapter {
             })
         } catch (error) {
             if (!axios.isCancel(error)) {
-                throw ('Couldn\'t upload file: ' + this.loader.file.name);
+                throw error?.message || ('Couldn\'t upload file: ' + this.loader?.file?.name);
             }
         }
     }
