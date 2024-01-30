@@ -56,7 +56,7 @@ const Commentary = (props) => {
         // console.log(commentaryDetails, matchTypeDetails)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         // console.log(currentBall)
-        // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+        console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
     })
 
     const checkForOverSwitch = (currentOver) => {
@@ -223,6 +223,7 @@ const Commentary = (props) => {
                 "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
                 "commentaryTeams": [teams[BATTING_TEAM]],
             }
+            // console.log(objToSave)
             dispatch(addCommentaryScreenData(objToSave))
             setSaveToDb(false)
             checkInningsSwitch(RUN)
@@ -652,8 +653,10 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
+        // console.log(currentBall)
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === + teams[BATTING_TEAM].teamOver)) {
             const bowler = onPitchPlayers[CURRENT_BOWLER]
+            const type = currentBall.ballType
             const isOnStrikeSame = compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentBall.batStrikeId)
             const batter = isOnStrikeSame ? onPitchPlayers[ON_STRIKE] : onPitchPlayers[NON_STRIKE]
             const run = currentBall.ballRun
@@ -663,45 +666,97 @@ const Commentary = (props) => {
             const updatedBowlerOver = ((+bowler.bowlerOver || 0) - 0.1).toFixed(1)
             const updateOver = {}
             const updatePartnership = {}
-            if (currentBall.ballType === BALL_TYPE_REGULAR) {
+            if (type === BALL_TYPE_REGULAR) {
                 updateBatter["batRun"] = (batter.batRun || 0) - run
                 updateBatter["batBall"] = (batter.batBall || 0) - 1
-                updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - run
                 updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
+                updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
+                updatePartnership["totalBalls"] = (currentPartnership.totalBalls || 0) - 1
+                updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - run
                 updateBowler["bowlerOver"] = updatedBowlerOver
                 updatePartnership["totalRuns"] = (currentPartnership.totalRuns || 0) - run
-                updatePartnership["totalBalls"] = (currentPartnership.totalBalls || 0) - 1
-                updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
                 updateOver["totalRun"] = (currentOver.totalRun || 0) - run
                 updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
                 updateBattingTeam["teamOver"] =
                     ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
                 if (!currentBall.ballIsWicket) { }
 
-            }
-            if (run === 0) {
-                updateBatter["batDotBall"] = (batter.batDotBall || 0) - 1
-                updateOver["dotBall"] = (currentOver.dotBall || 0) - 1
-                updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) - 1
-            } else if (run % 2 === 0) {
-                if (currentBall.ballFour === 1) {
-                    updateBatter["batFour"] = (batter.batFour || 0) - 1
-                    updateOver["totalFour"] = (currentOver.totalFour || 0) - 1
-                    updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) - 1
 
-                } else if (currentBall.ballSix === 1) {
-                    updateBatter["batSix"] = (batter.batSix || 0) - 1
-                    updateOver["totalSix"] = (currentOver.totalSix || 0) - 1
-                    updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) - 1
+                if (run === 0) {
+                    updateBatter["batDotBall"] = (batter.batDotBall || 0) - 1
+                    updateOver["dotBall"] = (currentOver.dotBall || 0) - 1
+                    updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) - 1
+                } else if (run % 2 === 0) {
+                    if (currentBall.ballFour === 1) {
+                        updateBatter["batFour"] = (batter.batFour || 0) - 1
+                        updateOver["totalFour"] = (currentOver.totalFour || 0) - 1
+                        updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) - 1
+
+                    } else if (currentBall.ballSix === 1) {
+                        updateBatter["batSix"] = (batter.batSix || 0) - 1
+                        updateOver["totalSix"] = (currentOver.totalSix || 0) - 1
+                        updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) - 1
+                    }
                 }
+                updateBatter = { ...onPitchPlayers[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
+                updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
+                const updateNonStriker = { ...onPitchPlayers[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
+                setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
+                setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } } })
+                setCurrentOver((prevValue) => { return { ...prevValue, ...updateOver, } })
+                setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership, } })
+            } else {
+                if (type === BALL_TYPE_WIDE) {
+                    updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) - 1
+                    updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) - run
+                    updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
+                    updateOver["totalWideBall"] = (currentOver.totalWideBall || 0) - 1
+                    updateOver["totalWideRun"] = (currentOver.totalWideRun || 0) - run
+                    updateOver["totalRun"] = (currentOver.totalRun || 0) - run
+                    updatePartnership["totalRuns"] = currentPartnership.totalRuns - run
+                    updatePartnership["extras"] = currentPartnership.extras - run
+                } else if (type === BALL_TYPE_NO_BALL) {
+                    updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) - 1
+                    updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - run
+                    updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
+                    updateOver["totalNoball"] = (currentOver.totalNoball || 0) - 1
+                    updateOver["totalNoBallRun"] = (currentOver.totalNoBallRun || 0) - run
+                    updateOver["totalRun"] = (currentOver.totalRun || 0) - run
+                    updatePartnership["totalRuns"] = currentPartnership.totalRuns - run
+                    updatePartnership["extras"] = currentPartnership.extras - run
+                }
+                else {
+                    updateBowler["bowlerOver"] = ((+bowler.bowlerOver || 0) - 0.1).toFixed(1)
+                    updateBattingTeam["teamOver"] =
+                        ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
+                    updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
+                    updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
+                    updateOver["totalRun"] = (currentOver.totalRun || 0) - run
+                    updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
+                    updatePartnership["totalRuns"] = currentPartnership.totalRuns - run
+                    updatePartnership["extras"] = currentPartnership.extras - run
+                    updatePartnership["totalBalls"] = currentPartnership.totalBalls - 1
+
+                    if (type === BALL_TYPE_BYE) {
+                        updateBowler["bowlerByeBall"] = (bowler.bowlerByeBall || 0) - 1
+                        updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) - run
+                        updateOver["totalByesBall"] = (currentOver.totalByesBall || 0) - 1
+                        updateOver["totalByesRun"] = (currentOver.totalByesRun || 0) - run
+                    }
+                    else if (type === BALL_TYPE_LEG_BYE) {
+                        updateBowler["bowlerLegByeBall"] = (bowler.bowlerLegByeBall || 0) - 1
+                        updateBowler["bowlerLegByeBallRun"] = (bowler.bowlerLegByeBallRun || 0) - run
+                        updateOver["totalLegByesBall"] = (currentOver.totalLegByesBall || 0) - 1
+                        updateOver["totalLegByesRun"] = (currentOver.totalLegByesRun || 0) - run
+                    }
+                }
+                setOnPitchPlayers((prevData) => {
+                    return { ...prevData, [CURRENT_BOWLER]: { ...prevData[CURRENT_BOWLER], ...updateBowler } }
+                })
+                setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...prevData[BATTING_TEAM], ...updateBattingTeam } } })
+                setCurrentOver((prevOver) => { return { ...prevOver, ...updateOver } })
+                setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership } })
             }
-            updateBatter = { ...onPitchPlayers[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
-            updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
-            const updateNonStriker = { ...onPitchPlayers[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
-            setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
-            setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } } })
-            setCurrentOver((prevValue) => { return { ...prevValue, ...updateOver, } })
-            setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership, } })
             setIsUndoBall(true)
             setSaveToDb(true)
         }
