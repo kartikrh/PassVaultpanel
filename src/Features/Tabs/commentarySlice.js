@@ -42,6 +42,19 @@ export const addCommentaryScreenData = createAsyncThunk(
         }
     }
 );
+export const undoBallFromCommentary = createAsyncThunk(
+    'commentary/undoBallFromCommentary',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary//deleteBallByBall', data);
+            // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            // dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 const commentarySlice = createSlice({
     name: 'commentary',
     initialState: {
@@ -49,7 +62,8 @@ const commentarySlice = createSlice({
         isSaved: undefined,
         isLoading: false,
         error: null,
-        isCommentaryDataUpdated: undefined
+        isCommentaryDataUpdated: undefined,
+        isUndoCompleted: undefined
     },
     reducers: {
         updateSavedState: (state, action) => {
@@ -58,6 +72,9 @@ const commentarySlice = createSlice({
         clearAddCommentaryScreenData: (state, action) => {
             state.commentaryDataToUpdate = {}
             state.isCommentaryDataUpdated = undefined
+        },
+        clearUndoFlag: (state, action) => {
+            state.isUndoCompleted = undefined
         },
     },
     extraReducers: (builder) => {
@@ -84,21 +101,21 @@ const commentarySlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
-            .addCase(addCommentaryScreenData.pending, (state) => {
-                // state.isLoading = true;
-            })
             .addCase(addCommentaryScreenData.fulfilled, (state, action) => {
                 state.commentaryDataToUpdate = action.payload
                 state.isCommentaryDataUpdated = true
-                // state.isSaved = true
-                // state.isLoading = false;
             })
             .addCase(addCommentaryScreenData.rejected, (state, action) => {
-                // state.isLoading = false;
                 state.error = action.payload;
-            });
+            })
+            .addCase(undoBallFromCommentary.fulfilled, (state, action) => {
+                state.isUndoCompleted = true
+            })
+            .addCase(undoBallFromCommentary.rejected, (state, action) => {
+                state.error = action.payload;
+            })
     }
 });
 
-export const { updateSavedState, clearAddCommentaryScreenData } = commentarySlice.actions;
+export const { updateSavedState, clearAddCommentaryScreenData, clearUndoFlag } = commentarySlice.actions;
 export default commentarySlice.reducer;

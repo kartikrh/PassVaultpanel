@@ -7,12 +7,10 @@ import Select from "react-select";
 import "../CommentaryCss.css"
 
 const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit }) => {
+    console.log(bowlingTeamDetails?.wrCommentaryPlayerTeamKipper)
     const [wicketData, setWicketData] = useState({ runs: 0 });
     const [showFields, setShowFields] = useState({});
     const [bowlingPlayerList, setBowlingPlayerList] = useState([]);
-    // useEffect(() => {
-    //     console.log(wicketData)
-    // })
     useEffect(() => {
         const formattedBowlerData = []
         bowlingTeam?.forEach(element => {
@@ -29,7 +27,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
             else if (value === RETIRED_OUT || value === OBSTRACT_THE_FIELDING || value === TIMED_OUT) updateShowFields = { "batterId": true, "runs": true, "fielder1": false, "fielder2": false, }
             else if (value === RUN_OUT) updateShowFields = { "batterId": true, "runs": true, "fielder1": true, "fielder2": true, }
             else if (value === CATCH || value === STUMP) {
-                if (value === STUMP) updateDependFields["fielder1"] = bowlingTeamDetails?.teamKipper
+                if (value === STUMP) updateDependFields["fielder1"] = bowlingTeamDetails?.commentaryPlayerTeamKipper
                 updateShowFields = { "batterId": false, "runs": false, "fielder1": true, "fielder2": false, }
             }
             setShowFields(updateShowFields)
@@ -38,6 +36,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
             return { ...prevValue, ...updateDependFields, [field]: value }
         })
     }
+
     const handleSubmit = () => {
         const dataToSend = {
             wicketType: wicketData.wicketType,
@@ -48,6 +47,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
         }
         onSubmit(dataToSend)
     }
+
     return (
         <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}> <div className='modal-header-style'>Wicket</div> </ModalHeader>
