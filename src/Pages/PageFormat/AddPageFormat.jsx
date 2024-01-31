@@ -1,57 +1,35 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { ConfigFields } from "../../constants/FieldConst/ConfigConst";
+import { PageFormatFields } from "../../constants/FieldConst/PageFormatConst";
+import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_CONFIG, TAB_PAGE_FORMAT } from '../../components/Common/Const';
-import { addConfigToDB, updateSavedState } from "../../Features/Tabs/ConfigSlice";
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PAGE_FORMAT } from '../../components/Common/Const';
+import { addPageFormatToDB, updateSavedState } from '../../Features/Tabs/pageFormatSlice';
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
-import {
-  Button,
-  ButtonDropdown,
-  Card,
-  CardBody,
-  Col,
-  Container,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Row,
-} from "reactstrap";
 
-const AddConfig = () => {
-  const finalizeRef = useRef(null);
-  let navigate = useNavigate();
-  const handleBackClick = () => {
-    navigate("/PageFormat");
-  };
-
+const AddPageFormat = () => {
   const pageName = TAB_PAGE_FORMAT
+  const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
-  const [disabledFields, setDisabledFields] = useState({});
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector(state => state.tabsData.config);
+  const { isSaved, isLoading } = useSelector(state => state.tabsData.pageFormat);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
+  let navigate = useNavigate();
   const location = useLocation();
-  const [configId, setconfigId] = useState(location.state?.configId || "0");
+  const [pageFormatId, setPageFormatId] = useState(location.state?.pageFormatId || "0");
 
   useEffect(() => {
-    // if (id !== "0") {
-    //   fetchData(id);
-    // }
-    if (configId !== "0") {
-        fetchData(configId);
-        setDisabledFields({
-            key: true,
-        });
-      }
-  }, [configId]);
+    if (pageFormatId !== "0") {
+      fetchData(pageFormatId);
+    }
+  }, [pageFormatId]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -67,16 +45,15 @@ const AddConfig = () => {
       }
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
-        setDisabledFields({})
-        setconfigId("0")
+        setPageFormatId("0")
         finalizeRef.current.resetForm()
       }
       setCurrentSaveAction(undefined)
     }
   }, [isSaved]);
 
-  const fetchData = async (configId) => {
-    await axiosInstance.post('/admin/pageFormate/byId', { configId })
+  const fetchData = async (pageFormatId) => {
+    await axiosInstance.post('/admin/pageFormate/byId', { pageFormatId })
       .then((response) => {
         setInitialEditData(response?.result);
       }).catch((error) => {
@@ -88,13 +65,16 @@ const AddConfig = () => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        configId: configId
+        pageFormatId: pageFormatId
       }
-      dispatch(addConfigToDB({ ...dataToSave, ...extraData }))
+      dispatch(addPageFormatToDB(convertObjtoFormData({ ...dataToSave, ...extraData })))
       setCurrentSaveAction(saveAction);
     }
   };
 
+  const handleBackClick = () => {
+    navigate("/PageFormat");
+  };
 
   return (
     <React.Fragment>
@@ -104,22 +84,12 @@ const AddConfig = () => {
             <Col xs={12} md={8} lg={9}>
               <h3>Page Format</h3>
             </Col>
-            {/* {isLoading && <SpinnerModel />} */}
             <Card>
               <CardBody>
+                {isLoading && <SpinnerModel />}
                 <Row>
-                  <Col
-                    className="mb-3"
-                    xs={12}
-                    md={{ span: 4, offset: 8 }}
-                    lg={{ span: 3, offset: 9 }}
-                  >
-                    <button
-                      className="btn btn-danger mx-1"
-                      onClick={handleBackClick}
-                    >
-                      Back
-                    </button>
+                  <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
+                    <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
                     <ButtonDropdown
                       direction="down"
                       isOpen={drp_up}
@@ -129,12 +99,7 @@ const AddConfig = () => {
                         disabled={
                           !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
                             checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
-                        id="caret"
-                        color="primary"
-                        onClick={() => {
-                          handleSaveClick(SAVE_AND_CLOSE);
-                        }}
-                      >
+                        id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
                         Save & Close
                       </Button>
                       <DropdownToggle caret color="primary">
@@ -153,10 +118,8 @@ const AddConfig = () => {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={ConfigFields}
+                  fields={PageFormatFields}
                   editFormData={initialEditData}
-                // masterData={masterData}
-                 disabledFields={disabledFields}
                 />
               </CardBody>
             </Card>
@@ -164,7 +127,7 @@ const AddConfig = () => {
         </Container>
       </div>
     </React.Fragment>
-  )
+  );
 }
 
-export default AddConfig
+export default AddPageFormat;

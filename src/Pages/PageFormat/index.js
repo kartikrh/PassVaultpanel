@@ -65,8 +65,8 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/pageFormate/save`, {
-        // blockId: record.blockId,
-        ...record,
+        pageFormatId: record.pageFormatId,
+        pageFormatName: record.pageFormatName,
         [pType]: cState ? false : true,
       })
       .then((response) => {
