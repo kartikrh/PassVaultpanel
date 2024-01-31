@@ -34,6 +34,7 @@ export const TAB_EVENT = "Events"
 export const TAB_CONFIG = "Config"
 export const TAB_BLOCKS = "Blocks"
 export const TAB_PAGE_FORMAT = "Page Format"
+export const TAB_PAGE = "Page"
 export const TAB_IMPORT_MARKET = "Import Market"
 
 // Permission Type

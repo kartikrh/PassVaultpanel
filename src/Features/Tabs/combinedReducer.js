@@ -15,6 +15,7 @@ import importMarketSlice from './importMarketSlice';
 import BlockSlice from './BlockSlice';
 import ConfigSlice from './ConfigSlice';
 import pageFormatSlice from './pageFormatSlice';
+import pageSlice from './pageSlice';
 
 const rootReducer = combineReducers({
     tab: TabSlice,
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
     block: BlockSlice,
     config: ConfigSlice,
     pageFormat: pageFormatSlice,
+    page: pageSlice,
 });
 
 export default rootReducer;
