@@ -666,6 +666,7 @@ const Commentary = (props) => {
             const updatedBowlerOver = ((+bowler.bowlerOver || 0) - 0.1).toFixed(1)
             const updateOver = {}
             const updatePartnership = {}
+            const undoWicketPlayers = {}
             if (type === BALL_TYPE_REGULAR) {
                 updateBatter["batRun"] = (batter.batRun || 0) - run
                 updateBatter["batBall"] = (batter.batBall || 0) - 1
@@ -679,9 +680,9 @@ const Commentary = (props) => {
                 updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
                 updateBattingTeam["teamOver"] =
                     ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
-                if (!currentBall.ballIsWicket) { }
+                if (!currentBall.ballIsWicket) {
 
-
+                }
                 if (run === 0) {
                     updateBatter["batDotBall"] = (batter.batDotBall || 0) - 1
                     updateOver["dotBall"] = (currentOver.dotBall || 0) - 1
@@ -762,16 +763,16 @@ const Commentary = (props) => {
         }
         // console.log(currentBall, teams, onPitchPlayers)
     }
+    const updatePlayerAfterUndoWicket = () => {
 
+    }
     return <>
         <CommentaryScreen
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
             changePlayer={changePlayer}
-            changeOver={() => {
-                setShowChangeOverModal(true)
-            }}
+            changeOver={() => { setShowChangeOverModal(true) }}
             updateExtras={(extraType) => {
                 setExtrasType(extraType)
                 setExtrasList(EXTRAS_LIST[extraType])
