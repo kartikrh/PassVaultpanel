@@ -52,6 +52,9 @@ import AddBlock from "../Pages/Blocks/AddBlock.jsx";
 import Blocks from "../Pages/Blocks";
 import AddConfig from "../Pages/Config/AddConfig.jsx";
 import Config from "../Pages/Config";
+import PageFormat from "../Pages/PageFormat";
+import AddPageFormat from "../Pages/PageFormat/AddPageFormat.jsx";
+
 
 const authProtectedRoutes = [
   //dashboard
@@ -87,6 +90,8 @@ const authProtectedRoutes = [
   { path: '/addblocks', component: <AddBlock /> },
   { path: '/config', component: <Config /> },
   { path: '/addConfig', component: <AddConfig /> },
+  { path: '/addPageFormat', component: <AddPageFormat /> },
+  { path: "/PageFormat", component: <PageFormat /> },
   {
     path: '/changePassword', component: <ChangePassword />
   },
