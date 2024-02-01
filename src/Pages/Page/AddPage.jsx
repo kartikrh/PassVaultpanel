@@ -24,6 +24,7 @@ const AddPage = () => {
   let navigate = useNavigate();
   const location = useLocation();
   const [pageId, setPageId] = useState(location.state?.pageId || "0");
+  const [masterData, setMasterData] = useState({});
 
   useEffect(() => {
     if (pageId !== "0") {
@@ -35,12 +36,13 @@ const AddPage = () => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
+    fetchMasterData()
   }, []);
 
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined))
-      if (currentSaveAction === SAVE_AND_CLOSE){
+      if (currentSaveAction === SAVE_AND_CLOSE) {
         navigate("/Page")
       }
       else if (currentSaveAction === SAVE_AND_NEW) {
@@ -56,6 +58,20 @@ const AddPage = () => {
     await axiosInstance.post('/admin/page/byId', { pageId })
       .then((response) => {
         setInitialEditData(response?.result);
+      }).catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const fetchMasterData = async () => {
+    axiosInstance.post('/admin/page/pageFormateList', {})
+      .then((response) => {
+        setMasterData((prevData) => ({
+          ...prevData, "pageFormatId":
+            response?.result?.map(item => {
+              return { label: item.pageFormatName, value: item.pageFormatId }
+            })
+        }));
       }).catch((error) => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
@@ -120,6 +136,7 @@ const AddPage = () => {
                   ref={finalizeRef}
                   fields={PageFields}
                   editFormData={initialEditData}
+                  masterData={masterData}
                 />
               </CardBody>
             </Card>
