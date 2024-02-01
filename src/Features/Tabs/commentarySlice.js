@@ -46,7 +46,7 @@ export const undoBallFromCommentary = createAsyncThunk(
     'commentary/undoBallFromCommentary',
     async (data, { rejectWithValue, dispatch }) => {
         try {
-            const response = await axiosInstance.post('/admin/commentary//deleteBallByBall', data);
+            const response = await axiosInstance.post('/admin/commentary/deleteBallByBall', data);
             // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
