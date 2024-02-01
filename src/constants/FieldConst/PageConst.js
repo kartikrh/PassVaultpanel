@@ -5,7 +5,7 @@ export const PageFields = [
         name: "pageName",
         label: "Page Name",
         parentclassName: "",
-        regex: /^.{0,100}$/,
+        regex: /^.{1,100}$/,
         regexErrorMessage: "Max allowed Characters 100",
         isRequired: true,
         type: TEXT,
