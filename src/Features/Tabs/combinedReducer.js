@@ -14,6 +14,9 @@ import changePasswordSlice from './changePasswordSlice';
 import importMarketSlice from './importMarketSlice';
 import BlockSlice from './BlockSlice';
 import ConfigSlice from './ConfigSlice';
+import pageFormatSlice from './pageFormatSlice';
+import pageSlice from './pageSlice';
+
 const rootReducer = combineReducers({
     tab: TabSlice,
     commentary: CommentarySlice,
@@ -27,10 +30,11 @@ const rootReducer = combineReducers({
     team: TeamSlice,
     role: roleSlice,
     changePassword: changePasswordSlice,
-    importMarket : importMarketSlice,
-    block:BlockSlice,
-    config:ConfigSlice
-
+    importMarket: importMarketSlice,
+    block: BlockSlice,
+    config: ConfigSlice,
+    pageFormat: pageFormatSlice,
+    page: pageSlice,
 });
 
 export default rootReducer;

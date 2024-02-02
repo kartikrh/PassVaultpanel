@@ -31,6 +31,7 @@ import {
   RADIO_BUTTON,
   TEXT_EDITOR,
   ERROR,
+  ckeditor5ToolbarItems,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form } from "reactstrap";
@@ -118,7 +119,7 @@ const FormBuilder = forwardRef(
         const value = formData[field.name];
         const shouldValidate =
           !doNotValidateFields.includes(field.name) &&
-          (!field.dependsOnField || formData[field.dependsOnField]);
+          ((field.dependsOnField && formData[field.dependsOnField] === field.dependsOnValue));
 
         if (shouldValidate && field.isRequired && isValueEmpty(value)) {
           errors[field.name] =
@@ -175,7 +176,7 @@ const FormBuilder = forwardRef(
       const errors = { ...fieldErrors };
       const dependentFieldValue = formData[field.dependsOnField];
       if (
-        (!field.dependsOnField || dependentFieldValue) &&
+        (!field.dependsOnField || dependentFieldValue === field.dependsOnValue) &&
         field.isRequired &&
         isValueEmpty(value)
       ) {
@@ -195,10 +196,11 @@ const FormBuilder = forwardRef(
     };
 
     const fetchIsDependable = (field) => {
-      return (
-        (field.dependsOnField && formData[field.dependsOnField]) ||
-        !field.dependsOnField
-      );
+      if (field.dependsOnField) {
+        return formData[field.dependsOnField] === field.dependsOnValue;
+      } else {
+        return true;
+      }
     };
 
     // Expose the finalizeData & reset function to the parent using a ref
@@ -517,9 +519,12 @@ const FormBuilder = forwardRef(
                     <CKEditor
                       config={{
                         extraPlugins: [MyCustomUploadAdapterPlugin],
+                        style: {
+                          minHeight: '300px', // Adjust the minimum height as needed
+                        },
                       }}
                       editor={ClassicEditor}
-                      data={formData[field.name]}
+                      data={formData?.[field.name] || ""}
                       onChange={(event, editor) =>
                         handleChange(field, editor.getData())
                       }

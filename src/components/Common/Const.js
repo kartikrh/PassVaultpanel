@@ -33,6 +33,8 @@ export const TAB_COMPETITION = "Competition"
 export const TAB_EVENT = "Events"
 export const TAB_CONFIG = "Config"
 export const TAB_BLOCKS = "Blocks"
+export const TAB_PAGE_FORMAT = "Page Format"
+export const TAB_PAGE = "Page"
 export const TAB_IMPORT_MARKET = "Import Market"
 
 // Permission Type
@@ -57,3 +59,45 @@ export const BALLING_STATUS = 2
 export const CONTENT_IMAGE_TYPE = {
     BLOCKS: "Blocks"
 }
+
+export const ckeditor5ToolbarItems =  [
+    'undo', 'redo',
+    '|',
+    'exportPdf', 'exportWord', 'importWord',
+    '|',
+    'showBlocks', 'formatPainter', 'findAndReplace', 'selectAll', 'wproofreader',
+    '|',
+    'heading',
+    '|',
+    'style',
+    '|',
+    'fontSize', 'fontFamily',
+    {
+        label: 'Font color',
+        icon: 'plus',
+        items: ['fontColor', 'fontBackgroundColor']
+    },
+    '|',
+    'caseChange',
+    '-',
+    'bold', 'italic', 'underline',
+    {
+        label: 'Formatting',
+        icon: 'text',
+        items: ['strikethrough', 'subscript', 'superscript', 'code', 'horizontalLine', '|', 'removeFormat']
+    },
+    'specialCharacters', 'pageBreak',
+    '|',
+    'link', 'insertImage', 'ckbox', 'insertTable', 'tableOfContents', 'insertTemplate',
+    {
+        label: 'Insert',
+        icon: 'plus',
+        items: ['highlight', 'blockQuote', 'mediaEmbed', 'codeBlock', 'htmlEmbed']
+    },
+    '|',
+    'alignment',
+    '|',
+    'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent',
+    '|',
+    'sourceEditing'
+]

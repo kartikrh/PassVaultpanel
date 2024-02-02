@@ -13,18 +13,6 @@ export const BALL_TYPE_NO_BALL_BYE = 6;
 export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
 export const BALL_TYPE_PANELTY_RUN = 8;
 
-// Ball Status
-export const BATTER_STATUS_NONE = 0;
-export const BATTER_STATUS_ON_PITCH = 1;
-export const BATTER_STATUS_WICKET = 2;
-export const BATTER_STATUS_RETIRE = 3;
-
-// Innings
-export const OPEN = 1;
-export const TOSSDONE = 2;
-export const INPROGRESS = 3;
-export const END = 4;
-
 // Out Type
 export const BOLD = 1;
 export const BOLD_LABEL = "Bold";
