@@ -13,7 +13,7 @@ import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMIS
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-
+import {ImportExportModel} from '../../components/Model/ImportExportModel'
 const Index = () => {
   const pageName = TAB_PLAYERS
   const finalizeRef = useRef(null);
@@ -24,6 +24,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [importExportModelVisable, setImportExportModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -226,13 +227,30 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
-
+  const modelColumns = [
+    { title: "Player Id", key: "playerId", type: "text" },
+    { title: "Player Name", key: "playerName", type: "text" },
+    { title: "Batsman Average", key: "batsmanAverage", type: "input" },
+    { title: "Batsman StrikeRate", key: "batsmanStrikeRate", type: "input" },
+    { title: "Bowler Average", key: "bowlerAverage", type: "input" },
+    { title: "Bowler Economy", key: "bowlerEconomy", type: "input" },
+  ];
+  const dataToPick = [
+    { item: "playerId", type: "text" },
+    { item: "playerName", type: "text" },
+    { item: "batsmanAverage", type: "input" },
+    { item: "batsmanStrikeRate", type: "input" },
+    { item: "bowlerEconomy", type: "input" },
+    { item: "bowlerAverage", type: "input" },
+    {item: "isUpdate", type: "input" }
+  ];
   //elements required
   const tableElement = {
     title: "Players",
     isActive: true,
     eventTypeSelect: true,
     resetButton: true,
+    importExport: true,
   };
 
   useEffect(() => {
@@ -262,6 +280,7 @@ const Index = () => {
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            setImportExportModelVisable={setImportExportModelVisable}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -269,6 +288,13 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {importExportModelVisable && <ImportExportModel
+            importExportModelVisable={importExportModelVisable}
+            setImportExportModelVisable={setImportExportModelVisable}
+            dataSource={data}
+            columns={modelColumns}
+            dataToPick={dataToPick}
+          />}
         </Container>
       </div>
     </React.Fragment>

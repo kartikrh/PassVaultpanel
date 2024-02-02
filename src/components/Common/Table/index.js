@@ -44,7 +44,7 @@ const Index = forwardRef(
       cloneModelFunction,
       deleteModelFunction,
       singleCheck,
-      displayTypes,
+      setImportExportModelVisable,
       eventTypes,
       reFetchData,
       handleReset,
@@ -157,8 +157,7 @@ const Index = forwardRef(
           setTotal(data.length);
           setFilteredData(data);
         }
-      }
-      else if (tableElement.title === "Import Events") {
+      } else if (tableElement.title === "Import Events") {
         const updatedData = dataSource.filter((val) => {
           const first = Object.values(val);
           const firstObject = first[0];
@@ -181,8 +180,7 @@ const Index = forwardRef(
           setFilteredData(updatedData);
           setTotal(updatedData.length);
         }
-      }
-      else {
+      } else {
         const updatedData = dataSource.filter((val) => {
           const found = Object.values(val).some((value) => {
             if (typeof value === "string" || value instanceof String) {
@@ -205,7 +203,13 @@ const Index = forwardRef(
         }
       }
     };
-
+    const diffKey = [
+      "playerId",
+      "playerName",
+      "batsmanAverage",
+      "batsmanStrikeRate",
+      "bowlerEconomy",
+    ];
     const generateSimplifiedData = () => {
       let pdfCols = ["No."];
       let colsDataKey = [];
@@ -219,12 +223,12 @@ const Index = forwardRef(
           colsDataKey.push(item.key);
         }
       });
+      console.log({ pdfCols, colsDataKey });
       const headers = [pdfCols];
       let colsData = dataSource.map((dataItem) =>
         colsDataKey.map((key) => dataItem[key])
       );
       colsData = colsData.map((value, index) => [index + 1, ...value]);
-      // const csvData = [...headers, ...colsData];
       const csvData = colsData.map((value, i) => {
         let data = {};
         value.forEach((v, i) => {
@@ -236,6 +240,42 @@ const Index = forwardRef(
         return data;
       });
       return { headers, colsData, csvData };
+    };
+    const generateDifferentData = () => {
+      let pdfCols = ["No."];
+      let colsDataKey = [];
+      diffKey?.forEach((item) => {
+        pdfCols.push(item);
+        colsDataKey.push(item);
+      });
+      const headers = [pdfCols];
+      let colsData = dataSource.map((dataItem) =>
+        colsDataKey.map((key) => dataItem[key])
+      );
+      colsData = colsData.map((value, index) => [index + 1, ...value]);
+      const csvData = colsData.map((value, i) => {
+        let data = {};
+        value.forEach((v, i) => {
+          data = {
+            ...data,
+            [pdfCols[i]]: v,
+          };
+        });
+        return data;
+      });
+      return { headers, colsData, csvData };
+    };
+    const handleDownloadExcel = () => {
+      // Create a worksheet
+
+      const ws = XLSX.utils.json_to_sheet(generateDifferentData().csvData);
+
+      // Create a workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
+
+      // Download the workbook
+      XLSX.writeFile(wb, `${tableElement.title}.xlsx`);
     };
 
     const generatePDF = () => {
@@ -283,8 +323,10 @@ const Index = forwardRef(
       });
 
       const sortedData = data.slice().sort((a, b) => {
-        const valueA = typeof a[propName] === "string" ? a[propName] : a[propName];
-        const valueB = typeof b[propName] === "string" ? b[propName] : b[propName];
+        const valueA =
+          typeof a[propName] === "string" ? a[propName] : a[propName];
+        const valueB =
+          typeof b[propName] === "string" ? b[propName] : b[propName];
 
         if (order === "ascending") {
           return valueA.localeCompare(valueB);
@@ -307,7 +349,11 @@ const Index = forwardRef(
         key: propName,
       });
       const sortedData = data.slice().sort((a, b) => {
-        if (propName == "eventTypeId" || propName == "competitionId" || propName == "eventId") {
+        if (
+          propName == "eventTypeId" ||
+          propName == "competitionId" ||
+          propName == "eventId"
+        ) {
           const first = Object.values(a);
           const second = Object.values(b);
           const firstObject = first[0]?.id;
@@ -325,27 +371,21 @@ const Index = forwardRef(
           } else {
             return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
           }
-        }
-        else if (propName == "date") {
+        } else if (propName == "date") {
           const first = Object.values(a);
           const second = Object.values(b);
           const firstObject = first[0]?.openDate;
           const secondObject = second[0]?.openDate;
           const valueA =
-            typeof firstObject === "string"
-              ? firstObject
-              : firstObject;
+            typeof firstObject === "string" ? firstObject : firstObject;
           const valueB =
-            typeof secondObject === "string"
-              ? secondObject
-              : secondObject;
+            typeof secondObject === "string" ? secondObject : secondObject;
           if (order === "ascending") {
             return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
           } else {
             return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
           }
-        }
-        else {
+        } else {
           //   const valueA =
           //   typeof a[propName].name === "string"
           //     ? a[propName]?.name
@@ -360,8 +400,14 @@ const Index = forwardRef(
           //   return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
           // }
 
-          const valueA = typeof a[propName]?.name === "string" ? a[propName]?.name : a[propName]?.name;
-          const valueB = typeof b[propName]?.name === "string" ? b[propName]?.name : b[propName]?.name;
+          const valueA =
+            typeof a[propName]?.name === "string"
+              ? a[propName]?.name
+              : a[propName]?.name;
+          const valueB =
+            typeof b[propName]?.name === "string"
+              ? b[propName]?.name
+              : b[propName]?.name;
           if (order === "ascending") {
             return valueA.localeCompare(valueB);
           } else {
@@ -439,83 +485,85 @@ const Index = forwardRef(
       <Row>
         <Col lg={12}>
           <Card>
-            {tableElement?.title !== "Import Events" && <CardHeader>
-              <form>
-                <Row className="g-2">
-                  <Col className="col-sm-auto">
-                    <div className="d-flex gap-2">
-                      {isAddPermission && (
-                        <Button
-                          color="success"
-                          className="add-btn"
-                          onClick={() => {
-                            navigate(onAddNavigate);
-                          }}
-                          id="create-btn"
-                        >
-                          <i className="ri-add-line align-bottom me-1"></i> Add
-                        </Button>
-                      )}
-                      {tableElement?.clone ? (
-                        <Button
-                          color="warning"
-                          className="btn"
-                          onClick={() => {
-                            singleCheck.length === 1
-                              ? cloneModelFunction(true)
-                              : dispatch(
-                                updateToastData({
-                                  data: "Select at least one (only One) row",
-                                  title: "Error",
-                                  type: ERROR,
-                                })
-                              );
-                          }}
-                          id="create-btn"
-                        >
-                          <i className="ri-add-line align-bottom me-1"></i>{" "}
-                          Clone
-                        </Button>
-                      ) : null}
-                      {isDeletePermission && (
-                        <Button
-                          color="soft-danger"
-                          onClick={() => {
-                            singleCheck.length > 0
-                              ? deleteModelFunction(true)
-                              : dispatch(
-                                updateToastData({
-                                  data: "Select at least one (only One) row",
-                                  title: "Error",
-                                  type: ERROR,
-                                })
-                              );
-                          }}
-                        >
-                          <i className="ri-delete-bin-2-line"></i>
-                        </Button>
-                      )}
-                      {tableElement?.displayTypeDropDown ? (
-                        <div className="">
-                          <select
-                            className="form-select"
-                            id="inlineFormSelectPref"
-                            onChange={(e) => {
-                              handleTableActions(
-                                "displayType",
-                                Number(e.target.value)
-                              );
+            {tableElement?.title !== "Import Events" && (
+              <CardHeader>
+                <form>
+                  <Row className="g-2">
+                    <Col className="col-sm-auto">
+                      <div className="d-flex gap-2">
+                        {isAddPermission && (
+                          <Button
+                            color="success"
+                            className="add-btn"
+                            onClick={() => {
+                              navigate(onAddNavigate);
                             }}
-                            value={tableActions?.displayType}
+                            id="create-btn"
                           >
-                            <option value={0}>Select Display Type</option>
-                            {tableElement?.displayTypes.map((val, index) => {
-                              return (
-                                <option value={val.value}>{val.label}</option>
-                              );
-                            })}
-                          </select>
-                          {/* <Col>
+                            <i className="ri-add-line align-bottom me-1"></i>{" "}
+                            Add
+                          </Button>
+                        )}
+                        {tableElement?.clone ? (
+                          <Button
+                            color="warning"
+                            className="btn"
+                            onClick={() => {
+                              singleCheck.length === 1
+                                ? cloneModelFunction(true)
+                                : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                            }}
+                            id="create-btn"
+                          >
+                            <i className="ri-add-line align-bottom me-1"></i>{" "}
+                            Clone
+                          </Button>
+                        ) : null}
+                        {isDeletePermission && (
+                          <Button
+                            color="soft-danger"
+                            onClick={() => {
+                              singleCheck.length > 0
+                                ? deleteModelFunction(true)
+                                : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                            }}
+                          >
+                            <i className="ri-delete-bin-2-line"></i>
+                          </Button>
+                        )}
+                        {tableElement?.displayTypeDropDown ? (
+                          <div className="">
+                            <select
+                              className="form-select"
+                              id="inlineFormSelectPref"
+                              onChange={(e) => {
+                                handleTableActions(
+                                  "displayType",
+                                  Number(e.target.value)
+                                );
+                              }}
+                              value={tableActions?.displayType}
+                            >
+                              <option value={0}>Select Display Type</option>
+                              {tableElement?.displayTypes.map((val, index) => {
+                                return (
+                                  <option value={val.value}>{val.label}</option>
+                                );
+                              })}
+                            </select>
+                            {/* <Col>
                             <Select
                               classNamePrefix="select2-selection"
                               placeholder="Select Display Type"
@@ -543,108 +591,121 @@ const Index = forwardRef(
                               defaultInputValue={tableActions?.displayType}
                             />
                           </Col> */}
-                        </div>
-                      ) : null}
-                      {tableElement?.eventTypeSelect ? (
-                        <div className="">
-                          <select
-                            className="form-select"
-                            id="inlineFormSelectPref"
-                            onChange={(e) => {
-                              handleTableActions("eventTypeId", e.target.value);
-                            }}
-                            value={tableActions?.eventTypeId}
-                          >
-                            <option value={0}>Select Event Type</option>
-                            {eventTypes?.map((val) => {
-                              return (
-                                <option value={val?.eventTypeId}>
-                                  {val?.eventType}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </div>
-                      ) : null}
-                      {tableElement?.competitionsSelect ? (
-                        <div className="">
-                          <select
-                            className="form-select"
-                            id="inlineFormSelectPref"
-                            onChange={(e) => {
-                              handleTableActions(
-                                "competitionId",
-                                e.target.value
-                              );
-                            }}
-                            value={tableActions?.competitionId}
-                          >
-                            <option value={0}>Select Competition</option>
-                            {competitions?.map((val) => {
-                              return (
-                                <option value={val.competitionId}>
-                                  {val.competition}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </div>
-                      ) : null}
-                      {tableElement?.isActive ? (
-                        <div className="d-flex align-items-center">
-                          <Switch
-                            width={70}
-                            uncheckedIcon={<OffsymbolStatus />}
-                            checkedIcon={<OnSymbolStatus />}
-                            className="pe-0"
-                            onColor="#02a499"
-                            onChange={() => {
-                              handleTableActions("isActive", !statusSwitch);
-                            }}
-                            checked={statusSwitch}
-                          />
-                        </div>
-                      ) : null}
+                          </div>
+                        ) : null}
+                        {tableElement?.eventTypeSelect ? (
+                          <div className="">
+                            <select
+                              className="form-select"
+                              id="inlineFormSelectPref"
+                              onChange={(e) => {
+                                handleTableActions(
+                                  "eventTypeId",
+                                  e.target.value
+                                );
+                              }}
+                              value={tableActions?.eventTypeId}
+                            >
+                              <option value={0}>Select Event Type</option>
+                              {eventTypes?.map((val) => {
+                                return (
+                                  <option value={val?.eventTypeId}>
+                                    {val?.eventType}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                        ) : null}
+                        {tableElement?.competitionsSelect ? (
+                          <div className="">
+                            <select
+                              className="form-select"
+                              id="inlineFormSelectPref"
+                              onChange={(e) => {
+                                handleTableActions(
+                                  "competitionId",
+                                  e.target.value
+                                );
+                              }}
+                              value={tableActions?.competitionId}
+                            >
+                              <option value={0}>Select Competition</option>
+                              {competitions?.map((val) => {
+                                return (
+                                  <option value={val.competitionId}>
+                                    {val.competition}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                        ) : null}
+                        {tableElement?.isActive ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolStatus />}
+                              checkedIcon={<OnSymbolStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isActive", !statusSwitch);
+                              }}
+                              checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
 
-                      {tableElement?.isShowContent ? (
-                        <div className="d-flex align-items-center">
-                          <Switch
-                            width={70}
-                            uncheckedIcon={<OffsymbolStatus />}
-                            checkedIcon={<OnSymbolStatus />}
-                            className="pe-0"
-                            onColor="#02a499"
-                            onChange={() => {
-                              handleTableActions(
-                                "isShowContent",
-                                !statusSwitch
-                              );
-                            }}
-                            checked={statusSwitch}
-                          />
-                        </div>
-                      ) : null}
-
-                      {tableElement?.resetButton ? (
-                        <div>
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => {
-                              handleTableReset();
-                            }}
-                            type="reset"
-                            id="create-btn"
-                          >
-                            Reset
-                            {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                          </button>
-                        </div>
-                      ) : null}
-                    </div>
-                  </Col>
-                </Row>
-              </form>
-            </CardHeader>}
+                        {tableElement?.isShowContent ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolStatus />}
+                              checkedIcon={<OnSymbolStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions(
+                                  "isShowContent",
+                                  !statusSwitch
+                                );
+                              }}
+                              checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.resetButton ? (
+                          <div style={{display:"flex", flexGrow:50}}>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handleTableReset();
+                              }}
+                              type="reset"
+                              id="create-btn"
+                            >
+                              Reset
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                          </div>
+                        ) : null}
+                        {tableElement?.importExport ? (
+                          <div className="d-flex align-items-center" style={{}}>
+                            <span
+                              className="btn btn-primary"
+                              onClick={()=>{setImportExportModelVisable(true)}}
+                            >
+                              Bulk Update
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </Col>
+                  </Row>
+                </form>
+              </CardHeader>
+            )}
 
             <CardBody>
               <div id="customerList">
@@ -668,26 +729,28 @@ const Index = forwardRef(
                   </Col>
                   <Col className="col-sm">
                     <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                      {tableElement.title !== "Import Events" && <div className="me-1 d-flex">
-                        <CSVLink
-                          data={generateSimplifiedData().csvData}
-                          filename={tableElement.title + ".csv"}
-                        >
-                          <Button size="small" className="btn border">
-                            <i className="fas fa-file-csv"></i>
+                      {tableElement.title !== "Import Events" && (
+                        <div className="me-1 d-flex">
+                          <CSVLink
+                            data={generateSimplifiedData().csvData}
+                            filename={tableElement.title + ".csv"}
+                          >
+                            <Button size="small" className="btn border">
+                              <i className="fas fa-file-csv"></i>
+                            </Button>
+                          </CSVLink>
+                          <Button
+                            size="large"
+                            className="btn border mx-1"
+                            onClick={downloadExcel}
+                          >
+                            <i className="fas fa-file-excel"></i>
                           </Button>
-                        </CSVLink>
-                        <Button
-                          size="large"
-                          className="btn border mx-1"
-                          onClick={downloadExcel}
-                        >
-                          <i className="fas fa-file-excel"></i>
-                        </Button>
-                        <Button onClick={generatePDF} className="btn border">
-                          <i className="bx bxs-file-pdf"></i>
-                        </Button>
-                      </div>}
+                          <Button onClick={generatePDF} className="btn border">
+                            <i className="bx bxs-file-pdf"></i>
+                          </Button>
+                        </div>
+                      )}
                       <div className="">
                         <input
                           type="text"
@@ -735,12 +798,13 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${sortOrder.key === column.key &&
-                                                  sortOrder.sortOrder ===
+                                              color: `${
+                                                sortOrder.key === column.key &&
+                                                sortOrder.sortOrder ===
                                                   "ascending"
                                                   ? "gray"
                                                   : "lightGray"
-                                                }`,
+                                              }`,
                                               fontSize: "12px",
                                               marginTop: "2px",
                                               cursor: "pointer",
@@ -755,12 +819,13 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${sortOrder.key === column.key &&
-                                                  sortOrder.sortOrder ===
+                                              color: `${
+                                                sortOrder.key === column.key &&
+                                                sortOrder.sortOrder ===
                                                   "descending"
                                                   ? "gray"
                                                   : "lightGray"
-                                                }`,
+                                              }`,
                                               marginTop: "-5px",
                                               fontSize: "12px",
                                               cursor: "pointer",
@@ -800,9 +865,9 @@ const Index = forwardRef(
                                             >
                                               {column.render
                                                 ? column.render(
-                                                  record[column.dataIndex],
-                                                  record
-                                                )
+                                                    record[column.dataIndex],
+                                                    record
+                                                  )
                                                 : record[column.dataIndex]}
                                             </td>
                                           </>
@@ -836,20 +901,21 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                            "ascending",
-                                            column.key
-                                          )
+                                              "ascending",
+                                              column.key
+                                            )
                                           : sortByProperty(
-                                            "ascending",
-                                            column.key
-                                          );
+                                              "ascending",
+                                              column.key
+                                            );
                                       }}
                                       style={{
-                                        color: `${sortOrder.key === column.key &&
-                                            sortOrder.sortOrder === "ascending"
+                                        color: `${
+                                          sortOrder.key === column.key &&
+                                          sortOrder.sortOrder === "ascending"
                                             ? "gray"
                                             : "lightGray"
-                                          }`,
+                                        }`,
                                         fontSize: "12px",
                                         marginTop: "2px",
                                         cursor: "pointer",
@@ -860,20 +926,21 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                            "descending",
-                                            column.key
-                                          )
+                                              "descending",
+                                              column.key
+                                            )
                                           : sortByProperty(
-                                            "descending",
-                                            column.key
-                                          );
+                                              "descending",
+                                              column.key
+                                            );
                                       }}
                                       style={{
-                                        color: `${sortOrder.key === column.key &&
-                                            sortOrder.sortOrder === "descending"
+                                        color: `${
+                                          sortOrder.key === column.key &&
+                                          sortOrder.sortOrder === "descending"
                                             ? "gray"
                                             : "lightGray"
-                                          }`,
+                                        }`,
                                         marginTop: "-5px",
                                         fontSize: "12px",
                                         cursor: "pointer",
@@ -893,9 +960,9 @@ const Index = forwardRef(
                               <td key={column.key} style={column.style}>
                                 {column.render
                                   ? column.render(
-                                    record[column.dataIndex],
-                                    record
-                                  )
+                                      record[column.dataIndex],
+                                      record
+                                    )
                                   : record[column.dataIndex]}
                               </td>
                             ))}

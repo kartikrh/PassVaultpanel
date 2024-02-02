@@ -14,7 +14,6 @@ import { checkPermission } from '../../components/Common/Reusables/reusableMetho
 
 const formatMultiSelectDataTeams = (inputList) => {
     const outputList = [];
-
     inputList.forEach((item) =>
         outputList.push(item.teamId)
     );
