@@ -318,7 +318,7 @@ const Commentary = (props) => {
             setCurrentPartnership({ ...partnershipDetails, ...currentPartnership })
             setCurrentOver(currentOver)
             setCurrentBall(_.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined)
-            checkInningsSwitch(ALL)
+            // checkInningsSwitch(ALL)
             setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
             if (isEmpty(currentPartnership))
                 dispatch(addCommentaryScreenData({ "commentaryDetails": commentaryDetails, "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams }), }))
