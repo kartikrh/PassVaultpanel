@@ -77,6 +77,7 @@ export const TabFields = [
         label: "Add Page Route",
         type: TEXT,
         dependsOnField: "isAdd",
+        dependsOnValue: true,
         isRequired: true,
         requiredErrorMessage: "Please enter add page route.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
