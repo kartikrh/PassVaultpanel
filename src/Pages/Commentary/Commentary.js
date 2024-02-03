@@ -15,6 +15,7 @@ import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
 import { compareNumStringValues } from "../../components/Common/Reusables/reusableMethods.js"
 import UpdateStrikeModal from "./CommentaryModels/UpdateStrikerModal.jsx"
 import WinnerModal from "./CommentaryModels/WinnerModal.jsx"
+import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -47,6 +48,7 @@ const Commentary = (props) => {
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
     const [showSwitchBatterModal, setShowSwitchBatterModal] = useState(undefined)
     const [isUndoBall, setIsUndoBall] = useState(undefined)
+    const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted } = useSelector(state => state.tabsData.commentary);
@@ -56,7 +58,8 @@ const Commentary = (props) => {
         // console.log(commentaryDetails, matchTypeDetails)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         console.log(currentOver, currentBall)
-        console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+        // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+        console.log(ballHistory, overHistory)
     })
 
     const checkForOverSwitch = (currentOver) => {
@@ -94,7 +97,7 @@ const Commentary = (props) => {
         }
         if (conditionsToCheck.some(condition => condition)) {
             if (
-                teams[BOWLING_TEAM].isBattingComplete && isLastInnigs) checkWinner()
+                teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) checkWinner()
             else setShowInningsChangePopup(true);
         }
     }
@@ -688,7 +691,12 @@ const Commentary = (props) => {
     }
     const handleUndoClick = () => {
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
-            if ((currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) updateAfterOverUndo()
+            console.log("clicked")
+            console.log(currentOver, currentOver.over, currentOver.ballCount, currentBall.ballRun)
+            if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
+                && ((currentBall.ballRun || 0) === 0)) {
+                setUndoInningsPopup(true)
+            } else if ((currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) updateAfterOverUndo()
             else {
                 const updateBattingTeam = {}
                 let updateBowler = {}
@@ -897,6 +905,55 @@ const Commentary = (props) => {
         dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
         setIsUndoBall(OVER)
     }
+    const onUndoPlayerSelection = () => {
+        let teamUpdates = undefined
+        let commentaryUpdates = undefined
+
+        teamUpdates = [
+            { ...teams?.[BATTING_TEAM], isBattingComplete: false, teamStatus: 1 },
+            { ...teams?.[BOWLING_TEAM], teamStatus: 2 }]
+        commentaryUpdates = {
+            "commentaryStatus": 2,
+            "target": 0,
+            "displayStatus": "Innings Break"
+        }
+        let objToSave = {
+            "commentaryDetails": {
+                ...commentaryDetails,
+                ...commentaryUpdates
+            },
+            "commentaryTeams": teamUpdates,
+            "commentaryPlayers": [
+                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
+                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
+            ],
+        }
+        setRedirectOnScreenChange(true)
+        dispatch(addCommentaryScreenData(objToSave))
+    }
+    const onUndoLastInningsClick = () => {
+        let commentaryUpdates = undefined
+
+        let teamUpdates = [
+            { ...teams?.[BATTING_TEAM], isBattingComplete: false, teamStatus: 2 },
+            { ...teams?.[BOWLING_TEAM], isBattingComplete: false, teamStatus: 1 }]
+        commentaryUpdates = {
+            "target": 0,
+            "displayStatus": "Previous Innings"
+        }
+        let objToSave = {
+            "commentaryDetails": { ...commentaryDetails, ...commentaryUpdates },
+            "commentaryTeams": teamUpdates,
+            "commentaryPlayers": [
+                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
+                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
+            ],
+        }
+        setRedirectOnScreenChange(true)
+        dispatch(addCommentaryScreenData(objToSave))
+    }
     return <>
         <CommentaryScreen
             teamDetails={teams}
@@ -954,6 +1011,11 @@ const Commentary = (props) => {
             toggle={() => { setShowSwitchBatterModal(undefined) }}
             onsubmit={changeOnStrikePlayer}
             players={onPitchPlayers}
+        />}
+        {undoInningsPopup && <UndoInnnigsModal isOpen={undoInningsPopup}
+            toggle={() => { setUndoInningsPopup(undefined) }}
+            onLastInnigsClick={() => { }}
+            onPlayerSelectionClick={onUndoPlayerSelection}
         />}
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}
