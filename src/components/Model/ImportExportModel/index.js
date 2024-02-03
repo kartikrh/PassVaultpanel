@@ -92,17 +92,11 @@ export const ImportExportModel = ({
     reader.readAsBinaryString(file);
   };
   const handleInputChange = (value, index, subIndex) => {
-    // console.log(fileData[index][fileData[index].length-1])
-    // console.log(fileData[index][subIndex])
     setFileData((preValue) => {
-      return [
-        ...preValue,
-        [
-          fileData[index],
-          (fileData[index][subIndex] = value),
-          (fileData[index][fileData[index].length - 1] = 1),
-        ],
-      ];
+      const updatedData = [...preValue]; // Create a shallow copy of the original array
+      updatedData[index][subIndex] = value;
+      updatedData[index][updatedData[index].length - 1] = 1;
+      return updatedData; // Return the updated array
     });
   };
   function createObjects(keys, values) {
@@ -118,42 +112,44 @@ export const ImportExportModel = ({
     );
     const data = arrayOfObjects.filter((value) => value.isUpdate == 1);
     console.log(data);
-    if(data.length > 0){await axiosInstance
-      .post("/admin/player/updatePlayerStats", data)
-      .then((response) => {
-        setUpdateStatus(true);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-        setReport({
-          totalNo: data.length || 0,
-          successNo: data.length - response.result.length || 0,
-          failedNo: response.result.length || 0,
+    if (data.length > 0) {
+      await axiosInstance
+        .post("/admin/player/updatePlayerStats", data)
+        .then((response) => {
+          setUpdateStatus(true);
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+          setReport({
+            totalNo: data.length || 0,
+            successNo: data.length - response.result.length || 0,
+            failedNo: response.result.length || 0,
+          });
+          setFailed(response.result);
+        })
+        .catch((error) => {
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+          setUpdateStatus(true);
         });
-        setFailed(response.result);
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-        setUpdateStatus(true);
-      });}else{
-        dispatch(
-          updateToastData({
-            data: "Note :Pls Set IsUpdate by 1 in Player Excel Sheet which Player you want to Update!",
-            title: "Players not found for Update",
-            type: ERROR,
-          })
-        );
-      }
+    } else {
+      dispatch(
+        updateToastData({
+          data: "Note :Pls Set IsUpdate by 1 in Player Excel Sheet which Player you want to Update!",
+          title: "Players not found for Update",
+          type: ERROR,
+        })
+      );
+    }
   };
   useEffect(() => {
     console.log(dataSource);
@@ -223,20 +219,17 @@ export const ImportExportModel = ({
           >
             <div className="" style={{ marginRight: "10px" }}>
               <label type="button" className="btn btn-primary me-1">
-                Total:{" "}
-                <span className="badge ms-1">{report?.totalNo}</span>
+                Total: <span className="badge ms-1">{report?.totalNo}</span>
               </label>
             </div>
             <div className="" style={{ marginRight: "10px" }}>
               <label type="button" className="btn btn-primary me-1">
-                Updated:{" "}
-                <span className="badge ms-1">{report?.successNo}</span>
+                Updated: <span className="badge ms-1">{report?.successNo}</span>
               </label>
             </div>
             <div className="" style={{ marginRight: "10px" }}>
               <label type="button" className="btn btn-danger me-1">
-                Failed:{" "}
-                <span className="badge ms-1">{report?.failedNo}</span>
+                Failed: <span className="badge ms-1">{report?.failedNo}</span>
               </label>
             </div>
           </div>
@@ -267,7 +260,11 @@ export const ImportExportModel = ({
                             disabled
                             style={
                               failed?.some((obj) => obj?.playerId == val[0])
-                                ? { background: "#f2657d", border: "none", color:"white" }
+                                ? {
+                                    background: "#f2657d",
+                                    border: "none",
+                                    color: "white",
+                                  }
                                 : { border: "none", background: "transparent" }
                             }
                             type="text"
