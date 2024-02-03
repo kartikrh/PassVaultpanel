@@ -55,6 +55,19 @@ export const undoBallFromCommentary = createAsyncThunk(
         }
     }
 );
+export const undoOverFromCommentary = createAsyncThunk(
+    'commentary/undoOverFromCommentary',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/deleteOverCommentary', data);
+            // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            // dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 const commentarySlice = createSlice({
     name: 'commentary',
     initialState: {

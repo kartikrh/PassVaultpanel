@@ -54,6 +54,8 @@ import AddConfig from "../Pages/Config/AddConfig.jsx";
 import Config from "../Pages/Config";
 import PageFormat from "../Pages/PageFormat";
 import AddPageFormat from "../Pages/PageFormat/AddPageFormat.jsx";
+import AddPage from "../Pages/Page/AddPage.jsx";
+import Page from "../Pages/Page";
 
 
 const authProtectedRoutes = [
@@ -92,6 +94,8 @@ const authProtectedRoutes = [
   { path: '/addConfig', component: <AddConfig /> },
   { path: '/addPageFormat', component: <AddPageFormat /> },
   { path: "/PageFormat", component: <PageFormat /> },
+  { path: '/addPage', component: <AddPage /> },
+  { path: "/Page", component: <Page /> },
   {
     path: '/changePassword', component: <ChangePassword />
   },

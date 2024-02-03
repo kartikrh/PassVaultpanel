@@ -1,14 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
-import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { updateToastData } from '../toasterSlice';
+import { ERROR, SUCCESS } from '../../components/Common/Const';
 
-export const addPlayerToDb = createAsyncThunk(
-    'player/addPlayer',
-    async (data, { rejectWithValue, dispatch }) => {
+export const addPageToDB = createAsyncThunk(
+    'page/addPage',
+    async (pageData, { rejectWithValue, dispatch }) => {
         try {
-            console.log("this is playerData", data)
-            const response = await axiosInstance.post('/admin/player/save', data);
+            const response = await axiosInstance.post('/admin/page/save', pageData);
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
@@ -18,8 +17,8 @@ export const addPlayerToDb = createAsyncThunk(
     }
 );
 
-const playerSlice = createSlice({
-    name: 'player',
+const pageSlice = createSlice({
+    name: 'page',
     initialState: {
         isSaved: undefined,
         isLoading: false,
@@ -32,19 +31,19 @@ const playerSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(addPlayerToDb.pending, (state) => {
+            .addCase(addPageToDB.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addPlayerToDb.fulfilled, (state, action) => {
+            .addCase(addPageToDB.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addPlayerToDb.rejected, (state, action) => {
+            .addCase(addPageToDB.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export const { updateSavedState } = playerSlice.actions;
-export default playerSlice.reducer;
+export const { updateSavedState } = pageSlice.actions;
+export default pageSlice.reducer;

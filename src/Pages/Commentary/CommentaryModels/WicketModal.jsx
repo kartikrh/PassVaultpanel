@@ -7,7 +7,6 @@ import Select from "react-select";
 import "../CommentaryCss.css"
 
 const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit }) => {
-    console.log(bowlingTeamDetails?.wrCommentaryPlayerTeamKipper)
     const [wicketData, setWicketData] = useState({ runs: 0 });
     const [showFields, setShowFields] = useState({});
     const [bowlingPlayerList, setBowlingPlayerList] = useState([]);

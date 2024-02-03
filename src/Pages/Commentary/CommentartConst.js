@@ -50,6 +50,7 @@ export const BALL_BYE = "BALL_BYE"
 export const BALL_LEG_BYE = "BALL_LEG_BYE"
 
 export const OVER = "OVER"
+export const OVER_ENDED = "OVER_ENDED"
 export const WICKET = "WICKET"
 export const RUN = "RUN"
 export const ALL = "ALL"

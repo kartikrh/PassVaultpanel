@@ -34,7 +34,7 @@ const CommonToast = () => {
     }
 
     return (
-        <div className="position-fixed top-0 end-0 p-3 " style={{ zIndex: "1005" }}>
+        <div className="position-fixed top-0 end-0 p-3 " style={{ zIndex: "5000" }}>
             <Toast
                 style={{ border: `solid ${toastData.type === SUCCESS ? "Green" : "Red"} 2px` }}
                 isOpen={toastData.isVisible} >
