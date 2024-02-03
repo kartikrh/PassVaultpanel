@@ -57,9 +57,9 @@ const Commentary = (props) => {
     useEffect(() => {
         // console.log(commentaryDetails, matchTypeDetails)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
-        console.log(currentOver, currentBall)
+        // console.log(currentOver, currentBall)
         // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
-        console.log(ballHistory, overHistory)
+        // console.log(ballHistory, overHistory)
     })
 
     const checkForOverSwitch = (currentOver) => {
@@ -691,8 +691,8 @@ const Commentary = (props) => {
     }
     const handleUndoClick = () => {
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
-            console.log("clicked")
-            console.log(currentOver, currentOver.over, currentOver.ballCount, currentBall.ballRun)
+            // console.log("clicked")
+            // console.log(currentOver, currentOver.over, currentOver.ballCount, currentBall.ballRun)
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0)) {
                 setUndoInningsPopup(true)
@@ -890,7 +890,7 @@ const Commentary = (props) => {
                 previousOnPitchPlayer[ON_STRIKE] = updatedPlayer
             }
             if (compareNumStringValues(player.commentaryPlayerId, previousBall.batNonStrikeId)) {
-                console.log("Inside change no strike")
+                // console.log("Inside change no strike")
                 updatedPlayer["isPlay"] = true
                 previousOnPitchPlayer[NON_STRIKE] = updatedPlayer
             }
@@ -899,7 +899,7 @@ const Commentary = (props) => {
         // console.log(updatedBattingTeam)
         setTeams({ ...teams, [BATTING_TEAM]: updatedBattingTeam })
         // console.log(updatedBattingPlayerList, updatedBowlingPlayerList)
-        console.log(players[BATTING_TEAM], onPitchPlayers, previousOnPitchPlayer)
+        // console.log(players[BATTING_TEAM], onPitchPlayers, previousOnPitchPlayer)
         setPlayers({ [BATTING_TEAM]: updatedBattingPlayerList, [BOWLING_TEAM]: updatedBowlingPlayerList })
         setOnPitchPlayers(previousOnPitchPlayer)
         dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
