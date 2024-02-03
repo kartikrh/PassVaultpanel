@@ -68,9 +68,7 @@ export const ImportExportModel = ({
   };
   const ImportFile = (e) => {
     const file = e.target.files[0];
-
     const reader = new FileReader();
-
     reader.onload = (event) => {
       const binaryString = event.target.result;
       const workbook = XLSX.read(binaryString, { type: "binary" });
@@ -120,7 +118,7 @@ export const ImportExportModel = ({
     );
     const data = arrayOfObjects.filter((value) => value.isUpdate == 1);
     console.log(data);
-    await axiosInstance
+    if(data.length > 0){await axiosInstance
       .post("/admin/player/updatePlayerStats", data)
       .then((response) => {
         setUpdateStatus(true);
@@ -147,7 +145,15 @@ export const ImportExportModel = ({
           })
         );
         setUpdateStatus(true);
-      });
+      });}else{
+        dispatch(
+          updateToastData({
+            data: "Note :Pls Set IsUpdate by 1 in Player Excel Sheet which Player you want to Update!",
+            title: "Players not found for Update",
+            type: ERROR,
+          })
+        );
+      }
   };
   useEffect(() => {
     console.log(dataSource);
@@ -217,19 +223,19 @@ export const ImportExportModel = ({
           >
             <div className="" style={{ marginRight: "10px" }}>
               <label type="button" className="btn btn-primary me-1">
-                Total Data:{" "}
+                Total:{" "}
                 <span className="badge ms-1">{report?.totalNo}</span>
               </label>
             </div>
             <div className="" style={{ marginRight: "10px" }}>
               <label type="button" className="btn btn-primary me-1">
-                Updated Successful:{" "}
+                Updated:{" "}
                 <span className="badge ms-1">{report?.successNo}</span>
               </label>
             </div>
             <div className="" style={{ marginRight: "10px" }}>
               <label type="button" className="btn btn-danger me-1">
-                Failed To Update:{" "}
+                Failed:{" "}
                 <span className="badge ms-1">{report?.failedNo}</span>
               </label>
             </div>
