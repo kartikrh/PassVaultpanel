@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalBody } from "reactstrap";
 import axiosInstance from "../../../Features/axios";
-import { updateToastData } from '../../../Features/toasterSlice';
-import { ERROR, SUCCESS } from '../../../components/Common/Const';
+import { updateToastData } from "../../../Features/toasterSlice";
+import { ERROR, SUCCESS } from "../../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import * as XLSX from "xlsx";
 import axios from "axios";
@@ -21,6 +21,7 @@ export const ImportExportModel = ({
     successNo: 0,
     failedNo: 0,
   });
+  const [failed, setFailed] = useState([]);
   const [updatedStatus, setUpdateStatus] = useState(false);
   const generateDifferentData = () => {
     let pdfCols = [];
@@ -86,7 +87,7 @@ export const ImportExportModel = ({
 
       // Remove headers from data
       sheetData.shift();
-      console.log(sheetData);
+      console.log("this is fileData", sheetData);
       setFileData(sheetData);
     };
 
@@ -123,15 +124,28 @@ export const ImportExportModel = ({
       .post("/admin/player/updatePlayerStats", data)
       .then((response) => {
         setUpdateStatus(true);
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
         setReport({
           totalNo: data.length || 0,
           successNo: data.length - response.result.length || 0,
           failedNo: response.result.length || 0,
         });
+        setFailed(response.result);
       })
       .catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
         setUpdateStatus(true);
       });
   };
@@ -197,34 +211,27 @@ export const ImportExportModel = ({
           </label>
         </div>
         {updatedStatus && (
-          <div className="d-flex">
-            {/* <table className="table table-nowrap">
-              <thead className="table-light">
-                <tr>
-                  <th>Total Number Of Data</th>
-                  <th>Updated Data</th>
-                  <th>Failed Data</th>
-                </tr>
-              </thead>
-              <tbody className="list form-check-all">
-                <tr>
-                  <th>{report?.totalNo}</th>
-                  <th>{report?.successNo}</th>
-                  <th>{report?.failedNo}</th>
-                </tr>
-              </tbody>
-            </table> */}
-            <div className="" style={{marginRight:"30px"}}>
-              <span style={{marginRight:"10px"}}>Total Data:</span>
-              <span>{report?.totalNo}</span>
+          <div
+            className="d-flex justify-content-end"
+            style={{ padding: "10px" }}
+          >
+            <div className="" style={{ marginRight: "10px" }}>
+              <label type="button" className="btn btn-primary me-1">
+                Total Data:{" "}
+                <span className="badge ms-1">{report?.totalNo}</span>
+              </label>
             </div>
-            <div  style={{marginRight:"30px"}}>
-              <span style={{marginRight:"10px"}}>Updated Successful:</span>
-              <span>{report?.successNo}</span>
+            <div className="" style={{ marginRight: "10px" }}>
+              <label type="button" className="btn btn-primary me-1">
+                Updated Successful:{" "}
+                <span className="badge ms-1">{report?.successNo}</span>
+              </label>
             </div>
-            <div style={{width:"20%", display:"flex",}}>
-              <span style={{marginRight:"10px"}}>Failed To Update:</span>
-              <span>{report?.failedNo}</span>
+            <div className="" style={{ marginRight: "10px" }}>
+              <label type="button" className="btn btn-danger me-1">
+                Failed To Update:{" "}
+                <span className="badge ms-1">{report?.failedNo}</span>
+              </label>
             </div>
           </div>
         )}
@@ -245,39 +252,80 @@ export const ImportExportModel = ({
             <tbody className="list form-check-all">
               {fileData.map((val, rowIndex) => (
                 <tr key={rowIndex} className={`hover`}>
-                  {val.map((cellData, cellIndex) => (
-                    <td key={cellIndex}>
-                      {columns[cellIndex]?.type === "text" ? (
-                        <input
-                          className="form-control"
-                          disabled
-                          style={{ border: "none", background: "transparent" }}
-                          type="text"
-                          value={cellData}
-                          onChange={(e) => {
-                            handleInputChange(
-                              e.target.value,
-                              rowIndex,
-                              cellIndex
-                            );
-                          }}
-                        />
-                      ) : columns[cellIndex]?.type === "input" ? (
-                        <input
-                          className="form-control"
-                          type="text"
-                          value={cellData}
-                          onChange={(e) => {
-                            handleInputChange(
-                              e.target.value,
-                              rowIndex,
-                              cellIndex
-                            );
-                          }}
-                        />
-                      ) : null}
-                    </td>
-                  ))}
+                  {val.map((cellData, cellIndex) =>
+                    cellIndex == 0 ? (
+                      <td key={cellIndex}>
+                        {columns[cellIndex]?.type === "text" ? (
+                          <input
+                            className="form-control"
+                            disabled
+                            style={
+                              failed?.some((obj) => obj?.playerId == val[0])
+                                ? { background: "#f2657d", border: "none", color:"white" }
+                                : { border: "none", background: "transparent" }
+                            }
+                            type="text"
+                            value={cellData}
+                            onChange={(e) => {
+                              handleInputChange(
+                                e.target.value,
+                                rowIndex,
+                                cellIndex
+                              );
+                            }}
+                          />
+                        ) : columns[cellIndex]?.type === "input" ? (
+                          <input
+                            className="form-control"
+                            type="text"
+                            value={cellData}
+                            onChange={(e) => {
+                              handleInputChange(
+                                e.target.value,
+                                rowIndex,
+                                cellIndex
+                              );
+                            }}
+                          />
+                        ) : null}
+                      </td>
+                    ) : (
+                      <td key={cellIndex}>
+                        {columns[cellIndex]?.type === "text" ? (
+                          <input
+                            className="form-control"
+                            disabled
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                            type="text"
+                            value={cellData}
+                            onChange={(e) => {
+                              handleInputChange(
+                                e.target.value,
+                                rowIndex,
+                                cellIndex
+                              );
+                            }}
+                          />
+                        ) : columns[cellIndex]?.type === "input" ? (
+                          <input
+                            className="form-control"
+                            type="text"
+                            value={cellData}
+                            onChange={(e) => {
+                              handleInputChange(
+                                e.target.value,
+                                rowIndex,
+                                cellIndex
+                              );
+                            }}
+                          />
+                        ) : null}
+                      </td>
+                    )
+                  )}
                 </tr>
               ))}
             </tbody>
