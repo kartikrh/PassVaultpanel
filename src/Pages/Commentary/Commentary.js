@@ -58,7 +58,7 @@ const Commentary = (props) => {
         // console.log(commentaryDetails, matchTypeDetails)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         // console.log(currentOver, currentBall)
-        // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+        console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
         // console.log(ballHistory, overHistory)
     })
 
@@ -521,10 +521,22 @@ const Commentary = (props) => {
             }
             checkForOverSwitch(updatedBowlerOver)
         }
+        const isStrikeChange = runs % 2 !== 0
+        const updateBatter = { ...onPitchPlayers[isStrikeChange ? NON_STRIKE : ON_STRIKE], onStrike: true }
+        const updateNonStriker = { ...onPitchPlayers[isStrikeChange ? ON_STRIKE : NON_STRIKE], onStrike: false }
         setOnPitchPlayers((prevData) => {
-            return { ...prevData, [CURRENT_BOWLER]: { ...prevData[CURRENT_BOWLER], ...updateBowler } }
+            return { [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: { ...prevData[CURRENT_BOWLER], ...updateBowler } }
         })
-        setPlayers({ ...players, [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), })
+        setPlayers({
+            [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
+            [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
+                if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
+                    return updateBatter
+                else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
+                    return updateNonStriker
+                else return player
+            })
+        })
         setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...prevData[BATTING_TEAM], ...updateBattingTeam } } })
         setCurrentOver((prevOver) => { return { ...prevOver, ...updateOver } })
         setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall } })
@@ -536,8 +548,8 @@ const Commentary = (props) => {
         updateBattingTeam["teamOver"] =
             Math.ceil(+teams[BATTING_TEAM].teamOver || 0)
         setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
-        const newOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: "true" }
-        const newNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: "false" }
+        const newOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: true }
+        const newNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
         setOnPitchPlayers(
             (prevValue) => {
                 return { ...prevValue, [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer, }
@@ -811,7 +823,7 @@ const Commentary = (props) => {
                     }
                     updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
                     setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: updateBowler })
-                    setPlayers({ [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), })
+                    setPlayers({ ...players, [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), })
                     setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...prevData[BATTING_TEAM], ...updateBattingTeam } } })
                     setCurrentOver((prevOver) => { return { ...prevOver, ...updateOver } })
                     setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership } })
