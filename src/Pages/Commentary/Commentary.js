@@ -452,6 +452,7 @@ const Commentary = (props) => {
     const updateExtras = (type, runs) => {
         setCurrentBall({})
         const bowler = onPitchPlayers[CURRENT_BOWLER]
+        const batter = onPitchPlayers[ON_STRIKE]
         const updateBattingTeam = {}
         const updateOver = {}
         const updateBall = {}
@@ -495,6 +496,7 @@ const Commentary = (props) => {
             updateBowler["bowlerOver"] = updatedBowlerOver
             updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + 1
             updateOver["ballCount"] = (currentOver.ballCount || 0) + 1
+            batter["batBall"] = (batter.batBall || 0) + 1
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runs
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runs
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runs
@@ -522,8 +524,11 @@ const Commentary = (props) => {
             checkForOverSwitch(updatedBowlerOver)
         }
         const isStrikeChange = runs % 2 !== 0
-        const updateBatter = { ...onPitchPlayers[isStrikeChange ? NON_STRIKE : ON_STRIKE], onStrike: true }
-        const updateNonStriker = { ...onPitchPlayers[isStrikeChange ? ON_STRIKE : NON_STRIKE], onStrike: false }
+        const updatedOnStrike = { ...onPitchPlayers[ON_STRIKE], ...batter }
+        const updateBatter = isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike
+        const updateNonStriker = !isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike
+        updateBatter["onStrike"] = true
+        updateNonStriker["onStrike"] = false
         setOnPitchPlayers((prevData) => {
             return { [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: { ...prevData[CURRENT_BOWLER], ...updateBowler } }
         })
