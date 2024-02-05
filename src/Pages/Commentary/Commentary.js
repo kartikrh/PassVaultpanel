@@ -432,6 +432,7 @@ const Commentary = (props) => {
         // console.log(updateBatter)
         updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
         const updateNonStriker = { ...onPitchPlayers[NON_STRIKE], onStrike: isChangeStrike ? true : false }
+        console.log({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
         setPlayers({
             [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
             [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
@@ -583,19 +584,19 @@ const Commentary = (props) => {
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateOver["totalWicket"] = (currentOver.totalWicket || 0) + 1
         updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) + 1
-        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + +wicketData.runs
-        updateBattingTeam["teamOver"] =
-            ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
+        // updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + +wicketData.runs
+        // updateBattingTeam["teamOver"] =
+        //     ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
+        updateBall["ballPlayerId"] = wicketPlayerDetails.commentaryPlayerId
+        updateWicket["batterId"] = wicketPlayerDetails.commentaryPlayerId
+        updateWicket["batterName"] = wicketPlayerDetails.playerName
+        updateWicket["batterRuns"] = wicketPlayerDetails.batRun + isOnStrikeWicket ? +wicketData.runs : 0
+        updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? 1 : 0
         const updatedBattingPlayers = players[BATTING_TEAM]?.map((player) => {
             if (isEqual(player.commentaryPlayerId, wicketData.batterId)) {
-                updateBall["ballPlayerId"] = player.commentaryPlayerId
-                updateWicket["batterId"] = player.commentaryPlayerId
-                updateWicket["batterName"] = player.playerName
-                updateWicket["batterRuns"] = wicketPlayerDetails.batRun + +wicketData.runs
-                updateWicket["batterBalls"] = wicketPlayerDetails.batBall + 1
                 const playerDataToList = {
-                    ...wicketPlayerDetails,
+                    ...player,
                     "isBatterOut": true,
                     "isBatterRetir": wicketData.wicketType === RETIRED_OUT,
                     "wicketType": wicketData.wicketType,
@@ -605,28 +606,25 @@ const Commentary = (props) => {
                     "isPlay": null,
                     "onStrike": null
                 }
-                // setPlayerUpdateList([].concat([playerDataToList], playerUpdateList || []))
                 updatedBatter = playerDataToList
                 return playerDataToList
             }
             return player
         })
-        updateRuns({ run: +wicketData.runs, ball: 1, batter: wicketPlayerDetails, bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
+        updateRuns({ run: +wicketData.runs, ball: 1, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
         setPlayers((prevData) => { return { ...prevData, [BATTING_TEAM]: updatedBattingPlayers } })
         setOnPitchPlayers((prevValue) => {
-            const updateStriker = isOnStrikeWicket ? updatedBatter : prevValue[ON_STRIKE]
-            const udpateNonStriker = !isOnStrikeWicket ? updatedBatter : prevValue[NON_STRIKE]
             return {
-                [ON_STRIKE]: updateStriker,
-                [NON_STRIKE]: { ...udpateNonStriker, onStrike: false },
+                [ON_STRIKE]: isOnStrikeWicket ? updatedBatter : prevValue[ON_STRIKE],
+                [NON_STRIKE]: !isOnStrikeWicket ? updatedBatter : prevValue[NON_STRIKE],
                 [CURRENT_BOWLER]: { ...prevValue[CURRENT_BOWLER], ...updateBowler }
             }
         })
-        let newValue = {}
         setTeams((prevValue) => {
-            newValue = { ...teams, [BATTING_TEAM]: { ...prevValue[BATTING_TEAM], ...updateBattingTeam } }
-            return newValue
+            return { ...teams, [BATTING_TEAM]: { ...prevValue[BATTING_TEAM], ...updateBattingTeam } }
         })
+        console.log("##########UPDATE WICKET:############", updateWicket)
+        console.log("##########UPDATE ON PITCH PLAYER:############", updateWicket)
         setCurrentOver((prevValue) => { return { ...prevValue, ...updateOver } })
         setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall, } })
         changePlayer(isOnStrikeWicket ? ON_STRIKE : NON_STRIKE)
