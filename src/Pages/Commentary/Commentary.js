@@ -61,7 +61,14 @@ const Commentary = (props) => {
         console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
         // console.log(ballHistory, overHistory)
     })
-
+    const updateOnPitchPlayerForStrikeChange = () => {
+        console.log(onPitchPlayers)
+        setOnPitchPlayers({
+            ...onPitchPlayers,
+            [ON_STRIKE]: onPitchPlayers[ON_STRIKE].isBatterOut ? {} : onPitchPlayers[ON_STRIKE],
+            [NON_STRIKE]: onPitchPlayers[NON_STRIKE].isBatterOut ? {} : onPitchPlayers[NON_STRIKE]
+        })
+    }
     const checkForOverSwitch = (currentOver) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
             setShowChangeOverModal(true)
@@ -449,6 +456,7 @@ const Commentary = (props) => {
         setCurrentOver((prevValue) => { return { ...prevValue, ...updateOver, } })
         setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership, } })
         setSaveToDb(true)
+        if (freezePlayers) updateOnPitchPlayerForStrikeChange()
     }
     const updateExtras = (type, runs) => {
         setCurrentBall({})
@@ -701,6 +709,8 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
+        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             // console.log("clicked")
             // console.log(currentOver, currentOver.over, currentOver.ballCount, currentBall.ballRun)

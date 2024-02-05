@@ -95,7 +95,7 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
     "teamId": teams[BOWLING_TEAM].teamId,
     "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings,
-    "over": +teams?.[BATTING_TEAM].teamOver?.toFixed(0),
+    "over": +teams?.[BATTING_TEAM]?.teamOver?.toFixed(0),
     "ballCount": 0,
     "totalRun": 0,
     "totalFour": 0,
