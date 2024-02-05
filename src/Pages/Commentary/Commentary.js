@@ -589,12 +589,8 @@ const Commentary = (props) => {
                 updateWicket["batterName"] = player.playerName
                 updateWicket["batterRuns"] = wicketPlayerDetails.batRun + +wicketData.runs
                 updateWicket["batterBalls"] = wicketPlayerDetails.batBall + 1
-                wicketPlayerDetails["batRun"] = wicketPlayerDetails.batRun + +wicketData.runs
-                wicketPlayerDetails["batBall"] = wicketPlayerDetails.batBall + 1
                 const playerDataToList = {
                     ...wicketPlayerDetails,
-                    "batBall": wicketPlayerDetails.batBall + 1,
-                    "batRun": wicketPlayerDetails.batRun + +wicketData.runs,
                     "isBatterOut": true,
                     "isBatterRetir": wicketData.wicketType === RETIRED_OUT,
                     "wicketType": wicketData.wicketType,
