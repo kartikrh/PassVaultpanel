@@ -16,6 +16,7 @@ import { compareNumStringValues } from "../../components/Common/Reusables/reusab
 import UpdateStrikeModal from "./CommentaryModels/UpdateStrikerModal.jsx"
 import WinnerModal from "./CommentaryModels/WinnerModal.jsx"
 import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
+import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -51,6 +52,7 @@ const Commentary = (props) => {
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
     const [updateRunsFromWicket, setUpdateRunFromWicket] = useState(undefined)
     const [isSwapPlayer, setIsSwapPlayer] = useState(undefined)
+    const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
@@ -60,8 +62,8 @@ const Commentary = (props) => {
         // console.log(commentaryDetails, matchTypeDetails)
         // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
         // console.log(currentOver, currentBall)
-        console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
-        // console.log(onPitchPlayers)
+        // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+        console.log(onPitchPlayers, players?.[BATTING_TEAM])
     })
     const checkForOverSwitch = (currentOver) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
@@ -96,9 +98,9 @@ const Commentary = (props) => {
                 conditionsToCheck = [isRunTargetAchieved()]; break;
             default: break;
         }
+        console.log(checkFor)
         if (conditionsToCheck.some(condition => condition)) {
-            if (
-                teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) checkWinner()
+            if (teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
             else setShowInningsChangePopup(true);
         }
     }
@@ -131,6 +133,7 @@ const Commentary = (props) => {
         }
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
+        setCompleteMatchModal(undefined)
         setRedirectOnScreenChange(true)
         setWinnerAnnouncement(WINNING_MESSAGE)
     }
@@ -657,13 +660,11 @@ const Commentary = (props) => {
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         let newPlayer = undefined
-        let oldPlayer = undefined
         const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
         setPlayers({
             ...players,
             [teamType]: players[teamType]?.map((player) => {
                 if (isEqual(player.commentaryPlayerId, playerToChangeId)) {
-                    oldPlayer = player
                     const updatedPlayer = { ...onPitchPlayers[playerToChange], "isPlay": null, "onStrike": null }
                     if (playerToChange === CURRENT_BOWLER) {
                         updatedPlayer["bowlerOver"] = Math.ceil(+updatedPlayer.bowlerOver || 0)
@@ -685,7 +686,6 @@ const Commentary = (props) => {
             ...onPitchPlayers,
             [playerToChange]: newPlayer
         }
-        if (isSwapPlayer) swapPlayer(newPlayer, oldPlayer, updatedOnPitchPlayer)
         setOnPitchPlayers(updatedOnPitchPlayer)
         if (playerToChange === CURRENT_BOWLER) setIsOverChange(true)
         if (isWicketChange) {
@@ -717,31 +717,48 @@ const Commentary = (props) => {
                 else return player.isPlay === null && player.isBatterOut !== true
             }))
     }
-    const swapPlayer = (newPlayer, oldPlayer, updatedOnPitchPlayer) => {
+    const swapPlayer = (newPlayerId) => {
+        console.log(newPlayerId)
+        const oldPlayer = onPitchPlayers[playerToChange]
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
+        let newPlayer = undefined
+        players[teamType]?.forEach((player) => {
+            if (isEqual(player.commentaryPlayerId, newPlayerId)) newPlayer = player
+        })
+        console.log(newPlayer, oldPlayer)
         let updatedNewPlayer = {
             ...newPlayer,
             "playerId": oldPlayer["playerId"],
-            "playerName": oldPlayer["playerId"],
-            "batsmanAverage": oldPlayer["playerId"],
-            "batsmanStrikeRate": oldPlayer["playerId"],
-            "bowlerAverage": oldPlayer["playerId"],
+            "playerName": oldPlayer["playerName"],
+            "batsmanAverage": oldPlayer["batsmanAverage"],
+            "batsmanStrikeRate": oldPlayer["batsmanStrikeRate"],
+            "bowlerAverage": oldPlayer["bowlerAverage"],
         }
         let updatedOldPlayer = {
             ...oldPlayer,
             "playerId": newPlayer["playerId"],
-            "playerName": newPlayer["playerId"],
-            "batsmanAverage": newPlayer["playerId"],
-            "batsmanStrikeRate": newPlayer["playerId"],
-            "bowlerAverage": newPlayer["playerId"],
+            "playerName": newPlayer["playerName"],
+            "batsmanAverage": newPlayer["batsmanAverage"],
+            "batsmanStrikeRate": newPlayer["batsmanStrikeRate"],
+            "bowlerAverage": newPlayer["bowlerAverage"],
         }
+
         const listToUpdate = players[teamType]?.map((player) => {
             if (isEqual(player.commentaryPlayerId, oldPlayer.commentaryPlayerId)) return updatedOldPlayer
             else if (isEqual(player.commentaryPlayerId, newPlayer.commentaryPlayerId)) return updatedNewPlayer
             return player
         })
+        const updatedOnPitchPlayer = { ...onPitchPlayers, [playerToChange]: updatedOldPlayer }
+        setOnPitchPlayers(updatedOnPitchPlayer)
+        updatedOnPitchPlayer["EXTRA_PLAYER"] = updatedNewPlayer
+        const objToSave = {
+            "commentaryPlayers": Object.values(updatedOnPitchPlayer),
+        }
+        dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [teamType]: listToUpdate })
-        onPitchPlayers({ ...updatedOnPitchPlayer })
+        setIsSwapPlayer(undefined)
+        setChangePlayerList(undefined)
+        setPlayerToChange(undefined)
     }
     const changeOnStrikePlayer = (commentaryPlayerId) => {
         const isPlayerOnNonstrike = compareNumStringValues(onPitchPlayers[NON_STRIKE].commentaryPlayerId, commentaryPlayerId)
@@ -1037,7 +1054,10 @@ const Commentary = (props) => {
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
-            changePlayer={changePlayer}
+            changePlayer={(type) => {
+                setIsSwapPlayer(true)
+                changePlayer(type)
+            }}
             changeOver={() => { setShowChangeOverModal(true) }}
             updateExtras={(extraType) => {
                 setExtrasType(extraType)
@@ -1053,7 +1073,9 @@ const Commentary = (props) => {
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={() => { setChangePlayerList(undefined) }}
                 playerList={changePlayerList}
-                selectPlayer={onPlayerChange} />}
+                selectPlayer={(newPlayerId) => {
+                    isSwapPlayer ? swapPlayer(newPlayerId) : onPlayerChange(newPlayerId)
+                }} />}
         <ExtrasModal isOpen={extrasList}
             toggle={() => { setExtrasList(undefined) }}
             runList={extrasList}
@@ -1095,6 +1117,12 @@ const Commentary = (props) => {
             toggle={() => { setUndoInningsPopup(undefined) }}
             onLastInnigsClick={() => { }}
             onPlayerSelectionClick={onUndoPlayerSelection}
+        />}
+        {completeMatchModal && <CompleteCurrentMatchModal
+            isOpen={completeMatchModal}
+            toggle={() => { setCompleteMatchModal(undefined) }}
+            onNoClick={() => { setCompleteMatchModal(undefined) }}
+            onYesClick={checkWinner}
         />}
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}

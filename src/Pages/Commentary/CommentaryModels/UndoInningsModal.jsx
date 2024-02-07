@@ -5,7 +5,7 @@ const UndoInnnigsModal = ({ isOpen, toggle, onPlayerSelectionClick, onLastInnigs
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
-                Change Over
+                Change Innings
             </ModalHeader>
             <ModalBody>
                 What do you want to perform?
