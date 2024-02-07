@@ -255,9 +255,8 @@ const FormBuilder = forwardRef(
                   </>
                 )}
                 <Col
-                  className={`${field.label ? "" : "d-none"} ${
-                    fetchIsDependable(field) ? "" : "invisible"
-                  }`}
+                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"
+                    }`}
                   xs={field.labelColspan?.xs || 3}
                   md={field.labelColspan?.md || 2}
                   lg={field.labelColspan?.lg || 2}
@@ -275,9 +274,8 @@ const FormBuilder = forwardRef(
                   </div>
                 </Col>
                 <Col
-                  className={`${field.type !== DIVIDER ? "" : "d-none"}${
-                    fetchIsDependable(field) ? "" : "invisible"
-                  } mb-4`}
+                  className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : "invisible"
+                    } mb-4`}
                   xs={field.fieldColspan?.xs || 9}
                   md={field.fieldColspan?.md || 4}
                   lg={field.fieldColspan?.lg || 4}
@@ -301,18 +299,18 @@ const FormBuilder = forwardRef(
                     {field.type === TEXT_BUTTON && (
                       <div className="d-flex">
                         <Input
-                        className="form-control"
-                        style={field?.customStyle}
-                        type="text"
-                        disabled={disabledFields?.[field.name]}
-                        id={field.name}
-                        name={field.name}
-                        value={formData[field.name] || ""}
-                        onChange={(e) => handleChange(field, e.target.value)}
-                        required={field.isRequired}
-                        invalid={fieldErrors[field.name]}
-                      />
-                      <Button>{field?.btnLable}</Button>
+                          className="form-control"
+                          style={field?.customStyle}
+                          type="text"
+                          disabled={disabledFields?.[field.name]}
+                          id={field.name}
+                          name={field.name}
+                          value={formData[field.name] || ""}
+                          onChange={(e) => handleChange(field, e.target.value)}
+                          required={field.isRequired}
+                          invalid={fieldErrors[field.name]}
+                        />
+                        <Button>{field?.btnLable}</Button>
                       </div>
                     )}
 
@@ -429,8 +427,8 @@ const FormBuilder = forwardRef(
                                 // Regular selection
                                 const values = selectedOptions
                                   ? selectedOptions.map(
-                                      (option) => option.value
-                                    )
+                                    (option) => option.value
+                                  )
                                   : [];
                                 handleChange(field, values);
                               }
@@ -452,9 +450,9 @@ const FormBuilder = forwardRef(
                           (formData[field.name] &&
                             (typeof formData[field.name] === "string"
                               ? {
-                                  label: formData[field.name],
-                                  value: formData[field.name],
-                                }
+                                label: formData[field.name],
+                                value: formData[field.name],
+                              }
                               : formData[field.name])) ||
                           field.defaultOption
                         }
@@ -494,11 +492,11 @@ const FormBuilder = forwardRef(
                             <label
                               key={option?.value}
                               className="radio_option_label"
-                              style={{marginRight:"30px"}}
+                              style={{ marginRight: "30px" }}
                             >
                               <input
                                 className="inputtag normal_input"
-                                style={{ transform: "scale(1.5)", marginRight:"10px"}}
+                                style={{ transform: "scale(1.5)", marginRight: "10px" }}
                                 type="radio"
                                 name={field?.name}
                                 value={[]
