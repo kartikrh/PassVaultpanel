@@ -41,7 +41,7 @@ import AddPage from "../Pages/Page/AddPage.jsx";
 import Page from "../Pages/Page";
 import MenuList from '../Pages/menuList'
 import AddMenuType from '../Pages/menuList/AddMenuType.js'
-
+import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
 
 
 
@@ -103,6 +103,7 @@ const authProtectedRoutes = [
   { path: "/Page", component: <Page /> },
   { path: "/menuList", component: <MenuList /> },
   { path: "/addMenuType", component: <AddMenuType /> },
+  { path: "/addMenuItem", component: <AddMenuItem /> },
   {
     path: '/changePassword', component: <ChangePassword />
   },

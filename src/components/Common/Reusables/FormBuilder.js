@@ -451,38 +451,39 @@ const FormBuilder = forwardRef(
                   {field.type === RADIO_BUTTON && (
                     <div className="radio-button-styling radio_options_list">
                       {[]
-                        .concat(field.options, masterData?.[field.name] || [])
+                        .concat(field?.options, masterData?.[field?.name] || [])
                         .map((option) => (
                           <label
-                            key={option.value}
+                            key={option?.value}
                             className="radio_option_label"
+                            style={{display:"flex", alignItems:"center"}}
                           >
                             <input
                               className="inputtag normal_input"
-                              style={field?.customStyle}
+                              style={{transform: "scale(1.5)"}}
                               type="radio"
-                              name={field.name}
+                              name={field?.name}
                               value={[]
                                 .concat(
-                                  field.options,
-                                  masterData?.[field.name] || []
+                                  field?.options,
+                                  masterData?.[field?.name] || []
                                 )
                                 .filter((e) => {
-                                  if (formData[field.name])
+                                  if (formData[field?.name])
                                     return compareNumStringValues(
                                       e?.value,
-                                      formData[field.name]
+                                      formData[field?.name]
                                     );
                                   else
                                     return compareNumStringValues(
                                       e?.value,
-                                      formData[field.name]
+                                      formData[field?.name]
                                     );
                                 })}
-                              onChange={() => handleChange(field, option.value)}
+                              onChange={() => handleChange(field, option?.value)}
                               required={field.isRequired}
                             />
-                            {option.label}
+                            {option?.label}
                           </label>
                         ))}
                     </div>
@@ -506,6 +507,7 @@ const FormBuilder = forwardRef(
                         type="checkbox"
                         id="customSwitchsizelg"
                         // defaultChecked
+                        disabled={disabledFields?.[field.name]}
                         checked={formData[field.name]}
                         onChange={(e) => {
                           handleChange(field, !formData[field.name]);

@@ -55,7 +55,9 @@ const Index = () => {
     await axiosInstance
       .post(
         `${
-          selectedMenuType.level == 0 ? "/admin/menuTypes/all" : "/admin/menuItem/menuItemList"
+          selectedMenuType.level == 0
+            ? "/admin/menuTypes/all"
+            : "/admin/menuItem/menuItemList"
         }`,
         selectedMenuType.level == 0
           ? {
@@ -99,10 +101,22 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post("/admin/menuTypes/save", {
-        menuTypeId: record.menuTypeId,
-        [pType]: cState ? false : true,
-      })
+        .post(
+          `${
+            selectedMenuType.level == 0
+              ? "/admin/menuTypes/save"
+              : "/admin/menuItem/save"
+          }`,
+            selectedMenuType.level == 0
+              ? {
+                  menuTypeId: record.menuTypeId,
+                  [pType]: cState ? false : true,
+                }
+              : {
+                menuItemId: record.menuItemId,
+                [pType]: cState ? false : true,
+                }
+        )
       .then((response) => {
         dispatch(
           updateToastData({
@@ -164,7 +178,7 @@ const Index = () => {
   };
 
   const handleBreadCrumbsClick = (value) => {
-    console.log("these values :: ",value)
+    console.log("these values :: ", value);
     let historyList = _.clone(selectedMenuTypeHistory);
     const index = historyList.findIndex((item) => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
@@ -388,19 +402,37 @@ const Index = () => {
       sort: true,
       style: { width: "50%" },
     },
+    {
+      title: "Is Active",
+      key: "isActive",
+      dataIndex: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
   const tableElement = {
     title: "Tabs",
     dragDrop: true,
-    displayTypeDropDown: true,
+    // displayTypeDropDown: true,
     switch: false,
     subTable: true,
     resetButton: true,
     isActive: true,
-    displayTypes: [
-      { label: "Admin", value: 1 },
-      { label: "Agent", value: 2 },
-    ],
+    // displayTypes: [
+    //   { label: "Admin", value: 1 },
+    //   { label: "Agent", value: 2 },
+    // ],
   };
 
   useEffect(() => {
@@ -415,17 +447,17 @@ const Index = () => {
 
   useEffect(() => {
     fetchData();
-    console.log("changed", selectedMenuType)
+    console.log("changed", selectedMenuType);
   }, [selectedMenuType]);
- useEffect(()=>{
-  dispatch(
-    setSelectedMenuType({
-      isActive: true,
-      parentId: 0, 
-      level: 0
-    })
-  );
- },[])
+  useEffect(() => {
+    dispatch(
+      setSelectedMenuType({
+        isActive: true,
+        parentId: 0,
+        level: 0,
+      })
+    );
+  }, []);
   return (
     <React.Fragment>
       <div className="page-content">
@@ -434,11 +466,13 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={selectedMenuType.level == 0 ? columnsMenuTypes : columnsMenuItems}
+            columns={
+              selectedMenuType.level == 0 ? columnsMenuTypes : columnsMenuItems
+            }
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            onAddNavigate={"/addMenuType"}
+            onAddNavigate={ selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem"}
             changeOrderApiName="menuList"
             displayTypes={displayTypes}
             singleCheck={checekedList}

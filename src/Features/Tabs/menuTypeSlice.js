@@ -26,7 +26,11 @@ const initialSliceState = {
         level: 0
     },
     selectedMenuTypeHistory: [{
-        label: "MenuType", value: "0"
+        label: "MenuType", value: {
+            isActive: true,
+            parentId: 0, 
+            level: 0
+        }
     }]
 }
 const menuTypeSlice = createSlice({
