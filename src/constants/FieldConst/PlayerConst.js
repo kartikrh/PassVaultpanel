@@ -99,7 +99,7 @@ export const PlayerFields = [
         type: SWITCH,
         name: "isSystemPlayer",
         label: "Is System Player",
-        defaultValue: true,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
