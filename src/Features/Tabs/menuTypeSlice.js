@@ -16,6 +16,19 @@ export const addMenuTypeToDb = createAsyncThunk(
         }
     }
 );
+export const addMenuItemToDb = createAsyncThunk(
+    'menuItem/addMenuItem',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/menuItem/save', data);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 const initialSliceState = {
     isSaved: undefined,
     isLoading: false,
@@ -23,13 +36,15 @@ const initialSliceState = {
     selectedMenuType: {  
         isActive: true,
         parentId: 0, 
-        level: 0
+        level: 0,
+        id:0,
     },
     selectedMenuTypeHistory: [{
         label: "MenuType", value: {
             isActive: true,
             parentId: 0, 
-            level: 0
+            level: 0,
+            id:0,
         }
     }]
 }
@@ -40,6 +55,7 @@ const menuTypeSlice = createSlice({
         setSelectedMenuType: (state, action) => {
             state.selectedMenuType.level = action.payload.level
             state.selectedMenuType.parentId = action.payload.parentId
+            state.selectedMenuType.id = action.payload.id
         },
         setSelectedMenuTypeHistory: (state, action) => {
             state.selectedMenuTypeHistory = action.payload

@@ -1,72 +1,115 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { menuItemFields, menuItemPageDetials } from "../../constants/FieldConst/MenuItemConst";
-import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from "reactstrap";
+import {
+  menuItemFields,
+  PageFields,
+  existingPage,
+} from "../../constants/FieldConst/MenuItemConst";
+import {
+  Button,
+  ButtonDropdown,
+  Card,
+  CardBody,
+  Col,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
+} from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, Tab_Menu_List } from '../../components/Common/Const';
-import { addMenuTypeToDb, updateSavedState } from '../../Features/Tabs/menuTypeSlice';
+import {
+  ERROR,
+  PERMISSION_ADD,
+  PERMISSION_EDIT,
+  PERMISSION_VIEW,
+  SAVE,
+  SAVE_AND_CLOSE,
+  SAVE_AND_NEW,
+  Tab_Menu_List,
+} from "../../components/Common/Const";
+import {
+  addMenuTypeToDb,
+  addMenuItemToDb,
+  updateSavedState,
+  setSelectedMenuType,
+  setSelectedMenuTypeHistory,
+} from "../../Features/Tabs/menuTypeSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
-import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const AddMenuType = () => {
-  const pageName = Tab_Menu_List
+  const pageName = Tab_Menu_List;
   const finalizeRef1 = useRef(null);
   const finalizeRef2 = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector(state => state.tabsData.menuType);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+  const { isSaved, isLoading, selectedMenuType, selectedMenuTypeHistory } = useSelector(
+    (state) => state.tabsData.menuType
+  );
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId || "0");
+  const [menuItemId, setMenuTypeId] = useState(
+    location.state?.menuItemId || "0"
+  );
   const [masterData, setMasterData] = useState({});
+  const [pageNewOld, setPageNewOld] = useState(null);
+  useEffect(() => {
+    if (menuItemId !== "0") {
+      setPageNewOld(0)
+      fetchData(menuItemId);
+    }
+  }, [menuItemId]);
 
   useEffect(() => {
-    if (menuTypeId !== "0") {
-      fetchData(menuTypeId);
-    }
-  }, [menuTypeId]);
+    console.log("changed", initialEditData);
+  }, [initialEditData, menuItemFields]);
 
-  useEffect(()=>{
-    console.log("changed",initialEditData)
-  },[initialEditData, menuItemFields])
-  
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
-    fetchMasterData()
+    fetchMasterData();
   }, []);
 
   useEffect(() => {
     if (isSaved) {
-      dispatch(updateSavedState(undefined))
+      dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
-        navigate("/menuList")
+        navigate("/menuList");
+      } else if (currentSaveAction === SAVE_AND_NEW) {
+        setInitialEditData({});
+        setMenuTypeId("0");
+        finalizeRef1.current.resetForm();
+        finalizeRef2.current.resetForm();
       }
-      else if (currentSaveAction === SAVE_AND_NEW) {
-        setInitialEditData({})
-        setMenuTypeId("0")
-        finalizeRef1.current.resetForm()
-        finalizeRef2.current.resetForm()
-      }
-      setCurrentSaveAction(undefined)
+      setCurrentSaveAction(undefined);
     }
   }, [isSaved]);
 
-  const fetchData = async (menuTypeId) => {
-    await axiosInstance.post('/admin/menuTypes/byId', { menuTypeId })
+  const fetchData = async (menuItemId) => {
+    await axiosInstance
+      .post("/admin/menuItem/byId", { menuItemId })
       .then((response) => {
         setInitialEditData(response?.result);
-      }).catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        console.log(response?.result)
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -74,7 +117,7 @@ const AddMenuType = () => {
     // axiosInstance.post('/admin/menuItem/menuTypeList', {})
     //   .then((response) => {
     //     setMasterData((prevData) => ({
-    //       ...prevData, 
+    //       ...prevData,
     //       "menuTypeId": response?.result?.map(item => {
     //           return { label: item.menuTypeName, value: item.menuTypeId }
     //         })
@@ -85,7 +128,7 @@ const AddMenuType = () => {
     //   axiosInstance.post('/admin/menuItem/getMenuItemByMenuType', {})
     //   .then((response) => {
     //     setMasterData((prevData) => ({
-    //       ...prevData, 
+    //       ...prevData,
     //       "menuItemId": response?.result?.map(item => {
     //           return { label: item.menuItem, value: item.menuItemId }
     //         })
@@ -95,42 +138,113 @@ const AddMenuType = () => {
     //   });
   };
   const handleFormBDataChange = (newFormData) => {
-    axiosInstance.post('/admin/menuItem/menuTypeList', {})
+    axiosInstance
+      .post("/admin/menuItem/menuTypeList", {})
       .then((response) => {
         setMasterData((prevData) => ({
-          ...prevData, 
-          "menuTypeId": response?.result?.map(item => {
-              return { label: item.menuTypeName, value: item.menuTypeId }
-            })
+          ...prevData,
+          menuTypeId: response?.result?.map((item) => {
+            return { label: item.menuTypeName, value: item.menuTypeId };
+          }),
         }));
-      }).catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
-    console.log({newFormData})
-}
-const handleSaveClick = async (saveAction) => {
-  const dataToSave1 = finalizeRef1.current.finalizeData()
-  const dataToSave2 = finalizeRef2.current.finalizeData()
-  if (dataToSave1 && dataToSave2) {
+    if (newFormData?.menuTypeId !== undefined) {
+      axiosInstance
+        .post("/admin/menuItem/getMenuItemByMenuType", {
+          isActive: true,
+          menuTypeId: newFormData?.menuTypeId,
+        })
+        .then((response) => {
+          setMasterData((prevData) => ({
+            ...prevData,
+            parentId: response?.result?.map((item) => {
+              return { label: item.menuItem, value: item.menuItemId };
+            }),
+          }));
+        })
+        .catch((error) => {
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    }
+    if (newFormData?.newOldPage == 1) {
+      axiosInstance
+        .post("/admin/menuItem/pageList", {})
+        .then((response) => {
+          setMasterData((prevData) => ({
+            ...prevData,
+            pageId: response?.result?.map((item) => {
+              return { label: item.pageName, value: item.pageId };
+            }),
+          }));
+        })
+        .catch((error) => {
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+        setPageNewOld(newFormData?.newOldPage);
+    }else if(newFormData?.newOldPage == 0){
+      setPageNewOld(newFormData?.newOldPage);
+    }
+    console.log(newFormData);
+  };
+  const handleSaveClick = async (saveAction) => {
+    const dataToSave1 = finalizeRef1?.current?.finalizeData();
+    const dataToSave2 = finalizeRef2?.current?.finalizeData();
+    const {alias, createPage,newOldPage, ...rest} = dataToSave1
+    if (pageNewOld == 1) {
       const dataToSave = {
-          ...dataToSave1,
-          "team1Id": dataToSave2.team1Id,
-          "team2Id": dataToSave2.team2Id,
-          "team1Captain": dataToSave2.team1Captain,
-          "team2Captain": dataToSave2.team2Captain,
-          "team1Kipper": dataToSave2.team1Kipper,
-          "team2Kipper": dataToSave2.team2Kipper,
-          "team1Players": dataToSave2.team1Players,
-          "team2Players": dataToSave2.team2Players,
-          "addSystemPlayer" : dataToSave2.addSystemPlayer
-      }
+        ...rest,
+        parentId: rest?.parentId ? rest?.parentId : "0",
+        menuItemId: rest?.menuItemId ? rest?.menuItemId : "0",
+        pageDetails: {
+          alias: dataToSave1.alias
+        }
+      };
       setCurrentSaveAction(saveAction);
-      dispatch(addMenuTypeToDb({ ...dataToSave }))
-  }
-};
+      dispatch(addMenuItemToDb({ ...dataToSave,}));
+      // console.log(dataToSave)
+    } else if (pageNewOld == 0){
+      const dataToSave = {
+        ...rest,
+        menuItemId: rest?.menuItemId ? rest?.menuItemId : "0",
+        parentId: rest?.parentId ? rest?.parentId : "0",
+        pageId: rest?.pageId ? rest?.pageId : "0",
+        pageDetails: {
+          ...dataToSave2
+        }
+      };
+      setCurrentSaveAction(saveAction);
+      dispatch(addMenuItemToDb({ ...dataToSave,}));
+      console.log(dataToSave)
+    }
+  };
 
   const handleBackClick = () => {
     navigate("/menuList");
+    // dispatch(setSelectedMenuType(selectedMenuTypeHistory[selectedMenuTypeHistory.length-1].value))
+    console.log(
+      {selectedMenuType}
+    )
   };
 
   return (
@@ -145,8 +259,18 @@ const handleSaveClick = async (saveAction) => {
               <CardBody>
                 {isLoading && <SpinnerModel />}
                 <Row>
-                  <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
-                    <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
+                  <Col
+                    className="mb-3"
+                    xs={12}
+                    md={{ span: 4, offset: 8 }}
+                    lg={{ span: 3, offset: 9 }}
+                  >
+                    <button
+                      className="btn btn-danger mx-1"
+                      onClick={handleBackClick}
+                    >
+                      Back
+                    </button>
                     <ButtonDropdown
                       direction="down"
                       isOpen={drp_up}
@@ -154,40 +278,98 @@ const handleSaveClick = async (saveAction) => {
                     >
                       <Button
                         disabled={
-                          !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
-                            checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
-                        id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
+                          !(
+                            checkPermission(
+                              permissionObj,
+                              pageName,
+                              PERMISSION_ADD
+                            ) ||
+                            checkPermission(
+                              permissionObj,
+                              pageName,
+                              PERMISSION_EDIT
+                            )
+                          )
+                        }
+                        id="caret"
+                        color="primary"
+                        onClick={() => {
+                          handleSaveClick(SAVE_AND_CLOSE);
+                        }}
+                      >
                         Save & Close
                       </Button>
                       <DropdownToggle caret color="primary">
                         <i className="mdi mdi-chevron-down" />
                       </DropdownToggle>
                       <DropdownMenu>
-                        {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-                          && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
-                        }
-                        {checkPermission(permissionObj, pageName, PERMISSION_ADD)
-                          && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
-                        }
+                        {checkPermission(
+                          permissionObj,
+                          pageName,
+                          PERMISSION_EDIT
+                        ) && (
+                          <DropdownItem
+                            onClick={() => {
+                              handleSaveClick(SAVE);
+                            }}
+                          >
+                            Save
+                          </DropdownItem>
+                        )}
+                        {checkPermission(
+                          permissionObj,
+                          pageName,
+                          PERMISSION_ADD
+                        ) && (
+                          <DropdownItem
+                            onClick={() => {
+                              handleSaveClick(SAVE_AND_NEW);
+                            }}
+                          >
+                            Save & New
+                          </DropdownItem>
+                        )}
                       </DropdownMenu>
                     </ButtonDropdown>
                   </Col>
                 </Row>
                 <FormBuilder
-                  ref={finalizeRef2}
-                  fields={menuItemFields}
+                  ref={finalizeRef1}
+                  fields={
+                    pageNewOld == null
+                      ? menuItemFields :   pageNewOld == 0? menuItemFields
+                      : pageNewOld == 1
+                      ? [...menuItemFields, ...existingPage]
+                      : null
+                  }
                   editFormData={initialEditData}
                   masterData={masterData}
                   onFormDataChange={handleFormBDataChange}
-
                 />
               </CardBody>
             </Card>
           </Row>
+          {pageNewOld == 0 && (
+            <Row>
+              <Col xs={12} md={8} lg={9}>
+                <h3>Page Details</h3>
+              </Col>
+              <Card>
+                <CardBody>
+                  <FormBuilder
+                    ref={finalizeRef2}
+                    fields={PageFields}
+                    editFormData={initialEditData?.pageDetails}
+                    onFormDataChange={handleFormBDataChange}
+                  />
+                </CardBody>
+              </Card>
+            </Row>
+          )}
         </Container>
       </div>
     </React.Fragment>
   );
-}
+};
 
 export default AddMenuType;

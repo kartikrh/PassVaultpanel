@@ -17,7 +17,8 @@ export const SAVE_AND_NEXT = "SAVE_AND_NEXT"
 export const DIVIDER = "DIVIDER"
 export const ERROR = "ERROR"
 export const SUCCESS = "SUCCESS"
-
+export const TEXT_BUTTON = "TEXT_BUTTON"
+export const LABEL_PARTATION = "LABEL_PARTATION"
 
 // Tab names
 export const TAB_TABS = "Tabs"

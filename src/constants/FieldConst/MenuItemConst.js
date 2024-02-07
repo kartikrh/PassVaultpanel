@@ -1,32 +1,27 @@
-import { IMAGE, SELECT, SWITCH, TEXT, TEXT_AREA, TEXT_EDITOR, RADIO_BUTTON } from "../../components/Common/Const";
+import { IMAGE, SELECT, SWITCH, TEXT, TEXT_AREA, TEXT_EDITOR, RADIO_BUTTON, TEXT_BUTTON, LABEL_PARTATION } from "../../components/Common/Const";
 
 export const menuItemFields = [
-   {
+{
     name: "menuTypeId",
-    label: "main",
-    options: [{ label: "Select a Block", value: "0" }],
+    label: "Main",
+    options: [{ label: "Select a Menu Type", value: "0" }],
     type: SELECT,
     isRequired: true,
     // labelColspan: { xs: 12, md: 2, lg: 2 },
     // fieldColspan: { xs: 12, md: 10, lg: 10 }
 },
 {
-    name: "menuItemId",
-    label: "parent",
-    options: [{ label: "Select a Block", value: "0" }],
+    name: "parentId",
+    label: "Parent",
+    options: [{ label: "Select a Parent", value: "0" }],
     type: SELECT,
-    isRequired: true,
-    // labelColspan: { xs: 12, md: 2, lg: 2 },
-    // fieldColspan: { xs: 12, md: 10, lg: 10 }
+    defaultValue: 0,
 },
 {
-    name: "name",
+    name: "menuItem",
     label: "Name",
-    options: [{ label: "Select a Block", value: "0" }],
-    type: SELECT,
+    type: TEXT,
     isRequired: true,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 10, lg: 10 }
 },
 {
     name: "isActive",
@@ -43,30 +38,94 @@ export const menuItemFields = [
     defaultValue: true,
     parentclassName: "",
     type: SWITCH,
-    // labelColspan: { xs: 12, md: 2 },
-    // fieldColspan: { xs: 12, md: 4 }
+    labelColspan: { xs: 2, md: 2, lg: 2 },
+    fieldColspan: { xs: 10, md: 4, lg: 10 }
 },
 {
-    name: "isActive1",
-    label: "Create New Page",
-    defaultValue: true,
-    parentclassName: "",
+    name: "newOldPage",
+    label: " ",
+    options: [{ label: "Create New Page", value: "0" }, { label: "Use Existing Page", value: "1" }],
     type: RADIO_BUTTON,
-    // labelColspan: { xs: 12, md: 2 },
-    // fieldColspan: { xs: 12, md: 4 }
-},
-{
-    name: "isActive1",
-    label: "Use Existing Page",
-    defaultValue: true,
-    parentclassName: "",
-    type: RADIO_BUTTON,
-    // labelColspan: { xs: 12, md: 2 },
-    // fieldColspan: { xs: 12, md: 4 }
+    labelColspan: { xs: 2, md: 2, lg: 2 },
+    fieldColspan: { xs: 10, md: 10, lg: 10 }
 },
 ]
+export const existingPage = [
+    {
+        name: "pageId",
+        label: "Page",
+        options: [{ label: "Select a Page", value: "0" }],
+        type: SELECT,
+        isRequired: true,
+        defaultValue: 0,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
+        name: "alias",
+        label: "Alias",
+        type: TEXT_BUTTON,
+        btnLable:"Auto Generate",
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+]
 
-export const menuItemPageDetials = [    
+export const PageFields = [
+    {
+        name: "pageName",
+        label: "Page Name",
+        parentclassName: "",
+        regex: /^.{1,100}$/,
+        regexErrorMessage: "Max allowed Characters 100",
+        isRequired: true,
+        type: TEXT,
+        // labelColspan: { xs: 12, md: 2, lg: 2 },
+        // fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
+        name: "pageTitle",
+        label: "Page Browse Title",
+        parentclassName: "",
+        isRequired: true,
+        regex: /^.{1,100}$/,
+        regexErrorMessage: "Max allowed Characters 100",
+        type: TEXT,
+        // labelColspan: { xs: 12, md: 2, lg: 2 },
+        // fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
+        name: "pageHeading",
+        label: "Page Header",
+        parentclassName: "",
+        isRequired: true,
+        regex: /^.{1,100}$/,
+        regexErrorMessage: "Max allowed Characters 100",
+        type: TEXT,
+        // labelColspan: { xs: 12, md: 2, lg: 2 },
+        // fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
+        name: "alias",
+        label: "Page Alias",
+        parentclassName: "",
+        regex: /^.{0,100}$/,
+        regexErrorMessage: "Max allowed Characters 100",
+        isRequired: true,
+        type: TEXT,
+        // labelColspan: { xs: 12, md: 2, lg: 2 },
+        // fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
+        name: "dynamicParameters",
+        label: "Page Dynamic Parameters",
+        parentclassName: "",
+        type: TEXT_EDITOR,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+
     {
         name: "seoWord",
         label: "SEO Word",
