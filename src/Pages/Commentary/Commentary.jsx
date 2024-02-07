@@ -62,7 +62,7 @@ export const CommentaryScreen = ({
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                         <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
-                        <button onClick={() => { changePlayer(CURRENT_BOWLER) }} className=" text-right change-button">C</button>
+                        {/* <button onClick={() => { changePlayer(CURRENT_BOWLER) }} className=" text-right change-button">C</button> */}
                     </Col>
                     {(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0 &&
                         < Col xs={12} md={12} lg={12}>
