@@ -6,7 +6,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {
@@ -69,7 +69,7 @@ export const CommentaryScreen = ({
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
                 </Row>
-                <Row >
+                <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => handleRuns(0, 1)}>
                         <img className="button-icon" src="icons/0.png" alt="Icon" />

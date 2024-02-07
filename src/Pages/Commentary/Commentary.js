@@ -51,7 +51,7 @@ const Commentary = (props) => {
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
-    const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted } = useSelector(state => state.tabsData.commentary);
+    const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -63,10 +63,8 @@ const Commentary = (props) => {
     })
     const updateOnPitchPlayerForStrikeChange = () => {
         console.log(onPitchPlayers)
-        setOnPitchPlayers({
-            ...onPitchPlayers,
-            [ON_STRIKE]: onPitchPlayers[ON_STRIKE].isBatterOut ? {} : onPitchPlayers[ON_STRIKE],
-            [NON_STRIKE]: onPitchPlayers[NON_STRIKE].isBatterOut ? {} : onPitchPlayers[NON_STRIKE]
+        setOnPitchPlayers((prevValue) => {
+            return { ...prevValue, [ON_STRIKE]: prevValue[ON_STRIKE].isBatterOut ? {} : prevValue[ON_STRIKE], [NON_STRIKE]: prevValue[NON_STRIKE].isBatterOut ? {} : prevValue[NON_STRIKE] }
         })
     }
     const checkForOverSwitch = (currentOver) => {
@@ -439,7 +437,7 @@ const Commentary = (props) => {
         // console.log(updateBatter)
         updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
         const updateNonStriker = { ...onPitchPlayers[NON_STRIKE], onStrike: isChangeStrike ? true : false }
-        console.log({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
+        // console.log({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
         setPlayers({
             [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
             [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
@@ -473,6 +471,7 @@ const Commentary = (props) => {
             const runToUpdate = (+matchTypeDetails["valueOfWideBall"] || 0) + runs
             updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) + 1
             updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) + runToUpdate
+            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
             updateOver["totalWideBall"] = (currentOver.totalWideBall || 0) + 1
             updateOver["totalWideRun"] = (currentOver.totalWideRun || 0) + runToUpdate
@@ -489,6 +488,7 @@ const Commentary = (props) => {
             const runToUpdate = (+matchTypeDetails["valueOfNoBall"] || 0) + runs
             updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
             updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runToUpdate
+            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
             updateOver["totalNoball"] = (currentOver.totalNoball || 0) + 1
             updateOver["totalNoBallRun"] = (currentOver.totalNoBallRun || 0) + runToUpdate
@@ -499,6 +499,7 @@ const Commentary = (props) => {
             updateBall["ballType"] = BALL_TYPE_NO_BALL
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
             updatePartnership["extras"] = currentPartnership.extras + runToUpdate
+            batter["batRun"] = (batter.batRun || 0) + runs
         }
         else {
             updateBall["ballIsCount"] = true
@@ -599,7 +600,7 @@ const Commentary = (props) => {
         updateBall["ballPlayerId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterName"] = wicketPlayerDetails.playerName
-        updateWicket["batterRuns"] = wicketPlayerDetails.batRun + isOnStrikeWicket ? +wicketData.runs : 0
+        updateWicket["batterRuns"] = wicketPlayerDetails.batRun + (isOnStrikeWicket ? +wicketData.runs : 0)
         updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? 1 : 0
         const updatedBattingPlayers = players[BATTING_TEAM]?.map((player) => {
             if (isEqual(player.commentaryPlayerId, wicketData.batterId)) {
@@ -744,7 +745,7 @@ const Commentary = (props) => {
                     updateBatter["batBall"] = (batter.batBall || 0) - 1
                     updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
                     updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
-                    updatePartnership["totalBalls"] = (currentPartnership.totalBalls || 0) - 1
+                    updatePartnership["totalBalls"] = (currentPartnership?.totalBalls || 0) - 1
                     updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - run
                     updateBowler["bowlerOver"] = updatedBowlerOver
                     updatePartnership["totalRuns"] = (currentPartnership.totalRuns || 0) - run
@@ -896,6 +897,10 @@ const Commentary = (props) => {
                 updatedBattingTeam["teamOver"] = (+(updatedBattingTeam.teamOver || 0) + ((player.bowlerTotalBall || 0) / 10) - 1)?.toFixed(1)
                 previousOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
             }
+            if (!isEqual(updatedPlayer, player)) {
+                console.log("Player Different")
+                setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
+            }
             return updatedPlayer
         })
         const updatedBattingPlayerList = players[BATTING_TEAM].map(player => {
@@ -990,6 +995,7 @@ const Commentary = (props) => {
             changeStrike={changeOnStrikePlayer}
             endInnings={() => setShowInningsChangePopup(true)}
             onUndoClick={handleUndoClick}
+            isLoading={isCommentaryBallLoading}
         />
         {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
