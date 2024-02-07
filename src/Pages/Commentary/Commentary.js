@@ -16,6 +16,7 @@ import { compareNumStringValues } from "../../components/Common/Reusables/reusab
 import UpdateStrikeModal from "./CommentaryModels/UpdateStrikerModal.jsx"
 import WinnerModal from "./CommentaryModels/WinnerModal.jsx"
 import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
+import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -51,6 +52,7 @@ const Commentary = (props) => {
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
     const [updateRunsFromWicket, setUpdateRunFromWicket] = useState(undefined)
     const [isSwapPlayer, setIsSwapPlayer] = useState(undefined)
+    const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
@@ -96,9 +98,9 @@ const Commentary = (props) => {
                 conditionsToCheck = [isRunTargetAchieved()]; break;
             default: break;
         }
+        console.log(checkFor)
         if (conditionsToCheck.some(condition => condition)) {
-            if (
-                teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) checkWinner()
+            if (teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
             else setShowInningsChangePopup(true);
         }
     }
@@ -131,6 +133,7 @@ const Commentary = (props) => {
         }
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
+        setCompleteMatchModal(undefined)
         setRedirectOnScreenChange(true)
         setWinnerAnnouncement(WINNING_MESSAGE)
     }
@@ -1114,6 +1117,12 @@ const Commentary = (props) => {
             toggle={() => { setUndoInningsPopup(undefined) }}
             onLastInnigsClick={() => { }}
             onPlayerSelectionClick={onUndoPlayerSelection}
+        />}
+        {completeMatchModal && <CompleteCurrentMatchModal
+            isOpen={completeMatchModal}
+            toggle={() => { setCompleteMatchModal(undefined) }}
+            onNoClick={() => { setCompleteMatchModal(undefined) }}
+            onYesClick={checkWinner}
         />}
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}
