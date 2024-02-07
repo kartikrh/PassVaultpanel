@@ -36,6 +36,7 @@ export const TAB_BLOCKS = "Blocks"
 export const TAB_PAGE_FORMAT = "Page Format"
 export const TAB_PAGE = "Page"
 export const TAB_IMPORT_MARKET = "Import Market"
+export const Tab_Menu_List = "Menu List"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"

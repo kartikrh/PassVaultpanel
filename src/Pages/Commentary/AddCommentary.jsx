@@ -69,6 +69,7 @@ function AddCommentary() {
                 "team1Players": true,
                 "team2Players": true,
                 "matchTypeId":true,
+                "addSystemPlayer": true,
             })
         }
     }, [id]);
@@ -369,6 +370,7 @@ function AddCommentary() {
                 "team2Kipper": dataToSave2.team2Kipper,
                 "team1Players": dataToSave2.team1Players,
                 "team2Players": dataToSave2.team2Players,
+                "addSystemPlayer" : dataToSave2.addSystemPlayer
             }
             const extraData = {
                 commentaryId: id,

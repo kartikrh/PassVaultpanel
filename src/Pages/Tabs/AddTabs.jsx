@@ -35,7 +35,9 @@ function AddTabs() {
         }
         fetchMasterData()
     }, []);
-
+    // useEffect(()=>{
+    //     console.log({initialEditData})
+    // },[initialEditData])
     useEffect(() => {
         if (id !== "0") {
             fetchData(id);
