@@ -9,12 +9,14 @@ import { addMenuTypeToDb, updateSavedState } from '../../Features/Tabs/menuTypeS
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
+import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 
 const AddMenuType = () => {
   const pageName = Tab_Menu_List
-  const finalizeRef = useRef(null);
+  const finalizeRef1 = useRef(null);
+  const finalizeRef2 = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -52,7 +54,8 @@ const AddMenuType = () => {
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
         setMenuTypeId("0")
-        finalizeRef.current.resetForm()
+        finalizeRef1.current.resetForm()
+        finalizeRef2.current.resetForm()
       }
       setCurrentSaveAction(undefined)
     }
@@ -91,17 +94,40 @@ const AddMenuType = () => {
     //     dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
     //   });
   };
-
-  const handleSaveClick = async (saveAction) => {
-    const dataToSave = finalizeRef.current.finalizeData()
-    if (dataToSave) {
-      const extraData = {
-        menuTypeId: menuTypeId
+  const handleFormBDataChange = (newFormData) => {
+    axiosInstance.post('/admin/menuItem/menuTypeList', {})
+      .then((response) => {
+        setMasterData((prevData) => ({
+          ...prevData, 
+          "menuTypeId": response?.result?.map(item => {
+              return { label: item.menuTypeName, value: item.menuTypeId }
+            })
+        }));
+      }).catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+    console.log({newFormData})
+}
+const handleSaveClick = async (saveAction) => {
+  const dataToSave1 = finalizeRef1.current.finalizeData()
+  const dataToSave2 = finalizeRef2.current.finalizeData()
+  if (dataToSave1 && dataToSave2) {
+      const dataToSave = {
+          ...dataToSave1,
+          "team1Id": dataToSave2.team1Id,
+          "team2Id": dataToSave2.team2Id,
+          "team1Captain": dataToSave2.team1Captain,
+          "team2Captain": dataToSave2.team2Captain,
+          "team1Kipper": dataToSave2.team1Kipper,
+          "team2Kipper": dataToSave2.team2Kipper,
+          "team1Players": dataToSave2.team1Players,
+          "team2Players": dataToSave2.team2Players,
+          "addSystemPlayer" : dataToSave2.addSystemPlayer
       }
-      dispatch(addMenuTypeToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
       setCurrentSaveAction(saveAction);
-    }
-  };
+      dispatch(addMenuTypeToDb({ ...dataToSave }))
+  }
+};
 
   const handleBackClick = () => {
     navigate("/menuList");
@@ -148,10 +174,12 @@ const AddMenuType = () => {
                   </Col>
                 </Row>
                 <FormBuilder
-                  ref={finalizeRef}
+                  ref={finalizeRef2}
                   fields={menuItemFields}
                   editFormData={initialEditData}
                   masterData={masterData}
+                  onFormDataChange={handleFormBDataChange}
+
                 />
               </CardBody>
             </Card>
