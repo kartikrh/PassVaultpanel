@@ -30,6 +30,21 @@ import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
 import ChangePassword from '../Pages/ChangePassword'
 import Toss from '../Pages/Commentary/Toss.jsx'
+import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
+import AddBlock from "../Pages/Blocks/AddBlock.jsx";
+import Blocks from "../Pages/Blocks";
+import AddConfig from "../Pages/Config/AddConfig.jsx";
+import Config from "../Pages/Config";
+import PageFormat from "../Pages/PageFormat";
+import AddPageFormat from "../Pages/PageFormat/AddPageFormat.jsx";
+import AddPage from "../Pages/Page/AddPage.jsx";
+import Page from "../Pages/Page";
+import MenuList from '../Pages/menuList'
+import AddMenuType from '../Pages/menuList/AddMenuType.js'
+import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
+
+
+
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -47,15 +62,7 @@ import Maintenance from "../Pages/Utility/Maintenance-Page.js";
 import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
-import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
-import AddBlock from "../Pages/Blocks/AddBlock.jsx";
-import Blocks from "../Pages/Blocks";
-import AddConfig from "../Pages/Config/AddConfig.jsx";
-import Config from "../Pages/Config";
-import PageFormat from "../Pages/PageFormat";
-import AddPageFormat from "../Pages/PageFormat/AddPageFormat.jsx";
-import AddPage from "../Pages/Page/AddPage.jsx";
-import Page from "../Pages/Page";
+
 
 
 const authProtectedRoutes = [
@@ -82,9 +89,7 @@ const authProtectedRoutes = [
   { path: '/commentary', component: <Commentary /> },
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/commentaryMaster', component: <CommentaryMaster /> },
-  {
-    path: '/importMarket', component: <ImportMarket/>
-  },
+  { path: '/importMarket', component: <ImportMarket/> },
   { path: '/Toss', component: <Toss /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },
@@ -96,6 +101,9 @@ const authProtectedRoutes = [
   { path: "/PageFormat", component: <PageFormat /> },
   { path: '/addPage', component: <AddPage /> },
   { path: "/Page", component: <Page /> },
+  { path: "/menuList", component: <MenuList /> },
+  { path: "/addMenuType", component: <AddMenuType /> },
+  { path: "/addMenuItem", component: <AddMenuItem /> },
   {
     path: '/changePassword', component: <ChangePassword />
   },

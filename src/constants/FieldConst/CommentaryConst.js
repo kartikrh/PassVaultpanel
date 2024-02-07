@@ -1,4 +1,4 @@
-import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT } from "../../components/Common/Const";
+import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH } from "../../components/Common/Const";
 
 export const MatchDetailFields = [
     {
@@ -210,5 +210,13 @@ export const TeamDetailsFields = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: MULTI_SELECT,
+    },
+    {
+        name: "addSystemPlayer",
+        label: "Add System Players",
+        defaultValue: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: SWITCH,
     },
 ]

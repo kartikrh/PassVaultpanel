@@ -17,7 +17,8 @@ export const SAVE_AND_NEXT = "SAVE_AND_NEXT"
 export const DIVIDER = "DIVIDER"
 export const ERROR = "ERROR"
 export const SUCCESS = "SUCCESS"
-
+export const TEXT_BUTTON = "TEXT_BUTTON"
+export const LABEL_PARTATION = "LABEL_PARTATION"
 
 // Tab names
 export const TAB_TABS = "Tabs"
@@ -36,6 +37,7 @@ export const TAB_BLOCKS = "Blocks"
 export const TAB_PAGE_FORMAT = "Page Format"
 export const TAB_PAGE = "Page"
 export const TAB_IMPORT_MARKET = "Import Market"
+export const Tab_Menu_List = "Menu List"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"

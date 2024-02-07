@@ -97,6 +97,14 @@ export const PlayerFields = [
     },
     {
         type: SWITCH,
+        name: "isSystemPlayer",
+        label: "Is System Player",
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SWITCH,
         name: "isLeftArmFielding",
         label: "Is Left Hand Bowling",
         labelColspan: { xs: 12, md: 2, lg: 2 },

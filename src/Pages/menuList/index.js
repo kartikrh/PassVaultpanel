@@ -1,0 +1,517 @@
+import React, { useState, useEffect, useRef } from "react";
+import Breadcrumbs from "../../components/Common/Breadcrumb";
+import { validateTabResponse } from "../../Layout/VerticalLayout/functions";
+import { apiGetTabCleaner } from "../../helpers/helper";
+import Table from "../../components/Common/Table";
+import { Button } from "reactstrap";
+import { Container } from "reactstrap";
+import { useNavigate } from "react-router-dom";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import TabModel from "../../components/Model/AddTabModel";
+import DeleteTabModel from "../../components/Model/DeleteModel";
+import axiosInstance from "../../Features/axios";
+import _, { isEqual } from "lodash";
+import {
+  ERROR,
+  PERMISSION_ADD,
+  PERMISSION_DELETE,
+  PERMISSION_EDIT,
+  PERMISSION_VIEW,
+  SUCCESS,
+  Tab_Menu_List,
+} from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
+import {
+  resetMenuTypeSliceData,
+  setSelectedMenuTypeHistory,
+  setSelectedMenuType,
+} from "../../Features/Tabs/menuTypeSlice";
+
+const Index = () => {
+  const pageName = Tab_Menu_List;
+  const finalizeRef = useRef(null);
+  document.title = "Menu List";
+  const { selectedMenuType, selectedMenuTypeHistory } = useSelector(
+    (state) => state.tabsData?.menuType
+  );
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const [data, setData] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [addModelVisable, setAddModelVisable] = useState(false);
+  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [level, setLevel] = useState(0);
+  // const [displayTypes, setDisplayTypes] = useState([]);
+  const [checekedList, setCheckedList] = useState([]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const displayTypes = [1, 2];
+
+  const fetchData = async (latestValueFromTable) => {
+    setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(
+        `${
+          selectedMenuType?.level == 0
+            ? "/admin/menuTypes/all"
+            : selectedMenuType.level == 1 ?
+             "/admin/menuItem/menuItemList" : 
+             "/admin/menuItemTypes/byId" 
+        }`,
+        selectedMenuType?.level == 0
+          ? {
+              parentId: selectedMenuType.id,
+              ...(latestValueFromTable || tableActions),
+            }
+          : selectedMenuType?.level == 1?  {
+              menuTypeId: selectedMenuType.id,
+              isActive: true,
+              parentId: selectedMenuType.parentId,
+            } :
+            {
+              menuItemTypeId: selectedMenuType.id,
+            } 
+
+      )
+      .then((response) => {
+        setData(response?.result);
+        setCheckedList([]);
+        setIsLoading(false);
+        setDeleteModelVisable(false);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setIsLoading(false);
+      });
+  };
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.menuTypeId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== selectedMenuType.level == 0 ? e.menuTypeId : e.menuItemId);
+    } else {
+      updateSingleCheck = [...checekedList, selectedMenuType.level == 0 ? e.menuTypeId : e.menuItemId];
+    }
+    setCheckedList(updateSingleCheck);
+  };
+
+  const handlePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+        .post(
+          `${
+            selectedMenuType.level == 0
+              ? "/admin/menuTypes/save"
+              : "/admin/menuItem/save"
+          }`,
+            selectedMenuType.level == 0
+              ? {
+                  menuTypeId: record.menuTypeId,
+                  [pType]: cState ? false : true,
+                }
+              : {
+                menuItemId: record.menuItemId,
+                [pType]: cState ? false : true,
+                }
+        )
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+        fetchData();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleDelete = async (e) => {
+    if (checekedList?.length > 0) {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/${selectedMenuType.level == 0 ? "menuType" : "menuItem"}/delete`, {
+          [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]: checekedList,
+        })
+        .then((response) => {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+          fetchData();
+        })
+        .catch((error) => {
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    }
+  };
+
+  const handleEdit = (id) => {
+    navigate(selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem", { state: { [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]: id } });
+  };
+
+  const handleReset = (value) => {
+    fetchData(value);
+  };
+
+  const handleBreadCrumbsClick = (value) => {
+    console.log("these values :: ", value);
+    let historyList = _.clone(selectedMenuTypeHistory);
+    const index = historyList.findIndex((item) => item.value === value);
+    historyList = index === -1 ? [] : historyList.slice(0, index + 1);
+    dispatch(setSelectedMenuTypeHistory(historyList));
+    dispatch(setSelectedMenuType(value));
+  };
+
+  const columnsMenuTypes = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.menuTypeId)}
+            onChange={() => {
+              handleSingleCheck(record);
+            }}
+          />
+          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
+        </div>
+      ), // Use 'select' as a placeholder key for the checkbox column
+      key: "select",
+      style: { width: "2%" },
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
+      title: "Edit",
+      key: "menuItem",
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.menuItemId);
+          }}
+        ></i>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Menu",
+      dataIndex: "menuTypeName",
+      render: (text, record) => (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            // setLevel(1);
+            let currentRecord = [
+              { label: record.menuTypeName, value: record?.menuTypeId },
+            ];
+            let historyList = selectedMenuTypeHistory
+              ? [].concat(selectedMenuTypeHistory, currentRecord)
+              : currentRecord;
+            dispatch(setSelectedMenuTypeHistory(historyList));
+            dispatch(
+              setSelectedMenuType({
+                id: record?.menuTypeId,
+                level: 1,
+                parentId: 0,
+                isActive: true,
+              })
+            );
+          }}
+        >
+          {text}
+        </span>
+      ),
+      key: "menuTypeName",
+      style: { width: "10%" },
+    },
+    {
+      title: "Level",
+      dataIndex: "noOfLevel",
+      key: "noOfLevel",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "No.Child",
+      dataIndex: "childCount",
+      key: "childCount",
+      render: (text, record) => <span>{text}</span>,
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Block",
+      dataIndex: "blockName",
+      render: (text, record) => (text ? text : "N/A"),
+      key: "blockId",
+      style: { width: "10%" },
+    },
+    {
+      title: "Is Active",
+      key: "isActive",
+      dataIndex: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+  ];
+  const columnsMenuItems = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.menuItemId)}
+            onChange={() => {
+              handleSingleCheck(record);
+            }}
+          />
+          <i className="bx bx-move ms-1 mt-1"></i>
+        </div>
+      ), // Use 'select' as a placeholder key for the checkbox column
+      key: "select",
+      style: { width: "2%" },
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
+      title: "Edit",
+      key: "menuItem",
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.menuItemId);
+          }}
+        ></i>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Menu Title",
+      dataIndex: "menuItem",
+      render: (text, record) => (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            let currentRecord = [
+              { label: record.menuItem, value: record?.menuItemId },
+            ];
+            let historyList = selectedMenuTypeHistory
+              ? [].concat(selectedMenuTypeHistory, currentRecord)
+              : currentRecord;
+            dispatch(setSelectedMenuTypeHistory(historyList));
+            dispatch(
+              setSelectedMenuType({
+                id: record?.menuItemId,
+                displayType: record?.menuItem,
+                level: 2
+              })
+            );
+          }}
+        >
+          {text}
+        </span>
+      ),
+      key: "menuItem",
+      style: { width: "85%" },
+    },
+    {
+      title: "No.Child",
+      dataIndex: "childCount",
+      key: "childCount",
+      render: (text, record) => <span>{text ? text : "N/A"}</span>,
+      sort: true,
+      style: { width: "50%" },
+    },
+    {
+      title: "Is Active",
+      key: "isActive",
+      dataIndex: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+  ];
+  const tableElement = {
+    title: "Menu",
+    dragDrop: true,
+    // displayTypeDropDown: true,
+    switch: false,
+    subTable: true,
+    resetButton: true,
+    isActive: true,
+    // displayTypes: [
+    //   { label: "Admin", value: 1 },
+    //   { label: "Agent", value: 2 },
+    // ],
+  };
+
+  useEffect(() => {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard");
+    }
+    fetchData();
+    // return (() => {
+    //   dispatch(resetTabSliceData())
+    // })
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+    console.log("changed", selectedMenuType);
+  }, [selectedMenuType]);
+  useEffect(() => {
+    dispatch(
+      setSelectedMenuType({
+        isActive: true,
+        parentId: 0,
+        level: 0,
+      })
+    );
+  }, []);
+  return (
+    <React.Fragment>
+      <div className="page-content">
+        <Container fluid={true}>
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Menu List" />
+          {isLoading && <SpinnerModel />}
+          <Table
+            ref={finalizeRef}
+            columns={
+              selectedMenuType.level == 0 ? columnsMenuTypes : columnsMenuItems
+            }
+            dataSource={data}
+            tableElement={tableElement}
+            deleteModelFunction={setDeleteModelVisable}
+            onAddNavigate={ selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem"}
+            changeOrderApiName="menuList"
+            displayTypes={displayTypes}
+            singleCheck={checekedList}
+            handleReset={handleReset}
+            reFetchData={fetchData}
+            isAddPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_ADD
+            )}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
+            breadCrumbs={selectedMenuTypeHistory}
+            onBreadCrumbsClick={handleBreadCrumbsClick}
+          />
+          <DeleteTabModel
+            deleteModelVisable={deleteModelVisable}
+            setDeleteModelVisable={setDeleteModelVisable}
+            handleDelete={handleDelete}
+            singleCheck={checekedList}
+          />
+          {/* <TabModel
+            addModelVisable={addModelVisable}
+            setAddModelVisable={setAddModelVisable}
+          /> */}
+        </Container>
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default Index;

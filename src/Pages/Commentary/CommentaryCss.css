@@ -148,3 +148,8 @@
 .match-details-breadcrumbs {
     font-size: 16px;
 }
+
+.disable-button {
+    pointer-events: none;
+    opacity: 0.5;
+}
