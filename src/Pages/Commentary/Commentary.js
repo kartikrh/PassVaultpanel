@@ -60,10 +60,10 @@ const Commentary = (props) => {
 
     useEffect(() => {
         // console.log(commentaryDetails, matchTypeDetails)
-        // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
-        // console.log(currentOver, currentBall)
-        // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
-        console.log(onPitchPlayers, players?.[BATTING_TEAM])
+        console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
+        console.log(currentOver, currentBall)
+        console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+        console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     })
     const checkForOverSwitch = (currentOver) => {
         if (currentOver * 10 % 10 >= matchTypeDetails.ballsPerOver) {
