@@ -52,29 +52,30 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    // console.log(...(latestValueFromTable || tableActions));
     await axiosInstance
       .post(
         `${
           selectedMenuType?.level == 0
             ? "/admin/menuTypes/all"
-            : selectedMenuType.level == 1 ?
-             "/admin/menuItem/menuItemList" : 
-             "/admin/menuItemTypes/byId" 
+            : "/admin/menuItem/menuItemList"
         }`,
         selectedMenuType?.level == 0
           ? {
               parentId: selectedMenuType.id,
               ...(latestValueFromTable || tableActions),
             }
-          : selectedMenuType?.level == 1?  {
-              menuTypeId: selectedMenuType.id,
-              isActive: true,
+          : selectedMenuType?.level == 1
+          ? {
+            ...(latestValueFromTable || tableActions),
               parentId: selectedMenuType.parentId,
-            } :
-            {
-              menuItemTypeId: selectedMenuType.id,
-            } 
-
+              menuTypeId: selectedMenuType?.menuTypeId,
+            }
+          : {
+            ...(latestValueFromTable || tableActions),
+              parentId: selectedMenuType.menuItemId,
+              menuTypeId: selectedMenuType.menuTypeId,
+            }
       )
       .then((response) => {
         setData(response?.result);
@@ -95,34 +96,33 @@ const Index = () => {
   };
 
   const handleSingleCheck = (e) => {
-    let updateSingleCheck = [];
-    if (checekedList.includes(e.menuTypeId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== selectedMenuType.level == 0 ? e.menuTypeId : e.menuItemId);
+    let updateSingleCheck = []
+    if (checekedList.includes(e)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e);
     } else {
-      updateSingleCheck = [...checekedList, selectedMenuType.level == 0 ? e.menuTypeId : e.menuItemId];
+      updateSingleCheck = [...checekedList, e];
     }
-    setCheckedList(updateSingleCheck);
+    setCheckedList(updateSingleCheck)
   };
-
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-        .post(
-          `${
-            selectedMenuType.level == 0
-              ? "/admin/menuTypes/save"
-              : "/admin/menuItem/save"
-          }`,
-            selectedMenuType.level == 0
-              ? {
-                  menuTypeId: record.menuTypeId,
-                  [pType]: cState ? false : true,
-                }
-              : {
-                menuItemId: record.menuItemId,
-                [pType]: cState ? false : true,
-                }
-        )
+      .post(
+        `${
+          selectedMenuType.level == 0
+            ? "/admin/menuTypes/save"
+            : "/admin/menuItem/activeInactiveMenuItem"
+        }`,
+        selectedMenuType.level == 0
+          ? {
+              menuTypeId: record.menuTypeId,
+              [pType]: cState ? false : true,
+            }
+          : {
+              menuItemId: record.menuItemId,
+              [pType]: cState ? false : true,
+            }
+      )
       .then((response) => {
         dispatch(
           updateToastData({
@@ -150,9 +150,15 @@ const Index = () => {
     if (checekedList?.length > 0) {
       setIsLoading(true);
       await axiosInstance
-        .post(`/admin/${selectedMenuType.level == 0 ? "menuType" : "menuItem"}/delete`, {
-          [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]: checekedList,
-        })
+        .post(
+          `/admin/${
+            selectedMenuType.level == 0 ? "menuType" : "menuItem"
+          }/delete`,
+          {
+            [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]:
+              checekedList,
+          }
+        )
         .then((response) => {
           dispatch(
             updateToastData({
@@ -162,8 +168,10 @@ const Index = () => {
             })
           );
           fetchData();
+          setIsLoading(true);
         })
         .catch((error) => {
+      setIsLoading(false);
           dispatch(
             updateToastData({
               data: error?.message,
@@ -176,7 +184,11 @@ const Index = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem", { state: { [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]: id } });
+    navigate(selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem", {
+      state: {
+        [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]: id,
+      },
+    });
   };
 
   const handleReset = (value) => {
@@ -184,7 +196,6 @@ const Index = () => {
   };
 
   const handleBreadCrumbsClick = (value) => {
-    console.log("these values :: ", value);
     let historyList = _.clone(selectedMenuTypeHistory);
     const index = historyList.findIndex((item) => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
@@ -222,9 +233,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.menuTypeId)}
+            checked={checekedList.includes(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId)}
             onChange={() => {
-              handleSingleCheck(record);
+              handleSingleCheck(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId);
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -240,7 +251,7 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.menuItemId);
+            handleEdit(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId);
           }}
         ></i>
       ),
@@ -255,7 +266,15 @@ const Index = () => {
           onClick={() => {
             // setLevel(1);
             let currentRecord = [
-              { label: record.menuTypeName, value: record?.menuTypeId },
+              {
+                label: record.menuTypeName,
+                value: {
+                  menuTypeId: record?.menuTypeId,
+                  level: 1,
+                  parentId: 0,
+                  isActive: true,
+                },
+              },
             ];
             let historyList = selectedMenuTypeHistory
               ? [].concat(selectedMenuTypeHistory, currentRecord)
@@ -263,7 +282,7 @@ const Index = () => {
             dispatch(setSelectedMenuTypeHistory(historyList));
             dispatch(
               setSelectedMenuType({
-                id: record?.menuTypeId,
+                menuTypeId: record?.menuTypeId,
                 level: 1,
                 parentId: 0,
                 isActive: true,
@@ -348,9 +367,9 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.menuItemId)}
+            checked={checekedList.includes(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId)}
             onChange={() => {
-              handleSingleCheck(record);
+              handleSingleCheck(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId);
             }}
           />
           <i className="bx bx-move ms-1 mt-1"></i>
@@ -366,7 +385,7 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.menuItemId);
+            handleEdit(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId);
           }}
         ></i>
       ),
@@ -380,7 +399,14 @@ const Index = () => {
           style={{ cursor: "pointer" }}
           onClick={() => {
             let currentRecord = [
-              { label: record.menuItem, value: record?.menuItemId },
+              {
+                label: record.menuItem,
+                value: {
+                  menuItemId: record?.menuItemId,
+                  displayType: record?.menuItem,
+                  level: 2,
+                },
+              },
             ];
             let historyList = selectedMenuTypeHistory
               ? [].concat(selectedMenuTypeHistory, currentRecord)
@@ -388,9 +414,9 @@ const Index = () => {
             dispatch(setSelectedMenuTypeHistory(historyList));
             dispatch(
               setSelectedMenuType({
-                id: record?.menuItemId,
+                menuItemId: record?.menuItemId,
                 displayType: record?.menuItem,
-                level: 2
+                level: 2,
               })
             );
           }}
@@ -452,19 +478,9 @@ const Index = () => {
     // })
   }, []);
 
-  useEffect(() => {
-    fetchData();
-    console.log("changed", selectedMenuType);
-  }, [selectedMenuType]);
-  useEffect(() => {
-    dispatch(
-      setSelectedMenuType({
-        isActive: true,
-        parentId: 0,
-        level: 0,
-      })
-    );
-  }, []);
+    useEffect(() => {
+      fetchData();
+    }, [selectedMenuType]);
   return (
     <React.Fragment>
       <div className="page-content">
@@ -479,7 +495,9 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            onAddNavigate={ selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem"}
+            onAddNavigate={
+              selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem"
+            }
             changeOrderApiName="menuList"
             displayTypes={displayTypes}
             singleCheck={checekedList}
