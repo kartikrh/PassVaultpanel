@@ -84,7 +84,7 @@ const AddMenuType = () => {
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
-    if (dataToSave) {
+    if (dataToSave !== "0") {
       const extraData = {
         menuTypeId: menuTypeId
       }

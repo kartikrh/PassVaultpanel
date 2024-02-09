@@ -50,7 +50,7 @@ const Index = () => {
   const displayTypes = [1, 2];
 
   const fetchData = async (latestValueFromTable) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     // console.log(...(latestValueFromTable || tableActions));
     await axiosInstance
@@ -196,7 +196,6 @@ const Index = () => {
   };
 
   const handleBreadCrumbsClick = (value) => {
-    console.log("these values :: ", value);
     let historyList = _.clone(selectedMenuTypeHistory);
     const index = historyList.findIndex((item) => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
@@ -481,32 +480,7 @@ const Index = () => {
 
     useEffect(() => {
       fetchData();
-      console.log("changed", selectedMenuType);
     }, [selectedMenuType]);
-    useEffect(()=>{
-  console.log({selectedMenuTypeHistory})
-    },[selectedMenuTypeHistory])
-  useEffect(() => {
-    // dispatch(
-    //   setSelectedMenuType({
-    //     isActive: true,
-    //     parentId: 0,
-    //     level: 0,
-    //   })
-    // );
-    // dispatch(
-    //   setSelectedMenuTypeHistory([{
-    //     label: "MenuType",
-    //     value: {
-    //       isActive: true,
-    //       parentId: 0,
-    //       level: 0,
-    //       menuTypeId: 0,
-    //       menuItemId: 0,
-    //     },
-    //   }])
-    // );
-  }, []);
   return (
     <React.Fragment>
       <div className="page-content">
