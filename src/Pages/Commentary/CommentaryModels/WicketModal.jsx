@@ -5,16 +5,21 @@ import CardComponent from '../CardComponent';
 import { compareNumStringValues } from '../../../components/Common/Reusables/reusableMethods';
 import Select from "react-select";
 import "../CommentaryCss.css"
+import { useDispatch } from 'react-redux';
+import { updateToastData } from '../../../Features/toasterSlice';
+import { ERROR } from '../../../components/Common/Const';
 
 const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit }) => {
     const [wicketData, setWicketData] = useState({ runs: 0 });
     const [showFields, setShowFields] = useState({});
     const [bowlingPlayerList, setBowlingPlayerList] = useState([]);
+    const dispatch = useDispatch()
     useEffect(() => {
         const formattedBowlerData = []
         bowlingTeam?.forEach(element => {
             formattedBowlerData.push({ label: element.playerName, value: element.commentaryPlayerId })
         })
+        console.log(formattedBowlerData)
         setBowlingPlayerList(formattedBowlerData)
     }, [])
 
@@ -37,14 +42,30 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     }
 
     const handleSubmit = () => {
-        const dataToSend = {
-            wicketType: wicketData.wicketType,
-            batterId: showFields["batterId"] ? wicketData.batterId : onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId,
-            runs: showFields["runs"] ? wicketData.runs : 0,
-            fielder1: showFields["fielder1"] ? wicketData.fielder1 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
-            fielder2: showFields["fielder2"] ? wicketData.fielder2 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
+        if (checkIfRequiredError()) {
+            dispatch(updateToastData({
+                data: "Please Fill all required fields", title: "Required Error", type: ERROR
+            }));
         }
-        onSubmit(dataToSend)
+        else {
+            const dataToSend = {
+                wicketType: wicketData.wicketType,
+                batterId: showFields["batterId"] ? wicketData.batterId : onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId,
+                runs: showFields["runs"] ? wicketData.runs : 0,
+                fielder1: showFields["fielder1"] ? wicketData.fielder1 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
+                fielder2: showFields["fielder2"] ? wicketData.fielder2 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
+            }
+            onSubmit(dataToSend)
+        }
+    }
+
+    const checkIfRequiredError = () => {
+        let isRequiredError = false
+        if (!wicketData.wicketType) isRequiredError = true
+        Object.keys(showFields).forEach(field => {
+            if (showFields[field] && !wicketData[field]) isRequiredError = true
+        })
+        return isRequiredError
     }
 
     return (

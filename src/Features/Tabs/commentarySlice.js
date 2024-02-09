@@ -76,7 +76,8 @@ const commentarySlice = createSlice({
         isLoading: false,
         error: null,
         isCommentaryDataUpdated: undefined,
-        isUndoCompleted: undefined
+        isUndoCompleted: undefined,
+        isCommentaryBallLoading: undefined
     },
     reducers: {
         updateSavedState: (state, action) => {
@@ -114,12 +115,17 @@ const commentarySlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
+            .addCase(addCommentaryScreenData.pending, (state) => {
+                state.isCommentaryBallLoading = true;
+            })
             .addCase(addCommentaryScreenData.fulfilled, (state, action) => {
                 state.commentaryDataToUpdate = action.payload
                 state.isCommentaryDataUpdated = true
+                state.isCommentaryBallLoading = false
             })
             .addCase(addCommentaryScreenData.rejected, (state, action) => {
                 state.error = action.payload;
+                state.isCommentaryBallLoading = false
             })
             .addCase(undoBallFromCommentary.fulfilled, (state, action) => {
                 state.isUndoCompleted = true
