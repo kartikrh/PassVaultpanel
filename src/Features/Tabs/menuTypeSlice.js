@@ -38,6 +38,8 @@ const initialSliceState = {
         parentId: 0, 
         level: 0,
         id:0,
+        menuTypeId:0,
+        menuItemId:0,
     },
     selectedMenuTypeHistory: [{
         label: "MenuType", value: {
@@ -45,6 +47,8 @@ const initialSliceState = {
             parentId: 0, 
             level: 0,
             id:0,
+            menuTypeId:0,
+            menuItemId:0,
         }
     }]
 }
@@ -56,6 +60,8 @@ const menuTypeSlice = createSlice({
             state.selectedMenuType.level = action.payload.level
             state.selectedMenuType.parentId = action.payload.parentId
             state.selectedMenuType.id = action.payload.id
+            state.selectedMenuType.menuTypeId = action.payload.menuTypeId
+            state.selectedMenuType.menuItemId = action.payload.menuItemId
         },
         setSelectedMenuTypeHistory: (state, action) => {
             state.selectedMenuTypeHistory = action.payload

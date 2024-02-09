@@ -26,13 +26,15 @@ const AddMenuType = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId || "0");
+  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId);
   const [masterData, setMasterData] = useState({});
 
   useEffect(() => {
     if (menuTypeId !== "0") {
+      // alert("inside it")
       fetchData(menuTypeId);
     }
+    // console.log(location)
   }, [menuTypeId]);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ const AddMenuType = () => {
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
-    if (dataToSave) {
+    if (dataToSave !== "0") {
       const extraData = {
         menuTypeId: menuTypeId
       }
