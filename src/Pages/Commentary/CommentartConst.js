@@ -55,6 +55,10 @@ export const WICKET = "WICKET"
 export const RUN = "RUN"
 export const ALL = "ALL"
 
+
+export const SWITCH_BOWLER = "SWITCH_BOWLER"
+export const CHANGE_BOWLER = "CHANGE_BOWLER"
+
 export const WICKET_TYPE_LIST = [
     { label: BOLD_LABEL, value: BOLD },
     { label: CATCH_LABEL, value: CATCH },
