@@ -241,7 +241,7 @@ const AddMenuType = () => {
 
   const handleBackClick = () => {
     navigate("/menuList");
-    console.log(selectedMenuTypeHistory[selectedMenuTypeHistory.length-1].value)
+    dispatch(selectedMenuType[selectedMenuTypeHistory.length-1].value)
     console.log(
       {selectedMenuType}
     )

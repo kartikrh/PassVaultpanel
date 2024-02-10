@@ -52,7 +52,6 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    // console.log(...(latestValueFromTable || tableActions));
     await axiosInstance
       .post(
         `${
@@ -104,6 +103,7 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck)
   };
+
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -212,10 +212,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
               setCheckedList(
                 isEqual(checekedList?.sort(), dataIndexList?.sort())
@@ -337,6 +334,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
+
   const columnsMenuItems = [
     {
       title: (
@@ -454,6 +452,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
+
   const tableElement = {
     title: "Menu",
     dragDrop: true,
@@ -476,11 +475,22 @@ const Index = () => {
     // return (() => {
     //   dispatch(resetTabSliceData())
     // })
+    // dispatch(
+    //   setSelectedMenuType({  
+    //     isActive: true,
+    //     parentId: 0, 
+    //     level: 0,
+    //     id:0,
+    //     menuTypeId:0,
+    //     menuItemId:0,
+    // })
+    // )
+    // dispatch()
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
       fetchData();
-    }, [selectedMenuType]);
+  }, [selectedMenuType]);
   return (
     <React.Fragment>
       <div className="page-content">
