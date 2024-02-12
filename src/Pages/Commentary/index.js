@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { mapCommentaryStatus } from './functions'
+import { mapCommentaryStatus } from "./functions";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
@@ -10,28 +10,41 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
+import {
+  ERROR,
+  PERMISSION_ADD,
+  PERMISSION_DELETE,
+  PERMISSION_EDIT,
+  PERMISSION_VIEW,
+  SUCCESS,
+  TAB_COMMENTARY,
+} from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import {
+  checkPermission,
+  convertDateUTCToLocal,
+} from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import {ChnageMatchTypeModel} from '../../components/Model/ChangeMatchType'
+import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
 import moment from "moment";
 
 const Index = () => {
-  const pageName = TAB_COMMENTARY
+  const pageName = TAB_COMMENTARY;
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Commentary";
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  document.title = "Commentary";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [changeModelVisible, setChangeModelVisible] = useState(false);
-  const [matchType, setMatchType] = useState("")
-  const [selectedCommentary, setSelectedCommentary] = useState({})
+  const [matchType, setMatchType] = useState("");
+  const [selectedCommentary, setSelectedCommentary] = useState({});
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
   });
-  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
+  const [checekedList, setCheckedList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
@@ -39,20 +52,20 @@ const Index = () => {
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
-    const tableActions = finalizeRef.current.getTableAction()
+    const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
       .post(`/admin/commentary/all`, {
-        ...(latestValueFromTable || tableActions)
+        ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result;
         let apiDataIdList = [];
-        apiData.forEach(ele => {
-          apiDataIdList.push(ele?.commentaryId)
-        })
+        apiData.forEach((ele) => {
+          apiDataIdList.push(ele?.commentaryId);
+        });
         setData(apiData);
-        setDataIndexList(apiDataIdList)
-        setCheckedList([])
+        setDataIndexList(apiDataIdList);
+        setCheckedList([]);
         setIsLoading(false);
         setEventTypes(eventTypes);
       })
@@ -62,32 +75,43 @@ const Index = () => {
   };
 
   const handleSingleCheck = (e) => {
-    let updateSingleCheck = []
+    let updateSingleCheck = [];
     if (checekedList.includes(e.commentaryId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.commentaryId);
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.commentaryId
+      );
     } else {
       updateSingleCheck = [...checekedList, e.commentaryId];
     }
-    setCheckedList(updateSingleCheck)
+    setCheckedList(updateSingleCheck);
   };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(
-        `/admin/commentary/delete`,
-        {
-          commentaryId: checekedList,
-        }
-      )
+      .post(`/admin/commentary/delete`, {
+        commentaryId: checekedList,
+      })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -109,31 +133,61 @@ const Index = () => {
         })
         .then((response) => {
           fetchData();
-          dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
           setCloneModelVisible(false);
         })
         .catch((error) => {
-          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
         });
     } else {
-      dispatch(updateToastData({ data: "Name and Reference Id are required", title: "Required", type: ERROR }))
+      dispatch(
+        updateToastData({
+          data: "Name and Reference Id are required",
+          title: "Required",
+          type: ERROR,
+        })
+      );
     }
   };
   const handleChange = async () => {
-      setIsLoading(true);
-      await axiosInstance
-        .post(`/admin/commentary/changeMatchType`, {
-         ...selectedCommentary
-        })
-        .then((response) => {
-          fetchData();
-          dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-          setChangeModelVisible(false);
-        })
-        .catch((error) => {
-          setChangeModelVisible(false);
-          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        });
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeMatchType`, {
+        ...selectedCommentary,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setChangeModelVisible(false);
+      })
+      .catch((error) => {
+        setChangeModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
   //table columns
   const columns = [
@@ -145,10 +199,16 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
             onChange={() => {
-              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-              )
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
             }}
           />
         </div>
@@ -171,22 +231,26 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-    && {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"
-        onClick={() => {
-          handleEdit(record.commentaryId);
-        }}
-      ></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.commentaryId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, 'index')}</span>
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
       ),
       key: "eventDate",
       sort: true,
@@ -231,7 +295,15 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       render: (text, record) => (
-        <span onClick={()=>{setChangeModelVisible(true); setSelectedCommentary(record)}} style={{ cursor: "pointer" }}>{text}{" "} {<a className="bx bx-edit-alt"></a>}</span>
+        <span
+          onClick={() => {
+            setChangeModelVisible(true);
+            setSelectedCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text} {<a className="bx bx-edit-alt"></a>}
+        </span>
       ),
       key: "matchType",
       sort: true,
@@ -263,12 +335,31 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: false,
     switch: false,
-    clone: true
+    clone: true,
+    commentaryStatus: true,
+    statusOptions: [
+      {
+        label: "Open",
+        value: 1,
+      },
+      {
+        label: "Toss Done",
+        value: 2,
+      },
+      {
+        label: "In Progress",
+        value: 3,
+      },
+      {
+        label: "End",
+        value: 4,
+      },
+    ],
   };
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
   }, []);
@@ -289,8 +380,16 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             onAddNavigate={"/addCommentary"}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
-            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            isAddPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_ADD
+            )}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -306,16 +405,17 @@ const Index = () => {
             cloneValues={cloneValues}
             singleCheck={checekedList}
           />
-          {changeModelVisible && 
-          <ChnageMatchTypeModel
-           changeModelVisible={changeModelVisible}
-           setChangeModelVisible={setChangeModelVisible}
-           handleChange={handleChange}
-           setMatchType={setMatchType}
-           singleCheck={checekedList}
-           selectedCommentary={selectedCommentary}
-           setSelectedCommentary = {setSelectedCommentary}
-          />}
+          {changeModelVisible && (
+            <ChnageMatchTypeModel
+              changeModelVisible={changeModelVisible}
+              setChangeModelVisible={setChangeModelVisible}
+              handleChange={handleChange}
+              setMatchType={setMatchType}
+              singleCheck={checekedList}
+              selectedCommentary={selectedCommentary}
+              setSelectedCommentary={setSelectedCommentary}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

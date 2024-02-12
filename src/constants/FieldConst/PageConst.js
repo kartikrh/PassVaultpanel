@@ -1,4 +1,4 @@
-import { IMAGE, SELECT, SWITCH, TEXT, TEXT_AREA, TEXT_EDITOR } from "../../components/Common/Const";
+import { IMAGE, SELECT, SWITCH, TEXT, TEXT_AREA, TEXT_BUTTON, TEXT_EDITOR } from "../../components/Common/Const";
 
 export const PageFields = [
     {
@@ -41,7 +41,8 @@ export const PageFields = [
         regex: /^.{0,100}$/,
         regexErrorMessage: "Max allowed Characters 100",
         isRequired: true,
-        type: TEXT,
+        type: TEXT_BUTTON,
+        btnLable:"Auto Generate",
         // labelColspan: { xs: 12, md: 2, lg: 2 },
         // fieldColspan: { xs: 12, md: 10, lg: 10 }
     },

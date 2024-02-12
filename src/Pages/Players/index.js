@@ -51,6 +51,7 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/player/eventTypeList`, {})
@@ -60,6 +61,7 @@ const Index = () => {
       })
       .catch((error) => { });
   };
+
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -125,7 +127,11 @@ const Index = () => {
             value="option1"
             checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+              setCheckedList(
+                isEqual(checekedList?.sort(), 
+                dataIndexList?.sort())
+                 ? []
+                 : dataIndexList
               )
             }}
           />

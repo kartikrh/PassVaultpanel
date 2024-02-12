@@ -16,7 +16,7 @@ export const PlayerFields = [
         name: "playerName",
         label: "Player Name",
         isRequired: true,
-        regex: /^[a-zA-Z0-9 ]{1,100}$/,
+        regex: /^[a-zA-Z0-9 ]{1,10}$/,
         regexErrorMessage: "Max allowed Characters 100, No Spacial Character",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }

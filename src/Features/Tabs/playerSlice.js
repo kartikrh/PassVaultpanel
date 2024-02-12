@@ -7,7 +7,6 @@ export const addPlayerToDb = createAsyncThunk(
     'player/addPlayer',
     async (data, { rejectWithValue, dispatch }) => {
         try {
-            console.log("this is playerData", data)
             const response = await axiosInstance.post('/admin/player/save', data);
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;

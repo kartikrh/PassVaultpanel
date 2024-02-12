@@ -40,11 +40,11 @@ const Index = () => {
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [level, setLevel] = useState(0);
-  // const [displayTypes, setDisplayTypes] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
+  // const [addModelVisable, setAddModelVisable] = useState(false);
+  // const [level, setLevel] = useState(0);
+  // const [displayTypes, setDisplayTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const displayTypes = [1, 2];
@@ -52,33 +52,38 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    // console.log(...(latestValueFromTable || tableActions));
     await axiosInstance
       .post(
-        `${
-          selectedMenuType?.level == 0
-            ? "/admin/menuTypes/all"
-            : "/admin/menuItem/menuItemList"
+        `${selectedMenuType?.level == 0
+          ? "/admin/menuTypes/all"
+          : "/admin/menuItem/menuItemList"
         }`,
-        selectedMenuType?.level == 0
+        +selectedMenuType?.level === 0
           ? {
-              parentId: selectedMenuType.id,
-              ...(latestValueFromTable || tableActions),
-            }
-          : selectedMenuType?.level == 1
-          ? {
+            parentId: selectedMenuType.id,
             ...(latestValueFromTable || tableActions),
+          }
+          : +selectedMenuType?.level === 1
+            ? {
+              ...(latestValueFromTable || tableActions),
               parentId: selectedMenuType.parentId,
               menuTypeId: selectedMenuType?.menuTypeId,
             }
-          : {
-            ...(latestValueFromTable || tableActions),
+            : {
+              ...(latestValueFromTable || tableActions),
               parentId: selectedMenuType.menuItemId,
               menuTypeId: selectedMenuType.menuTypeId,
             }
       )
       .then((response) => {
-        setData(response?.result);
+        const apiData = response?.result
+        let apiDataIdList = [];
+        apiData.forEach(ele => {
+          const uniqueId = +selectedMenuType?.level === 0 ? ele?.menuTypeId : ele?.menuItemId
+          apiDataIdList.push(uniqueId)
+        })
+        setDataIndexList(apiDataIdList)
+        setData(apiData);
         setCheckedList([]);
         setIsLoading(false);
         setDeleteModelVisable(false);
@@ -94,7 +99,10 @@ const Index = () => {
         setIsLoading(false);
       });
   };
-
+  useEffect(() => {
+    console.log(checekedList, data, data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort()))
+    console.log(checekedList, dataIndexList)
+  })
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
     if (checekedList.includes(e)) {
@@ -104,24 +112,24 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck)
   };
+
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
       .post(
-        `${
-          selectedMenuType.level == 0
-            ? "/admin/menuTypes/save"
-            : "/admin/menuItem/activeInactiveMenuItem"
+        `${selectedMenuType.level == 0
+          ? "/admin/menuTypes/save"
+          : "/admin/menuItem/activeInactiveMenuItem"
         }`,
         selectedMenuType.level == 0
           ? {
-              menuTypeId: record.menuTypeId,
-              [pType]: cState ? false : true,
-            }
+            menuTypeId: record.menuTypeId,
+            [pType]: cState ? false : true,
+          }
           : {
-              menuItemId: record.menuItemId,
-              [pType]: cState ? false : true,
-            }
+            menuItemId: record.menuItemId,
+            [pType]: cState ? false : true,
+          }
       )
       .then((response) => {
         dispatch(
@@ -151,8 +159,7 @@ const Index = () => {
       setIsLoading(true);
       await axiosInstance
         .post(
-          `/admin/${
-            selectedMenuType.level == 0 ? "menuType" : "menuItem"
+          `/admin/${selectedMenuType.level == 0 ? "menuType" : "menuItem"
           }/delete`,
           {
             [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]:
@@ -171,7 +178,7 @@ const Index = () => {
           setIsLoading(true);
         })
         .catch((error) => {
-      setIsLoading(false);
+          setIsLoading(false);
           dispatch(
             updateToastData({
               data: error?.message,
@@ -212,10 +219,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
+            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
               setCheckedList(
                 isEqual(checekedList?.sort(), dataIndexList?.sort())
@@ -233,7 +237,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId)}
+            checked={checekedList.includes(+selectedMenuType.level === 0 ? record.menuTypeId : record.menuItemId)}
             onChange={() => {
               handleSingleCheck(selectedMenuType.level == 0 ? record.menuTypeId : record.menuItemId);
             }}
@@ -337,6 +341,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
+
   const columnsMenuItems = [
     {
       title: (
@@ -454,6 +459,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
+
   const tableElement = {
     title: "Menu",
     dragDrop: true,
@@ -476,11 +482,22 @@ const Index = () => {
     // return (() => {
     //   dispatch(resetTabSliceData())
     // })
+    // dispatch(
+    //   setSelectedMenuType({  
+    //     isActive: true,
+    //     parentId: 0, 
+    //     level: 0,
+    //     id:0,
+    //     menuTypeId:0,
+    //     menuItemId:0,
+    // })
+    // )
+    // dispatch()
   }, []);
 
-    useEffect(() => {
-      fetchData();
-    }, [selectedMenuType]);
+  useEffect(() => {
+    fetchData();
+  }, [selectedMenuType]);
   return (
     <React.Fragment>
       <div className="page-content">

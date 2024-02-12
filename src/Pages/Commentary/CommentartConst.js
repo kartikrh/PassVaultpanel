@@ -44,16 +44,22 @@ export const BOWLING_TEAM = "BOWLING_TEAM"
 export const FOUR = "FOUR"
 export const SIX = "SIX"
 export const BALL_EXTRAS = "BALL_EXTRAS"
-export const BALL_WIDE = "BALL_WIDE"
-export const NO_BALL = "NO_BALL"
-export const BALL_BYE = "BALL_BYE"
-export const BALL_LEG_BYE = "BALL_LEG_BYE"
+export const BALL_WIDE = "Wide Ball"
+export const NO_BALL = "No Ball"
+export const BALL_BYE = "Ball Bye"
+export const BALL_LEG_BYE = "Leg Bye"
 
+export const EXTRAS = "EXTRAS"
 export const OVER = "OVER"
 export const OVER_ENDED = "OVER_ENDED"
 export const WICKET = "WICKET"
 export const RUN = "RUN"
 export const ALL = "ALL"
+
+
+export const SWITCH_BOWLER = "SWITCH_BOWLER"
+export const CHANGE_BOWLER = "CHANGE_BOWLER"
+
 
 export const WICKET_TYPE_LIST = [
     { label: BOLD_LABEL, value: BOLD },
@@ -67,53 +73,8 @@ export const WICKET_TYPE_LIST = [
     { label: HIT_BALL_TWICE_LABEL, value: HIT_BALL_TWICE },
     { label: OBSTRACT_THE_FIELDING_LABEL, value: OBSTRACT_THE_FIELDING },
 ]
-export const EXTRAS_LIST = {
-    [BALL_WIDE]: [
-        { label: "No Run", value: 0 },
-        { label: "1 Run", value: 1 },
-        { label: "2 Runs", value: 2 },
-        { label: "3 Runs", value: 3 },
-        { label: "4 Runs", value: 4 },
-        { label: "5 Runs", value: 5 },
-        { label: "6 Runs", value: 6 },
-        { label: "7 Runs", value: 7 },
-        { label: "8 Runs", value: 8 },
-        { label: "9 Runs", value: 9 },
-    ],
-    [NO_BALL]: [
-        { label: "No Run", value: 0 },
-        { label: "1 Run", value: 1 },
-        { label: "2 Runs", value: 2 },
-        { label: "3 Runs", value: 3 },
-        { label: "4 Runs", value: 4 },
-        { label: "5 Runs", value: 5 },
-        { label: "6 Runs", value: 6 },
-        { label: "7 Runs", value: 7 },
-        { label: "8 Runs", value: 8 },
-        { label: "9 Runs", value: 9 },
-    ],
-    [BALL_BYE]: [
-        { label: "No Run", value: 0 },
-        { label: "1 Run", value: 1 },
-        { label: "2 Runs", value: 2 },
-        { label: "3 Runs", value: 3 },
-        { label: "4 Runs", value: 4 },
-        { label: "5 Runs", value: 5 },
-        { label: "6 Runs", value: 6 },
-        { label: "7 Runs", value: 7 },
-        { label: "8 Runs", value: 8 },
-        { label: "9 Runs", value: 9 },
-    ],
-    [BALL_LEG_BYE]: [
-        { label: "No Run", value: 0 },
-        { label: "1 Run", value: 1 },
-        { label: "2 Runs", value: 2 },
-        { label: "3 Runs", value: 3 },
-        { label: "4 Runs", value: 4 },
-        { label: "5 Runs", value: 5 },
-        { label: "6 Runs", value: 6 },
-        { label: "7 Runs", value: 7 },
-        { label: "8 Runs", value: 8 },
-        { label: "9 Runs", value: 9 },
-    ]
-}
+
+export const EXTRAS_WICKET_TYPE = [
+    { label: RUN_OUT_LABEL, value: RUN_OUT },
+    { label: RETIRED_OUT_LABEL, value: RETIRED_OUT },
+]

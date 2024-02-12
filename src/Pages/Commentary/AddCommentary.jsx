@@ -370,7 +370,8 @@ function AddCommentary() {
                 "team2Kipper": dataToSave2.team2Kipper,
                 "team1Players": dataToSave2.team1Players,
                 "team2Players": dataToSave2.team2Players,
-                "addSystemPlayer": dataToSave2.addSystemPlayer
+                "addSystemPlayer" : dataToSave2.addSystemPlayer,
+                "systemPlayerCount" :dataToSave2.addSystemPlayer?dataToSave2.systemPlayerCount : "0" 
             }
             const extraData = {
                 commentaryId: id,
