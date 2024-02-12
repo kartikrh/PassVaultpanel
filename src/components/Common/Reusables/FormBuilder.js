@@ -51,15 +51,7 @@ const FormBuilder = forwardRef(
     const [formData, setFormData] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
-  //   function generateAlias() {
-  //     const inputString = "Hamza Faham@$$$"
-  //     // // Remove special characters and replace spaces with dashes
-  //     const alias = inputString.replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
-  //     alert(alias)
-  
-  //     // return alias;
-  //     console.log("this is clicked upon")
-  // }
+
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
       setFormData((prevFormData) => ({
@@ -68,7 +60,6 @@ const FormBuilder = forwardRef(
       }));
       if (file) {
         const reader = new FileReader();
-
         reader.onload = function (e) {
           setViewImage((prev) => ({
             ...prev,
@@ -319,7 +310,7 @@ const FormBuilder = forwardRef(
                           required={field.isRequired}
                           invalid={fieldErrors[field.name]}
                         />
-                        <Button onClick={generateAlias}>{field?.btnLable}</Button>
+                        <Button type="button" onClick={generateAlias}>{field?.btnLable}</Button>
                       </div>
                     )}
 

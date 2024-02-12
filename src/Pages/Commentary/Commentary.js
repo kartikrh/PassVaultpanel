@@ -250,7 +250,6 @@ const Commentary = (props) => {
                 "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
                 "commentaryTeams": [teams[BATTING_TEAM]],
             }
-            // console.log(objToSave)
             dispatch(addCommentaryScreenData(objToSave))
             setSaveToDb(false)
             checkInningsSwitch(RUN)

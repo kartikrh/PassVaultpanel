@@ -87,10 +87,6 @@ const AddPage = () => {
       setCurrentSaveAction(saveAction);
     }
   };
-  useEffect(() => {
-    const finalizeData = finalizeRef.current.finalizeData();
-    console.log({ finalizeData, initialEditData })
-  })
   function generateAlias() {
     const finalizeData = finalizeRef.current.finalizeData();
     const { pageName } = finalizeData;

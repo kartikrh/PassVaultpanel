@@ -223,7 +223,6 @@ const Index = forwardRef(
           colsDataKey.push(item.key);
         }
       });
-      console.log({ pdfCols, colsDataKey });
       const headers = [pdfCols];
       let colsData = dataSource.map((dataItem) =>
         colsDataKey.map((key) => dataItem[key])
