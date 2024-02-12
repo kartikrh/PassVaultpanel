@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { BOLD, CATCH, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, TIMED_OUT, WICKET_TYPE_LIST } from '../CommentartConst';
+import { BOLD, CATCH, CURRENT_BOWLER, EXTRAS_WICKET_TYPE, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, TIMED_OUT, WICKET_TYPE_LIST } from '../CommentartConst';
 import CardComponent from '../CardComponent';
 import { compareNumStringValues } from '../../../components/Common/Reusables/reusableMethods';
 import Select from "react-select";
@@ -9,10 +9,11 @@ import { useDispatch } from 'react-redux';
 import { updateToastData } from '../../../Features/toasterSlice';
 import { ERROR } from '../../../components/Common/Const';
 
-const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit }) => {
+const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit, extraType }) => {
     const [wicketData, setWicketData] = useState({ runs: 0 });
     const [showFields, setShowFields] = useState({});
     const [bowlingPlayerList, setBowlingPlayerList] = useState([]);
+    const wicketListToRender = extraType ? EXTRAS_WICKET_TYPE : WICKET_TYPE_LIST
     const dispatch = useDispatch()
     useEffect(() => {
         const formattedBowlerData = []
@@ -54,6 +55,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                 runs: showFields["runs"] ? wicketData.runs : 0,
                 fielder1: showFields["fielder1"] ? wicketData.fielder1 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
                 fielder2: showFields["fielder2"] ? wicketData.fielder2 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
+                isExtraWicket: extraType ? true : false
             }
             onSubmit(dataToSend)
         }
@@ -72,8 +74,9 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
         <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}> <div className='modal-header-style'>Wicket</div> </ModalHeader>
             <ModalBody>
+                {extraType && <Row>Ball Type:&nbsp;{extraType}</Row>}
                 <Row>
-                    {WICKET_TYPE_LIST.map((wicketType, index) => (
+                    {wicketListToRender.map((wicketType, index) => (
                         <Col
                             key={index}
                             xs={6} md={4} lg={3}

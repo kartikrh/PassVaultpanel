@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { ALL, BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, EXTRAS_LIST, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, OVER, RETIRED_OUT, RUN, SIX, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { ALL, BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, EXTRAS, EXTRAS_LIST, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, OVER, RETIRED_OUT, RUN, SIX, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -34,7 +34,6 @@ const Commentary = (props) => {
     const [players, setPlayers] = useState(undefined)
     const [onPitchPlayers, setOnPitchPlayers] = useState({})
     const [changePlayerList, setChangePlayerList] = useState(undefined)
-    const [extrasList, setExtrasList] = useState(undefined)
     const [extrasType, setExtrasType] = useState(undefined)
     const [playerToChange, setPlayerToChange] = useState(undefined)
     const [changeOverOnPopupClick, setChangeOverOnPopupClick] = useState(undefined)
@@ -418,15 +417,15 @@ const Commentary = (props) => {
         updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
         updateBatter["batRun"] = (batter.batRun || 0) + run
         updateBatter["batBall"] = (batter.batBall || 0) + ball
-        updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + run
-        updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + ball
+        updateBowler["bowlerRun"] = (+bowler.bowlerRun || 0) + run
+        updateBowler["bowlerTotalBall"] = (+bowler.bowlerTotalBall || 0) + ball
         updateBowler["bowlerOver"] = updatedBowlerOver
         updatePartnership["totalRuns"] = (currentPartnership.totalRuns || 0) + run
         updatePartnership["totalBalls"] = (currentPartnership.totalBalls || 0) + ball
         updateOver["ballCount"] = (currentOver.ballCount || 0) + ball
         updateOver["totalRun"] = (currentOver.totalRun || 0) + run
         updateBattingTeam["teamWicket"] = (+teams[BATTING_TEAM].teamWicket || 0)
-        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + run
+        updateBattingTeam["teamScore"] = (+teams[BATTING_TEAM].teamScore || 0) + run
         updateBattingTeam["teamOver"] =
             ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
         if (run === 0) {
@@ -589,7 +588,8 @@ const Commentary = (props) => {
             })
     }
     const handleWicket = (wicketData) => {
-        setCurrentBall({})
+        if (!wicketData.isExtraWicket) setCurrentBall({})
+        const ballToUpdateOnWicket = wicketData.isExtraWicket ? 0 : 1
         setIsWicketChange(true)
         const updateBattingTeam = {}
         const updateBall = {}
@@ -619,7 +619,7 @@ const Commentary = (props) => {
         updateWicket["batterId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterName"] = wicketPlayerDetails.playerName
         updateWicket["batterRuns"] = wicketPlayerDetails.batRun + (isOnStrikeWicket ? +wicketData.runs : 0)
-        updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? 1 : 0
+        updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? ballToUpdateOnWicket : 0
         const updatedBattingPlayers = players[BATTING_TEAM]?.map((player) => {
             if (isEqual(player.commentaryPlayerId, wicketData.batterId)) {
                 const playerDataToList = {
@@ -655,12 +655,13 @@ const Commentary = (props) => {
         setCurrentWicket(updateWicket)
         setShowWicketModal(undefined)
         checkInningsSwitch(WICKET)
-        setUpdateRunFromWicket({ run: +wicketData.runs, ball: 1, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
-    }
-    const onExtrasChange = (runFromModal) => {
-        updateExtras(extrasType, runFromModal)
-        setExtrasList(undefined)
         setExtrasType(undefined)
+        setUpdateRunFromWicket({ run: +wicketData.runs, ball: ballToUpdateOnWicket, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
+    }
+    const onExtrasChange = (dataFromModal) => {
+        updateExtras(extrasType, dataFromModal.run)
+        if (dataFromModal.type === WICKET) setShowWicketModal(true)
+        else setExtrasType(undefined)
     }
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
@@ -1142,7 +1143,6 @@ const Commentary = (props) => {
             changeOver={() => { setShowChangeOverModal(true) }}
             updateExtras={(extraType) => {
                 setExtrasType(extraType)
-                setExtrasList(EXTRAS_LIST[extraType])
             }}
             onWicketClick={() => { setShowWicketModal(true) }}
             changeStrike={changeOnStrikePlayer}
@@ -1162,10 +1162,11 @@ const Commentary = (props) => {
                     else if (isChangeBowler.isChange) onBowlerChange(newPlayerId)
                     else onPlayerChange(newPlayerId)
                 }} />}
-        <ExtrasModal isOpen={extrasList}
-            toggle={() => { setExtrasList(undefined) }}
-            runList={extrasList}
-            selectExtraRun={onExtrasChange} />
+        {extrasType && < ExtrasModal
+            isOpen={extrasType}
+            toggle={() => { setExtrasType(undefined) }}
+            extraType={extrasType}
+            updateExtras={onExtrasChange} />}
         <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined) }}
@@ -1186,7 +1187,9 @@ const Commentary = (props) => {
                 onSubmit={handleWicket}
                 bowlingTeam={players[BOWLING_TEAM]}
                 bowlingTeamDetails={teams[BOWLING_TEAM]}
-                onPitchPlayers={onPitchPlayers} />}
+                onPitchPlayers={onPitchPlayers}
+                extraType={extrasType}
+            />}
         {showUpdateInnings && <UpdateInningsModal
             isOpen={showUpdateInnings}
             toggle={() => { setShowUpdateInnings(undefined) }}
