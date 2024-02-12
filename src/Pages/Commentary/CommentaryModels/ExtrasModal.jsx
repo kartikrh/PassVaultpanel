@@ -9,15 +9,16 @@ const ExtrasModal = ({ runList, toggle, isOpen, selectExtraRun }) => {
             </ModalHeader>
             <ModalBody>
                 <Table responsive>
-                    <tbody>
+
+                    {/* <tbody>
                         {runList?.map(item => <tr key={item.value}>
                             <td role='button' onClick={() => selectExtraRun(item.value)} >{item.label}</td>
                         </tr>)}
-                    </tbody>
+                    </tbody> */}
                 </Table>
             </ModalBody>
             <ModalFooter>
-                <Button color="danger" className="decision-Button text-right " onClick={toggle}>Close</Button>
+                <Button color="danger" className="decision-Button text-right " onClick={toggle}>Update</Button>
             </ModalFooter>
         </Modal>
     )
