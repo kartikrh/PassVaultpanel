@@ -79,7 +79,7 @@ function AddTabs() {
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/tabs/byId', { id })
             .then((response) => {
-                setInitialEditData(response?.result);
+                finalizeRef.current.updateFormFromParent(response?.result)
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });

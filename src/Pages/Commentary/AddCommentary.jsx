@@ -68,7 +68,7 @@ function AddCommentary() {
                 "team2Kipper": true,
                 "team1Players": true,
                 "team2Players": true,
-                "matchTypeId":true,
+                "matchTypeId": true,
                 "addSystemPlayer": true,
             })
         }
@@ -412,32 +412,34 @@ function AddCommentary() {
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
                                 <Row>
-                                    <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
+                                    <Col className='mb-3 text-end' xs={12}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
-                                        <ButtonDropdown
-                                            direction="down"
-                                            isOpen={drp_up}
-                                            toggle={() => setDrp_up(!drp_up)}
-                                        >
-                                            <Button
-                                                disabled={
-                                                    !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
-                                                        checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
-                                                id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
-                                                Save & Close
-                                            </Button>
-                                            <DropdownToggle caret color="primary">
-                                                <i className="mdi mdi-chevron-down" />
-                                            </DropdownToggle>
-                                            <DropdownMenu>
-                                                {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-                                                    && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
-                                                }
-                                                {checkPermission(permissionObj, pageName, PERMISSION_ADD)
-                                                    && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
-                                                }
-                                            </DropdownMenu>
-                                        </ButtonDropdown>
+                                        {activeTab !== 1 &&
+                                            <ButtonDropdown
+                                                direction="down"
+                                                isOpen={drp_up}
+                                                toggle={() => setDrp_up(!drp_up)}
+                                            >
+                                                <Button
+                                                    disabled={
+                                                        !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
+                                                            checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
+                                                    id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
+                                                    Save & Close
+                                                </Button>
+                                                <DropdownToggle caret color="primary">
+                                                    <i className="mdi mdi-chevron-down" />
+                                                </DropdownToggle>
+                                                <DropdownMenu>
+                                                    {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+                                                        && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
+                                                    }
+                                                    {checkPermission(permissionObj, pageName, PERMISSION_ADD)
+                                                        && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
+                                                    }
+                                                </DropdownMenu>
+                                            </ButtonDropdown>
+                                        }
                                     </Col>
                                 </Row>
                                 <div id="basic-pills-wizard" className="twitter-bs-wizard">
