@@ -44,13 +44,22 @@ import { useDispatch } from "react-redux";
 
 const FormBuilder = forwardRef(
   (
-    { fields, editFormData, masterData, disabledFields, onFormDataChange },
+    { fields, editFormData, masterData, disabledFields, onFormDataChange, generateAlias },
     ref
   ) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
+  //   function generateAlias() {
+  //     const inputString = "Hamza Faham@$$$"
+  //     // // Remove special characters and replace spaces with dashes
+  //     const alias = inputString.replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
+  //     alert(alias)
+  
+  //     // return alias;
+  //     console.log("this is clicked upon")
+  // }
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
       setFormData((prevFormData) => ({
@@ -310,7 +319,7 @@ const FormBuilder = forwardRef(
                           required={field.isRequired}
                           invalid={fieldErrors[field.name]}
                         />
-                        <Button>{field?.btnLable}</Button>
+                        <Button onClick={generateAlias}>{field?.btnLable}</Button>
                       </div>
                     )}
 
