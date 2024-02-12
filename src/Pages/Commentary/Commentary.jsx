@@ -6,7 +6,7 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler }) => {
     const handleRuns = (run, ball, type = "") => {
         updateRuns(
             {
@@ -62,7 +62,7 @@ export const CommentaryScreen = ({
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                         <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
-                        {/* <button onClick={() => { changePlayer(CURRENT_BOWLER) }} className=" text-right change-button">C</button> */}
+                        <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
                     {(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0 &&
                         < Col xs={12} md={12} lg={12}>
