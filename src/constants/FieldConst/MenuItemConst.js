@@ -32,15 +32,15 @@ export const menuItemFields = [
     // labelColspan: { xs: 12, md: 2 },
     // fieldColspan: { xs: 12, md: 4 }
 },
-{
-    name: "createPage",
-    label: "Create Page",
-    defaultValue: true,
-    parentclassName: "",
-    type: SWITCH,
-    labelColspan: { xs: 2, md: 2, lg: 2 },
-    fieldColspan: { xs: 10, md: 4, lg: 10 }
-},
+// {
+//     name: "createPage",
+//     label: "Create Page",
+//     defaultValue: true,
+//     parentclassName: "",
+//     type: SWITCH,
+//     labelColspan: { xs: 2, md: 2, lg: 2 },
+//     fieldColspan: { xs: 10, md: 4, lg: 10 }
+// },
 {
     name: "newOldPage",
     label: " ",
@@ -113,7 +113,8 @@ export const PageFields = [
         regex: /^.{0,100}$/,
         regexErrorMessage: "Max allowed Characters 100",
         isRequired: true,
-        type: TEXT,
+        type: TEXT_BUTTON,
+        btnLable:"Auto Generate",
         // labelColspan: { xs: 12, md: 2, lg: 2 },
         // fieldColspan: { xs: 12, md: 10, lg: 10 }
     },

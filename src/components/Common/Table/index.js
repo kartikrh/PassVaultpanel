@@ -223,7 +223,6 @@ const Index = forwardRef(
           colsDataKey.push(item.key);
         }
       });
-      console.log({ pdfCols, colsDataKey });
       const headers = [pdfCols];
       let colsData = dataSource.map((dataItem) =>
         colsDataKey.map((key) => dataItem[key])
@@ -593,24 +592,25 @@ const Index = forwardRef(
                           </Col> */}
                           </div>
                         ) : null}
-                        {tableElement?.eventTypeSelect ? (
+                        
+                        {tableElement?.commentaryStatus ? (
                           <div className="">
                             <select
                               className="form-select"
                               id="inlineFormSelectPref"
                               onChange={(e) => {
                                 handleTableActions(
-                                  "eventTypeId",
+                                  "commentaryStatus",
                                   e.target.value
                                 );
                               }}
                               value={tableActions?.eventTypeId}
                             >
-                              <option value={0}>Select Event Type</option>
-                              {eventTypes?.map((val) => {
+                              <option value={0}>Select Commentary Status</option>
+                              {tableElement?.statusOptions?.map((val) => {
                                 return (
-                                  <option value={val?.eventTypeId}>
-                                    {val?.eventType}
+                                  <option value={val?.value}>
+                                    {val?.label}
                                   </option>
                                 );
                               })}

@@ -44,13 +44,14 @@ import { useDispatch } from "react-redux";
 
 const FormBuilder = forwardRef(
   (
-    { fields, editFormData, masterData, disabledFields, onFormDataChange },
+    { fields, editFormData, masterData, disabledFields, onFormDataChange, generateAlias },
     ref
   ) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
+
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
       setFormData((prevFormData) => ({
@@ -59,7 +60,6 @@ const FormBuilder = forwardRef(
       }));
       if (file) {
         const reader = new FileReader();
-
         reader.onload = function (e) {
           setViewImage((prev) => ({
             ...prev,
@@ -310,7 +310,7 @@ const FormBuilder = forwardRef(
                           required={field.isRequired}
                           invalid={fieldErrors[field.name]}
                         />
-                        <Button>{field?.btnLable}</Button>
+                        <Button type="button" onClick={generateAlias}>{field?.btnLable}</Button>
                       </div>
                     )}
 

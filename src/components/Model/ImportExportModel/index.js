@@ -85,7 +85,6 @@ export const ImportExportModel = ({
 
       // Remove headers from data
       sheetData.shift();
-      console.log("this is fileData", sheetData);
       setFileData(sheetData);
     };
 
@@ -111,7 +110,6 @@ export const ImportExportModel = ({
       createObjects(dataToPick, values)
     );
     const data = arrayOfObjects.filter((value) => value.isUpdate == 1);
-    console.log(data);
     if (data.length > 0) {
       await axiosInstance
         .post("/admin/player/updatePlayerStats", data)
