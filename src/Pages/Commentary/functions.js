@@ -117,3 +117,23 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
     "isDelete": null,
   }
 }
+
+export const getStrikeRate = (runs, balls) => {
+  return ((+runs / +balls) * 100).toFixed(2)
+
+}
+
+export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
+  return ((+runs / +totalBalls) * ballsPerOver)
+}
+
+export const getRequiredRunRate = (runs, currentOver, ballsPerOver, total, OverInInnings) => {
+  runs = total - runs
+  const remainingBalls = (((+OverInInnings - +currentOver?.over) * +ballsPerOver) - currentOver?.ballCount)
+  return ((+runs / +remainingBalls) * +ballsPerOver)
+}
+
+export const getRunRate = (runs, currentOver, ballsPerOver) => {
+  const totalBalls = ((+currentOver?.over * +ballsPerOver) + currentOver?.ballCount)
+  return ((+runs / totalBalls) * ballsPerOver)
+}
