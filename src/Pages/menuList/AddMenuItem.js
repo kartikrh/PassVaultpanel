@@ -62,6 +62,7 @@ const AddMenuType = () => {
   );
   const [masterData, setMasterData] = useState({});
   const [pageNewOld, setPageNewOld] = useState(null);
+  const [initialFields, setInitialFields] = useState([])
   useEffect(() => {
     if (menuItemId !== "0") {
       setPageNewOld(0)
@@ -69,11 +70,15 @@ const AddMenuType = () => {
     }
   }, [menuItemId]);
 
-
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
+    if (menuItemId !== "0") {
+    setInitialFields(menuItemFields.filter(item => item.name !== "newOldPage"))
+  }else{
+    setInitialFields( menuItemFields)
+  }
   }, []);
 
   useEffect(() => {
@@ -225,9 +230,6 @@ const AddMenuType = () => {
   const handleBackClick = () => {
     navigate("/menuList");
     dispatch(selectedMenuType[selectedMenuTypeHistory.length-1].value)
-    console.log(
-      {selectedMenuType}
-    )
   };
 
   return (
@@ -320,9 +322,9 @@ const AddMenuType = () => {
                   ref={finalizeRef1}
                   fields={
                     pageNewOld == null
-                      ? menuItemFields :   pageNewOld == 0? menuItemFields
+                      ? initialFields :   pageNewOld == 0? initialFields
                       : pageNewOld == 1
-                      ? [...menuItemFields, ...existingPage]
+                      ? [...initialFields, ...existingPage]
                       : null
                   }
                   editFormData={initialEditData}
