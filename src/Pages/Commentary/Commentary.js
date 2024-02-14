@@ -426,12 +426,11 @@ const Commentary = (props) => {
         updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
         updateBatter["batRun"] = (batter.batRun || 0) + run
         updateBatter["batBall"] = (batter.batBall || 0) + ball
-        updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
+        updateBatter["batsmanStr"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
         updateBowler["bowlerRun"] = (+bowler.bowlerRun || 0) + run
         updateBowler["bowlerTotalBall"] = (+bowler.bowlerTotalBall || 0) + ball
         updateBowler["bowlerOver"] = updatedBowlerOver
-        updateBowler["bowlerEconomy"] = (+bowler.bowlerEconomy || 0)
-            + getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
+        updateBowler["bowlerEcon"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
         updatePartnership["totalRuns"] = (currentPartnership.totalRuns || 0) + run
         updatePartnership["totalBalls"] = (currentPartnership.totalBalls || 0) + ball
         updateOver["ballCount"] = (currentOver.ballCount || 0) + ball
@@ -505,8 +504,7 @@ const Commentary = (props) => {
             updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) + 1
             updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) + runToUpdate
             updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
-            updateBowler["bowlerEconomy"] = (+bowler.bowlerEconomy || 0)
-                + getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
+            updateBowler["bowlerEcon"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
             updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, currentOver, matchTypeDetails.ballsPerOver)
             if (matchTypeDetails.isLimitedOvers && commentaryDetails.target) {
@@ -529,8 +527,7 @@ const Commentary = (props) => {
             updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
             updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runToUpdate
             updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
-            updateBowler["bowlerEconomy"] = (+bowler.bowlerEconomy || 0)
-                + getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
+            updateBowler["bowlerEcon"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
             updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, currentOver, matchTypeDetails.ballsPerOver)
             if (matchTypeDetails.isLimitedOvers && commentaryDetails.target) {
@@ -548,15 +545,14 @@ const Commentary = (props) => {
             updatePartnership["extras"] = currentPartnership.extras + runToUpdate
             batter["batRun"] = (batter.batRun || 0) + runs
             batter["batBall"] = (batter.batBall || 0) + 1
-            batter["batsmanStrikeRate"] = getStrikeRate(batter.batRun, batter.batBall)
+            batter["batsmanStr"] = getStrikeRate(batter.batRun, batter.batBall)
         }
         else {
             updateBall["ballIsCount"] = true
             updateBowler["bowlerOver"] = updatedBowlerOver
             updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runs
             updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + 1
-            updateBowler["bowlerEconomy"] = (+bowler.bowlerEconomy || 0)
-                + getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
+            updateBowler["bowlerEcon"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
             updateOver["ballCount"] = (currentOver.ballCount || 0) + 1
             batter["batBall"] = (batter.batBall || 0) + 1
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runs
@@ -799,6 +795,10 @@ const Commentary = (props) => {
         setOnPitchPlayers(updatedOnPitchPlayer)
         updatedOnPitchPlayer["EXTRA_PLAYER"] = updatedNewPlayer
         const objToSave = {
+            "commentaryDetails": {
+                ...commentaryDetails,
+                "displayStatus": "Batter Switched"
+            },
             "commentaryPlayers": Object.values(updatedOnPitchPlayer),
         }
         dispatch(addCommentaryScreenData(objToSave))
@@ -818,7 +818,7 @@ const Commentary = (props) => {
             "bowlerOver": +(currentBowler.bowlerOver || 0) - +(currentOver.ballCount / 10),
             "bowlerTotalBall": +currentBowler.bowlerTotalBall - +currentOver.ballCount,
             "bowlerRun": +currentBowler.bowlerRun - +currentOver.totalRun,
-            "bowlerEconomy": getEconomyRate(+currentBowler.bowlerRun - +currentOver.totalRun, +currentBowler.bowlerTotalBall - +currentOver.ballCount, matchTypeDetails.ballsPerOver),
+            "bowlerEcon": getEconomyRate(+currentBowler.bowlerRun - +currentOver.totalRun, +currentBowler.bowlerTotalBall - +currentOver.ballCount, matchTypeDetails.ballsPerOver),
             "bowlerDotBall": +currentBowler.bowlerDotBall - +currentOver.dotBall,
             "bowlerFour": +currentBowler.bowlerFour - +currentOver.totalFour,
             "bowlerSix": +currentBowler.bowlerSix - +currentOver.totalSix,
@@ -837,7 +837,7 @@ const Commentary = (props) => {
             "bowlerOver": +(newBowler.bowlerOver || 0) + +(currentOver.ballCount / 10),
             "bowlerTotalBall": +(newBowler.bowlerTotalBall || 0) + +(currentOver.ballCount || 0),
             "bowlerRun": +(newBowler.bowlerRun || 0) + +(currentOver.totalRun || 0),
-            "bowlerEconomy": getEconomyRate(+currentBowler.bowlerRun + +currentOver.totalRun, currentOver, matchTypeDetails.ballsPerOver),
+            "bowlerEcon": getEconomyRate(+currentBowler.bowlerRun + +currentOver.totalRun, currentOver, matchTypeDetails.ballsPerOver),
             "bowlerDotBall": +(newBowler.bowlerDotBall || 0) + +(currentOver.dotBall || 0),
             "bowlerFour": +(newBowler.bowlerFour || 0) + +(currentOver.totalFour || 0),
             "bowlerSix": +(newBowler.bowlerSix || 0) + +(currentOver.totalSix || 0),
@@ -936,13 +936,12 @@ const Commentary = (props) => {
                 if (type === BALL_TYPE_REGULAR) {
                     updateBatter["batRun"] = (batter.batRun || 0) - run
                     updateBatter["batBall"] = (batter.batBall || 0) - 1
-                    updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
+                    updateBatter["batsmanStr"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
                     updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
                     updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
                     updatePartnership["totalBalls"] = (currentPartnership?.totalBalls || 0) - 1
                     updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - run
-                    updateBowler["bowlerEconomy"] = (+bowler.bowlerEconomy || 0)
-                        + getEconomyRate(updateBowler.bowlerRun, updateBowler.totalBalls, matchTypeDetails.ballsPerOver)
+                    updateBowler["bowlerEcon"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.totalBalls, matchTypeDetails.ballsPerOver)
                     updateBowler["bowlerOver"] = updatedBowlerOver
                     updatePartnership["totalRuns"] = (currentPartnership.totalRuns || 0) - run
                     updateOver["totalRun"] = (currentOver.totalRun || 0) - run
