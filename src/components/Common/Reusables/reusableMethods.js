@@ -137,3 +137,9 @@ export function compareNumStringValues(value1, value2) {
 export const checkPermission = (permissionObj, tabName, permissionType) => {
   return permissionObj[tabName]?.[permissionType] || false;
 }
+
+export const fixDecimal = (value, decimalNumber) => {
+  if (typeof value === "number" && value !== Infinity) return value.toFixed(decimalNumber)
+  if (value === Infinity) return "0"
+  else return value
+}
