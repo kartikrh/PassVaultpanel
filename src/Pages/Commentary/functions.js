@@ -142,7 +142,7 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   let displayStatus = ""
   // New Logic 
   const run = currentBall.ballRun
-  const extraRun = currentBall.baballExtraRunllRun
+  const extraRun = currentBall.ballExtraRun
   const ballType = currentBall.ballType
   const wicketType = currentBall.ballWicketType
   if (playerSwitch) {
