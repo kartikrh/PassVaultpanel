@@ -59,7 +59,10 @@ export const ALL = "ALL"
 
 export const SWITCH_BOWLER = "SWITCH_BOWLER"
 export const CHANGE_BOWLER = "CHANGE_BOWLER"
+export const BATTER_SWITCH = "BATTER_SWITCH"
 
+export const INNINGS_CHANGED = "INNINGS_CHANGED"
+export const BATTING_COMPLETED = "BATTING_COMPLETED"
 
 export const WICKET_TYPE_LIST = [
     { label: BOLD_LABEL, value: BOLD },

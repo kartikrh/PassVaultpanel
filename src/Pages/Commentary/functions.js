@@ -1,4 +1,5 @@
-import { BALL_TYPE_OVER_COMPLETE, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst";
+import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -119,21 +120,65 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
 }
 
 export const getStrikeRate = (runs, balls) => {
-  return ((+runs / +balls) * 100).toFixed(2)
-
+  return fixDecimal(((+runs / +balls) * 100), 2)
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
-  return ((+runs / +totalBalls) * ballsPerOver)
+  return fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
 }
 
 export const getRequiredRunRate = (runs, currentOver, ballsPerOver, total, OverInInnings) => {
   runs = total - runs
   const remainingBalls = (((+OverInInnings - +currentOver?.over) * +ballsPerOver) - currentOver?.ballCount)
-  return ((+runs / +remainingBalls) * +ballsPerOver)
+  return fixDecimal(((+runs / +remainingBalls) * +ballsPerOver), 2)
 }
 
 export const getRunRate = (runs, currentOver, ballsPerOver) => {
   const totalBalls = ((+currentOver?.over * +ballsPerOver) + currentOver?.ballCount)
-  return ((+runs / totalBalls) * ballsPerOver)
+  return fixDecimal(((+runs / totalBalls) * ballsPerOver), 2)
+}
+
+export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
+  let displayStatus = ""
+  // New Logic 
+  const run = currentBall.ballRun
+  const extraRun = currentBall.ballExtraRun
+  const ballType = currentBall.ballType
+  const wicketType = currentBall.ballWicketType
+  if (playerSwitch) {
+    if (playerSwitch === SWITCH_BOWLER) displayStatus = "Bowler Switched"
+    else if (playerSwitch === CHANGE_BOWLER) displayStatus = "Bowler Changed"
+    else if (playerSwitch === BATTER_SWITCH) displayStatus = "Batter Switched"
+  } else {
+    if (ballType === BALL_TYPE_REGULAR) {
+      if (currentBall.ballIsWicket) {
+        if (wicketType === BOLD) displayStatus = "Wicket!, Bowled"
+        else if (wicketType === CATCH) displayStatus = "Wicket!, Catch Out"
+        else if (wicketType === STUMP) displayStatus = "Wicket!, Stumped"
+        else if (wicketType === HIT_WICKET) displayStatus = "Wicket!, Hit Wicket"
+        else if (wicketType === LBW) displayStatus = "Wicket!, LBW"
+        else if (wicketType === RUN_OUT) displayStatus = "Wicket!, Run Out"
+        else if (wicketType === RETIRED_OUT) displayStatus = "Wicket!, Retired Out"
+        else if (wicketType === TIMED_OUT) displayStatus = "Wicket!, Timed Out"
+        else if (wicketType === HIT_BALL_TWICE) displayStatus = "Wicket!, Hit the ball twice"
+        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = "Wicket!, Obstract the fielding"
+      }
+      else if (currentBall.ballFour !== 0) displayStatus = "Four, Boundary"
+      else if (currentBall.ballSix !== 0) displayStatus = "Six, Boundary"
+      else {
+        if (run === 0) displayStatus = "No Runs"
+        else if (run === 1) displayStatus = "Single, Strike changed"
+        else if (run === 2) displayStatus = "Double, No strike change"
+        else if (run === 3) displayStatus = "Three Runs, Strike change"
+        else if (run === 4) displayStatus = "Four Runs, No strike change"
+        else if (run === 5) displayStatus = "Five Runs, Strike change"
+      }
+    }
+    else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
+    else if (ballType === BALL_TYPE_WIDE) displayStatus = `Wide ball, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_BYE) displayStatus = `Bye, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `Leg Bye, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `No ball, with ${extraRun} run`
+  }
+  return displayStatus
 }
