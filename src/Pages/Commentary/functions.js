@@ -1,4 +1,5 @@
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BATTER_SWITCH, BATTING_COMPLETED, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, FOUR, HIT_BALL_TWICE, HIT_WICKET, INNINGS_CHANGED, LBW, NON_STRIKE, NO_BALL, OBSTRACT_THE_FIELDING, ON_STRIKE, OVER_ENDED, RETIRED_OUT, RUN_OUT, SIX, STUMP, SWITCH_BOWLER, TIMED_OUT, WICKET } from "./CommentartConst";
+import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -119,23 +120,22 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
 }
 
 export const getStrikeRate = (runs, balls) => {
-  return ((+runs / +balls) * 100).toFixed(2)
-
+  return fixDecimal(((+runs / +balls) * 100), 2)
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
-  return ((+runs / +totalBalls) * ballsPerOver)
+  return fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
 }
 
 export const getRequiredRunRate = (runs, currentOver, ballsPerOver, total, OverInInnings) => {
   runs = total - runs
   const remainingBalls = (((+OverInInnings - +currentOver?.over) * +ballsPerOver) - currentOver?.ballCount)
-  return ((+runs / +remainingBalls) * +ballsPerOver)
+  return fixDecimal(((+runs / +remainingBalls) * +ballsPerOver), 2)
 }
 
 export const getRunRate = (runs, currentOver, ballsPerOver) => {
   const totalBalls = ((+currentOver?.over * +ballsPerOver) + currentOver?.ballCount)
-  return ((+runs / totalBalls) * ballsPerOver)
+  return fixDecimal(((+runs / totalBalls) * ballsPerOver), 2)
 }
 
 export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
@@ -166,7 +166,8 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
       else if (currentBall.ballFour !== 0) displayStatus = "Four, Boundary"
       else if (currentBall.ballSix !== 0) displayStatus = "Six, Boundary"
       else {
-        if (run === 1) displayStatus = "Single, Strike changed"
+        if (run === 0) displayStatus = "No Runs"
+        else if (run === 1) displayStatus = "Single, Strike changed"
         else if (run === 2) displayStatus = "Double, No strike change"
         else if (run === 3) displayStatus = "Three Runs, Strike change"
         else if (run === 4) displayStatus = "Four Runs, No strike change"
