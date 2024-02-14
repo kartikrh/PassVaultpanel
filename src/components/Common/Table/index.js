@@ -55,6 +55,7 @@ const Index = forwardRef(
       isDeletePermission,
       breadCrumbs,
       onBreadCrumbsClick,
+      teams
     },
     ref
   ) => {
@@ -592,31 +593,32 @@ const Index = forwardRef(
                           </Col> */}
                           </div>
                         ) : null}
-                        
-                        {tableElement?.commentaryStatus ? (
-                          <div className="">
-                            <select
-                              className="form-select"
-                              id="inlineFormSelectPref"
-                              onChange={(e) => {
-                                handleTableActions(
-                                  "commentaryStatus",
-                                  e.target.value
-                                );
-                              }}
-                              value={tableActions?.eventTypeId}
-                            >
-                              <option value={0}>Select Commentary Status</option>
-                              {tableElement?.statusOptions?.map((val) => {
-                                return (
-                                  <option value={val?.value}>
-                                    {val?.label}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        ) : null}
+                         {
+                          tableElement?.eventTypeSelect ?(
+                            <div className="">
+                              <select
+                                className="form-select"
+                                id="inlineFormSelectPref"
+                                onChange={(e) => {
+                                  handleTableActions(
+                                    "eventTypeId",
+                                    e.target.value
+                                  );
+                                }}
+                                value={tableActions?.eventTypeId}
+                              >
+                                <option value={0}>Select Event Type</option>
+                                {eventTypes?.map((val) => {
+                                  return (
+                                    <option value={val.eventTypeId}>
+                                      {val.eventType}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
+                          ) : null
+                        }
                         {tableElement?.competitionsSelect ? (
                           <div className="">
                             <select
@@ -635,6 +637,56 @@ const Index = forwardRef(
                                 return (
                                   <option value={val.competitionId}>
                                     {val.competition}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                        ) : null}
+                         {
+                          tableElement?.teamsList ?(
+                            <div className="">
+                              <select
+                                className="form-select"
+                                id="inlineFormSelectPref"
+                                onChange={(e) => {
+                                  handleTableActions(
+                                    "teamId",
+                                    e.target.value
+                                  );
+                                }}
+                                value={tableActions?.teamId}
+                              >
+                                <option value={0}>Select Team</option>
+                                {teams?.map((val) => {
+                                  return (
+                                    <option value={val.teamId}>
+                                      {val.teamName}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
+                          ) : null
+                        }
+                         {tableElement?.commentaryStatus ? (
+                          <div className="">
+                            <select
+                              className="form-select"
+                              id="inlineFormSelectPref"
+                              onChange={(e) => {
+                                handleTableActions(
+                                  "commentaryStatus",
+                                  e.target.value
+                                );
+                              }}
+                              value={tableActions?.eventTypeId}
+                            >
+                              <option value={0}>Select Commentary Status</option>
+                              {tableElement?.statusOptions?.map((val) => {
+                                return (
+                                  <option value={val?.value}>
+                                    {val?.label}
                                   </option>
                                 );
                               })}
