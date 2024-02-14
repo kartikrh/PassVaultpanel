@@ -26,6 +26,8 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [importExportModelVisable, setImportExportModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
+  const [teams, setTeams] = useState([]);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -61,7 +63,15 @@ const Index = () => {
       })
       .catch((error) => { });
   };
-
+  const fetchTeamsData = async () => {
+    await axiosInstance
+      .post(`/admin/player/teamList`, {})
+      .then((response) => {
+        setTeams(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -257,6 +267,7 @@ const Index = () => {
     eventTypeSelect: true,
     resetButton: true,
     importExport: true,
+    teamsList:true,
   };
 
   useEffect(() => {
@@ -265,6 +276,7 @@ const Index = () => {
     }
     fetchData();
     fetchEventTypeData()
+    fetchTeamsData()
   }, []);
 
   return (
@@ -287,6 +299,7 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}
+            teams = {teams}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
