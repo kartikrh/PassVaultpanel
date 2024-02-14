@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { ALL, BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, EXTRAS, EXTRAS_LIST, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, OVER, RETIRED_OUT, RUN, SIX, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { ALL, BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_COMPLETED, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, EXTRAS, EXTRAS_LIST, FOUR, INNINGS_CHANGED, NON_STRIKE, NO_BALL, ON_STRIKE, OVER, OVER_ENDED, RETIRED_OUT, RUN, SIX, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { generateBall, generateOver, generatePartnership, generateWicket, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, undoBallFromCommentary, undoOverFromCommentary } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -151,7 +151,7 @@ const Commentary = (props) => {
             commentaryUpdates = {
                 "commentaryStatus": 2,
                 "target": (teams[BATTING_TEAM]?.teamScore || 0) + 1,
-                "displayStatus": "Innings Break"
+                "displayStatus": "Batting for Current team Completed"
             }
             setRedirectOnScreenChange(true)
         }
@@ -181,7 +181,8 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
-                commentaryStatus: 2
+                commentaryStatus: 2,
+                "displayStatus": "Innings Changed"
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": [
@@ -244,9 +245,13 @@ const Commentary = (props) => {
             let newCurrentBall = undefined
             if (isUndoBall) newCurrentBall = currentBall
             else newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
+            const generatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
             const objToSave = {
-                "commentaryBallByBall": generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams }),
-                "commentaryDetails": commentaryDetails,
+                "commentaryBallByBall": generatedBallByBall,
+                "commentaryDetails": {
+                    ...commentaryDetails,
+                    "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall })
+                },
                 "commentaryOvers": currentOver,
                 "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
                 "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
@@ -349,7 +354,8 @@ const Commentary = (props) => {
                 if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
                     const updatedOverHistory = overHistory.slice(0, -1)
                     setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
-                    dispatch(addCommentaryScreenData({ "commentaryDetails": commentaryDetails, "commentaryBallByBall": generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams }), }))
+                    const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams })
+                    dispatch(addCommentaryScreenData({ "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }) }, "commentaryBallByBall": generatedBall, }))
                     setCurrentOver(commentaryDataToUpdate.overdetails)
                 }
                 // Update Over history on over change
@@ -388,7 +394,10 @@ const Commentary = (props) => {
         const updatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
         const updatedWicket = generateWicket({ commentaryDetails, currentOver, teams, currentWicket, currentBall: newCurrentBall })
         const objToSave = {
-            "commentaryDetails": commentaryDetails,
+            "commentaryDetails": {
+                ...commentaryDetails,
+                "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall })
+            },
             "commentaryPartnership": updatedPartnership,
             "commentaryBallByBall": updatedBallByBall,
             "commentaryWicket": updatedWicket,
