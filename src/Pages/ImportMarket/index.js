@@ -118,6 +118,7 @@ const Index = () => {
         }`,
       render: (text, record) => (
         <div
+        style={{cursor:"pointer"}}
           onClick={() => {
             setData([])
             let currentRecord = [{
@@ -195,6 +196,7 @@ const Index = () => {
       dataIndex: "event",
       render: (text, record) => (
         <div
+        style={{cursor:"pointer"}}
           onClick={() => {
             let currentRecord = [{
               label: text?.name, value: {
