@@ -47,6 +47,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -72,8 +73,30 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
+      if (latestValueFromTable?.eventTypeId) {
+        fetchCompetitionData(latestValueFromTable?.eventTypeId)
+      }
   };
-
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/commentary/eventTypeList`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/commentary/competitionListByEventTypeId`, {
+        eventTypeId: value
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
     if (checekedList.includes(e.commentaryId)) {
@@ -85,7 +108,6 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck);
   };
-
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -114,15 +136,12 @@ const Index = () => {
         );
       });
   };
-
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
-
   const handleDetailsClick = (id) => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
-
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
@@ -189,6 +208,10 @@ const Index = () => {
         );
       });
   };
+  const handleReset = (value) => {
+    fetchData(value)
+    fetchEventTypeData()
+  }
   //table columns
   const columns = [
     {
@@ -328,15 +351,16 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
-
   //elements required
   const tableElement = {
     title: "Commentary",
     headerSelect: false,
-    eventTypeSelect: false,
+    eventTypeSelect: true,
     switch: false,
     clone: true,
     commentaryStatus: true,
+    competitionsSelect: true,
+    resetButton: true,
     statusOptions: [
       {
         label: "Open",
@@ -362,6 +386,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+    fetchEventTypeData();
   }, []);
   return (
     <React.Fragment>
@@ -379,7 +404,9 @@ const Index = () => {
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReset={handleReset}
             onAddNavigate={"/addCommentary"}
+            competitions={competitions}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
