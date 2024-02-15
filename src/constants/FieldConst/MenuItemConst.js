@@ -32,15 +32,6 @@ export const menuItemFields = [
     // labelColspan: { xs: 12, md: 2 },
     // fieldColspan: { xs: 12, md: 4 }
 },
-// {
-//     name: "createPage",
-//     label: "Create Page",
-//     defaultValue: true,
-//     parentclassName: "",
-//     type: SWITCH,
-//     labelColspan: { xs: 2, md: 2, lg: 2 },
-//     fieldColspan: { xs: 10, md: 4, lg: 10 }
-// },
 {
     name: "newOldPage",
     label: " ",
