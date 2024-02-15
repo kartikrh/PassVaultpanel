@@ -11,12 +11,13 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
     }
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader toggle={toggle}>
-                Select Extra Runs
+            <ModalHeader className='normal-header' toggle={toggle}>
+                Select&nbsp;
+                <b>{extraType}</b> Extra Run
             </ModalHeader>
             <ModalBody>
                 <Table responsive>
-                    Ball Type:&nbsp;{extraType}
+                    {/* Ball Type:&nbsp;{extraType} */}
                     <Row>
                         {<Col xs={6} md={6} lg={6} >
                             Runs

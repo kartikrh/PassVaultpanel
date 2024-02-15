@@ -157,3 +157,7 @@
 .switch-padding {
     padding: 0 4rem !important;
 }
+
+.normal-header {
+    font-weight: 100 !important;
+}
