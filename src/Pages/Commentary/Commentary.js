@@ -463,7 +463,7 @@ const Commentary = (props) => {
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
             }
-        } else isChangeStrike = freezePlayers ? false : true
+        } else if (run % 2 !== 0) isChangeStrike = freezePlayers ? false : true
         updateBatter = { ...onPitchPlayers[ON_STRIKE], ...updateBatter, onStrike: isChangeStrike ? false : true }
         updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
         const updateNonStriker = { ...onPitchPlayers[NON_STRIKE], onStrike: isChangeStrike ? true : false }
@@ -1238,7 +1238,9 @@ const Commentary = (props) => {
                     if (isSwapPlayer) swapPlayer(newPlayerId)
                     else if (isChangeBowler.isChange) onBowlerChange(newPlayerId)
                     else onPlayerChange(newPlayerId)
-                }} />}
+                }}
+            // teamName={teams.[]}
+            />}
         {extrasType && < ExtrasModal
             isOpen={extrasType}
             toggle={() => { setExtrasType(undefined) }}
