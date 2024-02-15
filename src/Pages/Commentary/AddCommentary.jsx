@@ -8,7 +8,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addCommentaryToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
-import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
+import { convertDateLocalToUTC, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
@@ -128,7 +128,7 @@ function AddCommentary() {
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
-                            return { label: item?.eventName, value: item?.eventId }
+                            return { label:  `${item?.eventName} - ${convertDateUTCToLocal(item?.eventDate, "index")}`, value: item?.eventId }
                         })
                         setMasterData((preData) => ({
                             ...preData,
@@ -264,7 +264,7 @@ function AddCommentary() {
                     .then((response) => {
                         const resultData = fetchResult(response)
                         const formattedData = resultData?.map(item => {
-                            return { label: item?.eventName, value: item?.eventId }
+                            return { label:  `${item?.eventName} - ${convertDateUTCToLocal(item?.eventDate, "index")}`, value: item?.eventId }
                         })
                         newMasterData = { ...newMasterData, eventId: formattedData }
                     }).catch((error) => {
