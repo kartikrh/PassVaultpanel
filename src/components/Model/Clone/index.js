@@ -41,9 +41,9 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
           <div className="d-flex flex-column justify-content-center p-4">
                 <h4 className="form-label text-left text-lg">Clone New Commentary</h4>
                 <h6 className='text-left mt-4'>Event Name</h6>
-                <input type="text" onChange={handleCloneValues} name="eventName" className="form-control text-center" required />
+                <input type="text" onChange={handleCloneValues} value={cloneValues?.eventName} name="eventName" className="form-control" required />
                 <h6 className='text-left mt-4'>Ref Id</h6>
-                <input type="text" onChange={handleCloneValues} name="eventRefId" className="form-control text-center" required />
+                <input type="text" onChange={handleCloneValues} value={cloneValues?.eventRefId} name="eventRefId" className="form-control" required />
             </div>
             <div className="hstack gap-2 justify-content-end">
                 <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
