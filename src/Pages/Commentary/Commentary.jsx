@@ -1,17 +1,22 @@
-import React from "react"
+import React, { useState } from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, SIX } from "./CommentartConst"
+import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
     changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler }) => {
-    const handleRuns = (run, ball, type = "") => {
+    const [isBoundary, setIsBoundary] = useState(false)
+    const handleRuns = (run, ball, isBoundary = false) => {
         updateRuns(
             {
-                run: run, ball: ball, batter: onPitchPlayers[ON_STRIKE],
-                bowler: onPitchPlayers[CURRENT_BOWLER], type: type, switchBatter: false
+                run: run,
+                ball: ball,
+                batter: onPitchPlayers[ON_STRIKE],
+                bowler: onPitchPlayers[CURRENT_BOWLER],
+                isBoundary
             }
         )
     }
@@ -92,11 +97,11 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/3.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(4, 1, FOUR)}>
+                        onClick={() => setIsBoundary(4)}>
                         <img className="button-icon" src="icons/4.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(6, 1, SIX)}>
+                        onClick={() => setIsBoundary(6)}>
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
@@ -138,5 +143,18 @@ export const CommentaryScreen = ({
                 </Row>
             </Col>
         </Row >
+        {isBoundary &&
+            <IsBoundaryModal
+                isOpen={isBoundary}
+                toggle={() => { setIsBoundary(undefined) }}
+                onNoClick={() => {
+                    handleRuns(isBoundary, 1)
+                    setIsBoundary(undefined)
+                }}
+                onYesClick={() => {
+                    handleRuns(isBoundary, 1, true)
+                    setIsBoundary(undefined)
+                }}
+            />}
     </React.Fragment >
 }

@@ -59,18 +59,16 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => {
-        // console.log(commentaryDetails, matchTypeDetails)
-        // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
-        console.log(currentOver, currentBall)
-        console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
-        console.log(onPitchPlayers, teams)
-        // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
-    })
-    const checkForOverSwitch = () => {
-        const currentOver = teams[BATTING_TEAM]?.teamOver
-        if (currentOver * 10 % 10 >= (matchTypeDetails.ballsPerOver - 1)) setShowChangeOverModal(true)
-
+    // useEffect(() => {
+    //     // console.log(commentaryDetails, matchTypeDetails)
+    //     // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
+    //     // console.log(currentOver, currentBall)
+    //     // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+    //     // console.log(onPitchPlayers, teams)
+    //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
+    // })
+    const checkForOverSwitch = (ballcount) => {
+        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails.ballsPerOver)) setShowChangeOverModal(true)
     }
     const checkInningsSwitch = (checkFor) => {
         const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
@@ -317,7 +315,7 @@ const Commentary = (props) => {
                     currentPartnership = partnershipDetails
                 }
             });
-            console.log(props.data.commentaryData.commentaryOvers)
+            // console.log(props.data.commentaryData.commentaryOvers)
             props.data.commentaryData.commentaryOvers.forEach(overDetails => {
                 if (isEqual(+overDetails.over, +currentOver)) {
                     currentOver = overDetails
@@ -330,6 +328,7 @@ const Commentary = (props) => {
                 "batter2Name": onPitchPlayers[NON_STRIKE]?.playerName,
             }
             const ballByBallHistoryData = props.data.commentaryData.commentaryBallByBall
+            // if (typeof currentOver === "object" && currentOver.isComplete) changePlayer(CURRENT_BOWLER)
             setTeams(currentInningsTeams)
             setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
             setOnPitchPlayers(onPitchPlayers)
@@ -358,7 +357,7 @@ const Commentary = (props) => {
                     dispatch(addCommentaryScreenData({ "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }) }, "commentaryBallByBall": generatedBall, }))
                     setCurrentOver(commentaryDataToUpdate.overdetails)
                 }
-                // Update Over history on over change
+                // Update ball history on ball change
                 if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails) && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                     setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                     setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
@@ -407,7 +406,7 @@ const Commentary = (props) => {
         // update here
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
     }
-    const updateRuns = ({ run, ball, batter, bowler, type, freezePlayers = false }) => {
+    const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
         if (!freezePlayers) setCurrentBall({})
         const updateBattingTeam = {}
         let updateBatter = {}
@@ -418,7 +417,6 @@ const Commentary = (props) => {
         let isChangeStrike = undefined
 
         const updatedBowlerOver = ((+bowler.bowlerOver || 0) + 0.1).toFixed(1)
-        if (!freezePlayers) checkForOverSwitch()
         updateBall["ballIsCount"] = ball > 0
         updateBall["ballType"] = BALL_TYPE_REGULAR
         updateBall["ballRun"] = run
@@ -449,21 +447,21 @@ const Commentary = (props) => {
             updateBatter["batDotBall"] = (batter.batDotBall || 0) + ball
             updateOver["dotBall"] = (currentOver.dotBall || 0) + ball
             updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) + ball
-        } else if (run % 2 === 0) {
-            if (type === FOUR) {
+        } else if (isBoundary) {
+            if (run === 4) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballFour"] = 1
                 updateBatter["batFour"] = (batter.batFour || 0) + 1
                 updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
-            } else if (type === SIX) {
+            } else if (run === 6) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballSix"] = 1
                 updateBatter["batSix"] = (batter.batSix || 0) + 1
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
             }
-        } else isChangeStrike = freezePlayers ? false : true
+        } else if (run % 2 !== 0) isChangeStrike = freezePlayers ? false : true
         updateBatter = { ...onPitchPlayers[ON_STRIKE], ...updateBatter, onStrike: isChangeStrike ? false : true }
         updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
         const updateNonStriker = { ...onPitchPlayers[NON_STRIKE], onStrike: isChangeStrike ? true : false }
@@ -471,6 +469,7 @@ const Commentary = (props) => {
             updateNonStriker["onStrike"] = isChangeStrike ? true : false
             updateBatter["onStrike"] = isChangeStrike ? false : true
         }
+        if (!freezePlayers) checkForOverSwitch(updateOver.ballCount)
         setPlayers({
             [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
             [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
@@ -488,7 +487,7 @@ const Commentary = (props) => {
         setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership, } })
         setSaveToDb(true)
     }
-    const updateExtras = (type, runs) => {
+    const updateExtras = (type, runs, isBoundary = false) => {
         setCurrentBall({})
         const bowler = onPitchPlayers[CURRENT_BOWLER]
         const batter = onPitchPlayers[ON_STRIKE]
@@ -499,6 +498,19 @@ const Commentary = (props) => {
         const updateBowler = {}
         const updatedBowlerOver = ((+bowler.bowlerOver || 0) + 0.1).toFixed(1)
         updateBattingTeam["teamWicket"] = (+teams[BATTING_TEAM].teamWicket || 0)
+        if (isBoundary) {
+            if (+runs === 4) {
+                updateBall["ballIsBoundry"] = true
+                updateBall["ballFour"] = 1
+                updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
+                updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
+            } else if (+runs === 6) {
+                updateBall["ballIsBoundry"] = true
+                updateBall["ballSix"] = 1
+                updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
+                updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
+            }
+        }
         if (type === BALL_WIDE) {
             const runToUpdate = (+matchTypeDetails["valueOfWideBall"] || 0) + runs
             updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) + 1
@@ -550,7 +562,7 @@ const Commentary = (props) => {
         else {
             updateBall["ballIsCount"] = true
             updateBowler["bowlerOver"] = updatedBowlerOver
-            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runs
+            // updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runs
             updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + 1
             updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
             updateOver["ballCount"] = (currentOver.ballCount || 0) + 1
@@ -584,7 +596,7 @@ const Commentary = (props) => {
                 updateOver["totalLegByesRun"] = (currentOver.totalLegByesRun || 0) + runs
                 updateBall["ballType"] = BALL_TYPE_LEG_BYE
             }
-            checkForOverSwitch()
+            checkForOverSwitch(updateOver.ballCount)
         }
         const isStrikeChange = runs % 2 !== 0
         const updatedOnStrike = { ...onPitchPlayers[ON_STRIKE], ...batter }
@@ -695,7 +707,7 @@ const Commentary = (props) => {
         setUpdateRunFromWicket({ run: +wicketData.runs, ball: ballToUpdateOnWicket, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
     }
     const onExtrasChange = (dataFromModal) => {
-        updateExtras(extrasType, +dataFromModal.run)
+        updateExtras(extrasType, +dataFromModal.run, dataFromModal.isBoundary)
         if (dataFromModal.type === WICKET) setShowWicketModal(true)
         else setExtrasType(undefined)
     }
@@ -831,7 +843,6 @@ const Commentary = (props) => {
             "bowlerTotalWicket": +currentBowler.bowlerTotalWicket - +currentOver.totalWicket,
             "isPlay": null
         }
-        console.log(newBowler)
         const updatedNewBowler = {
             ...newBowler,
             "bowlerOver": +(newBowler.bowlerOver || 0) + +(currentOver.ballCount / 10),
@@ -865,7 +876,6 @@ const Commentary = (props) => {
             "currentInnings": commentaryDetails.currentInnings,
             "overId": currentOver.overId
         }
-        console.log(objForChangeBowler)
         dispatch(addCommentaryScreenData({ "commentaryPlayers": [updatedPerviousBowler, updatedNewBowler], }))
         dispatch(changeBowlerFromCommentary(objForChangeBowler))
         setCurrentOver(UpdatedOver)
@@ -900,13 +910,9 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
-        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
-        console.log("From 1")
+        // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
-            // console.log("clicked")
-            console.log("From 3")
-            // console.log(currentOver, currentOver.over, currentOver.ballCount, currentBall.ballRun)
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0)) {
                 setUndoInningsPopup(true)
@@ -969,7 +975,6 @@ const Commentary = (props) => {
                             updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) - 1
                         }
                     }
-                    // console.log(updateBatter, updateBowler, updateBattingTeam)
                     updateBatter = { ...playersOnPitch[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
                     updateBowler = { ...playersOnPitch[CURRENT_BOWLER], ...updateBowler }
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
@@ -1058,7 +1063,6 @@ const Commentary = (props) => {
                 setSaveToDb(true)
             }
         }
-        // console.log(currentBall, teams, playersOnPitch)
     }
     const updatePlayerAfterUndoWicket = () => {
         const isbatterWicket = (player) => {
@@ -1101,7 +1105,6 @@ const Commentary = (props) => {
     }
     const updateAfterOverUndo = () => {
         const previousBall = ballHistory[ballHistory.length - 2]
-        console.log("From 2")
         const previousOnPitchPlayer = {}
         const updatedBattingTeam = teams[BATTING_TEAM]
         const updatedBowlingPlayerList = players[BOWLING_TEAM].map(player => {
@@ -1225,7 +1228,9 @@ const Commentary = (props) => {
                     if (isSwapPlayer) swapPlayer(newPlayerId)
                     else if (isChangeBowler.isChange) onBowlerChange(newPlayerId)
                     else onPlayerChange(newPlayerId)
-                }} />}
+                }}
+            // teamName={teams.[]}
+            />}
         {extrasType && < ExtrasModal
             isOpen={extrasType}
             toggle={() => { setExtrasType(undefined) }}
