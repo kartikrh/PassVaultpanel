@@ -55,7 +55,7 @@ const Index = forwardRef(
       isDeletePermission,
       breadCrumbs,
       onBreadCrumbsClick,
-      teams
+      teams,
     },
     ref
   ) => {
@@ -74,10 +74,10 @@ const Index = forwardRef(
       key: "",
     });
     const [statusSwitch, setStatusSwitch] = useState(true);
+    const [selectedTableElements, setSelectedTableElements] = useState({})
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
-
     useEffect(() => {
       setData(filteredData);
     }, [filteredData]);
@@ -130,12 +130,12 @@ const Index = forwardRef(
       }
       reFetchData({
         ...tableActions,
-        [key]: id,
+        [key]: id.value,
       });
       setTableActions((preValue) => {
         return {
           ...preValue,
-          [key]: id,
+          [key]: id.value,
         };
       });
     };
@@ -418,7 +418,24 @@ const Index = forwardRef(
 
       setData(sortedData);
     };
-
+    const optionGroup = [
+      {
+        label: "Picnic",
+        options: [
+          { label: "Mustard", value: "Mustard" },
+          { label: "Ketchup", value: "Ketchup" },
+          { label: "Relish", value: "Relish" },
+        ],
+      },
+      {
+        label: "Camping",
+        options: [
+          { label: "Tent", value: "Tent" },
+          { label: "Flashlight", value: "Flashlight" },
+          { label: "Toilet Paper", value: "Toilet Paper" },
+        ],
+      },
+    ];
     const fetchData = () => {
       const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
       let sliced;
@@ -453,15 +470,28 @@ const Index = forwardRef(
     };
 
     const handleTableReset = () => {
-      // setTimeout(()=>{
-      //   selectInputRef.current.select.clearValue();
-      // },2000)
       setSearchTerm("");
-
       setTableActions({
         isActive: true,
-        // displayType: null
       });
+      setSelectedTableElements({
+        competition : {
+          value: 0,
+          label: "Competition",
+        },
+        eventType: {
+          value: 0,
+          label: "Event Type",
+        },
+        commentaryStatus: {
+          value: 0,
+          label: "Commentary Status"
+        },
+        displayType:{
+          value: 0,
+          label: "Display Type"
+        }
+      })
       setStatusSwitch(true);
       handleReset({
         isActive: true,
@@ -475,7 +505,9 @@ const Index = forwardRef(
     useEffect(() => {
       handleSearchFilter();
     }, [searchTerm]);
-
+useEffect(()=>{
+  console.log(selectedTableElements);
+},[selectedTableElements])
     useEffect(() => {
       fetchData();
     }, [dataSource]);
@@ -545,153 +577,125 @@ const Index = forwardRef(
                         )}
                         {tableElement?.displayTypeDropDown ? (
                           <div className="">
-                            <select
-                              className="form-select"
-                              id="inlineFormSelectPref"
+                            <Select
+                            value={selectedTableElements?.displayType}
+                              placeholder="Select Event Type"
+                              styles={{
+                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                              }}
                               onChange={(e) => {
                                 handleTableActions(
                                   "displayType",
-                                  Number(e.target.value)
+                                  e
                                 );
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  displayType : e
+                                })
                               }}
-                              value={tableActions?.displayType}
-                            >
-                              <option value={0}>Select Display Type</option>
-                              {tableElement?.displayTypes.map((val, index) => {
-                                return (
-                                  <option value={val.value}>{val.label}</option>
-                                );
-                              })}
-                            </select>
-                            {/* <Col>
-                            <Select
+                              options={tableElement?.displayTypes?.map((item) => ({
+                                label: item?.label,
+                                value: item?.value,
+                              }))}
                               classNamePrefix="select2-selection"
-                              placeholder="Select Display Type"
-                              options={tableElement?.displayTypes}
-                              ref={selectInputRef}
-                              onChange={(e) => {
-                                handleTableActions("displayType", e.value);
-                              }}
-                              isClearable={true}
-                              styles={{
-                                option: (provided, state) => ({
-                                  ...provided,
-                                  whiteSpace: 'nowrap', // Prevents text from wrapping
-                                  overflow: 'hidden',   // Hides any overflowing text
-                                  textOverflow: 'ellipsis', // Adds an ellipsis (...) for overflow
-                                }),
-                                menu: (provided, state) => ({
-                                  whiteSpace: "nowrap", // Prevents text from wrapping
-                                  overflow: "hidden", // Hides any overflowing text
-                                  textOverflow: "ellipsis", // Adds an ellipsis (...) for overflow
-                                  ...provided,
-                                  width: "200px", // Set a specific width for the dropdown menu
-                                }),
-                              }}
-                              defaultInputValue={tableActions?.displayType}
                             />
-                          </Col> */}
                           </div>
                         ) : null}
-                         {
-                          tableElement?.eventTypeSelect ?(
-                            <div className="">
-                              <select
-                                className="form-select"
-                                id="inlineFormSelectPref"
-                                onChange={(e) => {
-                                  handleTableActions(
-                                    "eventTypeId",
-                                    e.target.value
-                                  );
-                                }}
-                                value={tableActions?.eventTypeId}
-                              >
-                                <option value={0}>Select Event Type</option>
-                                {eventTypes?.map((val) => {
-                                  return (
-                                    <option value={val.eventTypeId}>
-                                      {val.eventType}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </div>
-                          ) : null
-                        }
+                        {tableElement?.eventTypeSelect ? (
+                          <div className="">
+                            <Select
+                            styles={{
+                              control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                            }}
+                            value={selectedTableElements?.eventType}
+                              placeholder="Select Event Type"
+                              onChange={(e) => {
+                                handleTableActions(
+                                  "eventTypeId",
+                                  e
+                                );
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  eventType : e
+                                })
+                              }}
+                              options={eventTypes?.map((item) => ({
+                                label: item?.eventType,
+                                value: item?.eventTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
                         {tableElement?.competitionsSelect ? (
                           <div className="">
-                            <select
-                              className="form-select"
-                              id="inlineFormSelectPref"
+                            <Select
+                              value={selectedTableElements?.competition}
+                              placeholder="Select Competition"
+                              styles={{
+                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                              }}
                               onChange={(e) => {
                                 handleTableActions(
                                   "competitionId",
-                                  e.target.value
+                                  e
                                 );
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  competition : e
+                                })
                               }}
-                              value={tableActions?.competitionId}
-                            >
-                              <option value={0}>Select Competition</option>
-                              {competitions?.map((val) => {
-                                return (
-                                  <option value={val.competitionId}>
-                                    {val.competition}
-                                  </option>
-                                );
-                              })}
-                            </select>
+                              options={competitions?.map((item) => ({
+                                label: item?.competition,
+                                value: item?.competitionId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
                           </div>
                         ) : null}
-                         {
-                          tableElement?.teamsList ?(
-                            <div className="">
-                              <select
-                                className="form-select"
-                                id="inlineFormSelectPref"
-                                onChange={(e) => {
-                                  handleTableActions(
-                                    "teamId",
-                                    e.target.value
-                                  );
-                                }}
-                                value={tableActions?.teamId}
-                              >
-                                <option value={0}>Select Team</option>
-                                {teams?.map((val) => {
-                                  return (
-                                    <option value={val.teamId}>
-                                      {val.teamName}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </div>
-                          ) : null
-                        }
-                         {tableElement?.commentaryStatus ? (
-                          <div className="">
-                            <select
-                              className="form-select"
-                              id="inlineFormSelectPref"
+                        {tableElement?.teamsList ? (
+                          <Select
+                              value={tableActions?.label}
+                              placeholder="Select Team"
+                              styles={{
+                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                handleTableActions(
+                                  "teamId",
+                                  e
+                                );
+                              }}
+                              options={teams?.map((item) => ({
+                                label: item?.teamName,
+                                value: item?.teamId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                        ) : null}
+                        {tableElement?.commentaryStatus ? (
+                          <Select
+                              value={selectedTableElements?.commentaryStatus}
+                              placeholder="Select Commentary Status"
+                              styles={{
+                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                              }}
                               onChange={(e) => {
                                 handleTableActions(
                                   "commentaryStatus",
-                                  e.target.value
+                                  e
                                 );
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  commentaryStatus: e,
+                                })
                               }}
-                              value={tableActions?.eventTypeId}
-                            >
-                              <option value={0}>Select Commentary Status</option>
-                              {tableElement?.statusOptions?.map((val) => {
-                                return (
-                                  <option value={val?.value}>
-                                    {val?.label}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
+                              options={tableElement?.statusOptions?.map((item) => ({
+                                label: item?.label,
+                                value: item?.value,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
                         ) : null}
                         {tableElement?.isActive ? (
                           <div className="d-flex align-items-center">
@@ -728,7 +732,7 @@ const Index = forwardRef(
                           </div>
                         ) : null}
                         {tableElement?.resetButton ? (
-                          <div style={{display:"flex", flexGrow:50}}>
+                          <div>
                             <button
                               className="btn btn-primary"
                               onClick={() => {
@@ -746,7 +750,9 @@ const Index = forwardRef(
                           <div className="d-flex align-items-center" style={{}}>
                             <span
                               className="btn btn-primary"
-                              onClick={()=>{setImportExportModelVisable(true)}}
+                              onClick={() => {
+                                setImportExportModelVisable(true);
+                              }}
                             >
                               Bulk Update
                             </span>

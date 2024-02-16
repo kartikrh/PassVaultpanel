@@ -246,6 +246,10 @@ const Index = () => {
             checked={checekedList.includes(record.commentaryId)}
             onChange={() => {
               handleSingleCheck(record);
+              setCloneValues({
+                eventName: record?.eventName,
+                eventRefId: record?.eventRefId,
+              })
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -268,6 +272,16 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      key: "eventRefId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
@@ -279,7 +293,6 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
-
     {
       title: "Event Name",
       dataIndex: "eventName",
