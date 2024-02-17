@@ -1,5 +1,5 @@
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -142,7 +142,7 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   let displayStatus = ""
   // New Logic 
   const run = currentBall.ballRun
-  const extraRun = currentBall.ballExtraRun
+  const extraRun = currentBall.ballExtraRun - 1
   const ballType = currentBall.ballType
   const wicketType = currentBall.ballWicketType
   if (playerSwitch) {
@@ -174,11 +174,13 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
         else if (run === 5) displayStatus = "Five Runs, Strike change"
       }
     }
-    else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
+    // else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
     else if (ballType === BALL_TYPE_WIDE) displayStatus = `Wide ball, with ${extraRun} run`
     else if (ballType === BALL_TYPE_BYE) displayStatus = `Bye, with ${extraRun} run`
     else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `Leg Bye, with ${extraRun} run`
     else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `No ball, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `No ball Bye, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `No ball Leg Bye, with ${extraRun} run`
   }
   return displayStatus
 }
