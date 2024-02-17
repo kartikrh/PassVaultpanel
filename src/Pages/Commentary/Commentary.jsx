@@ -1,13 +1,13 @@
 import React, { useState } from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
-import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, FOUR, NON_STRIKE, NO_BALL, ON_STRIKE, SIX } from "./CommentartConst"
+import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE } from "./CommentartConst"
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const handleRuns = (run, ball, isBoundary = false) => {
         updateRuns(
@@ -117,12 +117,30 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
+                        <img className="button-icon" src="icons/b.png" alt="Icon" />
+                    </Col>
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}>
+                        {/* onClick={() => console.log("Update")} */}
+                        <img className="button-icon" src="icons/s.png" alt="Icon" />
+                    </Col>
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_BYE)}>
                         <img className="button-icon" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => updateExtras(NO_BALL_BYE)}>
+                        No Ball Bye
+                        {/* <img className="button-icon" src="icons/wide-ball.png" alt="Icon" /> */}
+                    </Col>
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_LEG_BYE)}>
                         <img className="button-icon" src="icons/leg-by.png" alt="Icon" />
+                    </Col>
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => updateExtras(NO_BALL_LEG_BYE)}>
+                        No Ball Leg Bye
+                        {/* <img className="button-icon" src="icons/no-ball.png" alt="Icon" /> */}
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={changeOver}>
