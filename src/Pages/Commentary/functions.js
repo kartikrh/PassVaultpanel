@@ -166,7 +166,7 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
       else if (currentBall.ballFour !== 0) displayStatus = "Four, Boundary"
       else if (currentBall.ballSix !== 0) displayStatus = "Six, Boundary"
       else {
-        if (run === 0) displayStatus = "No Runs"
+        if (run === 0) displayStatus = "Dot Ball, No Run"
         else if (run === 1) displayStatus = "Single, Strike changed"
         else if (run === 2) displayStatus = "Double, No strike change"
         else if (run === 3) displayStatus = "Three Runs, Strike change"
