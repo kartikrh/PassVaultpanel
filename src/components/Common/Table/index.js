@@ -22,7 +22,10 @@ import { ERROR } from "../Const";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
 import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
-
+import { RSelect } from "../Reusables/FormElements";
+import { DatePicker, Space } from "antd";
+import moment from "moment";
+const { RangePicker } = DatePicker;
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
@@ -34,7 +37,6 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
     throw Error(error);
   }
 };
-
 const Index = forwardRef(
   (
     {
@@ -56,6 +58,8 @@ const Index = forwardRef(
       breadCrumbs,
       onBreadCrumbsClick,
       teams,
+      setDateRange,
+      dateRange,
     },
     ref
   ) => {
@@ -74,7 +78,7 @@ const Index = forwardRef(
       key: "",
     });
     const [statusSwitch, setStatusSwitch] = useState(true);
-    const [selectedTableElements, setSelectedTableElements] = useState({})
+    const [selectedTableElements, setSelectedTableElements] = useState({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
@@ -122,6 +126,7 @@ const Index = forwardRef(
       menu: ({ width, ...css }) => ({ ...css }),
     };
     const handleTableActions = (key, id) => {
+      console.log({ key, id });
       if (key === "isActive") {
         setStatusSwitch(id);
       }
@@ -130,12 +135,18 @@ const Index = forwardRef(
       }
       reFetchData({
         ...tableActions,
-        [key]: id.value,
+        [key]: id,
       });
+      setDateRange({
+        startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
+        endDate: `${
+          new Date().toISOString().split("T")[0]
+        }T23:59:59`
+      })
       setTableActions((preValue) => {
         return {
           ...preValue,
-          [key]: id.value,
+          [key]: id,
         };
       });
     };
@@ -386,20 +397,6 @@ const Index = forwardRef(
             return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
           }
         } else {
-          //   const valueA =
-          //   typeof a[propName].name === "string"
-          //     ? a[propName]?.name
-          //     : a[propName]?.name;
-          // const valueB =
-          //   typeof b[propName] === "string"
-          //     ? b[propName]?.name
-          //     : b[propName]?.name;
-          // if (order === "ascending") {
-          //   return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
-          // } else {
-          //   return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
-          // }
-
           const valueA =
             typeof a[propName]?.name === "string"
               ? a[propName]?.name
@@ -475,7 +472,7 @@ const Index = forwardRef(
         isActive: true,
       });
       setSelectedTableElements({
-        competition : {
+        competition: {
           value: 0,
           label: "Competition",
         },
@@ -485,13 +482,13 @@ const Index = forwardRef(
         },
         commentaryStatus: {
           value: 0,
-          label: "Commentary Status"
+          label: "Commentary Status",
         },
-        displayType:{
+        displayType: {
           value: 0,
-          label: "Display Type"
-        }
-      })
+          label: "Display Type",
+        },
+      });
       setStatusSwitch(true);
       handleReset({
         isActive: true,
@@ -505,9 +502,9 @@ const Index = forwardRef(
     useEffect(() => {
       handleSearchFilter();
     }, [searchTerm]);
-useEffect(()=>{
-  console.log(selectedTableElements);
-},[selectedTableElements])
+    useEffect(() => {
+      console.log(selectedTableElements);
+    }, [selectedTableElements]);
     useEffect(() => {
       fetchData();
     }, [dataSource]);
@@ -520,9 +517,10 @@ useEffect(()=>{
             {tableElement?.title !== "Import Events" && (
               <CardHeader>
                 <form>
-                  <Row className="g-2">
-                    <Col className="col-sm-auto">
-                      <div className="d-flex gap-2">
+                  {tableElement?.dateRange ? (
+                    <Row className="">
+                      {/* <Col className="bg-white p-2 m-2"> */}
+                      <div className="d-flex flex-sm-column flex-md-row align-items-center gap-2 p-2 m-2">
                         {isAddPermission && (
                           <Button
                             color="success"
@@ -575,28 +573,77 @@ useEffect(()=>{
                             <i className="ri-delete-bin-2-line"></i>
                           </Button>
                         )}
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="datetime-local"
+                            defaultValue={dateRange?.startDate}
+                            onChange={(startDate) => {
+                              setDateRange({
+                                ...dateRange,
+                                startDate: startDate?.target?.value,
+                              });
+                            }}
+                            id="example-datetime-local-input"
+                          />
+                        </div>
+                        <span>To</span>
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="datetime-local"
+                            defaultValue={dateRange?.endDate}
+                            onChange={(startDate) => {
+                              setDateRange({
+                                ...dateRange,
+                                endDate: startDate?.target?.value,
+                              });
+                            }}
+                            id="example-datetime-local-input"
+                          />
+                        </div>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            reFetchData();
+                          }}
+                          type="reset"
+                          id="create-btn"
+                        >
+                          Search
+                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                        </button>
+                      </div>
+                      {/* </Col> */}
+                    </Row>
+                  ) : null}
+                  <Row className="g-2">
+                    <Col className="col-sm-auto">
+                      <div className="d-flex gap-2">
                         {tableElement?.displayTypeDropDown ? (
                           <div className="">
                             <Select
-                            value={selectedTableElements?.displayType}
+                              value={selectedTableElements?.displayType}
                               placeholder="Select Event Type"
                               styles={{
-                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                handleTableActions(
-                                  "displayType",
-                                  e
-                                );
+                                handleTableActions("displayType", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
-                                  displayType : e
-                                })
+                                  displayType: e,
+                                });
                               }}
-                              options={tableElement?.displayTypes?.map((item) => ({
-                                label: item?.label,
-                                value: item?.value,
-                              }))}
+                              options={tableElement?.displayTypes?.map(
+                                (item) => ({
+                                  label: item?.label,
+                                  value: item?.value,
+                                })
+                              )}
                               classNamePrefix="select2-selection"
                             />
                           </div>
@@ -604,20 +651,20 @@ useEffect(()=>{
                         {tableElement?.eventTypeSelect ? (
                           <div className="">
                             <Select
-                            styles={{
-                              control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
-                            }}
-                            value={selectedTableElements?.eventType}
-                              placeholder="Select Event Type"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.eventType}
+                              placeholder="Event Type"
                               onChange={(e) => {
-                                handleTableActions(
-                                  "eventTypeId",
-                                  e
-                                );
+                                handleTableActions("eventTypeId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
-                                  eventType : e
-                                })
+                                  eventType: e,
+                                });
                               }}
                               options={eventTypes?.map((item) => ({
                                 label: item?.eventType,
@@ -625,25 +672,34 @@ useEffect(()=>{
                               }))}
                               classNamePrefix="select2-selection"
                             />
+                            {/* <RSelect 
+                            placeholder = "Select Event Type" 
+                            value={selectedTableElements?.eventType}
+                            setSelectedTableElements = {setSelectedTableElements} 
+                            selectedTableElements = {selectedTableElements}
+                            options = {eventTypes}
+                            handleTableActions = {handleTableActions}
+                            items = {{label:"eventType", value:"eventTypeId"}}
+                            /> */}
                           </div>
                         ) : null}
                         {tableElement?.competitionsSelect ? (
                           <div className="">
                             <Select
                               value={selectedTableElements?.competition}
-                              placeholder="Select Competition"
+                              placeholder="Competition"
                               styles={{
-                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                handleTableActions(
-                                  "competitionId",
-                                  e
-                                );
+                                handleTableActions("competitionId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
-                                  competition : e
-                                })
+                                  competition: e,
+                                });
                               }}
                               options={competitions?.map((item) => ({
                                 label: item?.competition,
@@ -655,47 +711,49 @@ useEffect(()=>{
                         ) : null}
                         {tableElement?.teamsList ? (
                           <Select
-                              value={tableActions?.label}
-                              placeholder="Select Team"
-                              styles={{
-                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
-                              }}
-                              onChange={(e) => {
-                                handleTableActions(
-                                  "teamId",
-                                  e
-                                );
-                              }}
-                              options={teams?.map((item) => ({
-                                label: item?.teamName,
-                                value: item?.teamId,
-                              }))}
-                              classNamePrefix="select2-selection"
-                            />
+                            value={tableActions?.label}
+                            placeholder="Select Team"
+                            styles={{
+                              control: (provided) => ({
+                                ...provided,
+                                width: 200,
+                              }), // Adjust width as needed
+                            }}
+                            onChange={(e) => {
+                              handleTableActions("teamId", e);
+                            }}
+                            options={teams?.map((item) => ({
+                              label: item?.teamName,
+                              value: item?.teamId,
+                            }))}
+                            classNamePrefix="select2-selection"
+                          />
                         ) : null}
                         {tableElement?.commentaryStatus ? (
                           <Select
-                              value={selectedTableElements?.commentaryStatus}
-                              placeholder="Select Commentary Status"
-                              styles={{
-                                control: provided => ({ ...provided, width: 200 }), // Adjust width as needed
-                              }}
-                              onChange={(e) => {
-                                handleTableActions(
-                                  "commentaryStatus",
-                                  e
-                                );
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  commentaryStatus: e,
-                                })
-                              }}
-                              options={tableElement?.statusOptions?.map((item) => ({
+                            value={selectedTableElements?.commentaryStatus}
+                            placeholder="Commentary Status"
+                            styles={{
+                              control: (provided) => ({
+                                ...provided,
+                                width: 200,
+                              }), // Adjust width as needed
+                            }}
+                            onChange={(e) => {
+                              handleTableActions("commentaryStatus", e);
+                              setSelectedTableElements({
+                                ...selectedTableElements,
+                                commentaryStatus: e,
+                              });
+                            }}
+                            options={tableElement?.statusOptions?.map(
+                              (item) => ({
                                 label: item?.label,
                                 value: item?.value,
-                              }))}
-                              classNamePrefix="select2-selection"
-                            />
+                              })
+                            )}
+                            classNamePrefix="select2-selection"
+                          />
                         ) : null}
                         {tableElement?.isActive ? (
                           <div className="d-flex align-items-center">
@@ -712,7 +770,6 @@ useEffect(()=>{
                             />
                           </div>
                         ) : null}
-
                         {tableElement?.isShowContent ? (
                           <div className="d-flex align-items-center">
                             <Switch

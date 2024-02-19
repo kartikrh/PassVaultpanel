@@ -43,6 +43,12 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
+    endDate: `${
+      new Date().toISOString().split("T")[0]
+    }T23:59:59`
+  })
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -57,6 +63,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/commentary/all`, {
         ...(latestValueFromTable || tableActions),
+        ...dateRange
       })
       .then((response) => {
         const apiData = response?.result;
@@ -392,6 +399,7 @@ const Index = () => {
         value: 4,
       },
     ],
+    dateRange: true,
   };
 
   useEffect(() => {
@@ -430,6 +438,8 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            setDateRange = {setDateRange}
+            dateRange = {dateRange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
