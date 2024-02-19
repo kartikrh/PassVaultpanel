@@ -129,24 +129,26 @@ const Index = forwardRef(
       console.log({ key, id });
       if (key === "isActive") {
         setStatusSwitch(id);
-      }
+        reFetchData({
+          ...tableActions,
+          [key]: id,
+        });
+      }else{
       if (key === "isShowContent") {
+        console.log({ key, id });
         setStatusSwitch(id);
       }
       reFetchData({
         ...tableActions,
         [key]: id?.value,
       });
-      setDateRange({
-        startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-        endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
-      });
       setTableActions((preValue) => {
         return {
           ...preValue,
-          [key]: id,
+          [key]: id?.value,
         };
       });
+    }
     };
 
     const handleSearchFilter = () => {
@@ -486,7 +488,15 @@ const Index = forwardRef(
           value: 0,
           label: "Display Type",
         },
+        team: {
+          value: 0,
+          label: "Select Team",
+        }
       });
+     if(tableElement?.dateRange){ setDateRange({
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
+    })}
       setStatusSwitch(true);
       handleReset({
         isActive: true,
@@ -573,7 +583,7 @@ const Index = forwardRef(
                         {tableElement?.displayTypeDropDown ? (
                           <div className="">
                             <Select
-                              value={selectedTableElements?.displayType}
+                              value={selectedTableElements}
                               placeholder="Select Event Type"
                               styles={{
                                 control: (provided) => ({
@@ -661,7 +671,7 @@ const Index = forwardRef(
                         ) : null}
                         {tableElement?.teamsList ? (
                           <Select
-                            value={tableActions?.label}
+                            value={selectedTableElements?.team}
                             placeholder="Select Team"
                             styles={{
                               control: (provided) => ({
@@ -671,6 +681,10 @@ const Index = forwardRef(
                             }}
                             onChange={(e) => {
                               handleTableActions("teamId", e);
+                              setSelectedTableElements({
+                                ...selectedTableElements,
+                                team: e,
+                              });
                             }}
                             options={teams?.map((item) => ({
                               label: item?.teamName,
