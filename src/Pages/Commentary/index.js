@@ -47,7 +47,7 @@ const Index = () => {
     startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
     endDate: `${
       new Date().toISOString().split("T")[0]
-    }T23:59:59`
+    }T23:59:00`
   })
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
