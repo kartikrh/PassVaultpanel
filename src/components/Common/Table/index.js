@@ -135,14 +135,12 @@ const Index = forwardRef(
       }
       reFetchData({
         ...tableActions,
-        [key]: id,
+        [key]: id?.value,
       });
       setDateRange({
-        startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
-        endDate: `${
-          new Date().toISOString().split("T")[0]
-        }T23:59:59`
-      })
+        startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+        endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
+      });
       setTableActions((preValue) => {
         return {
           ...preValue,
@@ -517,10 +515,9 @@ const Index = forwardRef(
             {tableElement?.title !== "Import Events" && (
               <CardHeader>
                 <form>
-                  {tableElement?.dateRange ? (
-                    <Row className="">
-                      {/* <Col className="bg-white p-2 m-2"> */}
-                      <div className="d-flex flex-sm-column flex-md-row align-items-center gap-2 p-2 m-2">
+                  <Row className="g-2">
+                    <Col className="col-sm-auto">
+                      <div className="d-flex gap-2">
                         {isAddPermission && (
                           <Button
                             color="success"
@@ -573,53 +570,6 @@ const Index = forwardRef(
                             <i className="ri-delete-bin-2-line"></i>
                           </Button>
                         )}
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="datetime-local"
-                            defaultValue={dateRange?.startDate}
-                            onChange={(startDate) => {
-                              setDateRange({
-                                ...dateRange,
-                                startDate: startDate?.target?.value,
-                              });
-                            }}
-                            id="example-datetime-local-input"
-                          />
-                        </div>
-                        <span>To</span>
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="datetime-local"
-                            defaultValue={dateRange?.endDate}
-                            onChange={(startDate) => {
-                              setDateRange({
-                                ...dateRange,
-                                endDate: startDate?.target?.value,
-                              });
-                            }}
-                            id="example-datetime-local-input"
-                          />
-                        </div>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => {
-                            reFetchData();
-                          }}
-                          type="reset"
-                          id="create-btn"
-                        >
-                          Search
-                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                        </button>
-                      </div>
-                      {/* </Col> */}
-                    </Row>
-                  ) : null}
-                  <Row className="g-2">
-                    <Col className="col-sm-auto">
-                      <div className="d-flex gap-2">
                         {tableElement?.displayTypeDropDown ? (
                           <div className="">
                             <Select
@@ -818,6 +768,54 @@ const Index = forwardRef(
                       </div>
                     </Col>
                   </Row>
+                  {tableElement?.dateRange ? (
+                    <Row className="">
+                      {/* <Col className="bg-white p-2 m-2"> */}
+                      <div className="d-flex flex-sm-column flex-md-row align-items-center gap-2 p-2 m-2">
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="datetime-local"
+                            defaultValue={dateRange?.startDate}
+                            onChange={(startDate) => {
+                              setDateRange({
+                                ...dateRange,
+                                startDate: startDate?.target?.value,
+                              });
+                            }}
+                            id="example-datetime-local-input"
+                          />
+                        </div>
+                        <span>To</span>
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="datetime-local"
+                            defaultValue={dateRange?.endDate}
+                            onChange={(startDate) => {
+                              setDateRange({
+                                ...dateRange,
+                                endDate: startDate?.target?.value,
+                              });
+                            }}
+                            id="example-datetime-local-input"
+                          />
+                        </div>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            reFetchData();
+                          }}
+                          type="reset"
+                          id="create-btn"
+                        >
+                          Search
+                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                        </button>
+                      </div>
+                      {/* </Col> */}
+                    </Row>
+                  ) : null}
                 </form>
               </CardHeader>
             )}
