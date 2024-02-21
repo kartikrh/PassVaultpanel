@@ -33,6 +33,7 @@ const Index = () => {
   })
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
   const fetchData = async (value) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
@@ -57,8 +58,9 @@ const Index = () => {
       });
     if (value?.eventTypeId) {
       await axiosInstance
-        .post(`/admin/competition/byeventTypeId`, {
-          eventTypeId: value?.eventTypeId
+        .post(`/admin/events/competitionList`, {
+          eventTypeId: value?.eventTypeId,
+          isActive:true,
         })
         .then((response) => {
           setCompetitions(response.result);

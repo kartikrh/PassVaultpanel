@@ -40,7 +40,7 @@ function AddEvents() {
   let navigate = useNavigate();
   const location = useLocation();
   const [eventId, setEventId] = useState(location.state?.userId || "0")
-
+  const [count, setCount] = useState(0)
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
@@ -84,7 +84,7 @@ function AddEvents() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("/admin/eventType/all", {})
+      .post("admin/events/eventTypeList", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
@@ -96,20 +96,28 @@ function AddEvents() {
       .catch((error) => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
-    await axiosInstance
-      .post("/admin/competition/all", {})
-      .then((response) => {
-        setMasterData((preData) => ({
-          ...preData,
-          competitionId: response.result?.map((item) => {
-            return { label: item.competition, value: item.competitionId };
-          }),
-        }));
-      })
-      .catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
   };
+  const handleFormDataChange = async(newFormData) =>{
+    console.log({initialEditData})
+   if(newFormData?.eventTypeId != undefined && newFormData?.eventTypeId != 0){
+    await axiosInstance
+    .post("/admin/events/competitionList", {
+      isActive:true,
+      eventTypeId: newFormData?.eventTypeId
+    })
+    .then((response) => {
+      setMasterData((preData) => ({
+        ...preData,
+        competitionId: response.result?.map((item) => {
+          return { label: item.competition, value: item.competitionId };
+        }),
+      }));
+    })
+    .catch((error) => {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
+   }
+  }
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
@@ -192,6 +200,7 @@ function AddEvents() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
+                  onFormDataChange = {handleFormDataChange}
                 />
               </CardBody>
             </Card>
