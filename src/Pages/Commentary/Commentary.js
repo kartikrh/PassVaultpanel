@@ -540,7 +540,7 @@ const Commentary = (props) => {
             updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
             updatePartnership["extras"] = currentPartnership.extras + runToUpdate
-        } else if (type === NO_BALL) {
+        } else if (type === NO_BALL || type === NO_BALL_BYE || type === NO_BALL_LEG_BYE) {
             const runToUpdate = (+matchTypeDetails["valueOfNoBall"] || 0) + runs
             updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
             updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runToUpdate
@@ -558,38 +558,16 @@ const Commentary = (props) => {
             updateBall["ballIsCount"] = false
             updateBall["ballRun"] = runToUpdate
             updateBall["ballExtraRun"] = runToUpdate
-            updateBall["ballType"] = BALL_TYPE_NO_BALL
-            updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
-            updatePartnership["extras"] = currentPartnership.extras + runToUpdate
-            batter["batRun"] = (batter.batRun || 0) + runs
-            batter["batBall"] = (batter.batBall || 0) + 1
-            batter["batsmanStrikeRate"] = getStrikeRate(batter.batRun, batter.batBall)
-        }
-        else if (type === NO_BALL_BYE || type === NO_BALL_LEG_BYE) {
-            const runToUpdate = (+matchTypeDetails["valueOfNoBall"] || 0) + runs
-            updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
-            updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runToUpdate
-            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
-            updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-            updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
-            updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, currentOver, matchTypeDetails.ballsPerOver)
-            if (matchTypeDetails.isLimitedOvers && commentaryDetails.target) {
-                updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                    currentOver, matchTypeDetails.ballsPerOver, commentaryDetails.target || 0, matchTypeDetails.oversPerInings)
+            if (type === NO_BALL) {
+                updateBall["ballType"] = BALL_TYPE_NO_BALL
+                batter["batRun"] = (batter.batRun || 0) + runs
             }
-            updateOver["totalNoball"] = (currentOver.totalNoball || 0) + 1
-            updateOver["totalNoBallRun"] = (currentOver.totalNoBallRun || 0) + runToUpdate
-            updateOver["totalRun"] = (currentOver.totalRun || 0) + runToUpdate
-            updateBall["ballIsCount"] = false
-            updateBall["ballRun"] = runToUpdate
-            updateBall["ballExtraRun"] = runToUpdate
-            updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
-            updatePartnership["extras"] = currentPartnership.extras + runToUpdate
-            // batter["batRun"] = (batter.batRun || 0) + runs
-            batter["batBall"] = (batter.batBall || 0) + 1
-            batter["batsmanStrikeRate"] = getStrikeRate(batter.batRun, batter.batBall)
-            if (type === NO_BALL_BYE) updateBall["ballType"] = BALL_TYPE_NO_BALL_BYE
+            else if (type === NO_BALL_BYE) updateBall["ballType"] = BALL_TYPE_NO_BALL_BYE
             else if (type === NO_BALL_LEG_BYE) updateBall["ballType"] = BALL_TYPE_NO_BALL_LEG_BYE
+            updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
+            updatePartnership["extras"] = currentPartnership.extras + runToUpdate
+            batter["batBall"] = (batter.batBall || 0) + 1
+            batter["batsmanStrikeRate"] = getStrikeRate(batter.batRun, batter.batBall)
         }
         else {
             updateBall["ballIsCount"] = true
@@ -1040,7 +1018,7 @@ const Commentary = (props) => {
                         updateOver["totalRun"] = (currentOver.totalRun || 0) - run
                         updatePartnership["totalRuns"] = currentPartnership.totalRuns - run
                         updatePartnership["extras"] = currentPartnership.extras - run
-                    } else if (type === BALL_TYPE_NO_BALL) {
+                    } else if (type === BALL_TYPE_NO_BALL || type === BALL_TYPE_NO_BALL_BYE || type === BALL_TYPE_NO_BALL_LEG_BYE) {
                         updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) - 1
                         updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - run
                         updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
@@ -1085,6 +1063,7 @@ const Commentary = (props) => {
                             updateOver["totalLegByesRun"] = (currentOver.totalLegByesRun || 0) - run
                         }
                     }
+                    updateBatter = { ...playersOnPitch[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
                     updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
                     setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: updateBowler })
                     setPlayers({ ...players, [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), })
