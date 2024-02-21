@@ -129,9 +129,15 @@ const Index = forwardRef(
       console.log({ key, id });
       if (key === "isActive") {
         setStatusSwitch(id);
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id,
+          };
+        });
         reFetchData({
           ...tableActions,
-          [key]: id,
+          isActive: id,
         });
       }else{
       if (key === "isShowContent") {
