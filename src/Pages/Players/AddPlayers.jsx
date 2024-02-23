@@ -53,6 +53,7 @@ function AddPlayer() {
 
     useEffect(() => {
         if (isSaved) {
+    alert(isSaved)
             dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE) { }
             else if (currentSaveAction === SAVE_AND_CLOSE)

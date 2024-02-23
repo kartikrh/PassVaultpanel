@@ -26,7 +26,7 @@ const AddMenuType = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId);
+  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId || 0);
   const [masterData, setMasterData] = useState({});
 
   useEffect(() => {
@@ -39,6 +39,7 @@ const AddMenuType = () => {
   }, [menuTypeId]);
 
   useEffect(() => {
+    console.log({isSaved})
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
@@ -46,14 +47,17 @@ const AddMenuType = () => {
   }, []);
 
   useEffect(() => {
+    alert(isSaved)
     if (isSaved) {
       dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) {
+        alert("save and close")
         navigate("/menuList")
       }
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
         setMenuTypeId("0")
+        alert("save and new")
         finalizeRef.current.resetForm()
       }
       setCurrentSaveAction(undefined)
@@ -84,6 +88,7 @@ const AddMenuType = () => {
   };
 
   const handleSaveClick = async (saveAction) => {
+    console.log("this is menuTypeId", menuTypeId)
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave !== "0") {
       const extraData = {
