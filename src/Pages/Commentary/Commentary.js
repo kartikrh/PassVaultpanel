@@ -289,7 +289,7 @@ const Commentary = (props) => {
                 if (isEqual(teamDetails.currentInnings, commentaryDetails.currentInnings)) {
                     const isBattingTeam = teamDetails.teamStatus === BAT
                     currentInningsTeams[isBattingTeam ? BATTING_TEAM : BOWLING_TEAM] = teamDetails
-                    currentOver = isBattingTeam ? (+teamDetails?.teamOver || 0).toFixed(0) : currentOver
+                    currentOver = isBattingTeam ? Math.floor(teamDetails?.teamOver) : currentOver
                 }
             });
             props.data.commentaryData.commentaryPlayers.forEach(playerDetails => {
@@ -923,11 +923,12 @@ const Commentary = (props) => {
     const handleUndoClick = () => {
         // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
         // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
+        // console.log(currentOver, currentBall)
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0)) {
                 setUndoInningsPopup(true)
-            } else if (currentBall.ballType === BALL_TYPE_OVER_COMPLETE
+            } else if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) updateAfterOverUndo()
             else {
                 const updateBattingTeam = {}
