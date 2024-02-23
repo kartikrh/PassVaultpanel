@@ -57,6 +57,7 @@ const Commentary = (props) => {
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = props.data.commentaryData.commentaryDetails
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
+    const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
 
     // useEffect(() => {
@@ -1216,6 +1217,7 @@ const Commentary = (props) => {
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
+            statusList={statusList}
             changePlayer={(type) => {
                 setIsSwapPlayer(true)
                 changePlayer(type)
