@@ -18,15 +18,15 @@ export function mapCommentaryStatus(status) {
 
 export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPlayers, currentBall }) => {
   return {
-    "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
+    "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
     "commentaryId": commentaryDetails.commentaryId,
     "teamId": teams?.[BATTING_TEAM].teamId,
     "overId": currentOver.overId,
     "overCount": teams?.[BATTING_TEAM].teamOver || "0",
     "currentOverBalls": currentOver.ballCount || 0,
-    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || "0",
-    "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || "0",
-    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId || "0",
+    "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || 0,
+    "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || 0,
+    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId || 0,
     "ballIsCount": currentBall.ballIsCount || false,
     "ballType": currentBall.ballType || BALL_TYPE_OVER_COMPLETE,
     "ballIsDot": currentBall.ballIsDot || false,
@@ -37,20 +37,20 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "ballSix": currentBall.ballSix || 0,
     "ballIsWicket": currentBall.ballIsWicket || false,
     "ballWicketType": currentBall.ballWicketType || "0",
-    "ballPlayerId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || "0",
-    "ballBowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || "0",
-    "ballFielderId1": currentBall.ballFielderId1 || "0",
-    "ballFielderId2": currentBall.ballFielderId2 || "0",
+    "ballPlayerId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || 0,
+    "ballBowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId || 0,
+    "ballFielderId1": currentBall.ballFielderId1 || 0,
+    "ballFielderId2": currentBall.ballFielderId2 || 0,
     "overIsMaiden": currentBall.overIsMaiden || false,
-    "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId || "0",
-    "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || "0",
+    "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId || 0,
+    "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || 0,
     "currentInnings": commentaryDetails.currentInnings
   }
 }
 
 export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, teams, currentBall }) => {
   return {
-    "commentaryWicketId": currentWicket.commentaryWicketId || "0",
+    "commentaryWicketId": currentWicket.commentaryWicketId || 0,
     "commentaryId": commentaryDetails.commentaryId,
     "bowlerId": currentWicket.bowlerId,
     "bowlerName": currentWicket.bowlerName,
@@ -61,7 +61,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
     "fieldPlayerName": currentWicket.fieldPlayerId,
     "overId": currentOver.overId,
     "overCount": currentOver.over,
-    "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
+    "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
     "teamId": teams[BATTING_TEAM].teamId,
     "teamScore": teams[BATTING_TEAM].teamScore,
     "playerRun": currentWicket.batterRuns || 0,
@@ -74,7 +74,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
 
 export const generatePartnership = ({ currentPartnership, commentaryDetails, teams, currentBall }) => {
   return {
-    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || "0",
+    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
     "commentaryId": commentaryDetails.commentaryId,
     "teamId": teams[BATTING_TEAM].teamId,
     "batter1Id": currentPartnership.batter1Id,
@@ -84,14 +84,14 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "totalRuns": currentPartnership.totalRuns || 0,
     "totalBalls": currentPartnership.totalBalls || 0,
     "extras": currentPartnership.extras || 0,
-    "commentaryBallByBallId": currentBall.commentaryBallByBallId || "0",
+    "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
     "currentInnings": commentaryDetails.currentInnings,
   };
 }
 
 export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
   return {
-    "overId": "0",
+    "overId": 0,
     "commentaryId": commentaryDetails.commentaryId,
     "teamId": teams[BOWLING_TEAM].teamId,
     "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId,

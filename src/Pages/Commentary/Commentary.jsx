@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE } from "./CommentartConst"
@@ -9,7 +9,79 @@ export const CommentaryScreen = ({
     onPitchPlayers, updateRuns, changePlayer,
     changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus }) => {
     const [isBoundary, setIsBoundary] = useState(false)
+    const handleKeyPress = (event) => {
+        const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
+        switch (key) {
+            case '0':
+                handleRuns(0, 1);
+                break;
+            case '1':
+                handleRuns(1, 1);
+                break;
+            case '2':
+                handleRuns(2, 1);
+                break;
+            case 'u':
+                console.log("Undo Click")
+                onUndoClick();
+                break;
+            case '3':
+                handleRuns(3, 1);
+                break;
+            case '4':
+                setIsBoundary(4);
+                break;
+            case '5':
+                handleRuns(5, 1);
+                break;
+            case '6':
+                setIsBoundary(6);
+                break;
+            case 'q':
+                updateExtras(BALL_WIDE)
+                break;
+            case 'w':
+                updateExtras(NO_BALL);
+                break;
+            case 'e':
+                updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
+                break;
+            case 'r':
+                console.log("Status")
+                break;
+            case 'a':
+                updateExtras(BALL_BYE)
+                break;
+            case 's':
+                updateExtras(NO_BALL_BYE);
+                break;
+            case 'd':
+                updateExtras(BALL_LEG_BYE);
+                break;
+            case 'f':
+                updateExtras(NO_BALL_LEG_BYE);
+                break;
+            case 'z':
+                changeOver();
+                break;
+            case 'x':
+                endInnings();
+                break;
+            case 'c':
+                console.log("Actions")
+                break;
+            case 'v':
+                onWicketClick();
+                break;
+            default:
+                break;
+        }
+    }
     const handleRuns = (run, ball, isBoundary = false) => {
+        if (!onPitchPlayers || Object.keys(onPitchPlayers).length === 0) {
+            console.error("onPitchPlayers is empty");
+            return;
+        }
         updateRuns(
             {
                 run: run,
@@ -20,6 +92,12 @@ export const CommentaryScreen = ({
             }
         )
     }
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [onPitchPlayers, onUndoClick]);
     return <React.Fragment>
         <Row className="width-full">
             {/* {isLoading && <SpinnerModel />} */}
