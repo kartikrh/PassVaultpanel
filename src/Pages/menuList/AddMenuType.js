@@ -47,17 +47,14 @@ const AddMenuType = () => {
   }, []);
 
   useEffect(() => {
-    alert(isSaved)
     if (isSaved) {
       dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) {
-        alert("save and close")
         navigate("/menuList")
       }
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({})
         setMenuTypeId("0")
-        alert("save and new")
         finalizeRef.current.resetForm()
       }
       setCurrentSaveAction(undefined)
