@@ -589,7 +589,7 @@ const Index = forwardRef(
                         {tableElement?.displayTypeDropDown ? (
                           <div className="">
                             <Select
-                              value={selectedTableElements}
+                              value={selectedTableElements?.display}
                               placeholder="Select Event Type"
                               styles={{
                                 control: (provided) => ({
