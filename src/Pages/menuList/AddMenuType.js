@@ -30,7 +30,8 @@ const AddMenuType = () => {
   const [masterData, setMasterData] = useState({});
 
   useEffect(() => {
-    if (menuTypeId !== "0") {
+    if (menuTypeId !== undefined) {
+      console.log({menuTypeId})
       // alert("inside it")
       fetchData(menuTypeId);
     }
