@@ -3,12 +3,15 @@ import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE } from "./CommentartConst"
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
+import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 
 export const CommentaryScreen = ({
     teamDetails,
     onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus }) => {
+    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus,
+    statusList }) => {
     const [isBoundary, setIsBoundary] = useState(false)
+    const [statusPopup, setStatusPopup] = useState(undefined)
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -22,7 +25,6 @@ export const CommentaryScreen = ({
                 handleRuns(2, 1);
                 break;
             case 'u':
-                console.log("Undo Click")
                 onUndoClick();
                 break;
             case '3':
@@ -47,7 +49,7 @@ export const CommentaryScreen = ({
                 updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
                 break;
             case 'r':
-                console.log("Status")
+                setStatusPopup(true)
                 break;
             case 'a':
                 updateExtras(BALL_BYE)
@@ -198,8 +200,8 @@ export const CommentaryScreen = ({
                         onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
                     </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}>
-                        {/* onClick={() => console.log("Update")} */}
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => setStatusPopup(true)}>
                         <img className="button-icon" src="icons/s.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
@@ -252,5 +254,14 @@ export const CommentaryScreen = ({
                     setIsBoundary(undefined)
                 }}
             />}
+        {statusPopup && <ChangeStatusModal
+            statusList={statusList}
+            toggle={() => setStatusPopup(undefined)}
+            isOpen={true}
+            onSubmit={(displayStatus) => {
+                setStatusPopup(undefined)
+                updateDisplayStatus(displayStatus)
+            }}
+        />}
     </React.Fragment >
 }
