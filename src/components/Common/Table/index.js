@@ -533,7 +533,7 @@ const Index = forwardRef(
                 <form>
                   <Row className="g-2">
                     <Col className="col-sm-auto">
-                      <div className="d-flex gap-2">
+                      <div className="d-flex flex-wrap align-items-center gap-2">
                         {isAddPermission && (
                           <Button
                             color="success"
@@ -791,7 +791,7 @@ const Index = forwardRef(
                   {tableElement?.dateRange ? (
                     <Row className="">
                       {/* <Col className="bg-white p-2 m-2"> */}
-                      <div className="d-flex flex-sm-column flex-md-row align-items-center gap-2 p-2 m-2">
+                      <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
                         <div className="d-flex flex-column">
                           <input
                             className="form-control"
