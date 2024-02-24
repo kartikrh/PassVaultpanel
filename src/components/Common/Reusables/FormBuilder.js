@@ -78,7 +78,7 @@ const FormBuilder = forwardRef(
         }
       });
       if (isEmpty(formData) && isEmpty(editFormData)) {
-        setFormData(defaultValueObj);
+        // setFormData(defaultValueObj);
       } else if (
         !isEmpty(editFormData) &&
         (isEmpty(formData) || isEqual(formData, defaultValueObj))
