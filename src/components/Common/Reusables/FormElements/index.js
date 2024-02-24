@@ -10,7 +10,6 @@ export const RSelect = ({
   selectedTableElements,
   setSelectedTableElements
 }) => {
-  console.log(items);
   return (
     <div>
       <Select

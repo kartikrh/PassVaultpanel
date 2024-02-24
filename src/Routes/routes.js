@@ -42,6 +42,7 @@ import Page from "../Pages/Page";
 import MenuList from '../Pages/menuList'
 import AddMenuType from '../Pages/menuList/AddMenuType.js'
 import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
+import News from '../Pages/News'
 
 
 
@@ -62,6 +63,7 @@ import Maintenance from "../Pages/Utility/Maintenance-Page.js";
 import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
+import AddNews from "../Pages/News/AddNews.jsx";
 
 
 
@@ -104,6 +106,9 @@ const authProtectedRoutes = [
   { path: "/menuList", component: <MenuList /> },
   { path: "/addMenuType", component: <AddMenuType /> },
   { path: "/addMenuItem", component: <AddMenuItem /> },
+  { path: "/news", component: <News /> },
+  { path: "/addNews", component: <AddNews /> },
+
   {
     path: '/changePassword', component: <ChangePassword />
   },
@@ -118,8 +123,6 @@ const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-  // { path: "/forgot-password", component: <ForgetPasswordPage /> },
-  // { path: "/register", component: <Register /> },
 
   // Authentication Inner Pages
   { path: "/auth-login", component: <Login1 /> },

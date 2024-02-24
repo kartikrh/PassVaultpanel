@@ -149,9 +149,6 @@ export const ImportExportModel = ({
       );
     }
   };
-  useEffect(() => {
-    console.log(dataSource);
-  }, []);
   return (
     <Modal
       size="xl"

@@ -20,7 +20,6 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
         bowlingTeam?.forEach(element => {
             formattedBowlerData.push({ label: element.playerName, value: element.commentaryPlayerId })
         })
-        console.log(formattedBowlerData)
         setBowlingPlayerList(formattedBowlerData)
     }, [])
 

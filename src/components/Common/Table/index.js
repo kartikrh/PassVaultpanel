@@ -126,7 +126,6 @@ const Index = forwardRef(
       menu: ({ width, ...css }) => ({ ...css }),
     };
     const handleTableActions = (key, id) => {
-      console.log({ key, id });
       if (key === "isActive") {
         setStatusSwitch(id);
         setTableActions((preValue) => {
@@ -141,7 +140,6 @@ const Index = forwardRef(
         });
       }else{
       if (key === "isShowContent") {
-        console.log({ key, id });
         setStatusSwitch(id);
       }
       reFetchData({
@@ -516,9 +514,6 @@ const Index = forwardRef(
     useEffect(() => {
       handleSearchFilter();
     }, [searchTerm]);
-    useEffect(() => {
-      console.log(selectedTableElements);
-    }, [selectedTableElements]);
     useEffect(() => {
       fetchData();
     }, [dataSource]);
