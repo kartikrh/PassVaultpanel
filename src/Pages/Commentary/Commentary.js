@@ -1242,6 +1242,8 @@ const Commentary = (props) => {
                     },
                 }))
             }}
+            anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
+                || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup}
         />
         {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
