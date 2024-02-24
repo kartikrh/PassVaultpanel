@@ -6,10 +6,8 @@ import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 
 export const CommentaryScreen = ({
-    teamDetails,
-    onPitchPlayers, updateRuns, changePlayer,
-    changeOver, updateExtras, onWicketClick, onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus,
-    statusList }) => {
+    teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
+    onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
     const handleKeyPress = (event) => {
@@ -95,11 +93,12 @@ export const CommentaryScreen = ({
         )
     }
     useEffect(() => {
-        window.addEventListener('keydown', handleKeyPress);
+        if (anyPopup || isBoundary || statusPopup) window.removeEventListener('keydown', handleKeyPress);
+        else { window.addEventListener('keydown', handleKeyPress); }
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [onPitchPlayers, onUndoClick]);
+    }, [onPitchPlayers, onUndoClick, anyPopup, isBoundary, statusPopup]);
     return <React.Fragment>
         <Row className="width-full">
             {/* {isLoading && <SpinnerModel />} */}
