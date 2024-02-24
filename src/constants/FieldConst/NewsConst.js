@@ -14,8 +14,8 @@ export const newsFields = [
     label: "Title",
     isRequired: true,
     type: TEXT,
-    labelColspan: { xs: 12, md: 3, lg: 2 },
-    fieldColspan: { xs: 12, md: 9, lg: 9 },
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
   },
   {
     type: SWITCH,
@@ -35,9 +35,9 @@ export const newsFields = [
     name: "startDate",
     label: "From",
     isRequired: true,
-    customStyle: {
-      maxWidth: "600px",
-    },
+    // customStyle: {
+    //   maxWidth: "600px",
+    // },
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
     type: DATE_TIME_PICKER,
@@ -46,9 +46,9 @@ export const newsFields = [
     name: "endDate",
     label: "To",
     isRequired: true,
-    customStyle: {
-      maxWidth: "600px",
-    },
+    // customStyle: {
+    //   maxWidth: "600px",
+    // },
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
     type: DATE_TIME_PICKER,
@@ -57,10 +57,10 @@ export const newsFields = [
     type: IMAGE,
     name: "image",
     label: "Image",
-    customStyle: {
-        maxWidth: "200px",
-        border:"solid green 2px"
-      },
+    // customStyle: {
+    //     maxWidth: "200px",
+    //     paddingLeft:"0px"
+    //   },
     labelColspan: { xs: 12, md: 3, lg: 2 },
     fieldColspan: { xs: 12, md: 9, lg: 10 },
   },
@@ -69,7 +69,7 @@ export const newsFields = [
     label: "News",
     parentclassName: "",
     type: TEXT_EDITOR,
-    labelColspan: { xs: 12, md: 3, lg: 2 },
-    fieldColspan: { xs: 12, md: 9, lg: 9 },
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
   },
 ];

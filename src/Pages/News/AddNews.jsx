@@ -44,7 +44,7 @@ const AddNews = () => {
   let navigate = useNavigate();
   const location = useLocation();
   const [newsId, setNewsId] = useState(location.state?.newsId || "0");
-  // const [fields, setFields] = useState(newsFields || [])
+  const [fields, setFields] = useState(newsFields || [])
   useEffect(() => {
     if (newsId !== 0) {
       fetchData(newsId);
@@ -91,9 +91,9 @@ const AddNews = () => {
   const handleFormBDataChange = (val) => {
     if(val?.isPermanent){
       const filteredFields = newsFields.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")
-      // setFields(filteredFields)
+      setFields(filteredFields)
     }else if (!val?.isPermanent){
-      // setFields(newsFields)
+      setFields(newsFields)
     }
   };
 
@@ -201,7 +201,7 @@ const AddNews = () => {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={newsFields}
+                  fields={fields}
                   editFormData={initialEditData}
                   onFormDataChange={handleFormBDataChange}
                 />
