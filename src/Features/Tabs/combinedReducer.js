@@ -17,6 +17,7 @@ import ConfigSlice from './ConfigSlice';
 import pageFormatSlice from './pageFormatSlice';
 import pageSlice from './pageSlice';
 import MenuTypeSlice from './menuTypeSlice';
+import NewsSlice from './newsSlice'
 const rootReducer = combineReducers({
     tab: TabSlice,
     commentary: CommentarySlice,
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
     pageFormat: pageFormatSlice,
     page: pageSlice,
     menuType: MenuTypeSlice,
+    news: NewsSlice
 });
 
 export default rootReducer;

@@ -31,15 +31,11 @@ const AddMenuType = () => {
 
   useEffect(() => {
     if (menuTypeId !== undefined) {
-      console.log({menuTypeId})
-      // alert("inside it")
       fetchData(menuTypeId);
     }
-    // console.log(location)
   }, [menuTypeId]);
 
   useEffect(() => {
-    console.log({isSaved})
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
@@ -85,7 +81,6 @@ const AddMenuType = () => {
   };
 
   const handleSaveClick = async (saveAction) => {
-    console.log("this is menuTypeId", menuTypeId)
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave !== "0") {
       const extraData = {

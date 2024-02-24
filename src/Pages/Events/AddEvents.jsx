@@ -98,7 +98,6 @@ function AddEvents() {
       });
   };
   const handleFormDataChange = async(newFormData) =>{
-    console.log({initialEditData})
    if(newFormData?.eventTypeId != undefined && newFormData?.eventTypeId != 0){
     await axiosInstance
     .post("/admin/events/competitionList", {

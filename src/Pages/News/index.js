@@ -9,44 +9,51 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
-import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, } from "../../components/Common/Const";
+import {
+  TAB_NEWS,
+  PERMISSION_ADD,
+  PERMISSION_DELETE,
+  PERMISSION_EDIT,
+  PERMISSION_VIEW,
+  SUCCESS,
+  ERROR,
+} from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import {ImportExportModel} from '../../components/Model/ImportExportModel'
 const Index = () => {
-  const pageName = TAB_PLAYERS
+  const pageName = TAB_NEWS;
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = TAB_PLAYERS;
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  document.title = TAB_NEWS;
   const [data, setData] = useState([]);
-  const [eventTypes, setEventTypes] = useState([]);
+
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [importExportModelVisable, setImportExportModelVisable] = useState(false);
+  const [importExportModelVisable, setImportExportModelVisable] =
+    useState(false);
   const [checekedList, setCheckedList] = useState([]);
-  const [teams, setTeams] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
-    const tableActions = finalizeRef.current.getTableAction()
+    const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/player/all`, {
-        ...(latestValueFromTable || tableActions)
+      .post(`/admin/news/all`, {
+        ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result;
         let apiDataIdList = [];
-        apiData.forEach(ele => {
-          apiDataIdList.push(ele?.playerId)
-        })
+        apiData.forEach((ele) => {
+          apiDataIdList.push(ele?.newsId);
+        });
         setData(apiData);
-        setDataIndexList(apiDataIdList)
-        setCheckedList([])
+        setDataIndexList(apiDataIdList);
+        setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -54,77 +61,100 @@ const Index = () => {
       });
   };
 
-  const fetchEventTypeData = async () => {
-    await axiosInstance
-      .post(`/admin/player/eventTypeList`, {})
-      .then((response) => {
-        setEventTypes(response.result);
-        setIsLoading(false);
-      })
-      .catch((error) => { });
-  };
-  const fetchTeamsData = async () => {
-    await axiosInstance
-      .post(`/admin/player/teamList`, {})
-      .then((response) => {
-        setTeams(response.result);
-        setIsLoading(false);
-      })
-      .catch((error) => { });
-  };
+  //   const fetchEventTypeData = async () => {
+  //     await axiosInstance
+  //       .post(`/admin/player/eventTypeList`, {})
+  //       .then((response) => {
+  //         setEventTypes(response.result);
+  //         setIsLoading(false);
+  //       })
+  //       .catch((error) => { });
+  //   };
+  //   const fetchTeamsData = async () => {
+  //     await axiosInstance
+  //       .post(`/admin/player/teamList`, {})
+  //       .then((response) => {
+  //         setTeams(response.result);
+  //         setIsLoading(false);
+  //       })
+  //       .catch((error) => { });
+  //   };
   //checkbox function
   const handleSingleCheck = (e) => {
-    let updateSingleCheck = []
-    if (checekedList.includes(e.playerId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.playerId);
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.newsId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.newsId);
     } else {
-      updateSingleCheck = [...checekedList, e.playerId];
+      updateSingleCheck = [...checekedList, e.newsId];
     }
-    setCheckedList(updateSingleCheck)
+    setCheckedList(updateSingleCheck);
   };
 
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/player/save`, {
-        playerId: record.playerId,
-        playerName: record.playerName,
+      .post(`/admin/news/save`, {
+        newsId: record.newsId,
         [pType]: cState ? false : true,
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/player/delete`, {
-        playerId: checekedList,
+      .post(`/admin/news/delete`, {
+        newsId: checekedList,
       })
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
         setCheckedList([]);
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
         setCheckedList([]);
       });
   };
   const handleEdit = (id) => {
-    navigate("/addPlayer", { state: { userId: id } });
+    navigate("/addNews", { state: { newsId: id } });
   };
   const handleReset = (value) => {
-    fetchData(value)
-  }
+    fetchData(value);
+  };
   //table columns
   const columns = [
     {
@@ -135,14 +165,16 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
             onChange={() => {
               setCheckedList(
-                isEqual(checekedList?.sort(), 
-                dataIndexList?.sort())
-                 ? []
-                 : dataIndexList
-              )
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
             }}
           />
         </div>
@@ -154,7 +186,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.playerId)}
+            checked={checekedList.includes(record.newsId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -165,15 +197,17 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-    && {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"
-        onClick={() => {
-          handleEdit(record.playerId);
-        }}
-      ></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.newsId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -202,32 +236,79 @@ const Index = () => {
       style: { width: "10%", textAlign: "left" },
     },
     {
-      title: "Player Name",
-      dataIndex: "playerName",
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      key: "playerName",
-      sort: true,
-      style: { width: "30%" },
-    },
-    {
-      title: "Display Name",
-      dataIndex: "displayName",
-      key: "displayName",
-      style: { width: "30%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
-      title: "Event Type",
-      dataIndex: "eventType",
-      key: "eventType",
-
-      style: { width: "30%" },
+      title: "News",
+      dataIndex: "news",
+      render: (text, record) => (
+        <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+      ),
+      key: "news",
+      style: { width: "80%" },
     },
+    // {
+    //   title: "Start Date",
+    //   dataIndex: "startDate",
+    //   key: "startDate",
+    //   style: { width: "30%" },
+    // },
+    // {
+    //   title: "End Date",
+    //   dataIndex: "endDate",
+    //   key: "endDate",
+    //   style: { width: "30%" },
+    // },
+    // {
+    //   title: "Created By",
+    //   dataIndex: "createdBy",
+    //   key: "eventType",
+    //   style: { width: "30%" },
+    // },
+    // {
+    //   title: "Created Date",
+    //   dataIndex: "createdDate",
+    //   key: "createdDate",
+    //   style: { width: "30%" },
+    // },
+    // {
+    //   title: "Modify By",
+    //   dataIndex: "modifyBy",
+    //   key: "modifyBy",
+    //   style: { width: "30%" },
+    // },
+    // {
+    //   title: "Modify Date",
+    //   dataIndex: "modifyDate",
+    //   key: "modifyDate",
+    //   style: { width: "30%" },
+    // },
+    // {
+    //   title: "IsPermanent",
+    //   key: "IsPermanent",
+    //   render: (text, record) => (
+    //     <Button
+    //       color={`${record.isPermanent ? "primary" : "danger"}`}
+    //       size="sm"
+    //       className="btn"
+    //     >
+    //       <i
+    //         className={`bx ${record.isPermanent ? "bx-check" : "bx-block"}`}
+    //       ></i>
+    //     </Button>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
-      title: "Is Active",
-      key: "isActive",
+      title: "IsActive",
+      key: "IsActive",
       render: (text, record) => (
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
@@ -243,31 +324,10 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
-  const modelColumns = [
-    { title: "Player Id", key: "playerId", type: "text" },
-    { title: "Player Name", key: "playerName", type: "text" },
-    { title: "Batsman Average", key: "batsmanAverage", type: "input" },
-    { title: "Batsman StrikeRate", key: "batsmanStrikeRate", type: "input" },
-    { title: "Bowler Average", key: "bowlerAverage", type: "input" },
-    { title: "Bowler Economy", key: "bowlerEconomy", type: "input" },
-  ];
-  const dataToPick = [
-    { item: "playerId", type: "text" },
-    { item: "playerName", type: "text" },
-    { item: "batsmanAverage", type: "input" },
-    { item: "batsmanStrikeRate", type: "input" },
-    { item: "bowlerEconomy", type: "input" },
-    { item: "bowlerAverage", type: "input" },
-    {item: "isUpdate", type: "input" }
-  ];
   //elements required
   const tableElement = {
-    title: "Players",
+    title: "News",
     isActive: true,
-    eventTypeSelect: true,
-    resetButton: true,
-    importExport: true,
-    teamsList:true,
   };
 
   useEffect(() => {
@@ -275,15 +335,13 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-    fetchEventTypeData()
-    fetchTeamsData()
   }, []);
 
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="News" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -292,14 +350,19 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            eventTypes={eventTypes}
-            onAddNavigate={"/addPlayer"}
+            onAddNavigate={"/addNews"}
             handleReset={handleReset}
             reFetchData={fetchData}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
-            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
-            setImportExportModelVisable={setImportExportModelVisable}
-            teams = {teams}
+            isAddPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_ADD
+            )}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -307,13 +370,6 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {importExportModelVisable && <ImportExportModel
-            importExportModelVisable={importExportModelVisable}
-            setImportExportModelVisable={setImportExportModelVisable}
-            dataSource={data}
-            columns={modelColumns}
-            dataToPick={dataToPick}
-          />}
         </Container>
       </div>
     </React.Fragment>

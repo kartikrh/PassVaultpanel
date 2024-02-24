@@ -294,7 +294,6 @@ const Index = () => {
   };
 
   const handleBreadCrumbsClick = (value) => {
-    console.log("these values :: ",value)
     let historyList = _.clone(selectedMarketHistory);
     const index = historyList.findIndex((item) => item.value === value);
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);

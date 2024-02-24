@@ -32,7 +32,6 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
                                 step={1}
                             />
                         </Col >}
-                        {console.log(typeof run, isBoundary)}
                         {((+run === 4) || (+run === 6)) &&
                             <Col xs={6} md={6} lg={6} >
                                 Is Boundary

@@ -121,7 +121,6 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}>
-                        {/* onClick={() => console.log("Update")} */}
                         <img className="button-icon" src="icons/s.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}

@@ -174,7 +174,7 @@ const Sidebar = (props) => {
                           )}
                           <span>{props.t(item.label)}</span>
                         </Link>
-                        {item.subItem && (
+                        {item.subItem && item.subItem.length > 0 && (
                           <ul className="sub-menu">
                             {item.subItem
                               .slice() // Create a shallow copy
