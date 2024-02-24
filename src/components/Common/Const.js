@@ -20,6 +20,7 @@ export const SUCCESS = "SUCCESS"
 export const TEXT_BUTTON = "TEXT_BUTTON"
 export const LABEL_PARTATION = "LABEL_PARTATION"
 
+
 // Tab names
 export const TAB_TABS = "Tabs"
 export const TAB_ROLES = "Roles"
@@ -38,6 +39,7 @@ export const TAB_PAGE_FORMAT = "Page Format"
 export const TAB_PAGE = "Page"
 export const TAB_IMPORT_MARKET = "Import Market"
 export const Tab_Menu_List = "Menu List"
+export const TAB_NEWS = "News"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"

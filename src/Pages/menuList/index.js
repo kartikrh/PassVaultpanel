@@ -99,10 +99,6 @@ const Index = () => {
         setIsLoading(false);
       });
   };
-  useEffect(() => {
-    console.log(checekedList, data, data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort()))
-    console.log(checekedList, dataIndexList)
-  })
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
     if (checekedList.includes(e)) {

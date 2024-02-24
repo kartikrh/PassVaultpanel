@@ -89,8 +89,8 @@
 .ImageDropBox {
     height: fit-content;
     /* padding-left: 170px; */
-    display: flex;
-    justify-content: center;
+    /* display: flex;
+    justify-content: center; */
 
 }
 
