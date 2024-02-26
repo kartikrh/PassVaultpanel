@@ -1041,7 +1041,7 @@ const Commentary = (props) => {
                         updatePartnership["extras"] = currentPartnership.extras - run
                     }
                     else {
-                        batter["batBall"] = (batter.batBall || 0) + 1
+                        batter["batBall"] = (batter.batBall || 0) - 1
                         updateBowler["bowlerOver"] = ((+bowler.bowlerOver || 0) - 0.1).toFixed(1)
                         updateBattingTeam["teamOver"] =
                             ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
