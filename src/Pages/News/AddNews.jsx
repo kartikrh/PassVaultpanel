@@ -51,7 +51,6 @@ const AddNews = () => {
     }
   }, [newsId]);
 
-  useEffect(()=>{})
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
@@ -88,6 +87,7 @@ const AddNews = () => {
         );
       });
   };
+  
   const handleFormBDataChange = (val) => {
     if(val?.isPermanent){
       const filteredFields = newsFields.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")

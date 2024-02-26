@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row, Table } from 'reactstrap';
-import { EXTRAS, WICKET } from '../CommentartConst';
+import { BALL_WIDE, EXTRAS, NO_BALL, WICKET } from '../CommentartConst';
 import "../CommentaryCss.css"
 const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
-    const [run, setRun] = useState(0)
+    const defaultValue = (extraType === BALL_WIDE || extraType === NO_BALL) ? 0 : 1
+    const [run, setRun] = useState(defaultValue)
     const [isBoundary, setIsBoundary] = useState(undefined)
     const handleSubmit = (type) => {
         const objToSend = { run, type, isBoundary: ((+run === 4) || (+run === 6)) ? isBoundary : false }
