@@ -1021,6 +1021,9 @@ const Commentary = (props) => {
                         updatePartnership["totalRuns"] = currentPartnership.totalRuns - run
                         updatePartnership["extras"] = currentPartnership.extras - run
                     } else if (type === BALL_TYPE_NO_BALL || type === BALL_TYPE_NO_BALL_BYE || type === BALL_TYPE_NO_BALL_LEG_BYE) {
+                        if (type === BALL_TYPE_NO_BALL) {
+                            batter["batRun"] = (batter.batRun || 0) - run
+                        }
                         updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) - 1
                         updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - run
                         updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
@@ -1036,6 +1039,7 @@ const Commentary = (props) => {
                         updatePartnership["extras"] = currentPartnership.extras - run
                     }
                     else {
+                        batter["batBall"] = (batter.batBall || 0) + 1
                         updateBowler["bowlerOver"] = ((+bowler.bowlerOver || 0) - 0.1).toFixed(1)
                         updateBattingTeam["teamOver"] =
                             ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
@@ -1243,7 +1247,7 @@ const Commentary = (props) => {
                 }))
             }}
             anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
-                || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup}
+                || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || changePlayerList}
         />
         {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
