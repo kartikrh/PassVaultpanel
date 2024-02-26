@@ -62,7 +62,7 @@ const Commentary = (props) => {
 
     // useEffect(() => {
     //     // console.log(commentaryDetails, matchTypeDetails)
-    //     // console.log(currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers)
+    console.log({ currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers, ballHistory })
     //     // console.log(currentOver, currentBall)
     //     // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
     //     // console.log(onPitchPlayers, teams)
@@ -1008,7 +1008,9 @@ const Commentary = (props) => {
                 } else {
                     if (type === BALL_TYPE_WIDE) {
                         updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) - 1
-                        updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) - run
+                        updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) - currentBall.ballRun
+                        updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - currentBall.ballRun
+                        updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
                         updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
                         updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, currentOver, matchTypeDetails.ballsPerOver)
                         if (matchTypeDetails.isLimitedOvers && commentaryDetails.target) {
@@ -1261,7 +1263,7 @@ const Commentary = (props) => {
             // teamName={teams.[]}
             />}
         {extrasType && < ExtrasModal
-            isOpen={extrasType}
+            isOpen={true}
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
             updateExtras={onExtrasChange} />}
