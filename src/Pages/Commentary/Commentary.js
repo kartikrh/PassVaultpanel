@@ -537,8 +537,6 @@ const Commentary = (props) => {
             updateBall["ballRun"] = runToUpdate
             updateBall["ballExtraRun"] = runToUpdate
             updateBall["ballType"] = BALL_TYPE_WIDE
-            updateBall["batStrikeId"] = onPitchPlayers[ON_STRIKE].commentaryPlayerId
-            updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
             updatePartnership["extras"] = currentPartnership.extras + runToUpdate
         } else if (type === NO_BALL || type === NO_BALL_BYE || type === NO_BALL_LEG_BYE) {
@@ -610,6 +608,8 @@ const Commentary = (props) => {
             checkForOverSwitch(updateOver.ballCount)
         }
         const isStrikeChange = runs % 2 !== 0
+        updateBall["batStrikeId"] = onPitchPlayers[ON_STRIKE].commentaryPlayerId
+        updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
         const updatedOnStrike = { ...onPitchPlayers[ON_STRIKE], ...batter }
         const updateBatter = isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike
         const updateNonStriker = !isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike
