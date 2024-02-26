@@ -954,7 +954,7 @@ const Commentary = (props) => {
                 const updatePartnership = {}
                 if (type === BALL_TYPE_REGULAR) {
                     updateBatter["batRun"] = (batter.batRun || 0) - run
-                    updateBatter["batBall"] = (batter.batBall || 0) - 1
+                    updateBatter["batBall"] = (batter.batBall || 0) - currentBall.ballIsCount ? 1 : 0
                     updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
                     updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
                     updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
