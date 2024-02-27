@@ -18,6 +18,7 @@ import WinnerModal from "./CommentaryModels/WinnerModal.jsx"
 import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
 import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx"
 import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
+import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const Commentary = (props) => {
     const [showWicketModal, setShowWicketModal] = useState(undefined)
     const [saveToDb, setSaveToDb] = useState(undefined)
     const [isOverChange, setIsOverChange] = useState(undefined)
+    const [undoOverPopup, setUndoOverPopup] = useState(undefined)
     const [isWicketChange, setIsWicketChange] = useState(undefined)
     const [playerUpdateList, setPlayerUpdateList] = useState(undefined)
     const [inningsChangePopup, setShowInningsChangePopup] = useState(undefined)
@@ -234,12 +236,6 @@ const Commentary = (props) => {
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
             changeOver()
-            dispatch(addCommentaryScreenData({
-                "commentaryDetails": {
-                    ...commentaryDetails,
-                    "displayStatus": "Over Completed"
-                }, "commentaryOvers": { ...currentOver, "isComplete": true },
-            }))
             setChangeOverOnPopupClick(undefined)
         }
     }, [changeOverOnPopupClick])
@@ -640,16 +636,26 @@ const Commentary = (props) => {
         setSaveToDb(true)
     }
     const changeOver = () => {
-        let updateBattingTeam = {}
+        let updateBattingTeam = { ...teams[BATTING_TEAM] }
         updateBattingTeam["teamOver"] =
             Math.ceil(+teams[BATTING_TEAM].teamOver || 0)
-        setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
+        setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         const newOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: true }
         const newNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
+        const updatedOnPitchPlayer = { [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer }
         setOnPitchPlayers(
             (prevValue) => {
-                return { ...prevValue, [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer, }
+                return { ...prevValue, updatedOnPitchPlayer }
             })
+        dispatch(addCommentaryScreenData({
+            "commentaryDetails": {
+                ...commentaryDetails,
+                "displayStatus": "Over Completed"
+            },
+            "commentaryOvers": { ...currentOver, "isComplete": true },
+            "commentaryPlayers": Object.values(updatedOnPitchPlayer),
+            "commentaryTeams": [updateBattingTeam],
+        }))
     }
     const handleWicket = (wicketData) => {
         if (!wicketData.isExtraWicket) setCurrentBall({})
@@ -935,7 +941,7 @@ const Commentary = (props) => {
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
                 setUndoInningsPopup(true)
             } else if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
-                && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) updateAfterOverUndo()
+                && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) setUndoOverPopup(true)
             else {
                 const updateBattingTeam = {}
                 let updateBowler = {}
@@ -1342,6 +1348,19 @@ const Commentary = (props) => {
             onBowlerChange={(selectedOption) => {
                 setIsChangeBowler({ isChange: true, isChangePopup: false, popupOption: selectedOption })
                 changePlayer(CURRENT_BOWLER)
+            }}
+        />}
+        {undoOverPopup && <UndoOverModal
+            isOpen={true}
+            toggle={() => { setUndoOverPopup(undefined) }}
+            onChangebowlerClick={() => {
+                setUndoOverPopup(undefined)
+                setIsChangeBowler({ isChange: true, isChangePopup: false, popupOption: SWITCH_BOWLER })
+                changePlayer(CURRENT_BOWLER)
+            }}
+            onLastOverClick={() => {
+                setUndoOverPopup(undefined)
+                updateAfterOverUndo()
             }}
         />}
     </>
