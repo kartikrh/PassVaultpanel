@@ -234,12 +234,6 @@ const Commentary = (props) => {
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
             changeOver()
-            dispatch(addCommentaryScreenData({
-                "commentaryDetails": {
-                    ...commentaryDetails,
-                    "displayStatus": "Over Completed"
-                }, "commentaryOvers": { ...currentOver, "isComplete": true },
-            }))
             setChangeOverOnPopupClick(undefined)
         }
     }, [changeOverOnPopupClick])
@@ -640,16 +634,26 @@ const Commentary = (props) => {
         setSaveToDb(true)
     }
     const changeOver = () => {
-        let updateBattingTeam = {}
+        let updateBattingTeam = { ...teams[BATTING_TEAM] }
         updateBattingTeam["teamOver"] =
             Math.ceil(+teams[BATTING_TEAM].teamOver || 0)
-        setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
+        setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         const newOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: true }
         const newNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
+        const updatedOnPitchPlayer = { [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer }
         setOnPitchPlayers(
             (prevValue) => {
-                return { ...prevValue, [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer, }
+                return { ...prevValue, updatedOnPitchPlayer }
             })
+        dispatch(addCommentaryScreenData({
+            "commentaryDetails": {
+                ...commentaryDetails,
+                "displayStatus": "Over Completed"
+            },
+            "commentaryOvers": { ...currentOver, "isComplete": true },
+            "commentaryPlayers": Object.values(updatedOnPitchPlayer),
+            "commentaryTeams": [updateBattingTeam],
+        }))
     }
     const handleWicket = (wicketData) => {
         if (!wicketData.isExtraWicket) setCurrentBall({})
