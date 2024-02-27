@@ -645,7 +645,7 @@ const Commentary = (props) => {
         const updatedOnPitchPlayer = { [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer }
         setOnPitchPlayers(
             (prevValue) => {
-                return { ...prevValue, updatedOnPitchPlayer }
+                return { ...prevValue, ...updatedOnPitchPlayer }
             })
         dispatch(addCommentaryScreenData({
             "commentaryDetails": {
@@ -788,6 +788,7 @@ const Commentary = (props) => {
     }
     const changePlayer = (type) => {
         setPlayerToChange(type)
+        console.log(players[type === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM])
         setChangePlayerList(players[type === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM]
             ?.filter((player) => {
                 if (type === CURRENT_BOWLER)
@@ -933,9 +934,9 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
-        // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
-        // console.log(currentOver, currentBall)
+        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
+        console.log(currentOver, currentBall, players[BATTING_TEAM])
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
@@ -1121,7 +1122,7 @@ const Commentary = (props) => {
         const updatedBattingPlayerList = players[BATTING_TEAM].map(player => {
             let forNewPlayers = {}
             if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[ON_STRIKE].commentaryPlayerId) || compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) {
-                forNewPlayers = { isPlay: null, onStrike: null }
+                forNewPlayers = { isPlay: null, onStrike: null, isBatterOut: false }
                 playerListToSendToDb.push({ ...player, ...forNewPlayers })
             }
             let updatedPlayer = { ...player, ...forNewPlayers }
