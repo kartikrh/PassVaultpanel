@@ -151,17 +151,14 @@ const Sidebar = (props) => {
                   <React.Fragment key={key}>
                     {item.isMainMenu && item.subItem?.length === 0? (
                       <li key={key}>
-                        <Link
-                          to={item.url ? item.url : "/#"}
-                          className={""}
-                        >
-                           <i
-                            className={item.icon}
-                            style={{ marginRight: "5px" }}
-                          ></i>
-                        {props.t(item.label)}
-                        </Link>
-                        </li>
+                      <Link to={item.url ? item.url : "/#"}>
+                        <i
+                          className={item.icon}
+                          style={{ marginRight: "5px" }}
+                        ></i>
+                        <span>{props.t(item.label)}</span>
+                      </Link>
+                    </li>
                     ) : (
                       <li key={key}>
                         <Link
