@@ -65,7 +65,7 @@ export const transformApiDataToSidebarData = (apiData) => {
         icon: item.iconName,
         url: item.webPage,
         displayOrder: item.displayOrder,
-        // isMainMenu: true,
+        isMainMenu: true,
         encryptedTabId: item.encryptedTabId, // Add encryptedTabId to identify parents
         subItem: []
       });

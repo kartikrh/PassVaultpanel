@@ -26,15 +26,13 @@ const AddMenuType = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId);
+  const [menuTypeId, setMenuTypeId] = useState(location.state?.menuTypeId || 0);
   const [masterData, setMasterData] = useState({});
 
   useEffect(() => {
-    if (menuTypeId !== "0") {
-      // alert("inside it")
+    if (menuTypeId !== undefined) {
       fetchData(menuTypeId);
     }
-    // console.log(location)
   }, [menuTypeId]);
 
   useEffect(() => {

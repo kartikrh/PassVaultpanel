@@ -20,7 +20,6 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
         bowlingTeam?.forEach(element => {
             formattedBowlerData.push({ label: element.playerName, value: element.commentaryPlayerId })
         })
-        console.log(formattedBowlerData)
         setBowlingPlayerList(formattedBowlerData)
     }, [])
 
@@ -116,7 +115,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                     </Row>
                 </>}
                 <Row>
-                    {showFields["runs"] && <Col xs={6} md={6} lg={4} >
+                    {!extraType && showFields["runs"] && <Col xs={6} md={6} lg={4} >
                         Runs
                         <input
                             className="form-control"

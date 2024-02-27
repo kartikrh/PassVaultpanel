@@ -25,15 +25,22 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
+    endDate: `${
+      new Date().toISOString().split("T")[0]
+    }T23:59`
+  })
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
   const fetchData = async (value) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/events/all`, {
-        ...(value || tableActions)
+        ...(value || tableActions),
+        ...dateRange
       })
       .then((response) => {
         const apiData = response?.result
@@ -51,8 +58,9 @@ const Index = () => {
       });
     if (value?.eventTypeId) {
       await axiosInstance
-        .post(`/admin/competition/byeventTypeId`, {
-          eventTypeId: value?.eventTypeId
+        .post(`/admin/events/competitionList`, {
+          eventTypeId: value?.eventTypeId,
+          isActive:true,
         })
         .then((response) => {
           setCompetitions(response.result);
@@ -256,6 +264,7 @@ const Index = () => {
     competitionsSelect: true,
     isActive: true,
     resetButton: true,
+    dateRange: true,
   };
 
   useEffect(() => {
@@ -286,6 +295,8 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addEvents"}
+            setDateRange = {setDateRange}
+            dateRange = {dateRange}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />

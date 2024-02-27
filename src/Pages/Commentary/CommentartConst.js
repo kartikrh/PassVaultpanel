@@ -46,6 +46,8 @@ export const SIX = "SIX"
 export const BALL_EXTRAS = "BALL_EXTRAS"
 export const BALL_WIDE = "Wide Ball"
 export const NO_BALL = "No Ball"
+export const NO_BALL_BYE = "No Ball Bye"
+export const NO_BALL_LEG_BYE = "No Ball Leg Bye"
 export const BALL_BYE = "Ball Bye"
 export const BALL_LEG_BYE = "Leg Bye"
 
@@ -81,3 +83,6 @@ export const EXTRAS_WICKET_TYPE = [
     { label: RUN_OUT_LABEL, value: RUN_OUT },
     { label: RETIRED_OUT_LABEL, value: RETIRED_OUT },
 ]
+
+
+export const BOWLER_CHANGE_DISPLAY_STATUS = "Ball Start"

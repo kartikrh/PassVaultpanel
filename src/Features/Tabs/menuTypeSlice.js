@@ -90,6 +90,17 @@ const menuTypeSlice = createSlice({
             .addCase(addMenuTypeToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
+            })
+            .addCase(addMenuItemToDb.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addMenuItemToDb.fulfilled, (state, action) => {
+                state.isSaved = true
+                state.isLoading = false;
+            })
+            .addCase(addMenuItemToDb.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
             });
     }
 });
