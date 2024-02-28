@@ -1004,15 +1004,17 @@ const Commentary = (props) => {
                     updateBowler = { ...playersOnPitch[CURRENT_BOWLER], ...updateBowler }
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
                     setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
-                    setPlayers({
-                        [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
-                        [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
-                            if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
-                                return updateBatter
-                            else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
-                                return updateNonStriker
-                            else return player
-                        })
+                    setPlayers((prevValue) => {
+                        return {
+                            [BOWLING_TEAM]: prevValue?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
+                            [BATTING_TEAM]: prevValue?.[BATTING_TEAM].map(player => {
+                                if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
+                                    return updateBatter
+                                else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
+                                    return updateNonStriker
+                                else return player
+                            })
+                        }
                     })
                     setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership, } })
                     setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } } })
