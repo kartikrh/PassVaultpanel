@@ -18,6 +18,7 @@ import WinnerModal from "./CommentaryModels/WinnerModal.jsx"
 import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
 import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx"
 import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
+import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const Commentary = (props) => {
     const [showWicketModal, setShowWicketModal] = useState(undefined)
     const [saveToDb, setSaveToDb] = useState(undefined)
     const [isOverChange, setIsOverChange] = useState(undefined)
+    const [undoOverPopup, setUndoOverPopup] = useState(undefined)
     const [isWicketChange, setIsWicketChange] = useState(undefined)
     const [playerUpdateList, setPlayerUpdateList] = useState(undefined)
     const [inningsChangePopup, setShowInningsChangePopup] = useState(undefined)
@@ -234,12 +236,6 @@ const Commentary = (props) => {
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
             changeOver()
-            dispatch(addCommentaryScreenData({
-                "commentaryDetails": {
-                    ...commentaryDetails,
-                    "displayStatus": "Over Completed"
-                }, "commentaryOvers": { ...currentOver, "isComplete": true },
-            }))
             setChangeOverOnPopupClick(undefined)
         }
     }, [changeOverOnPopupClick])
@@ -640,16 +636,26 @@ const Commentary = (props) => {
         setSaveToDb(true)
     }
     const changeOver = () => {
-        let updateBattingTeam = {}
+        let updateBattingTeam = { ...teams[BATTING_TEAM] }
         updateBattingTeam["teamOver"] =
             Math.ceil(+teams[BATTING_TEAM].teamOver || 0)
-        setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
+        setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         const newOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: true }
         const newNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
+        const updatedOnPitchPlayer = { [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer }
         setOnPitchPlayers(
             (prevValue) => {
-                return { ...prevValue, [ON_STRIKE]: newOnStrikePlayer, [NON_STRIKE]: newNonStrikePlayer, }
+                return { ...prevValue, ...updatedOnPitchPlayer }
             })
+        dispatch(addCommentaryScreenData({
+            "commentaryDetails": {
+                ...commentaryDetails,
+                "displayStatus": "Over Completed"
+            },
+            "commentaryOvers": { ...currentOver, "isComplete": true },
+            "commentaryPlayers": Object.values(updatedOnPitchPlayer),
+            "commentaryTeams": [updateBattingTeam],
+        }))
     }
     const handleWicket = (wicketData) => {
         if (!wicketData.isExtraWicket) setCurrentBall({})
@@ -782,6 +788,7 @@ const Commentary = (props) => {
     }
     const changePlayer = (type) => {
         setPlayerToChange(type)
+        console.log(players[type === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM])
         setChangePlayerList(players[type === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM]
             ?.filter((player) => {
                 if (type === CURRENT_BOWLER)
@@ -927,15 +934,15 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
-        // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
-        // console.log(currentOver, currentBall)
+        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
+        console.log(currentOver, currentBall, players[BATTING_TEAM])
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
                 setUndoInningsPopup(true)
             } else if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
-                && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) updateAfterOverUndo()
+                && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) setUndoOverPopup(true)
             else {
                 const updateBattingTeam = {}
                 let updateBowler = {}
@@ -997,15 +1004,17 @@ const Commentary = (props) => {
                     updateBowler = { ...playersOnPitch[CURRENT_BOWLER], ...updateBowler }
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
                     setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
-                    setPlayers({
-                        [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
-                        [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
-                            if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
-                                return updateBatter
-                            else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
-                                return updateNonStriker
-                            else return player
-                        })
+                    setPlayers((prevValue) => {
+                        return {
+                            [BOWLING_TEAM]: prevValue?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
+                            [BATTING_TEAM]: prevValue?.[BATTING_TEAM].map(player => {
+                                if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
+                                    return updateBatter
+                                else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
+                                    return updateNonStriker
+                                else return player
+                            })
+                        }
                     })
                     setCurrentPartnership((prevValue) => { return { ...prevValue, ...updatePartnership, } })
                     setTeams((prevData) => { return { ...prevData, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } } })
@@ -1115,7 +1124,7 @@ const Commentary = (props) => {
         const updatedBattingPlayerList = players[BATTING_TEAM].map(player => {
             let forNewPlayers = {}
             if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[ON_STRIKE].commentaryPlayerId) || compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) {
-                forNewPlayers = { isPlay: null, onStrike: null }
+                forNewPlayers = { isPlay: null, onStrike: null, isBatterOut: false }
                 playerListToSendToDb.push({ ...player, ...forNewPlayers })
             }
             let updatedPlayer = { ...player, ...forNewPlayers }
@@ -1342,6 +1351,19 @@ const Commentary = (props) => {
             onBowlerChange={(selectedOption) => {
                 setIsChangeBowler({ isChange: true, isChangePopup: false, popupOption: selectedOption })
                 changePlayer(CURRENT_BOWLER)
+            }}
+        />}
+        {undoOverPopup && <UndoOverModal
+            isOpen={true}
+            toggle={() => { setUndoOverPopup(undefined) }}
+            onChangebowlerClick={() => {
+                setUndoOverPopup(undefined)
+                setIsChangeBowler({ isChange: true, isChangePopup: false, popupOption: SWITCH_BOWLER })
+                changePlayer(CURRENT_BOWLER)
+            }}
+            onLastOverClick={() => {
+                setUndoOverPopup(undefined)
+                updateAfterOverUndo()
             }}
         />}
     </>
