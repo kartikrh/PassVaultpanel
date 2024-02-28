@@ -10,7 +10,7 @@ import { updateToastData } from '../../../Features/toasterSlice';
 import { ERROR } from '../../../components/Common/Const';
 
 const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit, extraType }) => {
-    const [wicketData, setWicketData] = useState({ runs: 0 });
+    const [wicketData, setWicketData] = useState({ runs: "0" });
     const [showFields, setShowFields] = useState({});
     const [bowlingPlayerList, setBowlingPlayerList] = useState([]);
     const wicketListToRender = extraType ? EXTRAS_WICKET_TYPE : WICKET_TYPE_LIST
