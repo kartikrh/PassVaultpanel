@@ -11,7 +11,7 @@ const ChangeBowlerModal = ({ isOpen, toggle, onBowlerChange }) => {
             <ModalBody>
                 Do you want to :
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button"
                     onClick={() => { onBowlerChange(SWITCH_BOWLER) }}>Change bowler for current over</Button>
                 <Button color="danger" className="decision-Button text-right"

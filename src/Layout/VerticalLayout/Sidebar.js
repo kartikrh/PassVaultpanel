@@ -141,24 +141,21 @@ const Sidebar = (props) => {
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">
-            {
-              console.log({newTabList, sidebarData})
-            }
               {(newTabList || sidebarData)
                 .slice() // Create a shallow copy
                 .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
                 .map((item, key) => (
                   <React.Fragment key={key}>
-                    {item.isMainMenu && item.subItem?.length === 0? (
+                    {item.isMainMenu && item.subItem?.length === 0 ? (
                       <li key={key}>
-                      <Link to={item.url ? item.url : "/#"}>
-                        <i
-                          className={item.icon}
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                        <span>{props.t(item.label)}</span>
-                      </Link>
-                    </li>
+                        <Link to={item.url ? item.url : "/#"}>
+                          <i
+                            className={item.icon}
+                            style={{ marginRight: "5px" }}
+                          ></i>
+                          <span>{props.t(item.label)}</span>
+                        </Link>
+                      </li>
                     ) : (
                       <li key={key}>
                         <Link

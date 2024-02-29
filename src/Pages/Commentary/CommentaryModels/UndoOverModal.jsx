@@ -10,7 +10,7 @@ const UndoOverModal = ({ isOpen, toggle, onChangebowlerClick, onLastOverClick })
             <ModalBody>
                 Please select one
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button" onClick={onChangebowlerClick}>Change Bowler</Button>
                 <Button color="danger" className="decision-Button text-right " onClick={onLastOverClick}>Last Over</Button>
             </ModalFooter>
