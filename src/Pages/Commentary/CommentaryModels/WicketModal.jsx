@@ -155,7 +155,6 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
             </ModalBody>
             <ModalFooter>
                 <Button color="success" className="decision-Button" onClick={handleSubmit}>Wicket</Button>
-                <Button color="danger" className="decision-Button text-right " onClick={toggle}>Close</Button>
             </ModalFooter>
         </Modal >
     )
