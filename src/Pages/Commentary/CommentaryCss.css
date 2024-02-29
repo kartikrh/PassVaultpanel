@@ -161,3 +161,23 @@
 .normal-header {
     font-weight: 100 !important;
 }
+
+.over-ball-display {
+    min-width: 7%;
+    border-style: solid;
+    border-radius: 3rem;
+    margin: 0 1%;
+    padding: 0 2%;
+}
+
+.ball-blue {
+    background-color: skyblue;
+}
+
+.ball-white {
+    background-color: white;
+}
+
+.ball-red {
+    background-color: red;
+}
