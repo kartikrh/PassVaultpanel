@@ -58,14 +58,14 @@ const Commentary = (props) => {
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
     const matchTypeDetails = props.data.matchTypeData
-    const commentaryDetails = props.data.commentaryData.commentaryDetails
+    const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
 
     // useEffect(() => {
     //     // console.log(commentaryDetails, matchTypeDetails)
-    console.log({ currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers, ballHistory })
+    // console.log({ currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers, ballHistory })
     //     // console.log(currentOver, currentBall)
     //     // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
     //     // console.log(onPitchPlayers, teams)
