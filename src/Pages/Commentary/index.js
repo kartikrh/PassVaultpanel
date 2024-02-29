@@ -26,7 +26,6 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
-import moment from "moment";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -45,9 +44,8 @@ const Index = () => {
   });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
-    endDate: `${
-      new Date().toISOString().split("T")[0]
-    }T23:59:00`
+    endDate: `${new Date().toISOString().split("T")[0]
+      }T23:59:00`
   })
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,9 +78,9 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-      if (latestValueFromTable?.eventTypeId) {
-        fetchCompetitionData(latestValueFromTable?.eventTypeId)
-      }
+    if (latestValueFromTable?.eventTypeId) {
+      fetchCompetitionData(latestValueFromTable?.eventTypeId)
+    }
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -148,6 +146,9 @@ const Index = () => {
   };
   const handleDetailsClick = (id) => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
+  };
+  const handleShortCommentaryClick = (id) => {
+    navigate("/shortCommentary", { state: { commentaryId: id } });
   };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
@@ -353,8 +354,26 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Short Commentary",
+      key: "shortCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleShortCommentaryClick(record.commentaryId);
+          }}
+        >
+          <i class='bx bx-minus' />
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "Commentary Details",
-      key: "active",
+      key: "commentaryDetails",
       printType: "ignore",
       render: (text, record) => (
         <Button
@@ -438,8 +457,8 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
-            setDateRange = {setDateRange}
-            dateRange = {dateRange}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

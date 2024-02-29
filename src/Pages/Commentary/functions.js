@@ -1,5 +1,5 @@
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -183,4 +183,36 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
     else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `No ball Leg Bye, with ${extraRun} run`
   }
   return displayStatus
+}
+
+export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false) => {
+  let toReturn = []
+  for (let i = objects.length - 1; i >= 0; i--) {
+    if ((objects[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(objects[i].overCount || 0)) === Math.floor(+overToFindFor))) {
+      toReturn = objects?.slice(i);
+    }
+  }
+  toReturn?.shift();
+  if (isUndoBall) {
+    toReturn?.pop();
+  }
+  toReturn = toReturn?.map((element) => {
+    return element.ballType !== BALL_TYPE_OVER_COMPLETE ? {
+      type: element.ballType, value: element.ballRun, isWicket: element.ballWicketType
+    } : null
+  })
+  return toReturn;
+}
+
+export const generateBallLabelFromBall = (ballType, isWicket) => {
+  let toReturn = undefined
+  if (ballType === BALL_TYPE_WIDE) toReturn = "Wd"
+  else if (ballType === BALL_TYPE_BYE) toReturn = "By"
+  else if (ballType === BALL_TYPE_LEG_BYE) toReturn = "Lby"
+  else if (ballType === BALL_TYPE_NO_BALL) toReturn = "Nb"
+  else if (ballType === BALL_TYPE_NO_BALL_BYE) toReturn = "NbBy"
+  else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) toReturn = "NbLby"
+  else if (ballType === BALL_TYPE_PANELTY_RUN) toReturn = "P"
+  else if (isWicket) toReturn = "Wk"
+  return toReturn
 }
