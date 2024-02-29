@@ -370,11 +370,12 @@ const Commentary = (props) => {
                 if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails) && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                     setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                     setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
-                    setOverBallByBallDisplay([].concat(overBallByBallDisplay, [{
-                        type: commentaryDataToUpdate.commentaryBallByBallDetails.ballType,
-                        value: commentaryDataToUpdate.commentaryBallByBallDetails.ballRun,
-                        isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType
-                    }]))
+                    if (commentaryDataToUpdate.commentaryBallByBallDetails.ballType !== BALL_TYPE_OVER_COMPLETE)
+                        setOverBallByBallDisplay([].concat(overBallByBallDisplay, [{
+                            type: commentaryDataToUpdate.commentaryBallByBallDetails.ballType,
+                            value: commentaryDataToUpdate.commentaryBallByBallDetails.ballRun,
+                            isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType
+                        }]))
                     if (isWicketChange) callWicketToDB(commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)
                 }
                 // Add partnershot to the partnership history when new Partnershi created
@@ -1302,19 +1303,19 @@ const Commentary = (props) => {
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
             updateExtras={onExtrasChange} />}
-        <ChangeOverModal
+        {showChangeOverModal && < ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined) }}
             onNoClick={() => { setShowChangeOverModal(undefined) }}
             onYesClick={() => {
                 setShowChangeOverModal(undefined);
                 setChangeOverOnPopupClick(true)
-            }} />
-        <ChangeInningsModal
+            }} />}
+        {inningsChangePopup && <ChangeInningsModal
             isOpen={inningsChangePopup}
             toggle={() => { setShowInningsChangePopup(undefined) }}
             onNoClick={() => { setShowInningsChangePopup(undefined) }}
-            onYesClick={onInningsChange} />
+            onYesClick={onInningsChange} />}
         {showWicketModal &&
             <WicketModal
                 isOpen={showWicketModal}

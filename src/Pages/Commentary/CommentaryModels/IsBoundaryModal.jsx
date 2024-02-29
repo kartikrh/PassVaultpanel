@@ -2,15 +2,16 @@ import React, { useEffect } from 'react'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import "../CommentaryCss.css"
 const IsBoundaryModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && e.shiftKey) onNoClick();
+        else if (e.key === 'Enter') onYesClick()
+    };
     useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (e.key === 'Enter') { onYesClick(); }
-        };
         document.addEventListener('keydown', handleKeyPress);
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
         };
-    }, [onYesClick]);
+    }, [])
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>

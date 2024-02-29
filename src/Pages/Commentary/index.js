@@ -366,7 +366,7 @@ const Index = () => {
             handleShortCommentaryClick(record.commentaryId);
           }}
         >
-          <i class='bx bx-cricket-ball' />
+          <i class='bx bx-minus' />
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
