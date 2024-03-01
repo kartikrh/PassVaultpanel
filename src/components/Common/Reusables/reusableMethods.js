@@ -40,7 +40,7 @@ export const filterAutofillData = (autofill, data) => {
   }, {});
 };
 
-export const isValueEmpty = (value) => {
+export const isValueEmpty = (value, isDropdown = false) => {
   // Check for null or undefined
   if (value === null || value === undefined) {
     return true;
@@ -52,7 +52,7 @@ export const isValueEmpty = (value) => {
   }
 
   // Use Lodash's isEmpty for other types
-  return _.isEmpty(value);
+  return (isDropdown && value==="0") || _.isEmpty(value);
 };
 export const transformApiDataToSidebarData = (apiData) => {
   const SidebarData = [];
