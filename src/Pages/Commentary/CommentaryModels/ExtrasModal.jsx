@@ -53,7 +53,7 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
                     </Row>
                 </Table>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className='d-block' >
                 <Button color="danger" className="decision-Button text-left" onClick={() => handleSubmit(WICKET)}>Wicket</Button>
                 <Button color="success" className="decision-Button text-right" onClick={() => handleSubmit(EXTRAS)}>Update</Button>
             </ModalFooter>

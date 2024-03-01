@@ -74,47 +74,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
             <ModalHeader toggle={toggle}> <div className='modal-header-style'>Wicket</div> </ModalHeader>
             <ModalBody>
                 {extraType && <Row>Ball Type:&nbsp;{extraType}</Row>}
-                <Row>
-                    {wicketListToRender.map((wicketType, index) => (
-                        <Col
-                            key={index}
-                            xs={6} md={4} lg={3}
-                            onClick={() => { handleChange("wicketType", wicketType.value) }}
-                        >
-                            <CardComponent
-                                title={wicketType.label}
-                                selectIcon={"bx bxs-check-circle"}
-                                onClickColor={"#099680"}
-                                bgColor={"#55c6b4"}
-                                check={wicketType.value === wicketData["wicketType"]}
-                            />
-                        </Col>
-                    ))}
-                </Row>
-                {showFields["batterId"] && <>
-                    <div className="wicket-section-header">Please select a Batsman :</div>
-                    <Row>
-                        <Col xs={6} md={6} lg={6} onClick={() => { handleChange("batterId", onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId) }}>
-                            <CardComponent
-                                title={onPitchPlayers?.[ON_STRIKE]?.playerName}
-                                selectIcon={"bx bxs-check-circle"}
-                                onClickColor={"#099680"}
-                                bgColor={"#55c6b4"}
-                                check={onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId === wicketData["batterId"]}
-                            />
-                        </Col>
-                        <Col xs={6} md={6} lg={6} onClick={() => { handleChange("batterId", onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId) }}>
-                            <CardComponent
-                                title={onPitchPlayers?.[NON_STRIKE]?.playerName}
-                                selectIcon={"bx bxs-check-circle"}
-                                onClickColor={"#099680"}
-                                bgColor={"#55c6b4"}
-                                check={onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId === wicketData["batterId"]}
-                            />
-                        </Col>
-                    </Row>
-                </>}
-                <Row>
+                <Row className="mb-3">
                     {!extraType && showFields["runs"] && <Col xs={6} md={6} lg={4} >
                         Runs
                         <input
@@ -151,11 +111,50 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                             onChange={(selectedOption) => { handleChange("fielder2", selectedOption?.value || null) }}
                         />
                     </Col>}
+                    {showFields["batterId"] && <>
+                        <div className="wicket-section-header">Please select a Batsman :</div>
+                        <Row>
+                            <Col xs={6} md={6} lg={6} onClick={() => { handleChange("batterId", onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId) }}>
+                                <CardComponent
+                                    title={onPitchPlayers?.[ON_STRIKE]?.playerName}
+                                    selectIcon={"bx bxs-check-circle"}
+                                    onClickColor={"#099680"}
+                                    bgColor={"#55c6b4"}
+                                    check={onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId === wicketData["batterId"]}
+                                />
+                            </Col>
+                            <Col xs={6} md={6} lg={6} onClick={() => { handleChange("batterId", onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId) }}>
+                                <CardComponent
+                                    title={onPitchPlayers?.[NON_STRIKE]?.playerName}
+                                    selectIcon={"bx bxs-check-circle"}
+                                    onClickColor={"#099680"}
+                                    bgColor={"#55c6b4"}
+                                    check={onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId === wicketData["batterId"]}
+                                />
+                            </Col>
+                        </Row>
+                    </>}
+                </Row>
+                <Row>
+                    {wicketListToRender.map((wicketType, index) => (
+                        <Col
+                            key={index}
+                            xs={6} md={4} lg={3}
+                            onClick={() => { handleChange("wicketType", wicketType.value) }}
+                        >
+                            <CardComponent
+                                title={wicketType.label}
+                                selectIcon={"bx bxs-check-circle"}
+                                onClickColor={"#099680"}
+                                bgColor={"#55c6b4"}
+                                check={wicketType.value === wicketData["wicketType"]}
+                            />
+                        </Col>
+                    ))}
                 </Row>
             </ModalBody>
             <ModalFooter>
                 <Button color="success" className="decision-Button" onClick={handleSubmit}>Wicket</Button>
-                <Button color="danger" className="decision-Button text-right " onClick={toggle}>Close</Button>
             </ModalFooter>
         </Modal >
     )

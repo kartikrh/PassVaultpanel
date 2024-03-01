@@ -60,11 +60,12 @@ export const COMMENTARY_MAIN_SCREEN = "COMMENTARY_MAIN_SCREEN"
 export const BATTING_STATUS = 1
 export const BALLING_STATUS = 2
 
+export const STRING_SEPERATOR = "_##_"
 export const CONTENT_IMAGE_TYPE = {
     BLOCKS: "Blocks"
 }
 
-export const ckeditor5ToolbarItems =  [
+export const ckeditor5ToolbarItems = [
     'undo', 'redo',
     '|',
     'exportPdf', 'exportWord', 'importWord',

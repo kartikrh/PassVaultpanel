@@ -64,6 +64,7 @@ import ComingSoon from "../Pages/Utility/ComingSoon-Page.js";
 import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
 import AddNews from "../Pages/News/AddNews.jsx";
+import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
 
 
 
@@ -91,7 +92,8 @@ const authProtectedRoutes = [
   { path: '/commentary', component: <Commentary /> },
   { path: '/addCommentary', component: <AddCommentary /> },
   { path: '/commentaryMaster', component: <CommentaryMaster /> },
-  { path: '/importMarket', component: <ImportMarket/> },
+  { path: '/shortCommentary', component: <ShortCommentary /> },
+  { path: '/importMarket', component: <ImportMarket /> },
   { path: '/Toss', component: <Toss /> },
   { path: '/users', component: <Users /> },
   { path: '/addUsers', component: <AddUsers /> },

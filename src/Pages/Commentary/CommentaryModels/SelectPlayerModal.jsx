@@ -15,6 +15,14 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
         setPlayers(filteredPlayers)
     }, [search])
 
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                const inputElement = document.getElementById('playerNameInput');
+                if (inputElement) inputElement.focus();
+            }, 150); // Adjust timing as needed
+        }
+    }, [isOpen]);
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
@@ -24,6 +32,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                 <Table responsive>
                     <thead>
                         <Input
+                            id="playerNameInput"
                             className="form-control mb-3"
                             type="text"
                             placeholder='Player Name'
@@ -38,7 +47,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                     </tbody>
                 </Table>
             </ModalBody>
-        </Modal>
+        </Modal >
     )
 }
 
