@@ -87,7 +87,6 @@ const Index = () => {
       .post(`/admin/commentary/eventTypeList`, {})
       .then((response) => {
         setEventTypes(response.result);
-        setIsLoading(false);
       })
       .catch((error) => { });
   };
@@ -98,7 +97,6 @@ const Index = () => {
       })
       .then((response) => {
         setCompetitions(response.result);
-        setIsLoading(false);
       })
       .catch((error) => { });
   };
