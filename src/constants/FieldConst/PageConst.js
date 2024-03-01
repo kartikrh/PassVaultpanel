@@ -40,7 +40,6 @@ export const PageFields = [
         parentclassName: "",
         regex: /^.{0,100}$/,
         regexErrorMessage: "Max allowed Characters 100",
-        // isRequired: true,
         type: TEXT_BUTTON,
         btnLable:"Auto Generate",
         // labelColspan: { xs: 12, md: 2, lg: 2 },
