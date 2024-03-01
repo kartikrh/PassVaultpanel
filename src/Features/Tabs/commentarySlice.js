@@ -36,13 +36,13 @@ export const addCommentaryScreenData = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
             const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
+            console.log(`addCommentaryToDb API call Succed after ${endTime - startTime} milliseconds.`);
             // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
             const endTime = performance.now(); // End timing
             console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
-            // dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error?.message);
         }
     }
@@ -54,13 +54,13 @@ export const undoBallFromCommentary = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/commentary/deleteBallByBall', data);
             const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
+            console.log(`addCommentaryToDb API call Succed after ${endTime - startTime} milliseconds.`);
             // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
             const endTime = performance.now(); // End timing
             console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
-            // dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error?.message);
         }
     }
@@ -71,14 +71,14 @@ export const undoOverFromCommentary = createAsyncThunk(
         const startTime = performance.now(); // Start timing
         try {
             const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
+            console.log(`addCommentaryToDb API call Succed after ${endTime - startTime} milliseconds.`);
             const response = await axiosInstance.post('/admin/commentary/deleteOverCommentary', data);
             // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
             const endTime = performance.now(); // End timing
             console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
-            // dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error?.message);
         }
     }
@@ -92,7 +92,7 @@ export const changeBowlerFromCommentary = createAsyncThunk(
             console.log(response?.result)
             return response?.result;
         } catch (error) {
-            // dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error?.message);
         }
     }
