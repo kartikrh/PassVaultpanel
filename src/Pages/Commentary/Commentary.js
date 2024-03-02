@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, undoBallFromCommentary, undoOverFromCommentary } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -58,7 +58,7 @@ const Commentary = (props) => {
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
     const matchTypeDetails = props.data.matchTypeData
-    const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "" }
+    const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
@@ -286,6 +286,7 @@ const Commentary = (props) => {
             const bowlingTeam = []
             const onPitchPlayers = {}
             let currentPartnership = {}
+            const apiCallObj = {}
             let currentOver = 0
             let currentOverToUpdate = 0
             props.data.commentaryData.commentaryTeams.forEach(teamDetails => {
@@ -300,14 +301,23 @@ const Commentary = (props) => {
                     const isBattingTeam = playerDetails.teamId === currentInningsTeams[BATTING_TEAM].teamId
                     // If player is from batting team, add them to the batting object list
                     if (isBattingTeam) {
-                        if (playerDetails.isPlay === true)
+                        if (playerDetails.isPlay === true) {
+                            if (!playerDetails.batterOrder) {
+                                playerDetails = { ...playerDetails, batterOrder: playerDetails.onStrike === true ? 1 : 2 }
+                                apiCallObj["commentaryPlayers"] = [].concat((apiCallObj.commentaryPlayers || []), [playerDetails])
+                            }
                             onPitchPlayers[playerDetails.onStrike === true ? ON_STRIKE : NON_STRIKE] = playerDetails
+                        }
                         battingTeam.push(playerDetails)
                     }
-                    // else add them to the bowling object list
                     else {
-                        if (playerDetails.isPlay === true)
+                        if (playerDetails.isPlay === true) {
+                            if (!playerDetails.bowlerOrder) {
+                                playerDetails = { ...playerDetails, bowlerOrder: 1 }
+                                apiCallObj["commentaryPlayers"] = [].concat((apiCallObj.commentaryPlayers || []), [playerDetails])
+                            }
                             onPitchPlayers[CURRENT_BOWLER] = playerDetails
+                        }
                         bowlingTeam.push(playerDetails)
                     }
                 }
@@ -350,9 +360,10 @@ const Commentary = (props) => {
             setCurrentBall(_.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined)
             // checkInningsSwitch(ALL)
             setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
-            if (isEmpty(currentPartnership)) {
-                dispatch(addCommentaryScreenData({ "commentaryDetails": { ...commentaryDetails, "displayStatus": "" }, "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams }), }))
-            }
+            if (isEmpty(currentPartnership) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
+                && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
+                apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams })
+            if (!isEmpty(apiCallObj)) dispatch(addCommentaryScreenData(apiCallObj))
         }
     }, [])
     useEffect(() => {
@@ -694,13 +705,11 @@ const Commentary = (props) => {
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateOver["totalWicket"] = (currentOver.totalWicket || 0) + 1
         updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) + 1
-        // updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + +wicketData.runs
-        // updateBattingTeam["teamOver"] =
-        //     ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1)
         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
         updateBall["ballPlayerId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterName"] = wicketPlayerDetails.playerName
+        updateWicket["wicketCount"] = updateBattingTeam.teamWicket
         updateWicket["batterRuns"] = wicketPlayerDetails.batRun + (isOnStrikeWicket ? +wicketData.runs : 0)
         updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? ballToUpdateOnWicket : 0
         const updatedBattingPlayers = players[BATTING_TEAM]?.map((player) => {
@@ -748,6 +757,7 @@ const Commentary = (props) => {
     }
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
+        const updateOrderKey = playerToChange === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
         let newPlayer = undefined
         const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
         setPlayers({
@@ -764,7 +774,11 @@ const Commentary = (props) => {
                 }
                 if (isEqual(player.commentaryPlayerId, newPlayerId)) {
                     newPlayer = player
-                    const updatedPlayer = { ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : playerToChange === NON_STRIKE ? false : null }
+                    const updatedPlayer = {
+                        ...player, "isPlay": true,
+                        "onStrike": playerToChange === ON_STRIKE ? true : playerToChange === NON_STRIKE ? false : null,
+                        [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, players[teamType])
+                    }
                     newPlayer = updatedPlayer
                     // setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
                     return updatedPlayer
