@@ -121,10 +121,9 @@ const FormBuilder = forwardRef(
         const value = formData[field.name];
         const shouldValidate =
           !doNotValidateFields.includes(field.name) &&
-          field.dependsOnField &&
-          formData[field.dependsOnField] === field.dependsOnValue;
+          (!field.dependsOnField || formData[field.dependsOnField] === field.dependsOnValue);
 
-        if (shouldValidate && field.isRequired && isValueEmpty(value)) {
+        if (shouldValidate && field.isRequired && isValueEmpty(value, field.type === SELECT || field.type === MULTI_SELECT)) {
           errors[field.name] =
             field.requiredErrorMessage || `Please Enter ${field.label}`;
         }
@@ -182,7 +181,7 @@ const FormBuilder = forwardRef(
         (!field.dependsOnField ||
           dependentFieldValue === field.dependsOnValue) &&
         field.isRequired &&
-        isValueEmpty(value)
+        isValueEmpty(value, field.type === SELECT || field.type === MULTI_SELECT)
       ) {
         errors[field.name] =
           field.requiredErrorMessage || "This field is required.";
