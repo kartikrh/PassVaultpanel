@@ -72,6 +72,7 @@ const Commentary = (props) => {
     //     // console.log(onPitchPlayers, teams)
     //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     // })
+
     const checkForOverSwitch = (ballcount) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails.ballsPerOver)) setShowChangeOverModal(true)
     }
@@ -825,7 +826,7 @@ const Commentary = (props) => {
     }
     const swapPlayer = (newPlayerId) => {
         // console.log(newPlayerId)
-        const oldPlayer = onPitchPlayers[playerToChange]
+        const oldPlayer = onPitchPlayers[playerToChange] || {}
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         let newPlayer = undefined
         players[teamType]?.forEach((player) => {
