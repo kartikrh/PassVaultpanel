@@ -186,6 +186,7 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
 }
 
 export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false) => {
+  console.log({ objects, overToFindFor })
   let toReturn = []
   for (let i = objects.length - 1; i >= 0; i--) {
     if ((objects[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(objects[i].overCount || 0)) === Math.floor(+overToFindFor))) {
@@ -198,10 +199,10 @@ export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false)
   }
   toReturn = toReturn?.map((element) => {
     return element.ballType !== BALL_TYPE_OVER_COMPLETE ? {
-      type: element.ballType, value: element.ballRun, isWicket: element.ballWicketType
+      type: element.ballType, value: element.ballRun, isWicket: element.ballWicketType || false
     } : null
   })
-  return toReturn;
+  return toReturn?.filter((e) => e);
 }
 
 export const generateBallLabelFromBall = (ballType, isWicket) => {
