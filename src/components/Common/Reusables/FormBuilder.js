@@ -77,7 +77,7 @@ const FormBuilder = forwardRef(
           defaultValueObj[field.name] = field.defaultValue;
         }
       });
-      if (isEmpty(formData) && isEmpty(editFormData)) {
+      if (isEmpty(formData) && isEmpty(editFormData) && !isEmpty(defaultValueObj)) {
         setFormData(defaultValueObj);
       } else if (
         !isEmpty(editFormData) &&
@@ -88,7 +88,7 @@ const FormBuilder = forwardRef(
             fetch(editFormData[element.name])
               .then((response) => response.blob())
               .then((blob) => {
-                // Convert the image data to base64
+                // Convert th e image data to base64
                 const reader = new FileReader();
                 reader.onloadend = () => {
                   setViewImage((prev) => ({
