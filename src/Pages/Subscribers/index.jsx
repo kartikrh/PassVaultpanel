@@ -9,16 +9,16 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
-import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, } from "../../components/Common/Const";
+import { TAB_SUBSCRIBERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel'
 const Index = () => {
-  const pageName = TAB_PLAYERS
+  const pageName = TAB_SUBSCRIBERS
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = TAB_PLAYERS;
+  document.title = TAB_SUBSCRIBERS;
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
