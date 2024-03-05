@@ -76,7 +76,7 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
   return {
     "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
     "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BATTING_TEAM].commentaryTeamId,
+    "teamId": teams[BATTING_TEAM].teamId,
     "batter1Id": currentPartnership.batter1Id,
     "batter1Name": currentPartnership.batter1Name,
     "batter2Id": currentPartnership.batter2Id,
@@ -93,7 +93,7 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
   return {
     "overId": 0,
     "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BOWLING_TEAM].commentaryTeamId,
+    "teamId": teams[BOWLING_TEAM].teamId,
     "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings,
     "over": +teams?.[BATTING_TEAM]?.teamOver?.toFixed(0),

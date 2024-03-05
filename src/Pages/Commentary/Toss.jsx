@@ -54,7 +54,7 @@ const Index = ({ data, next, save }) => {
     const UpdatedCurrentInningTeams = currentInningTeams.map((team) =>
       team.teamId === values?.tossWonBy
         ? updatedTeam
-        : { ...team, teamStatus: alternateStatus }
+        : { ...team, teamStatus: alternateStatus, teamBattingOrder: alternateStatus }
     );
     const newData = {
       commentaryDetails: {
