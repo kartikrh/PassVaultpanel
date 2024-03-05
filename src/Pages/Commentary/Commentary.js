@@ -70,7 +70,7 @@ const Commentary = (props) => {
     // console.log(teams)
     //     // console.log(currentOver, currentBall)
     console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
-    //     // console.log(onPitchPlayers, teams)
+    console.log(onPitchPlayers, teams)
     //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     // })
 
