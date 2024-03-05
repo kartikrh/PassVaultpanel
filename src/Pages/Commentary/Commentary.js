@@ -179,7 +179,8 @@ const Commentary = (props) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
         props.data.commentaryData?.commentaryTeams?.forEach(team => {
             if (team.currentInnings === (commentaryDetails.currentInnings + 1)) {
-                updatedInningsTeam.push({ ...team, teamStatus: team.teamId === battingTeamId ? 1 : 2 })
+                const updatedTeamStatus = team.teamId === battingTeamId ? 1 : 2
+                updatedInningsTeam.push({ ...team, teamStatus: updatedTeamStatus, teamBattingOrder: updatedTeamStatus + (+commentaryDetails.currentInnings * 2) })
             }
         });
         let objToSave = {
