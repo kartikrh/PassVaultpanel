@@ -49,6 +49,7 @@ const Index = ({ data, next, save }) => {
     const updatedTeam = {
       ...winnerTeam,
       teamStatus: values.choseTo,
+      teamBattingOrder: values.choseTo,
     };
     const alternateStatus = updatedTeam?.teamStatus == 2 ? 1 : 2;
     const UpdatedCurrentInningTeams = currentInningTeams.map((team) =>
