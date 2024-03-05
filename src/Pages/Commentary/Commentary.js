@@ -56,6 +56,7 @@ const Commentary = (props) => {
     const [isSwapPlayer, setIsSwapPlayer] = useState(undefined)
     const [isChangeBowler, setIsChangeBowler] = useState({})
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
+    const [isExtrasWicket, setIsExtrasWicket] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
     const matchTypeDetails = props.data.matchTypeData
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
@@ -65,10 +66,10 @@ const Commentary = (props) => {
 
     // useEffect(() => {
     //     // console.log(commentaryDetails, matchTypeDetails)
-    // console.log({ currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers, ballHistory })
+    console.log({ currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers, ballHistory })
     // console.log(teams)
     //     // console.log(currentOver, currentBall)
-    //     // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
+    console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
     //     // console.log(onPitchPlayers, teams)
     //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     // })
@@ -387,7 +388,7 @@ const Commentary = (props) => {
                         setOverBallByBallDisplay([].concat(overBallByBallDisplay, [{
                             type: commentaryDataToUpdate.commentaryBallByBallDetails.ballType,
                             value: commentaryDataToUpdate.commentaryBallByBallDetails.ballRun,
-                            isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType
+                            isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType || false
                         }]))
                     if (isWicketChange) callWicketToDB(commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)
                 }
@@ -803,6 +804,7 @@ const Commentary = (props) => {
             const objToSave = {
                 "commentaryPartnership": updatedPartnership,
                 "commentaryDetails": commentaryDetails,
+                "commentaryPlayers": Object.values(updatedOnPitchPlayer),
             }
             checkForOverSwitch()
             // Player Changed
@@ -1314,7 +1316,6 @@ const Commentary = (props) => {
                     else if (isChangeBowler.isChange) onBowlerChange(newPlayerId)
                     else onPlayerChange(newPlayerId)
                 }}
-            // teamName={teams.[]}
             />}
         {extrasType && < ExtrasModal
             isOpen={true}

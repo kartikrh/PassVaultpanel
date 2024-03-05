@@ -12,14 +12,15 @@ export const CommentaryScreen = ({
     overBalls }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
-    const generateBallfromArray = (ballArray = []) => {
-        return ballArray?.map(element => {
-            const isWicket = +element?.isWicket !== 0
-            const ballTypeAdd = generateBallLabelFromBall(element.type, isWicket)
-            const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
-            return <div className={` over-ball-display ${ballColor}`}>{`${element.value} ${ballTypeAdd ? ("| " + ballTypeAdd) : ""}`}</div>
-        })
-    }
+    // const generateBallfromArray = (ballArray = []) => {
+    //     return ballArray?.map(element => {
+    //         console.log(element)
+    //         const isWicket = +element?.isWicket !== 0
+    //         const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
+    //         const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
+    //         return <div className={` over-ball-display ${ballColor}`}>{`${element.value} ${ballTypeAdd ? ("| " + ballTypeAdd) : ""}`}</div>
+    //     })
+    // }
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -163,7 +164,7 @@ export const CommentaryScreen = ({
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
                     {<Col className="d-flex" xs={12} md={12} lg={12}>
-                        {generateBallfromArray(overBalls)}
+                        {/* {generateBallfromArray(overBalls)} */}
                     </Col>}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
