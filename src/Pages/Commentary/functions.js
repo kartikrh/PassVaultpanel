@@ -1,5 +1,5 @@
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -66,7 +66,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
     "teamScore": teams[BATTING_TEAM].teamScore,
     "playerRun": currentWicket.batterRuns || 0,
     "playerBalls": currentWicket.batterBalls || 0,
-    "wicketCount": (+teams[BATTING_TEAM] || 0) + 1,
+    "wicketCount": (currentWicket.wicketCount || 0) + 1,
     "ballCount": 0, //Change in future
     "currentInnings": commentaryDetails.currentInnings,
   }
@@ -215,4 +215,14 @@ export const generateBallLabelFromBall = (ballType, isWicket) => {
   else if (ballType === BALL_TYPE_PANELTY_RUN) toReturn = "P"
   else if (isWicket) toReturn = "Wk"
   return toReturn
+}
+
+export const fetchNextPlayerOrder = (playerType, playerList) => {
+  console.log(playerList)
+  const searchFor = playerType === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
+  let highestNumber = 1
+  playerList?.map(player => {
+    if (player[searchFor]) highestNumber = Math.max(+player[searchFor], +highestNumber)
+  })
+  return highestNumber + 1
 }

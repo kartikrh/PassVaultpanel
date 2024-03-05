@@ -214,6 +214,22 @@ const Index = () => {
         );
       });
   };
+  const handlePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/updateShowClient`, {
+        "commentaryId": record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
   const handleReset = (value) => {
     fetchData(value)
     fetchEventTypeData()
@@ -383,6 +399,23 @@ const Index = () => {
           }}
         >
           <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "IsClientShow",
+      key: "isClientShow",
+      render: (text, record) => (
+        <Button
+          color={`${record.isClientShow ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isClientShow", record, record?.isClientShow);
+          }}
+        >
+          <i className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },

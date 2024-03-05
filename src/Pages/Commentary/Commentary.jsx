@@ -14,7 +14,7 @@ export const CommentaryScreen = ({
     const [statusPopup, setStatusPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
-            const isWicket = +element.isWicket !== 0
+            const isWicket = +element?.isWicket !== 0
             const ballTypeAdd = generateBallLabelFromBall(element.type, isWicket)
             const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
             return <div className={` over-ball-display ${ballColor}`}>{`${element.value} ${ballTypeAdd ? ("| " + ballTypeAdd) : ""}`}</div>
