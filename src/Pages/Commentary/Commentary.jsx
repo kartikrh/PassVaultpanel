@@ -4,7 +4,7 @@ import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE } from "./CommentartConst"
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
-import { generateBallLabelFromBall } from "./functions"
+// import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
