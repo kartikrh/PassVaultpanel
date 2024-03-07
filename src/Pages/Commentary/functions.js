@@ -152,35 +152,35 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   } else {
     if (ballType === BALL_TYPE_REGULAR) {
       if (currentBall.ballIsWicket) {
-        if (wicketType === BOLD) displayStatus = "Wicket!, Bowled"
-        else if (wicketType === CATCH) displayStatus = "Wicket!, Catch Out"
-        else if (wicketType === STUMP) displayStatus = "Wicket!, Stumped"
-        else if (wicketType === HIT_WICKET) displayStatus = "Wicket!, Hit Wicket"
-        else if (wicketType === LBW) displayStatus = "Wicket!, LBW"
-        else if (wicketType === RUN_OUT) displayStatus = "Wicket!, Run Out"
-        else if (wicketType === RETIRED_OUT) displayStatus = "Wicket!, Retired Out"
-        else if (wicketType === TIMED_OUT) displayStatus = "Wicket!, Timed Out"
-        else if (wicketType === HIT_BALL_TWICE) displayStatus = "Wicket!, Hit the ball twice"
-        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = "Wicket!, Obstract the fielding"
+        if (wicketType === BOLD) displayStatus = "Wicket"
+        else if (wicketType === CATCH) displayStatus = "Wicket"
+        else if (wicketType === STUMP) displayStatus = "Wicket"
+        else if (wicketType === HIT_WICKET) displayStatus = "Wicket"
+        else if (wicketType === LBW) displayStatus = "Wicket"
+        else if (wicketType === RUN_OUT) displayStatus = "Wicket"
+        else if (wicketType === RETIRED_OUT) displayStatus = "Wicket"
+        else if (wicketType === TIMED_OUT) displayStatus = "Wicket"
+        else if (wicketType === HIT_BALL_TWICE) displayStatus = "Wicket"
+        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = "Wicket"
       }
-      else if (currentBall.ballFour !== 0) displayStatus = "Four, Boundary"
-      else if (currentBall.ballSix !== 0) displayStatus = "Six, Boundary"
+      else if (currentBall.ballFour !== 0) displayStatus = "4"
+      else if (currentBall.ballSix !== 0) displayStatus = "6"
       else {
-        if (run === 0) displayStatus = "Dot Ball, No Run"
-        else if (run === 1) displayStatus = "Single, Strike changed"
-        else if (run === 2) displayStatus = "Double, No strike change"
-        else if (run === 3) displayStatus = "Three Runs, Strike change"
-        else if (run === 4) displayStatus = "Four Runs, No strike change"
-        else if (run === 5) displayStatus = "Five Runs, Strike change"
+        if (run === 0) displayStatus = "0"
+        else if (run === 1) displayStatus = "1"
+        else if (run === 2) displayStatus = "2"
+        else if (run === 3) displayStatus = "3"
+        else if (run === 4) displayStatus = "4"
+        else if (run === 5) displayStatus = "5"
       }
     }
     // else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
-    else if (ballType === BALL_TYPE_WIDE) displayStatus = `Wide ball, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_BYE) displayStatus = `Bye, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `Leg Bye, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `No ball, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `No ball Bye, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `No ball Leg Bye, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_WIDE) displayStatus = `WD + ${extraRun}`
+    else if (ballType === BALL_TYPE_BYE) displayStatus = `BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `L-BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `NB + ${extraRun}`
+    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `NB BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `NB L-BYE + ${extraRun}`
   }
   return displayStatus
 }
