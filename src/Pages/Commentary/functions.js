@@ -1,5 +1,5 @@
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -66,7 +66,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
     "teamScore": teams[BATTING_TEAM].teamScore,
     "playerRun": currentWicket.batterRuns || 0,
     "playerBalls": currentWicket.batterBalls || 0,
-    "wicketCount": (+teams[BATTING_TEAM] || 0) + 1,
+    "wicketCount": (currentWicket.wicketCount || 0) + 1,
     "ballCount": 0, //Change in future
     "currentInnings": commentaryDetails.currentInnings,
   }
@@ -152,40 +152,41 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   } else {
     if (ballType === BALL_TYPE_REGULAR) {
       if (currentBall.ballIsWicket) {
-        if (wicketType === BOLD) displayStatus = "Wicket!, Bowled"
-        else if (wicketType === CATCH) displayStatus = "Wicket!, Catch Out"
-        else if (wicketType === STUMP) displayStatus = "Wicket!, Stumped"
-        else if (wicketType === HIT_WICKET) displayStatus = "Wicket!, Hit Wicket"
-        else if (wicketType === LBW) displayStatus = "Wicket!, LBW"
-        else if (wicketType === RUN_OUT) displayStatus = "Wicket!, Run Out"
-        else if (wicketType === RETIRED_OUT) displayStatus = "Wicket!, Retired Out"
-        else if (wicketType === TIMED_OUT) displayStatus = "Wicket!, Timed Out"
-        else if (wicketType === HIT_BALL_TWICE) displayStatus = "Wicket!, Hit the ball twice"
-        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = "Wicket!, Obstract the fielding"
+        if (wicketType === BOLD) displayStatus = "Wicket"
+        else if (wicketType === CATCH) displayStatus = "Wicket"
+        else if (wicketType === STUMP) displayStatus = "Wicket"
+        else if (wicketType === HIT_WICKET) displayStatus = "Wicket"
+        else if (wicketType === LBW) displayStatus = "Wicket"
+        else if (wicketType === RUN_OUT) displayStatus = "Wicket"
+        else if (wicketType === RETIRED_OUT) displayStatus = "Wicket"
+        else if (wicketType === TIMED_OUT) displayStatus = "Wicket"
+        else if (wicketType === HIT_BALL_TWICE) displayStatus = "Wicket"
+        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = "Wicket"
       }
-      else if (currentBall.ballFour !== 0) displayStatus = "Four, Boundary"
-      else if (currentBall.ballSix !== 0) displayStatus = "Six, Boundary"
+      else if (currentBall.ballFour !== 0) displayStatus = "4"
+      else if (currentBall.ballSix !== 0) displayStatus = "6"
       else {
-        if (run === 0) displayStatus = "Dot Ball, No Run"
-        else if (run === 1) displayStatus = "Single, Strike changed"
-        else if (run === 2) displayStatus = "Double, No strike change"
-        else if (run === 3) displayStatus = "Three Runs, Strike change"
-        else if (run === 4) displayStatus = "Four Runs, No strike change"
-        else if (run === 5) displayStatus = "Five Runs, Strike change"
+        if (run === 0) displayStatus = "0"
+        else if (run === 1) displayStatus = "1"
+        else if (run === 2) displayStatus = "2"
+        else if (run === 3) displayStatus = "3"
+        else if (run === 4) displayStatus = "4"
+        else if (run === 5) displayStatus = "5"
       }
     }
     // else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
-    else if (ballType === BALL_TYPE_WIDE) displayStatus = `Wide ball, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_BYE) displayStatus = `Bye, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `Leg Bye, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `No ball, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `No ball Bye, with ${extraRun} run`
-    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `No ball Leg Bye, with ${extraRun} run`
+    else if (ballType === BALL_TYPE_WIDE) displayStatus = `WD + ${extraRun}`
+    else if (ballType === BALL_TYPE_BYE) displayStatus = `BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `L-BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `NB + ${extraRun}`
+    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `NB BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `NB L-BYE + ${extraRun}`
   }
   return displayStatus
 }
 
 export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false) => {
+  console.log({ objects, overToFindFor })
   let toReturn = []
   for (let i = objects.length - 1; i >= 0; i--) {
     if ((objects[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(objects[i].overCount || 0)) === Math.floor(+overToFindFor))) {
@@ -198,10 +199,10 @@ export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false)
   }
   toReturn = toReturn?.map((element) => {
     return element.ballType !== BALL_TYPE_OVER_COMPLETE ? {
-      type: element.ballType, value: element.ballRun, isWicket: element.ballWicketType
+      type: element.ballType, value: element.ballRun, isWicket: element.ballWicketType || false
     } : null
   })
-  return toReturn;
+  return toReturn?.filter((e) => e);
 }
 
 export const generateBallLabelFromBall = (ballType, isWicket) => {
@@ -215,4 +216,14 @@ export const generateBallLabelFromBall = (ballType, isWicket) => {
   else if (ballType === BALL_TYPE_PANELTY_RUN) toReturn = "P"
   else if (isWicket) toReturn = "Wk"
   return toReturn
+}
+
+export const fetchNextPlayerOrder = (playerType, playerList) => {
+  console.log(playerList)
+  const searchFor = playerType === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
+  let highestNumber = 1
+  playerList?.map(player => {
+    if (player[searchFor]) highestNumber = Math.max(+player[searchFor], +highestNumber)
+  })
+  return highestNumber + 1
 }

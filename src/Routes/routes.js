@@ -39,10 +39,11 @@ import PageFormat from "../Pages/PageFormat";
 import AddPageFormat from "../Pages/PageFormat/AddPageFormat.jsx";
 import AddPage from "../Pages/Page/AddPage.jsx";
 import Page from "../Pages/Page";
-import MenuList from "../Pages/menuList";
-import AddMenuType from "../Pages/menuList/AddMenuType.js";
-import AddMenuItem from "../Pages/menuList/AddMenuItem.js";
-import News from "../Pages/News";
+import MenuList from '../Pages/menuList'
+import AddMenuType from '../Pages/menuList/AddMenuType.js'
+import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
+import News from '../Pages/News'
+import Subscribers from '../Pages/Subscribers'
 
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
@@ -108,7 +109,7 @@ const authProtectedRoutes = [
   { path: "/addMenuItem", component: <AddMenuItem /> },
   { path: "/news", component: <News /> },
   { path: "/addNews", component: <AddNews /> },
-
+  {path:"/subscribers", component: <Subscribers/>},
   {
     path: "/changePassword",
     component: <ChangePassword />,

@@ -1,32 +1,56 @@
-import React from 'react'
-import { Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
-import CardComponent from '../CardComponent';
+import React, { useEffect, useState } from 'react'
+import { Input, Modal, ModalBody, ModalHeader, Row, Table } from 'reactstrap';
 import "../CommentaryCss.css"
 
 const ChangeStatusModal = ({ statusList, toggle, isOpen, onSubmit }) => {
+    const [updatedStatusList, setUpadtedStatusList] = useState(statusList);
+    const [search, setSearch] = useState("");
 
+    useEffect(() => {
+        setSearch("");
+        setUpadtedStatusList(statusList);
+    }, [isOpen, statusList]);
+
+    useEffect(() => {
+        const filteredStatusList = statusList?.filter(value => value.displayStatus.toLowerCase().includes(search.toLowerCase()));
+        setUpadtedStatusList(filteredStatusList)
+    }, [search])
+
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                const inputElement = document.getElementById('statusInput');
+                if (inputElement) inputElement.focus();
+            }, 150); // Adjust timing as needed
+        }
+    }, [isOpen]);
 
     return (
         <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader toggle={toggle}> <div className='modal-header-style'>Wicket</div> </ModalHeader>
+            <ModalHeader toggle={toggle}> <div className='modal-header-style'>Status</div> </ModalHeader>
             <ModalBody>
                 Update Commentary Display Status
                 <Row>
-                    {statusList.map((status, index) => (
-                        <Col
-                            key={index}
-                            xs={6} md={4} lg={3}
-                            onClick={() => onSubmit(status.displayStatus)}
-                        >
-                            <CardComponent
-                                title={status.displayStatus}
-                                selectIcon={"bx bxs-check-circle"}
-                                onClickColor={"#099680"}
-                                bgColor={"#55c6b4"}
-                            // check={status === currentStatus}
+                    <Table responsive>
+                        <thead>
+                            <Input
+                                id="statusInput"
+                                className="form-control mb-3"
+                                type="text"
+                                placeholder='Status'
+                                value={search}
+                                onChange={(e) => {
+                                    console.log(e.target.value)
+                                    setSearch(e.target.value)
+                                }}
                             />
-                        </Col>
-                    ))}
+                        </thead>
+                        <tbody>
+                            {updatedStatusList?.map(value => <tr key={value.displayStatusId}>
+                                <td role='button' onClick={() => onSubmit(value.displayStatus)} >{value.displayStatus}</td>
+                            </tr>)}
+                        </tbody>
+                    </Table>
                 </Row>
             </ModalBody>
         </Modal >

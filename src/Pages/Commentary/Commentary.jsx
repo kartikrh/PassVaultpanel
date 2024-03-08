@@ -4,7 +4,7 @@ import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE } from "./CommentartConst"
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
-import { generateBallLabelFromBall } from "./functions"
+// import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
@@ -12,14 +12,15 @@ export const CommentaryScreen = ({
     overBalls }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
-    const generateBallfromArray = (ballArray = []) => {
-        return ballArray?.map(element => {
-            const isWicket = +element.isWicket !== 0
-            const ballTypeAdd = generateBallLabelFromBall(element.type, isWicket)
-            const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
-            return <div className={` over-ball-display ${ballColor}`}>{`${element.value} ${ballTypeAdd ? ("| " + ballTypeAdd) : ""}`}</div>
-        })
-    }
+    // const generateBallfromArray = (ballArray = []) => {
+    //     return ballArray?.map(element => {
+    //         console.log(element)
+    //         const isWicket = +element?.isWicket !== 0
+    //         const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
+    //         const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
+    //         return <div className={` over-ball-display ${ballColor}`}>{`${element.value} ${ballTypeAdd ? ("| " + ballTypeAdd) : ""}`}</div>
+    //     })
+    // }
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -123,14 +124,14 @@ export const CommentaryScreen = ({
                 </Row>
                 <Row>
                     <Col className="current-score-header" xs={6} md={6} lg={6}>
-                        <span className="current-team-name">{teamDetails?.[BATTING_TEAM].shortName?.toUpperCase()}&nbsp;</span>
+                        <span className="current-team-name">{teamDetails?.[BATTING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="current-team-score">
                             {teamDetails?.[BATTING_TEAM].teamScore || 0}/{teamDetails?.[BATTING_TEAM].teamWicket || 0}
                             &nbsp;({teamDetails?.[BATTING_TEAM].teamOver || 0})
                             &nbsp;</span>
                     </Col>
                     <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
-                        <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM].shortName?.toUpperCase()}&nbsp;</span>
+                        <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="bowling-team-score">
                             {teamDetails?.[BOWLING_TEAM].teamScore || 0}/{teamDetails?.[BOWLING_TEAM].teamWicket || 0}
                             &nbsp;({teamDetails?.[BOWLING_TEAM].teamOver || 0})
@@ -138,19 +139,39 @@ export const CommentaryScreen = ({
                     </Col>
                 </Row>
                 <Row>
-                    <Col className="striker-end" xs={12} md={6} lg={6}>
-                        <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
-                        <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
-                        <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
-                        <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
-                    </Col>
-                    <Col className="non-striker-end" xs={12} md={6} lg={6}>
-                        <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
-                        <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
-                        <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
-                        <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right ">C</button>
-                    </Col>
+                    {onPitchPlayers[ON_STRIKE]?.batterOrder > onPitchPlayers[NON_STRIKE]?.batterOrder ? (
+                        <>
+                            <Col className="non-striker-end" xs={12} md={6} lg={6}>
+                                <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
+                                <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
+                                <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right">C</button>
+                            </Col>
+                            <Col className="striker-end" xs={12} md={6} lg={6}>
+                                <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
+                                <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
+                                <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
+                            </Col>
+                        </>
+                    ) : (
+                        <>
+                            <Col className="striker-end" xs={12} md={6} lg={6}>
+                                <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
+                                <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
+                                <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
+                            </Col>
+                            <Col className="non-striker-end" xs={12} md={6} lg={6}>
+                                <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
+                                <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
+                                <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right ">C</button>
+                            </Col>
+                        </>
+                    )}
                 </Row>
+
                 <Row className="Bowler-header">
                     <Col xs={12} md={12} lg={12}>
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
@@ -163,7 +184,7 @@ export const CommentaryScreen = ({
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
                     {<Col className="d-flex" xs={12} md={12} lg={12}>
-                        {generateBallfromArray(overBalls)}
+                        {/* {generateBallfromArray(overBalls)} */}
                     </Col>}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >

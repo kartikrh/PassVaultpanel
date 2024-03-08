@@ -86,7 +86,7 @@ const FormBuilder = forwardRef(
           defaultValueObj[field.name] = field.defaultValue;
         }
       });
-      if (isEmpty(formData) && isEmpty(editFormData)) {
+      if (isEmpty(formData) && isEmpty(editFormData) && !isEmpty(defaultValueObj)) {
         setFormData(defaultValueObj);
       } else if (
         !isEmpty(editFormData) &&
@@ -97,7 +97,7 @@ const FormBuilder = forwardRef(
             fetch(editFormData[element.name])
               .then((response) => response.blob())
               .then((blob) => {
-                // Convert the image data to base64
+                // Convert th e image data to base64
                 const reader = new FileReader();
                 reader.onloadend = () => {
                   setViewImage((prev) => ({
@@ -130,10 +130,9 @@ const FormBuilder = forwardRef(
         const value = formData[field.name];
         const shouldValidate =
           !doNotValidateFields.includes(field.name) &&
-          field.dependsOnField &&
-          formData[field.dependsOnField] === field.dependsOnValue;
+          (!field.dependsOnField || formData[field.dependsOnField] === field.dependsOnValue);
 
-        if (shouldValidate && field.isRequired && isValueEmpty(value)) {
+        if (shouldValidate && field.isRequired && isValueEmpty(value, field.type === SELECT || field.type === MULTI_SELECT)) {
           errors[field.name] =
             field.requiredErrorMessage || `Please Enter ${field.label}`;
         }
@@ -191,7 +190,7 @@ const FormBuilder = forwardRef(
         (!field.dependsOnField ||
           dependentFieldValue === field.dependsOnValue) &&
         field.isRequired &&
-        isValueEmpty(value)
+        isValueEmpty(value, field.type === SELECT || field.type === MULTI_SELECT)
       ) {
         errors[field.name] =
           field.requiredErrorMessage || "This field is required.";

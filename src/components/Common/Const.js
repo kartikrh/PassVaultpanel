@@ -41,7 +41,7 @@ export const TAB_PAGE = "Page"
 export const TAB_IMPORT_MARKET = "Import Market"
 export const Tab_Menu_List = "Menu List"
 export const TAB_NEWS = "News"
-
+export const TAB_SUBSCRIBERS = "Subscribers"
 // Permission Type
 export const PERMISSION_ADD = "isAdd"
 export const PERMISSION_EDIT = "isEdit"
