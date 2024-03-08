@@ -106,3 +106,8 @@
     white-space: break-spaces;
     word-break: break-all;
 }
+
+.editor-container {
+    min-height: 300px;
+    border: 1px solid #ccc;
+}

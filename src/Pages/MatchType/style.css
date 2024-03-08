@@ -1,0 +1,10 @@
+.hover:hover{
+    background-color: gray;
+    color:white;
+    /* cursor: pointer; */
+}
+
+.required-message {
+    color: red;
+    margin-left: 5px;
+  }

@@ -6,8 +6,8 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { CKEditor } from "@ckeditor/ckeditor5-react";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Creatable from "react-select/creatable";
 import { isEmpty, isEqual } from "lodash";
 import {
@@ -32,8 +32,9 @@ import {
   TEXT_EDITOR,
   ERROR,
   TEXT_BUTTON,
-  ckeditor5ToolbarItems,
-  LABEL_PARTATION
+  BUTTON,
+  // ckeditor5ToolbarItems,
+  // LABEL_PARTATION,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form, Button } from "reactstrap";
@@ -41,10 +42,18 @@ import ImageField from "./ImageField.jsx";
 import MyUploadAdapter from "./MyUploadAdapter.js";
 import { updateToastData } from "../../../Features/toasterSlice.js";
 import { useDispatch } from "react-redux";
+import MyEditor from "./MyEditor.js";
 
 const FormBuilder = forwardRef(
   (
-    { fields, editFormData, masterData, disabledFields, onFormDataChange, generateAlias },
+    {
+      fields,
+      editFormData,
+      masterData,
+      disabledFields,
+      onFormDataChange,
+      generateAlias,
+    },
     ref
   ) => {
     const dispatch = useDispatch();
@@ -206,7 +215,6 @@ const FormBuilder = forwardRef(
         return true;
       }
     };
-
     // Expose the finalizeData & reset function to the parent using a ref
     useImperativeHandle(ref, () => ({
       finalizeData,
@@ -255,8 +263,9 @@ const FormBuilder = forwardRef(
                   </>
                 )}
                 <Col
-                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"
-                    }`}
+                  className={`${field.label ? "" : "d-none"} ${
+                    fetchIsDependable(field) ? "" : "invisible"
+                  }`}
                   xs={field.labelColspan?.xs || 3}
                   md={field.labelColspan?.md || 2}
                   lg={field.labelColspan?.lg || 2}
@@ -274,8 +283,9 @@ const FormBuilder = forwardRef(
                   </div>
                 </Col>
                 <Col
-                  className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : "invisible"
-                    } mb-4`}
+                  className={`${field.type !== DIVIDER ? "" : "d-none"}${
+                    fetchIsDependable(field) ? "" : "invisible"
+                  } mb-4`}
                   xs={field.fieldColspan?.xs || 9}
                   md={field.fieldColspan?.md || 4}
                   lg={field.fieldColspan?.lg || 4}
@@ -310,7 +320,9 @@ const FormBuilder = forwardRef(
                           required={field.isRequired}
                           invalid={fieldErrors[field.name]}
                         />
-                        <Button type="button" onClick={generateAlias}>{field?.btnLable}</Button>
+                        <Button type="button" onClick={generateAlias}>
+                          {field?.btnLable}
+                        </Button>
                       </div>
                     )}
 
@@ -427,8 +439,8 @@ const FormBuilder = forwardRef(
                                 // Regular selection
                                 const values = selectedOptions
                                   ? selectedOptions.map(
-                                    (option) => option.value
-                                  )
+                                      (option) => option.value
+                                    )
                                   : [];
                                 handleChange(field, values);
                               }
@@ -450,9 +462,9 @@ const FormBuilder = forwardRef(
                           (formData[field.name] &&
                             (typeof formData[field.name] === "string"
                               ? {
-                                label: formData[field.name],
-                                value: formData[field.name],
-                              }
+                                  label: formData[field.name],
+                                  value: formData[field.name],
+                                }
                               : formData[field.name])) ||
                           field.defaultOption
                         }
@@ -496,7 +508,10 @@ const FormBuilder = forwardRef(
                             >
                               <input
                                 className="inputtag normal_input"
-                                style={{ transform: "scale(1.5)", marginRight: "10px" }}
+                                style={{
+                                  transform: "scale(1.5)",
+                                  marginRight: "10px",
+                                }}
                                 type="radio"
                                 name={field?.name}
                                 value={[]
@@ -555,12 +570,12 @@ const FormBuilder = forwardRef(
                       </div>
                     )}
 
-                    {field.type === TEXT_EDITOR && (
+                    {/* {field.type === TEXT_EDITOR && (
                       <CKEditor
                         config={{
                           extraPlugins: [MyCustomUploadAdapterPlugin],
                           style: {
-                            minHeight: "300px", // Adjust the minimum height as needed
+                            minHeight: "300px",
                           },
                         }}
                         editor={ClassicEditor}
@@ -569,6 +584,17 @@ const FormBuilder = forwardRef(
                           handleChange(field, editor.getData())
                         }
                       />
+                    )} */}
+
+                    {field.type === TEXT_EDITOR && (
+                      <>
+                        <MyEditor
+                          field={field}
+                          formData={formData}
+                          handleChange={handleChange}
+                          fieldErrors={fieldErrors}
+                        />
+                      </>
                     )}
 
                     {field.type === DATE_TIME_PICKER && (
@@ -604,6 +630,15 @@ const FormBuilder = forwardRef(
                         handleImageChange={handleImageChange}
                         src={viewImage?.[field.name]}
                       />
+                    )}
+                    {field.type === BUTTON && (
+                      <Button
+                        type="button"
+                        onClick={generateAlias}
+                        disabled={disabledFields?.[field.name]}
+                      >
+                        {field?.btnLable}
+                      </Button>
                     )}
                   </div>
                   <span className="text-danger">
