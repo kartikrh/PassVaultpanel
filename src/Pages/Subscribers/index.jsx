@@ -148,20 +148,20 @@ const Index = () => {
       ),
       key: "siteName",
       sort: true,
-      style: { width: "30%" },
+      style: { width: "10%" },
     },
     {
       title: "Site Domain",
       dataIndex: "siteDomain",
       key: "siteDomain",
-      style: { width: "30%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
         title: "subDomain Count",
         dataIndex: "subDomainCount",
         key: "subDomainCount",
-        style: { width: "30%" },
+        style: { width: "20%" },
         sort: true,
       },
     {
@@ -176,7 +176,7 @@ const Index = () => {
             handlePermissions("isApproved", record, record.isApproved);
           }}
         >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          <i className={`bx ${record.isApproved ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
