@@ -60,6 +60,7 @@ const Index = forwardRef(
       teams,
       setDateRange,
       dateRange,
+      matchType,
     },
     ref
   ) => {
@@ -484,6 +485,10 @@ const Index = forwardRef(
           value: 0,
           label: "Event Type",
         },
+        matchType: {
+          value: 0,
+          label: "Match Type",
+        },
         commentaryStatus: {
           value: 0,
           label: "Commentary Status",
@@ -642,6 +647,32 @@ const Index = forwardRef(
                             handleTableActions = {handleTableActions}
                             items = {{label:"eventType", value:"eventTypeId"}}
                             /> */}
+                          </div>
+                        ) : null}
+                        {tableElement?.matchTypeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.matchType}
+                              placeholder="Match Type"
+                              onChange={(e) => {
+                                handleTableActions("matchTypeId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  matchType: e,
+                                });
+                              }}
+                              options={matchType?.map((item) => ({
+                                label: item?.matchType,
+                                value: item?.matchTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
                           </div>
                         ) : null}
                         {tableElement?.competitionsSelect ? (

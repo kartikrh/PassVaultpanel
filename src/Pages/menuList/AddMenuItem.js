@@ -33,8 +33,6 @@ import {
   addMenuTypeToDb,
   addMenuItemToDb,
   updateSavedState,
-  setSelectedMenuType,
-  setSelectedMenuTypeHistory,
 } from "../../Features/Tabs/menuTypeSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
