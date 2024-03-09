@@ -139,21 +139,21 @@ const Index = forwardRef(
           ...tableActions,
           isActive: id,
         });
-      }else{
-      if (key === "isShowContent") {
-        setStatusSwitch(id);
-      }
-      reFetchData({
-        ...tableActions,
-        [key]: id?.value,
-      });
-      setTableActions((preValue) => {
-        return {
-          ...preValue,
+      } else {
+        if (key === "isShowContent") {
+          setStatusSwitch(id);
+        }
+        reFetchData({
+          ...tableActions,
           [key]: id?.value,
-        };
-      });
-    }
+        });
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id?.value,
+          };
+        });
+      }
     };
 
     const handleSearchFilter = () => {
@@ -500,12 +500,14 @@ const Index = forwardRef(
         team: {
           value: 0,
           label: "Select Team",
-        }
+        },
       });
-     if(tableElement?.dateRange){ setDateRange({
-      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-      endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
-    })}
+      if (tableElement?.dateRange) {
+        setDateRange({
+          startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+          endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
+        });
+      }
       setStatusSwitch(true);
       handleReset({
         isActive: true,
