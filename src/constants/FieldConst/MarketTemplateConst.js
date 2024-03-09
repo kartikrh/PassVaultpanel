@@ -24,6 +24,7 @@ export const MarketTemplateFileds = [
         name: "isPredefineMarket",
         label: "Predefine Market",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -31,6 +32,7 @@ export const MarketTemplateFileds = [
         name: "isPreMatchOnly",
         label: "PreMatch Only",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -38,6 +40,7 @@ export const MarketTemplateFileds = [
         name: "isPreMatchMarket",
         label: "PreMatch Market",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -45,6 +48,7 @@ export const MarketTemplateFileds = [
         name: "isOver",
         label: "Over",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 1, lg: 1 }
     },
@@ -60,6 +64,7 @@ export const MarketTemplateFileds = [
     {
         name: "isPlayer",
         label: "Player",
+        defaultValue: false,
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 1, lg: 1 }
@@ -77,6 +82,7 @@ export const MarketTemplateFileds = [
         name: "isAutoCancel",
         label: "Auto Cancel",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -85,6 +91,7 @@ export const MarketTemplateFileds = [
         label: "Auto Open Type",
         options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
         type: SELECT,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -93,8 +100,6 @@ export const MarketTemplateFileds = [
         label:"Auto Open",
         type: TEXT,
         requiredErrorMessage: "Please enter value",
-        regex: /^(10|[0-9]|[1-9][0-9]{0,2}|1000)?$/,
-        regexErrorMessage: "over Should be Between 0 to 1000",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -103,6 +108,7 @@ export const MarketTemplateFileds = [
         label: "Auto Close Type",
         options: [{ label: "Select Auto Close Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
         type: SELECT,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -118,6 +124,7 @@ export const MarketTemplateFileds = [
         label: "Auto Suspend Type",
         options: [{ label: "Select Auto Suspend Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
         type: SELECT,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -132,6 +139,7 @@ export const MarketTemplateFileds = [
         name: "isBallStart",
         label: "Ball Start",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 10 }
     },
@@ -139,6 +147,7 @@ export const MarketTemplateFileds = [
         name: "isAutoResultSet",
         label: "Auto Result Set",
         type: SWITCH,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 1, lg: 1 }
     },
@@ -146,8 +155,9 @@ export const MarketTemplateFileds = [
         name: "autoResultType",
         label:false,
         dependsOnField: "isAutoResultSet",
+        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
         dependsOnValue: true,
-        type: TEXT,
+        type: SELECT,
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
         {
@@ -177,6 +187,7 @@ export const MarketTemplateFileds = [
         name: "isActive",
         label: "IsActive",
         type: SWITCH,
+        defaultValue: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
