@@ -6,8 +6,6 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
-// import { CKEditor } from "@ckeditor/ckeditor5-react";
-// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Creatable from "react-select/creatable";
 import { isEmpty, isEqual } from "lodash";
 import {
@@ -33,8 +31,6 @@ import {
   ERROR,
   TEXT_BUTTON,
   BUTTON,
-  // ckeditor5ToolbarItems,
-  // LABEL_PARTATION,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form, Button } from "reactstrap";
@@ -86,7 +82,11 @@ const FormBuilder = forwardRef(
           defaultValueObj[field.name] = field.defaultValue;
         }
       });
-      if (isEmpty(formData) && isEmpty(editFormData) && !isEmpty(defaultValueObj)) {
+      if (
+        isEmpty(formData) &&
+        isEmpty(editFormData) &&
+        !isEmpty(defaultValueObj)
+      ) {
         setFormData(defaultValueObj);
       } else if (
         !isEmpty(editFormData) &&
@@ -130,9 +130,17 @@ const FormBuilder = forwardRef(
         const value = formData[field.name];
         const shouldValidate =
           !doNotValidateFields.includes(field.name) &&
-          (!field.dependsOnField || formData[field.dependsOnField] === field.dependsOnValue);
+          (!field.dependsOnField ||
+            formData[field.dependsOnField] === field.dependsOnValue);
 
-        if (shouldValidate && field.isRequired && isValueEmpty(value, field.type === SELECT || field.type === MULTI_SELECT)) {
+        if (
+          shouldValidate &&
+          field.isRequired &&
+          isValueEmpty(
+            value,
+            field.type === SELECT || field.type === MULTI_SELECT
+          )
+        ) {
           errors[field.name] =
             field.requiredErrorMessage || `Please Enter ${field.label}`;
         }
@@ -190,7 +198,10 @@ const FormBuilder = forwardRef(
         (!field.dependsOnField ||
           dependentFieldValue === field.dependsOnValue) &&
         field.isRequired &&
-        isValueEmpty(value, field.type === SELECT || field.type === MULTI_SELECT)
+        isValueEmpty(
+          value,
+          field.type === SELECT || field.type === MULTI_SELECT
+        )
       ) {
         errors[field.name] =
           field.requiredErrorMessage || "This field is required.";
@@ -568,23 +579,6 @@ const FormBuilder = forwardRef(
                         />
                       </div>
                     )}
-
-                    {/* {field.type === TEXT_EDITOR && (
-                      <CKEditor
-                        config={{
-                          extraPlugins: [MyCustomUploadAdapterPlugin],
-                          style: {
-                            minHeight: "300px",
-                          },
-                        }}
-                        editor={ClassicEditor}
-                        data={formData?.[field.name] || ""}
-                        onChange={(event, editor) =>
-                          handleChange(field, editor.getData())
-                        }
-                      />
-                    )} */}
-
                     {field.type === TEXT_EDITOR && (
                       <>
                         <MyEditor
@@ -595,7 +589,6 @@ const FormBuilder = forwardRef(
                         />
                       </>
                     )}
-
                     {field.type === DATE_TIME_PICKER && (
                       <input
                         className="form-control"

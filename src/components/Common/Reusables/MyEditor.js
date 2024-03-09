@@ -2,16 +2,19 @@ import React, { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-// import draftToHtml from "draftjs-to-html";
+import draftToHtml from "draftjs-to-html";
 import axiosInstance from "../../../Features/axios";
-import { convertObjtoFormData } from "../utilities";
 
 const MyEditor = ({ field, formData, handleChange, fieldErrors }) => {
-  // console.log("field", field);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
+    const rawContentState = draftToHtml(
+      convertToRaw(editorState.getCurrentContent())
+    );
+    console.log("rawContentState", rawContentState);
+    handleChange(field, JSON.stringify(rawContentState));
   };
 
   function dataURLtoBlob(dataURL) {
@@ -32,37 +35,20 @@ const MyEditor = ({ field, formData, handleChange, fieldErrors }) => {
       reader.onloadend = () => {
         setTimeout(() => {
           let imageData = reader.result;
-          // let imageData = reader.result.split(",")[1];
           const blob = dataURLtoBlob(imageData);
           const formData = new FormData();
           formData.append("image", blob, file.name);
           formData.append("module", field.name);
-          // console.log("imageData", imageData);
-          // const payload = convertObjtoFormData({
-          //   image: imageData,
-          //   module: field.name,
-          // });
           axiosInstance
             .post("/imgUpload", formData)
             .then((response) => {
               const imageUrl = response?.result?.path;
               console.log("imageUrl", imageUrl);
-              // resolve({ data: { link: imageUrl } });
               resolve({
                 data: {
-                  link:
-                    reader.result ||
-                    console.log("reader.result", reader.result),
+                  link: imageUrl,
                 },
               });
-              // setEditorState(imageUrl);
-              // const newEditorState = insertImage(editorState, imageUrl);
-              // setEditorState(newEditorState);
-              handleChange(
-                field,
-                // draftToHtml(convertToRaw(editorState.getCurrentContent()))
-                imageUrl
-              );
             })
             .catch((error) => {
               reject(error);
