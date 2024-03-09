@@ -101,7 +101,6 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    alert()
     navigate("/addMarketTemplate", { state: { marketTemplateId: id } });
   };
 
