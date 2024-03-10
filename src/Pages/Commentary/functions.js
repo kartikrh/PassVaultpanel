@@ -72,7 +72,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
   }
 }
 
-export const generatePartnership = ({ currentPartnership, commentaryDetails, teams, currentBall }) => {
+export const generatePartnership = ({ currentPartnership, commentaryDetails, teams }) => {
   return {
     "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
     "commentaryId": commentaryDetails.commentaryId,
@@ -84,7 +84,7 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "totalRuns": currentPartnership.totalRuns || 0,
     "totalBalls": currentPartnership.totalBalls || 0,
     "extras": currentPartnership.extras || 0,
-    "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
+    "commentaryBallByBallId": currentPartnership.commentaryBallByBallId || 0,
     "currentInnings": commentaryDetails.currentInnings,
   };
 }
