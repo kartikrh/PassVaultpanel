@@ -15,7 +15,7 @@ export const BALL_TYPE_PANELTY_RUN = 8;
 
 // Out Type
 export const BOLD = 1;
-export const BOLD_LABEL = "Bold";
+export const BOLD_LABEL = "Bowled";
 export const CATCH = 2;
 export const CATCH_LABEL = "Catch";
 export const STUMP = 3;

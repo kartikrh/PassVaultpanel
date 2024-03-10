@@ -66,11 +66,11 @@ const Commentary = (props) => {
 
     // useEffect(() => {
     //     // console.log(commentaryDetails, matchTypeDetails)
-    // console.log({ currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers, ballHistory })
-    // console.log(teams)
-    //     // console.log(currentOver, currentBall)
-    // console.log(ballHistory, overHistory, wicketHistory, partnershipHistory)
-    // console.log({ onPitchPlayers, teams })
+    console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
+    console.log("Batting Team: ", teams?.[BATTING_TEAM])
+    // //     // console.log(currentOver, currentBall)
+    console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
+    // // console.log({ onPitchPlayers, teams })
     //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     // })
 
@@ -1191,7 +1191,10 @@ const Commentary = (props) => {
         return updatedOnPitchPlayer
     }
     const updateAfterOverUndo = () => {
+        // removing 2 becaus length and index difference
         const previousBall = ballHistory[ballHistory.length - 2]
+        const previousOver = overHistory[overHistory.length - 2]
+        console.log(previousBall, previousOver)
         const previousOnPitchPlayer = {}
         const updatedBattingTeam = teams[BATTING_TEAM]
         const updatedBowlingPlayerList = players[BOWLING_TEAM].map(player => {
@@ -1202,8 +1205,9 @@ const Commentary = (props) => {
             }
             else if (compareNumStringValues(player.commentaryPlayerId, previousBall.bowlerId)) {
                 updatedPlayer["isPlay"] = true
-                updatedPlayer["bowlerOver"] = ((player.bowlerOver || 0) + ((player.bowlerTotalBall || 0) / 10) - 1)?.toFixed(1)
-                updatedBattingTeam["teamOver"] = (+(updatedBattingTeam.teamOver || 0) + ((player.bowlerTotalBall || 0) / 10) - 1)?.toFixed(1)
+                const bowlToAdd = ((+previousOver.ballCount || 0) / 10)
+                updatedPlayer["bowlerOver"] = (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
+                updatedBattingTeam["teamOver"] = (((+updatedBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1)
                 previousOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
             }
             return updatedPlayer
