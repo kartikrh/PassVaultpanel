@@ -28,8 +28,9 @@ import AddCompetition from "../Pages/Competition/AddCompetition.jsx";
 import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
-import ChangePassword from "../Pages/ChangePassword";
-import Toss from "../Pages/Commentary/Toss.jsx";
+import AddMarketTemplate from "../Pages/MarketTemplate/AddMarketTamplate.js";
+import ChangePassword from '../Pages/ChangePassword'
+import Toss from '../Pages/Commentary/Toss.jsx'
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
 import AddBlock from "../Pages/Blocks/AddBlock.jsx";
 import Blocks from "../Pages/Blocks";
@@ -44,6 +45,7 @@ import AddMenuType from '../Pages/menuList/AddMenuType.js'
 import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
 import News from '../Pages/News'
 import Subscribers from '../Pages/Subscribers'
+import MarketTemplate from '../Pages/MarketTemplate'
 
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
@@ -110,6 +112,8 @@ const authProtectedRoutes = [
   { path: "/news", component: <News /> },
   { path: "/addNews", component: <AddNews /> },
   {path:"/subscribers", component: <Subscribers/>},
+  {path:"/marketTemplate", component: <MarketTemplate/>},
+  {path:"/addMarketTemplate", component: <AddMarketTemplate/>},
   {
     path: "/changePassword",
     component: <ChangePassword />,

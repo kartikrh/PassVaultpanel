@@ -305,6 +305,7 @@ const FormBuilder = forwardRef(
                       <Input
                         className="form-control"
                         style={field?.customStyle}
+                        placeholder={field?.placeholder}
                         type="text"
                         disabled={disabledFields?.[field.name]}
                         id={field.name}
