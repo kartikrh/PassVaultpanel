@@ -4,7 +4,7 @@ import { Navigate, useLocation } from "react-router-dom"
 import axiosInstance from "../../Features/axios"
 import { updateToastData } from "../../Features/toasterSlice"
 import { ERROR, PERMISSION_VIEW, STRING_SEPERATOR, TAB_COMMENTARY } from "../../components/Common/Const"
-import { ShortCommentaryScreen } from "./ShortCommentary.jsx"
+import ShortCommentaryScreen from "./ShortCommentary.jsx"
 import { BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst"
 import { isEqual } from "lodash"
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
@@ -100,5 +100,8 @@ export const ShortCommentary = () => {
         setFormattedDetails(formattedData)
     }
 
-    return <><ShortCommentaryScreen /></>
+    return <>
+        <ShortCommentaryScreen
+            commentaryData
+        /></>
 }
