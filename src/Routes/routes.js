@@ -67,9 +67,11 @@ import Error500 from "../Pages/Utility/Error500-Page.js";
 import AddNews from "../Pages/News/AddNews.jsx";
 import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
 import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
+import PlayerCommentary from "../Pages/Commentary/PlayerCommentary.jsx";
 
 const authProtectedRoutes = [
   //dashboard
+  { path: "/test", component: <PlayerCommentary />},
   { path: "/dashboard", component: <Dashboard /> },
   { path: "/tabs", component: <Tabs /> },
   { path: "/addTabs", component: <AddTabs /> },
@@ -128,6 +130,7 @@ const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
+  
 
   // Authentication Inner Pages
   { path: "/auth-login", component: <Login1 /> },
