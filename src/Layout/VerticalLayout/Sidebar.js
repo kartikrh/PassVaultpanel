@@ -141,6 +141,7 @@ const Sidebar = (props) => {
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">
+              {/* No use of sidebarData, it is jusst Backup */}
               {(newTabList || sidebarData)
                 .slice() // Create a shallow copy
                 .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
