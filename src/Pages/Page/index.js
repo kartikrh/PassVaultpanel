@@ -184,7 +184,7 @@ const Index = () => {
           }}
         >
           {" "}
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          <i className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
