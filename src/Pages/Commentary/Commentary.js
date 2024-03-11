@@ -993,14 +993,15 @@ const Commentary = (props) => {
                 let updateBowler = {}
                 let undoType = RUN
                 const updateOver = {}
-                let updatePartnership = currentPartnership
+                let updatePartnership = { ...currentPartnership }
                 let playersOnPitch = onPitchPlayers
                 if (currentBall.ballIsWicket) {
                     undoType = WICKET
                     updateOver["totalWicket"] = (currentOver.totalWicket || 0) - 1
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
                     updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
-                    updatePartnership = partnershipHistory[partnershipHistory.length - 2]
+                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2] }
+                    console.log(updatePartnership)
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
                 const bowler = playersOnPitch[CURRENT_BOWLER]
@@ -1019,7 +1020,7 @@ const Commentary = (props) => {
                     updatePartnership["totalBalls"] = (updatePartnership?.totalBalls || 0) - 1
                     updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - run
                     updateBowler["bowlerOver"] = updatedBowlerOver
-                    updatePartnership["totalRuns"] = (updatePartnership.totalRuns || 0) - run
+                    updatePartnership["totalRuns"] = (updatePartnership?.totalRuns || 0) - run
                     updateOver["totalRun"] = (currentOver.totalRun || 0) - run
                     updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
                     if (matchTypeDetails.isLimitedOvers && commentaryDetails.target) {
