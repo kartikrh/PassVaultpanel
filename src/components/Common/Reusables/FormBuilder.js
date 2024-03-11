@@ -178,7 +178,10 @@ const FormBuilder = forwardRef(
         return null;
       }
     };
-
+    const getCurrentFormData = () => {
+      const filteredData = filterData(formData);
+      return sanitizeFormData(filteredData);
+    }
     const resetForm = () => {
       setFormData({});
       setViewImage(null);
@@ -230,6 +233,7 @@ const FormBuilder = forwardRef(
       finalizeData,
       resetForm,
       updateFormFromParent,
+      getCurrentFormData
     }));
     return (
       <Form
@@ -273,9 +277,8 @@ const FormBuilder = forwardRef(
                   </>
                 )}
                 <Col
-                  className={`${field.label ? "" : "d-none"} ${
-                    fetchIsDependable(field) ? "" : "invisible"
-                  }`}
+                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : "invisible"
+                    }`}
                   xs={field.labelColspan?.xs || 3}
                   md={field.labelColspan?.md || 2}
                   lg={field.labelColspan?.lg || 2}
@@ -293,9 +296,8 @@ const FormBuilder = forwardRef(
                   </div>
                 </Col>
                 <Col
-                  className={`${field.type !== DIVIDER ? "" : "d-none"}${
-                    fetchIsDependable(field) ? "" : "invisible"
-                  } mb-4`}
+                  className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : "invisible"
+                    } mb-4`}
                   xs={field.fieldColspan?.xs || 9}
                   md={field.fieldColspan?.md || 4}
                   lg={field.fieldColspan?.lg || 4}
@@ -450,8 +452,8 @@ const FormBuilder = forwardRef(
                                 // Regular selection
                                 const values = selectedOptions
                                   ? selectedOptions.map(
-                                      (option) => option.value
-                                    )
+                                    (option) => option.value
+                                  )
                                   : [];
                                 handleChange(field, values);
                               }
@@ -473,9 +475,9 @@ const FormBuilder = forwardRef(
                           (formData[field.name] &&
                             (typeof formData[field.name] === "string"
                               ? {
-                                  label: formData[field.name],
-                                  value: formData[field.name],
-                                }
+                                label: formData[field.name],
+                                value: formData[field.name],
+                              }
                               : formData[field.name])) ||
                           field.defaultOption
                         }

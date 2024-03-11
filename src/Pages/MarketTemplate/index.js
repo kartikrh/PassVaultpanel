@@ -197,6 +197,7 @@ const Index = () => {
     title: "Events",
     isActive: true,
     matchTypeSelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {
