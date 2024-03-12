@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, CardHeader } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import Select from "react-select";
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import { useDispatch } from 'react-redux';
 import { ERROR } from '../../components/Common/Const';
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import "./CommentaryCss.css";
 
 const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
@@ -59,11 +60,17 @@ const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
         }
     }
 
-    const handleReloadTeam = async (commentaryId) => {
+    const handleReloadTeam = async () => {
         setIsLoading(true);
         await axiosInstance
-            .post("/admin/commentary/reloadTeamAndPlayerById", { commentaryId, teamId: teamDetails?.teamId })
+            .post("/admin/commentary/loadTeamPlayer", { teamId: teamDetails?.teamId })
             .then((response) => {
+                if (response?.result) {
+                    const teamPlayers = response?.result;
+                    const selectedIds = commentaryTeamPlayers.map(player => player.playerId);
+                    setNonCommentaryTeamPlayers(teamPlayers.filter(player => !selectedIds.includes(player.playerId)));
+                    setSelectedPlayer(undefined);
+                }
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -74,11 +81,11 @@ const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
 
     return (
         <Card>
-            <CardHeader>
-                {isLoading && <SpinnerModel />}
-                {teamDetails?.teamName}
-                <div class="row card-body">
-                    <div class="col mb-1 mb-lg-0 mb-md-0 mb-sm-1">
+            {isLoading && <SpinnerModel />}
+            <CardHeader>{teamDetails?.teamName}</CardHeader>
+            <CardBody>
+                <Row>
+                    <Col lg={8} className="my-1">
                         <Select
                             class="form-control"
                             value={selectedPlayer || ""}
@@ -90,41 +97,44 @@ const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
                                 value: player?.playerId,
                             }))}
                         />
-                    </div>
-                    <div class="col-auto">
+                    </Col>
+                    <Col id="addreloadicon" lg={4} className="my-1 d-flex justify-content-around">
                         <Button
                             color="success"
-                            className="add-btn"
+                            className="btn-sm px-3"
                             id="create-btn"
                             onClick={handleAddPlayer}
                         >
-                            <i className="ri-add-line align-bottom me-1"></i>{" "}
-                            Add
+                            <i className="ri-add-line" style={{width: "30px"}} ></i>
                         </Button>
-                    </div>
-                    <div class="col-auto">
+                        <div className="mx-1"></div>
                         <Button
-                            color={"primary"}
-                            className="btn"
+                            color="primary"
+                            className="btn-sm px-3"
                             onClick={handleReloadTeam}
                         >
-                            Reload
+                            <i class="ri-refresh-line"></i>
                         </Button>
-                    </div>
-                </div>
-                <div class="rounded row border border-secondary card-body mx-3 mb-3">
+                    </Col>
+                </Row>
+                <Row className="rounded py-3">
                     {commentaryTeamPlayers?.map((player, index) => (
-                        <div key={index} class="row d-flex align-items-center my-1">
-                            <div class="col-6">
-                                {player?.playerName}
+                        <div key={index} class="row d-flex align-items-center my-2 ">
+                            <div class="col-2">
+                                <Button
+                                    color="soft-danger"
+                                    onClick={(e) => handleDeletePlayer(player.playerId)}
+                                >
+                                    <i className="ri-delete-bin-2-line"></i>
+                                </Button>
                             </div>
-                            <div class="col-6 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" onClick={(e) => handleDeletePlayer(player.playerId)}>Delete</button>
+                            <div class="col-10 ps-4">
+                                {player?.playerName}
                             </div>
                         </div>)
                     )}
-                </div>
-            </CardHeader>
+                </Row>
+            </CardBody>
         </Card>
     )
 }
