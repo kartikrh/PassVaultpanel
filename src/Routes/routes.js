@@ -67,6 +67,7 @@ import Error500 from "../Pages/Utility/Error500-Page.js";
 import AddNews from "../Pages/News/AddNews.jsx";
 import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
 import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
+import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -94,6 +95,7 @@ const authProtectedRoutes = [
   { path: "/addCommentary", component: <AddCommentary /> },
   { path: "/commentaryMaster", component: <CommentaryMaster /> },
   { path: "/shortCommentary", component: <ShortCommentary /> },
+  { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
   { path: "/importMarket", component: <ImportMarket /> },
   { path: "/Toss", component: <Toss /> },
   { path: "/users", component: <Users /> },
@@ -111,9 +113,9 @@ const authProtectedRoutes = [
   { path: "/addMenuItem", component: <AddMenuItem /> },
   { path: "/news", component: <News /> },
   { path: "/addNews", component: <AddNews /> },
-  {path:"/subscribers", component: <Subscribers/>},
-  {path:"/marketTemplate", component: <MarketTemplate/>},
-  {path:"/addMarketTemplate", component: <AddMarketTemplate/>},
+  { path: "/subscribers", component: <Subscribers /> },
+  { path: "/marketTemplate", component: <MarketTemplate /> },
+  { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,
@@ -128,6 +130,7 @@ const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
+
 
   // Authentication Inner Pages
   { path: "/auth-login", component: <Login1 /> },
