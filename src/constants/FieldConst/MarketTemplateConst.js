@@ -161,7 +161,7 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
         {
-        name: "autoResultAfterBall",
+        name: "autoResultafterBall",
         label:"Auto Result After Ball",
         dependsOnField: "isAutoResultSet",
         dependsOnValue: true,

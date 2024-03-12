@@ -145,6 +145,9 @@ const Index = () => {
   const handleDetailsClick = (id) => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
+  const handleUpdatePlayersClick = (id) => {
+    navigate("/updateCommentaryPlayer", { state: { commentaryId: id } });
+  };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
   };
@@ -396,6 +399,24 @@ const Index = () => {
           className="btn"
           onClick={() => {
             handleDetailsClick(record.commentaryId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Update Players",
+      key: "updatePlayers",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleUpdatePlayersClick(record.commentaryId);
           }}
         >
           <i className="bx bx-plus"></i>

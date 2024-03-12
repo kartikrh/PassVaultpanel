@@ -9,7 +9,11 @@ import { ERROR } from "../../../components/Common/Const";
 
 export const ChnageMatchTypeModel = ({changeModelVisible, setChangeModelVisible, selectedCommentary,setSelectedCommentary, handleChange, setMatchType, singleCheck}) => {
     const [matchTypeList, setMatchTypeList] = useState([])
+    const [selectedCommentaryVals, setSelectedCommentaryVals] = useState({})
     const dispatch = useDispatch();
+    useEffect(()=>{
+setSelectedCommentaryVals(selectedCommentary)
+    },[])
     const fetchData = async (latestValueFromTable) => {
         await axiosInstance
           .post(`/admin/commentary/getMatchTypeListByCommentary`, {
@@ -39,11 +43,11 @@ export const ChnageMatchTypeModel = ({changeModelVisible, setChangeModelVisible,
                 <div className="d-flex my-4">
                 <div style={{marginRight:"20px"}}>
                     <span style={{marginRight:"10px", fontWeight:"700"}}>Event Name:</span>
-                    <span >{selectedCommentary?.eventName}</span>
+                    <span >{selectedCommentaryVals?.eventName}</span>
                 </div>
                 <div>
                     <span style={{marginRight:"10px", fontWeight:"700"}}>RefId:</span>
-                    <span>{selectedCommentary?.eventRefId}</span>
+                    <span>{selectedCommentaryVals?.eventRefId}</span>
                 </div>
                 </div>
                 {/* <h6 className='text-left mt-4'>Match Type</h6> */}
