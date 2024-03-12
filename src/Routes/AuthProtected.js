@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Route, useNavigate } from "react-router-dom";
 
 import { useProfile } from "../Hooks/UserHooks";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import axiosInstance from "../Features/axios";
 import { useSelector } from "react-redux";
 
@@ -12,7 +12,7 @@ const AuthProtected = (props) => {
   const token = useSelector((state) => state.user.token);
 
   const navigate = useNavigate();
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  // const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   /*
     redirect is un-auth access protected routes via url
@@ -41,38 +41,38 @@ const AuthProtected = (props) => {
     return () => window.removeEventListener('storage', storageChange, false);
   }, []);
 
-  useEffect(() => {
-    let socket;
-    if (token) {
-      socket = io.connect(process.env.REACT_APP_SOCKET_URL, {
-        auth: {
-          token: token
-        }
-      });
-      socket.on("connect", () => {
-        setIsSocketConnected(true);
-      });
-      socket.on("disconnect", (reason) => {
-        setIsSocketConnected(false);
-      });
-      socket.on("logout", goToLogout)
-    }
-    return () => {
-      if (socket) {
-        socket.disconnect()
-      }
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   let socket;
+  //   if (token) {
+  //     socket = io.connect(process.env.REACT_APP_SOCKET_URL, {
+  //       auth: {
+  //         token: token
+  //       }
+  //     });
+  //     socket.on("connect", () => {
+  //       setIsSocketConnected(true);
+  //     });
+  //     socket.on("disconnect", (reason) => {
+  //       setIsSocketConnected(false);
+  //     });
+  //     socket.on("logout", goToLogout)
+  //   }
+  //   return () => {
+  //     if (socket) {
+  //       socket.disconnect()
+  //     }
+  //   }
+  // }, [token]);
 
-  useEffect(() => {
-    let interval;
-    if (!isSocketConnected) {
-      interval = setInterval(verifyToken, process.env.REACT_APP_API_INTERVAL);
-    }
-    return () => {
-      clearInterval(interval);
-    }
-  }, [isSocketConnected])
+  // useEffect(() => {
+  //   let interval;
+  //   if (!isSocketConnected) {
+  //     interval = setInterval(verifyToken, process.env.REACT_APP_API_INTERVAL);
+  //   }
+  //   return () => {
+  //     clearInterval(interval);
+  //   }
+  // }, [isSocketConnected])
 
 
   if (!userProfile && loading) {
