@@ -181,3 +181,7 @@
 .ball-red {
     background-color: red;
 }
+
+#addreloadicon{
+    max-width: 126px;
+}
