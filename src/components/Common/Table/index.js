@@ -60,6 +60,7 @@ const Index = forwardRef(
       teams,
       setDateRange,
       dateRange,
+      matchType,
     },
     ref
   ) => {
@@ -138,21 +139,21 @@ const Index = forwardRef(
           ...tableActions,
           isActive: id,
         });
-      }else{
-      if (key === "isShowContent") {
-        setStatusSwitch(id);
-      }
-      reFetchData({
-        ...tableActions,
-        [key]: id?.value,
-      });
-      setTableActions((preValue) => {
-        return {
-          ...preValue,
+      } else {
+        if (key === "isShowContent") {
+          setStatusSwitch(id);
+        }
+        reFetchData({
+          ...tableActions,
           [key]: id?.value,
-        };
-      });
-    }
+        });
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id?.value,
+          };
+        });
+      }
     };
 
     const handleSearchFilter = () => {
@@ -484,6 +485,10 @@ const Index = forwardRef(
           value: 0,
           label: "Event Type",
         },
+        matchType: {
+          value: 0,
+          label: "Match Type",
+        },
         commentaryStatus: {
           value: 0,
           label: "Commentary Status",
@@ -495,12 +500,14 @@ const Index = forwardRef(
         team: {
           value: 0,
           label: "Select Team",
-        }
+        },
       });
-     if(tableElement?.dateRange){ setDateRange({
-      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-      endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
-    })}
+      if (tableElement?.dateRange) {
+        setDateRange({
+          startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+          endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
+        });
+      }
       setStatusSwitch(true);
       handleReset({
         isActive: true,
@@ -642,6 +649,32 @@ const Index = forwardRef(
                             handleTableActions = {handleTableActions}
                             items = {{label:"eventType", value:"eventTypeId"}}
                             /> */}
+                          </div>
+                        ) : null}
+                        {tableElement?.matchTypeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.matchType}
+                              placeholder="Match Type"
+                              onChange={(e) => {
+                                handleTableActions("matchTypeId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  matchType: e,
+                                });
+                              }}
+                              options={matchType?.map((item) => ({
+                                label: item?.matchType,
+                                value: item?.matchTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
                           </div>
                         ) : null}
                         {tableElement?.competitionsSelect ? (

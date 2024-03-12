@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
+import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
@@ -8,41 +9,50 @@ import { MatchTypeClone } from "../../components/Model/Clone";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_MATCH_TYPE } from "../../components/Common/Const";
+import {
+  ERROR,
+  PERMISSION_ADD,
+  PERMISSION_DELETE,
+  PERMISSION_EDIT,
+  PERMISSION_VIEW,
+  SUCCESS,
+  TAB_MATCH_TYPE,
+} from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-  const pageName = TAB_MATCH_TYPE
+  const pageName = TAB_MATCH_TYPE;
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Match Type";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
-  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
+  const [checekedList, setCheckedList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [cloneName, setCloneName] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
-    const tableActions = finalizeRef.current.getTableAction()
+
+    const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
       .post(`/admin/matchType/all`, {
-        ...(latestValueFromTable || tableActions)
+        ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result;
         let apiDataIdList = [];
-        apiData.forEach(ele => {
-          apiDataIdList.push(ele?.matchTypeId)
-        })
+        apiData.forEach((ele) => {
+          apiDataIdList.push(ele?.matchTypeId);
+        });
         setData(apiData);
-        setDataIndexList(apiDataIdList)
-        setCheckedList([])
+        setDataIndexList(apiDataIdList);
+        setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -51,13 +61,13 @@ const Index = () => {
   };
 
   const handleSingleCheck = (e) => {
-    let updateSingleCheck = []
+    let updateSingleCheck = [];
     if (checekedList.includes(e.matchTypeId)) {
       updateSingleCheck = checekedList.filter((item) => item !== e.matchTypeId);
     } else {
       updateSingleCheck = [...checekedList, e.matchTypeId];
     }
-    setCheckedList(updateSingleCheck)
+    setCheckedList(updateSingleCheck);
   };
 
   const handleClone = async () => {
@@ -69,11 +79,23 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
         setCloneModelVisible(false);
       })
       .catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -85,19 +107,32 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
         setDeleteModelVisable(false);
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
-
   const handleEdit = (id) => {
     navigate("/addMatchType", { state: { userId: id } });
   };
-
+  const handlePredictorClick = (id) => {
+    navigate("/matchTypePredictor", { state: { userId: id } });
+  };
   const columns = [
     {
       title: (
@@ -107,10 +142,16 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
             onChange={() => {
-              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-              )
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
             }}
           />
         </div>
@@ -132,23 +173,43 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-    && {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"
-        onClick={() => {
-          handleEdit(record.matchTypeId);
-        }}
-      ></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          onClick={() => {
+            handleEdit(record.matchTypeId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Match Type",
       dataIndex: "matchType",
       key: "matchType",
-      style: { width: "96%" },
+      style: { width: "90%" },
       sort: true,
+    },
+    {
+      title: "Predictor",
+      key: "predictor",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePredictorClick(record.matchTypeId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "8%", textAlign: "center" },
     },
   ];
 
@@ -162,7 +223,7 @@ const Index = () => {
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
   }, []);
@@ -183,8 +244,16 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addMatchType"}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
-            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            isAddPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_ADD
+            )}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

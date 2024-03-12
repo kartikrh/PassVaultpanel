@@ -5,18 +5,18 @@ import { Navigate } from "react-router-dom";
 import Dashboard from "../Pages/Dashboard";
 
 //Pages
-import Tabs from '../Pages/Tabs'
-import Roles from '../Pages/Roles'
-import EventTypes from '../Pages/EventTypes'
-import Players from '../Pages/Players'
-import Teams from '../Pages/Teams'
-import MatchType from '../Pages/MatchType'
-import PenaltyRuns from '../Pages/PenaltyRuns'
-import Competition from '../Pages/Competition'
-import Events from '../Pages/Events'
-import Commentary from '../Pages/Commentary'
-import Users from '../Pages/Users'
-import ImportMarket from '../Pages/ImportMarket'
+import Tabs from "../Pages/Tabs";
+import Roles from "../Pages/Roles";
+import EventTypes from "../Pages/EventTypes";
+import Players from "../Pages/Players";
+import Teams from "../Pages/Teams";
+import MatchType from "../Pages/MatchType";
+import PenaltyRuns from "../Pages/PenaltyRuns";
+import Competition from "../Pages/Competition";
+import Events from "../Pages/Events";
+import Commentary from "../Pages/Commentary";
+import Users from "../Pages/Users";
+import ImportMarket from "../Pages/ImportMarket";
 import AddTabs from "../Pages/Tabs/AddTabs.jsx";
 import AddRoles from "../Pages/Roles/AddRoles.jsx";
 import AddEventTypes from "../Pages/EventTypes/AddEventType.jsx";
@@ -28,6 +28,7 @@ import AddCompetition from "../Pages/Competition/AddCompetition.jsx";
 import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
+import AddMarketTemplate from "../Pages/MarketTemplate/AddMarketTamplate.js";
 import ChangePassword from '../Pages/ChangePassword'
 import Toss from '../Pages/Commentary/Toss.jsx'
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
@@ -43,8 +44,8 @@ import MenuList from '../Pages/menuList'
 import AddMenuType from '../Pages/menuList/AddMenuType.js'
 import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
 import News from '../Pages/News'
-
-
+import Subscribers from '../Pages/Subscribers'
+import MarketTemplate from '../Pages/MarketTemplate'
 
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
@@ -65,54 +66,57 @@ import Error404 from "../Pages/Utility/Error404-Page.js";
 import Error500 from "../Pages/Utility/Error500-Page.js";
 import AddNews from "../Pages/News/AddNews.jsx";
 import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
-
-
+import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 
 const authProtectedRoutes = [
   //dashboard
   { path: "/dashboard", component: <Dashboard /> },
   { path: "/tabs", component: <Tabs /> },
-  { path: '/addTabs', component: <AddTabs /> },
+  { path: "/addTabs", component: <AddTabs /> },
   { path: "/roles", component: <Roles /> },
   { path: "/addRoles", component: <AddRoles /> },
   { path: "/eventType", component: <EventTypes /> },
   { path: "/addEventType", component: <AddEventTypes /> },
-  { path: '/events', component: <Events /> },
-  { path: '/addEvents', component: <AddEvents /> },
+  { path: "/events", component: <Events /> },
+  { path: "/addEvents", component: <AddEvents /> },
   { path: "/Players", component: <Players /> },
   { path: "/addPlayer", component: <AddPlayers /> },
-  { path: '/Teams', component: <Teams /> },
-  { path: '/addTeams', component: <AddTeams /> },
-  { path: '/matchType', component: <MatchType /> },
-  { path: '/addMatchType', component: <AddMatchType /> },
-  { path: '/penalty', component: <PenaltyRuns /> },
-  { path: '/addPenalty', component: <AddPenaltyRuns /> },
-  { path: '/competition', component: <Competition /> },
-  { path: '/addCompetition', component: <AddCompetition /> },
-  { path: '/commentary', component: <Commentary /> },
-  { path: '/addCommentary', component: <AddCommentary /> },
-  { path: '/commentaryMaster', component: <CommentaryMaster /> },
-  { path: '/shortCommentary', component: <ShortCommentary /> },
-  { path: '/importMarket', component: <ImportMarket /> },
-  { path: '/Toss', component: <Toss /> },
-  { path: '/users', component: <Users /> },
-  { path: '/addUsers', component: <AddUsers /> },
-  { path: '/blocks', component: <Blocks /> },
-  { path: '/addblocks', component: <AddBlock /> },
-  { path: '/config', component: <Config /> },
-  { path: '/addConfig', component: <AddConfig /> },
-  { path: '/addPageFormat', component: <AddPageFormat /> },
+  { path: "/Teams", component: <Teams /> },
+  { path: "/addTeams", component: <AddTeams /> },
+  { path: "/matchType", component: <MatchType /> },
+  { path: "/addMatchType", component: <AddMatchType /> },
+  { path: "/matchTypePredictor", component: <MatchTypePredictor /> },
+  { path: "/penalty", component: <PenaltyRuns /> },
+  { path: "/addPenalty", component: <AddPenaltyRuns /> },
+  { path: "/competition", component: <Competition /> },
+  { path: "/addCompetition", component: <AddCompetition /> },
+  { path: "/commentary", component: <Commentary /> },
+  { path: "/addCommentary", component: <AddCommentary /> },
+  { path: "/commentaryMaster", component: <CommentaryMaster /> },
+  { path: "/shortCommentary", component: <ShortCommentary /> },
+  { path: "/importMarket", component: <ImportMarket /> },
+  { path: "/Toss", component: <Toss /> },
+  { path: "/users", component: <Users /> },
+  { path: "/addUsers", component: <AddUsers /> },
+  { path: "/blocks", component: <Blocks /> },
+  { path: "/addblocks", component: <AddBlock /> },
+  { path: "/config", component: <Config /> },
+  { path: "/addConfig", component: <AddConfig /> },
+  { path: "/addPageFormat", component: <AddPageFormat /> },
   { path: "/PageFormat", component: <PageFormat /> },
-  { path: '/addPage', component: <AddPage /> },
+  { path: "/addPage", component: <AddPage /> },
   { path: "/Page", component: <Page /> },
   { path: "/menuList", component: <MenuList /> },
   { path: "/addMenuType", component: <AddMenuType /> },
   { path: "/addMenuItem", component: <AddMenuItem /> },
   { path: "/news", component: <News /> },
   { path: "/addNews", component: <AddNews /> },
-
+  {path:"/subscribers", component: <Subscribers/>},
+  {path:"/marketTemplate", component: <MarketTemplate/>},
+  {path:"/addMarketTemplate", component: <AddMarketTemplate/>},
   {
-    path: '/changePassword', component: <ChangePassword />
+    path: "/changePassword",
+    component: <ChangePassword />,
   },
   {
     path: "/",
@@ -121,7 +125,6 @@ const authProtectedRoutes = [
   },
 ];
 const publicRoutes = [
-
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },

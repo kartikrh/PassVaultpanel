@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { PlayerFields } from "../../constants/FieldConst/PlayerConst";
+import { MarketTemplateFileds } from "../../constants/FieldConst/MarketTemplateConst";
 import {
   Button,
   ButtonDropdown,
@@ -23,40 +23,39 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  TAB_PLAYERS,
+  TAB_MARKET_TEMPLATE,
 } from "../../components/Common/Const";
 import {
-  addPlayerToDb,
+  addMarketTemplateToDb,
   updateSavedState,
-} from "../../Features/Tabs/playerSlice";
+} from "../../Features/Tabs/marketTemplateSlice";
 import axiosInstance from "../../Features/axios";
+import { convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { updateToastData } from "../../Features/toasterSlice";
-import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
+import moment from "moment";
 
-const formatMultiSelectDataTeams = (inputList) => {
-  const outputList = [];
-  inputList.forEach((item) => outputList.push(item.teamId));
-  return outputList.filter((element) => element);
-};
-function AddPlayer() {
-  const pageName = TAB_PLAYERS;
+function AddMarketTemaplate() {
+  const pageName = TAB_MARKET_TEMPLATE;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
+  const [fields, setFields] = useState([]);
   const { isSaved, isLoading, error } = useSelector(
-    (state) => state.tabsData.player
+    (state) => state.tabsData.marketTemplate
   );
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [id, setId] = useState(location.state?.userId || "0");
-
+  const [marketTemplateId, setMarketTemplateId] = useState(
+    location.state?.marketTemplateId || "0"
+  );
+  const [isOverMarket, setIsOverMarket] = useState(undefined);
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
@@ -65,24 +64,22 @@ function AddPlayer() {
   }, []);
 
   useEffect(() => {
-    if (id !== "0") {
-      fetchData(id);
-      setDisabledFields({
-        parentId: true,
-        displayType: true,
-      });
-    }
-  }, [id]);
+    // if (marketTemplateId !== "0") {
+    fetchData(marketTemplateId);
+    setDisabledFields({
+      parentId: true,
+      displayType: true,
+    });
+    // }
+  }, [setMarketTemplateId]);
 
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
-      if (currentSaveAction === SAVE) {
-      } else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/Players");
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/marketTemplate");
       else if (currentSaveAction === SAVE_AND_NEW) {
-        setDisabledFields({});
         setInitialEditData({});
-        setId("0");
+        setMarketTemplateId("0");
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined);
@@ -91,12 +88,9 @@ function AddPlayer() {
 
   const fetchData = async (id) => {
     await axiosInstance
-      .post("/admin/player/byId", { playerId: id })
+      .post("/admin/marketTemplate/byId", { marketTemplateId: id })
       .then((response) => {
-        setInitialEditData({
-          ...response?.result,
-          teamId: formatMultiSelectDataTeams(response?.result?.teams),
-        });
+        setInitialEditData({ ...response?.result });
       })
       .catch((error) => {
         dispatch(
@@ -110,70 +104,14 @@ function AddPlayer() {
   };
 
   const fetchMasterData = async () => {
-    axiosInstance
-      .post("/admin/player/teamList", {})
+    await axiosInstance
+      .post("admin/matchType/all", {})
       .then((response) => {
-        setMasterData((prevData) => ({
-          ...prevData,
-          teamId: response?.result?.map((item) => {
-            return { label: item.teamName, value: item.teamId };
-          }),
-        }));
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-    axiosInstance
-      .post("/admin/player/eventTypeList", {})
-      .then((response) => {
-        setMasterData((prevData) => ({
-          ...prevData,
-          eventTypeId: response?.result?.map((item) => {
-            return { label: item.eventType, value: item.eventTypeId };
-          }),
-        }));
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-    axiosInstance
-      .post("/admin/player/allPlayerTypes", {})
-      .then((response) => {
-        setMasterData((prevData) => ({
-          ...prevData,
-          playerTypeId: response?.result?.map((item) => {
-            return { label: item.playerType, value: item.playerTypeId };
-          }),
-        }));
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-    axiosInstance
-      .post("admin/player/allBowlingTypes", {})
-      .then((response) => {
-        setMasterData((prevData) => ({
-          ...prevData,
-          bowlingTypeId: response?.result?.map((item) => {
-            return { label: item.bowlingType, value: item.bowlingTypeId };
+        console.log("This is Response ======>>>>", response.result);
+        setMasterData((preData) => ({
+          ...preData,
+          matchTypeID: response.result?.map((item) => {
+            return { label: item.matchType, value: item.matchTypeId };
           }),
         }));
       })
@@ -188,32 +126,78 @@ function AddPlayer() {
       });
   };
 
+  const handleFormADataChange = async (newFormData) => {
+    if (newFormData?.isOver === true) {
+      setIsOverMarket(true);
+      setDisabledFields({
+        isPlayer: true,
+        player: true,
+      });
+    } else if (newFormData?.isPlayer === true) {
+      setIsOverMarket(false);
+      setDisabledFields({
+        isOver: true,
+        over: true,
+      });
+    } else if (newFormData?.isPlayer === false) {
+      setDisabledFields({
+        isOver: false,
+        over: false,
+      });
+    } else if (newFormData?.isOver === false) {
+      setDisabledFields({
+        isPlayer: false,
+        player: false,
+      });
+    }
+    if (newFormData?.isPlayer === true) {
+      setIsOverMarket(newFormData?.isOver);
+      const filterFields = MarketTemplateFileds.filter((value) => {
+        return value?.name !== "isOver";
+      });
+      console.log(filterFields);
+      setFields(filterFields);
+    }
+  };
   const handleSaveClick = async (saveAction) => {
+    const impKeys = {
+      playerName: "",
+      marketTemplateId: 0,
+      templateName: "",
+      isActive: false,
+      isAutoCancel: false,
+      isAutoResultSet: false,
+      isBallStart: false,
+      isOver: false,
+      isPlayer: false,
+      isPredefineMarket: false,
+      isPreMatchMarket: false,
+      isPreMatchOnly: false,
+    };
     const dataToSave = finalizeRef.current.finalizeData();
-    console.log("dataToSave", dataToSave);
-    if (dataToSave) {
-      const extraData = {
-        playerId: id,
-      };
-      console.log("extraData", extraData);
+    const finalData = {
+      ...impKeys,
+      ...dataToSave,
+    };
+    if (finalData) {
       setCurrentSaveAction(saveAction);
-      dispatch(
-        addPlayerToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
-      );
+      dispatch(addMarketTemplateToDb(finalData));
     }
   };
 
   const handleBackClick = () => {
-    navigate("/Players");
+    navigate("/marketTemplate");
   };
-
+  useEffect(() => {
+    setFields(MarketTemplateFileds);
+  }, []);
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Players </h3>
+              <h3>Market Template </h3>
             </Col>
             <Card>
               <CardBody>
@@ -295,10 +279,11 @@ function AddPlayer() {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={PlayerFields}
+                  fields={MarketTemplateFileds}
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
+                  onFormDataChange={handleFormADataChange}
                 />
               </CardBody>
             </Card>
@@ -309,4 +294,4 @@ function AddPlayer() {
   );
 }
 
-export default AddPlayer;
+export default AddMarketTemaplate;
