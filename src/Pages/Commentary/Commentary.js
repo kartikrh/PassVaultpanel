@@ -203,10 +203,7 @@ const Commentary = (props) => {
         setRedirectOnScreenChange(true)
     }
     useEffect(() => {
-        if (updateRunsFromWicket) {
-            updateRuns(updateRunsFromWicket)
-            setUpdateRunFromWicket(undefined)
-        }
+        if (updateRunsFromWicket) updateRuns(updateRunsFromWicket)
     }, [updateRunsFromWicket])
     useEffect(() => {
         if (isUndoCompleted) {
@@ -249,26 +246,30 @@ const Commentary = (props) => {
     }, [changeOverOnPopupClick])
     useEffect(() => {
         if (saveToDb) {
-            // setting commentary ball by ball id to 0 in order to make sure that every time new ball is created
-            let newCurrentBall = undefined
-            if (isUndoBall) newCurrentBall = currentBall
-            else newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
-            const generatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
-            const objToSave = {
-                "commentaryBallByBall": generatedBallByBall,
-                "commentaryDetails": {
-                    ...commentaryDetails,
-                    "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall })
-                },
-                "commentaryOvers": currentOver,
-                "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
-                "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
-                "commentaryTeams": [teams[BATTING_TEAM]],
+            if (updateRunsFromWicket) callWicketToDB()
+            else {
+                // setting commentary ball by ball id to 0 in order to make sure that every time new ball is created
+                let newCurrentBall = undefined
+                if (isUndoBall) newCurrentBall = currentBall
+                else newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
+                const generatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
+                const objToSave = {
+                    "commentaryBallByBall": generatedBallByBall,
+                    "commentaryDetails": {
+                        ...commentaryDetails,
+                        "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall })
+                    },
+                    "commentaryOvers": currentOver,
+                    "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
+                    "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
+                    "commentaryTeams": [teams[BATTING_TEAM]],
+                }
+                dispatch(addCommentaryScreenData(objToSave))
+                setSaveToDb(false)
+                checkInningsSwitch(RUN)
             }
-            dispatch(addCommentaryScreenData(objToSave))
-            setSaveToDb(false)
-            checkInningsSwitch(RUN)
         }
+        //Data saving to DB----
     }, [saveToDb])
     useEffect(() => {
         if (isOverChange) {
@@ -399,7 +400,6 @@ const Commentary = (props) => {
                             value: commentaryDataToUpdate.commentaryBallByBallDetails.ballRun,
                             isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType || false
                         }]))
-                    if (isWicketChange) callWicketToDB(commentartBallByBallIdToUpdate)
                 }
                 // Add partnershot to the partnership history when new Partnershi created
                 if (!isEmpty(commentaryDataToUpdate.commentaryPartnershipDetails) && currentPartnership.commentaryPartnershipId
@@ -424,9 +424,9 @@ const Commentary = (props) => {
             dispatch(clearAddCommentaryScreenData())
         }
     }, [commentaryDataToUpdate])
-    const callWicketToDB = (currentBallByBallID) => {
-        const newCurrentBall = currentBall
-        newCurrentBall["commentaryBallByBallId"] = currentBallByBallID
+    const callWicketToDB = () => {
+        const newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
+        const generatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership, teams })
         const updatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
         const updatedWicket = generateWicket({ commentaryDetails, currentOver, teams, currentWicket, currentBall: newCurrentBall })
@@ -436,16 +436,19 @@ const Commentary = (props) => {
                 "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall })
             },
             "commentaryPartnership": updatedPartnership,
-            "commentaryBallByBall": updatedBallByBall,
+            "commentaryBallByBall": generatedBallByBall,
             "commentaryWicket": updatedWicket,
-            "commentaryPlayers": Object.values(onPitchPlayers),
+            "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
+            "commentaryTeams": [teams[BATTING_TEAM]],
+            "commentaryOvers": currentOver,
         }
         dispatch(addCommentaryScreenData(objToSave))
+        setUpdateRunFromWicket(undefined)
         // update here
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
     }
-    const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        if (!freezePlayers) setCurrentBall({})
+    const updateRuns = ({ run, ball, batter, bowler, isBoundary, isWicketBall = false }) => {
+        if (!isWicketBall) setCurrentBall({})
         const updateBattingTeam = {}
         let updateBatter = {}
         let updateBowler = {}
@@ -498,15 +501,15 @@ const Commentary = (props) => {
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
             }
-        } else if (run % 2 !== 0) isChangeStrike = freezePlayers ? false : true
+        } else if (run % 2 !== 0) isChangeStrike = isWicketBall ? false : true
         updateBatter = { ...onPitchPlayers[ON_STRIKE], ...updateBatter, onStrike: isChangeStrike ? false : true }
         updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
         const updateNonStriker = { ...onPitchPlayers[NON_STRIKE], onStrike: isChangeStrike ? true : false }
-        if (!freezePlayers) {
+        if (!isWicketBall) {
             updateNonStriker["onStrike"] = isChangeStrike ? true : false
             updateBatter["onStrike"] = isChangeStrike ? false : true
         }
-        if (!freezePlayers) checkForOverSwitch(updateOver.ballCount)
+        if (!isWicketBall) checkForOverSwitch(updateOver.ballCount)
         updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
         setPlayers({
             [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
@@ -704,7 +707,6 @@ const Commentary = (props) => {
     const handleWicket = (wicketData) => {
         if (!wicketData.isExtraWicket) setCurrentBall({})
         const ballToUpdateOnWicket = wicketData.isExtraWicket ? 0 : 1
-        setIsWicketChange(true)
         const updateBattingTeam = {}
         const updateBall = {}
         const updateWicket = {}
@@ -768,7 +770,8 @@ const Commentary = (props) => {
         setShowWicketModal(undefined)
         checkInningsSwitch(WICKET)
         setExtrasType(undefined)
-        setUpdateRunFromWicket({ run: +wicketData.runs, ball: ballToUpdateOnWicket, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], type: "", freezePlayers: true })
+        setIsWicketChange(true)
+        setUpdateRunFromWicket({ run: +wicketData.runs, ball: ballToUpdateOnWicket, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], type: "", isWicketBall: true })
     }
     const onExtrasChange = (dataFromModal) => {
         updateExtras(extrasType, +dataFromModal.run, dataFromModal.isBoundary)
