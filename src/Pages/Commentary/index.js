@@ -148,6 +148,9 @@ const Index = () => {
   const handleUpdatePlayersClick = (id) => {
     navigate("/updateCommentaryPlayer", { state: { commentaryId: id } });
   };
+  const handleCommentaryMarketTemplateClick = (id) => {
+    navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
+  };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
   };
@@ -417,6 +420,24 @@ const Index = () => {
           className="btn"
           onClick={() => {
             handleUpdatePlayersClick(record.commentaryId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Market Template",
+      key: "marketTemplate",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCommentaryMarketTemplateClick(record.commentaryId);
           }}
         >
           <i className="bx bx-plus"></i>
