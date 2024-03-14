@@ -47,42 +47,7 @@ export const addCommentaryScreenData = createAsyncThunk(
         }
     }
 );
-export const undoBallFromCommentary = createAsyncThunk(
-    'commentary/undoBallFromCommentary',
-    async (data, { rejectWithValue, dispatch }) => {
-        const startTime = performance.now(); // Start timing
-        try {
-            const response = await axiosInstance.post('/admin/commentary/deleteBallByBall', data);
-            const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call Succed after ${endTime - startTime} milliseconds.`);
-            // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            return response?.result;
-        } catch (error) {
-            const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            return rejectWithValue(error?.message);
-        }
-    }
-);
-export const undoOverFromCommentary = createAsyncThunk(
-    'commentary/undoOverFromCommentary',
-    async (data, { rejectWithValue, dispatch }) => {
-        const startTime = performance.now(); // Start timing
-        try {
-            const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call Succed after ${endTime - startTime} milliseconds.`);
-            const response = await axiosInstance.post('/admin/commentary/deleteOverCommentary', data);
-            // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            return response?.result;
-        } catch (error) {
-            const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            return rejectWithValue(error?.message);
-        }
-    }
-);
+
 export const changeBowlerFromCommentary = createAsyncThunk(
     'commentary/changeBowlerFromCommentary',
     async (data, { rejectWithValue, dispatch }) => {
@@ -153,6 +118,7 @@ const commentarySlice = createSlice({
             })
             .addCase(addCommentaryScreenData.fulfilled, (state, action) => {
                 state.commentaryDataToUpdate = action.payload
+                state.isUndoCompleted = (action.payload?.deleteCommentaryBallByBallId || action.payload?.deleteOverId) ? true : false
                 state.isCommentaryDataUpdated = true
                 state.isCommentaryBallLoading = false
             })
@@ -160,17 +126,17 @@ const commentarySlice = createSlice({
                 state.error = action.payload;
                 state.isCommentaryBallLoading = false
             })
-            .addCase(undoBallFromCommentary.pending, (state) => {
-                state.isCommentaryBallLoading = true;
-            })
-            .addCase(undoBallFromCommentary.fulfilled, (state, action) => {
-                state.isUndoCompleted = true
-                state.isCommentaryBallLoading = false
-            })
-            .addCase(undoBallFromCommentary.rejected, (state, action) => {
-                state.error = action.payload;
-                state.isCommentaryBallLoading = false
-            })
+            // .addCase(undoBallFromCommentary.pending, (state) => {
+            //     state.isCommentaryBallLoading = true;
+            // })
+            // .addCase(undoBallFromCommentary.fulfilled, (state, action) => {
+            //     state.isUndoCompleted = true
+            //     state.isCommentaryBallLoading = false
+            // })
+            // .addCase(undoBallFromCommentary.rejected, (state, action) => {
+            //     state.error = action.payload;
+            //     state.isCommentaryBallLoading = false
+            // })
             .addCase(changeBowlerFromCommentary.pending, (state) => {
                 state.isCommentaryBallLoading = true;
             })

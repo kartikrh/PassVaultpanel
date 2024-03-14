@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { fetchNextPlayerOrder, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, undoBallFromCommentary, undoOverFromCommentary } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
@@ -218,7 +218,6 @@ const Commentary = (props) => {
                 setCurrentPartnership(updaterPartnershipHistory[updaterPartnershipHistory.length - 1])
             }
             else if (isUndoBall === OVER) {
-                dispatch(undoOverFromCommentary({ "commentaryOverId": currentOver.overId }))
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverBallByBallDisplay(getBallsForGivenOver(ballHistory, teams[BATTING_TEAM]?.teamOver, true))
                 setOverHistory(updatedOverHistory)
@@ -256,6 +255,7 @@ const Commentary = (props) => {
                 if (isUndoBall) {
                     newCurrentBall = currentBall
                     objToSave["deleteCommentaryBallByBallId"] = currentBall.commentaryBallByBallId
+                    if (isUndoBall === OVER) objToSave["deleteOverId"] = currentOver.overId
                 }
                 else newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
                 const generatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
@@ -1257,7 +1257,8 @@ const Commentary = (props) => {
         setTeams({ ...teams, [BATTING_TEAM]: updatedBattingTeam })
         setPlayers({ [BATTING_TEAM]: updatedBattingPlayerList, [BOWLING_TEAM]: updatedBowlingPlayerList })
         setOnPitchPlayers(previousOnPitchPlayer)
-        dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
+        // dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
+        setSaveToDb(true)
         setIsUndoBall(OVER)
     }
     const onUndoPlayerSelection = () => {
