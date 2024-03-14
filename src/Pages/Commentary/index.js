@@ -52,6 +52,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
+  const [details, setDetails] = useState({})
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -145,8 +146,9 @@ const Index = () => {
   const handleDetailsClick = (id) => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
-  const handleUpdatePlayersClick = (id) => {
-    navigate("/updateCommentaryPlayer", { state: { commentaryId: id } });
+  const handleUpdatePlayersClick = (details) => {
+    console.log("details ===>>>", details)
+    navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details  } });
   };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
@@ -416,7 +418,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handleUpdatePlayersClick(record.commentaryId);
+            handleUpdatePlayersClick(record);
           }}
         >
           <i className="bx bx-plus"></i>
