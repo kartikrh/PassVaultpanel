@@ -14,15 +14,15 @@
 }
 
 @media only screen and (min-width: 768px) {
-  .ck-content {
-    min-height: 200px;
-  }
+    .ck-content {
+        min-height: 200px;
+    }
 }
 
 @media only screen and (max-width: 767px) {
-  .ck-content {
-    min-height: 150px;
-  }
+    .ck-content {
+        min-height: 150px;
+    }
 }
 
 .block {
@@ -111,3 +111,47 @@
     min-height: 300px;
     border: 1px solid #ccc;
 }
+
+
+/* Floating Button Css Start*/
+.floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    /* High z-index */
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    z-index: 1050;
+    /* Higher z-index */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    position: relative;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Foating Button Css End */

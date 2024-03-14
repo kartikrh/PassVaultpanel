@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { fetchNextPlayerOrder, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, undoBallFromCommentary, undoOverFromCommentary } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
@@ -126,6 +126,7 @@ const Commentary = (props) => {
             "displayStatus": WINNING_MESSAGE
         }
         let objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
                 ...commentaryUpdates
@@ -161,6 +162,7 @@ const Commentary = (props) => {
             setRedirectOnScreenChange(true)
         }
         let objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
                 ...commentaryUpdates
@@ -185,6 +187,7 @@ const Commentary = (props) => {
             }
         });
         let objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
@@ -218,7 +221,6 @@ const Commentary = (props) => {
                 setCurrentPartnership(updaterPartnershipHistory[updaterPartnershipHistory.length - 1])
             }
             else if (isUndoBall === OVER) {
-                dispatch(undoOverFromCommentary({ "commentaryOverId": currentOver.overId }))
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverBallByBallDisplay(getBallsForGivenOver(ballHistory, teams[BATTING_TEAM]?.teamOver, true))
                 setOverHistory(updatedOverHistory)
@@ -256,19 +258,21 @@ const Commentary = (props) => {
                 if (isUndoBall) {
                     newCurrentBall = currentBall
                     objToSave["deleteCommentaryBallByBallId"] = currentBall.commentaryBallByBallId
+                    if (isUndoBall === OVER) objToSave["deleteOverId"] = currentOver.overId
                 }
                 else newCurrentBall = { ...currentBall, commentaryBallByBallId: "0" }
                 const generatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
                 objToSave = {
                     ...objToSave,
+                    "commentaryId": commentaryDetails.commentaryId,
                     "commentaryBallByBall": generatedBallByBall,
+                    "commentaryOvers": currentOver,
+                    "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
+                    "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
                     "commentaryDetails": {
                         ...commentaryDetails,
                         "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall })
                     },
-                    "commentaryOvers": currentOver,
-                    "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
-                    "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
                     "commentaryTeams": [teams[BATTING_TEAM]],
                 }
                 dispatch(addCommentaryScreenData(objToSave))
@@ -281,6 +285,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (isOverChange) {
             const objToSave = {
+                "commentaryId": commentaryDetails.commentaryId,
                 "commentaryDetails": { ...commentaryDetails, "displayStatus": `${onPitchPlayers[CURRENT_BOWLER]?.playerName} with new Over` },
                 "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams }),
                 "commentaryPlayers": [].concat([onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]], playerUpdateList).filter(x => x),
@@ -297,7 +302,7 @@ const Commentary = (props) => {
             const bowlingTeam = []
             const onPitchPlayers = {}
             let currentPartnership = {}
-            const apiCallObj = {}
+            const apiCallObj = { "commentaryId": commentaryDetails.commentaryId, }
             let currentOver = 0
             let currentOverToUpdate = 0
             props.data.commentaryData.commentaryTeams.forEach(teamDetails => {
@@ -386,7 +391,11 @@ const Commentary = (props) => {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
                 const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams })
-                dispatch(addCommentaryScreenData({ "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }) }, "commentaryBallByBall": generatedBall, }))
+                dispatch(addCommentaryScreenData({
+                    "commentaryId": commentaryDetails.commentaryId,
+                    "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }) },
+                    "commentaryBallByBall": generatedBall,
+                }))
                 setCurrentOver(commentaryDataToUpdate.overdetails)
             }
             // Update ball history on ball change
@@ -438,6 +447,7 @@ const Commentary = (props) => {
         const updatedBallByBall = generateBall({ currentBall: newCurrentBall, commentaryDetails, currentOver, onPitchPlayers, teams })
         const updatedWicket = generateWicket({ commentaryDetails, currentOver, teams, currentWicket, currentBall: newCurrentBall })
         const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall })
@@ -699,6 +709,7 @@ const Commentary = (props) => {
                 return { ...prevValue, ...updatedOnPitchPlayer }
             })
         dispatch(addCommentaryScreenData({
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Over Completed"
@@ -827,6 +838,7 @@ const Commentary = (props) => {
             }
             const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
             const objToSave = {
+                "commentaryId": commentaryDetails.commentaryId,
                 "commentaryPartnership": updatedPartnership,
                 "commentaryDetails": commentaryDetails,
                 "commentaryPlayers": Object.values(updatedOnPitchPlayer),
@@ -883,11 +895,12 @@ const Commentary = (props) => {
         setOnPitchPlayers(updatedOnPitchPlayer)
         updatedOnPitchPlayer["EXTRA_PLAYER"] = updatedNewPlayer
         const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPlayers": Object.values(updatedOnPitchPlayer),
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Batter Switched"
             },
-            "commentaryPlayers": Object.values(updatedOnPitchPlayer),
         }
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [teamType]: listToUpdate })
@@ -952,7 +965,10 @@ const Commentary = (props) => {
             "currentInnings": commentaryDetails.currentInnings,
             "overId": currentOver.overId
         }
-        dispatch(addCommentaryScreenData({ "commentaryPlayers": [updatedPerviousBowler, updatedNewBowler], }))
+        dispatch(addCommentaryScreenData({
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPlayers": [updatedPerviousBowler, updatedNewBowler],
+        }))
         dispatch(changeBowlerFromCommentary(objForChangeBowler))
         setCurrentOver(UpdatedOver)
         setPlayers({ ...players, [BOWLING_TEAM]: updatedPlayerList })
@@ -973,6 +989,7 @@ const Commentary = (props) => {
             const updatedNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
             setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: updatedOnStrikePlayer, [NON_STRIKE]: updatedNonStrikePlayer })
             const objToSave = {
+                "commentaryId": commentaryDetails.commentaryId,
                 "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike` },
                 "commentaryBallByBall": generateBall({
                     currentBall, commentaryDetails, currentOver,
@@ -1257,7 +1274,8 @@ const Commentary = (props) => {
         setTeams({ ...teams, [BATTING_TEAM]: updatedBattingTeam })
         setPlayers({ [BATTING_TEAM]: updatedBattingPlayerList, [BOWLING_TEAM]: updatedBowlingPlayerList })
         setOnPitchPlayers(previousOnPitchPlayer)
-        dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
+        // dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
+        setSaveToDb(true)
         setIsUndoBall(OVER)
     }
     const onUndoPlayerSelection = () => {
@@ -1273,6 +1291,7 @@ const Commentary = (props) => {
             "displayStatus": "Innings Break"
         }
         let objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
                 ...commentaryUpdates
@@ -1298,6 +1317,7 @@ const Commentary = (props) => {
             "displayStatus": "Previous Innings"
         }
         let objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": { ...commentaryDetails, ...commentaryUpdates },
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": [
@@ -1333,6 +1353,7 @@ const Commentary = (props) => {
             }}
             updateDisplayStatus={(displayStatus) => {
                 dispatch(addCommentaryScreenData({
+                    "commentaryId": commentaryDetails.commentaryId,
                     "commentaryDetails": {
                         ...commentaryDetails,
                         "displayStatus": displayStatus
