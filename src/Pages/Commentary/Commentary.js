@@ -65,13 +65,14 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     // useEffect(() => {
-    //     // console.log(commentaryDetails, matchTypeDetails)
-    // console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
-    // console.log("Batting Team: ", teams?.[BATTING_TEAM])
-    // //     // console.log(currentOver, currentBall)
-    // console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
-    // // console.log({ onPitchPlayers, teams })
-    //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
+        // console.log({ overBallByBallDisplay })
+        // console.log(commentaryDetails, matchTypeDetails)
+        // console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
+        // console.log("Batting Team: ", teams?.[BATTING_TEAM])
+        // //     // console.log(currentOver, currentBall)
+        // console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
+        // // console.log({ onPitchPlayers, teams })
+        //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     // })
 
     const checkForOverSwitch = (ballcount) => {
