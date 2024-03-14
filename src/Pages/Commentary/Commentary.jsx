@@ -273,6 +273,11 @@ export const CommentaryScreen = ({
                     </Col>
                 </Row>
             </Col>
+            <Col xs={12} md={6} lg={6}>
+                <img role="button" className="sticky-button"
+                    onClick={() => setStatusPopup(true)}
+                    src="icons/commentary.png" alt="Icon" />
+            </Col>
         </Row >
         {isBoundary &&
             <IsBoundaryModal
