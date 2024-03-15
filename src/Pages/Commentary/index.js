@@ -148,7 +148,6 @@ const Index = () => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
   const handleUpdatePlayersClick = (details) => {
-    console.log("details ===>>>", details)
     navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details  } });
   };
   const handleShortCommentaryClick = (id) => {
