@@ -150,6 +150,9 @@ const Index = () => {
   const handleUpdatePlayersClick = (details) => {
     navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details  } });
   };
+  const handleCommentaryMarketTemplateClick = (id) => {
+    navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
+  };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
   };
@@ -454,6 +457,24 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Market Template",
+      key: "marketTemplate",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCommentaryMarketTemplateClick(record.commentaryId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },

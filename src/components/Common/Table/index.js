@@ -536,6 +536,7 @@ const Index = forwardRef(
                   <Row className="g-2">
                     <Col className="col-sm-auto">
                       <div className="d-flex flex-wrap align-items-center gap-2">
+                        {tableElement?.displayTitle && tableElement?.title}
                         {isAddPermission && (
                           <Button
                             color="success"
