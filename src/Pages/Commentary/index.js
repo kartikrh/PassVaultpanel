@@ -236,6 +236,21 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+  const updatePredictMarket = async (pType, record, cState) =>{
+    await axiosInstance
+    .post(`/admin/commentary/changePredictMarket`, {
+      "commentaryId": record?.commentaryId,
+      [pType]: cState ? false : true,
+    })
+    .then((response) => {
+      fetchData();
+      dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
+  }
   const handleReset = (value) => {
     fetchData(value)
     fetchEventTypeData()
@@ -429,17 +444,17 @@ const Index = () => {
     },
     {
       title: "IsPredictMarket",
-      key: "IsPredictMarket",
+      key: "isPredictMarket",
       render: (text, record) => (
         <Button
-          color={`${record.IsPredictMarket ? "primary" : "danger"}`}
+          color={`${record.isPredictMarket ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("IsPredictMarket", record, record?.IsPredictMarket);
+            updatePredictMarket("isPredictMarket", record, record?.isPredictMarket);
           }}
         >
-          <i className={`bx ${record?.IsPredictMarket ? "bx-check" : "bx-block"}`}></i>
+          <i className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
