@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { fetchNextPlayerOrder, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
@@ -1353,12 +1353,9 @@ const Commentary = (props) => {
                 setIsChangeBowler({ isChange: false, isChangePopup: true })
             }}
             updateDisplayStatus={(displayStatus) => {
-                dispatch(addCommentaryScreenData({
+                dispatch(updateCommentaryDisplayStatus({
                     "commentaryId": commentaryDetails.commentaryId,
-                    "commentaryDetails": {
-                        ...commentaryDetails,
-                        "displayStatus": displayStatus
-                    },
+                    "displayStatus": displayStatus
                 }))
             }}
             overBalls={overBallByBallDisplay}
