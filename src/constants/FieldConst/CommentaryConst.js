@@ -117,14 +117,22 @@ export const MatchDetailFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SELECT,
     },
+    // {
+    //     name: "displayStatus",
+    //     label: "Display Status",
+    //     labelColspan: { xs: 12, md: 2, lg: 2 },
+    //     fieldColspan: { xs: 12, md: 4, lg: 4 },
+    //     regex: /^[a-zA-Z0-9 ]{0,100}$/,
+    //     regexErrorMessage: "Max allowed Characters 20, No Spacial Character",
+    //     type: TEXT,
+    // },
     {
-        name: "displayStatus",
-        label: "Display Status",
+        name: "isPredictMarket",
+        label: "Predict Market",
+        defaultValue: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        regex: /^[a-zA-Z0-9 ]{0,100}$/,
-        regexErrorMessage: "Max allowed Characters 20, No Spacial Character",
-        type: TEXT,
+        fieldColspan: { xs: 12, md: 1, lg: 1 },
+        type: SWITCH,
     },
 ]
 

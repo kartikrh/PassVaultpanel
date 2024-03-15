@@ -140,6 +140,7 @@ const Index = () => {
         );
       });
   };
+
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
@@ -427,6 +428,23 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "IsPredictMarket",
+      key: "IsPredictMarket",
+      render: (text, record) => (
+        <Button
+          color={`${record.IsPredictMarket ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("IsPredictMarket", record, record?.IsPredictMarket);
+          }}
+        >
+          <i className={`bx ${record?.IsPredictMarket ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "IsClientShow",
       key: "isClientShow",
       render: (text, record) => (
@@ -443,6 +461,7 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    
   ];
   //elements required
   const tableElement = {
