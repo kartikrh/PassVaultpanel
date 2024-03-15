@@ -182,6 +182,15 @@
     background-color: red;
 }
 
-#addreloadicon{
+#addreloadicon {
     max-width: 126px;
+}
+
+.sticky-button {
+    height: 3rem;
+    position: fixed;
+    right: 3%;
+    bottom: 10%;
+    cursor: pointer;
+    z-index: 1050;
 }
