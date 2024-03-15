@@ -1,3 +1,4 @@
+import { PLAYER, TEAM } from "../../Pages/Commentary/CommentartConst";
 import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH, COUNTER } from "../../components/Common/Const";
 
 export const MatchDetailFields = [
@@ -240,5 +241,260 @@ export const TeamDetailsFields = [
         step: 1,
         requiredErrorMessage: "Please enter value",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
+    },
+]
+
+export const SHORT_COMMENTARY_TEAM = [
+    {
+        name: "teamScore",
+        label: "Score",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamOver",
+        label: "Over",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamWicket",
+        label: "Wicket",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "crr",
+        label: "Current Run Rate",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "rrr",
+        label: "Required Run Rate",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamStatus",
+        label: "Status",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamTrialRuns",
+        label: "Trial Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamLeadRuns",
+        label: "Lead Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamWideRuns",
+        label: "Wide Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamByRuns",
+        label: "By Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamLegByRuns",
+        label: "Leg Bye Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamNoBallRuns",
+        label: "No Ball Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+    {
+        name: "teamPenaltyRuns",
+        label: "Penalty Runs",
+        formName: TEAM,
+        type: TEXT,
+    },
+
+]
+export const SHORT_COMMENTARY_BATTING_PLAYER = [
+    {
+        name: "batRun",
+        label: "Runs",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "batBall",
+        label: "Balls",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "batDotBall",
+        label: "Dot Balls",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "batFour",
+        label: "Four",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "batSix",
+        label: "Six",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "batsmanStrikeRate",
+        label: "Strike rate",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "batterOrder",
+        label: "Batting Order",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "wicketType",
+        label: "Wicket Type",
+        formName: PLAYER,
+        type: TEXT,
+    },
+]
+
+export const SHORT_COMMENTARY_BOWLING_PLAYER = [
+    {
+        name: "bowlerOver",
+        label: "Over",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerCurrentBall",
+        label: "Current Ball",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerTotalBall",
+        label: "Total Ball",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerRun",
+        label: "Runs",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerDotBall",
+        label: "Dot Balls",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerMaidenOver",
+        label: "Maiden Over",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerFour",
+        label: "Four",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerSix",
+        label: "Six",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerWideBall",
+        label: "Wide Ball",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerWideBallRun",
+        label: "Wide Ball Run",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerNoBall",
+        label: "No Ball",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerNoBallRun",
+        label: "No Ball Run",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerByeBall",
+        label: "Bye Ball",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerByeBallRun",
+        label: "Bye Ball Run",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerLegByeBall",
+        label: "Leg Ball",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerLegByeBallRun",
+        label: "Leg Ball Run",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerTotalWicket",
+        label: "Wickets",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerEconomy",
+        label: "Economy",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerPeneltyRun",
+        label: "Panelty Runs",
+        formName: PLAYER,
+        type: TEXT,
+    },
+    {
+        name: "bowlerOrder",
+        label: "Bowler Order",
+        formName: PLAYER,
+        type: TEXT,
     },
 ]
