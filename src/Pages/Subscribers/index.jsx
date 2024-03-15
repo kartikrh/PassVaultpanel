@@ -101,7 +101,6 @@ const Index = () => {
   };
 
   const handleDomains = async (data) => {
-    console.log("this is subdomains data ===>>>", data)
     setSubDomains(data)
     setDomainsModelVisable(true)
   };
