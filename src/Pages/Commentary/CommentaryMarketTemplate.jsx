@@ -100,7 +100,8 @@ const CommentaryMarketTemplate = () => {
                                 index: marketIndex * teamAndPlayers.length + teamIndex,
                                 isCreate: true,
                                 status: "1",
-                                under: "",
+                                overRate: "",
+                                underRate: "",
                                 margin: "",
                                 isAllow: true,
                                 data: "", // not getting from market
@@ -109,7 +110,6 @@ const CommentaryMarketTemplate = () => {
                                 commentaryId: commentary.commentaryId,
                                 eventRefId: commentary.eventRefId,
                                 market: market.templateName,
-                                over: market.over,
                                 teamId: team.teamId,
                                 inningsId: team.currentInnings,
                             }))
@@ -248,31 +248,31 @@ const CommentaryMarketTemplate = () => {
         },
         {
             title: "Over",
-            dataIndex: "over",
+            dataIndex: "overRate",
             render: (text, record) => (
                 <Input
                     className="form-control"
                     type="text"
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "over", e.target.value)}
+                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
                 />
             ),
-            key: "over",
+            key: "overRate",
             sort: true,
             style: { width: "10%" },
         },
         {
             title: "Under",
-            dataIndex: "under",
+            dataIndex: "underRate",
             render: (text, record) => (
                 <Input
                     className="form-control"
                     type="text"
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "under", e.target.value)}
+                    onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
                 />
             ),
-            key: "under",
+            key: "underRate",
             sort: true,
             style: { width: "10%" },
         },
