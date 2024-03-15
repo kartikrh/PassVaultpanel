@@ -124,15 +124,19 @@ const CommentaryMarketTemplate = () => {
             title: "Status",
             dataIndex: "status",
             render: (text, record) => (
-                <Select
-                    classNamePrefix="select2-selection"
-                    value={{ label: STATUS[text], value: text }}
-                    options={Object.entries(STATUS).map(([key, value]) => ({ label: value, value: key }))}
+                <select
+                    className="form-select"
                     onChange={(selectedOption) => {
                         handleValueChange(record, "status", selectedOption?.value || null);
                     }}
                     closeMenuOnSelect={true}
-                />
+                >
+                    {
+                        Object.entries(STATUS).map(([key, value]) =>
+                            <option value={key}>{value}</option>
+                        )
+                    }
+                </select>
             ),
             key: "status",
             sort: true,
