@@ -33,9 +33,11 @@ const CommentaryMarketTemplate = () => {
     const finalizeRef = useRef(null);
     const [checekedList, setCheckedList] = useState([]);
     const [data, setData] = useState([]);
+    const [allInnings, setAllInnings] = useState([]);
+    const [allTeams, setAllTeams] = useState([]);
 
     useEffect(() => {
-        setCheckedList(data.filter(i=> i.isCreate).map(i => i.index))
+        setCheckedList(data.filter(i => i.isCreate).map(i => i.index))
     }, [data])
 
     const handleValueChange = (record, key, value) => {
@@ -53,20 +55,24 @@ const CommentaryMarketTemplate = () => {
     }
 
     const handleSave = async () => {
-        console.log(data);
-        // setIsLoading(true);
-        // await axiosInstance
-        //   .post(`/admin/eventMarket/createEventMarket`, {
-        //     eventMarket: [],
-        //   })
-        //   .then((response) => {
-        //     fetchData();
-        //     dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-        //   })
-        //   .catch((error) => {
-        //     setIsLoading(false);
-        //     dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        //   });
+        const validateData = data.filter(value => value.isCreate)
+        setIsLoading(true);
+        if (!validateData.length) {
+            setIsLoading(false);
+            return dispatch(updateToastData({ data: "No isCreate has been selected", title: pageName, type: ERROR }));
+        }
+        await axiosInstance
+            .post(`/admin/eventMarket/saveEventMarket`, {
+                eventMarket: validateData,
+            })
+            .then((response) => {
+                fetchData(commentaryId);
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            })
+            .catch((error) => {
+                setIsLoading(false);
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            });
     };
 
     const fetchData = async (commentaryId) => {
@@ -79,11 +85,18 @@ const CommentaryMarketTemplate = () => {
                     const marketTemplate = response?.result?.marketTemplate;
                     const commentary = response?.result?.commentary;
                     const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket);
-                    console.log("🚀 ~ .then ~ predefinedMarket:", predefinedMarket.length)
-                    const newData = [];
+                    const eventMarket = response?.result?.eventMarket;
+                    if (teamAndPlayers?.length) {
+                        const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
+                        setAllInnings(uniqueInnings.map(option => ({ label: `Inning ${option.currentInnings}`, value: option.currentInnings })))
+                        const uniqueTeams = teamAndPlayers?.filter(value => value.currentInnings === 1)
+                        setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId })))
+                    }
+                    let newData = [];
                     predefinedMarket.forEach((market, marketIndex) => {
                         teamAndPlayers.forEach((team, teamIndex) => {
                             newData.push(({
+                                eventMarketId: "0",
                                 index: marketIndex * teamAndPlayers.length + teamIndex,
                                 isCreate: true,
                                 status: "1",
@@ -102,6 +115,16 @@ const CommentaryMarketTemplate = () => {
                             }))
                         });
                     });
+                    newData = newData.map((market) => {
+                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        if (eventMarketIndex !== -1) {
+                            return {
+                                ...market,
+                                ...eventMarket[eventMarketIndex]
+                            }
+                        }
+                        return market;
+                    })
                     setData(newData);
                 }
                 setIsLoading(false);
@@ -144,6 +167,50 @@ const CommentaryMarketTemplate = () => {
             style: { width: "2%" },
         },
         {
+            title: "Inning",
+            dataIndex: "inningsId",
+            render: (text, record) => (
+                <select
+                    className="form-select"
+                    value={text}
+                    disabled={true}
+                    onChange={(e) => {
+                        handleValueChange(record, "inningsId", e.target.value);
+                    }}
+                    closeMenuOnSelect={true}
+                >
+                    {allInnings.map((option) =>
+                        <option value={option.value}>{option.label}</option>
+                    )}
+                </select>
+            ),
+            key: "inningsId",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Team",
+            dataIndex: "teamId",
+            render: (text, record) => (
+                <select
+                    className="form-select"
+                    value={text}
+                    disabled={true}
+                    onChange={(e) => {
+                        handleValueChange(record, "teamId", e.target.value);
+                    }}
+                    closeMenuOnSelect={true}
+                >
+                    {allTeams.map((option) =>
+                        <option value={option.value}>{option.label}</option>
+                    )}
+                </select>
+            ),
+            key: "teamId",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
             title: "Market",
             dataIndex: "market",
             render: (text, record) => (
@@ -164,16 +231,15 @@ const CommentaryMarketTemplate = () => {
             render: (text, record) => (
                 <select
                     className="form-select"
-                    onChange={(selectedOption) => {
-                        handleValueChange(record, "status", selectedOption?.value || null);
+                    value={text}
+                    onChange={(e) => {
+                        handleValueChange(record, "status", e.target.value);
                     }}
                     closeMenuOnSelect={true}
                 >
-                    {
-                        Object.entries(STATUS).map(([key, value]) =>
-                            <option value={key}>{value}</option>
-                        )
-                    }
+                    {Object.entries(STATUS).map(([key, value]) =>
+                        <option value={key}>{value}</option>
+                    )}
                 </select>
             ),
             key: "status",
