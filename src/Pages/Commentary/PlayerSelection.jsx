@@ -172,6 +172,7 @@ const PlayerSelection = forwardRef((props, ref) => {
               currentInnings: currentInnings,
             };
             const newData = {
+              commentaryId: commentaryDetails.commentaryId,
               commentaryDetails: commentaryDetails,
               commentaryPlayers: isPlayPlayers,
               commentaryBallByBall,
