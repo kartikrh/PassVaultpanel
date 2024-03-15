@@ -137,6 +137,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       };
       axiosInstance
         .post(`/admin/commentary/saveDetails`, {
+          commentaryId: commentaryDetails.commentaryId,
           commentaryOvers
         })
         .then((response) => {

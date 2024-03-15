@@ -32,29 +32,32 @@ export const addCommentaryDetailsToDb = createAsyncThunk(
 export const addCommentaryScreenData = createAsyncThunk(
     'commentary/addCommentaryScreenData',
     async (data, { rejectWithValue, dispatch }) => {
-        const startTime = performance.now(); // Start timing
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
-            const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call Succed after ${endTime - startTime} milliseconds.`);
-            // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            const endTime = performance.now(); // End timing
-            console.log(`addCommentaryToDb API call failed after ${endTime - startTime} milliseconds.`);
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error?.message);
         }
     }
 );
-
+export const updateCommentaryDisplayStatus = createAsyncThunk(
+    'commentary/updateCommentaryDisplayStatus',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/updateCommentaryStatus', data);
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 export const changeBowlerFromCommentary = createAsyncThunk(
     'commentary/changeBowlerFromCommentary',
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/changeBowler', data);
-            // dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            console.log(response?.result)
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -126,17 +129,16 @@ const commentarySlice = createSlice({
                 state.error = action.payload;
                 state.isCommentaryBallLoading = false
             })
-            // .addCase(undoBallFromCommentary.pending, (state) => {
-            //     state.isCommentaryBallLoading = true;
-            // })
-            // .addCase(undoBallFromCommentary.fulfilled, (state, action) => {
-            //     state.isUndoCompleted = true
-            //     state.isCommentaryBallLoading = false
-            // })
-            // .addCase(undoBallFromCommentary.rejected, (state, action) => {
-            //     state.error = action.payload;
-            //     state.isCommentaryBallLoading = false
-            // })
+            .addCase(updateCommentaryDisplayStatus.pending, (state) => {
+                state.isCommentaryBallLoading = true;
+            })
+            .addCase(updateCommentaryDisplayStatus.fulfilled, (state, action) => {
+                state.isCommentaryBallLoading = false
+            })
+            .addCase(updateCommentaryDisplayStatus.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isCommentaryBallLoading = false
+            })
             .addCase(changeBowlerFromCommentary.pending, (state) => {
                 state.isCommentaryBallLoading = true;
             })
