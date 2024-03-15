@@ -30,37 +30,23 @@ const CommentaryMarketTemplate = () => {
     const [isLoading, setIsLoading] = useState(false);
     const commentaryId = location.state?.commentaryId || "0";
     const dispatch = useDispatch();
-    const [teams, setTeams] = useState([]);
     const finalizeRef = useRef(null);
     const [checekedList, setCheckedList] = useState([]);
     const [data, setData] = useState([]);
-    const [dataIndexList, setDataIndexList] = useState([]);
 
     useEffect(() => {
-        setCheckedList(data.map(i => i.eventMarketId))
+        setCheckedList(data.filter(i=> i.isCreate).map(i => i.index))
     }, [data])
 
-
-    const handleSingleCheck = (e) => {
-        let updateSingleCheck = []
-        if (checekedList.includes(e.isCreate)) {
-            updateSingleCheck = checekedList.filter((item) => item !== e.eventMarketId);
-        } else {
-            updateSingleCheck = [...checekedList, e.eventMarketId];
-        }
-        setCheckedList(updateSingleCheck)
-    };
-
     const handleValueChange = (record, key, value) => {
-        const indexOfData = data.findIndex(i => i.eventMarketId === record.eventMarketId)
+        const indexOfData = data.findIndex(i => i.index === record.index)
         if (indexOfData !== -1) {
-            const newData = {
-                ...data[indexOfData],
-                [key]: value
-            }
             setData(prev => [
                 ...prev.slice(0, indexOfData),
-                newData,
+                {
+                    ...prev[indexOfData],
+                    [key]: value
+                },
                 ...prev.slice(indexOfData + 1, prev.length),
             ])
         }
@@ -83,6 +69,53 @@ const CommentaryMarketTemplate = () => {
         //   });
     };
 
+    const fetchData = async (commentaryId) => {
+        setIsLoading(true);
+        await axiosInstance
+            .post("/admin/eventMarket/getDetailsByCId", { commentaryId })
+            .then((response) => {
+                if (response?.result) {
+                    const teamAndPlayers = response?.result?.teamAndPlayers;
+                    const marketTemplate = response?.result?.marketTemplate;
+                    const commentary = response?.result?.commentary;
+                    const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket);
+                    console.log("🚀 ~ .then ~ predefinedMarket:", predefinedMarket.length)
+                    const newData = [];
+                    predefinedMarket.forEach((market, marketIndex) => {
+                        teamAndPlayers.forEach((team, teamIndex) => {
+                            newData.push(({
+                                index: marketIndex * teamAndPlayers.length + teamIndex,
+                                isCreate: true,
+                                status: "1",
+                                under: "",
+                                margin: "",
+                                isAllow: true,
+                                data: "", // not getting from market
+                                playerId: null, // not getting from market
+                                ...market,
+                                commentaryId: commentary.commentaryId,
+                                eventRefId: commentary.eventRefId,
+                                market: market.templateName,
+                                over: market.over,
+                                teamId: team.teamId,
+                                inningsId: team.currentInnings,
+                            }))
+                        });
+                    });
+                    setData(newData);
+                }
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsLoading(false);
+            });
+    };
+
+    const handleBackClick = () => {
+        navigate("/commentary");
+    };
+
     //elements required
     const tableElement = {
         title: "Predefined",
@@ -100,9 +133,9 @@ const CommentaryMarketTemplate = () => {
                         type="checkbox"
                         name="chk_child"
                         value="option1"
-                        checked={checekedList.includes(record.eventMarketId)}
+                        checked={checekedList.includes(record.index)}
                         onChange={() => {
-                            handleSingleCheck(record);
+                            handleValueChange(record, "isCreate", !checekedList.includes(record.index));
                         }}
                     />
                 </div>
@@ -230,7 +263,6 @@ const CommentaryMarketTemplate = () => {
         },
     ];
 
-
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard")
@@ -239,52 +271,6 @@ const CommentaryMarketTemplate = () => {
             fetchData(commentaryId);
         }
     }, []);
-
-    const fetchData = async (commentaryId) => {
-        setIsLoading(true);
-        await axiosInstance
-            .post("/admin/eventMarket/getDetailsByCId", { commentaryId })
-            .then((response) => {
-                if (response?.result) {
-                    const teamAndPlayers = response?.result?.teamAndPlayers;
-                    const marketTemplate = response?.result?.marketTemplate;
-                    const commentary = response?.result?.commentary;
-                    const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket);
-                    const newData = [];
-                    predefinedMarket.forEach(market => {
-                        teamAndPlayers.forEach(team => {
-                            newData.push(({
-                                eventMarketId: "0",
-                                isCreate: true,
-                                status: "1",
-                                under: "",
-                                margin: "",
-                                isAllow: true,
-                                data:"", // not getting from market
-                                playerId: null, // not getting from market
-                                ...market,
-                                commentaryId: commentary.commentaryId,
-                                eventRefId: commentary.eventRefId,
-                                market: market.templateName,
-                                over: market.over,
-                                teamId: team.teamId,
-                                inningsId: team.currentInnings,
-                            }))
-                        });
-                    });
-                    setData(newData);
-                }
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                setIsLoading(false);
-            });
-    };
-
-    const handleBackClick = () => {
-        navigate("/commentary");
-    };
 
     return (
         <React.Fragment>
