@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const";
+import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, CardHeader, Col, Container, Input, Row } from "reactstrap";
@@ -27,44 +27,32 @@ const CommentaryMarketTemplate = () => {
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const location = useLocation();
     let navigate = useNavigate();
-    const [isDataLoading, setIsDataLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const commentaryId = location.state?.commentaryId || "0";
     const dispatch = useDispatch();
     const [teams, setTeams] = useState([]);
     const finalizeRef = useRef(null);
     const [checekedList, setCheckedList] = useState([]);
-    const [data, setData] = useState([
-        {
-            id: 1,
-            isCreate: false,
-            market: "",
-            status: "1",
-            over: "",
-            under: "",
-            margin: "",
-            isActive: false,
-            isMarketAllow: true,
-        }
-    ]);
+    const [data, setData] = useState([]);
     const [dataIndexList, setDataIndexList] = useState([]);
 
     useEffect(() => {
-        setCheckedList(data.map(i => i.id))
+        setCheckedList(data.map(i => i.eventMarketId))
     }, [data])
 
 
     const handleSingleCheck = (e) => {
         let updateSingleCheck = []
         if (checekedList.includes(e.isCreate)) {
-            updateSingleCheck = checekedList.filter((item) => item !== e.id);
+            updateSingleCheck = checekedList.filter((item) => item !== e.eventMarketId);
         } else {
-            updateSingleCheck = [...checekedList, e.id];
+            updateSingleCheck = [...checekedList, e.eventMarketId];
         }
         setCheckedList(updateSingleCheck)
     };
 
     const handleValueChange = (record, key, value) => {
-        const indexOfData = data.findIndex(i => i.id === record.id)
+        const indexOfData = data.findIndex(i => i.eventMarketId === record.eventMarketId)
         if (indexOfData !== -1) {
             const newData = {
                 ...data[indexOfData],
@@ -77,6 +65,23 @@ const CommentaryMarketTemplate = () => {
             ])
         }
     }
+
+    const handleSave = async () => {
+        console.log(data);
+        // setIsLoading(true);
+        // await axiosInstance
+        //   .post(`/admin/eventMarket/createEventMarket`, {
+        //     eventMarket: [],
+        //   })
+        //   .then((response) => {
+        //     fetchData();
+        //     dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        //   })
+        //   .catch((error) => {
+        //     setIsLoading(false);
+        //     dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        //   });
+    };
 
     //elements required
     const tableElement = {
@@ -95,7 +100,7 @@ const CommentaryMarketTemplate = () => {
                         type="checkbox"
                         name="chk_child"
                         value="option1"
-                        checked={checekedList.includes(record.id)}
+                        checked={checekedList.includes(record.eventMarketId)}
                         onChange={() => {
                             handleSingleCheck(record);
                         }}
@@ -207,20 +212,20 @@ const CommentaryMarketTemplate = () => {
         },
         {
             title: "Market Allow",
-            dataIndex: "isMarketAllow",
+            dataIndex: "isAllow",
             render: (text, record) => (
                 <Button
-                    color={`${record.isMarketAllow ? "primary" : "danger"}`}
+                    color={`${record.isAllow ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isMarketAllow", !record.isMarketAllow);
+                        handleValueChange(record, "isAllow", !record.isAllow);
                     }}
                 >
-                    <i className={`bx ${record.isMarketAllow ? "bx-check" : "bx-block"}`}></i>
+                    <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
-            key: "isMarketAllow",
+            key: "isAllow",
             style: { width: "2%", textAlign: "center" },
         },
     ];
@@ -236,31 +241,44 @@ const CommentaryMarketTemplate = () => {
     }, []);
 
     const fetchData = async (commentaryId) => {
-        setIsDataLoading(true);
+        setIsLoading(true);
         await axiosInstance
             .post("/admin/eventMarket/getDetailsByCId", { commentaryId })
             .then((response) => {
-                const marketTemplate = response?.result?.marketTemplate;
-                if (marketTemplate) {
-                    const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket)
-                    setData(predefinedMarket.map(value => ({
-                        id: "0",
-                        isCreate: true,
-                        market: value.templateName,
-                        status: "1",
-                        over: value.over,
-                        under: "",
-                        margin: "",
-                        isActive: false,
-                        isMarketAllow: true,
-                    })))
-
+                if (response?.result) {
+                    const teamAndPlayers = response?.result?.teamAndPlayers;
+                    const marketTemplate = response?.result?.marketTemplate;
+                    const commentary = response?.result?.commentary;
+                    const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket);
+                    const newData = [];
+                    predefinedMarket.forEach(market => {
+                        teamAndPlayers.forEach(team => {
+                            newData.push(({
+                                eventMarketId: "0",
+                                isCreate: true,
+                                status: "1",
+                                under: "",
+                                margin: "",
+                                isAllow: true,
+                                data:"", // not getting from market
+                                playerId: null, // not getting from market
+                                ...market,
+                                commentaryId: commentary.commentaryId,
+                                eventRefId: commentary.eventRefId,
+                                market: market.templateName,
+                                over: market.over,
+                                teamId: team.teamId,
+                                inningsId: team.currentInnings,
+                            }))
+                        });
+                    });
+                    setData(newData);
                 }
-                setIsDataLoading(false);
+                setIsLoading(false);
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                setIsDataLoading(false);
+                setIsLoading(false);
             });
     };
 
@@ -275,7 +293,7 @@ const CommentaryMarketTemplate = () => {
                     <Row>
                         <Card>
                             <CardBody>
-                                {isDataLoading && <SpinnerModel />}
+                                {isLoading && <SpinnerModel />}
                                 <Row className='mb-3'>
                                     <Col className="mt-3 mt-lg-4 mt-md-4">
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
@@ -293,6 +311,11 @@ const CommentaryMarketTemplate = () => {
                                             tableElement={tableElement}
                                             singleCheck={checekedList}
                                         />
+                                    </Col>
+                                </Row>
+                                <Row className='mb-3'>
+                                    <Col className="mt-3 mt-lg-3 mt-md-3">
+                                        <Button color="primary" className="btn text-right" onClick={handleSave}>Save</Button>
                                     </Col>
                                 </Row>
                             </CardBody>
