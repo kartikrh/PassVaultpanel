@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel'
+import SubDomainsModels from '../../components/Model/SubdomainsModel'
 const Index = () => {
   const pageName = TAB_SUBSCRIBERS
   const finalizeRef = useRef(null);
@@ -24,7 +25,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
-
+  const [domainsModelVisable, setDomainsModelVisable] = useState(false);
+  const [subDomains, setSubDomains] = useState([])
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -97,6 +99,11 @@ const Index = () => {
         setCheckedList([]);
       });
   };
+
+  const handleDomains = async (data) => {
+    setSubDomains(data)
+    setDomainsModelVisable(true)
+  };
   const handleReset = (value) => {
     fetchData(value)
   }
@@ -154,14 +161,26 @@ const Index = () => {
       title: "Site Domain",
       dataIndex: "siteDomain",
       key: "siteDomain",
-      style: { width: "10%" },
+      style: { width: "20%" },
       sort: true,
     },
     {
         title: "subDomain Count",
         dataIndex: "subDomainCount",
         key: "subDomainCount",
-        style: { width: "20%" },
+        style: { width: "30%" },
+        sort: true,
+      },
+      {
+        title: "subDomains",
+        dataIndex: "subDomains",
+        key: "subDomains",
+        render: (text, record) => (
+          <span style={{ cursor: "pointer", }} onClick={()=>{handleDomains(text)}}>
+            <i className="fas fa-eye"></i>
+          </span>
+        ),
+        style: { width: "10%", textAlign:"center" },
         sort: true,
       },
     {
@@ -220,6 +239,12 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+            <SubDomainsModels
+            domainsModelVisable={domainsModelVisable}
+            setDomainsModelVisable={setDomainsModelVisable}
+            subDomains = {subDomains}
+            handleDomains={handleDomains}
+            />
         </Container>
       </div>
     </React.Fragment>

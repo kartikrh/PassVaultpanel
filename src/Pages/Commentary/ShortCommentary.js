@@ -82,7 +82,6 @@ export const ShortCommentary = () => {
             });
         formatData(commentaryDataToUpdate)
     };
-    useEffect(() => { console.log(formattedDetails) })
 
     const findPlayersFormList = (commentaryData, innings, teamId) => {
         const toReturn = []
