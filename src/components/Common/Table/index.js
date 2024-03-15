@@ -48,6 +48,11 @@ const Index = forwardRef(
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
+      competitionList,
+      eventList,
+      setEventTypeActive,
+      setEventTypeId,
+      setCompetitionId,
       reFetchData,
       handleReset,
       competitions,
@@ -129,6 +134,7 @@ const Index = forwardRef(
     const handleTableActions = (key, id) => {
       if (key === "isActive") {
         setStatusSwitch(id);
+        setEventTypeActive(id);
         setTableActions((preValue) => {
           return {
             ...preValue,
@@ -477,6 +483,14 @@ const Index = forwardRef(
         isActive: true,
       });
       setSelectedTableElements({
+        eventList:{
+          value: 0,
+          label: "Event List",
+        },
+        competitionList:{
+          value: 0,
+          label: "Competition List",
+        },
         competition: {
           value: 0,
           label: "Competition",
@@ -629,6 +643,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.eventType}
                               placeholder="Event Type"
                               onChange={(e) => {
+                                setEventTypeId(e?.value);
                                 handleTableActions("eventTypeId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
@@ -641,15 +656,59 @@ const Index = forwardRef(
                               }))}
                               classNamePrefix="select2-selection"
                             />
-                            {/* <RSelect 
-                            placeholder = "Select Event Type" 
-                            value={selectedTableElements?.eventType}
-                            setSelectedTableElements = {setSelectedTableElements} 
-                            selectedTableElements = {selectedTableElements}
-                            options = {eventTypes}
-                            handleTableActions = {handleTableActions}
-                            items = {{label:"eventType", value:"eventTypeId"}}
-                            /> */}
+                          </div>
+                        ) : null}
+                        {tableElement?.competitionsListSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.competitionList}
+                              placeholder="Competition List"
+                              onChange={(e) => {
+                                setCompetitionId(e?.value);
+                                handleTableActions("competitionId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  competitionList: e,
+                                });
+                              }}
+                              options={competitionList?.map((item) => ({
+                                label: item?.competitionList, //api response value
+                                value: item?.competitionId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.eventListSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.eventList}
+                              placeholder="Event List"
+                              onChange={(e) => {
+                                handleTableActions("eventTypeId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  eventList: e,
+                                });
+                              }}
+                              options={eventList?.map((item) => ({
+                                label: item?.eventList, //api response value
+                                value: item?.eventTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
                           </div>
                         ) : null}
                         {tableElement?.matchTypeSelect ? (

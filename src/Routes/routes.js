@@ -46,6 +46,7 @@ import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
 import News from '../Pages/News'
 import Subscribers from '../Pages/Subscribers'
 import MarketTemplate from '../Pages/MarketTemplate'
+import EventMarkets from "../Pages/EventMarkets"
 
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
@@ -118,6 +119,7 @@ const authProtectedRoutes = [
   { path: "/subscribers", component: <Subscribers /> },
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
+  { path: "/eventMarkets", component: <EventMarkets />},
   {
     path: "/changePassword",
     component: <ChangePassword />,
@@ -132,7 +134,7 @@ const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-
+  
 
   // Authentication Inner Pages
   { path: "/auth-login", component: <Login1 /> },
