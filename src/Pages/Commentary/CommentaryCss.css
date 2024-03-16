@@ -207,3 +207,8 @@
     margin: 2rem 0 0 0;
     float: right;
 }
+
+.small-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 3rem !important;
+}
