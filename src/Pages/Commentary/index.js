@@ -148,7 +148,10 @@ const Index = () => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
   const handleUpdatePlayersClick = (details) => {
-    navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details  } });
+    navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details } });
+  };
+  const handleCommentaryMarketTemplateClick = (id) => {
+    navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
   };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
@@ -235,20 +238,20 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
-  const updatePredictMarket = async (pType, record, cState) =>{
+  const updatePredictMarket = async (pType, record, cState) => {
     await axiosInstance
-    .post(`/admin/commentary/changePredictMarket`, {
-      "commentaryId": record?.commentaryId,
-      [pType]: cState ? false : true,
-    })
-    .then((response) => {
-      fetchData();
-      dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-    })
-    .catch((error) => {
-      setIsLoading(false);
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    });
+      .post(`/admin/commentary/changePredictMarket`, {
+        "commentaryId": record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
   }
   const handleReset = (value) => {
     fetchData(value)
@@ -459,6 +462,24 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "P-Market",
+      key: "marketTemplate",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCommentaryMarketTemplateClick(record.commentaryId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "IsClientShow",
       key: "isClientShow",
       render: (text, record) => (
@@ -475,7 +496,7 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    
+
   ];
   //elements required
   const tableElement = {
