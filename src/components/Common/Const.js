@@ -43,7 +43,6 @@ export const Tab_Menu_List = "Menu List"
 export const TAB_NEWS = "News"
 export const TAB_SUBSCRIBERS = "Subscribers"
 export const TAB_MARKET_TEMPLATE = "Market Template"
-export const TAB_EVENT_MARKETS = "Event Markets"
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd"

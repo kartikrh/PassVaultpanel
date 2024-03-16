@@ -8,6 +8,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addPageToDB, updateSavedState } from '../../Features/Tabs/pageSlice';
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 
@@ -82,7 +83,7 @@ const AddPage = () => {
       const extraData = {
         pageId: pageId
       }
-      dispatch(addPageToDB({ ...dataToSave, ...extraData }))
+      dispatch(addPageToDB(convertObjtoFormData({ ...dataToSave, ...extraData })))
       setCurrentSaveAction(saveAction);
     }
   };

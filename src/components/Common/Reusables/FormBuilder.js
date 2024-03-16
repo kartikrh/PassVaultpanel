@@ -586,7 +586,7 @@ const FormBuilder = forwardRef(
                       <>
                         <MyEditor
                           field={field}
-                          formData={formData[field.name]}
+                          formData={formData}
                           handleChange={handleChange}
                           fieldErrors={fieldErrors}
                         />
