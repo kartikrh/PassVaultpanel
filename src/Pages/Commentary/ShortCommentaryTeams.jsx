@@ -37,6 +37,7 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
                         xs={field.labelColspan?.xs || 3}
                         md={field.labelColspan?.md || 2}
                         lg={field.labelColspan?.lg || 2}
+                        className="d-flex p-0"
                     >
                         <div className="lablediv">
                             <label
@@ -70,12 +71,10 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
     const renderBatters = (playerList = [], teamUniqueId) => {
         return playerList.map((batter, index) => {
             const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
-            return <AccordionItem >
-                <AccordionHeader targetId={batter.playerId}>{batter.playerName}</AccordionHeader>
-                <AccordionBody accordionId={batter.playerId}>
-                    {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId)}
-                </AccordionBody>
-            </AccordionItem >
+            return <>
+                <div>{batter.playerName}</div>
+                {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId)
+                }            </>
         })
 
     }
@@ -97,9 +96,7 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
                     <AccordionItem>
                         <AccordionHeader targetId='Batter'>Batter</AccordionHeader>
                         <AccordionBody accordionId="Batter">
-                            <UncontrolledAccordion defaultOpen="0">
-                                {renderBatters(teamDetails.teamPlayers, uniqueId)}
-                            </UncontrolledAccordion>
+                            {renderBatters(teamDetails.teamPlayers, uniqueId)}
                         </AccordionBody>
                     </AccordionItem >
                     <AccordionItem>
