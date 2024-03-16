@@ -103,6 +103,7 @@ const CommentaryMarketTemplate = () => {
                                 overRate: "",
                                 underRate: "",
                                 margin: "",
+                                line: "",
                                 isAllow: true,
                                 data: "", // not getting from market
                                 playerId: null, // not getting from market
@@ -258,6 +259,21 @@ const CommentaryMarketTemplate = () => {
                 />
             ),
             key: "overRate",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Line",
+            dataIndex: "line",
+            render: (text, record) => (
+                <Input
+                    className="form-control"
+                    type="text"
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "line", e.target.value)}
+                />
+            ),
+            key: "line",
             sort: true,
             style: { width: "10%" },
         },
