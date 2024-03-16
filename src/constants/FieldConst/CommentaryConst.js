@@ -1,5 +1,5 @@
-import { PLAYER, TEAM } from "../../Pages/Commentary/CommentartConst";
-import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH, COUNTER } from "../../components/Common/Const";
+import { MARKET_STATUS, PLAYER, TEAM } from "../../Pages/Commentary/CommentartConst";
+import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH, COUNTER, LABEL } from "../../components/Common/Const";
 
 export const MatchDetailFields = [
     {
@@ -548,5 +548,94 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         type: TEXT,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+]
+
+export const MARKEt_EVENt_ACTION = [
+    {
+        name: "innings",
+        label: "Innings",
+        type: LABEL,
+        classname: ""
+    },
+    {
+        name: "team",
+        label: "Team",
+        type: LABEL,
+        classname: ""
+    },
+    {
+        name: "market",
+        label: "Market",
+        type: LABEL,
+        classname: ""
+    },
+    {
+        name: "status",
+        label: "Status",
+        placeholder: "Over",
+        type: SELECT,
+        options: MARKET_STATUS,
+        classname: ""
+    },
+    {
+        name: "line",
+        label: "Line",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "over",
+        label: "Over",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "under",
+        label: "Under",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "noRate",
+        label: "No Rate",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "noPoint",
+        label: "No Point",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "yesRate",
+        label: "Yes Rate",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "yesPoint",
+        label: "Yes Point",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "active",
+        label: "Active",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "allow",
+        label: "Allow",
+        type: COUNTER,
+        classname: ""
+    },
+    {
+        name: "isSend",
+        label: "Is Send",
+        type: COUNTER,
+        classname: ""
     },
 ]

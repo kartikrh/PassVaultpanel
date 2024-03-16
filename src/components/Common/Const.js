@@ -18,6 +18,7 @@ export const DIVIDER = "DIVIDER"
 export const ERROR = "ERROR"
 export const SUCCESS = "SUCCESS"
 export const TEXT_BUTTON = "TEXT_BUTTON"
+export const LABEL = "LABEL"
 export const LABEL_PARTATION = "LABEL_PARTATION"
 export const BUTTON = "BUTTON"
 

@@ -8,11 +8,10 @@ import { Button, Card, CardBody, CardHeader, Col, Container, Input, Row } from "
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import Table from "../../components/Common/Table";
 import { MARKET_STATUS } from "./CommentartConst";
+import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 
-
-const CommentaryMarketTemplate = () => {
+export const MarketEventAction = () => {
     const pageName = TAB_COMMENTARY;
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const location = useLocation();
@@ -20,7 +19,6 @@ const CommentaryMarketTemplate = () => {
     const [isLoading, setIsLoading] = useState(false);
     const commentaryId = location.state?.commentaryId || "0";
     const dispatch = useDispatch();
-    const finalizeRef = useRef(null);
     const [checekedList, setCheckedList] = useState([]);
     const [data, setData] = useState([]);
     const [allInnings, setAllInnings] = useState([]);
@@ -45,18 +43,12 @@ const CommentaryMarketTemplate = () => {
     }
 
     const handleSave = async () => {
-        let validateData = data.filter(value => value.isCreate)
+        const validateData = data.filter(value => value.isCreate)
         setIsLoading(true);
         if (!validateData.length) {
             setIsLoading(false);
             return dispatch(updateToastData({ data: "No isCreate has been selected", title: pageName, type: ERROR }));
         }
-        validateData = validateData.map(element => {
-            return {
-                ...element,
-                "eventMarketId": +element.eventMarketId
-            }
-        })
         await axiosInstance
             .post(`/admin/eventMarket/saveEventMarket`, {
                 eventMarket: validateData,
@@ -106,7 +98,7 @@ const CommentaryMarketTemplate = () => {
                                 ...market,
                                 commentaryId: commentary.commentaryId,
                                 eventRefId: commentary.eventRefId,
-                                marketName: market.templateName,
+                                market: market.templateName,
                                 teamId: team.teamId,
                                 inningsId: team.currentInnings,
                             }))
@@ -135,7 +127,10 @@ const CommentaryMarketTemplate = () => {
     const handleBackClick = () => {
         navigate("/commentary");
     };
-
+    const fetchTeamName = (id) => {
+        const teamOption = allTeams.find(element => element.value === id)
+        return teamOption.value
+    }
     //elements required
     const tableElement = {
         title: "Predefined",
@@ -145,42 +140,9 @@ const CommentaryMarketTemplate = () => {
     //table columns
     const columns = [
         {
-            title: "isCreate",
-            render: (text, record) => (
-                <div className="form-check d-flex align-items-center justify-between">
-                    <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="chk_child"
-                        value="option1"
-                        checked={checekedList.includes(record.index)}
-                        onChange={() => {
-                            handleValueChange(record, "isCreate", !checekedList.includes(record.index));
-                        }}
-                    />
-                </div>
-            ),
-            key: "isCreate",
-            style: { width: "2%" },
-        },
-        {
             title: "Inning",
             dataIndex: "inningsId",
-            render: (text, record) => (
-                <select
-                    className="form-select"
-                    value={text}
-                    disabled={true}
-                    onChange={(e) => {
-                        handleValueChange(record, "inningsId", e.target.value);
-                    }}
-                    closeMenuOnSelect={true}
-                >
-                    {allInnings.map((option) =>
-                        <option value={option.value}>{option.label}</option>
-                    )}
-                </select>
-            ),
+            render: (text) => (<span>{`Innings ${text}`}</span>),
             key: "inningsId",
             sort: true,
             style: { width: "10%" },
@@ -188,37 +150,23 @@ const CommentaryMarketTemplate = () => {
         {
             title: "Team",
             dataIndex: "teamId",
-            render: (text, record) => (
-                <select
-                    className="form-select"
-                    value={text}
-                    disabled={true}
-                    onChange={(e) => {
-                        handleValueChange(record, "teamId", e.target.value);
-                    }}
-                    closeMenuOnSelect={true}
-                >
-                    {allTeams.map((option) =>
-                        <option value={option.value}>{option.label}</option>
-                    )}
-                </select>
-            ),
+            render: (text) => (<span>{fetchTeamName(text)}</span>),
             key: "teamId",
             sort: true,
             style: { width: "10%" },
         },
         {
             title: "Market",
-            dataIndex: "marketName",
+            dataIndex: "market",
             render: (text, record) => (
                 <Input
                     className="form-control"
                     type="text"
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
+                    onChange={(e) => handleValueChange(record, "market", e.target.value)}
                 />
             ),
-            key: "marketName",
+            key: "market",
             sort: true,
             style: { width: "10%" },
         },
@@ -244,21 +192,6 @@ const CommentaryMarketTemplate = () => {
             style: { width: "10%" },
         },
         {
-            title: "Line",
-            dataIndex: "line",
-            render: (text, record) => (
-                <Input
-                    className="form-control"
-                    type="text"
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "line", e.target.value)}
-                />
-            ),
-            key: "line",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
             title: "Over",
             dataIndex: "overRate",
             render: (text, record) => (
@@ -270,6 +203,21 @@ const CommentaryMarketTemplate = () => {
                 />
             ),
             key: "overRate",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Line",
+            dataIndex: "line",
+            render: (text, record) => (
+                <Input
+                    className="form-control"
+                    type="text"
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "line", e.target.value)}
+                />
+            ),
+            key: "line",
             sort: true,
             style: { width: "10%" },
         },
@@ -368,12 +316,10 @@ const CommentaryMarketTemplate = () => {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <Table
-                                            ref={finalizeRef}
+                                        <ListingElement
                                             columns={columns}
                                             dataSource={data}
                                             tableElement={tableElement}
-                                            singleCheck={checekedList}
                                         />
                                     </Col>
                                 </Row>
@@ -391,5 +337,3 @@ const CommentaryMarketTemplate = () => {
 
     )
 }
-
-export default CommentaryMarketTemplate;
