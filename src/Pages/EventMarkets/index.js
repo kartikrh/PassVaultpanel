@@ -21,6 +21,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+// import eventData from "./eventData";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -447,8 +448,6 @@ const Index = () => {
   useEffect(() => {
     if (competitionId) {
       fetchEventList();
-    } else {
-      setEventList([]);
     }
   }, [competitionId]);
 
