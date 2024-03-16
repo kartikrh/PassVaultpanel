@@ -22,7 +22,6 @@ export const LABEL = "LABEL"
 export const LABEL_PARTATION = "LABEL_PARTATION"
 export const BUTTON = "BUTTON"
 
-
 // Tab names
 export const TAB_TABS = "Tabs"
 export const TAB_ROLES = "Roles"
@@ -45,7 +44,7 @@ export const TAB_NEWS = "News"
 export const TAB_SUBSCRIBERS = "Subscribers"
 export const TAB_MARKET_TEMPLATE = "Market Template"
 export const TAB_EVENT_MARKETS = "Event Markets"
-
+export const TAB_SET_MARKETS_RESULT = "Set Market Result"
 // Permission Type
 export const PERMISSION_ADD = "isAdd"
 export const PERMISSION_EDIT = "isEdit"
