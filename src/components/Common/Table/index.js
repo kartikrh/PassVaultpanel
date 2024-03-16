@@ -546,6 +546,7 @@ const Index = forwardRef(
                   <Row className="g-2">
                     <Col className="col-sm-auto">
                       <div className="d-flex flex-wrap align-items-center gap-2">
+                        {tableElement?.displayTitle && tableElement?.title}
                         {isAddPermission && (
                           <Button
                             color="success"
@@ -567,12 +568,12 @@ const Index = forwardRef(
                               singleCheck.length === 1
                                 ? cloneModelFunction(true)
                                 : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
                             }}
                             id="create-btn"
                           >
@@ -587,12 +588,12 @@ const Index = forwardRef(
                               singleCheck.length > 0
                                 ? deleteModelFunction(true)
                                 : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
                             }}
                           >
                             <i className="ri-delete-bin-2-line"></i>
@@ -1018,13 +1019,12 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${
-                                                sortOrder.key === column.key &&
-                                                sortOrder.sortOrder ===
+                                              color: `${sortOrder.key === column.key &&
+                                                  sortOrder.sortOrder ===
                                                   "ascending"
                                                   ? "gray"
                                                   : "lightGray"
-                                              }`,
+                                                }`,
                                               fontSize: "12px",
                                               marginTop: "2px",
                                               cursor: "pointer",
@@ -1039,13 +1039,12 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${
-                                                sortOrder.key === column.key &&
-                                                sortOrder.sortOrder ===
+                                              color: `${sortOrder.key === column.key &&
+                                                  sortOrder.sortOrder ===
                                                   "descending"
                                                   ? "gray"
                                                   : "lightGray"
-                                              }`,
+                                                }`,
                                               marginTop: "-5px",
                                               fontSize: "12px",
                                               cursor: "pointer",
@@ -1085,9 +1084,9 @@ const Index = forwardRef(
                                             >
                                               {column.render
                                                 ? column.render(
-                                                    record[column.dataIndex],
-                                                    record
-                                                  )
+                                                  record[column.dataIndex],
+                                                  record
+                                                )
                                                 : record[column.dataIndex]}
                                             </td>
                                           </>
@@ -1121,21 +1120,20 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                              "ascending",
-                                              column.key
-                                            )
+                                            "ascending",
+                                            column.key
+                                          )
                                           : sortByProperty(
-                                              "ascending",
-                                              column.key
-                                            );
+                                            "ascending",
+                                            column.key
+                                          );
                                       }}
                                       style={{
-                                        color: `${
-                                          sortOrder.key === column.key &&
-                                          sortOrder.sortOrder === "ascending"
+                                        color: `${sortOrder.key === column.key &&
+                                            sortOrder.sortOrder === "ascending"
                                             ? "gray"
                                             : "lightGray"
-                                        }`,
+                                          }`,
                                         fontSize: "12px",
                                         marginTop: "2px",
                                         cursor: "pointer",
@@ -1146,21 +1144,20 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                              "descending",
-                                              column.key
-                                            )
+                                            "descending",
+                                            column.key
+                                          )
                                           : sortByProperty(
-                                              "descending",
-                                              column.key
-                                            );
+                                            "descending",
+                                            column.key
+                                          );
                                       }}
                                       style={{
-                                        color: `${
-                                          sortOrder.key === column.key &&
-                                          sortOrder.sortOrder === "descending"
+                                        color: `${sortOrder.key === column.key &&
+                                            sortOrder.sortOrder === "descending"
                                             ? "gray"
                                             : "lightGray"
-                                        }`,
+                                          }`,
                                         marginTop: "-5px",
                                         fontSize: "12px",
                                         cursor: "pointer",
@@ -1180,9 +1177,9 @@ const Index = forwardRef(
                               <td key={column.key} style={column.style}>
                                 {column.render
                                   ? column.render(
-                                      record[column.dataIndex],
-                                      record
-                                    )
+                                    record[column.dataIndex],
+                                    record
+                                  )
                                   : record[column.dataIndex]}
                               </td>
                             ))}
@@ -1202,8 +1199,7 @@ const Index = forwardRef(
                       ></lord-icon>
                       <h5 className="mt-2">Sorry! No Result Found</h5>
                       <p className="text-muted mb-0">
-                        We've searched more than 150+ Orders We did not find any
-                        orders for you search.
+                        No Result
                       </p>
                     </div>
                   </div>

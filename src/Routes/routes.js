@@ -48,7 +48,7 @@ import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
 import UnsettledMarket from "../Pages/UnsettledMarket";
-
+import SetMarketResult from '../Pages/SetMarketResult';
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -70,6 +70,8 @@ import AddNews from "../Pages/News/AddNews.jsx";
 import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
 import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
+import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
+import { MarketEventAction } from "../Pages/Commentary/MarketEventAction.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -98,6 +100,8 @@ const authProtectedRoutes = [
   { path: "/commentaryMaster", component: <CommentaryMaster /> },
   { path: "/shortCommentary", component: <ShortCommentary /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
+  { path: "/commentaryMarketTemplate", component: <CommentaryMarketTemplate /> },
+  { path: "/marketEventAction", component: <MarketEventAction /> },
   { path: "/importMarket", component: <ImportMarket /> },
   { path: "/Toss", component: <Toss /> },
   { path: "/users", component: <Users /> },
@@ -120,6 +124,9 @@ const authProtectedRoutes = [
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
   { path: "/eventMarkets", component: <EventMarkets /> },
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
+  { path: "/eventMarkets", component: <EventMarkets />},
+  { path: "/setMarketResult", component: <SetMarketResult />},
+ 
   {
     path: "/changePassword",
     component: <ChangePassword />,

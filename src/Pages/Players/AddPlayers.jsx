@@ -190,12 +190,10 @@ function AddPlayer() {
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
-    console.log("dataToSave", dataToSave);
     if (dataToSave) {
       const extraData = {
         playerId: id,
       };
-      console.log("extraData", extraData);
       setCurrentSaveAction(saveAction);
       dispatch(
         addPlayerToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))

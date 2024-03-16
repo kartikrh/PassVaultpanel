@@ -1,7 +1,10 @@
 // Team Status
 export const BAT = 1;
 export const BOWL = 2;
-
+export const TOSS_SELECTION = {
+    1: "Bat",
+    2: "Bowl"
+}
 // Ball Type
 export const BALL_TYPE_OVER_COMPLETE = 0;
 export const BALL_TYPE_REGULAR = 1;
@@ -86,3 +89,15 @@ export const EXTRAS_WICKET_TYPE = [
 
 
 export const BOWLER_CHANGE_DISPLAY_STATUS = "Ball Start"
+export const TEAM = "TEAM"
+export const PLAYER = "PLAYER"
+
+export const MARKET_STATUS = {
+    "0": "NotOpen",
+    "1": "Open",
+    "2": "inActive",
+    "3": "Suspend",
+    "4": "Close",
+    "5": "Settled",
+    "6": "Cancel",
+}

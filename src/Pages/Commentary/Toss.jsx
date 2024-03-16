@@ -58,6 +58,7 @@ const Index = ({ data, next, save }) => {
         : { ...team, teamStatus: alternateStatus, teamBattingOrder: alternateStatus }
     );
     const newData = {
+      commentaryId: commentaryDetails.commentaryId,
       commentaryDetails: {
         ...commentaryDetails,
         ...values,

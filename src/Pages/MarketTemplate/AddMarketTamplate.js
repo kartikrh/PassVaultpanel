@@ -107,7 +107,6 @@ function AddMarketTemaplate() {
     await axiosInstance
       .post("admin/matchType/all", {})
       .then((response) => {
-        console.log("This is Response ======>>>>", response.result);
         setMasterData((preData) => ({
           ...preData,
           matchTypeID: response.result?.map((item) => {
@@ -155,7 +154,6 @@ function AddMarketTemaplate() {
       const filterFields = MarketTemplateFileds.filter((value) => {
         return value?.name !== "isOver";
       });
-      console.log(filterFields);
       setFields(filterFields);
     }
   };
