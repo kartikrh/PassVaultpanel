@@ -483,13 +483,9 @@ const Index = forwardRef(
         isActive: true,
       });
       setSelectedTableElements({
-        eventList:{
+        eventName: {
           value: 0,
           label: "Event List",
-        },
-        competitionList:{
-          value: 0,
-          label: "Competition List",
         },
         competition: {
           value: 0,
@@ -644,10 +640,13 @@ const Index = forwardRef(
                               placeholder="Event Type"
                               onChange={(e) => {
                                 setEventTypeId(e?.value);
+                                setCompetitionId(null);
                                 handleTableActions("eventTypeId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
                                   eventType: e,
+                                  competition: { value: 0, label: "Competition List" },
+                                  eventName: { value: 0, label: "Event List" },
                                 });
                               }}
                               options={eventTypes?.map((item) => ({
@@ -667,18 +666,19 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElements?.competitionList}
+                              value={selectedTableElements?.competition}
                               placeholder="Competition List"
                               onChange={(e) => {
                                 setCompetitionId(e?.value);
                                 handleTableActions("competitionId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
-                                  competitionList: e,
+                                  competition: e,
+                                  eventName: { value: 0, label: "Event List" },
                                 });
                               }}
                               options={competitionList?.map((item) => ({
-                                label: item?.competitionList, //api response value
+                                label: item?.competition,
                                 value: item?.competitionId,
                               }))}
                               classNamePrefix="select2-selection"
@@ -694,18 +694,18 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElements?.eventList}
+                              value={selectedTableElements?.eventName}
                               placeholder="Event List"
                               onChange={(e) => {
                                 handleTableActions("eventTypeId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
-                                  eventList: e,
+                                  eventName: e,
                                 });
                               }}
                               options={eventList?.map((item) => ({
-                                label: item?.eventList, //api response value
-                                value: item?.eventTypeId,
+                                label: item?.eventName,
+                                value: item?.eventId,
                               }))}
                               classNamePrefix="select2-selection"
                             />
