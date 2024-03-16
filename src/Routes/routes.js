@@ -47,7 +47,7 @@ import News from '../Pages/News'
 import Subscribers from '../Pages/Subscribers'
 import MarketTemplate from '../Pages/MarketTemplate'
 import EventMarkets from "../Pages/EventMarkets"
-
+import SetMarketResult from '../Pages/SetMarketResult'
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -121,7 +121,9 @@ const authProtectedRoutes = [
   { path: "/subscribers", component: <Subscribers /> },
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
-  { path: "/eventMarkets", component: <EventMarkets /> },
+  { path: "/eventMarkets", component: <EventMarkets />},
+  { path: "/setMarketResult", component: <SetMarketResult />},
+
   {
     path: "/changePassword",
     component: <ChangePassword />,
