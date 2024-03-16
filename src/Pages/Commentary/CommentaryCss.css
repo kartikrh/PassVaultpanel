@@ -181,3 +181,29 @@
 .ball-red {
     background-color: red;
 }
+
+#addreloadicon {
+    max-width: 126px;
+}
+
+.sticky-button {
+    height: 3rem;
+    position: fixed;
+    right: 3%;
+    bottom: 10%;
+    cursor: pointer;
+    z-index: 1050;
+}
+
+.player-header {
+    background: lightgray;
+    padding: 0.2rem;
+    margin: 0 0 1rem 0;
+    font-size: large;
+    font-weight: 600;
+}
+
+.generate-team-button {
+    margin: 2rem 0 0 0;
+    float: right;
+}

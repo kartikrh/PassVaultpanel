@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
+import {
+  // ContentState,
+  EditorState,
+  // convertFromHTML,
+  convertToRaw,
+} from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 import axiosInstance from "../../../Features/axios";
 
 const MyEditor = ({ field, formData, handleChange, fieldErrors }) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  // console.log("formData",formData);
+  // useEffect(() => {
+  //   if (formData) {
+  //     const parsedData = formData;
+  //     const blocksFromHtml = convertFromHTML(parsedData);
+  //     const state = ContentState.createFromBlockArray(
+  //       blocksFromHtml.contentBlocks,
+  //       blocksFromHtml.entityMap
+  //     );
+  //     setEditorState(EditorState.createWithContent(state));
+  //   }
+  // }, [formData]);
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);

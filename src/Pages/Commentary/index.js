@@ -52,6 +52,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
+  const [details, setDetails] = useState({})
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -139,11 +140,18 @@ const Index = () => {
         );
       });
   };
+
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
   const handleDetailsClick = (id) => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
+  };
+  const handleUpdatePlayersClick = (details) => {
+    navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details } });
+  };
+  const handleCommentaryMarketTemplateClick = (id) => {
+    navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
   };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
@@ -230,6 +238,21 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+  const updatePredictMarket = async (pType, record, cState) => {
+    await axiosInstance
+      .post(`/admin/commentary/changePredictMarket`, {
+        "commentaryId": record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  }
   const handleReset = (value) => {
     fetchData(value)
     fetchEventTypeData()
@@ -404,6 +427,59 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Update Players",
+      key: "updatePlayers",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleUpdatePlayersClick(record);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "IsPredictMarket",
+      key: "isPredictMarket",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPredictMarket ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            updatePredictMarket("isPredictMarket", record, record?.isPredictMarket);
+          }}
+        >
+          <i className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "P-Market",
+      key: "marketTemplate",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCommentaryMarketTemplateClick(record.commentaryId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "IsClientShow",
       key: "isClientShow",
       render: (text, record) => (
@@ -420,6 +496,7 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+
   ];
   //elements required
   const tableElement = {

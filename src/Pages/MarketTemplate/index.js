@@ -51,7 +51,6 @@ const Index = () => {
     await axiosInstance
     .post("/admin/marketTemplate/matchTypeList", {})
     .then((response) => {
-      console.log(response?.result)
       setMatchType(response?.result)
     })
     .catch((error) => {
@@ -197,6 +196,7 @@ const Index = () => {
     title: "Events",
     isActive: true,
     matchTypeSelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {

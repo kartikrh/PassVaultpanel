@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Navigate, useLocation } from "react-router-dom"
+import { Navigate, useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../../Features/axios"
 import { updateToastData } from "../../Features/toasterSlice"
 import { ERROR, PERMISSION_VIEW, STRING_SEPERATOR, TAB_COMMENTARY } from "../../components/Common/Const"
 import ShortCommentaryScreen from "./ShortCommentary.jsx"
+import SpinnerModel from "../../components/Model/SpinnerModel";
 import { BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst"
 import { isEqual } from "lodash"
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
 
+const navigateTo = "/commentary"
 export const ShortCommentary = () => {
     const pageName = TAB_COMMENTARY
     const [commentaryData, setCommentaryData] = useState(undefined);
@@ -23,6 +25,7 @@ export const ShortCommentary = () => {
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     const location = useLocation();
+    let navigate = useNavigate();
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -82,7 +85,6 @@ export const ShortCommentary = () => {
             });
         formatData(commentaryDataToUpdate)
     };
-    useEffect(() => { console.log(formattedDetails) })
 
     const findPlayersFormList = (commentaryData, innings, teamId) => {
         const toReturn = []
@@ -91,17 +93,28 @@ export const ShortCommentary = () => {
     }
     const formatData = (commentaryData) => {
         const formattedData = {}
-        const totalInnings = matchTypeData.noOfIningsPerSide
-        console.log(commentaryData)
         commentaryData?.commentaryTeams?.forEach(team => {
+            const oppositTeam = isEqual(team.teamId, commentaryData.commentaryDetails.team1Id) ?
+                commentaryData.commentaryDetails.team2Id : commentaryData.commentaryDetails.team1Id
             const key = team.currentInnings + STRING_SEPERATOR + team.teamId
-            formattedData[key] = { ...team, "teamPlayers": findPlayersFormList(commentaryData, team.currentInnings, team.teamId) }
+            formattedData[key] = {
+                ...team,
+                "oppositeTeam": oppositTeam,
+                "teamPlayers": findPlayersFormList(commentaryData, team.currentInnings, team.teamId),
+                "bowlers": findPlayersFormList(commentaryData, team.currentInnings, oppositTeam)
+            }
         });
         setFormattedDetails(formattedData)
     }
-
+    const handleBackClick = () => {
+        navigate(navigateTo);
+    };
     return <>
+        {isDataLoading && <SpinnerModel />}
         <ShortCommentaryScreen
-            commentaryData
+            commentaryData={commentaryData || {}}
+            CommentaryFormatedData={formattedDetails || {}}
+            totalInnings={matchTypeData.noOfIningsPerSide}
+            backClick={handleBackClick}
         /></>
 }
