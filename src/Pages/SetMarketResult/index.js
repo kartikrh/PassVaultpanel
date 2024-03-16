@@ -274,7 +274,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Event Markets",
+    title: "Set Market Result",
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
