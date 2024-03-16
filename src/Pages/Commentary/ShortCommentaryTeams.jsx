@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { AccordionBody, AccordionHeader, AccordionItem, Col, Input, Row, UncontrolledAccordion } from "reactstrap";
 import { STRING_SEPERATOR, TEXT } from "../../components/Common/Const";
 import { PLAYER, TEAM } from "./CommentartConst";
-import { SHORT_COMMENTARY_BATTING_PLAYER, SHORT_COMMENTARY_TEAM } from "../../constants/FieldConst/CommentaryConst";
+import { SHORT_COMMENTARY_BATTING_PLAYER, SHORT_COMMENTARY_BOWLING_PLAYER, SHORT_COMMENTARY_TEAM } from "../../constants/FieldConst/CommentaryConst";
+import "./CommentaryCss.css"
 
 export const ShortCommentaryTeams = ({ teamDetails }) => {
     const [teamData, setTeamData] = useState({});
@@ -72,21 +73,25 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
         return playerList.map((batter, index) => {
             const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
             return <>
-                <div>{batter.playerName}</div>
-                {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId)
-                }            </>
+                <div className="player-header">{batter.playerName}</div>
+                {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId)}
+            </>
         })
 
     }
     const renderBowler = (playerList = [], teamUniqueId) => {
-        return playerList.map((bowler, index) => {
-            const uniqueId = teamUniqueId + STRING_SEPERATOR + bowler.commentaryPlayerId
-            return
+        return playerList.map((batter, index) => {
+            const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
+            return <>
+                <div className="player-header">{batter.playerName}</div>
+                {renderTextFields(SHORT_COMMENTARY_BOWLING_PLAYER, uniqueId)}
+            </>
         })
 
     }
     const renderTeamFields = (teamDetails) => {
         const uniqueId = teamDetails.currentInnings + STRING_SEPERATOR + teamDetails.teamId
+        const oppositeTeamUniqueId = teamDetails.currentInnings + STRING_SEPERATOR + teamDetails.oppositeTeam
         return <AccordionItem >
             <AccordionHeader targetId={uniqueId}>
                 {`Innings : ${teamDetails.currentInnings} || Team : ${teamDetails.teamName} `}</AccordionHeader>
@@ -102,6 +107,7 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
                     <AccordionItem>
                         <AccordionHeader targetId="Bowler">Bowler</AccordionHeader>
                         <AccordionBody accordionId="Bowler">
+                            {renderBowler(teamDetails.bowlers, oppositeTeamUniqueId)}
                         </AccordionBody>
                     </AccordionItem >
                 </UncontrolledAccordion>

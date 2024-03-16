@@ -93,10 +93,16 @@ export const ShortCommentary = () => {
     }
     const formatData = (commentaryData) => {
         const formattedData = {}
-        const totalInnings = matchTypeData.noOfIningsPerSide
         commentaryData?.commentaryTeams?.forEach(team => {
+            const oppositTeam = isEqual(team.teamId, commentaryData.commentaryDetails.team1Id) ?
+                commentaryData.commentaryDetails.team2Id : commentaryData.commentaryDetails.team1Id
             const key = team.currentInnings + STRING_SEPERATOR + team.teamId
-            formattedData[key] = { ...team, "teamPlayers": findPlayersFormList(commentaryData, team.currentInnings, team.teamId) }
+            formattedData[key] = {
+                ...team,
+                "oppositeTeam": oppositTeam,
+                "teamPlayers": findPlayersFormList(commentaryData, team.currentInnings, team.teamId),
+                "bowlers": findPlayersFormList(commentaryData, team.currentInnings, oppositTeam)
+            }
         });
         setFormattedDetails(formattedData)
     }

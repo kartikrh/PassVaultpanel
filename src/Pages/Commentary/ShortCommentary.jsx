@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Row, UncontrolledAccordion } from 'reactstrap';
+import { AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Row, UncontrolledAccordion } from 'reactstrap';
 import { BAT, BOWL, TOSS_SELECTION } from './CommentartConst';
 import { isEmpty } from 'lodash';
 import CardComponent from './CardComponent';
@@ -13,15 +13,6 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
     const [nextBattingTeam, setNextBattingTeam] = useState(undefined)
     const [showInningsUpdate, setShowInningsUpdate] = useState(undefined)
 
-    // const [tossAccordian, setTossAccordian] = useState('1');
-
-    // const toogleBattingAccoridan = (id) => {
-    //     if (tossAccordian === id) {
-    //         setTossAccordian();
-    //     } else {
-    //         setTossAccordian(id);
-    //     }
-    // };
     const fetchTeamData = (teamId, key) => {
         return CommentaryFormatedData["1_##_" + teamId]?.[key]
     }
@@ -59,9 +50,6 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
     }
     const handleTeamChange = (key, value) => {
         setInningsTeam({ ...inningsTeam, [key]: value })
-    }
-    const handlePlayerChange = (key, value) => {
-
     }
     const handleCommentaryChange = (objToSave) => {
         setCommentaryDetails({
@@ -221,12 +209,15 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
                                 <UncontrolledAccordion defaultOpen="0">
                                     {selectTossAccordian()}
                                     {(commentaryDetails.tossWonBy && commentaryDetails.choseTo && isEmpty(inningsTeam)) &&
-                                        <Button color="success" className="decision-Button" onClick={generateTeam}>Generate first team</Button>
+                                        <div className='generate-team-button'>
+                                            <Button color="success" className="decision-Button"
+                                                onClick={generateTeam}>Generate first team</Button>
+                                        </div>
                                     }
                                     <ShortCommentaryTeams
                                         teamDetails={inningsTeam}
                                     />
-                                    {generateNextButtons()}
+                                    <div className='generate-team-button'>{generateNextButtons()}</div>
                                     {showInningsUpdate && selectNextInningsAccordian()}
                                 </UncontrolledAccordion>
                             </CardBody>
