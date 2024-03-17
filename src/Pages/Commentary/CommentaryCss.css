@@ -207,3 +207,32 @@
     margin: 2rem 0 0 0;
     float: right;
 }
+
+.small-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 3rem !important;
+}
+
+.small-button {
+    padding: 0.2rem 0.5rem !important;
+}
+
+.table-header-button {
+    margin: 1% 1%;
+    width: 48% !important;
+    padding: 0.2rem !important;
+}
+
+.btn-color-yellow {
+    color: #60530b !important;
+    background-color: #f4f481 !important;
+    font-weight: 500;
+    border-color: #60530b !important;
+}
+
+.btn-color-orange {
+    color: #60400b !important;
+    background-color: #ffc98f !important;
+    font-weight: 500;
+    border-color: #60400b !important;
+}
