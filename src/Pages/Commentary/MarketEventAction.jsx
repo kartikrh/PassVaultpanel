@@ -8,22 +8,54 @@ import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { MARKET_STATUS } from "./CommentartConst";
+import { ACTIVE, ACTIVE_VALUE, ALL, ALLOW, ALLOW_VALUE, DEACTIVE, DEACTIVE_VALUE, INACTIVE, INACTIVE_VALUE, MARKET_STATUS, NOT_ALLOW, NOT_ALLOW_VALUE, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE } from "./CommentartConst";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
-
+import _, { isEmpty } from "lodash";
+const tableElement = {
+    title: "Predefined",
+    displayTitle: true
+};
 export const MarketEventAction = () => {
     const pageName = TAB_COMMENTARY;
-    const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-    const location = useLocation();
-    let navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const commentaryId = location.state?.commentaryId || "0";
-    const dispatch = useDispatch();
     const [data, setData] = useState([]);
+    const [commentaryInfo, setCommentaryInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+    const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+    let navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const commentaryId = location.state?.commentaryId || "0";
+
+    const formatDataBeforeSend = (dataToChange = []) => {
+        const dataToSend = []
+        dataToChange.forEach(record => {
+            let workingRecord = _.clone(record)
+            const recordMarketRunner = {
+                ...record.marketRunners[0],
+                "line": +record.line,
+                "overRate": +record.overRate,
+                "underRate": +record.underRate,
+                "yesRate": +record.yesRate,
+                "yesPoint": +record.yesPoint,
+                "noRate": +record.noRate,
+                "noPoint": +record.noPoint,
+            }
+
+
+
+
+            workingRecord = _.omit(workingRecord,
+                ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
+            workingRecord["marketRunners"] = [recordMarketRunner]
+            console.log(workingRecord)
+            dataToSend.push(workingRecord)
+        })
+        return dataToSend
+    }
 
     const handleValueChange = (record, key, value) => {
-        const indexOfData = data.findIndex(i => i.index === record.index)
+        const indexOfData = data.findIndex(i => i.eventMarketId === record.eventMarketId)
         if (indexOfData !== -1) {
             setData(prev => [
                 ...prev.slice(0, indexOfData),
@@ -34,6 +66,33 @@ export const MarketEventAction = () => {
                 ...prev.slice(indexOfData + 1, prev.length),
             ])
         }
+    }
+
+    const handleAction = (status, changeIn = []) => {
+        let dataToUpdate = []
+        changeIn.forEach(record => {
+            if (!_.isEqual(+record.status, +status))
+                dataToUpdate.push({ ...record, "status": status })
+        })
+        dataToUpdate = formatDataBeforeSend(dataToUpdate)
+        // Add Api Call Here
+        console.log(dataToUpdate)
+    }
+
+    const updateRecords = (record) => {
+        let dataToSend = []
+        if (record) dataToSend = [record]
+        else dataToSend = data
+        dataToSend = formatDataBeforeSend(dataToSend)
+        // Add Api Call Here
+        console.log(dataToSend)
+    }
+
+    const handleSingleAction = (record, key, value) => {
+        const updatedRecord = { ...record, [key]: value }
+        const dataToSend = formatDataBeforeSend([updatedRecord])
+        // Add Api Call Here
+        console.log(dataToSend)
     }
 
     const handleSave = async () => {
@@ -48,7 +107,7 @@ export const MarketEventAction = () => {
                 eventMarket: validateData,
             })
             .then((response) => {
-                fetchData(commentaryId);
+                fetchTableData(commentaryId);
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             })
             .catch((error) => {
@@ -57,7 +116,7 @@ export const MarketEventAction = () => {
             });
     };
 
-    const fetchData = async (commentaryId) => {
+    const fetchTableData = async (commentaryId) => {
         setIsLoading(true);
         await axiosInstance
             .post("/admin/eventMarket/marketListByCId", { commentaryId })
@@ -66,22 +125,13 @@ export const MarketEventAction = () => {
                     console.log(response?.result)
                     const dataList = response?.result || []
                     let updatedDatalist = dataList.map(eventMarket => {
-                        return {
-                            ...eventMarket,
-                            ...eventMarket.marketRunners[0]
-                        }
-                    })
-                    // const updatedDataList = dataList.
-                    // newData = newData.map((market) => {
-                    //     const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
-                    //     if (eventMarketIndex !== -1) {
-                    //         return {
-                    //             ...market,
-                    //             ...eventMarket[eventMarketIndex]
-                    //         }
-                    //     }
-                    //     return market;
-                    // })
+                        if (eventMarket.marketRunners)
+                            return {
+                                ...eventMarket,
+                                ...eventMarket.marketRunners[0]
+                            }
+                        else return null
+                    }).filter(x => x)
                     setData(updatedDatalist);
                 }
                 setIsLoading(false);
@@ -92,6 +142,20 @@ export const MarketEventAction = () => {
             });
     };
 
+    const fetchCommentaryInfo = async () => {
+        setIsLoading(true);
+        await axiosInstance
+            .post("/admin/commentary/getEventDetailsByCId", { commentaryId })
+            .then((response) => {
+                if (response?.result?.es) setCommentaryInfo(response?.result?.es)
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsLoading(false);
+            });
+    }
+
     const handleBackClick = () => {
         navigate("/commentary");
     };
@@ -100,15 +164,6 @@ export const MarketEventAction = () => {
     //     return teamOption.label
     // }
     //elements required
-    const tableElement = {
-        title: "Predefined",
-        displayTitle: true
-    };
-    const saveData = (records = []) => {
-        records.forEach(data => {
-            console.log(data)
-        })
-    }
     const columns = [
         {
             title: "Inning",
@@ -135,9 +190,8 @@ export const MarketEventAction = () => {
                     className="form-control small-text-fields"
                     value={text}
                     onChange={(e) => {
-                        handleValueChange(record, "status", e.target.value);
+                        handleValueChange(record, "status", +e.target.value);
                     }}
-                    closeMenuOnSelect={true}
                 >
                     {Object.entries(MARKET_STATUS).map(([key, value]) =>
                         <option value={key}>{value}</option>
@@ -246,10 +300,10 @@ export const MarketEventAction = () => {
                     step={1}
                     min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "YesPoint", e.target.value)}
+                    onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
                 />
             ),
-            key: "YesPoint",
+            key: "yesPoint",
         },
         {
             title: "Active",
@@ -260,7 +314,7 @@ export const MarketEventAction = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isActive", !record.isActive);
+                        handleSingleAction(record, "isActive", !record.isActive);
                     }}
                 >
                     <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
@@ -278,7 +332,7 @@ export const MarketEventAction = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isAllow", !record.isAllow);
+                        handleSingleAction(record, "isAllow", !record.isAllow);
                     }}
                 >
                     <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
@@ -296,21 +350,18 @@ export const MarketEventAction = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isSend", !record.isActive);
+                        handleSingleAction(record, "isSend", !record.isActive);
                     }}
                 >
                     <i className={`bx ${record.isSend ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
-            key: "isSend",
             style: { width: "2%", textAlign: "center" },
         },
         {
             title: "Save",
             render: (text, record) => (
-                <Button color="primary" className="btn" onClick={() => saveData(record)}>
-                    <i>Save</i>
-                </Button>
+                <Button color="primary" className="small-button" onClick={() => updateRecords(record)}>Save</Button>
             ),
             key: "isSend",
         },
@@ -321,7 +372,8 @@ export const MarketEventAction = () => {
             navigate("/dashboard")
         }
         if (commentaryId !== "0") {
-            fetchData(commentaryId);
+            fetchTableData(commentaryId);
+            fetchCommentaryInfo(commentaryId)
         }
     }, []);
 
@@ -333,12 +385,37 @@ export const MarketEventAction = () => {
                         <Card>
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
-                                <Row className='mb-3'>
+                                <Row className=''>
                                     <Col className="mt-3 mt-lg-4 mt-md-4">
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Open Market" page="updatecp" />
                                     </Col>
                                     <Col className="mt-3 mt-lg-3 mt-md-3">
                                         <button className="btn btn-danger text-right" onClick={handleBackClick}>Back</button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    {!isEmpty(commentaryInfo) && <Col className="mb-3">
+                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ ${commentaryInfo.en}`}</div>
+                                        <div>{`Ref: ${commentaryInfo.eid} [ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
+                                    </Col>
+                                    }
+                                </Row>
+                                <Row>
+                                    <Col className="p-0" xs={12} md={3} lg={2}>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(INACTIVE_VALUE, data)}>{INACTIVE}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(SUSPEND_VALUE, data)}>{SUSPEND}</Button>
+                                    </Col>
+                                    <Col className="p-0" xs={12} md={3} lg={2}>
+                                        <Button color="success" className="table-header-button" onClick={() => handleAction(ALLOW_VALUE, data)}>{ALLOW}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(NOT_ALLOW_VALUE, data)}>{NOT_ALLOW}</Button>
+                                    </Col>
+                                    <Col className="p-0" xs={12} md={3} lg={2}>
+                                        <Button color="success" className="table-header-button" onClick={() => handleAction(ACTIVE_VALUE, data)}>{ACTIVE}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(DEACTIVE_VALUE, data)}>{DEACTIVE}</Button>
+                                    </Col>
+                                    <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 3 }}>
+                                        <Button color="success" className="table-header-button" onClick={() => handleAction(REFRESH, data)}>{REFRESH}</Button>
+                                        <Button color="success" className="table-header-button" onClick={() => updateRecords()}>{SEND_ALL}</Button>
                                     </Col>
                                 </Row>
                                 <Row>

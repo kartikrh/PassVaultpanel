@@ -212,3 +212,13 @@
     padding: 0 0.3rem !important;
     min-width: 3rem !important;
 }
+
+.small-button {
+    padding: 0.2rem 0.5rem !important;
+}
+
+.table-header-button {
+    margin: 1% 1%;
+    width: 48% !important;
+    padding: 0.2rem !important;
+}
