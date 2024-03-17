@@ -8,7 +8,7 @@ import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { ACTIVE, ACTIVE_VALUE, ALL, ALLOW, ALLOW_VALUE, DEACTIVE, DEACTIVE_VALUE, INACTIVE, INACTIVE_VALUE, MARKET_STATUS, NOT_ALLOW, NOT_ALLOW_VALUE, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE } from "./CommentartConst";
+import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE } from "./CommentartConst";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
@@ -41,14 +41,9 @@ export const MarketEventAction = () => {
                 "noRate": +record.noRate,
                 "noPoint": +record.noPoint,
             }
-
-
-
-
             workingRecord = _.omit(workingRecord,
                 ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
             workingRecord["marketRunners"] = [recordMarketRunner]
-            console.log(workingRecord)
             dataToSend.push(workingRecord)
         })
         return dataToSend
@@ -68,15 +63,14 @@ export const MarketEventAction = () => {
         }
     }
 
-    const handleAction = (status, changeIn = []) => {
+    const handleAction = (changeIn, key, value) => {
         let dataToUpdate = []
         changeIn.forEach(record => {
-            if (!_.isEqual(+record.status, +status))
-                dataToUpdate.push({ ...record, "status": status })
+            if (!_.isEqual(+record[key], +value))
+                dataToUpdate.push({ ...record, [key]: value })
         })
         dataToUpdate = formatDataBeforeSend(dataToUpdate)
-        // Add Api Call Here
-        console.log(dataToUpdate)
+        saveData(dataToUpdate)
     }
 
     const updateRecords = (record) => {
@@ -84,27 +78,20 @@ export const MarketEventAction = () => {
         if (record) dataToSend = [record]
         else dataToSend = data
         dataToSend = formatDataBeforeSend(dataToSend)
-        // Add Api Call Here
-        console.log(dataToSend)
+        saveData(dataToSend)
     }
 
     const handleSingleAction = (record, key, value) => {
         const updatedRecord = { ...record, [key]: value }
         const dataToSend = formatDataBeforeSend([updatedRecord])
-        // Add Api Call Here
-        console.log(dataToSend)
+        saveData(dataToSend)
     }
 
-    const handleSave = async () => {
-        const validateData = data.filter(value => value.isCreate)
+    const saveData = async (dataToSave) => {
         setIsLoading(true);
-        if (!validateData.length) {
-            setIsLoading(false);
-            return dispatch(updateToastData({ data: "No isCreate has been selected", title: pageName, type: ERROR }));
-        }
         await axiosInstance
-            .post(`/admin/eventMarket/saveEventMarket`, {
-                eventMarket: validateData,
+            .post(`/admin/eventMarket/updateMarketRate`, {
+                eventMarket: dataToSave,
             })
             .then((response) => {
                 fetchTableData(commentaryId);
@@ -122,7 +109,6 @@ export const MarketEventAction = () => {
             .post("/admin/eventMarket/marketListByCId", { commentaryId })
             .then((response) => {
                 if (response?.result) {
-                    console.log(response?.result)
                     const dataList = response?.result || []
                     let updatedDatalist = dataList.map(eventMarket => {
                         if (eventMarket.marketRunners)
@@ -132,6 +118,7 @@ export const MarketEventAction = () => {
                             }
                         else return null
                     }).filter(x => x)
+                    updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
                     setData(updatedDatalist);
                 }
                 setIsLoading(false);
@@ -246,7 +233,7 @@ export const MarketEventAction = () => {
             key: "underRate",
         },
         {
-            title: "No Rate",
+            title: "R-No",
             dataIndex: "noRate",
             render: (text, record) => (
                 <Input
@@ -261,7 +248,7 @@ export const MarketEventAction = () => {
             key: "noRate",
         },
         {
-            title: "No Point",
+            title: "P-No",
             dataIndex: "noPoint",
             render: (text, record) => (
                 <Input
@@ -276,7 +263,7 @@ export const MarketEventAction = () => {
             key: "noPoint",
         },
         {
-            title: "Yes Rate",
+            title: "R-Yes",
             dataIndex: "yesRate",
             render: (text, record) => (
                 <Input
@@ -291,7 +278,7 @@ export const MarketEventAction = () => {
             key: "yesRate",
         },
         {
-            title: "Yes Point",
+            title: "P-Yes",
             dataIndex: "yesPoint",
             render: (text, record) => (
                 <Input
@@ -346,7 +333,7 @@ export const MarketEventAction = () => {
             dataIndex: "isSend",
             render: (text, record) => (
                 <Button
-                    color={`${record.isActive ? "primary" : "danger"}`}
+                    color={`${record.isSend ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
@@ -402,20 +389,23 @@ export const MarketEventAction = () => {
                                 </Row>
                                 <Row>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(INACTIVE_VALUE, data)}>{INACTIVE}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(SUSPEND_VALUE, data)}>{SUSPEND}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</Button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="success" className="table-header-button" onClick={() => handleAction(ALLOW_VALUE, data)}>{ALLOW}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(NOT_ALLOW_VALUE, data)}>{NOT_ALLOW}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="success" className="table-header-button" onClick={() => handleAction(ACTIVE_VALUE, data)}>{ACTIVE}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(DEACTIVE_VALUE, data)}>{DEACTIVE}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 3 }}>
-                                        <Button color="success" className="table-header-button" onClick={() => handleAction(REFRESH, data)}>{REFRESH}</Button>
-                                        <Button color="success" className="table-header-button" onClick={() => updateRecords()}>{SEND_ALL}</Button>
+                                    <Col className="p-0" xs={12} md={3} lg={2}>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSend", true)}>{SEND_ALL}</Button>
+                                    </Col>
+                                    <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
+                                        <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
                                     </Col>
                                 </Row>
                                 <Row>
@@ -425,11 +415,6 @@ export const MarketEventAction = () => {
                                             dataSource={data}
                                             tableElement={tableElement}
                                         />
-                                    </Col>
-                                </Row>
-                                <Row className='mb-3'>
-                                    <Col className="mt-3 mt-lg-3 mt-md-3">
-                                        <Button color="primary" className="btn text-right" onClick={handleSave}>Save</Button>
                                     </Col>
                                 </Row>
                             </CardBody>

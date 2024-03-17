@@ -222,3 +222,17 @@
     width: 48% !important;
     padding: 0.2rem !important;
 }
+
+.btn-color-yellow {
+    color: #60530b !important;
+    background-color: #f4f481 !important;
+    font-weight: 500;
+    border-color: #60530b !important;
+}
+
+.btn-color-orange {
+    color: #60400b !important;
+    background-color: #ffc98f !important;
+    font-weight: 500;
+    border-color: #60400b !important;
+}
