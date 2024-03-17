@@ -29,8 +29,8 @@ import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
 import AddMarketTemplate from "../Pages/MarketTemplate/AddMarketTamplate.js";
-import ChangePassword from '../Pages/ChangePassword'
-import Toss from '../Pages/Commentary/Toss.jsx'
+import ChangePassword from "../Pages/ChangePassword";
+import Toss from "../Pages/Commentary/Toss.jsx";
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
 import AddBlock from "../Pages/Blocks/AddBlock.jsx";
 import Blocks from "../Pages/Blocks";
@@ -40,14 +40,15 @@ import PageFormat from "../Pages/PageFormat";
 import AddPageFormat from "../Pages/PageFormat/AddPageFormat.jsx";
 import AddPage from "../Pages/Page/AddPage.jsx";
 import Page from "../Pages/Page";
-import MenuList from '../Pages/menuList'
-import AddMenuType from '../Pages/menuList/AddMenuType.js'
-import AddMenuItem from '../Pages/menuList/AddMenuItem.js'
-import News from '../Pages/News'
-import Subscribers from '../Pages/Subscribers'
-import MarketTemplate from '../Pages/MarketTemplate'
-import EventMarkets from "../Pages/EventMarkets"
-import SetMarketResult from '../Pages/SetMarketResult'
+import MenuList from "../Pages/menuList";
+import AddMenuType from "../Pages/menuList/AddMenuType.js";
+import AddMenuItem from "../Pages/menuList/AddMenuItem.js";
+import News from "../Pages/News";
+import Subscribers from "../Pages/Subscribers";
+import MarketTemplate from "../Pages/MarketTemplate";
+import EventMarkets from "../Pages/EventMarkets";
+import UnsettledMarket from "../Pages/UnsettledMarket";
+import SetMarketResult from '../Pages/SetMarketResult';
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -121,9 +122,11 @@ const authProtectedRoutes = [
   { path: "/subscribers", component: <Subscribers /> },
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
+  { path: "/eventMarkets", component: <EventMarkets /> },
+  { path: "/unsettledMarket", component: <UnsettledMarket /> },
   { path: "/eventMarkets", component: <EventMarkets />},
   { path: "/setMarketResult", component: <SetMarketResult />},
-
+ 
   {
     path: "/changePassword",
     component: <ChangePassword />,
@@ -138,7 +141,6 @@ const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-
 
   // Authentication Inner Pages
   { path: "/auth-login", component: <Login1 /> },
