@@ -330,17 +330,17 @@ export const MarketEventAction = () => {
         },
         {
             title: "Is Send",
-            dataIndex: "isSend",
+            dataIndex: "isSendData",
             render: (text, record) => (
                 <Button
-                    color={`${record.isSend ? "primary" : "danger"}`}
+                    color={`${record.isSendData ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleSingleAction(record, "isSend", !record.isActive);
+                        handleSingleAction(record, "isSendData", !record.isActive);
                     }}
                 >
-                    <i className={`bx ${record.isSend ? "bx-check" : "bx-block"}`}></i>
+                    <i className={`bx ${record.isSendData ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
             style: { width: "2%", textAlign: "center" },
@@ -350,7 +350,7 @@ export const MarketEventAction = () => {
             render: (text, record) => (
                 <Button color="primary" className="small-button" onClick={() => updateRecords(record)}>Save</Button>
             ),
-            key: "isSend",
+            key: "isSendData",
         },
     ];
 
@@ -401,7 +401,7 @@ export const MarketEventAction = () => {
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSend", true)}>{SEND_ALL}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
                                         <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
