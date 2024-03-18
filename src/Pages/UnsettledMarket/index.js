@@ -192,7 +192,7 @@ const Index = () => {
       title: "Id",
       dataIndex: "eventMarketId",
       key: "eventMarketId",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     {
@@ -202,7 +202,7 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{text}</span>
       ),
       key: "eventTypeName",
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
@@ -217,20 +217,20 @@ const Index = () => {
       dataIndex: "eventName",
       key: "eventName",
       sort: true,
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      style: { width: "20%" },
+      style: { width: "10%" },
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
@@ -258,7 +258,7 @@ const Index = () => {
           </Button>
         </>
       ),
-      style: { width: "5%", textAlign: "center" },
+      style: { width: "10%", textAlign: "center" },
     },
   ];
 
