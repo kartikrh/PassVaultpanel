@@ -8,12 +8,39 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import axiosInstance from "../../Features/axios";
+import { updateToastData } from "../../Features/toasterSlice";
+import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { useDispatch } from "react-redux";
 
 const CancelModal = ({ isOpen, toggle, data }) => {
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
-  const handleYesClick = () => {
-    console.log("Password:", password);
+  const handleYesClick = async () => {
+    await axiosInstance
+      .post("/admin/eventMarket/setMarketCancel", {
+        eventMarketId: data.eventMarketId,
+        commentaryId: data.commentaryId,
+        password: password,
+      })
+      .then((response) => {
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        });
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+    setPassword("");
     toggle();
   };
 
