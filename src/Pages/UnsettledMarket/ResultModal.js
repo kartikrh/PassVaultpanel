@@ -13,7 +13,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 
-const ResultModal = ({ isOpen, toggle, data }) => {
+const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
   const [result, setResult] = useState("");
   const dispatch = useDispatch();
 
@@ -41,6 +41,7 @@ const ResultModal = ({ isOpen, toggle, data }) => {
         );
       });
     setResult("");
+    fetchData();
     toggle();
   };
 
