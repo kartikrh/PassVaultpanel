@@ -45,7 +45,7 @@ const CommentaryMarketTemplate = () => {
     }
 
     const handleSave = async () => {
-        let validateData = data.filter(value => value.isCreate)
+        let validateData = data.filter(value => value.isCreate).sort((a, b) => a.index - b.index)
         if (!validateData.length) {
             return dispatch(updateToastData({ data: "No isCreate has been selected", title: pageName, type: ERROR }));
         }
@@ -55,7 +55,8 @@ const CommentaryMarketTemplate = () => {
         }));
         let isError = false;
         const DECIMAL_REGEX = /^\d*\.?\d*$/
-        validateData.forEach((item, index) => {
+        let allErrors = [];
+        validateData.forEach((item) => {
             let error = {};
             for (const field in item) {
                 if (["marketName", "line", "overRate", "underRate"].includes(field)) {
@@ -65,24 +66,24 @@ const CommentaryMarketTemplate = () => {
                         setData(prevData => {
                             const newDataArray = [...prevData];
                             let updatedItem = { ...item, error: { ...error } };
-                            newDataArray[index] = updatedItem;
+                            newDataArray[item.index] = updatedItem;
+                            return newDataArray;
+                        });
+                    } else if (["line", "overRate", "underRate"].includes(field) && !DECIMAL_REGEX.test(item[field])) {
+                        isError = true
+                        error[field] = `invaild value`;
+                        setData(prevData => {
+                            const newDataArray = [...prevData];
+                            let updatedItem = { ...item, error: { ...error } };
+                            newDataArray[item.index] = updatedItem;
                             return newDataArray;
                         });
                     }
                 }
-                if (["line", "overRate", "underRate"].includes(field) && !DECIMAL_REGEX.test(item[field])) {
-                    isError = true
-                    error[field] = `invaild value`;
-                    setData(prevData => {
-                        const newDataArray = [...prevData];
-                        let updatedItem = { ...item, error: { ...error } };
-                        newDataArray[index] = updatedItem;
-                        return newDataArray;
-                    });
-                }
             }
+            if (Object.keys(error).length > 0) allErrors.push(error)
         })
-        if (!isError) {
+        if (allErrors.length < 1) {
             setIsLoading(true);
             validateData = validateData.map(element => {
                 return {
@@ -123,11 +124,10 @@ const CommentaryMarketTemplate = () => {
                         setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId })))
                     }
                     let newData = [];
-                    predefinedMarket.forEach((market, marketIndex) => {
-                        teamAndPlayers.forEach((team, teamIndex) => {
+                    predefinedMarket.forEach((market) => {
+                        teamAndPlayers.forEach((team) => {
                             newData.push(({
                                 eventMarketId: "0",
-                                index: marketIndex * teamAndPlayers.length + teamIndex,
                                 isCreate: false,
                                 status: "1",
                                 overRate: "",
@@ -146,16 +146,7 @@ const CommentaryMarketTemplate = () => {
                             }))
                         });
                     });
-                    newData = newData.map((market) => {
-                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
-                        if (eventMarketIndex !== -1) {
-                            return {
-                                ...market,
-                                ...eventMarket[eventMarketIndex]
-                            }
-                        }
-                        return market;
-                    }).sort((a, b) => {
+                    newData = newData.sort((a, b) => {
                         if (a.over !== b.over) {
                             return a.over - b.over;
                         }
@@ -163,6 +154,17 @@ const CommentaryMarketTemplate = () => {
                             return a.inningsId - b.inningsId;
                         }
                         return a.teamId - b.teamId;
+                    }).map((market, index) => {
+                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        let newData = {}
+                        if (eventMarketIndex !== -1) {
+                            newData = eventMarket[eventMarketIndex]
+                        }
+                        return {
+                            ...market,
+                            index,
+                            ...newData
+                        }
                     });
                     setData(newData);
                 }
