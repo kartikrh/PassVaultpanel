@@ -8,12 +8,39 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import axiosInstance from "../../Features/axios";
+import { updateToastData } from "../../Features/toasterSlice";
+import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { useDispatch } from "react-redux";
 
 const ResultModal = ({ isOpen, toggle, data }) => {
   const [result, setResult] = useState("");
+  const dispatch = useDispatch();
 
-  const handleYesClick = () => {
-    console.log("result", result);
+  const handleYesClick = async () => {
+    await axiosInstance
+      .post("/admin/eventMarket/setMarketResult", {
+        eventMarketId: data.eventMarketId,
+        commentaryId: data.commentaryId,
+        result: result,
+      })
+      .then((response) => {
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        });
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+    setResult("");
     toggle();
   };
 
@@ -48,7 +75,7 @@ const ResultModal = ({ isOpen, toggle, data }) => {
         <div style={{ display: "flex", alignItems: "center" }}>
           <Label for="result">Enter Result</Label>
           <Input
-            type="text"
+            type="number"
             id="result"
             placeholder="Enter result"
             value={result}
