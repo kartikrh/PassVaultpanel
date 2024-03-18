@@ -130,7 +130,7 @@ export const MatchDetailFields = [
     {
         name: "isPredictMarket",
         label: "Predict Market",
-        defaultValue: true,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 1, lg: 1 },
         type: SWITCH,
