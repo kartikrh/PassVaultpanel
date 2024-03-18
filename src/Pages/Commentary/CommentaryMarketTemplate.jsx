@@ -128,7 +128,7 @@ const CommentaryMarketTemplate = () => {
                             newData.push(({
                                 eventMarketId: "0",
                                 index: marketIndex * teamAndPlayers.length + teamIndex,
-                                isCreate: true,
+                                isCreate: false,
                                 status: "1",
                                 overRate: "",
                                 underRate: "",
