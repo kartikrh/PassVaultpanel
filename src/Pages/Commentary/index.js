@@ -153,6 +153,9 @@ const Index = () => {
   const handleCommentaryMarketTemplateClick = (id) => {
     navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
   };
+  const handleMarketEventActionClick = (id) => {
+    navigate("/marketEventAction", { state: { commentaryId: id } });
+  };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
   };
@@ -342,7 +345,7 @@ const Index = () => {
       title: "Event Name",
       dataIndex: "eventName",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span style={{ cursor: "pointer" }} onClick={() => { handleMarketEventActionClick(record.commentaryId); }}>{text}</span>
       ),
       key: "eventName",
       sort: true,
@@ -469,6 +472,7 @@ const Index = () => {
         <Button
           color={"primary"}
           size="sm"
+          disabled={!record.isPredictMarket || parseInt(record.commentaryStatus) !== 1}
           className="btn"
           onClick={() => {
             handleCommentaryMarketTemplateClick(record.commentaryId);

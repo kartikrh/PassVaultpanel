@@ -91,3 +91,24 @@ export const EXTRAS_WICKET_TYPE = [
 export const BOWLER_CHANGE_DISPLAY_STATUS = "Ball Start"
 export const TEAM = "TEAM"
 export const PLAYER = "PLAYER"
+
+export const MARKET_STATUS = {
+    "0": "NotOpen",
+    "1": "Open",
+    "2": "inActive",
+    "3": "Suspend",
+    "4": "Close",
+    "5": "Settled",
+    "6": "Cancel",
+}
+
+export const INACTIVE = "Inactive"
+export const SUSPEND = "Suspend"
+export const ALLOW = "Allow"
+export const NOT_ALLOW = "Not Allow"
+export const ACTIVE = "Active"
+export const DEACTIVE = "Deactive"
+export const INACTIVE_VALUE = 2
+export const SUSPEND_VALUE = 3
+export const REFRESH = "Refresh"
+export const SEND_ALL = "Send all"

@@ -3,21 +3,19 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
   TAB_EVENT_MARKETS,
-  PERMISSION_DELETE,
   PERMISSION_VIEW,
-  SUCCESS,
-  ERROR,
 } from "../../components/Common/Const";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
-import { updateToastData } from "../../Features/toasterSlice";
+import CancelModal from "./CancelModal";
+import ResultModal from "./ResultModal";
+import "./modal.css";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -30,14 +28,16 @@ const Index = () => {
   const [eventList, setEventList] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [cancelModalData, setCancelModalData] = useState(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [resultModalData, setResultModalData] = useState(null);
+  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
@@ -51,7 +51,8 @@ const Index = () => {
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.eventMarketId);
         });
-        setData(apiData);
+        const closeStatusData = apiData.filter((ele) => ele.status === 4);
+        setData(closeStatusData);
         setDataIndexList(apiDataIdList);
         setCheckedList([]);
         setIsLoading(false);
@@ -107,94 +108,15 @@ const Index = () => {
     setCheckedList(updateSingleCheck);
   };
 
-  const handleAllowPermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/updateAllowMarket`, {
-        eventMarketId: record.eventMarketId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
+  const handleCancel = async (record) => {
+    setCancelModalData(record);
+    setIsCancelModalOpen(true);
+  };
+  const handleResult = async (record) => {
+    setResultModalData(record);
+    setIsResultModalOpen(true);
   };
 
-  const handleActiveInactivePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/activeInactiveMarket`, {
-        eventMarketId: record.eventMarketId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
-  const handleDelete = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/delete`, {
-        eventMarketId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setDeleteModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-        setCheckedList([]);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-        setCheckedList([]);
-      });
-  };
   const handleReset = (value) => {
     fetchData(value);
   };
@@ -270,7 +192,7 @@ const Index = () => {
       title: "Id",
       dataIndex: "eventMarketId",
       key: "eventMarketId",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     {
@@ -280,7 +202,7 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{text}</span>
       ),
       key: "eventTypeName",
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
@@ -295,71 +217,59 @@ const Index = () => {
       dataIndex: "eventName",
       key: "eventName",
       sort: true,
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      style: { width: "20%" },
+      style: { width: "10%" },
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "Is Allow",
-      key: "isAllow",
       render: (text, record) => (
-        <Button
-          color={`${record.isAllow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleAllowPermissions("isAllow", record, record.isAllow);
-          }}
-        >
-          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-        </Button>
+        <>
+          <Button
+            color="danger"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCancel(record);
+            }}
+          >
+            C
+          </Button>{" "}
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleResult(record);
+            }}
+          >
+            R
+          </Button>
+        </>
       ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Active",
-      key: "isActive",
-      render: (text, record) => (
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleActiveInactivePermissions(
-              "isActive",
-              record,
-              record.isActive
-            );
-          }}
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
+      style: { width: "10%", textAlign: "center" },
     },
   ];
+
   //elements required
   const tableElement = {
-    title: "Event Markets",
+    title: "Unsettled Market",
     isActive: true,
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
     resetButton: true,
-    importExport: false,
-    teamsList: false,
   };
 
   useEffect(() => {
@@ -391,14 +301,13 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Markets" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Unsettled Market" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             eventTypes={eventTypes}
             competitionList={competitionList}
@@ -408,19 +317,18 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
             reFetchData={fetchData}
-            isDeletePermission={checkPermission(
-              permissionObj,
-              pageName,
-              PERMISSION_DELETE
-            )}
-          />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
-            singleCheck={checekedList}
           />
         </Container>
+        <CancelModal
+          isOpen={isCancelModalOpen}
+          toggle={() => setIsCancelModalOpen(!isCancelModalOpen)}
+          data={cancelModalData}
+        />
+        <ResultModal
+          isOpen={isResultModalOpen}
+          toggle={() => setIsResultModalOpen(!isResultModalOpen)}
+          data={resultModalData}
+        />
       </div>
     </React.Fragment>
   );

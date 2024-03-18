@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
+// import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -9,21 +10,23 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
-  TAB_EVENT_MARKETS,
+  TAB_SET_MARKETS_RESULT,
+  // PERMISSION_ADD,
   PERMISSION_DELETE,
+  // PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-  const pageName = TAB_EVENT_MARKETS;
+  const pageName = TAB_SET_MARKETS_RESULT;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_EVENT_MARKETS;
+  document.title = TAB_SET_MARKETS_RESULT;
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
@@ -42,7 +45,7 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/eventMarket/all`, {
+      .post(`/admin/eventMarket/pendingMarketList`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
@@ -94,7 +97,7 @@ const Index = () => {
       })
       .catch((error) => {});
   };
-
+  //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
     if (checekedList.includes(e.eventMarketId)) {
@@ -107,10 +110,11 @@ const Index = () => {
     setCheckedList(updateSingleCheck);
   };
 
+
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventMarket/updateAllowMarket`, {
+      .post(`/admin/eventMarket//setMarketIsResult`, {
         eventMarketId: record.eventMarketId,
         [pType]: cState ? false : true,
       })
@@ -136,65 +140,6 @@ const Index = () => {
       });
   };
 
-  const handleActiveInactivePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/activeInactiveMarket`, {
-        eventMarketId: record.eventMarketId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
-  const handleDelete = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/delete`, {
-        eventMarketId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setDeleteModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-        setCheckedList([]);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-        setCheckedList([]);
-      });
-  };
   const handleReset = (value) => {
     fetchData(value);
   };
@@ -220,89 +165,87 @@ const Index = () => {
   };
   //table columns
   const columns = [
-    {
-      title: (
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="chk_child"
-            value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
-          />
-        </div>
-      ),
-      render: (text, record) => (
-        <div className="form-check d-flex align-items-center justify-between">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="chk_child"
-            value="option1"
-            checked={checekedList.includes(record.eventMarketId)}
-            onChange={() => {
-              handleSingleCheck(record);
-            }}
-          />
-        </div>
-      ),
-      key: "select",
-      style: { width: "2%" },
-    },
+    // {
+    //   title: (
+    //     <div className="form-check">
+    //       <input
+    //         className="form-check-input"
+    //         type="checkbox"
+    //         name="chk_child"
+    //         value="option1"
+    //         checked={
+    //           data?.length > 0 &&
+    //           isEqual(checekedList?.sort(), dataIndexList?.sort())
+    //         }
+    //         onChange={() => {
+    //           setCheckedList(
+    //             isEqual(checekedList?.sort(), dataIndexList?.sort())
+    //               ? []
+    //               : dataIndexList
+    //           );
+    //         }}
+    //       />
+    //     </div>
+    //   ),
+    //   render: (text, record) => (
+    //     <div className="form-check d-flex align-items-center justify-between">
+    //       <input
+    //         className="form-check-input"
+    //         type="checkbox"
+    //         name="chk_child"
+    //         value="option1"
+    //         checked={checekedList.includes(record.eventMarketId)}
+    //         onChange={() => {
+    //           handleSingleCheck(record);
+    //         }}
+    //       />
+    //     </div>
+    //   ),
+    //   key: "select",
+    //   style: { width: "2%" },
+    // },
     {
       title: "Event Date",
       dataIndex: "eventDate",
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
       key: "eventDate",
-      style: { width: "10%" },
       sort: true,
+      style: { width: "10%" },
     },
     {
-      title: "Id",
-      dataIndex: "eventMarketId",
-      key: "eventMarketId",
-      style: { width: "10%" },
+      title: "Center ID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
       sort: true,
+      style: { width: "10%" },
     },
     {
-      title: "Event Name",
+      title: "Event Type",
       dataIndex: "eventTypeName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
       key: "eventTypeName",
-      style: { width: "20%" },
       sort: true,
+      style: { width: "10%" },
     },
     {
       title: "Competition",
       dataIndex: "competitionName",
       key: "competitionName",
       sort: true,
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Event",
       dataIndex: "eventName",
       key: "eventName",
       sort: true,
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
-      style: { width: "20%" },
       sort: true,
+      style: { width: "10%" },
     },
     {
       title: "Status",
@@ -312,39 +255,18 @@ const Index = () => {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "Is Allow",
-      key: "isAllow",
+      title: "Is Result",
+      key: "isResult",
       render: (text, record) => (
         <Button
-          color={`${record.isAllow ? "primary" : "danger"}`}
+          color={`${record.isResult ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handleAllowPermissions("isAllow", record, record.isAllow);
+            handleAllowPermissions("isResult", record, record.isResult);
           }}
         >
-          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Active",
-      key: "isActive",
-      render: (text, record) => (
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleActiveInactivePermissions(
-              "isActive",
-              record,
-              record.isActive
-            );
-          }}
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -352,8 +274,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Event Markets",
-    isActive: true,
+    title: "Set Market Result",
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
@@ -391,7 +312,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Event Markets" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Set Market Results" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -406,18 +327,24 @@ const Index = () => {
             setEventTypeActive={setEventTypeActive}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            onAddNavigate={"/addEventMarkets"}
             handleReset={handleReset}
             reFetchData={fetchData}
+            // isAddPermission={checkPermission(
+            //   permissionObj,
+            //   pageName,
+            //   PERMISSION_ADD
+            // )}
             isDeletePermission={checkPermission(
               permissionObj,
               pageName,
               PERMISSION_DELETE
             )}
+            // teams={teams}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
             singleCheck={checekedList}
           />
         </Container>
