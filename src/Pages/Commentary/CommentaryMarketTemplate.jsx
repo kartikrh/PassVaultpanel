@@ -54,7 +54,8 @@ const CommentaryMarketTemplate = () => {
             return newData;
         }));
         let isError = false;
-        validateData.forEach((item) => {
+        const DECIMAL_REGEX = /^\d*\.?\d*$/
+        validateData.forEach((item, index) => {
             let error = {};
             for (const field in item) {
                 if (["marketName", "line", "overRate", "underRate"].includes(field)) {
@@ -64,13 +65,22 @@ const CommentaryMarketTemplate = () => {
                         setData(prevData => {
                             const newDataArray = [...prevData];
                             let updatedItem = { ...item, error: { ...error } };
-                            newDataArray[item.index] = updatedItem;
+                            newDataArray[index] = updatedItem;
                             return newDataArray;
                         });
                     }
                 }
+                if (["line", "overRate", "underRate"].includes(field) && !DECIMAL_REGEX.test(item[field])) {
+                    isError = true
+                    error[field] = `invaild value`;
+                    setData(prevData => {
+                        const newDataArray = [...prevData];
+                        let updatedItem = { ...item, error: { ...error } };
+                        newDataArray[index] = updatedItem;
+                        return newDataArray;
+                    });
+                }
             }
-            console.log("🚀 ~ validateData.forEach ~ error:", item)
         })
         if (!isError) {
             setIsLoading(true);
@@ -122,7 +132,7 @@ const CommentaryMarketTemplate = () => {
                                 status: "1",
                                 overRate: "",
                                 underRate: "",
-                                margin: "",
+                                margin: null,
                                 line: "",
                                 isAllow: true,
                                 data: "", // not getting from market
@@ -247,7 +257,7 @@ const CommentaryMarketTemplate = () => {
                     <Input
                         className="form-control"
                         type="text"
-                        value={text || ""}
+                        value={text}
                         onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
                     />
                     <span className="text-danger">
@@ -283,12 +293,12 @@ const CommentaryMarketTemplate = () => {
         {
             title: "Line",
             dataIndex: "line",
-            render: (text, record) => (
+            render: (text = "", record) => (
                 <>
                     <Input
                         className="form-control"
                         type="text"
-                        value={text || ""}
+                        value={text}
                         onChange={(e) => handleValueChange(record, "line", e.target.value)}
                     />
                     <span className="text-danger">
@@ -303,12 +313,12 @@ const CommentaryMarketTemplate = () => {
         {
             title: "Over",
             dataIndex: "overRate",
-            render: (text, record) => (
+            render: (text = "", record) => (
                 <>
                     <Input
                         className="form-control"
                         type="text"
-                        value={text || ""}
+                        value={text}
                         onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
                     />
                     <span className="text-danger">
@@ -329,7 +339,7 @@ const CommentaryMarketTemplate = () => {
                     <Input
                         className="form-control"
                         type="text"
-                        value={text || ""}
+                        value={text}
                         onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
                     />
                     <span className="text-danger">
@@ -348,7 +358,7 @@ const CommentaryMarketTemplate = () => {
                 <Input
                     className="form-control"
                     type="text"
-                    value={text || ""}
+                    value={text}
                     onChange={(e) => handleValueChange(record, "margin", e.target.value)}
                 />
 
