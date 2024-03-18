@@ -13,7 +13,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 
-const CancelModal = ({ isOpen, toggle, data }) => {
+const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
@@ -41,6 +41,7 @@ const CancelModal = ({ isOpen, toggle, data }) => {
         );
       });
     setPassword("");
+    fetchData();
     toggle();
   };
 

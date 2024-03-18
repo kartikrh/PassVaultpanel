@@ -323,11 +323,13 @@ const Index = () => {
           isOpen={isCancelModalOpen}
           toggle={() => setIsCancelModalOpen(!isCancelModalOpen)}
           data={cancelModalData}
+          fetchData={fetchData}
         />
         <ResultModal
           isOpen={isResultModalOpen}
           toggle={() => setIsResultModalOpen(!isResultModalOpen)}
           data={resultModalData}
+          fetchData={fetchData}
         />
       </div>
     </React.Fragment>
