@@ -122,9 +122,15 @@ function AddRoles() {
 
     const updateAllPermission = (name, data) => {
         const newData = permissions.map(value => {
+            let customData = data
+            if ((name === "isAddPermission" && value.isAdd === false)
+                || (name === "isDeletePermission" && value.isDelete === false)
+                || (name === "isEditPermission" && value.isEdit === false)) {
+                    customData = false
+            }
             return {
                 ...value,
-                [name]: data
+                [name]: customData
             }
         })
         setPermissions(newData)
