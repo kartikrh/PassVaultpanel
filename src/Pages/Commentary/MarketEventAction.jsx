@@ -159,6 +159,11 @@ export const MarketEventAction = () => {
             key: "inningsId",
         },
         {
+            title: "M-Id",
+            dataIndex: "eventMarketId",
+            key: "eventMarketId",
+        },
+        {
             title: "Team",
             dataIndex: "teamId",
             // render: (text) => (<span>{fetchTeamName(text)}</span>),
@@ -389,8 +394,8 @@ export const MarketEventAction = () => {
                                 </Row>
                                 <Row>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</Button>
+                                        <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
+                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
