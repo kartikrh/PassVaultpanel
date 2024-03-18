@@ -25,6 +25,9 @@ export const Columns = ({
         isAddPermission: item.isAddPermission,
         isEditPermission: item.isEditPermission,
         isDeletePermission: item.isDeletePermission,
+        isAdd: item.isAdd,
+        isEdit: item.isEdit,
+        isDelete: item.isDelete
       });
     });
     setCheckboxStates(initialCheckboxStates);
@@ -66,10 +69,10 @@ export const Columns = ({
     let isEditPermission = true
 
     Array.from(checkboxStates)?.map((val, i) => {
-      isAddPermission = isAddPermission && val[1].isAddPermission
-      isDeletePermission = isDeletePermission && val[1].isDeletePermission
+      isAddPermission = isAddPermission && (!val[1].isAdd || val[1].isAddPermission)
+      isDeletePermission = isDeletePermission && (!val[1].isDelete || val[1].isDeletePermission)
       isViewPermission = isViewPermission && val[1].isViewPermission
-      isEditPermission = isEditPermission && val[1].isEditPermission
+      isEditPermission = isEditPermission && (!val[1].isEdit || val[1].isEditPermission)
     })
 
     setAllCheckBoxes({
