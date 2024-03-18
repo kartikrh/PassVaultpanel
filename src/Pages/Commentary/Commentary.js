@@ -1192,7 +1192,7 @@ const Commentary = (props) => {
             const bowlingTeam = []
             const onPitchPlayers = {}
             let currentPartnership = {}
-            const apiCallObj = { "commentaryId": commentaryDetails.commentaryId, }
+            const apiCallObj = {}
             let currentOver = 0
             let currentOverToUpdate = 0
             props.data.commentaryData.commentaryTeams.forEach(teamDetails => {
@@ -1269,7 +1269,12 @@ const Commentary = (props) => {
             if (isEmpty(currentPartnership) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
                 && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
                 apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams })
-            if (!isEmpty(apiCallObj)) dispatch(addCommentaryScreenData(apiCallObj))
+            if (!isEmpty(apiCallObj)) {
+                dispatch(addCommentaryScreenData({
+                    ...apiCallObj,
+                    "commentaryId": commentaryDetails.commentaryId,
+                }))
+            }
         }
     }, [])
     useEffect(() => {
