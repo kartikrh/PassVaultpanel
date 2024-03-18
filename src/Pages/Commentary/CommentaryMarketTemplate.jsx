@@ -54,7 +54,7 @@ const CommentaryMarketTemplate = () => {
             return newData;
         }));
         let isError = false;
-        const DECIMAL_REGEX = /^\d*\.?\d*$/
+        const DECIMAL_REGEX = /^\d+\.?\d*$/
         let allErrors = [];
         validateData.forEach((item) => {
             let error = {};

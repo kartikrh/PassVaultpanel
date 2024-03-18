@@ -124,7 +124,7 @@ function AddRoles() {
         const newData = permissions.map(value => {
             let customData = data
             if ((name === "isAddPermission" && value.isAdd === false)
-                || (name === "isDeletePermission" && value.isEdit === false)
+                || (name === "isDeletePermission" && value.isDelete === false)
                 || (name === "isEditPermission" && value.isEdit === false)) {
                     customData = false
             }
