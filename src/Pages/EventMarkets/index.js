@@ -198,6 +198,35 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value);
   };
+  const handleClose = async (record) => {
+    console.log("record", record);
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/eventMarket/setMarketClose`, {
+        eventMarketId: record.eventMarketId,
+        commentaryId: record.commentaryId,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const getStatusText = (status) => {
     switch (status) {
       case 0:
@@ -348,6 +377,25 @@ const Index = () => {
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Close",
+      key: "close",
+      render: (text, record) => (
+        <>
+          <Button
+            color="danger"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleClose(record);
+            }}
+          >
+            C
+          </Button>{" "}
+        </>
+      ),
+      style: { width: "5%", textAlign: "center" },
     },
   ];
   //elements required
