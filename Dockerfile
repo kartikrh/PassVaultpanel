@@ -6,10 +6,11 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
-COPY yarn*.json ./
+COPY yarn*.lock ./
 
 # Install dependencies
 RUN yarn install
+RUN npm install --global serve
 
 # Copy the current directory contents into the container at /app
 COPY . .
@@ -18,4 +19,5 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run your app using npm start
-CMD ["npm", "start"]
+RUN npm run build
+CMD serve -s build
