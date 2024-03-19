@@ -199,7 +199,6 @@ const Index = () => {
     fetchData(value);
   };
   const handleClose = async (record) => {
-    console.log("record", record);
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/eventMarket/setMarketClose`, {
