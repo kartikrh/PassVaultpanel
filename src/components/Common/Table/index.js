@@ -639,8 +639,6 @@ const Index = forwardRef(
                               value={selectedTableElements?.eventType}
                               placeholder="Event Type"
                               onChange={(e) => {
-                                setEventTypeId(e?.value);
-                                setCompetitionId(null);
                                 handleTableActions("eventTypeId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
@@ -648,6 +646,8 @@ const Index = forwardRef(
                                   competition: { value: 0, label: "Competition List" },
                                   eventName: { value: 0, label: "Event List" },
                                 });
+                                setEventTypeId(e?.value);
+                                setCompetitionId(null);
                               }}
                               options={eventTypes?.map((item) => ({
                                 label: item?.eventType,
