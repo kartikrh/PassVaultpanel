@@ -9,6 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst"
 import { isEqual } from "lodash"
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
+import { Col, Row } from "reactstrap"
 
 const navigateTo = "/commentary"
 export const ShortCommentary = () => {
@@ -43,40 +44,9 @@ export const ShortCommentary = () => {
     const fetchData = async () => {
         setIsDataLoading(true)
         let commentaryDataToUpdate = {}
-        let commentaryDetailsToUpdate = {}
         await axiosInstance.post('/admin/commentary/detailsById', { commentaryId })
             .then(async (response) => {
                 commentaryDataToUpdate = response?.result
-                // Get Match type data from matchTypeID
-                setIsDataLoading(true)
-                await axiosInstance.post('/admin/matchType/byId', { matchTypeId: commentaryDataToUpdate?.commentaryDetails?.matchTypeId })
-                    .then((response) => {
-                        setMatchTypeData(response?.result);
-                        setIsDataLoading(false)
-                    }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                        setIsDataLoading(false)
-                    });
-                // Get Event Type data from eventTypeId
-                setIsDataLoading(true)
-                await axiosInstance.post('/admin/eventType/byId', { eventTypeId: commentaryDataToUpdate?.commentaryDetails?.eventTypeId })
-                    .then((response) => {
-                        commentaryDetailsToUpdate["eventType"] = response?.result?.eventType;
-                        setIsDataLoading(false)
-                    }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                        setIsDataLoading(false)
-                    });
-                setIsDataLoading(true)
-                await axiosInstance.post('/admin/competition/byId', { competitionId: commentaryDataToUpdate?.commentaryDetails?.competitionId })
-                    .then((response) => {
-                        commentaryDetailsToUpdate["competition"] = response?.result?.competition;
-                        setIsDataLoading(false)
-                    }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                        setIsDataLoading(false)
-                    });
-                commentaryDataToUpdate.commentaryDetails = { ...commentaryDataToUpdate.commentaryDetails, ...commentaryDetailsToUpdate }
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
             }).catch((error) => {
@@ -91,6 +61,7 @@ export const ShortCommentary = () => {
         commentaryData?.commentaryPlayers?.forEach(player => { if ((player.currentInnings === innings) && (player.teamId === teamId)) toReturn.push(player) })
         return toReturn
     }
+
     const formatData = (commentaryData) => {
         const formattedData = {}
         commentaryData?.commentaryTeams?.forEach(team => {
@@ -111,10 +82,19 @@ export const ShortCommentary = () => {
     };
     return <>
         {isDataLoading && <SpinnerModel />}
-        <ShortCommentaryScreen
-            commentaryData={commentaryData || {}}
-            CommentaryFormatedData={formattedDetails || {}}
-            totalInnings={matchTypeData.noOfIningsPerSide}
-            backClick={handleBackClick}
-        /></>
+        <Row>
+            <Col>
+                <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
+                <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
+            </Col>
+        </Row>
+        <Row>
+            <ShortCommentaryScreen
+                commentaryData={commentaryData || {}}
+                CommentaryFormatedData={formattedDetails || {}}
+                totalInnings={matchTypeData.noOfIningsPerSide}
+                backClick={handleBackClick}
+            />
+        </Row>
+    </>
 }
