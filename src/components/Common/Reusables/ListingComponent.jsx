@@ -1,15 +1,9 @@
-import React, { useState, useEffect, } from "react";
+import React from "react";
 import "../Table/style.css"
-import { useNavigate } from "react-router-dom";
-import "jspdf-autotable";
-import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { Card, CardBody, Col, Row } from "reactstrap";
 
 export const ListingElement = ({ columns, dataSource, tableElement, }) => {
     document.title = `${tableElement?.title}`;
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-
     return (
         <Row>
             <Col lg={12}>
@@ -19,7 +13,7 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                             <Row className="g-2 d-flex align-items-center">
                                 <Col className="col-sm-auto">
                                     <span>
-                                        Showing {dataSource?.length} entries
+                                        {dataSource?.length} Records
                                     </span>
                                     <div className="d-flex align-items-center justify-content-end"></div>
                                 </Col>
@@ -29,7 +23,6 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                                 className="table-responsive table-card mt-3 mb-1"
                                 id="myTable"
                             >
-
                                 <table
                                     className="table align-middle table-nowrap"
                                     id="customerTable"

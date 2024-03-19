@@ -45,30 +45,65 @@ const CommentaryMarketTemplate = () => {
     }
 
     const handleSave = async () => {
-        let validateData = data.filter(value => value.isCreate)
-        setIsLoading(true);
+        let validateData = data.filter(value => value.isCreate).sort((a, b) => a.index - b.index)
         if (!validateData.length) {
-            setIsLoading(false);
             return dispatch(updateToastData({ data: "No isCreate has been selected", title: pageName, type: ERROR }));
         }
-        validateData = validateData.map(element => {
-            return {
-                ...element,
-                "eventMarketId": +element.eventMarketId
+        setData(prevData => prevData.map(value => {
+            let { error, ...newData } = value;
+            return newData;
+        }));
+        let isError = false;
+        const DECIMAL_REGEX = /^\d+\.?\d*$/
+        let allErrors = [];
+        validateData.forEach((item) => {
+            let error = {};
+            for (const field in item) {
+                if (["marketName", "line", "overRate", "underRate"].includes(field)) {
+                    if (!item[field] && item[field] !== 0) {
+                        isError = true
+                        error[field] = `required`;
+                        setData(prevData => {
+                            const newDataArray = [...prevData];
+                            let updatedItem = { ...item, error: { ...error } };
+                            newDataArray[item.index] = updatedItem;
+                            return newDataArray;
+                        });
+                    } else if (["line", "overRate", "underRate"].includes(field) && !DECIMAL_REGEX.test(item[field])) {
+                        isError = true
+                        error[field] = `invaild value`;
+                        setData(prevData => {
+                            const newDataArray = [...prevData];
+                            let updatedItem = { ...item, error: { ...error } };
+                            newDataArray[item.index] = updatedItem;
+                            return newDataArray;
+                        });
+                    }
+                }
             }
+            if (Object.keys(error).length > 0) allErrors.push(error)
         })
-        await axiosInstance
-            .post(`/admin/eventMarket/saveEventMarket`, {
-                eventMarket: validateData,
+        if (allErrors.length < 1) {
+            setIsLoading(true);
+            validateData = validateData.map(element => {
+                return {
+                    ...element,
+                    "eventMarketId": +element.eventMarketId
+                }
             })
-            .then((response) => {
-                fetchData(commentaryId);
-                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            });
+            await axiosInstance
+                .post(`/admin/eventMarket/saveEventMarket`, {
+                    eventMarket: validateData,
+                })
+                .then((response) => {
+                    fetchData(commentaryId);
+                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                })
+                .catch((error) => {
+                    setIsLoading(false);
+                    dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                });
+        }
     };
 
     const fetchData = async (commentaryId) => {
@@ -89,16 +124,15 @@ const CommentaryMarketTemplate = () => {
                         setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId })))
                     }
                     let newData = [];
-                    predefinedMarket.forEach((market, marketIndex) => {
-                        teamAndPlayers.forEach((team, teamIndex) => {
+                    predefinedMarket.forEach((market) => {
+                        teamAndPlayers.forEach((team) => {
                             newData.push(({
                                 eventMarketId: "0",
-                                index: marketIndex * teamAndPlayers.length + teamIndex,
-                                isCreate: true,
+                                isCreate: false,
                                 status: "1",
                                 overRate: "",
                                 underRate: "",
-                                margin: "",
+                                margin: null,
                                 line: "",
                                 isAllow: true,
                                 data: "", // not getting from market
@@ -112,16 +146,26 @@ const CommentaryMarketTemplate = () => {
                             }))
                         });
                     });
-                    newData = newData.map((market) => {
-                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
-                        if (eventMarketIndex !== -1) {
-                            return {
-                                ...market,
-                                ...eventMarket[eventMarketIndex]
-                            }
+                    newData = newData.sort((a, b) => {
+                        if (a.over !== b.over) {
+                            return a.over - b.over;
                         }
-                        return market;
-                    })
+                        if (a.inningsId !== b.inningsId) {
+                            return a.inningsId - b.inningsId;
+                        }
+                        return a.teamId - b.teamId;
+                    }).map((market, index) => {
+                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        let newData = {}
+                        if (eventMarketIndex !== -1) {
+                            newData = eventMarket[eventMarketIndex]
+                        }
+                        return {
+                            ...market,
+                            index,
+                            ...newData
+                        }
+                    });
                     setData(newData);
                 }
                 setIsLoading(false);
@@ -211,12 +255,17 @@ const CommentaryMarketTemplate = () => {
             title: "Market",
             dataIndex: "marketName",
             render: (text, record) => (
-                <Input
-                    className="form-control"
-                    type="text"
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
-                />
+                <>
+                    <Input
+                        className="form-control"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.marketName}
+                    </span>
+                </>
             ),
             key: "marketName",
             sort: true,
@@ -246,13 +295,18 @@ const CommentaryMarketTemplate = () => {
         {
             title: "Line",
             dataIndex: "line",
-            render: (text, record) => (
-                <Input
-                    className="form-control"
-                    type="text"
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "line", e.target.value)}
-                />
+            render: (text = "", record) => (
+                <>
+                    <Input
+                        className="form-control"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "line", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.line}
+                    </span>
+                </>
             ),
             key: "line",
             sort: true,
@@ -261,13 +315,19 @@ const CommentaryMarketTemplate = () => {
         {
             title: "Over",
             dataIndex: "overRate",
-            render: (text, record) => (
-                <Input
-                    className="form-control"
-                    type="text"
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
-                />
+            render: (text = "", record) => (
+                <>
+                    <Input
+                        className="form-control"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.overRate}
+                    </span>
+                </>
+
             ),
             key: "overRate",
             sort: true,
@@ -277,12 +337,17 @@ const CommentaryMarketTemplate = () => {
             title: "Under",
             dataIndex: "underRate",
             render: (text, record) => (
-                <Input
-                    className="form-control"
-                    type="text"
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
-                />
+                <>
+                    <Input
+                        className="form-control"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.underRate}
+                    </span>
+                </>
             ),
             key: "underRate",
             sort: true,
@@ -295,9 +360,10 @@ const CommentaryMarketTemplate = () => {
                 <Input
                     className="form-control"
                     type="text"
-                    value={text || ""}
+                    value={text}
                     onChange={(e) => handleValueChange(record, "margin", e.target.value)}
                 />
+
             ),
             key: "margin",
             sort: true,
