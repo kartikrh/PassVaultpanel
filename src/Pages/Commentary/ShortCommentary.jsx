@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Row, UncontrolledAccordion } from 'reactstrap';
 import { BAT, BOWL, TOSS_SELECTION } from './CommentartConst';
 import { isEmpty } from 'lodash';
 import CardComponent from './CardComponent';
 import { STRING_SEPERATOR } from '../../components/Common/Const';
 import { ShortCommentaryTeams } from './ShortCommentaryTeams';
+import Breadcrumbs from '../../components/Common/Breadcrumb';
+import { useDispatch } from 'react-redux';
+import { saveShortCommentary } from '../../Features/Tabs/commentarySlice';
 
 function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalInnings, backClick }) {
+    const shortCommentaryTeamsRef = useRef()
     const [commentaryDetails, setCommentaryDetails] = useState({});
     const [disableAccordian, setDisableAccordian] = useState({});
     const [inningsTeam, setInningsTeam] = useState({});
     const [nextBattingTeam, setNextBattingTeam] = useState(undefined)
     const [showInningsUpdate, setShowInningsUpdate] = useState(undefined)
+    const dispatch = useDispatch();
 
     const fetchTeamData = (teamId, key) => {
         return CommentaryFormatedData["1_##_" + teamId]?.[key]
     }
     const getBattingTeam = () => {
-        console.log(commentaryDetails)
         let battingTeam = undefined
         if (commentaryDetails.choseToLocal === BAT) {
             if (commentaryDetails.tossWonByLocal === commentaryDetails.team1Id) {
@@ -57,15 +61,6 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
             ...objToSave
         })
     }
-
-    useEffect(() => {
-        if (isEmpty(commentaryDetails) && !isEmpty(commentaryData)) setCommentaryDetails(commentaryData.commentaryDetails)
-    }, [commentaryData, CommentaryFormatedData])
-
-    useEffect(() => {
-        console.log(commentaryDetails, inningsTeam, nextBattingTeam)
-    },)
-
     const selectTossAccordian = () => {
         const winningTeam = commentaryDetails.tossWonBy
         const chooseTo = commentaryDetails.choseTo
@@ -170,7 +165,7 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
                     />
                 </Col>
             </Row >
-            <Button color="success" className="decision-Button"
+            <Button color="primary" className="decision-Button"
                 onClick={() => {
                     generateTeam()
                     setNextBattingTeam(undefined)
@@ -184,39 +179,59 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
         if (!isEmpty(inningsTeam)) {
             if (Object.values(inningsTeam).length % 2 === 0) {
                 if (commentaryDetails.currentInnings === totalInnings)
-                    return <Button color="success" className="decision-Button" onClick={saveDetails}>End Game</Button>
-                else return <Button color="success" className="decision-Button"
-                    onClick={() => {
-                        handleCommentaryChange({ "currentInnings": commentaryDetails.currentInnings + 1 })
-                        setShowInningsUpdate(true)
-                    }}>Change Innings</Button>
+                    return <Button color="primary" className="decision-Button" onClick={saveDetails}>End Game</Button>
+                else return <>
+                    {!showInningsUpdate && <Button color="primary" className="decision-Button"
+                        onClick={() => {
+                            handleCommentaryChange({ "currentInnings": commentaryDetails.currentInnings + 1 })
+                            setShowInningsUpdate(true)
+                        }}>Change Innings</Button>}
+                </>
             }
-            else return <Button color="success" className="decision-Button" onClick={generateTeam}>Generate Next team</Button>
+            else return <Button color="primary" className="decision-Button" onClick={generateTeam}>Generate Next team</Button>
         }
     }
+    const handleSaveData = () => {
+        const data = shortCommentaryTeamsRef.current.getData()
+        dispatch(saveShortCommentary({ commentaryDetails: commentaryDetails, ...data }))
+    }
+    useEffect(() => {
+        if (isEmpty(commentaryDetails) && !isEmpty(commentaryData)) setCommentaryDetails(commentaryData.commentaryDetails)
+    }, [commentaryData, CommentaryFormatedData])
 
     return (
         <React.Fragment>
             <div className="page-content">
                 <Container fluid={true}>
                     <Row>
-                        <Col xs={12} md={8} lg={9}>
-                            <h3>Short Commentary </h3>
-                        </Col>
-                        <Col xs={12} md={4} lg={3}> <button className="btn btn-danger mx-1 text-right " onClick={backClick}>Exit</button></Col>
                         <Card>
                             <CardBody>
+                                <Row>
+                                    <Col xs={6} md={8} lg={9} className="mt-3 mt-lg-4 mt-md-4">
+                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Short Commentary" page="updatecp" />
+                                    </Col>
+                                    <Col xs={6} md={4} lg={3} className="mt-3 mt-lg-2 mt-md-2">
+                                        <Button color='primary' className="table-header-button" onClick={handleSaveData}>Save</Button>
+                                        <Button color='danger' className="table-header-button" onClick={backClick}>Exit</Button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    {!isEmpty(commentaryDetails) && <Col className='mb-3'>
+                                        <div className='match-details-breadcrumbs'>{`${commentaryDetails.ety}/ ${commentaryDetails.com}/ ${commentaryDetails.en}`}</div>
+                                        <div>{`Ref: ${commentaryDetails.eid} [ ${commentaryDetails.ed + " " + commentaryDetails.et} ]`}</div>
+                                    </Col>}
+                                </Row>
                                 <UncontrolledAccordion defaultOpen="0">
                                     {selectTossAccordian()}
                                     {(commentaryDetails.tossWonBy && commentaryDetails.choseTo && isEmpty(inningsTeam)) &&
                                         <div className='generate-team-button'>
-                                            <Button color="success" className="decision-Button"
+                                            <Button color="primary" className="decision-Button"
                                                 onClick={generateTeam}>Generate first team</Button>
                                         </div>
                                     }
                                     <ShortCommentaryTeams
                                         teamDetails={inningsTeam}
-                                    />
+                                        ref={shortCommentaryTeamsRef} />
                                     <div className='generate-team-button'>{generateNextButtons()}</div>
                                     {showInningsUpdate && selectNextInningsAccordian()}
                                 </UncontrolledAccordion>

@@ -6,40 +6,37 @@ import { updateToastData } from "../../Features/toasterSlice"
 import { ERROR, PERMISSION_VIEW, STRING_SEPERATOR, TAB_COMMENTARY } from "../../components/Common/Const"
 import ShortCommentaryScreen from "./ShortCommentary.jsx"
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { BAT, BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from "./CommentartConst"
 import { isEqual } from "lodash"
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
-import { Col, Row } from "reactstrap"
+import { clearLoadingAndError } from "../../Features/Tabs/commentarySlice.js"
 
 const navigateTo = "/commentary"
 export const ShortCommentary = () => {
     const pageName = TAB_COMMENTARY
     const [commentaryData, setCommentaryData] = useState(undefined);
-    const [teams, setTeams] = useState(undefined)
-    const [players, setPlayers] = useState(undefined)
-    const [onPitchPlayers, setOnPitchPlayers] = useState({})
-    const [currentOver, setCurrentOver] = useState({})
-    const [isLastInnigs, setIsLastInnings] = useState(undefined)
-    const [matchTypeData, setMatchTypeData] = useState({});
     const [isDataLoading, setIsDataLoading] = useState(false)
     const [formattedDetails, setFormattedDetails] = useState({})
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-    const dispatch = useDispatch();
+    const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
     const location = useLocation();
+    const commentaryId = location.state?.commentaryId || "0";
+    const dispatch = useDispatch();
     let navigate = useNavigate();
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             Navigate("/dashboard")
         }
+        dispatch(clearLoadingAndError())
     }, []);
 
-    const commentaryId = location.state?.commentaryId || "0";
     useEffect(() => {
-        if (commentaryId !== "0") {
-            fetchData(commentaryId);
-        }
+        if (commentaryId !== "0") fetchData(commentaryId);
     }, [commentaryId]);
+
+    useEffect(() => {
+        if (!isLoading && isRedirect) navigate(navigateTo);
+    }, [isRedirect]);
 
     const fetchData = async () => {
         setIsDataLoading(true)
@@ -81,20 +78,13 @@ export const ShortCommentary = () => {
         navigate(navigateTo);
     };
     return <>
-        {isDataLoading && <SpinnerModel />}
-        <Row>
-            <Col>
-                <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
-                <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
-            </Col>
-        </Row>
-        <Row>
+        {(isDataLoading || isLoading) ? <SpinnerModel /> :
             <ShortCommentaryScreen
                 commentaryData={commentaryData || {}}
                 CommentaryFormatedData={formattedDetails || {}}
-                totalInnings={matchTypeData.noOfIningsPerSide}
+                totalInnings={commentaryData?.matchTypeDetails?.noOfIningsPerSide}
                 backClick={handleBackClick}
-            />
-        </Row>
+            />}
+
     </>
 }

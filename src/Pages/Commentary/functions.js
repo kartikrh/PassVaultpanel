@@ -186,7 +186,6 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
 }
 
 export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false) => {
-  console.log({ objects, overToFindFor })
   let toReturn = []
   for (let i = objects.length - 1; i >= 0; i--) {
     if ((objects[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(objects[i].overCount || 0)) === Math.floor(+overToFindFor))) {
@@ -219,7 +218,6 @@ export const generateBallLabelFromBall = (ballType, isWicket) => {
 }
 
 export const fetchNextPlayerOrder = (playerType, playerList) => {
-  console.log(playerList)
   const searchFor = playerType === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
   let highestNumber = 1
   playerList?.map(player => {
