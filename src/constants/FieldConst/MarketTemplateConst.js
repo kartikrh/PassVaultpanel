@@ -87,9 +87,26 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        name: "createType",
+        label: "Create Type",
+        options: [{ label: "Select Create Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },{ label: "Wicket", value: "3" },],
+        type: SELECT,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "create",
+        label:"Create",
+        type: TEXT,
+        requiredErrorMessage: "Please enter value",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
         name: "autoOpenType",
         label: "Auto Open Type",
-        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
+        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" }, { label: "Wicket", value: "3" },],
         type: SELECT,
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -104,25 +121,9 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "autoCloseType",
-        label: "Auto Close Type",
-        options: [{ label: "Select Auto Close Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
-        type: SELECT,
-        defaultValue: false,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        name: "beforeAutoClose",
-        label:"Before Auto Close",
-        type: TEXT,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
         name: "autoSuspendType",
         label: "Auto Suspend Type",
-        options: [{ label: "Select Auto Suspend Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
+        options: [{ label: "Select Auto Suspend Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" }, { label: "Wicket", value: "3" },],
         type: SELECT,
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -131,6 +132,22 @@ export const MarketTemplateFileds = [
     {
         name: "beforeAutoSuspend",
         label:"Before Auto Suspend",
+        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "autoCloseType",
+        label: "Auto Close Type",
+        options: [{ label: "Select Auto Close Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" }, { label: "Wickets", value: "3" },],
+        type: SELECT,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "beforeAutoClose",
+        label:"Before Auto Close",
         type: TEXT,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
@@ -155,7 +172,7 @@ export const MarketTemplateFileds = [
         name: "autoResultType",
         label:false,
         dependsOnField: "isAutoResultSet",
-        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },],
+        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" }, { label: "Wickets", value: "3" },],
         dependsOnValue: true,
         type: SELECT,
         fieldColspan: { xs: 12, md: 3, lg: 3 }
