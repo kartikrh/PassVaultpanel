@@ -213,6 +213,16 @@
     min-width: 3rem !important;
 }
 
+.small-labels {
+    word-break: break-word;
+    padding: 0;
+    white-space: normal;
+}
+
+.small-label-div {
+    width: 100%;
+}
+
 .small-button {
     padding: 0.2rem 0.5rem !important;
 }

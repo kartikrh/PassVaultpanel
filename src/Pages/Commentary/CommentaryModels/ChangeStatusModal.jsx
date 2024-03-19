@@ -40,7 +40,6 @@ const ChangeStatusModal = ({ statusList, toggle, isOpen, onSubmit }) => {
                                 placeholder='Status'
                                 value={search}
                                 onChange={(e) => {
-                                    console.log(e.target.value)
                                     setSearch(e.target.value)
                                 }}
                             />

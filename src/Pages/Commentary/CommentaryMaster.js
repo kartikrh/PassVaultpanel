@@ -31,7 +31,6 @@ const navigateTo = "/commentary"
 function CommentaryMaster() {
     const pageName = TAB_COMMENTARY
     const [commentaryData, setCommentaryData] = useState(undefined);
-    const [matchTypeData, setMatchTypeData] = useState({});
     const [currentScreen, setCurrentScreen] = useState(undefined)
     const [isDataLoading, setIsDataLoading] = useState(false)
     const [nextScreen, setNextScreen] = useState(undefined);
@@ -128,7 +127,7 @@ function CommentaryMaster() {
                                         />}
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
-                                            data={{ commentaryData, matchTypeData }}
+                                            data={{ commentaryData }}
                                             onInningsChange={handleInningsChange}
                                             isDataLoading={isDataLoading}
                                         />}

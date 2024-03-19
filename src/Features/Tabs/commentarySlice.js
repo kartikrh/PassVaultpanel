@@ -65,6 +65,18 @@ export const changeBowlerFromCommentary = createAsyncThunk(
         }
     }
 );
+export const saveShortCommentary = createAsyncThunk(
+    'commentary/saveShortCommentary',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/saveShortCommentary', data);
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 const commentarySlice = createSlice({
     name: 'commentary',
     initialState: {
@@ -76,6 +88,7 @@ const commentarySlice = createSlice({
         isUndoCompleted: undefined,
         isBowlerChanged: undefined,
         isCommentaryBallLoading: undefined,
+        isRedirect: undefined
     },
     reducers: {
         updateSavedState: (state, action) => {
@@ -90,6 +103,11 @@ const commentarySlice = createSlice({
         },
         clearChangeBowler: (state, action) => {
             state.isBowlerChanged = undefined
+        },
+        clearLoadingAndError: (state, action) => {
+            state.isLoading = undefined
+            state.error = undefined
+            state.isRedirect=undefined
         },
     },
     extraReducers: (builder) => {
@@ -150,8 +168,19 @@ const commentarySlice = createSlice({
                 state.error = action.payload;
                 state.isCommentaryBallLoading = false
             })
+            .addCase(saveShortCommentary.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(saveShortCommentary.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isRedirect = true
+            })
+            .addCase(saveShortCommentary.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isLoading = false
+            })
     }
 });
 
-export const { updateSavedState, clearAddCommentaryScreenData, clearUndoFlag, clearChangeBowler } = commentarySlice.actions;
+export const { updateSavedState, clearAddCommentaryScreenData, clearUndoFlag, clearChangeBowler, clearLoadingAndError } = commentarySlice.actions;
 export default commentarySlice.reducer;
