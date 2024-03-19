@@ -57,7 +57,7 @@ const Commentary = (props) => {
     const [isChangeBowler, setIsChangeBowler] = useState({})
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
-    const matchTypeDetails = props.data.matchTypeData
+    const matchTypeDetails = props.data.commentaryData.matchTypeDetails
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const statusList = props.data.commentaryData.commentaryDisplayStatus
@@ -769,9 +769,9 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
-        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
-        console.log(currentOver, currentBall, players[BATTING_TEAM])
+        // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
+        // console.log(currentOver, currentBall, players[BATTING_TEAM])
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
@@ -791,7 +791,6 @@ const Commentary = (props) => {
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
                     updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
                     updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2] }
-                    console.log(updatePartnership)
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
                 const bowler = playersOnPitch[CURRENT_BOWLER]

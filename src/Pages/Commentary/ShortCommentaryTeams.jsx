@@ -1,35 +1,29 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { AccordionBody, AccordionHeader, AccordionItem, Col, Input, Row, UncontrolledAccordion } from "reactstrap";
 import { STRING_SEPERATOR, TEXT } from "../../components/Common/Const";
 import { PLAYER, TEAM } from "./CommentartConst";
 import { SHORT_COMMENTARY_BATTING_PLAYER, SHORT_COMMENTARY_BOWLING_PLAYER, SHORT_COMMENTARY_TEAM } from "../../constants/FieldConst/CommentaryConst";
 import "./CommentaryCss.css"
+import _ from "lodash";
 
-export const ShortCommentaryTeams = ({ teamDetails }) => {
+export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
     const [teamData, setTeamData] = useState({});
     const [playerData, setPlayerData] = useState({});
-    useEffect(() => {
-        console.log(teamData, playerData)
-    })
-    const handleChange = (field, value, uniqueId) => {
-        if (field.formName === TEAM)
-            setTeamData({
-                ...teamData,
-                [uniqueId]: {
-                    ...teamData[uniqueId],
-                    [field.name]: value
-                }
-            })
-        else if (field.formName === PLAYER)
-            setPlayerData({
-                ...playerData,
-                [uniqueId]: {
-                    ...playerData[uniqueId],
-                    [field.name]: value
-                }
-            })
+
+    const handleChange = (field, value, uniqueId, dataObject) => {
+        const formattedValue = isNaN(+value) ? value : +value
+        if (field.formName === TEAM) {
+            const updatedTeamData = (_.isEmpty(teamData[uniqueId]) ? dataObject : teamData[uniqueId]) || {}
+            updatedTeamData[field.name] = formattedValue
+            setTeamData({ ...teamData, [uniqueId]: updatedTeamData })
+        }
+        else if (field.formName === PLAYER) {
+            let updatedPlayerData = _.isEmpty(playerData[uniqueId]) ? dataObject : playerData[uniqueId]
+            updatedPlayerData[field.name] = formattedValue
+            setPlayerData({ ...playerData, [uniqueId]: updatedPlayerData })
+        }
     }
-    const renderTextFields = (fields = [], uniqueId) => {
+    const renderTextFields = (fields = [], uniqueId, dataObject) => {
         return <Row>
             {fields.map((field, index) => {
                 return <>
@@ -40,10 +34,10 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
                         lg={field.labelColspan?.lg || 2}
                         className="d-flex p-0"
                     >
-                        <div className="lablediv">
+                        <div className="lablediv small-label-div ">
                             <label
                                 htmlFor={field.name}
-                                className="col-form-label dynamic-label-right form-label-class"
+                                className="dynamic-label-right form-label-class small-labels"
                             >   {field.label}</label>
                         </div>
                     </Col>
@@ -55,14 +49,14 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
                         lg={field.fieldColspan?.lg || 4}
                     >
                         {field.type === TEXT && <Input
-                            className="form-control"
+                            className="form-control small-text-fields"
                             style={field?.customStyle}
                             placeholder={field?.placeholder}
                             type="text"
                             id={field.name}
                             name={field.name}
                             value={teamData[uniqueId]?.[field.name] || field.defaultValue}
-                            onChange={(e) => handleChange(field, e.target.value, uniqueId)}
+                            onChange={(e) => handleChange(field, e.target.value, uniqueId, dataObject)}
                         />}
                     </Col></>
             })}
@@ -70,21 +64,21 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
 
     }
     const renderBatters = (playerList = [], teamUniqueId) => {
-        return playerList.map((batter, index) => {
+        return playerList.map(batter => {
             const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
             return <>
                 <div className="player-header">{batter.playerName}</div>
-                {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId)}
+                {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId, batter)}
             </>
         })
 
     }
     const renderBowler = (playerList = [], teamUniqueId) => {
-        return playerList.map((batter, index) => {
-            const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
+        return playerList.map(bowler => {
+            const uniqueId = teamUniqueId + STRING_SEPERATOR + bowler.commentaryPlayerId
             return <>
-                <div className="player-header">{batter.playerName}</div>
-                {renderTextFields(SHORT_COMMENTARY_BOWLING_PLAYER, uniqueId)}
+                <div className="player-header">{bowler.playerName}</div>
+                {renderTextFields(SHORT_COMMENTARY_BOWLING_PLAYER, uniqueId, bowler)}
             </>
         })
 
@@ -96,7 +90,7 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
             <AccordionHeader targetId={uniqueId}>
                 {`Innings : ${teamDetails.currentInnings} || Team : ${teamDetails.teamName} `}</AccordionHeader>
             <AccordionBody accordionId={uniqueId}>
-                {renderTextFields(SHORT_COMMENTARY_TEAM, uniqueId)}
+                {renderTextFields(SHORT_COMMENTARY_TEAM, uniqueId, teamDetails)}
                 <UncontrolledAccordion defaultOpen="0">
                     <AccordionItem>
                         <AccordionHeader targetId='Batter'>Batter</AccordionHeader>
@@ -114,8 +108,13 @@ export const ShortCommentaryTeams = ({ teamDetails }) => {
             </AccordionBody>
         </AccordionItem >
     }
+    useImperativeHandle(ref, () => ({
+        getData() {
+            return { commentaryTeams: Object.values(teamData || {}), commentaryPlayers: Object.values(playerData || {}) }
+        }
+    }))
 
     return Object.values(teamDetails).map((team, index) => {
         return <div key={index}>{renderTeamFields(team)}</div>
     })
-}
+})

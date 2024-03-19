@@ -146,11 +146,6 @@ export const MarketEventAction = () => {
     const handleBackClick = () => {
         navigate("/commentary");
     };
-    // const fetchTeamName = (id) => {
-    //     const teamOption = allTeams.find(element => element.value === id)
-    //     return teamOption.label
-    // }
-    //elements required
     const columns = [
         {
             title: "Inning",
@@ -165,9 +160,9 @@ export const MarketEventAction = () => {
         },
         {
             title: "Team",
-            dataIndex: "teamId",
+            dataIndex: "teamName",
             // render: (text) => (<span>{fetchTeamName(text)}</span>),
-            key: "teamId",
+            key: "teamName",
         },
         {
             title: "Market",
