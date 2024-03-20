@@ -45,6 +45,7 @@ const Index = forwardRef(
       tableElement,
       cloneModelFunction,
       deleteModelFunction,
+      suspendModelFunction,
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
@@ -60,6 +61,7 @@ const Index = forwardRef(
       changeOrderApiName,
       isAddPermission,
       isDeletePermission,
+      isSuspendPermission,
       breadCrumbs,
       onBreadCrumbsClick,
       teams,
@@ -581,6 +583,24 @@ const Index = forwardRef(
                             Clone
                           </Button>
                         ) : null}
+                         {isSuspendPermission && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              singleCheck.length > 0
+                                ? suspendModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                          >
+                           Suspend
+                          </Button>
+                        )}
                         {isDeletePermission && (
                           <Button
                             color="soft-danger"

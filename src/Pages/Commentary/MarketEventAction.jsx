@@ -37,9 +37,9 @@ export const MarketEventAction = () => {
                 "overRate": +record.overRate,
                 "underRate": +record.underRate,
                 "yesRate": +record.yesRate,
-                "yesPoint": +record.yesPoint,
+                "yesPoint": +(record.yesPoint || 100),
                 "noRate": +record.noRate,
-                "noPoint": +record.noPoint,
+                "noPoint": +(record.noPoint || 100),
             }
             workingRecord = _.omit(workingRecord,
                 ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
@@ -197,7 +197,11 @@ export const MarketEventAction = () => {
                     step={1}
                     min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "line", e.target.value)}
+                    onChange={(e) => {
+                        handleValueChange(record, "line", e.target.value)
+                        handleValueChange(record, "noRate", Math.round(+e.target.value) + 1)
+                        handleValueChange(record, "yesRate", Math.round(+e.target.value))
+                    }}
                 />
             ),
             key: "line",
