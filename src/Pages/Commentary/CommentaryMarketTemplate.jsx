@@ -25,11 +25,13 @@ const CommentaryMarketTemplate = () => {
     const [data, setData] = useState([]);
     const [allInnings, setAllInnings] = useState([]);
     const [allTeams, setAllTeams] = useState([]);
+    const [selectedField, setSelectedField] = useState("");
+    const [fieldValue, setFieldValue] = useState("");  
 
     useEffect(() => {
         setCheckedList(data.filter(i => i.isCreate).map(i => i.index))
     }, [data])
-
+   
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.index === record.index)
         if (indexOfData !== -1) {
@@ -40,10 +42,10 @@ const CommentaryMarketTemplate = () => {
                     {
                         ...prev[indexOfData],
                         [key]: value,
-                        yesRate: Math.round(roundedLine),
-                        noRate: Math.round(roundedLine) + 1,
-                        yesPoint: 100,
-                        noPoint: 100,
+                        yesRate: Math.round(roundedLine) || 0,
+                        noRate: Math.round(roundedLine) + 1 || 0,
+                        yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
+                        noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
                     },
                     ...prev.slice(indexOfData + 1),
                 ]);
@@ -105,10 +107,6 @@ const CommentaryMarketTemplate = () => {
                 return {
                     ...element,
                     "eventMarketId": +element.eventMarketId,
-                    "yesRate":element.yesRate,
-                    "yesPoint":element.yesPoint,
-                    "noRate":element.noRate,
-                    "noPoint":element.noPoint
                 }
             })
             await axiosInstance
@@ -206,6 +204,41 @@ const CommentaryMarketTemplate = () => {
         displayTitle: true
     };
 
+    const handleSubmit = () => {
+        if (!selectedField || !fieldValue) {
+          return dispatch(
+            updateToastData({
+              data: "Please select a field and enter a value.",
+              title: pageName,
+              type: ERROR,
+            })
+          );
+        }
+        const updatedData = data.map((record) => {
+            let updatedRecord = { ...record };
+            if (selectedField === 'line') {
+                const roundedLine = Math.round(parseFloat(fieldValue) * 10) / 10;
+                updatedRecord = {
+                    ...updatedRecord,
+                    [selectedField]: fieldValue,
+                    yesRate: Math.round(roundedLine) || 0,
+                    noRate: Math.round(roundedLine) + 1 || 0,
+                    yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
+                    noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
+                };
+            } else {
+                updatedRecord = {
+                    ...updatedRecord,
+                    [selectedField]: fieldValue,
+                };
+            }
+            updatedRecord.isCreate = true; 
+            return updatedRecord;
+        });
+        setData(updatedData);
+        setSelectedField("");
+        setFieldValue("");
+    };
     //table columns
     const columns = [
         {
@@ -532,6 +565,37 @@ const CommentaryMarketTemplate = () => {
                                         <button className="btn btn-danger text-right" onClick={handleBackClick}>Back</button>
                                     </Col>
                                 </Row>
+                                <Row className='mb-3'>
+                                    <Col className="d-flex align-items-center justify-content-start">
+                                       <div className="d-flex align-items-center">
+                                        <select
+                                          className="form-select me-2"
+                                          value={selectedField}
+                                          onChange={(e) => setSelectedField(e.target.value)}
+                                        >
+                                          <option value="">Select Field</option>
+                                          <option value="line">Line</option>
+                                          <option value="overRate">Over</option>
+                                          <option value="underRate">Under</option>
+                                          <option value="yesPoint">Yes Point</option>
+                                          <option value="noPoint">No Point</option>
+                                        </select>
+                                        <input
+                                          type="text"
+                                          className="form-control me-2"
+                                          value={fieldValue}
+                                          onChange={(e) => setFieldValue(e.target.value)}
+                                          placeholder="Enter Value"
+                                        />
+                                        <button
+                                           className="btn btn-primary"
+                                           onClick={handleSubmit}
+                                        >
+                                         Submit
+                                        </button>
+                                        </div>
+                                    </Col>
+                               </Row>
                                 <Row>
                                     <Col>
                                         <Table
