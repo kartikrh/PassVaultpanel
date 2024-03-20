@@ -50,10 +50,11 @@ export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
                     >
                         {field.type === TEXT && <Input
                             className="form-control small-text-fields"
-                            style={field?.customStyle}
-                            placeholder={field?.placeholder}
-                            type="text"
+                            type="number"
+                            step={1}
+                            min={0}
                             id={field.name}
+                            placeholder={field?.placeholder}
                             name={field.name}
                             value={teamData[uniqueId]?.[field.name] || field.defaultValue}
                             onChange={(e) => handleChange(field, e.target.value, uniqueId, dataObject)}
