@@ -6,6 +6,7 @@ import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import SuspendTabModel from "../../components/Model/SuspendModal";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
@@ -14,6 +15,7 @@ import {
   ERROR,
   PERMISSION_ADD,
   PERMISSION_DELETE,
+  PERMISSION_SUSPEND,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
@@ -43,16 +45,16 @@ const Index = () => {
     eventRefId: "",
   });
   const [dateRange, setDateRange] = useState({
-    startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
-    endDate: `${new Date().toISOString().split("T")[0]
-      }T23:59:00`
-  })
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+  });
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [suspendModelVisable, setSuspendModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
-  const [details, setDetails] = useState({})
+  const [details, setDetails] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -62,7 +64,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/commentary/all`, {
         ...(latestValueFromTable || tableActions),
-        ...dateRange
+        ...dateRange,
       })
       .then((response) => {
         const apiData = response?.result;
@@ -80,7 +82,7 @@ const Index = () => {
         setIsLoading(false);
       });
     if (latestValueFromTable?.eventTypeId) {
-      fetchCompetitionData(latestValueFromTable?.eventTypeId)
+      fetchCompetitionData(latestValueFromTable?.eventTypeId);
     }
   };
   const fetchEventTypeData = async () => {
@@ -89,17 +91,17 @@ const Index = () => {
       .then((response) => {
         setEventTypes(response.result);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
       .post(`/admin/commentary/competitionListByEventTypeId`, {
-        eventTypeId: value
+        eventTypeId: value,
       })
       .then((response) => {
         setCompetitions(response.result);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -140,7 +142,34 @@ const Index = () => {
         );
       });
   };
-
+  const handleSuspend = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/eventMarket/suspendMarketByCId`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setSuspendModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
@@ -148,7 +177,12 @@ const Index = () => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
   const handleUpdatePlayersClick = (details) => {
-    navigate("/updateCommentaryPlayer", { state: { commentaryId: details?.commentaryId, commentaryDetails: details } });
+    navigate("/updateCommentaryPlayer", {
+      state: {
+        commentaryId: details?.commentaryId,
+        commentaryDetails: details,
+      },
+    });
   };
   const handleCommentaryMarketTemplateClick = (id) => {
     navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
@@ -229,37 +263,61 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/commentary/updateShowClient`, {
-        "commentaryId": record?.commentaryId,
+        commentaryId: record?.commentaryId,
         [pType]: cState ? false : true,
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   const updatePredictMarket = async (pType, record, cState) => {
     await axiosInstance
       .post(`/admin/commentary/changePredictMarket`, {
-        "commentaryId": record?.commentaryId,
+        commentaryId: record?.commentaryId,
         [pType]: cState ? false : true,
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
-  }
+  };
   const handleReset = (value) => {
-    fetchData(value)
-    fetchEventTypeData()
-  }
+    fetchData(value);
+    fetchEventTypeData();
+  };
   //table columns
   const columns = [
     {
@@ -297,7 +355,7 @@ const Index = () => {
               setCloneValues({
                 eventName: record?.eventName,
                 eventRefId: record?.eventRefId,
-              })
+              });
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -345,7 +403,14 @@ const Index = () => {
       title: "Event Name",
       dataIndex: "eventName",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }} onClick={() => { handleMarketEventActionClick(record.commentaryId); }}>{text}</span>
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleMarketEventActionClick(record.commentaryId);
+          }}
+        >
+          {text}
+        </span>
       ),
       key: "eventName",
       sort: true,
@@ -406,7 +471,7 @@ const Index = () => {
             handleShortCommentaryClick(record.commentaryId);
           }}
         >
-          <i class='bx bx-minus' />
+          <i class="bx bx-minus" />
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -456,10 +521,18 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            updatePredictMarket("isPredictMarket", record, record?.isPredictMarket);
+            updatePredictMarket(
+              "isPredictMarket",
+              record,
+              record?.isPredictMarket
+            );
           }}
         >
-          <i className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${
+              record?.isPredictMarket ? "bx-check" : "bx-block"
+            }`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -472,7 +545,9 @@ const Index = () => {
         <Button
           color={"primary"}
           size="sm"
-          disabled={!record.isPredictMarket || parseInt(record.commentaryStatus) !== 1}
+          disabled={
+            !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
+          }
           className="btn"
           onClick={() => {
             handleCommentaryMarketTemplateClick(record.commentaryId);
@@ -495,12 +570,13 @@ const Index = () => {
             handlePermissions("isClientShow", record, record?.isClientShow);
           }}
         >
-          <i className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
-
   ];
   //elements required
   const tableElement = {
@@ -509,6 +585,7 @@ const Index = () => {
     eventTypeSelect: true,
     switch: false,
     clone: true,
+    suspend: true,
     commentaryStatus: true,
     competitionsSelect: true,
     resetButton: true,
@@ -552,6 +629,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            suspendModelFunction={setSuspendModelVisable}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
@@ -569,8 +647,19 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            isSuspendPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_EDIT
+            )}
             setDateRange={setDateRange}
             dateRange={dateRange}
+          />
+          <SuspendTabModel
+            suspendModalVisible={suspendModelVisable}
+            setSuspendModelVisable={setSuspendModelVisable}
+            handleSuspend={handleSuspend}
+            singleCheck={checekedList}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

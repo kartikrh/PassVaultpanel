@@ -50,6 +50,7 @@ export const PERMISSION_ADD = "isAdd"
 export const PERMISSION_EDIT = "isEdit"
 export const PERMISSION_DELETE = "isDelete"
 export const PERMISSION_VIEW = "isView"
+export const PERMISSION_SUSPEND = "isSuspend"
 
 export const LOGOUT = "/logout"
 export const REMEMBER_ME_KEY = "rememberMe"
