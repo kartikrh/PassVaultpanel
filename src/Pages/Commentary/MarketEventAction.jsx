@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
@@ -26,6 +26,7 @@ export const MarketEventAction = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const commentaryId = location.state?.commentaryId || "0";
+    const intervalIdRef = useRef(null);
 
     const formatDataBeforeSend = (dataToChange = []) => {
         const dataToSend = []
@@ -366,6 +367,37 @@ export const MarketEventAction = () => {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchConfigAll = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axiosInstance.post("/admin/config/all", { isActive: true });
+    
+                const isMarketRepetitionCall = response.result.find(config => config.key === 'ISMARKETREPETITIONCALL')?.value;
+                const repetitionCallInterval = response.result.find(config => config.key === 'REPETITIONCALLINTERVAL')?.value;
+    
+                if (isMarketRepetitionCall === 'true' && repetitionCallInterval) {
+                    const interval = parseInt(repetitionCallInterval);
+                    intervalIdRef.current = setInterval(() => {
+                      if (commentaryId !== "0") {
+                        fetchTableData(commentaryId);
+                      }
+                    }, interval);
+                }
+            } catch (error) {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    
+        fetchConfigAll();
+    
+        return () => {
+            clearInterval(intervalIdRef.current);
+        };
     }, []);
 
     return (
