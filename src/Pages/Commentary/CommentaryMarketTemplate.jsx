@@ -133,7 +133,7 @@ const CommentaryMarketTemplate = () => {
                     const teamAndPlayers = response?.result?.teamAndPlayers;
                     const marketTemplate = response?.result?.marketTemplate;
                     const commentary = response?.result?.commentary;
-                    const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket);
+                    const predefinedOverMarket = marketTemplate?.filter(value => value?.isPredefineMarket && value?.isOver);
                     const eventMarket = response?.result?.eventMarket;
                     if (teamAndPlayers?.length) {
                         const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
@@ -142,7 +142,7 @@ const CommentaryMarketTemplate = () => {
                         setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId })))
                     }
                     let newData = [];
-                    predefinedMarket.forEach((market) => {
+                    predefinedOverMarket.forEach((market) => {
                         teamAndPlayers.forEach((team) => {
                             newData.push(({
                                 eventMarketId: "0",
