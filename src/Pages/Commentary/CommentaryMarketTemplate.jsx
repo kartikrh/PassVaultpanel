@@ -265,7 +265,7 @@ const CommentaryMarketTemplate = () => {
             dataIndex: "inningsId",
             render: (text, record) => (
                 <select
-                    className="form-select"
+                    className="small-text-fields"
                     value={text}
                     disabled={true}
                     onChange={(e) => {
@@ -287,7 +287,7 @@ const CommentaryMarketTemplate = () => {
             dataIndex: "teamId",
             render: (text, record) => (
                 <select
-                    className="form-select"
+                    className="small-text-fields"
                     value={text}
                     disabled={true}
                     onChange={(e) => {
@@ -310,7 +310,7 @@ const CommentaryMarketTemplate = () => {
             render: (text, record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
@@ -329,7 +329,7 @@ const CommentaryMarketTemplate = () => {
             dataIndex: "status",
             render: (text, record) => (
                 <select
-                    className="form-select"
+                    className="small-text-fields"
                     value={text}
                     onChange={(e) => {
                         handleValueChange(record, "status", e.target.value);
@@ -351,7 +351,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "line", e.target.value)}
@@ -371,7 +371,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
@@ -391,7 +391,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "100", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
@@ -411,7 +411,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
@@ -431,7 +431,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "100", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
@@ -451,7 +451,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
@@ -472,7 +472,7 @@ const CommentaryMarketTemplate = () => {
             render: (text, record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
@@ -491,7 +491,7 @@ const CommentaryMarketTemplate = () => {
             dataIndex: "margin",
             render: (text, record) => (
                 <Input
-                    className="form-control"
+                    className="form-control small-text-fields"
                     type="text"
                     value={text}
                     onChange={(e) => handleValueChange(record, "margin", e.target.value)}
