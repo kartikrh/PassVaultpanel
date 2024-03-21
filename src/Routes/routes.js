@@ -47,6 +47,7 @@ import News from "../Pages/News";
 import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
+import AddEventMarket from "../Pages/EventMarkets/AddEventMarket.jsx";
 import UnsettledMarket from "../Pages/UnsettledMarket";
 import SetMarketResult from '../Pages/SetMarketResult';
 // Import Authentication pages
@@ -123,8 +124,8 @@ const authProtectedRoutes = [
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
   { path: "/eventMarkets", component: <EventMarkets /> },
+  { path: "/addEventMarket", component: <AddEventMarket />},
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
-  { path: "/eventMarkets", component: <EventMarkets />},
   { path: "/setMarketResult", component: <SetMarketResult />},
  
   {
