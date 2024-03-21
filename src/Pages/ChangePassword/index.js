@@ -23,10 +23,27 @@ const Index = (props) => {
   const [data, setData] = useState({
     oldPassword: "",
     newPassword: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const changePassword = async () => {
     setIsLoading(true);
+    if (data.oldPassword === data.newPassword) {
+      dispatch(
+        updateToastData({
+          data: "New password cannot be same as old password",
+          title: "Password Mismatch",
+          type: ERROR,
+        })
+      );
+      setIsLoading(false);
+      return;
+    }
+    if (data.newPassword !== data.confirmPassword) {
+      dispatch(updateToastData({ data: "New password and confirm password do not match", title: "Password Mismatch", type: ERROR }));
+      setIsLoading(false);
+      return;
+    }
     await axiosInstance.post(`/admin/user/changePassword`, { ...data })
       .then((response) => {
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
@@ -73,7 +90,7 @@ const Index = (props) => {
                           <Label className="form-label">Current Password</Label>
                           <Input
                             name="oldPassword"
-                            type="text"
+                            type="password"
                             placeholder="Enter Current Password"
                             value={data.oldPassword}
                             onChange={handleChange}
@@ -87,6 +104,18 @@ const Index = (props) => {
                             id="newPassword"
                             placeholder="New Password"
                             value={data.newPassword}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-4">
+                          <Label className="form-label">
+                            Confirm Password
+                          </Label>
+                          <Input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={data.confirmPassword}
                             onChange={handleChange}
                           />
                         </div>
