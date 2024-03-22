@@ -140,7 +140,7 @@ const CommentaryMarketTemplate = () => {
                         const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
                         setAllInnings(uniqueInnings.map(option => ({ label: `Inning ${option.currentInnings}`, value: option.currentInnings })))
                         const uniqueTeams = teamAndPlayers?.filter(value => value.currentInnings === 1)
-                        setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId })))
+                        setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId, fullName: option.teamName })))
                     }
                     let newData = [];
                     predefinedOverMarket.forEach((market) => {
@@ -351,7 +351,7 @@ const CommentaryMarketTemplate = () => {
             ),
             key: "marketName",
             sort: true,
-            style: { width: "10%" },
+            style: { width: "30%" },
         },
         {
             title: "Status",
@@ -391,6 +391,63 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "line",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="text"
+                    value={text}
+                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                />
+
+            ),
+            key: "margin",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Over",
+            dataIndex: "overRate",
+            render: (text = "", record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.overRate}
+                    </span>
+                </>
+
+            ),
+            key: "overRate",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Under",
+            dataIndex: "underRate",
+            render: (text, record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.underRate}
+                    </span>
+                </>
+            ),
+            key: "underRate",
             sort: true,
             style: { width: "10%" },
         },
@@ -471,63 +528,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "noPoint",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "Over",
-            dataIndex: "overRate",
-            render: (text = "", record) => (
-                <>
-                    <Input
-                        className="form-control small-text-fields"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.overRate}
-                    </span>
-                </>
-
-            ),
-            key: "overRate",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "Under",
-            dataIndex: "underRate",
-            render: (text, record) => (
-                <>
-                    <Input
-                        className="form-control small-text-fields"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.underRate}
-                    </span>
-                </>
-            ),
-            key: "underRate",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "Margin",
-            dataIndex: "margin",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="text"
-                    value={text}
-                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
-                />
-
-            ),
-            key: "margin",
             sort: true,
             style: { width: "10%" },
         },
@@ -629,13 +629,27 @@ const CommentaryMarketTemplate = () => {
                                     <Col>
                                         <Table
                                             ref={finalizeRef}
-                                            columns={columns}
-                                            dataSource={data}
+                                            columns={columns.filter(item => item.dataIndex !== "inningsId" && item.dataIndex !== "teamId")}
+                                            dataSource={data.filter(isOverFalse => !isOverFalse.isOver)}
                                             tableElement={tableElement}
                                             singleCheck={checekedList}
+                                            isPagination={false}
                                         />
                                     </Col>
                                 </Row>
+                                {allTeams?.map(teamData =>
+                                    <Row>
+                                        <Col>
+                                            <Table
+                                                ref={finalizeRef}
+                                                columns={columns.filter(item => item.dataIndex !== "teamId")}
+                                                dataSource={data.filter(tId => tId.teamId === teamData.value)}
+                                                tableElement={{...tableElement,title:teamData.fullName}}
+                                                singleCheck={checekedList}
+                                                isPagination={false}
+                                            />
+                                        </Col>
+                                    </Row>)}
                                 <Row className='mb-3'>
                                     <Col className="mt-3 mt-lg-3 mt-md-3">
                                         <Button color="primary" className="btn text-right" onClick={handleSave}>Save</Button>
