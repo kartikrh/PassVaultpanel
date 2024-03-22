@@ -68,6 +68,7 @@ const Index = forwardRef(
       setDateRange,
       dateRange,
       matchType,
+      isPagination
     },
     ref
   ) => {
@@ -447,23 +448,28 @@ const Index = forwardRef(
       },
     ];
     const fetchData = () => {
-      const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
-      let sliced;
+      if (isPagination) {
+        const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
+        let sliced;
 
-      if (currentPage < possibleNoOfPages) {
-        sliced = dataSource.slice(
-          currentPage * pageSize,
-          currentPage * pageSize + pageSize
-        );
-      } else {
-        const pageToJump = possibleNoOfPages - 1;
-        sliced = dataSource.slice(
-          pageToJump * pageSize,
-          pageToJump * pageSize + pageSize
-        );
+        if (currentPage < possibleNoOfPages) {
+          sliced = dataSource.slice(
+            currentPage * pageSize,
+            currentPage * pageSize + pageSize
+          );
+        } else {
+          const pageToJump = possibleNoOfPages - 1;
+          sliced = dataSource.slice(
+            pageToJump * pageSize,
+            pageToJump * pageSize + pageSize
+          );
+        }
+        setData(sliced);
+      }
+      else {
+        setData(dataSource);
       }
       setTotal(dataSource.length);
-      setData(sliced);
     };
 
     const handleDragEnd = (result) => {
@@ -956,7 +962,7 @@ const Index = forwardRef(
                     updateClickedId={onBreadCrumbsClick}
                   />
                 )}
-                <Row className="g-2 d-flex align-items-center">
+                {isPagination?(<Row className="g-2 d-flex align-items-center">
                   <Col className="col-sm-auto">
                     <span>
                       Showing {currentPage * pageSize + 1} -{" "}
@@ -1006,7 +1012,7 @@ const Index = forwardRef(
                       </div>
                     </div>
                   </Col>
-                </Row>
+                </Row>):null}
 
                 <div
                   className="table-responsive table-card mt-3 mb-1"
@@ -1226,14 +1232,14 @@ const Index = forwardRef(
                 </div>
                 {data.length > 0 ? (
                   <div className="d-flex justify-content-end">
-                    <Pagination
+                    {isPagination ? (<Pagination
                       total={total}
                       pageSize={pageSize}
                       currentPage={currentPage}
                       fetchData={fetchData}
                       setCurrentPage={setCurrentPage}
                       setPageSize={setPageSize}
-                    />
+                    />) : null}
                   </div>
                 ) : (
                   <div className="d-flex justify-content-center">
