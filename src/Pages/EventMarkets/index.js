@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
   TAB_EVENT_MARKETS,
+  PERMISSION_ADD,
+  PERMISSION_EDIT,
   PERMISSION_DELETE,
   PERMISSION_VIEW,
   SUCCESS,
@@ -198,6 +200,9 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value);
   };
+  const handleEdit = (id) => {
+    navigate("/addEventMarket", { state: { userId: id } });
+  };
   const handleClose = async (record) => {
     setIsLoading(true);
     await axiosInstance
@@ -286,6 +291,17 @@ const Index = () => {
       ),
       key: "select",
       style: { width: "2%" },
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    && {
+      title: "Edit",
+      key: "edit",
+      render: (text, record) => <i className="bx bx-edit"
+        onClick={() => {
+          handleEdit(record.eventMarketId);
+        }}
+      ></i>,
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Event Date",
@@ -446,6 +462,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            onAddNavigate={"/addEventMarket"}
             singleCheck={checekedList}
             eventTypes={eventTypes}
             competitionList={competitionList}
@@ -455,6 +472,7 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
             reFetchData={fetchData}
+            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(
               permissionObj,
               pageName,

@@ -89,6 +89,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:prod": "env-cmd -f .env.production npm start",
     "start:local": "env-cmd -f .env.local npm start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -111,5 +112,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
   }
 }
