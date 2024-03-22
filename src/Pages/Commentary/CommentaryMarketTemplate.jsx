@@ -134,6 +134,7 @@ const CommentaryMarketTemplate = () => {
                     const marketTemplate = response?.result?.marketTemplate;
                     const commentary = response?.result?.commentary;
                     const predefinedOverMarket = marketTemplate?.filter(value => value?.isPredefineMarket && value?.isOver);
+                    const predefinedOverFalseMarket = marketTemplate?.filter(value => value?.isPredefineMarket && !value?.isOver);
                     const eventMarket = response?.result?.eventMarket;
                     if (teamAndPlayers?.length) {
                         const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
@@ -164,6 +165,26 @@ const CommentaryMarketTemplate = () => {
                             }))
                         });
                     });
+                    predefinedOverFalseMarket.forEach((market) => {
+                        newData.push(({
+                            eventMarketId: "0",
+                            isCreate: false,
+                            status: "1",
+                            overRate: null,
+                            underRate: "",
+                            margin: null,
+                            line: "",
+                            isAllow: true,
+                            data: "", // not getting from market
+                            playerId: null, // not getting from market
+                            ...market,
+                            commentaryId: commentary.commentaryId,
+                            eventRefId: commentary.eventRefId,
+                            marketName: market.templateName,
+                            teamId: "0",
+                            inningsId: "0",
+                        }))
+                    });
                     newData = newData.sort((a, b) => {
                         if (a.over !== b.over) {
                             return a.over - b.over;
@@ -171,9 +192,17 @@ const CommentaryMarketTemplate = () => {
                         if (a.inningsId !== b.inningsId) {
                             return a.inningsId - b.inningsId;
                         }
-                        return a.teamId - b.teamId;
+                        if (a.teamId !== b.teamId) {
+                            return a.teamId - b.teamId;
+                        }
+                        return a.marketTemplateId - b.marketTemplateId;
                     }).map((market, index) => {
-                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        let eventMarketIndex = -1;
+                        if (market.isOver && market.isPredefineMarket) {
+                            eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        } else if (market.isPredefineMarket) {
+                            eventMarketIndex = eventMarket.findIndex((value) => market.marketTemplateId == value.marketTemplateId)
+                        }
                         let newData = {}
                         if (eventMarketIndex !== -1) {
                             newData = eventMarket[eventMarketIndex]
