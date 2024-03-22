@@ -19,6 +19,7 @@ import pageSlice from './pageSlice';
 import MenuTypeSlice from './menuTypeSlice';
 import NewsSlice from './newsSlice'
 import marketTemplateSlice from './marketTemplateSlice';
+import eventMarketSlice from './eventMarketSlice';
 const rootReducer = combineReducers({
     tab: TabSlice,
     commentary: CommentarySlice,
@@ -39,7 +40,8 @@ const rootReducer = combineReducers({
     page: pageSlice,
     menuType: MenuTypeSlice,
     news: NewsSlice,
-    marketTemplate: marketTemplateSlice
+    marketTemplate: marketTemplateSlice,
+    eventMarket: eventMarketSlice,
 });
 
 export default rootReducer;

@@ -25,11 +25,13 @@ const CommentaryMarketTemplate = () => {
     const [data, setData] = useState([]);
     const [allInnings, setAllInnings] = useState([]);
     const [allTeams, setAllTeams] = useState([]);
+    const [selectedField, setSelectedField] = useState("");
+    const [fieldValue, setFieldValue] = useState("");  
 
     useEffect(() => {
         setCheckedList(data.filter(i => i.isCreate).map(i => i.index))
     }, [data])
-
+   
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.index === record.index)
         if (indexOfData !== -1) {
@@ -40,10 +42,10 @@ const CommentaryMarketTemplate = () => {
                     {
                         ...prev[indexOfData],
                         [key]: value,
-                        yesRate: Math.round(roundedLine),
-                        noRate: Math.round(roundedLine) + 1,
-                        yesPoint: 100,
-                        noPoint: 100,
+                        yesRate: Math.round(roundedLine) || 0,
+                        noRate: Math.round(roundedLine) + 1 || 0,
+                        yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
+                        noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
                     },
                     ...prev.slice(indexOfData + 1),
                 ]);
@@ -105,10 +107,6 @@ const CommentaryMarketTemplate = () => {
                 return {
                     ...element,
                     "eventMarketId": +element.eventMarketId,
-                    "yesRate":element.yesRate,
-                    "yesPoint":element.yesPoint,
-                    "noRate":element.noRate,
-                    "noPoint":element.noPoint
                 }
             })
             await axiosInstance
@@ -135,16 +133,17 @@ const CommentaryMarketTemplate = () => {
                     const teamAndPlayers = response?.result?.teamAndPlayers;
                     const marketTemplate = response?.result?.marketTemplate;
                     const commentary = response?.result?.commentary;
-                    const predefinedMarket = marketTemplate?.filter(value => value?.isPredefineMarket);
+                    const predefinedOverMarket = marketTemplate?.filter(value => value?.isPredefineMarket && value?.isOver);
+                    const predefinedOverFalseMarket = marketTemplate?.filter(value => value?.isPredefineMarket && !value?.isOver);
                     const eventMarket = response?.result?.eventMarket;
                     if (teamAndPlayers?.length) {
                         const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
                         setAllInnings(uniqueInnings.map(option => ({ label: `Inning ${option.currentInnings}`, value: option.currentInnings })))
                         const uniqueTeams = teamAndPlayers?.filter(value => value.currentInnings === 1)
-                        setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId })))
+                        setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId, fullName: option.teamName })))
                     }
                     let newData = [];
-                    predefinedMarket.forEach((market) => {
+                    predefinedOverMarket.forEach((market) => {
                         teamAndPlayers.forEach((team) => {
                             newData.push(({
                                 eventMarketId: "0",
@@ -166,6 +165,26 @@ const CommentaryMarketTemplate = () => {
                             }))
                         });
                     });
+                    predefinedOverFalseMarket.forEach((market) => {
+                        newData.push(({
+                            eventMarketId: "0",
+                            isCreate: false,
+                            status: "1",
+                            overRate: null,
+                            underRate: "",
+                            margin: null,
+                            line: "",
+                            isAllow: true,
+                            data: "", // not getting from market
+                            playerId: null, // not getting from market
+                            ...market,
+                            commentaryId: commentary.commentaryId,
+                            eventRefId: commentary.eventRefId,
+                            marketName: market.templateName,
+                            teamId: "0",
+                            inningsId: "0",
+                        }))
+                    });
                     newData = newData.sort((a, b) => {
                         if (a.over !== b.over) {
                             return a.over - b.over;
@@ -173,9 +192,17 @@ const CommentaryMarketTemplate = () => {
                         if (a.inningsId !== b.inningsId) {
                             return a.inningsId - b.inningsId;
                         }
-                        return a.teamId - b.teamId;
+                        if (a.teamId !== b.teamId) {
+                            return a.teamId - b.teamId;
+                        }
+                        return a.marketTemplateId - b.marketTemplateId;
                     }).map((market, index) => {
-                        const eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        let eventMarketIndex = -1;
+                        if (market.isOver && market.isPredefineMarket) {
+                            eventMarketIndex = eventMarket.findIndex((value) => market.over == value.over && market.teamId == value.teamId && market.inningsId == value.inningsId)
+                        } else if (market.isPredefineMarket) {
+                            eventMarketIndex = eventMarket.findIndex((value) => market.marketTemplateId == value.marketTemplateId)
+                        }
                         let newData = {}
                         if (eventMarketIndex !== -1) {
                             newData = eventMarket[eventMarketIndex]
@@ -206,6 +233,41 @@ const CommentaryMarketTemplate = () => {
         displayTitle: true
     };
 
+    const handleSubmit = () => {
+        if (!selectedField || !fieldValue) {
+          return dispatch(
+            updateToastData({
+              data: "Please select a field and enter a value.",
+              title: pageName,
+              type: ERROR,
+            })
+          );
+        }
+        const updatedData = data.map((record) => {
+            let updatedRecord = { ...record };
+            if (selectedField === 'line') {
+                const roundedLine = Math.round(parseFloat(fieldValue) * 10) / 10;
+                updatedRecord = {
+                    ...updatedRecord,
+                    [selectedField]: fieldValue,
+                    yesRate: Math.round(roundedLine) || 0,
+                    noRate: Math.round(roundedLine) + 1 || 0,
+                    yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
+                    noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
+                };
+            } else {
+                updatedRecord = {
+                    ...updatedRecord,
+                    [selectedField]: fieldValue,
+                };
+            }
+            updatedRecord.isCreate = true; 
+            return updatedRecord;
+        });
+        setData(updatedData);
+        setSelectedField("");
+        setFieldValue("");
+    };
     //table columns
     const columns = [
         {
@@ -232,7 +294,7 @@ const CommentaryMarketTemplate = () => {
             dataIndex: "inningsId",
             render: (text, record) => (
                 <select
-                    className="form-select"
+                    className="small-text-fields"
                     value={text}
                     disabled={true}
                     onChange={(e) => {
@@ -254,7 +316,7 @@ const CommentaryMarketTemplate = () => {
             dataIndex: "teamId",
             render: (text, record) => (
                 <select
-                    className="form-select"
+                    className="small-text-fields"
                     value={text}
                     disabled={true}
                     onChange={(e) => {
@@ -277,7 +339,7 @@ const CommentaryMarketTemplate = () => {
             render: (text, record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
@@ -289,14 +351,14 @@ const CommentaryMarketTemplate = () => {
             ),
             key: "marketName",
             sort: true,
-            style: { width: "10%" },
+            style: { width: "30%" },
         },
         {
             title: "Status",
             dataIndex: "status",
             render: (text, record) => (
                 <select
-                    className="form-select"
+                    className="small-text-fields"
                     value={text}
                     onChange={(e) => {
                         handleValueChange(record, "status", e.target.value);
@@ -318,7 +380,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "line", e.target.value)}
@@ -333,82 +395,18 @@ const CommentaryMarketTemplate = () => {
             style: { width: "10%" },
         },
         {
-            title: "Yes Rate",
-            dataIndex: "yesRate",
-            render: (text = "", record) => (
-                <>
-                    <Input
-                        className="form-control"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.yesRate}
-                    </span>
-                </>
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="text"
+                    value={text}
+                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                />
+
             ),
-            key: "yesRate",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "Yes Point",
-            dataIndex: "yesPoint",
-            render: (text = "100", record) => (
-                <>
-                    <Input
-                        className="form-control"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.yesPoint}
-                    </span>
-                </>
-            ),
-            key: "yesPoint",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "No Rate",
-            dataIndex: "noRate",
-            render: (text = "", record) => (
-                <>
-                    <Input
-                        className="form-control"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.noRate}
-                    </span>
-                </>
-            ),
-            key: "noRate",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "No Point",
-            dataIndex: "noPoint",
-            render: (text = "100", record) => (
-                <>
-                    <Input
-                        className="form-control"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.noPoint}
-                    </span>
-                </>
-            ),
-            key: "noPoint",
+            key: "margin",
             sort: true,
             style: { width: "10%" },
         },
@@ -418,7 +416,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
@@ -439,7 +437,7 @@ const CommentaryMarketTemplate = () => {
             render: (text, record) => (
                 <>
                     <Input
-                        className="form-control"
+                        className="form-control small-text-fields"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
@@ -454,18 +452,82 @@ const CommentaryMarketTemplate = () => {
             style: { width: "10%" },
         },
         {
-            title: "Margin",
-            dataIndex: "margin",
-            render: (text, record) => (
-                <Input
-                    className="form-control"
-                    type="text"
-                    value={text}
-                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
-                />
-
+            title: "Yes Rate",
+            dataIndex: "yesRate",
+            render: (text = "", record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.yesRate}
+                    </span>
+                </>
             ),
-            key: "margin",
+            key: "yesRate",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Yes Point",
+            dataIndex: "yesPoint",
+            render: (text = "100", record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.yesPoint}
+                    </span>
+                </>
+            ),
+            key: "yesPoint",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "No Rate",
+            dataIndex: "noRate",
+            render: (text = "", record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.noRate}
+                    </span>
+                </>
+            ),
+            key: "noRate",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "No Point",
+            dataIndex: "noPoint",
+            render: (text = "100", record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.noPoint}
+                    </span>
+                </>
+            ),
+            key: "noPoint",
             sort: true,
             style: { width: "10%" },
         },
@@ -532,17 +594,62 @@ const CommentaryMarketTemplate = () => {
                                         <button className="btn btn-danger text-right" onClick={handleBackClick}>Back</button>
                                     </Col>
                                 </Row>
+                                <Row className='mb-3'>
+                                    <Col className="d-flex align-items-center justify-content-start">
+                                       <div className="d-flex align-items-center">
+                                        <select
+                                          className="form-select me-2"
+                                          value={selectedField}
+                                          onChange={(e) => setSelectedField(e.target.value)}
+                                        >
+                                          <option value="">Select Field</option>
+                                          <option value="line">Line</option>
+                                          <option value="overRate">Over</option>
+                                          <option value="underRate">Under</option>
+                                          <option value="yesPoint">Yes Point</option>
+                                          <option value="noPoint">No Point</option>
+                                        </select>
+                                        <input
+                                          type="text"
+                                          className="form-control me-2"
+                                          value={fieldValue}
+                                          onChange={(e) => setFieldValue(e.target.value)}
+                                          placeholder="Enter Value"
+                                        />
+                                        <button
+                                           className="btn btn-primary"
+                                           onClick={handleSubmit}
+                                        >
+                                         Submit
+                                        </button>
+                                        </div>
+                                    </Col>
+                               </Row>
                                 <Row>
                                     <Col>
                                         <Table
                                             ref={finalizeRef}
-                                            columns={columns}
-                                            dataSource={data}
+                                            columns={columns.filter(item => item.dataIndex !== "inningsId" && item.dataIndex !== "teamId")}
+                                            dataSource={data.filter(isOverFalse => !isOverFalse.isOver)}
                                             tableElement={tableElement}
                                             singleCheck={checekedList}
+                                            isPagination={false}
                                         />
                                     </Col>
                                 </Row>
+                                {allTeams?.map(teamData =>
+                                    <Row>
+                                        <Col>
+                                            <Table
+                                                ref={finalizeRef}
+                                                columns={columns.filter(item => item.dataIndex !== "teamId")}
+                                                dataSource={data.filter(tId => tId.teamId === teamData.value)}
+                                                tableElement={{...tableElement,title:teamData.fullName}}
+                                                singleCheck={checekedList}
+                                                isPagination={false}
+                                            />
+                                        </Col>
+                                    </Row>)}
                                 <Row className='mb-3'>
                                     <Col className="mt-3 mt-lg-3 mt-md-3">
                                         <Button color="primary" className="btn text-right" onClick={handleSave}>Save</Button>
