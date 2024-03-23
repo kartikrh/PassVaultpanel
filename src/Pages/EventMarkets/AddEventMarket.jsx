@@ -31,7 +31,6 @@ import {
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { EventMarketFields } from "../../constants/FieldConst/EventMarketConst";
 
@@ -43,12 +42,10 @@ function AddEventMarket() {
   const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [disabledFields, setDisabledFields] = useState({});
-  // const [selectedDropdown, setSelectedDropdwon] = useState({});
-  const [matchType, setMatchType] = useState(undefined);
   const [commentryType, setCommentryType] = useState(undefined);
   const [commentryList, setCommentryList] = useState([]);
   const [marketTemplate, setMarketTemplate] = useState([]);
-  const [marketTemplateList, setMarketTemplateList] = useState([])
+  const [marketTemplateList, setMarketTemplateList] = useState([]);
   const { isSaved, isLoading, error } = useSelector(
     (state) => state.tabsData.eventMarket
   );
@@ -63,26 +60,6 @@ function AddEventMarket() {
     }
     fetchMasterData();
   }, []);
-  // useEffect(() => {
-  //   if (selectedDropdown.field === "commentaryId") {
-  //     const matchTypeId = commentryList.find(
-  //       (item) => item.commentaryId === selectedDropdown.value
-  //     )?.matchTypeId;
-  //     setMatchTypeId(matchTypeId);
-  //   }
-  //   if (selectedDropdown.field === "matchTypeID") {
-  //     const selectedMarketList = marketTemplate.find(
-  //       (item) => item.marketTemplateId === selectedDropdown?.value
-  //     );
-  //     setInitialEditData({
-  //       ...selectedMarketList,
-  //     });
-  //   }
-  // }, [selectedDropdown?.value]);
-  // console.log("initialEditData",initialEditData);
-  // useEffect(() => {
-  //   fetchMasterData();
-  // }, [matchTypeId]);
 
   useEffect(() => {
     if (id !== "0") {
@@ -105,20 +82,6 @@ function AddEventMarket() {
       setCurrentSaveAction(undefined);
     }
   }, [isSaved]);
-
-  // useEffect(()=>{
-  //    if (newFormData.marketTemplateId !== 0 && marketTemplate.length > 0) {
-  //     const selectedMarketList = marketTemplate.find(
-  //       (item) => item.marketTemplateId === newFormData.marketTemplateId
-  //     );
-  //     setMasterData((preData) => ({
-  //       ...preData,
-  //       ...selectedMarketList,
-  //     }));
-  //     finalizeRef.current.updateFormFromParent({...selectedMarketList})
-  //   }
-
-  // },[marketTemplate])
 
   const fetchData = async (id) => {
     await axiosInstance
@@ -160,28 +123,6 @@ function AddEventMarket() {
           })
         );
       });
-    // axiosInstance
-    //   .post("/admin/marketTemplate/getByMatchTypeId", {
-    //     matchTypeId: matchTypeId,
-    //   })
-    //   .then((response) => {
-    //     setMarketTemplate(response?.result);
-    //     setMasterData((prevData) => ({
-    //       ...prevData,
-    //       matchTypeID: response?.result?.map((item) => {
-    //         return { label: item.templateName, value: item.marketTemplateId };
-    //       }),
-    //     }));
-    //   })
-    //   .catch((error) => {
-    //     dispatch(
-    //       updateToastData({
-    //         data: error?.message,
-    //         title: error?.title,
-    //         type: ERROR,
-    //       })
-    //     );
-    //   });
   };
 
   const handleSaveClick = async (saveAction) => {
@@ -195,52 +136,53 @@ function AddEventMarket() {
     }
   };
   const onFormDataChange = (newFormData) => {
-    if (newFormData.commentaryId !== 0) {
-      // const newMatchType = commentryList.find(
-      //   (item) => item.commentaryId === newFormData.commentaryId
-      // );
-      if (newFormData?.commentaryId !== commentryType?.commentaryId) {
-        const newCommentryType = commentryList.find(
-          (item) => item.commentaryId === newFormData.commentaryId
-        );
-        setCommentryType(newCommentryType);
-        if (newCommentryType?.matchTypeId) {
-          axiosInstance
-            .post("/admin/marketTemplate/getByMatchTypeId", {
-              matchTypeId: newCommentryType?.matchTypeId,
-            })
-            .then((response) => {
-              setMarketTemplateList(response.result)
-              setMasterData((prevData) => ({
-                ...prevData,
-                marketTemplateId: response?.result?.map((item) => {
-                  return {
-                    label: item.templateName,
-                    value: item.marketTemplateId,
-                  };
-                }),
-              }));
-            })
-            .catch((error) => {
-              dispatch(
-                updateToastData({
-                  data: error?.message,
-                  title: error?.title,
-                  type: ERROR,
-                })
-              );
-            });
-        }
+    if (
+      newFormData?.commentaryId &&
+      newFormData?.commentaryId !== commentryType?.commentaryId
+    ) {
+      const newCommentryType = commentryList.find(
+        (item) => item.commentaryId === newFormData.commentaryId
+      );
+      setCommentryType(newCommentryType);
+      if (newCommentryType?.matchTypeId) {
+        axiosInstance
+          .post("/admin/marketTemplate/getByMatchTypeId", {
+            matchTypeId: newCommentryType?.matchTypeId,
+          })
+          .then((response) => {
+            setMarketTemplateList(response.result);
+            setMasterData((prevData) => ({
+              ...prevData,
+              marketTemplateId: response?.result?.map((item) => {
+                return {
+                  label: item.templateName,
+                  value: item.marketTemplateId,
+                };
+              }),
+            }));
+          })
+          .catch((error) => {
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
       }
-      if (newFormData?.marketTemplateId && newFormData?.marketTemplateId !== marketTemplate?.marketTemplateId) {
-        const selectedMarketList = marketTemplateList.find(
-          (item) => item?.marketTemplateId === newFormData?.marketTemplateId
-        );
-        setMarketTemplate(selectedMarketList)
-        finalizeRef.current.updateFormFromParent({
-          ...selectedMarketList,
-        });
-      }
+    }
+    if (
+      newFormData?.marketTemplateId &&
+      newFormData?.marketTemplateId !== marketTemplate?.marketTemplateId
+    ) {
+      const selectedMarketList = marketTemplateList.find(
+        (item) => item?.marketTemplateId === newFormData?.marketTemplateId
+      );
+      setMarketTemplate(selectedMarketList);
+      finalizeRef.current.updateFormFromParent({
+        ...selectedMarketList,
+      });
     }
   };
   const handleBackClick = () => {
@@ -308,27 +250,27 @@ function AddEventMarket() {
                           pageName,
                           PERMISSION_EDIT
                         ) && (
-                            <DropdownItem
-                              onClick={() => {
-                                handleSaveClick(SAVE);
-                              }}
-                            >
-                              Save
-                            </DropdownItem>
-                          )}
+                          <DropdownItem
+                            onClick={() => {
+                              handleSaveClick(SAVE);
+                            }}
+                          >
+                            Save
+                          </DropdownItem>
+                        )}
                         {checkPermission(
                           permissionObj,
                           pageName,
                           PERMISSION_ADD
                         ) && (
-                            <DropdownItem
-                              onClick={() => {
-                                handleSaveClick(SAVE_AND_NEW);
-                              }}
-                            >
-                              Save & New
-                            </DropdownItem>
-                          )}
+                          <DropdownItem
+                            onClick={() => {
+                              handleSaveClick(SAVE_AND_NEW);
+                            }}
+                          >
+                            Save & New
+                          </DropdownItem>
+                        )}
                       </DropdownMenu>
                     </ButtonDropdown>
                   </Col>

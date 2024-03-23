@@ -1,9 +1,4 @@
-import {
-  DATE_TIME_PICKER,
-  SELECT,
-  SWITCH,
-  TEXT,
-} from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const EventMarketFields = [
   {
@@ -16,7 +11,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SELECT,
     name: "marketTemplateId",
     label: "Market Template",
@@ -25,33 +20,6 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  // {
-  //   type: TEXT,
-  //   name: "eventMarketId",
-  //   label: "Event Market Id",
-  //   isRequired: true,
-  //   regexErrorMessage: "Please Enter Event Market Id",
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  // {
-  //   type: TEXT,
-  //   name: "commentaryId",
-  //   label: "Event Commentary Id",
-  //   isRequired: true,
-  //   regexErrorMessage: "Please Enter Event Commentary Id",
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  // {
-  //   type: TEXT,
-  //   name: "eventRefId",
-  //   label: "Event Ref Id",
-  //   isRequired: true,
-  //   regexErrorMessage: "Please Enter Event Ref Id",
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
   {
     type: TEXT,
     name: "inningsId",
@@ -89,26 +57,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  // {
-  //   type: SELECT,
-  //   name: "status",
-  //   label: "Status",
-  //   isRequired: true,
-  //   options: [
-  //     { label: "Select Status" },
-  //     { label: "NotOpen", value: 0 },
-  //     { label: "Open", value: 1 },
-  //     { label: "Inactive", value: 2 },
-  //     { label: "Suspend", value: 3 },
-  //     { label: "Close", value: 4 },
-  //     { label: "Settled", value: 5 },
-  //     { label: "Cancel", value: 6 },
-  //   ],
-  //   // defaultValue: "0",
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  { //
+  {
     type: SWITCH,
     name: "isPredefineMarket",
     label: "Is PredefineMarket",
@@ -116,7 +65,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SWITCH,
     name: "isPreMatchOnly",
     label: "Is PreMatchOnly",
@@ -124,7 +73,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SWITCH,
     name: "isPreMatchMarket",
     label: "Is PreMatchMarket",
@@ -132,7 +81,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SWITCH,
     name: "isAutoCancel",
     label: "Is AutoCancel",
@@ -140,7 +89,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "isOver",
     label: "Over",
     type: SWITCH,
@@ -148,7 +97,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "over",
     label: "Over",
     dependsOnField: "isOver",
@@ -159,7 +108,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "isPlayer",
     label: "Player",
     defaultValue: false,
@@ -178,7 +127,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "autoOpenType",
     label: "Auto Open Type",
     options: [
@@ -193,7 +142,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: TEXT,
     name: "autoOpen",
     label: "Auto Open",
@@ -202,7 +151,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "autoCloseType",
     label: "Auto Close Type",
     isRequired: true,
@@ -217,7 +166,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: TEXT,
     name: "beforeAutoClose",
     label: "Before Auto Close",
@@ -226,7 +175,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "autoSuspendType",
     label: "Auto Suspend Type",
     isRequired: true,
@@ -241,7 +190,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: TEXT,
     name: "beforeAutoSuspend",
     label: "Before Auto Suspend",
@@ -250,7 +199,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SWITCH,
     name: "isAutoResultSet",
     label: "Is AutoResult Set",
@@ -258,7 +207,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "autoResultType",
     label: "Auto Result Type",
     dependsOnField: "isAutoResultSet",
@@ -274,7 +223,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SWITCH,
     name: "isBallStart",
     label: "Is Ball Start",
@@ -282,7 +231,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: TEXT,
     name: "autoResultafterBall",
     label: "Auto Result After Ball",
@@ -291,7 +240,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: TEXT,
     name: "afterWicketAutoSuspend",
     label: "After Wicket Auto Suspend",
@@ -300,7 +249,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: TEXT,
     name: "afterWicketNotCreated",
     label: "After Wicket Not Created",
@@ -309,7 +258,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     type: SWITCH,
     name: "isActive",
     label: "Is Active",
@@ -325,7 +274,7 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //
+  {
     name: "actionType",
     label: "Action Type",
     isRequired: true,
@@ -339,45 +288,4 @@ export const EventMarketFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  // { //
-  //   type: TEXT,
-  //   name: "marketTemplateId",
-  //   label: "Market Template Id",
-  //   isRequired: true,
-  //   regexErrorMessage: "Please Enter Market Template Id",
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  // {
-  //   type: DATE_TIME_PICKER,
-  //   name: "eventDate",
-  //   label: "Event Date",
-  //   isRequired: true,
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  // {
-  //   type: TEXT,
-  //   name: "eventTypeName",
-  //   label: "Event Name",
-  //   isRequired: true,
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  // {
-  //   type: TEXT,
-  //   name: "competitionName",
-  //   label: "Competition",
-  //   isRequired: true,
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
-  // {
-  //   type: TEXT,
-  //   name: "eventName",
-  //   label: "Event",
-  //   isRequired: true,
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
 ];
