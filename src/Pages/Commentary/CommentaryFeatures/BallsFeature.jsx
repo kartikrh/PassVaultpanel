@@ -27,7 +27,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData }) => {
                             index={index}
                             fields={BALL_FEATURE_FIELDS}
                             value={updatedData[ballInfo.commentaryBallByBallId] || ballInfo}
-                            onChange={(key, value) => onValueChange(ballInfo, key, value)}
+                            onChange={(field, value) => onValueChange(ballInfo, field.name, value)}
                         />
                     </>
                 })}

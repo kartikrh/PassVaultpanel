@@ -26,7 +26,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData }) =>
                             index={index}
                             fields={TEAM_FEATURE_FIELDS}
                             value={updatedData[wicketInfo.commentaryWicketId] || wicketInfo}
-                            onChange={(key, value) => onValueChange(wicketInfo, key, value)}
+                            onChange={(field, value) => onValueChange(wicketInfo, field.name, value)}
                         />
                     </>
                 })}
