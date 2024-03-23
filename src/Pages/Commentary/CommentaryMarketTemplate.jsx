@@ -32,24 +32,55 @@ const CommentaryMarketTemplate = () => {
         setCheckedList(data.filter(i => i.isCreate).map(i => i.index))
     }, [data])
 
+    useEffect(()=>{
+        console.log("every render",data);
+    })
+    
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.index === record.index)
         if (indexOfData !== -1) {
+            console.log("key value",`${key} ${value}`);
             if (key === 'line') {
                 const roundedLine = Math.round(parseFloat(value) * 10) / 10;
-                setData(prev => [
-                    ...prev.slice(0, indexOfData),
+                const thresholdValue = Math.round(roundedLine) + 0.5;
+                const marginAdjustment = record.margin ? ((record.margin / 100) + 1) : 1;
+                console.log("record formula",((1 / (marginAdjustment / (1 + Math.exp(-(value - thresholdValue))))).toFixed(2) || 0 ));
+                console.log("record.margin",record?.margin);
+
+                const datatoSave = [
+                    ...data.slice(0, indexOfData),
                     {
-                        ...prev[indexOfData],
+                        ...data[indexOfData],
                         [key]: value,
                         yesRate: Math.round(roundedLine) + 1 || 0,
                         noRate: Math.round(roundedLine) || 0,
                         yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
                         noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
+                        overRate: record.margin? ((1 / (marginAdjustment / (1 + Math.exp(-(value - thresholdValue))))).toFixed(2) || 0 ): null,
+                        underRate: record.margin? ((1 / (marginAdjustment / (1 + Math.exp(+(value - thresholdValue))))).toFixed(2) || 0) : null,
                     },
-                    ...prev.slice(indexOfData + 1),
-                ]);
-            } else {
+                    ...data.slice(indexOfData + 1),
+                ];
+                console.log("datatoSave",datatoSave);
+                setData(datatoSave);
+            } else if (key === 'margin') {
+                if (record?.line) {
+                    const roundedLine = Math.round(parseFloat(record?.line) * 10) / 10;
+                    const thresholdValue = Math.round(roundedLine) + 0.5;
+                    const marginAdjustment = value ? ((parseFloat(value) / 100) + 1) : 1;
+                    const datatoSave = [
+                        ...data.slice(0, indexOfData),
+                        {
+                            ...data[indexOfData],
+                            [key]: value,
+                            overRate: (1 / (marginAdjustment / (1 + Math.exp(-(record?.line - thresholdValue))))).toFixed(2) || 0,
+                            underRate: (1 / (marginAdjustment / (1 + Math.exp(+(record?.line - thresholdValue))))).toFixed(2) || 0,
+                        },
+                        ...data.slice(indexOfData + 1),
+                    ];
+                    setData(datatoSave);
+                } 
+            }else {
                 setData(prev => [
                     ...prev.slice(0, indexOfData),
                     {
@@ -57,7 +88,7 @@ const CommentaryMarketTemplate = () => {
                         [key]: value
                     },
                     ...prev.slice(indexOfData + 1, prev.length),
-                ])
+                ]);
             }
         }
     }
@@ -77,7 +108,7 @@ const CommentaryMarketTemplate = () => {
         validateData.forEach((item) => {
             let error = {};
             for (const field in item) {
-                if (["marketName", "line", "overRate", "underRate"].includes(field)) {
+                if (["marketName", "line", "overRate", "underRate", "margin"].includes(field)) {
                     if (!item[field] && item[field] !== 0) {
                         isError = true
                         error[field] = `required`;
@@ -247,6 +278,8 @@ const CommentaryMarketTemplate = () => {
             let updatedRecord = { ...record };
             if (selectedField === 'line') {
                 const roundedLine = Math.round(parseFloat(fieldValue) * 10) / 10;
+                const thresholdValue = roundedLine + 0.5;
+                const marginAdjustment = record.margin ? ((record.margin / 100) + 1) : 1;
                 updatedRecord = {
                     ...updatedRecord,
                     [selectedField]: fieldValue,
@@ -254,6 +287,10 @@ const CommentaryMarketTemplate = () => {
                     noRate: Math.round(roundedLine) || 0,
                     yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
                     noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
+                    ...(record.margin !== "" & record.margin !== null? {
+                        overRate: (1 / (marginAdjustment / (1 + Math.exp(-(record.line - thresholdValue))))).toFixed(2) || 0,
+                        underRate: (1 / (marginAdjustment / (1 + Math.exp(+(record.line - thresholdValue))))).toFixed(2) || 0,
+                    } : {}),
                 };
             } else {
                 updatedRecord = {
