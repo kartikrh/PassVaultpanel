@@ -204,6 +204,19 @@
     font-weight: 600;
 }
 
+.table-Row-dark {
+    background: lightgray;
+    padding: 0.2rem;
+    font-size: large;
+    font-weight: 600;
+}
+
+.table-Row-light {
+    padding: 0.2rem;
+    font-size: large;
+    font-weight: 600;
+}
+
 .generate-team-button {
     margin: 2rem 0 0 0;
     float: right;

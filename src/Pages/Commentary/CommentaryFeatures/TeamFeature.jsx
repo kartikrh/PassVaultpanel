@@ -26,7 +26,7 @@ export const TeamFeature = ({ teamlist, handleValueChange, updatedData }) => {
                             index={index}
                             fields={TEAM_FEATURE_FIELDS}
                             value={updatedData[teamInfo.commentaryTeamId] || teamInfo}
-                            onChange={(key, value) => onValueChange(teamInfo, key, value)}
+                            onChange={(field, value) => onValueChange(teamInfo, field.name, value)}
                         />
                     </>
                 })}

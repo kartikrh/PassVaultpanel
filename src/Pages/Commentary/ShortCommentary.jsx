@@ -45,6 +45,7 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
     }
     const generateTeam = () => {
         setDisableAccordian({ ...disableAccordian, "toss": true })
+        setCommentaryDetails({ ...commentaryDetails, "commentaryStatus": 2 })
         const battingTeam = nextBattingTeam || getBattingTeam()
         const uniqueTeamId = commentaryDetails.currentInnings + STRING_SEPERATOR + battingTeam
         handleTeamChange(uniqueTeamId, CommentaryFormatedData[uniqueTeamId])
