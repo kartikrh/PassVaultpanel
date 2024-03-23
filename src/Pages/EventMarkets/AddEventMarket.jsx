@@ -153,8 +153,14 @@ function AddEventMarket() {
       setCommentryType(newCommentryType);
       setMasterData((preData) => ({
         ...preData,
-        "inningsId": [],
-        "teamId":[],
+        "inningsId": Array(newCommentryType.totalInnings).fill(null).map((v, i)=>({
+          label: `Inning ${i+1}`,
+          value: i+1,
+        })),
+        "teamId":newCommentryType.teams.map((option, i)=>({
+          label: option.teamName,
+          value: option.teamId,
+        })),
       }));
       if (newCommentryType?.matchTypeId) {
         axiosInstance
