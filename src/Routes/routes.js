@@ -73,6 +73,7 @@ import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
 import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
 import { MarketEventAction } from "../Pages/Commentary/MarketEventAction.jsx";
+import { CommentaryFeatures } from "../Pages/Commentary/CommentaryFeatures.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -100,6 +101,7 @@ const authProtectedRoutes = [
   { path: "/addCommentary", component: <AddCommentary /> },
   { path: "/commentaryMaster", component: <CommentaryMaster /> },
   { path: "/shortCommentary", component: <ShortCommentary /> },
+  { path: "/updateCommentaryFeature", component: <CommentaryFeatures /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
   { path: "/commentaryMarketTemplate", component: <CommentaryMarketTemplate /> },
   { path: "/marketEventAction", component: <MarketEventAction /> },
