@@ -68,7 +68,7 @@ const Index = forwardRef(
       setDateRange,
       dateRange,
       matchType,
-      isPagination
+      isPagination = true
     },
     ref
   ) => {
