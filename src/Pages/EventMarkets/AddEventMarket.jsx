@@ -31,8 +31,7 @@ import {
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { EventMarketFields } from "../../constants/FieldConst/EventMarketConst";
 
 function AddEventMarket() {
@@ -40,8 +39,13 @@ function AddEventMarket() {
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
+  const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [disabledFields, setDisabledFields] = useState({});
+  const [commentryType, setCommentryType] = useState(undefined);
+  const [commentryList, setCommentryList] = useState([]);
+  const [marketTemplate, setMarketTemplate] = useState([]);
+  const [marketTemplateList, setMarketTemplateList] = useState([]);
   const { isSaved, isLoading, error } = useSelector(
     (state) => state.tabsData.eventMarket
   );
@@ -50,20 +54,22 @@ function AddEventMarket() {
   let navigate = useNavigate();
   const location = useLocation();
   const [id, setId] = useState(location.state?.userId || "0");
-
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
+    fetchMasterData();
   }, []);
 
   useEffect(() => {
     if (id !== "0") {
-      // fetchData(id);
+      fetchData(id);
       setDisabledFields({
-        parentId: true,
-        displayType: true,
-      });
+       "commentaryId":true,
+       "marketTemplateId":true,
+       "inningsId":true,
+       "teamId":true
+    })
     }
   }, [id]);
 
@@ -71,7 +77,8 @@ function AddEventMarket() {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE) {
-      } else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/eventMarkets");
+      } else if (currentSaveAction === SAVE_AND_CLOSE)
+        navigate("/eventMarkets");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setDisabledFields({});
         setInitialEditData({});
@@ -82,25 +89,47 @@ function AddEventMarket() {
     }
   }, [isSaved]);
 
-  // const fetchData = async (id) => {
-  //   await axiosInstance
-  //     .post("/admin/player/byId", { eventMarketId: id })
-  //     .then((response) => {
-  //       setInitialEditData({
-  //         ...response?.result,
-  //         teamId: formatMultiSelectDataTeams(response?.result?.teams),
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       dispatch(
-  //         updateToastData({
-  //           data: error?.message,
-  //           title: error?.title,
-  //           type: ERROR,
-  //         })
-  //       );
-  //     });
-  // };
+  const fetchData = async (id) => {
+    await axiosInstance
+      .post("/admin/eventMarket/byId", { eventMarketId: id })
+      .then((response) => {
+        setInitialEditData({
+          ...response?.result,
+        });
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const fetchMasterData = async () => {
+    axiosInstance
+      .post("admin/eventMarket/commentaryTypeList", {})
+      .then((response) => {
+        setCommentryList(response?.result);
+        setMasterData((prevData) => ({
+          ...prevData,
+          commentaryId: response?.result?.map((item) => {
+            return { label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal(item?.eventDate, "index")}`, value: item.commentaryId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
@@ -109,12 +138,72 @@ function AddEventMarket() {
         eventMarketId: id,
       };
       setCurrentSaveAction(saveAction);
-      dispatch(
-        addEventMarketToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
-      );
+      dispatch(addEventMarketToDb({ ...dataToSave, ...extraData }));
     }
   };
-
+  const onFormDataChange = (newFormData) => {
+    if (
+      newFormData?.commentaryId &&
+      newFormData?.commentaryId !== "0" &&
+      newFormData?.commentaryId !== commentryType?.commentaryId
+    ) {
+      const newCommentryType = commentryList.find(
+        (item) => item.commentaryId === newFormData.commentaryId
+      );
+      setCommentryType(newCommentryType);
+      setMasterData((preData) => ({
+        ...preData,
+        "inningsId": Array(newCommentryType.totalInnings).fill(null).map((v, i)=>({
+          label: `Inning ${i+1}`,
+          value: i+1,
+        })),
+        "teamId":newCommentryType.teams.map((option, i)=>({
+          label: option.teamName,
+          value: option.teamId,
+        })),
+      }));
+      if (newCommentryType?.matchTypeId) {
+        axiosInstance
+          .post("/admin/marketTemplate/getByMatchTypeId", {
+            matchTypeId: newCommentryType?.matchTypeId,
+          })
+          .then((response) => {
+            setMarketTemplateList(response.result);
+            setMasterData((prevData) => ({
+              ...prevData,
+              marketTemplateId: response?.result?.map((item) => {
+                return {
+                  label: item.templateName,
+                  value: item.marketTemplateId,
+                };
+              }),
+            }));
+          })
+          .catch((error) => {
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+      }
+    }
+    if (
+      newFormData?.marketTemplateId &&
+      newFormData?.marketTemplateId !== "0" &&
+      newFormData?.marketTemplateId !== marketTemplate?.marketTemplateId
+    ) {
+      const selectedMarketList = marketTemplateList.find(
+        (item) => item?.marketTemplateId === newFormData?.marketTemplateId
+      );
+      setMarketTemplate(selectedMarketList);
+      finalizeRef.current.updateFormFromParent({
+        ...selectedMarketList,
+      });
+    }
+  };
   const handleBackClick = () => {
     navigate("/eventMarkets");
   };
@@ -209,6 +298,8 @@ function AddEventMarket() {
                   ref={finalizeRef}
                   fields={EventMarketFields}
                   editFormData={initialEditData}
+                  masterData={masterData}
+                  onFormDataChange={onFormDataChange}
                   disabledFields={disabledFields}
                 />
               </CardBody>

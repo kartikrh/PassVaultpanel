@@ -195,10 +195,24 @@
     z-index: 1050;
 }
 
-.player-header {
+.player-header,
+.section-header {
     background: lightgray;
     padding: 0.2rem;
     margin: 0 0 1rem 0;
+    font-size: large;
+    font-weight: 600;
+}
+
+.table-Row-dark {
+    background: lightgray;
+    padding: 0.2rem;
+    font-size: large;
+    font-weight: 600;
+}
+
+.table-Row-light {
+    padding: 0.2rem;
     font-size: large;
     font-weight: 600;
 }
@@ -245,4 +259,16 @@
     background-color: #ffc98f !important;
     font-weight: 500;
     border-color: #60400b !important;
+}
+
+.feature-card-header {
+    padding: 0.2rem;
+    margin: 0 0 1rem 0;
+    font-size: large;
+    font-weight: 600;
+    text-align: center;
+}
+
+.text-center {
+    text-align: center;
 }

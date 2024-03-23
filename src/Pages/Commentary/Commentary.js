@@ -222,7 +222,7 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(onPitchPlayers),
         }
         dispatch(addCommentaryScreenData(objToSave))
-        // update here
+        setUpdateRunFromWicket(undefined)
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
@@ -1097,7 +1097,6 @@ const Commentary = (props) => {
     useEffect(() => {
         if (updateRunsFromWicket) {
             updateRuns(updateRunsFromWicket)
-            setUpdateRunFromWicket(undefined)
         }
     }, [updateRunsFromWicket])
     useEffect(() => {

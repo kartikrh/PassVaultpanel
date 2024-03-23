@@ -200,8 +200,8 @@ export const MarketEventAction = () => {
                     value={text || ""}
                     onChange={(e) => {
                         handleValueChange(record, "line", e.target.value)
-                        handleValueChange(record, "noRate", Math.round(+e.target.value) + 1)
-                        handleValueChange(record, "yesRate", Math.round(+e.target.value))
+                        handleValueChange(record, "noRate", Math.round(+e.target.value))
+                        handleValueChange(record, "yesRate", Math.round(+e.target.value) + 1)
                     }}
                 />
             ),
@@ -374,16 +374,16 @@ export const MarketEventAction = () => {
             setIsLoading(true);
             try {
                 const response = await axiosInstance.post("/admin/config/all", { isActive: true });
-    
+
                 const isMarketRepetitionCall = response.result.find(config => config.key === 'ISMARKETREPETITIONCALL')?.value;
                 const repetitionCallInterval = response.result.find(config => config.key === 'REPETITIONCALLINTERVAL')?.value;
-    
+
                 if (isMarketRepetitionCall === 'true' && repetitionCallInterval) {
                     const interval = parseInt(repetitionCallInterval);
                     intervalIdRef.current = setInterval(() => {
-                      if (commentaryId !== "0") {
-                        fetchTableData(commentaryId);
-                      }
+                        if (commentaryId !== "0") {
+                            fetchTableData(commentaryId);
+                        }
                     }, interval);
                 }
             } catch (error) {
@@ -392,9 +392,9 @@ export const MarketEventAction = () => {
                 setIsLoading(false);
             }
         };
-    
+
         fetchConfigAll();
-    
+
         return () => {
             clearInterval(intervalIdRef.current);
         };

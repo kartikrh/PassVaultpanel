@@ -1,4 +1,4 @@
-import { MARKET_STATUS, PLAYER, TEAM } from "../../Pages/Commentary/CommentartConst";
+import { PLAYER, TEAM } from "../../Pages/Commentary/CommentartConst";
 import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH, COUNTER, LABEL } from "../../components/Common/Const";
 
 export const MatchDetailFields = [
@@ -247,10 +247,322 @@ export const TeamDetailsFields = [
 export const SHORT_COMMENTARY_TEAM = [
     {
         name: "teamScore",
+        placeholder: "Score",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamWicket",
+        placeholder: "Wicket",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamOver",
+        placeholder: "Over",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamStatus",
+        placeholder: "Status",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamTrialRuns",
+        placeholder: "Trial",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamLeadRuns",
+        placeholder: "Lead",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamWideRuns",
+        placeholder: "Wide",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamByRuns",
+        placeholder: "By",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamLegByRuns",
+        placeholder: "Leg Bye",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "teamNoBallRuns",
+        placeholder: "No Ball",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+
+]
+
+export const SHORT_COMMENTARY_BATTING_PLAYER = [
+    {
+        name: "batRun",
+        placeholder: "Runs",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 3 },
+
+    },
+    {
+        name: "batBall",
+        placeholder: "Balls",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 3 },
+
+    },
+    {
+        name: "batFour",
+        placeholder: "Four",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "batSix",
+        placeholder: "Six",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "batterOrder",
+        placeholder: "Order",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+]
+
+export const SHORT_COMMENTARY_BOWLING_PLAYER = [
+    {
+        name: "bowlerOver",
+        placeholder: "Over",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+    },
+    {
+        name: "bowlerCurrentBall",
+        placeholder: "Current Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerTotalBall",
+        placeholder: "Total Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerRun",
+        placeholder: "Runs",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerDotBall",
+        placeholder: "Dot Balls",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerMaidenOver",
+        placeholder: "Maiden Over",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerFour",
+        placeholder: "Four",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerSix",
+        placeholder: "Six",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerWideBall",
+        placeholder: "Wide Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerWideBallRun",
+        placeholder: "Wide Ball Run",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerNoBall",
+        placeholder: "No Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerNoBallRun",
+        placeholder: "No Ball Run",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerByeBall",
+        placeholder: "Bye Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerByeBallRun",
+        placeholder: "Bye Ball Run",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerLegByeBall",
+        placeholder: "Leg Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerLegByeBallRun",
+        placeholder: "Leg Ball Run",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerTotalWicket",
+        placeholder: "Wickets",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+    {
+        name: "bowlerOrder",
+        placeholder: "Bowler Order",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 4, lg: 2 },
+
+    },
+]
+
+export const BALL_FEATURE_FIELDS = [
+    {
+        name: "ballRun",
+        label: "Run",
+        placeholder: "Run",
+        formName: PLAYER,
+        type: COUNTER,
+        labelColspan: { xs: 3, md: 1, lg: 1 },
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "ballExtraRun",
+        label: "Extra",
+        placeholder: "Extra",
+        formName: PLAYER,
+        type: COUNTER,
+        labelColspan: { xs: 3, md: 1, lg: 1 },
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "ballFour",
+        label: "Four",
+        placeholder: "Four",
+        formName: PLAYER,
+        type: COUNTER,
+        labelColspan: { xs: 3, md: 1, lg: 1 },
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "ballSix",
+        label: "Six",
+        placeholder: "Six",
+        formName: PLAYER,
+        type: COUNTER,
+        labelColspan: { xs: 3, md: 1, lg: 1 },
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+]
+
+export const TEAM_FEATURE_FIELDS = [
+    {
+        name: "teamScore",
         label: "Score",
         placeholder: "Score",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -259,7 +571,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "/",
         placeholder: "Wicket",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -268,7 +580,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "Over",
         placeholder: "Over",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -277,7 +589,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "Status",
         placeholder: "Status",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -286,7 +598,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "Trial",
         placeholder: "Trial",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -295,7 +607,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "Lead",
         placeholder: "Lead",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -304,7 +616,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "Wide",
         placeholder: "Wide",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -313,7 +625,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "By",
         placeholder: "By",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -322,7 +634,7 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "Leg Bye",
         placeholder: "Leg Bye",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -331,222 +643,9 @@ export const SHORT_COMMENTARY_TEAM = [
         label: "No Ball",
         placeholder: "No Ball",
         formName: TEAM,
-        type: TEXT,
+        type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
 
-]
-
-export const SHORT_COMMENTARY_BATTING_PLAYER = [
-    {
-        name: "batRun",
-        label: "Runs",
-        placeholder: "Runs",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "batBall",
-        label: "Balls",
-        placeholder: "Balls",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "batFour",
-        label: "Four",
-        placeholder: "Four",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "batSix",
-        label: "Six",
-        placeholder: "Six",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "batterOrder",
-        label: "Order",
-        placeholder: "Order",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-]
-
-export const SHORT_COMMENTARY_BOWLING_PLAYER = [
-    {
-        name: "bowlerOver",
-        label: "Over",
-        placeholder: "Over",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerCurrentBall",
-        label: "Current Ball",
-        placeholder: "Current Ball",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerTotalBall",
-        label: "Total Ball",
-        placeholder: "Total Ball",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerRun",
-        label: "Runs",
-        placeholder: "Runs",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerDotBall",
-        label: "Dot Balls",
-        placeholder: "Dot Balls",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerMaidenOver",
-        label: "Maiden Over",
-        placeholder: "Maiden Over",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerFour",
-        label: "Four",
-        placeholder: "Four",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerSix",
-        label: "Six",
-        placeholder: "Six",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerWideBall",
-        label: "Wide Ball",
-        placeholder: "Wide Ball",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerWideBallRun",
-        label: "Wide Ball Run",
-        placeholder: "Wide Ball Run",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerNoBall",
-        label: "No Ball",
-        placeholder: "No Ball",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerNoBallRun",
-        label: "No Ball Run",
-        placeholder: "No Ball Run",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerByeBall",
-        label: "Bye Ball",
-        placeholder: "Bye Ball",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerByeBallRun",
-        label: "Bye Ball Run",
-        placeholder: "Bye Ball Run",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerLegByeBall",
-        label: "Leg Ball",
-        placeholder: "Leg Ball",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerLegByeBallRun",
-        label: "Leg Ball Run",
-        placeholder: "Leg Ball Run",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerTotalWicket",
-        label: "Wickets",
-        placeholder: "Wickets",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerOrder",
-        label: "Bowler Order",
-        placeholder: "Bowler Order",
-        formName: PLAYER,
-        type: TEXT,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
 ]
