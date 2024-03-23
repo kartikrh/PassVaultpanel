@@ -193,6 +193,9 @@ const Index = () => {
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
   };
+  const handleUpdateCommentaryClick = (id) => {
+    navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
+  };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
@@ -490,6 +493,24 @@ const Index = () => {
           }}
         >
           <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Update Commentary",
+      key: "updateCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleUpdateCommentaryClick(record.commentaryId);
+          }}
+        >
+          <i class='bx bx-minus' />
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
