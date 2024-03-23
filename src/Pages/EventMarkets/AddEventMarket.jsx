@@ -64,6 +64,12 @@ function AddEventMarket() {
   useEffect(() => {
     if (id !== "0") {
       fetchData(id);
+      setDisabledFields({
+       "commentaryId":true,
+       "marketTemplateId":true,
+       "inningsId":true,
+       "teamId":true
+    })
     }
   }, [id]);
 
@@ -138,6 +144,7 @@ function AddEventMarket() {
   const onFormDataChange = (newFormData) => {
     if (
       newFormData?.commentaryId &&
+      newFormData?.commentaryId !== "0" &&
       newFormData?.commentaryId !== commentryType?.commentaryId
     ) {
       const newCommentryType = commentryList.find(
@@ -174,6 +181,7 @@ function AddEventMarket() {
     }
     if (
       newFormData?.marketTemplateId &&
+      newFormData?.marketTemplateId !== "0" &&
       newFormData?.marketTemplateId !== marketTemplate?.marketTemplateId
     ) {
       const selectedMarketList = marketTemplateList.find(
