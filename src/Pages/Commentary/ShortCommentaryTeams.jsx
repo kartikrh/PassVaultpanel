@@ -1,6 +1,6 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { AccordionBody, AccordionHeader, AccordionItem, Col, Input, Row, UncontrolledAccordion } from "reactstrap";
-import { STRING_SEPERATOR, TEXT } from "../../components/Common/Const";
+import { COUNTER, STRING_SEPERATOR } from "../../components/Common/Const";
 import { PLAYER, TEAM } from "./CommentartConst";
 import { SHORT_COMMENTARY_BATTING_PLAYER, SHORT_COMMENTARY_BOWLING_PLAYER, SHORT_COMMENTARY_TEAM } from "../../constants/FieldConst/CommentaryConst";
 import "./CommentaryCss.css"
@@ -48,7 +48,7 @@ export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
                         md={field.fieldColspan?.md || 4}
                         lg={field.fieldColspan?.lg || 4}
                     >
-                        {field.type === TEXT && <Input
+                        {field.type === COUNTER && <Input
                             className="form-control small-text-fields"
                             type="number"
                             step={1}
@@ -59,7 +59,8 @@ export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
                             value={teamData[uniqueId]?.[field.name] || field.defaultValue}
                             onChange={(e) => handleChange(field, e.target.value, uniqueId, dataObject)}
                         />}
-                    </Col></>
+                    </Col>
+                </>
             })}
         </Row>
 
