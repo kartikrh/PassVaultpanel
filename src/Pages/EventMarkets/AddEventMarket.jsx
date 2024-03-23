@@ -31,7 +31,7 @@ import {
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { EventMarketFields } from "../../constants/FieldConst/EventMarketConst";
 
 function AddEventMarket() {
@@ -116,7 +116,7 @@ function AddEventMarket() {
         setMasterData((prevData) => ({
           ...prevData,
           commentaryId: response?.result?.map((item) => {
-            return { label: item.eventName, value: item.commentaryId };
+            return { label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal(item?.eventDate, "index")}`, value: item.commentaryId };
           }),
         }));
       })
@@ -151,6 +151,11 @@ function AddEventMarket() {
         (item) => item.commentaryId === newFormData.commentaryId
       );
       setCommentryType(newCommentryType);
+      setMasterData((preData) => ({
+        ...preData,
+        "inningsId": [],
+        "teamId":[],
+      }));
       if (newCommentryType?.matchTypeId) {
         axiosInstance
           .post("/admin/marketTemplate/getByMatchTypeId", {
