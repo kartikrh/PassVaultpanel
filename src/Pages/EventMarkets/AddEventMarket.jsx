@@ -40,8 +40,14 @@ function AddEventMarket() {
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
+  const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [disabledFields, setDisabledFields] = useState({});
+  // const [selectedDropdown, setSelectedDropdwon] = useState({});
+  const [matchType, setMatchType] = useState(undefined);
+  const [commentryType, setCommentryType] = useState(undefined);
+  const [commentryList, setCommentryList] = useState([]);
+  // const [marketTemplate, setMarketTemplate] = useState([]);
   const { isSaved, isLoading, error } = useSelector(
     (state) => state.tabsData.eventMarket
   );
@@ -50,20 +56,36 @@ function AddEventMarket() {
   let navigate = useNavigate();
   const location = useLocation();
   const [id, setId] = useState(location.state?.userId || "0");
-
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
+    fetchMasterData();
   }, []);
+  // useEffect(() => {
+  //   if (selectedDropdown.field === "commentaryId") {
+  //     const matchTypeId = commentryList.find(
+  //       (item) => item.commentaryId === selectedDropdown.value
+  //     )?.matchTypeId;
+  //     setMatchTypeId(matchTypeId);
+  //   }
+  //   if (selectedDropdown.field === "matchTypeID") {
+  //     const selectedMarketList = marketTemplate.find(
+  //       (item) => item.marketTemplateId === selectedDropdown?.value
+  //     );
+  //     setInitialEditData({
+  //       ...selectedMarketList,
+  //     });
+  //   }
+  // }, [selectedDropdown?.value]);
+  // console.log("initialEditData",initialEditData);
+  // useEffect(() => {
+  //   fetchMasterData();
+  // }, [matchTypeId]);
 
   useEffect(() => {
     if (id !== "0") {
-      // fetchData(id);
-      setDisabledFields({
-        parentId: true,
-        displayType: true,
-      });
+      fetchData(id);
     }
   }, [id]);
 
@@ -71,7 +93,8 @@ function AddEventMarket() {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE) {
-      } else if (currentSaveAction === SAVE_AND_CLOSE) navigate("/eventMarkets");
+      } else if (currentSaveAction === SAVE_AND_CLOSE)
+        navigate("/eventMarkets");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setDisabledFields({});
         setInitialEditData({});
@@ -82,25 +105,83 @@ function AddEventMarket() {
     }
   }, [isSaved]);
 
-  // const fetchData = async (id) => {
-  //   await axiosInstance
-  //     .post("/admin/player/byId", { eventMarketId: id })
-  //     .then((response) => {
-  //       setInitialEditData({
-  //         ...response?.result,
-  //         teamId: formatMultiSelectDataTeams(response?.result?.teams),
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       dispatch(
-  //         updateToastData({
-  //           data: error?.message,
-  //           title: error?.title,
-  //           type: ERROR,
-  //         })
-  //       );
-  //     });
-  // };
+  // useEffect(()=>{
+  //    if (newFormData.marketTemplateId !== 0 && marketTemplate.length > 0) {
+  //     const selectedMarketList = marketTemplate.find(
+  //       (item) => item.marketTemplateId === newFormData.marketTemplateId
+  //     );
+  //     setMasterData((preData) => ({
+  //       ...preData,
+  //       ...selectedMarketList,
+  //     }));
+  //     finalizeRef.current.updateFormFromParent({...selectedMarketList})
+  //   }
+
+  // },[marketTemplate])
+
+  const fetchData = async (id) => {
+    await axiosInstance
+      .post("/admin/eventMarket/byId", { eventMarketId: id })
+      .then((response) => {
+        setInitialEditData({
+          ...response?.result,
+        });
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const fetchMasterData = async () => {
+    axiosInstance
+      .post("admin/eventMarket/commentaryTypeList", {})
+      .then((response) => {
+        setCommentryList(response?.result);
+        setMasterData((prevData) => ({
+          ...prevData,
+          commentaryId: response?.result?.map((item) => {
+            return { label: item.eventName, value: item.commentaryId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+    // axiosInstance
+    //   .post("/admin/marketTemplate/getByMatchTypeId", {
+    //     matchTypeId: matchTypeId,
+    //   })
+    //   .then((response) => {
+    //     setMarketTemplate(response?.result);
+    //     setMasterData((prevData) => ({
+    //       ...prevData,
+    //       matchTypeID: response?.result?.map((item) => {
+    //         return { label: item.templateName, value: item.marketTemplateId };
+    //       }),
+    //     }));
+    //   })
+    //   .catch((error) => {
+    //     dispatch(
+    //       updateToastData({
+    //         data: error?.message,
+    //         title: error?.title,
+    //         type: ERROR,
+    //       })
+    //     );
+    //   });
+  };
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
@@ -109,12 +190,61 @@ function AddEventMarket() {
         eventMarketId: id,
       };
       setCurrentSaveAction(saveAction);
-      dispatch(
-        addEventMarketToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
-      );
+      dispatch(addEventMarketToDb({ ...dataToSave, ...extraData }));
     }
   };
-
+  const onFormDataChange = (newFormData) => {
+    if (newFormData.commentaryId !== 0) {
+      // const newMatchType = commentryList.find(
+      //   (item) => item.commentaryId === newFormData.commentaryId
+      // );
+      if (newFormData?.commentaryId !== commentryType?.commentaryId) {
+        const newCommentryType = commentryList.find(
+          (item) => item.commentaryId === newFormData.commentaryId
+        );
+        // setMatchType(newMatchType)
+        setCommentryType(newCommentryType);
+        axiosInstance
+          .post("/admin/marketTemplate/getByMatchTypeId", {
+            matchTypeId: newCommentryType?.matchTypeId,
+          })
+          .then((response) => {
+            let marketData = response?.result;
+            // setMarketTemplate(response?.result)
+            if (newFormData.marketTemplateId !== 0 && marketData.length > 0) {
+              const selectedMarketList = marketData.find(
+                (item) => item.marketTemplateId === newFormData.marketTemplateId
+              );
+              // setMasterData((preData) => ({
+              //   ...preData,
+              //   ...selectedMarketList,
+              // }));
+              finalizeRef.current.updateFormFromParent({
+                ...selectedMarketList,
+              });
+            }
+            setMasterData((prevData) => ({
+              ...prevData,
+              marketTemplateId: response?.result?.map((item) => {
+                return {
+                  label: item.templateName,
+                  value: item.marketTemplateId,
+                };
+              }),
+            }));
+          })
+          .catch((error) => {
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+      }
+    }
+  };
   const handleBackClick = () => {
     navigate("/eventMarkets");
   };
@@ -209,6 +339,8 @@ function AddEventMarket() {
                   ref={finalizeRef}
                   fields={EventMarketFields}
                   editFormData={initialEditData}
+                  masterData={masterData}
+                  onFormDataChange={onFormDataChange}
                   disabledFields={disabledFields}
                 />
               </CardBody>
