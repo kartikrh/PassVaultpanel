@@ -32,21 +32,13 @@ const CommentaryMarketTemplate = () => {
         setCheckedList(data.filter(i => i.isCreate).map(i => i.index))
     }, [data])
 
-    useEffect(() => {
-        console.log("every render", data);
-    })
-
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.index === record.index)
         if (indexOfData !== -1) {
-            console.log("key value", `${key} ${value}`);
             if (key === 'line') {
                 const roundedLine = Math.round(parseFloat(value) * 10) / 10;
                 const thresholdValue = Math.round(roundedLine) + 0.5;
                 const marginAdjustment = record.margin ? ((record.margin / 100) + 1) : 1;
-                console.log("record formula", ((1 / (marginAdjustment / (1 + Math.exp(-(value - thresholdValue))))).toFixed(2) || 0));
-                console.log("record.margin", record);
-
                 const datatoSave = [
                     ...data.slice(0, indexOfData),
                     {
@@ -54,14 +46,13 @@ const CommentaryMarketTemplate = () => {
                         [key]: value,
                         yesRate: Math.round(roundedLine) + 1 || 0,
                         noRate: Math.round(roundedLine) || 0,
-                        yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
-                        noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
-                        overRate: record.margin ? ((1 / (marginAdjustment / (1 + Math.exp(-(value - thresholdValue))))).toFixed(2) || 0) : null,
-                        underRate: record.margin ? ((1 / (marginAdjustment / (1 + Math.exp(+(value - thresholdValue))))).toFixed(2) || 0) : null,
+                        yesPoint: record.yesPoint ? record.yesPoint : 100,
+                        noPoint: record.noPoint ? record.noPoint : 100,
+                        overRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(value - thresholdValue))))).toFixed(2)) || 0),
+                        underRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(value - thresholdValue))))).toFixed(2)) || 0),
                     },
                     ...data.slice(indexOfData + 1),
                 ];
-                console.log("datatoSave", datatoSave);
                 setData(datatoSave);
             } else if (key === 'margin') {
                 const roundedLine = Math.round(parseFloat(record?.line) * 10) / 10;
@@ -72,12 +63,11 @@ const CommentaryMarketTemplate = () => {
                     {
                         ...data[indexOfData],
                         [key]: value,
-                        overRate: record.line ? ((1 / (marginAdjustment / (1 + Math.exp(-(record?.line - thresholdValue))))).toFixed(2) || 0) : null,
-                        underRate: record.line ? ((1 / (marginAdjustment / (1 + Math.exp(+(record?.line - thresholdValue))))).toFixed(2) || 0) : null,
+                        overRate: record.line && ((1 / (marginAdjustment / (1 + Math.exp(-(record?.line - thresholdValue))))).toFixed(2) || 0),
+                        underRate: record.line && ((1 / (marginAdjustment / (1 + Math.exp(+(record?.line - thresholdValue))))).toFixed(2) || 0),
                     },
                     ...data.slice(indexOfData + 1),
                 ];
-                console.log(datatoSave)
                 setData(datatoSave);
             } else {
                 setData(prev => [
@@ -181,7 +171,7 @@ const CommentaryMarketTemplate = () => {
                                 status: "1",
                                 overRate: "",
                                 underRate: "",
-                                margin: null,
+                                margin: "",
                                 line: "",
                                 isAllow: true,
                                 data: "", // not getting from market
@@ -202,7 +192,7 @@ const CommentaryMarketTemplate = () => {
                             status: "1",
                             overRate: null,
                             underRate: "",
-                            margin: null,
+                            margin: "",
                             line: "",
                             isAllow: true,
                             data: "", // not getting from market
@@ -277,19 +267,17 @@ const CommentaryMarketTemplate = () => {
             let updatedRecord = { ...record };
             if (selectedField === 'line') {
                 const roundedLine = Math.round(parseFloat(fieldValue) * 10) / 10;
-                const thresholdValue = roundedLine + 0.5;
+                const thresholdValue = Math.round(roundedLine) + 0.5;
                 const marginAdjustment = record.margin ? ((record.margin / 100) + 1) : 1;
                 updatedRecord = {
                     ...updatedRecord,
                     [selectedField]: fieldValue,
                     yesRate: Math.round(roundedLine) + 1 || 0,
                     noRate: Math.round(roundedLine) || 0,
-                    yesPoint: record.yesPoint !== undefined && record.yesPoint != null ? record.yesPoint : 100,
-                    noPoint: record.noPoint !== undefined && record.noPoint != null ? record.noPoint : 100,
-                    ...(record.margin !== "" & record.margin !== null ? {
-                        overRate: (1 / (marginAdjustment / (1 + Math.exp(-(record.line - thresholdValue))))).toFixed(2) || 0,
-                        underRate: (1 / (marginAdjustment / (1 + Math.exp(+(record.line - thresholdValue))))).toFixed(2) || 0,
-                    } : {}),
+                    yesPoint: record.yesPoint ? record.yesPoint : 100,
+                    noPoint: record.noPoint ? record.noPoint : 100,
+                    overRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(fieldValue - thresholdValue))))).toFixed(2)) || 0),
+                    underRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(fieldValue - thresholdValue))))).toFixed(2)) || 0),
                 };
             } else {
                 updatedRecord = {
@@ -434,13 +422,17 @@ const CommentaryMarketTemplate = () => {
             title: "Margin",
             dataIndex: "margin",
             render: (text, record) => (
+            <>
                 <Input
                     className="form-control small-text-fields"
                     type="text"
                     value={text}
                     onChange={(e) => handleValueChange(record, "margin", e.target.value)}
                 />
-
+                <span className="text-danger">
+                {record?.error?.margin}
+               </span>
+            </>
             ),
             key: "margin",
             sort: true,
