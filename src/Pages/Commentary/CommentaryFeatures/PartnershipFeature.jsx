@@ -26,7 +26,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                             index={index}
                             fields={TEAM_FEATURE_FIELDS}
                             value={updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo}
-                            onChange={(key, value) => onValueChange(partnershipInfo, key, value)}
+                            onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
                         />
                     </>
                 })}

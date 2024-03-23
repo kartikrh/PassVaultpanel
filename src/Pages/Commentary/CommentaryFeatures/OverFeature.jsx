@@ -26,7 +26,7 @@ export const OverFeature = ({ overList, handleValueChange, updatedData }) => {
                             index={index}
                             fields={TEAM_FEATURE_FIELDS}
                             value={updatedData[overInfo.overId] || overInfo}
-                            onChange={(key, value) => onValueChange(overInfo, key, value)}
+                            onChange={(field, value) => onValueChange(overInfo, field.name, value)}
                         />
                     </>
                 })}

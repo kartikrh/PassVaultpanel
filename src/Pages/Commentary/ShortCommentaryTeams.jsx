@@ -5,6 +5,7 @@ import { PLAYER, TEAM } from "./CommentartConst";
 import { SHORT_COMMENTARY_BATTING_PLAYER, SHORT_COMMENTARY_BOWLING_PLAYER, SHORT_COMMENTARY_TEAM } from "../../constants/FieldConst/CommentaryConst";
 import "./CommentaryCss.css"
 import _ from "lodash";
+import { FieldRenderer } from "../../components/Common/Reusables/FieldRenderer";
 
 export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
     const [teamData, setTeamData] = useState({});
@@ -23,64 +24,40 @@ export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
             setPlayerData({ ...playerData, [uniqueId]: updatedPlayerData })
         }
     }
-    const renderTextFields = (fields = [], uniqueId, dataObject) => {
+    const renderTextFields = (fields = [], uniqueId, dataObject, index) => {
         return <Row>
-            {fields.map((field, index) => {
-                return <>
-                    <Col
-                        key={index}
-                        xs={field.labelColspan?.xs || 3}
-                        md={field.labelColspan?.md || 2}
-                        lg={field.labelColspan?.lg || 2}
-                        className="d-flex p-0"
-                    >
-                        <div className="lablediv small-label-div ">
-                            <label
-                                htmlFor={field.name}
-                                className="dynamic-label-right form-label-class small-labels"
-                            >   {field.label}</label>
-                        </div>
-                    </Col>
-                    <Col
-                        className={`mb-4`}
-                        key={index}
-                        xs={field.fieldColspan?.xs || 9}
-                        md={field.fieldColspan?.md || 4}
-                        lg={field.fieldColspan?.lg || 4}
-                    >
-                        {field.type === COUNTER && <Input
-                            className="form-control small-text-fields"
-                            type="number"
-                            step={1}
-                            min={0}
-                            id={field.name}
-                            placeholder={field?.placeholder}
-                            name={field.name}
-                            value={teamData[uniqueId]?.[field.name] || field.defaultValue}
-                            onChange={(e) => handleChange(field, e.target.value, uniqueId, dataObject)}
-                        />}
-                    </Col>
-                </>
-            })}
+            <FieldRenderer
+                key={index}
+                index={index}
+                fields={fields}
+                value={teamData[uniqueId] || {}}
+                onChange={(field, value) => handleChange(field, value, uniqueId, dataObject)}
+            />
         </Row>
 
     }
     const renderBatters = (playerList = [], teamUniqueId) => {
-        return playerList.map(batter => {
+        return playerList.map((batter, index) => {
             const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
             return <>
-                <div className="player-header">{batter.playerName}</div>
-                {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId, batter)}
+                <Row className={`pt-4 ${index % 2 === 0 ? "table-Row-dark" : "table-Row-light"}`}>
+                    <Col xs={12} md={4} lg={3}>
+                        <div>{batter.playerName}</div>
+                    </Col>
+                    <Col xs={12} md={8} lg={9}>
+                        {renderTextFields(SHORT_COMMENTARY_BATTING_PLAYER, uniqueId, batter, index)}
+                    </Col>
+                </Row>
             </>
         })
 
     }
     const renderBowler = (playerList = [], teamUniqueId) => {
-        return playerList.map(bowler => {
+        return playerList.map((bowler, index) => {
             const uniqueId = teamUniqueId + STRING_SEPERATOR + bowler.commentaryPlayerId
             return <>
                 <div className="player-header">{bowler.playerName}</div>
-                {renderTextFields(SHORT_COMMENTARY_BOWLING_PLAYER, uniqueId, bowler)}
+                {renderTextFields(SHORT_COMMENTARY_BOWLING_PLAYER, uniqueId, bowler, index)}
             </>
         })
 
@@ -92,7 +69,7 @@ export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
             <AccordionHeader targetId={uniqueId}>
                 {`Innings : ${teamDetails.currentInnings} || Team : ${teamDetails.teamName} `}</AccordionHeader>
             <AccordionBody accordionId={uniqueId}>
-                {renderTextFields(SHORT_COMMENTARY_TEAM, uniqueId, teamDetails)}
+                {renderTextFields(SHORT_COMMENTARY_TEAM, uniqueId, teamDetails, uniqueId)}
                 <UncontrolledAccordion defaultOpen="0">
                     <AccordionItem>
                         <AccordionHeader targetId='Batter'>Batter</AccordionHeader>

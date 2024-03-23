@@ -2,7 +2,6 @@ import { Col, Input, Row } from "reactstrap"
 import { COUNTER, TEXT } from "../Const"
 
 export const FieldRenderer = ({ fields, value, onChange, index }) => {
-
     return fields.map((field, index) => {
         return <>
             <Col
@@ -10,7 +9,7 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                 xs={field.labelColspan?.xs || 3}
                 md={field.labelColspan?.md || 2}
                 lg={field.labelColspan?.lg || 2}
-                className="d-flex p-0"
+                className={`d-flex p-0 ${field.label ? "" : "d-none"}`}
             >
                 <div className="lablediv small-label-div ">
                     <label
@@ -33,8 +32,8 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     type="text"
                     id={field.name}
                     name={field.name}
-                    value={value[field.name]}
-                    onChange={(e) => onChange(field.name, e.target.value)}
+                    value={value[field.name] || field.defaultValue}
+                    onChange={(e) => onChange(field, e.target.value)}
                 />}
                 {field.type === COUNTER && <Input
                     className="form-control small-text-fields"
@@ -44,8 +43,8 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     id={field.name}
                     placeholder={field?.placeholder}
                     name={field.name}
-                    value={value[field.name]}
-                    onChange={(e) => onChange(field.name, +e.target.value)}
+                    value={value[field.name] || field.defaultValue}
+                    onChange={(e) => onChange(field, +e.target.value)}
                 />}
             </Col>
         </>
