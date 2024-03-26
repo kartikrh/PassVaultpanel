@@ -30,11 +30,9 @@ import {
   updateSavedState,
 } from "../../Features/Tabs/marketTemplateSlice";
 import axiosInstance from "../../Features/axios";
-import { convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import moment from "moment";
 
 const fetchResult = (response) => {
   return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -128,7 +126,7 @@ function AddMarketTemaplate() {
           })
         );
       });
-      await axiosInstance
+    await axiosInstance
       .post("admin/marketTemplate/markeTypeList", {})
       .then((response) => {
         setMasterData((preData) => ({
@@ -219,11 +217,11 @@ function AddMarketTemaplate() {
       isPreMatchOnly: false,
     };
     const dataToSave = finalizeRef.current.finalizeData();
-    const finalData = {
-      ...impKeys,
-      ...dataToSave,
-    };
-    if (finalData) {
+    if (dataToSave) {
+      const finalData = {
+        ...impKeys,
+        ...dataToSave,
+      };
       setCurrentSaveAction(saveAction);
       dispatch(addMarketTemplateToDb(finalData));
     }
@@ -296,27 +294,27 @@ function AddMarketTemaplate() {
                           pageName,
                           PERMISSION_EDIT
                         ) && (
-                          <DropdownItem
-                            onClick={() => {
-                              handleSaveClick(SAVE);
-                            }}
-                          >
-                            Save
-                          </DropdownItem>
-                        )}
+                            <DropdownItem
+                              onClick={() => {
+                                handleSaveClick(SAVE);
+                              }}
+                            >
+                              Save
+                            </DropdownItem>
+                          )}
                         {checkPermission(
                           permissionObj,
                           pageName,
                           PERMISSION_ADD
                         ) && (
-                          <DropdownItem
-                            onClick={() => {
-                              handleSaveClick(SAVE_AND_NEW);
-                            }}
-                          >
-                            Save & New
-                          </DropdownItem>
-                        )}
+                            <DropdownItem
+                              onClick={() => {
+                                handleSaveClick(SAVE_AND_NEW);
+                              }}
+                            >
+                              Save & New
+                            </DropdownItem>
+                          )}
                       </DropdownMenu>
                     </ButtonDropdown>
                   </Col>
