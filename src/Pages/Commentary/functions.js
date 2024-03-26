@@ -225,3 +225,19 @@ export const fetchNextPlayerOrder = (playerType, playerList) => {
   })
   return highestNumber + 1
 }
+
+export const generateOverUnder = (dataObj) => {
+  const roundedLine = Math.floor(parseFloat(dataObj?.line));
+  const thresholdValue = Math.floor(roundedLine) + 0.5;
+  const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+  const dataToSend = {
+    ...dataObj,
+    yesRate: roundedLine + 1 || 0,
+    noRate: roundedLine || 0,
+    yesPoint: dataObj?.yesPoint || 100,
+    noPoint: dataObj?.noPoint || 100,
+    overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
+    underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
+  }
+  return dataToSend
+}
