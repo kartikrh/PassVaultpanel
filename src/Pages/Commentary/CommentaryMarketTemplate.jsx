@@ -422,19 +422,39 @@ const CommentaryMarketTemplate = () => {
             title: "Margin",
             dataIndex: "margin",
             render: (text, record) => (
-            <>
-                <Input
-                    className="form-control small-text-fields"
-                    type="text"
-                    value={text}
-                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
-                />
-                <span className="text-danger">
-                {record?.error?.margin}
-               </span>
-            </>
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.margin}
+                    </span>
+                </>
             ),
             key: "margin",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Under",
+            dataIndex: "underRate",
+            render: (text, record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.underRate}
+                    </span>
+                </>
+            ),
+            key: "underRate",
             sort: true,
             style: { width: "10%" },
         },
@@ -460,22 +480,22 @@ const CommentaryMarketTemplate = () => {
             style: { width: "10%" },
         },
         {
-            title: "Under",
-            dataIndex: "underRate",
-            render: (text, record) => (
+            title: "No Rate",
+            dataIndex: "noRate",
+            render: (text = "", record) => (
                 <>
                     <Input
                         className="form-control small-text-fields"
                         type="text"
                         value={text}
-                        onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
+                        onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
                     />
                     <span className="text-danger">
-                        {record?.error?.underRate}
+                        {record?.error?.noRate}
                     </span>
                 </>
             ),
-            key: "underRate",
+            key: "noRate",
             sort: true,
             style: { width: "10%" },
         },
@@ -500,46 +520,6 @@ const CommentaryMarketTemplate = () => {
             style: { width: "10%" },
         },
         {
-            title: "Yes Point",
-            dataIndex: "yesPoint",
-            render: (text = "100", record) => (
-                <>
-                    <Input
-                        className="form-control small-text-fields"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.yesPoint}
-                    </span>
-                </>
-            ),
-            key: "yesPoint",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
-            title: "No Rate",
-            dataIndex: "noRate",
-            render: (text = "", record) => (
-                <>
-                    <Input
-                        className="form-control small-text-fields"
-                        type="text"
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.noRate}
-                    </span>
-                </>
-            ),
-            key: "noRate",
-            sort: true,
-            style: { width: "10%" },
-        },
-        {
             title: "No Point",
             dataIndex: "noPoint",
             render: (text = "100", record) => (
@@ -556,6 +536,26 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "noPoint",
+            sort: true,
+            style: { width: "10%" },
+        },
+        {
+            title: "Yes Point",
+            dataIndex: "yesPoint",
+            render: (text = "100", record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.yesPoint}
+                    </span>
+                </>
+            ),
+            key: "yesPoint",
             sort: true,
             style: { width: "10%" },
         },
