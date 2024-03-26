@@ -214,7 +214,7 @@ function AddEventMarket() {
       }
     }
     if (
-      newFormData?.marketTemplateId &&
+      id === "0" && newFormData?.marketTemplateId &&
       newFormData?.marketTemplateId !== "0" &&
       newFormData?.marketTemplateId !== marketTemplate?.marketTemplateId
     ) {
