@@ -6,6 +6,7 @@ import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
 import SuspendTabModel from "../../components/Model/SuspendModal";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -15,7 +16,6 @@ import {
   ERROR,
   PERMISSION_ADD,
   PERMISSION_DELETE,
-  PERMISSION_SUSPEND,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
@@ -51,10 +51,10 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [loadModelVisable, setLoadModelVisable] = useState(false);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
-  const [details, setDetails] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -91,7 +91,7 @@ const Index = () => {
       .then((response) => {
         setEventTypes(response.result);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
@@ -101,7 +101,7 @@ const Index = () => {
       .then((response) => {
         setCompetitions(response.result);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -118,6 +118,35 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/commentary/delete`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setDeleteModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleLoadCommentary = async (e) => {
+    setIsLoading(true);
+    console.log(checekedList);
+    await axiosInstance
+      .post(`/admin/commentary/loadMultiCommentary`, {
         commentaryId: checekedList,
       })
       .then((response) => {
@@ -550,9 +579,8 @@ const Index = () => {
           }}
         >
           <i
-            className={`bx ${
-              record?.isPredictMarket ? "bx-check" : "bx-block"
-            }`}
+            className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
+              }`}
           ></i>
         </Button>
       ),
@@ -606,6 +634,7 @@ const Index = () => {
     eventTypeSelect: true,
     switch: false,
     clone: true,
+    loadCommentary: true,
     suspend: true,
     commentaryStatus: true,
     competitionsSelect: true,
@@ -650,6 +679,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            loadModelFunction={setLoadModelVisable}
             suspendModelFunction={setSuspendModelVisable}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
@@ -687,6 +717,11 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
+          />
+          <LoadCommentaryModel
+            loadModelVisable={loadModelVisable}
+            setLoadModelVisable={setLoadModelVisable}
+            handleLoad={handleLoadCommentary}
           />
           <CommentaryClone
             cloneModelVisible={cloneModelVisible}
