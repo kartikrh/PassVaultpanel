@@ -207,7 +207,11 @@ const Index = () => {
     {
       title: "Event Date",
       dataIndex: "eventDate",
-      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
       key: "eventDate",
       sort: true,
       style: { width: "10%" },
@@ -246,6 +250,20 @@ const Index = () => {
       key: "marketName",
       sort: true,
       style: { width: "10%" },
+    },
+    {
+      title: "Team",
+      dataIndex: "teamName",
+      key: "teamName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Inning",
+      dataIndex: "inningsId",
+      key: "inningsId",
+      style: { width: "10%" },
+      sort: true,
     },
     {
       title: "Status",
