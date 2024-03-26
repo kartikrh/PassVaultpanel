@@ -217,10 +217,10 @@ const Index = () => {
     navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
   };
   const handleMarketEventActionClick = (id) => {
-    navigate("/marketEventAction", { state: { commentaryId: id } });
-    // const url = new URL(window.location.origin + "/marketEventAction");
-    // url.searchParams.append("commentaryId", id);
-    // window.open(url.href, '_blank');
+    localStorage.setItem('openMarketCommentaryId', "" + id);
+    const url = new URL(window.location.origin + "/marketEventAction");
+    url.searchParams.append("commentaryId", id);
+    window.open(url.href, '_blank');
   };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });

@@ -25,7 +25,7 @@ export const MarketEventAction = () => {
     let navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
-    const commentaryId = location.state?.commentaryId || "0";
+    const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
 
     const formatDataBeforeSend = (dataToChange = []) => {
