@@ -235,7 +235,7 @@ function AddMarketTemaplate() {
   }, []);
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="page-content overflow-scroll">
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
