@@ -130,6 +130,30 @@ export const EventMarketFields = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "createType",
+    label: "Create Type",
+    options: [
+      { label: "Select Create Type", value: "0" },
+      { label: "Ball", value: "1" },
+      { label: "Over", value: "2" },
+      { label: "Wicket", value: "3" },
+    ],
+    isRequired: true,
+    type: SELECT,
+    defaultValue: false,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "create",
+    label: "Create",
+    type: TEXT,
+    isRequired: true,
+    requiredErrorMessage: "Please enter value",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
     name: "autoOpenType",
     label: "Auto Open Type",
     options: [
