@@ -36,9 +36,14 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import moment from "moment";
 
+const fetchResult = (response) => {
+  return Array.isArray(response.result) ? response?.result : [response?.result]
+}
+
 function AddMarketTemaplate() {
   const pageName = TAB_MARKET_TEMPLATE;
   const finalizeRef = useRef(null);
+  const [savedFormState, setSavedFormState] = useState({});
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -123,9 +128,50 @@ function AddMarketTemaplate() {
           })
         );
       });
+      await axiosInstance
+      .post("admin/marketTemplate/markeTypeList", {})
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          marketType: response.result?.map((item) => {
+            return { label: item.marketTypeName, value: item.marketTypeId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleFormADataChange = async (newFormData) => {
+    setSavedFormState(newFormData);
+    if (newFormData["markettype"] !== savedFormState["marketType"]) {
+      setMasterData((preData) => ({
+        ...preData,
+        "category": [],
+      }));
+      if (newFormData["marketType"] !== "0") {
+        axiosInstance.post('/admin/marketTemplate/getCategoryByMarketType', { marketTypeId: newFormData["marketType"] })
+          .then((response) => {
+            const resultData = fetchResult(response)
+            const formattedData = resultData?.map(item => {
+              return { label: item?.categoryName, value: item?.marketTypeCategoryId }
+            })
+            setMasterData((preData) => ({
+              ...preData,
+              "category": formattedData,
+            }));
+          }).catch((error) => {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+          });
+      }
+    }
     if (newFormData?.isOver === true) {
       setIsOverMarket(true);
       setDisabledFields({
