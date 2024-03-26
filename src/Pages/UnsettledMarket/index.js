@@ -12,7 +12,7 @@ import {
   PERMISSION_VIEW,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import CancelModal from "./CancelModal";
 import ResultModal from "./ResultModal";
 import "./modal.css";
@@ -184,6 +184,11 @@ const Index = () => {
     {
       title: "Event Date",
       dataIndex: "eventDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
       key: "eventDate",
       style: { width: "10%" },
       sort: true,
@@ -223,6 +228,20 @@ const Index = () => {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Team",
+      dataIndex: "teamName",
+      key: "teamName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Inning",
+      dataIndex: "inningsId",
+      key: "inningsId",
       style: { width: "10%" },
       sort: true,
     },
