@@ -12,6 +12,7 @@ import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
+import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 
 const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
   const [result, setResult] = useState("");
@@ -25,11 +26,14 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
         result: result,
       })
       .then((response) => {
-        updateToastData({
-          data: response?.message,
-          title: response?.title,
-          type: SUCCESS,
-        });
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         dispatch(
@@ -41,7 +45,6 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
         );
       });
     setResult("");
-    fetchData();
     toggle();
   };
 
@@ -63,7 +66,11 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
             </thead>
             <tbody>
               <tr>
-                <td>{data.eventDate}</td>
+                <td>
+                  <span style={{ cursor: "pointer" }}>
+                    {convertDateUTCToLocal(data.eventDate, "index")}
+                  </span>
+                </td>
                 <td>{data.eventMarketId}</td>
                 <td>{data.eventTypeName}</td>
                 <td>{data.competitionName}</td>
@@ -87,7 +94,7 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={handleYesClick}>
-          Set Result
+          Ok
         </Button>
       </ModalFooter>
     </Modal>

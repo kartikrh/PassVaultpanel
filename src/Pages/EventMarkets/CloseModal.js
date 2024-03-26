@@ -1,8 +1,5 @@
-import { useState } from "react";
 import {
   Button,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -14,16 +11,14 @@ import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 
-const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
-  const [password, setPassword] = useState("");
+const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
   const dispatch = useDispatch();
 
   const handleYesClick = async () => {
     await axiosInstance
-      .post("/admin/eventMarket/setMarketCancel", {
+      .post(`/admin/eventMarket/setMarketClose`, {
         eventMarketId: data.eventMarketId,
         commentaryId: data.commentaryId,
-        password: password,
       })
       .then((response) => {
         fetchData();
@@ -44,13 +39,12 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
           })
         );
       });
-    setPassword("");
     toggle();
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-      <ModalHeader toggle={toggle}>Cancel Market</ModalHeader>
+      <ModalHeader toggle={toggle}>Close Market</ModalHeader>
       <ModalBody>
         {data && (
           <table className="table">
@@ -80,17 +74,6 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
             </tbody>
           </table>
         )}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Label for="pass">Enter Password</Label>
-          <Input
-            type="password"
-            id="pass"
-            placeholder="Enter your password"
-            value={password}
-            style={{ width: "400px", marginLeft: "8px" }}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={handleYesClick}>
@@ -101,4 +84,4 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
   );
 };
 
-export default CancelModal;
+export default CloseModal;
