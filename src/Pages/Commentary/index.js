@@ -218,6 +218,9 @@ const Index = () => {
   };
   const handleMarketEventActionClick = (id) => {
     navigate("/marketEventAction", { state: { commentaryId: id } });
+    // const url = new URL(window.location.origin + "/marketEventAction");
+    // url.searchParams.append("commentaryId", id);
+    // window.open(url.href, '_blank');
   };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
@@ -491,79 +494,100 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Short Commentary",
-      key: "shortCommentary",
-      printType: "ignore",
-      render: (text, record) => (
-        <Button
-          color={"primary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleShortCommentaryClick(record.commentaryId);
-          }}
-        >
-          <i class="bx bx-minus" />
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Commentary Details",
+      title: "Scoring",
       key: "commentaryDetails",
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color={"primary"}
+          color={"warning"}
           size="sm"
           className="btn"
           onClick={() => {
             handleDetailsClick(record.commentaryId);
           }}
         >
-          <i className="bx bx-plus"></i>
+          <i class='bx bxs-right-arrow' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Update Commentary",
+      title: "S-Score",
+      key: "shortCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"secondary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleShortCommentaryClick(record.commentaryId);
+          }}
+        >
+          <i class='bx bxs-chevrons-right'></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "S-Update",
       key: "updateCommentary",
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color={"primary"}
+          color={"success"}
           size="sm"
           className="btn"
           onClick={() => {
             handleUpdateCommentaryClick(record.commentaryId);
           }}
         >
-          <i class='bx bx-minus' />
+          <i class='bx bx-arrow-to-right' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Update Players",
+      title: "P-Update",
       key: "updatePlayers",
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color={"primary"}
+          color={"info"}
           size="sm"
           className="btn"
           onClick={() => {
             handleUpdatePlayersClick(record);
           }}
         >
-          <i className="bx bx-plus"></i>
+          <i class='bx bxs-up-arrow-square' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "IsPredictMarket",
+      title: "P-Market",
+      key: "marketTemplate",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          disabled={
+            !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
+          }
+          className="btn"
+          onClick={() => {
+            handleCommentaryMarketTemplateClick(record.commentaryId);
+          }}
+        >
+          <i class='bx bxs-store' ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Is P-Market",
       key: "isPredictMarket",
       render: (text, record) => (
         <Button
@@ -586,29 +610,9 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+
     {
-      title: "P-Market",
-      key: "marketTemplate",
-      printType: "ignore",
-      render: (text, record) => (
-        <Button
-          color={"primary"}
-          size="sm"
-          disabled={
-            !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
-          }
-          className="btn"
-          onClick={() => {
-            handleCommentaryMarketTemplateClick(record.commentaryId);
-          }}
-        >
-          <i className="bx bx-plus"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "IsClientShow",
+      title: "Is C-Show",
       key: "isClientShow",
       render: (text, record) => (
         <Button

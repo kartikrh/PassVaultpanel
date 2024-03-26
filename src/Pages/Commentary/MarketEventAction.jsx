@@ -360,9 +360,9 @@ export const MarketEventAction = () => {
     ];
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-            navigate("/dashboard")
-        }
+        // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        //     navigate("/dashboard")
+        // }
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
