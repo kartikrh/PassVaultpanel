@@ -133,7 +133,7 @@ function AddMarketTemaplate() {
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
-          marketType: response.result?.map((item) => {
+          marketTypeId: response.result?.map((item) => {
             return { label: item.marketTypeName, value: item.marketTypeId };
           }),
         }));
@@ -151,13 +151,13 @@ function AddMarketTemaplate() {
 
   const handleFormADataChange = async (newFormData) => {
     setSavedFormState(newFormData);
-    if (newFormData["markettype"] !== savedFormState["marketType"]) {
+    if (newFormData["marketTypeId"] !== savedFormState["marketTypeId"]) {
       setMasterData((preData) => ({
         ...preData,
-        "category": [],
+        "marketTypeCategoryId": [],
       }));
-      if (newFormData["marketType"] !== "0") {
-        axiosInstance.post('/admin/marketTemplate/getCategoryByMarketType', { marketTypeId: newFormData["marketType"] })
+      if (newFormData["marketTypeId"] !== "0") {
+        axiosInstance.post('/admin/marketTemplate/getCategoryByMarketType', { marketTypeId: newFormData["marketTypeId"] })
           .then((response) => {
             const resultData = fetchResult(response)
             const formattedData = resultData?.map(item => {
@@ -165,7 +165,7 @@ function AddMarketTemaplate() {
             })
             setMasterData((preData) => ({
               ...preData,
-              "category": formattedData,
+              "marketTypeCategoryId": formattedData,
             }));
           }).catch((error) => {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));

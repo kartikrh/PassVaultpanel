@@ -210,7 +210,7 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "marketType",
+        name: "marketTypeId",
         label: "Market Type",
         type: SELECT,
         options: [{ label: "Select a Market Type", value: "0" }],
@@ -232,7 +232,7 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "category",
+        name: "marketTypeCategoryId",
         label:"Category",
         type: SELECT,
         options: [{ label: "Select a Category", value: "0" }],
