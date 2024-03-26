@@ -43,7 +43,9 @@ function AddEventMarket() {
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [disabledFields, setDisabledFields] = useState({});
   const [commentryType, setCommentryType] = useState(undefined);
+  const [marketType, setMarketType] = useState(undefined);
   const [commentryList, setCommentryList] = useState([]);
+  const [marketTypeList, setMarketTypeList] = useState([]);
   const [marketTemplate, setMarketTemplate] = useState([]);
   const [marketTemplateList, setMarketTemplateList] = useState([]);
   const { isSaved, isLoading, error } = useSelector(
@@ -129,6 +131,27 @@ function AddEventMarket() {
           })
         );
       });
+
+      axiosInstance
+      .post("/admin/marketTemplate/markeTypeList", {})
+      .then((response) => {
+        setMarketTypeList(response?.result);
+        setMasterData((prevData) => ({
+          ...prevData,
+          marketTypeId: response?.result?.map((item) => {
+            return { label: item.marketTypeName, value: item.marketTypeId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleSaveClick = async (saveAction) => {
@@ -153,11 +176,11 @@ function AddEventMarket() {
       setCommentryType(newCommentryType);
       setMasterData((preData) => ({
         ...preData,
-        "inningsId": Array(newCommentryType.totalInnings).fill(null).map((v, i)=>({
+        "inningsId": Array(newCommentryType?.totalInnings).fill(null).map((v, i)=>({
           label: `Inning ${i+1}`,
           value: i+1,
         })),
-        "teamId":newCommentryType.teams.map((option, i)=>({
+        "teamId":newCommentryType?.teams.map((option, i)=>({
           label: option.teamName,
           value: option.teamId,
         })),
@@ -191,7 +214,7 @@ function AddEventMarket() {
       }
     }
     if (
-      newFormData?.marketTemplateId &&
+      id === "0" && newFormData?.marketTemplateId &&
       newFormData?.marketTemplateId !== "0" &&
       newFormData?.marketTemplateId !== marketTemplate?.marketTemplateId
     ) {
@@ -202,6 +225,42 @@ function AddEventMarket() {
       finalizeRef.current.updateFormFromParent({
         ...selectedMarketList,
       });
+    }
+    if (
+      newFormData?.marketTypeId &&
+      newFormData?.marketTypeId !== "0" &&
+      newFormData?.marketTypeId !== marketType?.marketTypeId
+    ) {
+      const newMarketType = marketTypeList.find(
+        (item) => item.marketTypeId === newFormData.marketTypeId
+      );
+      setMarketType(newMarketType);
+      if (newMarketType?.marketTypeId) {
+        axiosInstance
+          .post("/admin/marketTemplate/getCategoryByMarketType", {
+            marketTypeId: newMarketType?.marketTypeId,
+          })
+          .then((response) => {
+            setMasterData((prevData) => ({
+              ...prevData,
+              marketTypeCategoryId: response?.result?.map((item) => {
+                return {
+                  label: item.categoryName,
+                  value: item.marketTypeCategoryId,
+                };
+              }),
+            }));
+          })
+          .catch((error) => {
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+      }
     }
   };
   const handleBackClick = () => {
