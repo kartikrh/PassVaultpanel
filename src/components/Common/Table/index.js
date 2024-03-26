@@ -45,6 +45,7 @@ const Index = forwardRef(
       tableElement,
       cloneModelFunction,
       deleteModelFunction,
+      loadModelFunction,
       suspendModelFunction,
       singleCheck,
       setImportExportModelVisable,
@@ -589,7 +590,28 @@ const Index = forwardRef(
                             Clone
                           </Button>
                         ) : null}
-                         {isSuspendPermission && (
+                        {tableElement?.loadCommentary ? (
+                          <Button
+                            color="success"
+                            className="btn"
+                            onClick={() => {
+                              singleCheck.length > 0
+                                ? loadModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                            id="create-btn"
+                          >
+                            <i className="ri-add-line align-bottom me-1"></i>{" "}
+                            Load
+                          </Button>
+                        ) : null}
+                        {isSuspendPermission && (
                           <Button
                             color="danger"
                             onClick={() => {
@@ -604,7 +626,7 @@ const Index = forwardRef(
                                 );
                             }}
                           >
-                           Suspend
+                            Suspend
                           </Button>
                         )}
                         {isDeletePermission && (
@@ -962,7 +984,7 @@ const Index = forwardRef(
                     updateClickedId={onBreadCrumbsClick}
                   />
                 )}
-                {isPagination?(<Row className="g-2 d-flex align-items-center">
+                {isPagination ? (<Row className="g-2 d-flex align-items-center">
                   <Col className="col-sm-auto">
                     <span>
                       Showing {currentPage * pageSize + 1} -{" "}
@@ -1012,7 +1034,7 @@ const Index = forwardRef(
                       </div>
                     </div>
                   </Col>
-                </Row>):null}
+                </Row>) : null}
 
                 <div
                   className="table-responsive table-card mt-3 mb-1"
@@ -1046,10 +1068,10 @@ const Index = forwardRef(
                                             }}
                                             style={{
                                               color: `${sortOrder.key === column.key &&
-                                                  sortOrder.sortOrder ===
-                                                  "ascending"
-                                                  ? "gray"
-                                                  : "lightGray"
+                                                sortOrder.sortOrder ===
+                                                "ascending"
+                                                ? "gray"
+                                                : "lightGray"
                                                 }`,
                                               fontSize: "12px",
                                               marginTop: "2px",
@@ -1066,10 +1088,10 @@ const Index = forwardRef(
                                             }}
                                             style={{
                                               color: `${sortOrder.key === column.key &&
-                                                  sortOrder.sortOrder ===
-                                                  "descending"
-                                                  ? "gray"
-                                                  : "lightGray"
+                                                sortOrder.sortOrder ===
+                                                "descending"
+                                                ? "gray"
+                                                : "lightGray"
                                                 }`,
                                               marginTop: "-5px",
                                               fontSize: "12px",
@@ -1156,9 +1178,9 @@ const Index = forwardRef(
                                       }}
                                       style={{
                                         color: `${sortOrder.key === column.key &&
-                                            sortOrder.sortOrder === "ascending"
-                                            ? "gray"
-                                            : "lightGray"
+                                          sortOrder.sortOrder === "ascending"
+                                          ? "gray"
+                                          : "lightGray"
                                           }`,
                                         fontSize: "12px",
                                         marginTop: "2px",
@@ -1180,9 +1202,9 @@ const Index = forwardRef(
                                       }}
                                       style={{
                                         color: `${sortOrder.key === column.key &&
-                                            sortOrder.sortOrder === "descending"
-                                            ? "gray"
-                                            : "lightGray"
+                                          sortOrder.sortOrder === "descending"
+                                          ? "gray"
+                                          : "lightGray"
                                           }`,
                                         marginTop: "-5px",
                                         fontSize: "12px",
