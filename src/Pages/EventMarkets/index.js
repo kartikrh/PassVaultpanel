@@ -18,8 +18,9 @@ import {
   ERROR,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import CloseModal from "./CloseModal";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -37,6 +38,8 @@ const Index = () => {
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [closeModalData, setCloseModalData] = useState(null);
+  const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -204,32 +207,8 @@ const Index = () => {
     navigate("/addEventMarket", { state: { userId: id } });
   };
   const handleClose = async (record) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/setMarketClose`, {
-        eventMarketId: record.eventMarketId,
-        commentaryId: record.commentaryId,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
+    setCloseModalData(record);
+    setIsCloseModalOpen(true);
   };
   const getStatusText = (status) => {
     switch (status) {
@@ -306,6 +285,11 @@ const Index = () => {
     {
       title: "Event Date",
       dataIndex: "eventDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
       key: "eventDate",
       style: { width: "10%" },
       sort: true,
@@ -346,6 +330,20 @@ const Index = () => {
       dataIndex: "marketName",
       key: "marketName",
       style: { width: "20%" },
+      sort: true,
+    },
+    {
+      title: "Team",
+      dataIndex: "teamName",
+      key: "teamName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Inning",
+      dataIndex: "inningsId",
+      key: "inningsId",
+      style: { width: "10%" },
       sort: true,
     },
     {
@@ -486,6 +484,12 @@ const Index = () => {
             singleCheck={checekedList}
           />
         </Container>
+        <CloseModal
+          isOpen={isCloseModalOpen}
+          toggle={() => setIsCloseModalOpen(!isCloseModalOpen)}
+          data={closeModalData}
+          fetchData={fetchData}
+        />
       </div>
     </React.Fragment>
   );
