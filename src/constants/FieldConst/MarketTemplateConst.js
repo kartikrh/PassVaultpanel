@@ -210,6 +210,39 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        name: "marketTypeId",
+        label: "Market Type",
+        type: SELECT,
+        options: [{ label: "Select a Market Type", value: "0" }],
+        defaultValue: "0",
+        isRequired: true,
+        requiredErrorMessage: "Please enter market type.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "margin",
+        label:"Margin",
+        type: TEXT,
+        isRequired: true,
+        requiredErrorMessage: "Please enter margin.",
+        regex: /^\d+\.?\d*$/,
+        regexErrorMessage: "Please enter only decimal margin.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "marketTypeCategoryId",
+        label:"Category",
+        type: SELECT,
+        options: [{ label: "Select a Category", value: "0" }],
+        defaultValue: "0",
+        isRequired: true,
+        requiredErrorMessage: "Please enter category.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
         name: "isActive",
         label: "IsActive",
         type: SWITCH,
