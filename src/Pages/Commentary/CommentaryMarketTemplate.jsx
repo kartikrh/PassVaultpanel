@@ -10,6 +10,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import Table from "../../components/Common/Table";
 import { MARKET_STATUS } from "./CommentartConst";
+import { generateOverUnder } from "./functions";
 
 
 const CommentaryMarketTemplate = () => {
@@ -35,37 +36,13 @@ const CommentaryMarketTemplate = () => {
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.index === record.index)
         if (indexOfData !== -1) {
-            if (key === 'line') {
-                const roundedLine = Math.round(parseFloat(value) * 10) / 10;
-                const thresholdValue = Math.round(roundedLine) + 0.5;
-                const marginAdjustment = record.margin ? ((record.margin / 100) + 1) : 1;
+            if (key === 'line' || key === 'margin') {
                 const datatoSave = [
                     ...data.slice(0, indexOfData),
-                    {
+                    generateOverUnder({
                         ...data[indexOfData],
-                        [key]: value,
-                        yesRate: Math.round(roundedLine) + 1 || 0,
-                        noRate: Math.round(roundedLine) || 0,
-                        yesPoint: record.yesPoint ? record.yesPoint : 100,
-                        noPoint: record.noPoint ? record.noPoint : 100,
-                        overRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(value - thresholdValue))))).toFixed(2)) || 0),
-                        underRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(value - thresholdValue))))).toFixed(2)) || 0),
-                    },
-                    ...data.slice(indexOfData + 1),
-                ];
-                setData(datatoSave);
-            } else if (key === 'margin') {
-                const roundedLine = Math.round(parseFloat(record?.line) * 10) / 10;
-                const thresholdValue = Math.round(roundedLine) + 0.5;
-                const marginAdjustment = value ? ((parseFloat(value) / 100) + 1) : 1;
-                const datatoSave = [
-                    ...data.slice(0, indexOfData),
-                    {
-                        ...data[indexOfData],
-                        [key]: value,
-                        overRate: record.line && ((1 / (marginAdjustment / (1 + Math.exp(-(record?.line - thresholdValue))))).toFixed(2) || 0),
-                        underRate: record.line && ((1 / (marginAdjustment / (1 + Math.exp(+(record?.line - thresholdValue))))).toFixed(2) || 0),
-                    },
+                        [key]: value
+                    }),
                     ...data.slice(indexOfData + 1),
                 ];
                 setData(datatoSave);
