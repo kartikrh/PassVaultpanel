@@ -44,7 +44,7 @@ export const MarketEventAction = () => {
                 "noPoint": +(record.noPoint || 100),
             }
             workingRecord = _.omit(workingRecord,
-                ["marketRunners", "line", "margin", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
+                ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
             workingRecord["marketRunners"] = [recordMarketRunner]
             dataToSend.push(workingRecord)
         })
