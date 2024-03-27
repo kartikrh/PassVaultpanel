@@ -294,6 +294,36 @@ const Index = () => {
         );
       });
   };
+
+  const handleActiveInactive = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/activeInactiveCommentary`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -610,7 +640,6 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-
     {
       title: "Is C-Show",
       key: "isClientShow",
@@ -625,6 +654,25 @@ const Index = () => {
         >
           <i
             className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Is Active",
+      key: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleActiveInactive("isActive", record, record?.isActive);
+          }}
+        >
+          <i
+            className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
           ></i>
         </Button>
       ),
