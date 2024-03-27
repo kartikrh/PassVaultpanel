@@ -1158,13 +1158,13 @@ const Index = forwardRef(
                       <thead className="table-light">
                         <tr>
                           {columns.map((column) => (
-                            <th key={column.key} style={column.style}>
+                            <th key={column.key} style={column.style} className={column.className}>
                               <div className="d-flex">
                                 <span>{column.title}</span>
                                 {column.sort ? (
                                   <span className="d-flex flex-column align-items-center">
                                     <i
-                                      className="bx bx-caret-up"
+                                      className={"bx bx-caret-up "+column.className}
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
@@ -1188,7 +1188,7 @@ const Index = forwardRef(
                                       }}
                                     ></i>
                                     <i
-                                      className="bx bx-caret-down"
+                                      className={"bx bx-caret-down "+column.className}
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(

@@ -462,7 +462,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-no-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
@@ -475,6 +475,7 @@ const CommentaryMarketTemplate = () => {
             key: "noRate",
             sort: true,
             style: { width: "10%" },
+            className: "input-no-field"
         },
         {
             title: "Yes Rate",
@@ -482,7 +483,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-yes-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
@@ -495,6 +496,7 @@ const CommentaryMarketTemplate = () => {
             key: "yesRate",
             sort: true,
             style: { width: "10%" },
+            className: "input-yes-field"
         },
         {
             title: "No Point",
@@ -502,7 +504,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "100", record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-no-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
@@ -515,6 +517,7 @@ const CommentaryMarketTemplate = () => {
             key: "noPoint",
             sort: true,
             style: { width: "10%" },
+            className: "input-no-field"
         },
         {
             title: "Yes Point",
@@ -522,7 +525,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "100", record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-yes-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
@@ -535,6 +538,7 @@ const CommentaryMarketTemplate = () => {
             key: "yesPoint",
             sort: true,
             style: { width: "10%" },
+            className: "input-yes-field",
         },
         {
             title: "Is Active",

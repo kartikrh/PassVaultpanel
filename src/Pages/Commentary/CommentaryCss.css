@@ -272,3 +272,13 @@
 .text-center {
     text-align: center;
 }
+
+.input-yes-field {
+    background-color: #BBE1EE !important;
+    color: #106481 !important;
+}
+
+.input-no-field {
+    background-color: #F6C5C8 !important;
+    color: #af4d52 !important;
+}
