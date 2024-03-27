@@ -31,16 +31,27 @@ const PlayerSelection = forwardRef((props, ref) => {
   const [selectedBowler, setSelectedBowler] = useState(null);
   const [selectedStriker, setSelectedStriker] = useState(null);
   const [selectedNonStriker, setSelectedNonStriker] = useState(null);
-
+  const [playersToUpdate, setPlayersToUpdate] = useState([])
   const [isNext, setIsNext] = useState(false);
 
   useEffect(() => {
     if (data) {
       const commentaryDetails = data.commentaryDetails
+      const updatedPlayers = data.commentaryPlayers?.map(player => {
+        if (player.isPlay) {
+          setPlayersToUpdate(playersToUpdate.push(player))
+          return { ...player, isPlay: null }
+        }
+        if (player.onStrike) {
+          setPlayersToUpdate(playersToUpdate.push(player))
+          return { ...player, onStrike: null }
+        }
+        return player
+      })
       setCommentaryDetails(commentaryDetails);
       setCurrentInnings(commentaryDetails?.currentInnings)
       setCommentaryTeamsDetails(data.commentaryTeams);
-      setCommentaryTeamsPlayersDetails(data.commentaryPlayers);
+      setCommentaryTeamsPlayersDetails(updatedPlayers);
     }
   }, [data]);
 
@@ -92,7 +103,8 @@ const PlayerSelection = forwardRef((props, ref) => {
       const isPlayPlayers = [];
       const otherPlayers = []
       commentaryTeamsPlayersDetails.forEach((player) => {
-        if ((player.commentaryId === battingteam.commentaryId) && player.isPlay) isPlayPlayers.push(player)
+        if (player.isPlay)
+          isPlayPlayers.push(player)
         else otherPlayers.push(player)
       })
       if (isPlayPlayers.length !== 3) {
@@ -175,7 +187,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             const newData = {
               commentaryId: commentaryDetails.commentaryId,
               commentaryDetails: commentaryDetails,
-              commentaryPlayers: isPlayPlayers,
+              commentaryPlayers: [...isPlayPlayers, ...playersToUpdate],
               commentaryBallByBall,
             };
             const commentaryStatus = 3;
