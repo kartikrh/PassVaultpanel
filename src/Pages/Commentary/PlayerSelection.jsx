@@ -92,7 +92,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       const isPlayPlayers = [];
       const otherPlayers = []
       commentaryTeamsPlayersDetails.forEach((player) => {
-        if (player.isPlay === true) isPlayPlayers.push(player)
+        if ((player.commentaryId === battingteam.commentaryId) && player.isPlay) isPlayPlayers.push(player)
         else otherPlayers.push(player)
       })
       if (isPlayPlayers.length !== 3) {
