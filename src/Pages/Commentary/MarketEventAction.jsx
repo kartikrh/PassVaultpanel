@@ -35,6 +35,7 @@ export const MarketEventAction = () => {
             const recordMarketRunner = {
                 ...record.marketRunners[0],
                 "line": +record.line,
+                "margin": +record.margin,
                 "overRate": +record.overRate,
                 "underRate": +record.underRate,
                 "yesRate": +record.yesRate,
@@ -43,7 +44,7 @@ export const MarketEventAction = () => {
                 "noPoint": +(record.noPoint || 100),
             }
             workingRecord = _.omit(workingRecord,
-                ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
+                ["marketRunners", "line", "margin", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
             workingRecord["marketRunners"] = [recordMarketRunner]
             dataToSend.push(workingRecord)
         })
@@ -206,6 +207,21 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "line",
+        },
+        {
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="number"
+                    step={1}
+                    min={0}
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                />
+            ),
+            key: "margin",
         },
         {
             title: "Over",
