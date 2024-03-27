@@ -6,6 +6,7 @@ import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
 import SuspendTabModel from "../../components/Model/SuspendModal";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -15,7 +16,6 @@ import {
   ERROR,
   PERMISSION_ADD,
   PERMISSION_DELETE,
-  PERMISSION_SUSPEND,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
@@ -51,10 +51,10 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [loadModelVisable, setLoadModelVisable] = useState(false);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
-  const [details, setDetails] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -91,7 +91,7 @@ const Index = () => {
       .then((response) => {
         setEventTypes(response.result);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
@@ -101,7 +101,7 @@ const Index = () => {
       .then((response) => {
         setCompetitions(response.result);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -118,6 +118,35 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/commentary/delete`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setDeleteModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleLoadCommentary = async (e) => {
+    setIsLoading(true);
+    console.log(checekedList);
+    await axiosInstance
+      .post(`/admin/commentary/loadMultiCommentary`, {
         commentaryId: checekedList,
       })
       .then((response) => {
@@ -188,7 +217,10 @@ const Index = () => {
     navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
   };
   const handleMarketEventActionClick = (id) => {
-    navigate("/marketEventAction", { state: { commentaryId: id } });
+    localStorage.setItem('openMarketCommentaryId', "" + id);
+    const url = new URL(window.location.origin + "/marketEventAction");
+    url.searchParams.append("commentaryId", id);
+    window.open(url.href, '_blank');
   };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
@@ -262,6 +294,36 @@ const Index = () => {
         );
       });
   };
+
+  const handleActiveInactive = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/activeInactiveCommentary`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -462,98 +524,73 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Short Commentary",
-      key: "shortCommentary",
-      printType: "ignore",
-      render: (text, record) => (
-        <Button
-          color={"primary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleShortCommentaryClick(record.commentaryId);
-          }}
-        >
-          <i class="bx bx-minus" />
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Commentary Details",
+      title: "Scoring",
       key: "commentaryDetails",
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color={"primary"}
+          color={"warning"}
           size="sm"
           className="btn"
           onClick={() => {
             handleDetailsClick(record.commentaryId);
           }}
         >
-          <i className="bx bx-plus"></i>
+          <i class='bx bxs-right-arrow' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Update Commentary",
+      title: "S-Score",
+      key: "shortCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"secondary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleShortCommentaryClick(record.commentaryId);
+          }}
+        >
+          <i class='bx bxs-chevrons-right'></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "S-Update",
       key: "updateCommentary",
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color={"primary"}
+          color={"success"}
           size="sm"
           className="btn"
           onClick={() => {
             handleUpdateCommentaryClick(record.commentaryId);
           }}
         >
-          <i class='bx bx-minus' />
+          <i class='bx bx-arrow-to-right' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Update Players",
+      title: "P-Update",
       key: "updatePlayers",
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color={"primary"}
+          color={"info"}
           size="sm"
           className="btn"
           onClick={() => {
             handleUpdatePlayersClick(record);
           }}
         >
-          <i className="bx bx-plus"></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "IsPredictMarket",
-      key: "isPredictMarket",
-      render: (text, record) => (
-        <Button
-          color={`${record.isPredictMarket ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            updatePredictMarket(
-              "isPredictMarket",
-              record,
-              record?.isPredictMarket
-            );
-          }}
-        >
-          <i
-            className={`bx ${
-              record?.isPredictMarket ? "bx-check" : "bx-block"
-            }`}
-          ></i>
+          <i class='bx bxs-up-arrow-square' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -574,13 +611,37 @@ const Index = () => {
             handleCommentaryMarketTemplateClick(record.commentaryId);
           }}
         >
-          <i className="bx bx-plus"></i>
+          <i class='bx bxs-store' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "IsClientShow",
+      title: "Is P-Market",
+      key: "isPredictMarket",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPredictMarket ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            updatePredictMarket(
+              "isPredictMarket",
+              record,
+              record?.isPredictMarket
+            );
+          }}
+        >
+          <i
+            className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
+              }`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Is C-Show",
       key: "isClientShow",
       render: (text, record) => (
         <Button
@@ -598,6 +659,25 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Is Active",
+      key: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleActiveInactive("isActive", record, record?.isActive);
+          }}
+        >
+          <i
+            className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
   //elements required
   const tableElement = {
@@ -606,6 +686,7 @@ const Index = () => {
     eventTypeSelect: true,
     switch: false,
     clone: true,
+    loadCommentary: true,
     suspend: true,
     commentaryStatus: true,
     competitionsSelect: true,
@@ -650,6 +731,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            loadModelFunction={setLoadModelVisable}
             suspendModelFunction={setSuspendModelVisable}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
@@ -687,6 +769,11 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
+          />
+          <LoadCommentaryModel
+            loadModelVisable={loadModelVisable}
+            setLoadModelVisable={setLoadModelVisable}
+            handleLoad={handleLoadCommentary}
           />
           <CommentaryClone
             cloneModelVisible={cloneModelVisible}

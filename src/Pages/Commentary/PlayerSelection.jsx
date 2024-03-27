@@ -31,16 +31,27 @@ const PlayerSelection = forwardRef((props, ref) => {
   const [selectedBowler, setSelectedBowler] = useState(null);
   const [selectedStriker, setSelectedStriker] = useState(null);
   const [selectedNonStriker, setSelectedNonStriker] = useState(null);
-
+  const [playersToUpdate, setPlayersToUpdate] = useState([])
   const [isNext, setIsNext] = useState(false);
 
   useEffect(() => {
     if (data) {
       const commentaryDetails = data.commentaryDetails
+      const updatedPlayers = data.commentaryPlayers?.map(player => {
+        if (player.isPlay) {
+          setPlayersToUpdate(playersToUpdate.push(player))
+          return { ...player, isPlay: null }
+        }
+        if (player.onStrike) {
+          setPlayersToUpdate(playersToUpdate.push(player))
+          return { ...player, onStrike: null }
+        }
+        return player
+      })
       setCommentaryDetails(commentaryDetails);
       setCurrentInnings(commentaryDetails?.currentInnings)
       setCommentaryTeamsDetails(data.commentaryTeams);
-      setCommentaryTeamsPlayersDetails(data.commentaryPlayers);
+      setCommentaryTeamsPlayersDetails(updatedPlayers);
     }
   }, [data]);
 
@@ -83,16 +94,17 @@ const PlayerSelection = forwardRef((props, ref) => {
     setIsOpen(true)
   }
 
-  const onPrevious = async () => {
-    previous()
-  }
+  // const onPrevious = async () => {
+  //   previous()
+  // }
 
   const onNext = async () => {
     if (data) {
       const isPlayPlayers = [];
       const otherPlayers = []
       commentaryTeamsPlayersDetails.forEach((player) => {
-        if (player.isPlay === true) isPlayPlayers.push(player)
+        if (player.isPlay)
+          isPlayPlayers.push(player)
         else otherPlayers.push(player)
       })
       if (isPlayPlayers.length !== 3) {
@@ -175,7 +187,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             const newData = {
               commentaryId: commentaryDetails.commentaryId,
               commentaryDetails: commentaryDetails,
-              commentaryPlayers: isPlayPlayers,
+              commentaryPlayers: [...isPlayPlayers, ...playersToUpdate],
               commentaryBallByBall,
             };
             const commentaryStatus = 3;
@@ -352,12 +364,12 @@ const PlayerSelection = forwardRef((props, ref) => {
             </CardBody>
           </Card>
           <Container className='d-flex justify-content-between flex-wrap' >
-            <Button
+            {/* <Button
               className='m-2'
               id="caret" color="primary" onClick={onPrevious}>
               <i className='bx bxs-left-arrow me-1'></i>
               <span>Previous</span>
-            </Button>
+            </Button> */}
             {isNext && (<Button
               className='m-2 d-flex align-items-center'
               id="caret" color="primary" onClick={onNext}>

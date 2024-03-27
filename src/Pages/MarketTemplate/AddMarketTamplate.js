@@ -30,15 +30,18 @@ import {
   updateSavedState,
 } from "../../Features/Tabs/marketTemplateSlice";
 import axiosInstance from "../../Features/axios";
-import { convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import moment from "moment";
+
+const fetchResult = (response) => {
+  return Array.isArray(response.result) ? response?.result : [response?.result]
+}
 
 function AddMarketTemaplate() {
   const pageName = TAB_MARKET_TEMPLATE;
   const finalizeRef = useRef(null);
+  const [savedFormState, setSavedFormState] = useState({});
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
@@ -123,9 +126,50 @@ function AddMarketTemaplate() {
           })
         );
       });
+    await axiosInstance
+      .post("admin/marketTemplate/markeTypeList", {})
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          marketTypeId: response.result?.map((item) => {
+            return { label: item.marketTypeName, value: item.marketTypeId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleFormADataChange = async (newFormData) => {
+    setSavedFormState(newFormData);
+    if (newFormData["marketTypeId"] !== savedFormState["marketTypeId"]) {
+      setMasterData((preData) => ({
+        ...preData,
+        "marketTypeCategoryId": [],
+      }));
+      if (newFormData["marketTypeId"] !== "0") {
+        axiosInstance.post('/admin/marketTemplate/getCategoryByMarketType', { marketTypeId: newFormData["marketTypeId"] })
+          .then((response) => {
+            const resultData = fetchResult(response)
+            const formattedData = resultData?.map(item => {
+              return { label: item?.categoryName, value: item?.marketTypeCategoryId }
+            })
+            setMasterData((preData) => ({
+              ...preData,
+              "marketTypeCategoryId": formattedData,
+            }));
+          }).catch((error) => {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+          });
+      }
+    }
     if (newFormData?.isOver === true) {
       setIsOverMarket(true);
       setDisabledFields({
@@ -173,11 +217,11 @@ function AddMarketTemaplate() {
       isPreMatchOnly: false,
     };
     const dataToSave = finalizeRef.current.finalizeData();
-    const finalData = {
-      ...impKeys,
-      ...dataToSave,
-    };
-    if (finalData) {
+    if (dataToSave) {
+      const finalData = {
+        ...impKeys,
+        ...dataToSave,
+      };
       setCurrentSaveAction(saveAction);
       dispatch(addMarketTemplateToDb(finalData));
     }
@@ -191,7 +235,7 @@ function AddMarketTemaplate() {
   }, []);
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="page-content overflow-scroll">
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
@@ -250,27 +294,27 @@ function AddMarketTemaplate() {
                           pageName,
                           PERMISSION_EDIT
                         ) && (
-                          <DropdownItem
-                            onClick={() => {
-                              handleSaveClick(SAVE);
-                            }}
-                          >
-                            Save
-                          </DropdownItem>
-                        )}
+                            <DropdownItem
+                              onClick={() => {
+                                handleSaveClick(SAVE);
+                              }}
+                            >
+                              Save
+                            </DropdownItem>
+                          )}
                         {checkPermission(
                           permissionObj,
                           pageName,
                           PERMISSION_ADD
                         ) && (
-                          <DropdownItem
-                            onClick={() => {
-                              handleSaveClick(SAVE_AND_NEW);
-                            }}
-                          >
-                            Save & New
-                          </DropdownItem>
-                        )}
+                            <DropdownItem
+                              onClick={() => {
+                                handleSaveClick(SAVE_AND_NEW);
+                              }}
+                            >
+                              Save & New
+                            </DropdownItem>
+                          )}
                       </DropdownMenu>
                     </ButtonDropdown>
                   </Col>

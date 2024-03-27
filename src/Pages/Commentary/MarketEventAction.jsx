@@ -12,6 +12,7 @@ import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_ST
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
+import { generateOverUnder } from "./functions";
 const tableElement = {
     title: "Predefined",
     displayTitle: true
@@ -25,7 +26,7 @@ export const MarketEventAction = () => {
     let navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
-    const commentaryId = location.state?.commentaryId || "0";
+    const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
 
     const formatDataBeforeSend = (dataToChange = []) => {
@@ -35,6 +36,7 @@ export const MarketEventAction = () => {
             const recordMarketRunner = {
                 ...record.marketRunners[0],
                 "line": +record.line,
+                "margin": +record.margin,
                 "overRate": +record.overRate,
                 "underRate": +record.underRate,
                 "yesRate": +record.yesRate,
@@ -53,14 +55,26 @@ export const MarketEventAction = () => {
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.eventMarketId === record.eventMarketId)
         if (indexOfData !== -1) {
-            setData(prev => [
-                ...prev.slice(0, indexOfData),
-                {
-                    ...prev[indexOfData],
-                    [key]: value
-                },
-                ...prev.slice(indexOfData + 1, prev.length),
-            ])
+            if (key === 'line' || key === 'margin') {
+                const datatoSave = [
+                    ...data.slice(0, indexOfData),
+                    generateOverUnder({
+                        ...data[indexOfData],
+                        [key]: value
+                    }),
+                    ...data.slice(indexOfData + 1),
+                ];
+                setData(datatoSave);
+            } else {
+                setData(prev => [
+                    ...prev.slice(0, indexOfData),
+                    {
+                        ...prev[indexOfData],
+                        [key]: value
+                    },
+                    ...prev.slice(indexOfData + 1, prev.length),
+                ]);
+            }
         }
     }
 
@@ -208,8 +222,8 @@ export const MarketEventAction = () => {
             key: "line",
         },
         {
-            title: "Over",
-            dataIndex: "overRate",
+            title: "Margin",
+            dataIndex: "margin",
             render: (text, record) => (
                 <Input
                     className="form-control small-text-fields"
@@ -217,10 +231,10 @@ export const MarketEventAction = () => {
                     step={1}
                     min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
+                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
                 />
             ),
-            key: "overRate",
+            key: "margin",
         },
         {
             title: "Under",
@@ -238,6 +252,21 @@ export const MarketEventAction = () => {
             key: "underRate",
         },
         {
+            title: "Over",
+            dataIndex: "overRate",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="number"
+                    step={1}
+                    min={0}
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
+                />
+            ),
+            key: "overRate",
+        },
+        {
             title: "R-No",
             dataIndex: "noRate",
             render: (text, record) => (
@@ -253,21 +282,6 @@ export const MarketEventAction = () => {
             key: "noRate",
         },
         {
-            title: "P-No",
-            dataIndex: "noPoint",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
-                />
-            ),
-            key: "noPoint",
-        },
-        {
             title: "R-Yes",
             dataIndex: "yesRate",
             render: (text, record) => (
@@ -281,6 +295,21 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "yesRate",
+        },
+        {
+            title: "P-No",
+            dataIndex: "noPoint",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="number"
+                    step={1}
+                    min={0}
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
+                />
+            ),
+            key: "noPoint",
         },
         {
             title: "P-Yes",
@@ -360,9 +389,9 @@ export const MarketEventAction = () => {
     ];
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-            navigate("/dashboard")
-        }
+        // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        //     navigate("/dashboard")
+        // }
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
