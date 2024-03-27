@@ -101,7 +101,16 @@ export const MarketTemplateFileds = [
         type: TEXT,
         requiredErrorMessage: "Please enter value",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+        fieldColspan: { xs: 12, md: 1, lg: 1 }
+    },
+    {
+        name: "createRefId",
+        label: false,
+        dependsOnField: "createType",
+        dependsOnValue: "1",
+        type: TEXT,
+        placeholder: "Create Ref Id",
+        fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
     {
         name: "autoOpenType",
@@ -118,7 +127,16 @@ export const MarketTemplateFileds = [
         type: TEXT,
         requiredErrorMessage: "Please enter value",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+        fieldColspan: { xs: 12, md: 1, lg: 1 }
+    },
+    {
+        name: "openRefId",
+        label: false,
+        dependsOnField: "autoOpenType",
+        dependsOnValue: "1",
+        type: TEXT,
+        placeholder: "Open Ref Id",
+        fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
     {
         name: "autoSuspendType",

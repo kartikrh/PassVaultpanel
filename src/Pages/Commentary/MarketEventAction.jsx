@@ -12,6 +12,7 @@ import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_ST
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
+import { generateOverUnder } from "./functions";
 const tableElement = {
     title: "Predefined",
     displayTitle: true
@@ -54,14 +55,26 @@ export const MarketEventAction = () => {
     const handleValueChange = (record, key, value) => {
         const indexOfData = data.findIndex(i => i.eventMarketId === record.eventMarketId)
         if (indexOfData !== -1) {
-            setData(prev => [
-                ...prev.slice(0, indexOfData),
-                {
-                    ...prev[indexOfData],
-                    [key]: value
-                },
-                ...prev.slice(indexOfData + 1, prev.length),
-            ])
+            if (key === 'line' || key === 'margin') {
+                const datatoSave = [
+                    ...data.slice(0, indexOfData),
+                    generateOverUnder({
+                        ...data[indexOfData],
+                        [key]: value
+                    }),
+                    ...data.slice(indexOfData + 1),
+                ];
+                setData(datatoSave);
+            } else {
+                setData(prev => [
+                    ...prev.slice(0, indexOfData),
+                    {
+                        ...prev[indexOfData],
+                        [key]: value
+                    },
+                    ...prev.slice(indexOfData + 1, prev.length),
+                ]);
+            }
         }
     }
 
@@ -224,21 +237,6 @@ export const MarketEventAction = () => {
             key: "margin",
         },
         {
-            title: "Over",
-            dataIndex: "overRate",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
-                />
-            ),
-            key: "overRate",
-        },
-        {
             title: "Under",
             dataIndex: "underRate",
             render: (text, record) => (
@@ -252,6 +250,21 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "underRate",
+        },
+        {
+            title: "Over",
+            dataIndex: "overRate",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="number"
+                    step={1}
+                    min={0}
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
+                />
+            ),
+            key: "overRate",
         },
         {
             title: "R-No",
@@ -269,21 +282,6 @@ export const MarketEventAction = () => {
             key: "noRate",
         },
         {
-            title: "P-No",
-            dataIndex: "noPoint",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
-                />
-            ),
-            key: "noPoint",
-        },
-        {
             title: "R-Yes",
             dataIndex: "yesRate",
             render: (text, record) => (
@@ -297,6 +295,21 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "yesRate",
+        },
+        {
+            title: "P-No",
+            dataIndex: "noPoint",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="number"
+                    step={1}
+                    min={0}
+                    value={text || ""}
+                    onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
+                />
+            ),
+            key: "noPoint",
         },
         {
             title: "P-Yes",
