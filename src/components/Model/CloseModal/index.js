@@ -2,20 +2,20 @@ import React, { useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
 
 const Index = ({
-  suspendModalVisible,
-  setSuspendModelVisable,
-  handleSuspend,
+  closeModalVisible,
+  setCloseModelVisable,
+  handleClose,
   singleCheck,
 }) => {
-  const [modal_suspend, setModal_suspend] = useState(true);
-  function tog_suspend() {
-    setModal_suspend(!modal_suspend);
+  const [modal_close, setModal_close] = useState(true);
+  function tog_close() {
+    setModal_close(!modal_close);
   }
   return (
     <Modal
-      isOpen={suspendModalVisible}
+      isOpen={closeModalVisible}
       toggle={() => {
-        setSuspendModelVisable(false);
+        setCloseModelVisable(false);
       }}
       centered
     >
@@ -23,10 +23,10 @@ const Index = ({
         className="bg-light p-3"
         id="exampleModalLabel"
         toggle={() => {
-          setSuspendModelVisable(false);
+          setCloseModelVisable(false);
         }}
       >
-        Suspend
+        Close
         {/* TODO, do we need to add teh screen name also like delete tabs or delete Penelty run */}
       </ModalHeader>
       <div className="tablelist-form">
@@ -36,14 +36,14 @@ const Index = ({
             id="modal-id"
           >
             <span className="mt-4 mb-4">
-              Are you sure you want to suspend this commentary?
+              Are you sure you want to close this commentary?
             </span>
             <div className="hstack gap-2 justify-content-center">
               <button
                 type="button"
                 className="btn btn-light"
                 onClick={() => {
-                  setSuspendModelVisable(false);
+                  setCloseModelVisable(false);
                 }}
               >
                 Close
@@ -52,10 +52,10 @@ const Index = ({
                 className="btn btn-danger"
                 id="add-btn"
                 onClick={() => {
-                  handleSuspend();
+                  handleClose();
                 }}
               >
-                Suspend
+                Ok
               </button>
             </div>
           </div>

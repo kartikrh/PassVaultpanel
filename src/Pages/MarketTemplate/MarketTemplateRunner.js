@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Col, Container, Row } from "reactstrap";
+import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
@@ -167,6 +167,7 @@ const MarketTemplateRunner = () => {
       };
       const dataToSave = finalizeRef.current.finalizeData();
       if (dataToSave) {
+        setIsLoading(true);
         const finalData = {
           ...payload,
           ...dataToSave,
@@ -179,9 +180,11 @@ const MarketTemplateRunner = () => {
         setData([...data, marketTemplateRunnerData]);
         fetchData(marketTemplateId);
         finalizeRef.current.resetForm();
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching Market Template Runner data:", error);
+      setIsLoading(false);
       dispatch(
         updateToastData({
           data: error?.message,
@@ -331,20 +334,24 @@ const MarketTemplateRunner = () => {
             <Col
               className="mb-3"
               xs={12}
-              md={{ span: 4, offset: 8 }}
-              lg={{ span: 3, offset: 9 }}
+              md={{ span: 4, offset: 11 }}
+              lg={{ span: 3, offset: 11 }}
             >
               <button className="btn btn-danger mx-1" onClick={handleBackClick}>
                 Back
               </button>
             </Col>
           </Row>
-          <FormBuilder
-            ref={finalizeRef}
-            fields={MarketTemplateRunnerFileds}
-            onFormDataChange={onFormDataChange}
-            generateAlias={onGenerateClick}
-          />
+          <Card>
+            <CardBody>
+              <FormBuilder
+                ref={finalizeRef}
+                fields={MarketTemplateRunnerFileds}
+                onFormDataChange={onFormDataChange}
+                generateAlias={onGenerateClick}
+              />
+            </CardBody>
+          </Card>
           <Table
             columns={columns}
             dataSource={data}
