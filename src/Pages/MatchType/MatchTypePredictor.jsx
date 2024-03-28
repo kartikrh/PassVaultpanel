@@ -27,7 +27,6 @@ import {
   TAB_MATCH_TYPE,
 } from "../../components/Common/Const";
 import {
-  addMatchTypeToDb,
   updateSavedState,
 } from "../../Features/Tabs/matchTypeSlice";
 import axiosInstance from "../../Features/axios";
@@ -42,12 +41,9 @@ const MatchTypePredictor = () => {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [data, setData] = useState([]);
-  const [checekedList, setCheckedList] = useState([]);
   const [disabledFields, setDisabledFields] = useState({});
   const [newFormData, setNewFormData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const [masterData, setMasterData] = useState({});
-  const [predictorData, setPredictorData] = useState([]);
   const { isSaved, isLoading, error } = useSelector(
     (state) => state.tabsData.matchType
   );
@@ -399,7 +395,6 @@ const MatchTypePredictor = () => {
                   ref={finalizeRef}
                   fields={MatchTypePredictorFields}
                   editFormData={initialEditData}
-                  masterData={masterData}
                   generateAlias={onGenerateClick}
                   onFormDataChange={onFormDataChange}
                   disabledFields={disabledFields}
@@ -411,7 +406,6 @@ const MatchTypePredictor = () => {
                     dataSource={data}
                     tableElement={tableElement}
                     reFetchData={fetchData}
-                    singleCheck={checekedList}
                   />
                 )}
               </CardBody>
