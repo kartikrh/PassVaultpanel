@@ -64,14 +64,15 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     // useEffect(() => {
-    // console.log({ overBallByBallDisplay })
-    // console.log(commentaryDetails, matchTypeDetails)
-    // console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
-    // console.log("Batting Team: ", teams?.[BATTING_TEAM])
-    // //     // console.log(currentOver, currentBall)
-    // console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
-    // // console.log({ onPitchPlayers, teams })
-    //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
+    //     console.log({ overBallByBallDisplay })
+    //     console.log({ saveToDb })
+    //     // console.log(commentaryDetails, matchTypeDetails)
+    //     // console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
+    //     // console.log("Batting Team: ", teams?.[BATTING_TEAM])
+    //     // //     // console.log(currentOver, currentBall)
+    //     // console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
+    //     // // console.log({ onPitchPlayers, teams })
+    //     //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     // })
 
     const checkForOverSwitch = (ballcount) => {
@@ -216,12 +217,14 @@ const Commentary = (props) => {
                 ...commentaryDetails,
                 "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall })
             },
+            "commentaryTeams": [teams[BATTING_TEAM]],
             "commentaryPartnership": updatedPartnership,
             "commentaryBallByBall": updatedBallByBall,
             "commentaryWicket": updatedWicket,
             "commentaryPlayers": Object.values(onPitchPlayers),
         }
         dispatch(addCommentaryScreenData(objToSave))
+        setSaveToDb(false)
         setUpdateRunFromWicket(undefined)
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
     }
@@ -1168,7 +1171,6 @@ const Commentary = (props) => {
                 checkInningsSwitch(RUN)
             }
         }
-        //Data saving to DB----
     }, [saveToDb])
     useEffect(() => {
         if (isOverChange) {
