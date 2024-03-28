@@ -47,6 +47,7 @@ const Index = forwardRef(
       deleteModelFunction,
       loadModelFunction,
       suspendModelFunction,
+      closeModelFunction,
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
@@ -63,6 +64,7 @@ const Index = forwardRef(
       isAddPermission,
       isDeletePermission,
       isSuspendPermission,
+      isClosePermission,
       breadCrumbs,
       onBreadCrumbsClick,
       teams,
@@ -627,6 +629,24 @@ const Index = forwardRef(
                             }}
                           >
                             Suspend
+                          </Button>
+                        )}
+                         {isClosePermission && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              singleCheck.length > 0
+                                ? closeModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                          >
+                            Close
                           </Button>
                         )}
                         {isDeletePermission && (
