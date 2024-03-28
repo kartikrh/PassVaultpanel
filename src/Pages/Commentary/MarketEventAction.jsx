@@ -108,6 +108,8 @@ export const MarketEventAction = () => {
             })
             .then((response) => {
                 fetchTableData(commentaryId);
+                setIsLoading(false);
+                setIsAutoUpdate(true)
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             })
             .catch((error) => {
