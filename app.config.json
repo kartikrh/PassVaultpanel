@@ -1,0 +1,10 @@
+{
+    "apps": [
+        {
+            "name": "production-node-server",
+            "script": "yarn",
+            "interpreter": "none",
+            "args": "serve"
+        }
+    ]
+}
