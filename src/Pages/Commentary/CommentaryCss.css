@@ -225,6 +225,8 @@
 .small-text-fields {
     padding: 0 0.3rem !important;
     min-width: 3rem !important;
+    line-height: 26px !important;
+    font-size: 12px !important;
 }
 
 .small-labels {
@@ -280,5 +282,20 @@
 
 .input-no-field {
     background-color: #F6C5C8 !important;
-    color: #af4d52 !important;
+    color: #ad1119 !important;
+}
+
+.input-under-field {
+    background-color: #f3e3e4 !important;
+    color: #800d14 !important;
+}
+
+.input-over-field {
+    background-color: #ddecf1 !important;
+    color: #094155 !important;
+}
+
+.input-line-field {
+    background-color: #e2f9c2 !important;
+    color: #294503 !important;
 }

@@ -7,8 +7,8 @@ import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
-import SuspendTabModel from "../../components/Model/SuspendModal";
-import CloseTabModel from "../../components/Model/CloseModal";
+import SuspendTabModel from "../../components/Model/SuspendModel";
+import CloseTabModel from "../../components/Model/CloseModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
@@ -795,13 +795,13 @@ const Index = () => {
             dateRange={dateRange}
           />
           <SuspendTabModel
-            suspendModalVisible={suspendModelVisable}
+            suspendModelVisible={suspendModelVisable}
             setSuspendModelVisable={setSuspendModelVisable}
             handleSuspend={handleSuspend}
             singleCheck={checekedList}
           />
           <CloseTabModel
-            closeModalVisible = {closeModelVisable}
+            closeModelVisible = {closeModelVisable}
             setCloseModelVisable = {setCloseModelVisable}
             handleClose = {handleClose}
             singleCheck = {checekedList}

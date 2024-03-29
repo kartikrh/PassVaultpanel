@@ -13,6 +13,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import DeleteAllModel from "../../components/Model/DeleteAllModel";
 
 const Index = () => {
   const pageName = TAB_CONFIG
@@ -22,6 +23,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteAllModelVisable, setDeleteAllModelVisable] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [run, setRun] = useState(null);
@@ -93,6 +95,33 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+  //delete All Commentary
+  const handleDeleteAll = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/deleteAllCommentary`)
+      .then((response) => {
+        fetchData();
+        setDeleteAllModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   //chnage Penalty Run
@@ -269,12 +298,20 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
+            deleteAllModelFunction={setDeleteAllModelVisable}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
             onAddNavigate={"/addConfig"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            isDeleteAllPermission={checkPermission(permissionObj,pageName,PERMISSION_EDIT)}
+          />
+           <DeleteAllModel
+            deleteAllModelVisable={deleteAllModelVisable}
+            setDeleteAllModelVisable={setDeleteAllModelVisable}
+            handleDeleteAll={handleDeleteAll}
+            singleCheck={checekedList}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
