@@ -70,7 +70,7 @@ const ProfileMenu = props => {
             <i className="ri-settings-2-line align-middle me-2" />
             {props.t("Settings")}
           </DropdownItem> */}
-          <DropdownItem tag="a" href="#">
+          <DropdownItem tag="div">
             <Link to="/changePassword">
             <i className="bx bx-transfer align-middle me-2" />
             {/* {props.t("Change Password")} */}
