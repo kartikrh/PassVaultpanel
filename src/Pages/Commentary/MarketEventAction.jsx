@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { ERROR, SUCCESS } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -18,13 +17,12 @@ const tableElement = {
     displayTitle: true
 };
 export const MarketEventAction = () => {
-    const pageName = TAB_COMMENTARY;
     const [data, setData] = useState([]);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+    const [isAutoUpdate, setIsAutoUpdate] = useState(false);
+    const [autoInterval, setAutoInterval] = useState(500)
     let navigate = useNavigate();
-    const location = useLocation();
     const dispatch = useDispatch();
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
@@ -110,6 +108,8 @@ export const MarketEventAction = () => {
             })
             .then((response) => {
                 fetchTableData(commentaryId);
+                setIsLoading(false);
+                setIsAutoUpdate(true)
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             })
             .catch((error) => {
@@ -119,7 +119,7 @@ export const MarketEventAction = () => {
     };
 
     const fetchTableData = async (commentaryId) => {
-        setIsLoading(true);
+        // setIsLoading(true);
         await axiosInstance
             .post("/admin/eventMarket/marketListByCId", { commentaryId })
             .then((response) => {
@@ -136,11 +136,11 @@ export const MarketEventAction = () => {
                     updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
                     setData(updatedDatalist);
                 }
-                setIsLoading(false);
+                // setIsLoading(false);
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                setIsLoading(false);
+                // setIsLoading(false);
             });
     };
 
@@ -396,16 +396,10 @@ export const MarketEventAction = () => {
     ];
 
     useEffect(() => {
-        // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-        //     navigate("/dashboard")
-        // }
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
         }
-    }, []);
-
-    useEffect(() => {
         const fetchConfigAll = async () => {
             setIsLoading(true);
             try {
@@ -416,11 +410,8 @@ export const MarketEventAction = () => {
 
                 if (isMarketRepetitionCall === 'true' && repetitionCallInterval) {
                     const interval = parseInt(repetitionCallInterval);
-                    intervalIdRef.current = setInterval(() => {
-                        if (commentaryId !== "0") {
-                            fetchTableData(commentaryId);
-                        }
-                    }, interval);
+                    setAutoInterval(interval || 1000)
+
                 }
             } catch (error) {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -428,14 +419,23 @@ export const MarketEventAction = () => {
                 setIsLoading(false);
             }
         };
-
         fetchConfigAll();
+    }, []);
 
+    useEffect(() => {
+        if (isAutoUpdate) {
+            intervalIdRef.current = setInterval(() => {
+                if (commentaryId !== "0") {
+                    fetchTableData(commentaryId);
+                }
+            }, autoInterval);
+        } else {
+            clearInterval(intervalIdRef.current);
+        }
         return () => {
             clearInterval(intervalIdRef.current);
         };
-    }, []);
-
+    }, [isAutoUpdate])
     return (
         <React.Fragment>
             <div className="page-content">
@@ -474,6 +474,7 @@ export const MarketEventAction = () => {
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
+                                        <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
                                         <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
