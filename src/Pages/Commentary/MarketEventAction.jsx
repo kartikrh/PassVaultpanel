@@ -207,7 +207,7 @@ export const MarketEventAction = () => {
             dataIndex: "line",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-line-field"
                     type="number"
                     step={1}
                     min={0}
@@ -220,6 +220,7 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "line",
+            className: "input-line-field"
         },
         {
             title: "Margin",
@@ -241,7 +242,7 @@ export const MarketEventAction = () => {
             dataIndex: "underRate",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-under-field"
                     type="number"
                     step={1}
                     min={0}
@@ -250,13 +251,14 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "underRate",
+            className: "input-under-field"
         },
         {
             title: "Over",
             dataIndex: "overRate",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-over-field"
                     type="number"
                     step={1}
                     min={0}
@@ -265,13 +267,14 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "overRate",
+            className: "input-over-field"
         },
         {
             title: "R-No",
             dataIndex: "noRate",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-no-field"
                     type="number"
                     step={1}
                     min={0}
@@ -280,13 +283,14 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "noRate",
+            className: "input-no-field"
         },
         {
             title: "R-Yes",
             dataIndex: "yesRate",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-yes-field"
                     type="number"
                     step={1}
                     min={0}
@@ -295,13 +299,14 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "yesRate",
+            className: "input-yes-field"
         },
         {
             title: "P-No",
             dataIndex: "noPoint",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-no-field"
                     type="number"
                     step={1}
                     min={0}
@@ -310,13 +315,14 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "noPoint",
+            className: "input-no-field"
         },
         {
             title: "P-Yes",
             dataIndex: "yesPoint",
             render: (text, record) => (
                 <Input
-                    className="form-control small-text-fields"
+                    className="form-control small-text-fields input-yes-field"
                     type="number"
                     step={1}
                     min={0}
@@ -325,6 +331,7 @@ export const MarketEventAction = () => {
                 />
             ),
             key: "yesPoint",
+            className: "input-yes-field"
         },
         {
             title: "Active",

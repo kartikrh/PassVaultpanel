@@ -48,6 +48,7 @@ const Index = forwardRef(
       loadModelFunction,
       suspendModelFunction,
       closeModelFunction,
+      deleteAllModelFunction,
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
@@ -65,6 +66,7 @@ const Index = forwardRef(
       isDeletePermission,
       isSuspendPermission,
       isClosePermission,
+      isDeleteAllPermission,
       breadCrumbs,
       onBreadCrumbsClick,
       teams,
@@ -647,6 +649,16 @@ const Index = forwardRef(
                             }}
                           >
                             Close
+                          </Button>
+                        )}
+                         {isDeleteAllPermission && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              deleteAllModelFunction(true)
+                            }}
+                          >
+                            Delete All
                           </Button>
                         )}
                         {isDeletePermission && (
