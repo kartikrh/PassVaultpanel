@@ -320,8 +320,8 @@ export const EventMarketFields = [
     options: [
       { label: "Select Template Type", value: "0" },
       { label: "Prematch", value: 1 },
-      { label: "In Play", value: 2 },
-      { label: "Prematch & In Play", value: 3 },
+      { label: "Inplay", value: 2 },
+      { label: "Prematch & Inplay", value: 3 },
     ],
     isRequired: true,
     type: SELECT,

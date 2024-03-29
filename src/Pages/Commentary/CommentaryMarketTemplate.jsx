@@ -309,7 +309,6 @@ const CommentaryMarketTemplate = () => {
                 </select>
             ),
             key: "inningsId",
-            sort: true,
             style: { width: "10%" },
         },
         {
@@ -331,7 +330,6 @@ const CommentaryMarketTemplate = () => {
                 </select>
             ),
             key: "teamId",
-            sort: true,
             style: { width: "10%" },
         },
         {
@@ -351,7 +349,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "marketName",
-            sort: true,
             style: { width: "30%" },
         },
         {
@@ -372,7 +369,6 @@ const CommentaryMarketTemplate = () => {
                 </select>
             ),
             key: "status",
-            sort: true,
             style: { width: "10%" },
         },
         {
@@ -381,7 +377,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-line-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "line", e.target.value)}
@@ -392,8 +388,8 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "line",
-            sort: true,
             style: { width: "10%" },
+            className: "input-line-field"
         },
         {
             title: "Margin",
@@ -412,7 +408,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "margin",
-            sort: true,
             style: { width: "10%" },
         },
         {
@@ -421,7 +416,7 @@ const CommentaryMarketTemplate = () => {
             render: (text, record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-under-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
@@ -432,8 +427,8 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "underRate",
-            sort: true,
             style: { width: "10%" },
+            className: "input-under-field"
         },
         {
             title: "Over",
@@ -441,7 +436,7 @@ const CommentaryMarketTemplate = () => {
             render: (text = "", record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
+                        className="form-control small-text-fields input-over-field"
                         type="text"
                         value={text}
                         onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
@@ -453,8 +448,8 @@ const CommentaryMarketTemplate = () => {
 
             ),
             key: "overRate",
-            sort: true,
             style: { width: "10%" },
+            className: "input-over-field"
         },
         {
             title: "No Rate",
@@ -473,7 +468,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "noRate",
-            sort: true,
             style: { width: "10%" },
             className: "input-no-field"
         },
@@ -494,7 +488,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "yesRate",
-            sort: true,
             style: { width: "10%" },
             className: "input-yes-field"
         },
@@ -515,7 +508,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "noPoint",
-            sort: true,
             style: { width: "10%" },
             className: "input-no-field"
         },
@@ -536,7 +528,6 @@ const CommentaryMarketTemplate = () => {
                 </>
             ),
             key: "yesPoint",
-            sort: true,
             style: { width: "10%" },
             className: "input-yes-field",
         },
