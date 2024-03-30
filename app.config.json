@@ -1,0 +1,10 @@
+{
+    "apps": [
+        {
+            "name": "production-node-server",
+            "script": "npm",
+            "interpreter": "none",
+            "args": "run serve"
+        }
+    ]
+}

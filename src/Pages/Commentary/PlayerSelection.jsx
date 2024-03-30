@@ -37,17 +37,19 @@ const PlayerSelection = forwardRef((props, ref) => {
   useEffect(() => {
     if (data) {
       const commentaryDetails = data.commentaryDetails
+      const newPlayerToUpdate = []
       const updatedPlayers = data.commentaryPlayers?.map(player => {
         if (player.isPlay) {
-          setPlayersToUpdate(playersToUpdate.push(player))
+          newPlayerToUpdate.push(player)
           return { ...player, isPlay: null }
         }
         if (player.onStrike) {
-          setPlayersToUpdate(playersToUpdate.push(player))
+          newPlayerToUpdate.push(player)
           return { ...player, onStrike: null }
         }
         return player
       })
+      setPlayersToUpdate(newPlayerToUpdate)
       setCommentaryDetails(commentaryDetails);
       setCurrentInnings(commentaryDetails?.currentInnings)
       setCommentaryTeamsDetails(data.commentaryTeams);
@@ -187,7 +189,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             const newData = {
               commentaryId: commentaryDetails.commentaryId,
               commentaryDetails: commentaryDetails,
-              commentaryPlayers: [...isPlayPlayers, ...playersToUpdate],
+              commentaryPlayers: [].concat(isPlayPlayers || [], playersToUpdate || []),
               commentaryBallByBall,
             };
             const commentaryStatus = 3;

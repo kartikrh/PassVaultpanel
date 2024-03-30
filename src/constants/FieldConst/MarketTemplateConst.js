@@ -1,4 +1,4 @@
-import { COUNTER, DIVIDER, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const MarketTemplateFileds = [
     {
@@ -29,22 +29,6 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "isPreMatchOnly",
-        label: "PreMatch Only",
-        type: SWITCH,
-        defaultValue: false,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        name: "isPreMatchMarket",
-        label: "PreMatch Market",
-        type: SWITCH,
-        defaultValue: false,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
         name: "isOver",
         label: "Over",
         type: SWITCH,
@@ -54,7 +38,7 @@ export const MarketTemplateFileds = [
     },
     {
         name: "over",
-        label:false,
+        label: false,
         dependsOnField: "isOver",
         dependsOnValue: true,
         type: TEXT,
@@ -71,7 +55,7 @@ export const MarketTemplateFileds = [
     },
     {
         name: "playerName",
-        label:false,
+        label: false,
         dependsOnField: "isPlayer",
         dependsOnValue: true,
         type: TEXT,
@@ -89,7 +73,7 @@ export const MarketTemplateFileds = [
     {
         name: "createType",
         label: "Create Type",
-        options: [{ label: "Select Create Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" },{ label: "Wicket", value: "3" },],
+        options: [{ label: "Select Create Type", value: "0" },{ label: "Ball", value: 1 }, { label: "Over", value: 2 },{ label: "Wicket", value: 3 },],
         type: SELECT,
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -107,7 +91,7 @@ export const MarketTemplateFileds = [
         name: "createRefId",
         label: false,
         dependsOnField: "createType",
-        dependsOnValue: "1",
+        dependsOnValue: 1,
         type: TEXT,
         placeholder: "Create Ref Id",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
@@ -115,7 +99,7 @@ export const MarketTemplateFileds = [
     {
         name: "autoOpenType",
         label: "Auto Open Type",
-        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" }, { label: "Wicket", value: "3" },],
+        options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: 1 }, { label: "Over", value: 2 }, { label: "Wicket", value: 3 },],
         type: SELECT,
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -133,7 +117,7 @@ export const MarketTemplateFileds = [
         name: "openRefId",
         label: false,
         dependsOnField: "autoOpenType",
-        dependsOnValue: "1",
+        dependsOnValue: 1,
         type: TEXT,
         placeholder: "Open Ref Id",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
@@ -197,14 +181,14 @@ export const MarketTemplateFileds = [
     },
     {
         name: "autoResultType",
-        label:false,
+        label: false,
         dependsOnField: "isAutoResultSet",
         options: [{ label: "Select Auto Open Type", value: "0" },{ label: "Ball", value: "1" }, { label: "Over", value: "2" }, { label: "Wickets", value: "3" },],
         dependsOnValue: true,
         type: SELECT,
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
-        {
+    {
         name: "autoResultafterBall",
         label:"Auto Result After Ball",
         dependsOnField: "isAutoResultSet",
@@ -259,6 +243,21 @@ export const MarketTemplateFileds = [
         requiredErrorMessage: "Please enter category.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "templateType",
+        label: "Template Type",
+        options: [
+          { label: "Select Template Type", value: "0" },
+          { label: "Prematch", value: 1 },
+          { label: "Inplay", value: 2 },
+          { label: "Prematch & Inplay", value: 3 },
+        ],
+        isRequired: true,
+        type: SELECT,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
         name: "isActive",

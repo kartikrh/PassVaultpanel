@@ -84,7 +84,7 @@ function AddEvents() {
 
   const fetchMasterData = async () => {
     await axiosInstance
-      .post("admin/events/eventTypeList", {})
+      .post("/admin/events/eventTypeList", {})
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,

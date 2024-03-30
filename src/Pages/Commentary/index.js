@@ -7,7 +7,8 @@ import { Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
-import SuspendTabModel from "../../components/Model/SuspendModal";
+import SuspendTabModel from "../../components/Model/SuspendModel";
+import CloseTabModel from "../../components/Model/CloseModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
@@ -53,6 +54,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadModelVisable, setLoadModelVisable] = useState(false);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
+  const [closeModelVisable, setCloseModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const navigate = useNavigate();
@@ -180,6 +182,34 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setSuspendModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleClose = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/closeCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setCloseModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -733,6 +763,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             loadModelFunction={setLoadModelVisable}
             suspendModelFunction={setSuspendModelVisable}
+            closeModelFunction={setCloseModelVisable}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
@@ -755,14 +786,25 @@ const Index = () => {
               pageName,
               PERMISSION_EDIT
             )}
+            isClosePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_EDIT
+            )}
             setDateRange={setDateRange}
             dateRange={dateRange}
           />
           <SuspendTabModel
-            suspendModalVisible={suspendModelVisable}
+            suspendModelVisible={suspendModelVisable}
             setSuspendModelVisable={setSuspendModelVisable}
             handleSuspend={handleSuspend}
             singleCheck={checekedList}
+          />
+          <CloseTabModel
+            closeModelVisible = {closeModelVisable}
+            setCloseModelVisable = {setCloseModelVisable}
+            handleClose = {handleClose}
+            singleCheck = {checekedList}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

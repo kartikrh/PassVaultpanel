@@ -102,7 +102,36 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addMarketTemplate", { state: { marketTemplateId: id } });
   };
-
+  const handleMarketTemplateRunnerClick = (id) => {
+    navigate("/marketTemplateRunner", { state: { marketTemplateId: id } });
+  };
+  const updatePredefineRunnerValue = async (pType, record, cState) => {
+    await axiosInstance
+      .post(`/admin/marketTemplate/changePredefineRunner`, {
+        marketTemplateId: record?.marketTemplateId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleReset = (value) => {
     fetchData(value)
   }
@@ -186,6 +215,51 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Is P-Runner Value",
+      key: "isPredefineRunnerValue",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPredefineRunnerValue ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            updatePredefineRunnerValue(
+              "isPredefineRunnerValue",
+              record,
+              record?.isPredefineRunnerValue
+            );
+          }}
+        >
+          <i
+            className={`bx ${record?.isPredefineRunnerValue ? "bx-check" : "bx-block"
+              }`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "P-Market Template Runner",
+      key: "marketTemplate",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"primary"}
+          size="sm"
+          disabled={
+            !record.isPredefineRunnerValue
+          }
+          className="btn"
+          onClick={() => {
+            handleMarketTemplateRunnerClick(record.marketTemplateId);
+          }}
+        >
+          <i class='bx bxs-store' ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },

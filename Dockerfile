@@ -4,13 +4,9 @@ FROM node:20
 # Set the working directory in the container to /app
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
-COPY package*.json ./
-COPY yarn*.lock ./
-
 # Install dependencies
-RUN yarn install
-RUN npm install --global serve
+RUN npm install pm2 -g
+RUN npm install serve -g
 
 # Copy the current directory contents into the container at /app
 COPY . .
@@ -19,5 +15,4 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run your app using npm start
-RUN npm run build
-CMD serve -s build
+CMD ["./deploy.sh"]
