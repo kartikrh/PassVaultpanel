@@ -141,7 +141,7 @@ export const MatchDetailFields = [
         label: "Predict Market",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 1, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SWITCH,
     },
     {
@@ -149,7 +149,7 @@ export const MatchDetailFields = [
         label: "IsActive",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 1, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SWITCH,
     },
     {
@@ -157,7 +157,7 @@ export const MatchDetailFields = [
         label: "IsClient",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 1, lg: 1 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: SWITCH,
     },
 ]
