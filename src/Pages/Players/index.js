@@ -285,7 +285,7 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Players" />
           {isLoading && <SpinnerModel />}
-          <Table
+          {/* <Table
             ref={finalizeRef}
             columns={columns}
             dataSource={data}
@@ -300,7 +300,7 @@ const Index = () => {
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}
             teams = {teams}
-          />
+          /> */}
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
