@@ -281,7 +281,12 @@ export const SHORT_COMMENTARY_TEAM = [
         name: "teamStatus",
         placeholder: "Status",
         formName: TEAM,
-        type: COUNTER,
+        type: SELECT,
+        defaultValue: 1,
+        options: [
+            { label: "Batting", value: 1 },
+            { label: "Bowling", value: 2 },
+        ],
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
