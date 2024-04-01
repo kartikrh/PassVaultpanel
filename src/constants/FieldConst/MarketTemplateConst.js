@@ -260,6 +260,14 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        type: TEXT,
+        name: "delay",
+        label: "Market Delay",
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         name: "isActive",
         label: "IsActive",
         type: SWITCH,
