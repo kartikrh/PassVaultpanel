@@ -1,12 +1,12 @@
 version: '3.8'
 
 services:
-  test-react-app:
+  react-app:
     build: 
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3010:3000"
+      - "4000:3000"
     volumes:
       - .:/app
     stdin_open: true
