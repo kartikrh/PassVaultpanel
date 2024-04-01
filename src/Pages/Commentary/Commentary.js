@@ -19,6 +19,7 @@ import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
 import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx"
 import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
 import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
+import OnPitchPlayerModal from "./CommentaryModels/OnPitchPlayerModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const Commentary = (props) => {
     const [isChangeBowler, setIsChangeBowler] = useState({})
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
+    const [selectMissingPlayer, setSelectMissingPlayer] = useState([])
     const matchTypeDetails = props.data.commentaryData.matchTypeDetails
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
@@ -567,7 +569,7 @@ const Commentary = (props) => {
         const updateOrderKey = playerToChange === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
         let newPlayer = undefined
         const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
-        setPlayers({
+        const playerToUpdate = {
             ...players,
             [teamType]: players[teamType]?.map((player) => {
                 if (isEqual(player.commentaryPlayerId, playerToChangeId)) {
@@ -591,7 +593,8 @@ const Commentary = (props) => {
                     return updatedPlayer
                 } return player
             })
-        })
+        }
+        setPlayers(playerToUpdate)
         const updatedOnPitchPlayer = {
             ...onPitchPlayers,
             [playerToChange]: newPlayer
@@ -1138,6 +1141,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (changeOverOnPopupClick) {
             setOverBallByBallDisplay([])
+            // TODO add check
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
             changeOver()
@@ -1268,12 +1272,17 @@ const Commentary = (props) => {
             setWicketHistory(props.data.commentaryData.commentaryWicket)
             setCurrentPartnership({ ...partnershipDetails, ...currentPartnership })
             setCurrentOver(currentOverToUpdate)
+            console.log(currentOverToUpdate);
             setCurrentBall(_.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined)
             // checkInningsSwitch(ALL)
             setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
             if (isEmpty(currentPartnership) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
                 && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
                 apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams })
+            if (!currentOverToUpdate)
+                apiCallObj["commentaryOvers"] = generateOver({
+                    commentaryDetails, onPitchPlayers, teams: currentInningsTeams
+                })
             if (!isEmpty(apiCallObj)) {
                 dispatch(addCommentaryScreenData({
                     ...apiCallObj,
@@ -1340,6 +1349,11 @@ const Commentary = (props) => {
             dispatch(clearAddCommentaryScreenData())
         }
     }, [commentaryDataToUpdate])
+    useEffect(() => {
+        if (!onPitchPlayers[ON_STRIKE] || !onPitchPlayers[NON_STRIKE] || !onPitchPlayers[CURRENT_BOWLER]) {
+            setSelectMissingPlayer(true)
+        } else if (selectMissingPlayer) setSelectMissingPlayer(false)
+    }, [onPitchPlayers])
     return <>
         <CommentaryScreen
             teamDetails={teams}
@@ -1463,6 +1477,16 @@ const Commentary = (props) => {
                 updateAfterOverUndo()
             }}
         />}
+        {selectMissingPlayer &&
+            <OnPitchPlayerModal
+                onPitchPlayers={onPitchPlayers}
+                players={players}
+                updatePlayerOnParent={(updatedPlayerList) => {
+                    setOnPitchPlayers(updatedPlayerList)
+                }}
+                toggle={() => setSelectMissingPlayer(false)}
+            />
+        }
     </>
 }
 
