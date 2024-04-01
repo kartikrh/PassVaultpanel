@@ -183,7 +183,7 @@ export const CommentaryScreen = ({
                         < Col xs={12} md={12} lg={12}>
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
-                    {<Col className="d-flex" xs={12} md={12} lg={12}>
+                    {<Col className="ball-by-ball-display" xs={12} md={12} lg={12}>
                         {generateBallfromArray(overBalls)}
                     </Col>}
                 </Row>

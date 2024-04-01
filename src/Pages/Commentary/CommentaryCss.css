@@ -299,3 +299,10 @@
     background-color: #e2f9c2 !important;
     color: #294503 !important;
 }
+
+
+.ball-by-ball-display {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 10px;
+}
