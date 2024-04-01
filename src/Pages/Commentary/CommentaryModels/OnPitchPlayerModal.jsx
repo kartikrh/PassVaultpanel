@@ -15,16 +15,14 @@ const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, tog
     }
 
     const onSubmitClick = (newPlayerId) => {
-        const toReturn = onPitchPlayers
         let playerToAdd = {}
         playerList.map(player => {
             if (player.commentaryPlayerId === newPlayerId) playerToAdd = player
             return player
         })
-        toReturn[changePlayerType] = playerToAdd
         setPlayerList(null)
         setChangePlayerType(null)
-        updatePlayerOnParent(toReturn)
+        updatePlayerOnParent(changePlayerType, playerToAdd)
     }
 
     return (
