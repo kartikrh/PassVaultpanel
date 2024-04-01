@@ -45,6 +45,7 @@ const AuthProtected = (props) => {
     let socket;
     if (token) {
       socket = io.connect(process.env.REACT_APP_SOCKET_URL, {
+        transports: ["websocket"],
         auth: {
           token: token
         }
