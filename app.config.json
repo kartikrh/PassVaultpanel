@@ -2,9 +2,9 @@
     "apps": [
         {
             "name": "production-node-server",
-            "script": "npm",
+            "script": "yarn",
             "interpreter": "none",
-            "args": "run serve"
+            "args": "serve"
         }
     ]
 }
