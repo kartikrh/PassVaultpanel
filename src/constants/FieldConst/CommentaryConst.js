@@ -128,6 +128,14 @@ export const MatchDetailFields = [
     //     type: TEXT,
     // },
     {
+        name: "delay",
+        label: "Event Delay",
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: TEXT,
+    },
+    {
         name: "isPredictMarket",
         label: "Predict Market",
         defaultValue: false,

@@ -30,7 +30,7 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                                     <thead className="table-light">
                                         <tr>
                                             {columns.map((column) => (
-                                                <th key={column.key} style={column.style}>
+                                                <th key={column.key} style={column.style} className={column.className}>
                                                     <div className="d-flex">
                                                         <span>{column.title}</span>
                                                     </div>
