@@ -12,7 +12,6 @@ const UndoInnnigsModal = ({ isOpen, toggle, onPlayerSelectionClick, onLastInnigs
             </ModalBody>
             <ModalFooter>
                 <Button color="success" className="decision-Button" onClick={onPlayerSelectionClick}>Player Selection</Button>
-                {/* <Button color="danger" className="decision-Button text-right " onClick={onLastInnigsClick}>Last Innings scoring</Button> */}
             </ModalFooter>
         </Modal>
     )
