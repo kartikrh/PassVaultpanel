@@ -7,7 +7,7 @@ WORKDIR /app
 # Install dependencies
 RUN npm install pm2 -g
 RUN npm install serve -g
-RUN npm install yarn -g
+RUN npm install yarn -g --force
 
 # Copy the current directory contents into the container at /app
 COPY . .
