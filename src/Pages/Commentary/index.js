@@ -29,6 +29,7 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
+import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -39,8 +40,10 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [changeModelVisible, setChangeModelVisible] = useState(false);
+  const [delayModelVisible, setDelayModelVisible] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
+  const [selectedDelay, setSelectedDelay] = useState({});
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -146,7 +149,6 @@ const Index = () => {
   };
   const handleLoadCommentary = async (e) => {
     setIsLoading(true);
-    console.log(checekedList);
     await axiosInstance
       .post(`/admin/commentary/loadMultiCommentary`, {
         commentaryId: checekedList,
@@ -324,7 +326,34 @@ const Index = () => {
         );
       });
   };
-
+  const handleChangeDelay = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeDelay`, {
+        ...selectedDelay,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setDelayModelVisible(false);
+      })
+      .catch((error) => {
+        setDelayModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleActiveInactive = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -550,6 +579,24 @@ const Index = () => {
         </span>
       ),
       key: "matchType",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Event Delay",
+      dataIndex: "delay",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setDelayModelVisible(true);
+            setSelectedDelay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text} {<a className="bx bx-edit-alt"></a>}
+        </span>
+      ),
+      key: "delay",
       sort: true,
       style: { width: "10%" },
     },
@@ -834,6 +881,16 @@ const Index = () => {
               singleCheck={checekedList}
               selectedCommentary={selectedCommentary}
               setSelectedCommentary={setSelectedCommentary}
+            />
+          )}
+           {delayModelVisible && (
+            <ChangeDelayModel
+              delayModelVisible={delayModelVisible}
+              setDelayModelVisible={setDelayModelVisible}
+              handleChange={handleChangeDelay}
+              singleCheck={checekedList}
+              selectedDelay={selectedDelay}
+              setSelectedDelay={setSelectedDelay}
             />
           )}
         </Container>
