@@ -772,9 +772,9 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
-        // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
-        // console.log(currentOver, currentBall, players[BATTING_TEAM])
+        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
+        console.log(currentOver, currentBall, players[BATTING_TEAM])
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
@@ -1104,6 +1104,7 @@ const Commentary = (props) => {
     }, [updateRunsFromWicket])
     useEffect(() => {
         if (isUndoCompleted) {
+            let updatedBallHistory = []
             if (isUndoBall === WICKET) {
                 const updatedWicketHistory = wicketHistory.slice(0, -1)
                 const updaterPartnershipHistory = partnershipHistory.slice(0, -1)
@@ -1113,14 +1114,17 @@ const Commentary = (props) => {
             }
             else if (isUndoBall === OVER) {
                 const updatedOverHistory = overHistory.slice(0, -1)
-                setOverBallByBallDisplay(getBallsForGivenOver(ballHistory, teams[BATTING_TEAM]?.teamOver, true))
+                updatedBallHistory = getBallsForGivenOver(ballHistory, teams[BATTING_TEAM]?.teamOver, true)
                 setOverHistory(updatedOverHistory)
                 setCurrentOver(updatedOverHistory[updatedOverHistory.length - 1])
             }
+            else {
+                updatedBallHistory = overBallByBallDisplay.slice(0, -1)
+            }
             const updatedBallHistoryList = ballHistory.slice(0, -1)
             dispatch(clearUndoFlag())
+            setOverBallByBallDisplay(updatedBallHistory)
             setBallHistory(updatedBallHistoryList)
-            setOverBallByBallDisplay(overBallByBallDisplay.slice(0, -1))
             setCurrentBall(updatedBallHistoryList[updatedBallHistoryList.length - 1])
             setIsUndoBall(undefined)
         }
@@ -1251,7 +1255,8 @@ const Commentary = (props) => {
                 "batter2Id": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
                 "batter2Name": onPitchPlayers[NON_STRIKE]?.playerName,
             }
-            const ballByBallHistoryData = props.data.commentaryData.commentaryBallByBall
+            const ballData = props.data.commentaryData.commentaryBallByBall
+            const ballByBallHistoryData = ballData?.commentaryBallByBallId ? [ballData] : ballData
             // if (typeof currentOver === "object" && currentOver.isComplete) changePlayer(CURRENT_BOWLER)
             setTeams(currentInningsTeams)
             setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })

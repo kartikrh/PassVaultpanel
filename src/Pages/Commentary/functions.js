@@ -1,5 +1,5 @@
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LATEST_BALLS_TO_FIND_BALL_HISTORY, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -185,11 +185,12 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   return displayStatus
 }
 
-export const getBallsForGivenOver = (objects, overToFindFor, isUndoBall = false) => {
+export const getBallsForGivenOver = (ballHistory, overToFindFor, isUndoBall = false) => {
+  const latestBalls = ballHistory.slice(-LATEST_BALLS_TO_FIND_BALL_HISTORY);
   let toReturn = []
-  for (let i = objects.length - 1; i >= 0; i--) {
-    if ((objects[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(objects[i].overCount || 0)) === Math.floor(+overToFindFor))) {
-      toReturn = objects?.slice(i);
+  for (let i = latestBalls.length - 1; i >= 0; i--) {
+    if ((latestBalls[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(latestBalls[i].overCount || 0)) === Math.floor(+overToFindFor))) {
+      toReturn = latestBalls?.slice(i);
     }
   }
   toReturn?.shift();
