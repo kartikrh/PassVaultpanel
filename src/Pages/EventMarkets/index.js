@@ -243,10 +243,16 @@ const Index = () => {
     navigate("/addEventMarket", { state: { userId: id } });
   };
   const handleSL = (id) => {
-    navigate("/marketLogs", { state: { userId: id } });
+    localStorage.setItem('EventMarketLogId', "" + id);
+    const url = new URL(window.location.origin + "/marketLogs");
+    url.searchParams.append("eventMarketId", id);
+    window.open(url.href, '_blank');
   };
   const handleDS = (id) => {
-    navigate("/marketDataLogs", { state: { userId: id } });
+    localStorage.setItem('EventMarketDataLogId', "" + id);
+    const url = new URL(window.location.origin + "/marketDataLogs");
+    url.searchParams.append("eventMarketId", id);
+    window.open(url.href, '_blank');
   };
   const handleClose = async (record) => {
     setCloseModalData(record);
