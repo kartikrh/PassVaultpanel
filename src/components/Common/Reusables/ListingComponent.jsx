@@ -2,14 +2,14 @@ import React from "react";
 import "../Table/style.css"
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-export const ListingElement = ({ columns, dataSource, tableElement, }) => {
+export const ListingElement = ({ columns, dataSource = [], tableElement, }) => {
     document.title = `${tableElement?.title}`;
     return (
         <Row>
             <Col lg={12}>
                 <Card>
                     <CardBody>
-                        <div id="customerList">
+                        {dataSource.length > 0 ? <div id="customerList">
                             <Row className="g-2 d-flex align-items-center">
                                 <Col className="col-sm-auto">
                                     <span>
@@ -41,7 +41,7 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                                     <tbody className="list form-check-all">
                                         {dataSource.map((record, index) => (
                                             <tr key={index}>
-                                                {columns.map((column,index) => (
+                                                {columns.map((column, index) => (
                                                     <td key={index}
                                                         style={column.style}
                                                         className={column.columnClassName}>
@@ -70,7 +70,7 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> : <div className=" m-4 text-center">No record found</div>}
                     </CardBody>
                 </Card>
             </Col>
