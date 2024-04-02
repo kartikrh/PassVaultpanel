@@ -54,6 +54,7 @@ const Index = forwardRef(
       eventTypes,
       competitionList,
       eventList,
+      statusList,
       setEventTypeActive,
       setEventTypeId,
       setCompetitionId,
@@ -96,6 +97,7 @@ const Index = forwardRef(
     });
     const [statusSwitch, setStatusSwitch] = useState(true);
     const [selectedTableElements, setSelectedTableElements] = useState({});
+    const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
@@ -527,6 +529,10 @@ const Index = forwardRef(
           value: 0,
           label: "Select Team",
         },
+        statusType: {
+          value: 0,
+          label: "Select Status"
+        }
       });
       if (tableElement?.dateRange) {
         setDateRange({
@@ -794,6 +800,33 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
+                          {tableElement?.statusListSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.statusType}
+                              // defaultValue={statusList?.find(item => item.statusId === 1)?.statusType}
+                              placeholder="Status Type"
+                              onChange={(e) => {
+                                handleTableActions("status", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  statusType: e,
+                                });
+                              }}
+                              options={statusList?.map((item) => ({
+                                label: item?.statusType,
+                                value: item?.statusId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
                         {tableElement?.matchTypeSelect ? (
                           <div className="">
                             <Select
@@ -1021,20 +1054,31 @@ const Index = forwardRef(
                             }}
                             id="delay"
                           />
+                          {delayValidationMessage && (
+                            <div style={{ color: 'red', marginTop: '2px' }}>
+                              {delayValidationMessage}
+                            </div>
+                          )}
                         </div>
                         <button
                           className="btn btn-primary"
                           onClick={(e) => {
                             e.preventDefault()
-                            singleCheck.length > 0
-                            ? handleDelay()
-                            : dispatch(
-                              updateToastData({
-                                data: "Select at least one (only One) row",
-                                title: "Error",
-                                type: ERROR,
-                              })
-                            );
+                            if (!delay) {
+                              setDelayValidationMessage("Delay value is required.");
+                            } else if (singleCheck.length > 0) {
+                              setDelayValidationMessage("");
+                              handleDelay();
+                            } else {
+                              setDelayValidationMessage("");
+                              dispatch(
+                                updateToastData({
+                                  data: "Select at least one (only one) row",
+                                  title: "Error",
+                                  type: Error,
+                                })
+                              );
+                            }
                           }}
                           type="delay"
                           id="create-btn"

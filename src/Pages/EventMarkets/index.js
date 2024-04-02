@@ -242,6 +242,12 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addEventMarket", { state: { userId: id } });
   };
+  const handleSL = (id) => {
+    navigate("/marketLogs", { state: { userId: id } });
+  };
+  const handleDS = (id) => {
+    navigate("/marketDataLogs", { state: { userId: id } });
+  };
   const handleClose = async (record) => {
     setCloseModalData(record);
     setIsCloseModalOpen(true);
@@ -266,6 +272,37 @@ const Index = () => {
         return "Unknown";
     }
   };
+
+  const statusList = [
+    {
+      statusType: "NotOpen",
+      statusId: 0
+    },
+    {
+      statusType: "Open",
+      statusId: 1
+    },
+    {
+      statusType: "Inactive",
+      statusId: 2
+    },
+    {
+      statusType: "Suspend",
+      statusId: 3
+    },
+    {
+      statusType: "Close",
+      statusId: 4
+    },
+    {
+      statusType: "Settled",
+      statusId: 5
+    },
+    {
+      statusType: "Cancel",
+      statusId: 6
+    }
+  ]
   //table columns
   const columns = [
     {
@@ -313,6 +350,7 @@ const Index = () => {
       render: (text, record) => (
         <i
           className="bx bx-edit"
+          style={{ cursor: "pointer" }}
           onClick={() => {
             handleEdit(record.eventMarketId);
           }}
@@ -455,6 +493,33 @@ const Index = () => {
       ),
       style: { width: "5%", textAlign: "center" },
     },
+    {
+      render: (text, record) => (
+        <>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleSL(record?.eventMarketId);
+            }}
+          >
+            SL
+          </Button>{" "}
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleDS(record?.eventMarketId);
+            }}
+          >
+            DS
+          </Button>
+        </>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },
   ];
   //elements required
   const tableElement = {
@@ -463,6 +528,7 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
+    statusListSelect: true,
     resetButton: true,
     delayTextBox: true,
     importExport: false,
@@ -511,6 +577,7 @@ const Index = () => {
             eventTypes={eventTypes}
             competitionList={competitionList}
             eventList={eventList}
+            statusList={statusList}
             setEventTypeActive={setEventTypeActive}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
