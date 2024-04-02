@@ -272,7 +272,7 @@ const CommentaryMarketTemplate = () => {
     //table columns
     const columns = [
         {
-            title: "isCreate",
+            title: "",
             render: (text, record) => (
                 <div className="form-check d-flex align-items-center justify-between">
                     <input
