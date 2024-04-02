@@ -125,7 +125,8 @@ const Commentary = (props) => {
             "commentaryStatus": 4,
             "winnerId": teams?.[WINNING_TEAM].commentaryTeamId,
             "winnerName": teams?.[WINNING_TEAM].teamName,
-            "displayStatus": WINNING_MESSAGE
+            "displayStatus": WINNING_MESSAGE,
+            "rmk": WINNING_MESSAGE
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,

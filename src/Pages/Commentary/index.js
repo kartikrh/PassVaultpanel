@@ -252,6 +252,12 @@ const Index = () => {
     url.searchParams.append("commentaryId", id);
     window.open(url.href, '_blank');
   };
+  const handleOddsViewClick = (id) => {
+    localStorage.setItem('oddsViewCommentaryId', "" + id);
+    const url = new URL(window.location.origin + "/oddsView");
+    url.searchParams.append("commentaryId", id);
+    window.open(url.href, '_blank');
+  };
   const handleShortCommentaryClick = (id) => {
     navigate("/shortCommentary", { state: { commentaryId: id } });
   };
@@ -353,7 +359,7 @@ const Index = () => {
         );
       });
   };
-  
+
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -476,7 +482,14 @@ const Index = () => {
       title: "Event Id",
       dataIndex: "eventRefId",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleOddsViewClick(record.commentaryId);
+          }}
+        >
+          {text}
+        </span>
       ),
       key: "eventRefId",
       sort: true,
@@ -801,10 +814,10 @@ const Index = () => {
             singleCheck={checekedList}
           />
           <CloseTabModel
-            closeModelVisible = {closeModelVisable}
-            setCloseModelVisable = {setCloseModelVisable}
-            handleClose = {handleClose}
-            singleCheck = {checekedList}
+            closeModelVisible={closeModelVisable}
+            setCloseModelVisable={setCloseModelVisable}
+            handleClose={handleClose}
+            singleCheck={checekedList}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

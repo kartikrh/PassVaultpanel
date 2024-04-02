@@ -27,7 +27,7 @@ const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, tog
 
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Player Selection
             </ModalHeader>
             <ModalBody>
