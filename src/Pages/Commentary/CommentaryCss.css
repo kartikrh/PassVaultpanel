@@ -306,3 +306,27 @@
     flex-wrap: wrap;
     gap: 10px;
 }
+
+.odds-page-header {
+    text-align: center;
+    font-size: large;
+}
+
+.odds-container {
+    display: flex !important;
+}
+
+.odds-box {
+    margin: 0 0.1rem;
+    padding: 0.3rem;
+    min-width: 25%;
+    text-align: center;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.odds-column {
+    padding: 0 !important;
+}
+
+/* http://localhost:3000/oddsView?commentaryId=601 */
