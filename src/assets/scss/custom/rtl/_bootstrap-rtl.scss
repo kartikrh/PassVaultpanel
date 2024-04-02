@@ -249,6 +249,8 @@ dd {
         height: 20px;
         right: -0.5rem;
         position: relative;
+        width: 16px;
+        height: 16px;
     }
 
     .form-check-label {
@@ -265,6 +267,8 @@ dd {
         height: 24px;
         right: -0.75rem;
         position: relative;
+        width: 16px;
+        height: 16px;
     }
 }
 
@@ -280,6 +284,8 @@ dd {
         float: left !important;
         margin-right: 0 !important;
         margin-left: $form-check-padding-start * -1 !important;
+        width: 16px;
+        height: 16px;
     }
   }
   
@@ -331,6 +337,8 @@ dd {
         float: right;
         margin-left: 0;
         margin-right: $form-check-padding-start * -1;
+        width: 16px;
+        height: 16px;
     }
 }
 
@@ -367,6 +375,8 @@ dd {
     .form-check-input{
         margin-right: $form-switch-padding-start * -1;
         margin-left: 0;
+        width: 16px;
+        height: 16px;
     }
 }
 
