@@ -29,8 +29,8 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                                 >
                                     <thead className="table-light">
                                         <tr>
-                                            {columns.map((column) => (
-                                                <th key={column.key} style={column.style} className={column.className}>
+                                            {columns.map((column, index) => (
+                                                <th key={index} style={column.style} className={column.className}>
                                                     <div className="d-flex">
                                                         <span>{column.title}</span>
                                                     </div>
@@ -40,9 +40,11 @@ export const ListingElement = ({ columns, dataSource, tableElement, }) => {
                                     </thead>
                                     <tbody className="list form-check-all">
                                         {dataSource.map((record, index) => (
-                                            <tr key={index} className={`hover`}>
-                                                {columns.map((column) => (
-                                                    <td key={column.key} style={column.style}>
+                                            <tr key={index}>
+                                                {columns.map((column,index) => (
+                                                    <td key={index}
+                                                        style={column.style}
+                                                        className={column.columnClassName}>
                                                         {column.render
                                                             ? column.render(
                                                                 record[column.dataIndex],

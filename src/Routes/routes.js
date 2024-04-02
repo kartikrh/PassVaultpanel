@@ -75,6 +75,7 @@ import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTempla
 import { MarketEventAction } from "../Pages/Commentary/MarketEventAction.jsx";
 import { CommentaryFeatures } from "../Pages/Commentary/CommentaryFeatures.jsx";
 import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.js";
+import { OddsView } from "../Pages/Commentary/OddsView.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -106,6 +107,7 @@ const authProtectedRoutes = [
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
   { path: "/commentaryMarketTemplate", component: <CommentaryMarketTemplate /> },
   { path: "/marketEventAction", component: <MarketEventAction /> },
+  { path: "/oddsView", component: <OddsView /> },
   { path: "/importMarket", component: <ImportMarket /> },
   { path: "/Toss", component: <Toss /> },
   { path: "/users", component: <Users /> },

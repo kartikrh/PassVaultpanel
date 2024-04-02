@@ -1,5 +1,6 @@
-import { Col, Input, Row } from "reactstrap"
-import { COUNTER, TEXT } from "../Const"
+import { Col, Input } from "reactstrap"
+import { COUNTER, SELECT, TEXT } from "../Const"
+import Select from "react-select";
 
 export const FieldRenderer = ({ fields, value, onChange, index }) => {
     return fields.map((field, index) => {
@@ -46,6 +47,20 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     value={value[field.name] || field.defaultValue}
                     onChange={(e) => onChange(field, +e.target.value)}
                 />}
+                {field.type === SELECT && (
+                    <Select
+                        classNamePrefix="select2-selection small-text-fields"
+                        style={field?.customStyle}
+                        id={field.name}
+                        name={field.name}
+                        value={field.options.filter((option) => value[field.name] === option.value)}
+                        options={field.options}
+                        onChange={(selectedOption) => onChange(field, selectedOption?.value)}
+                        closeMenuOnSelect={!field.isMulti}
+                        required={field.isRequired}
+                        isMulti={field.isMulti}
+                    />
+                )}
             </Col>
         </>
     })

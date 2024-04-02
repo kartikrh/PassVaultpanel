@@ -58,6 +58,9 @@ const Index = forwardRef(
       setEventTypeId,
       setCompetitionId,
       reFetchData,
+      delay,
+      setDelay,
+      handleDelay,
       handleReset,
       competitions,
       onAddNavigate,
@@ -1002,6 +1005,43 @@ const Index = forwardRef(
                         </button>
                       </div>
                       {/* </Col> */}
+                    </Row>
+                  ) : null}
+                    {tableElement?.delayTextBox ? (
+                    <Row className="">
+                      <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Event Delay"
+                            defaultValue={delay}
+                            onChange={(e) => {
+                              setDelay(e.target.value);
+                            }}
+                            id="delay"
+                          />
+                        </div>
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            singleCheck.length > 0
+                            ? handleDelay()
+                            : dispatch(
+                              updateToastData({
+                                data: "Select at least one (only One) row",
+                                title: "Error",
+                                type: ERROR,
+                              })
+                            );
+                          }}
+                          type="delay"
+                          id="create-btn"
+                        >
+                          Save
+                        </button>
+                      </div>
                     </Row>
                   ) : null}
                 </form>
