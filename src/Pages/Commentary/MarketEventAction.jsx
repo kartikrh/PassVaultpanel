@@ -223,6 +223,11 @@ export const MarketEventAction = () => {
             className: "input-line-field"
         },
         {
+            title: "R-Rate",
+            render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2) || 0}`}</span>),
+            key: "inningsId",
+        },
+        {
             title: "Margin",
             dataIndex: "margin",
             render: (text, record) => (
