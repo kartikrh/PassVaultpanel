@@ -210,7 +210,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/setdelay`, {
         eventMarketId: checekedList,
-        delay: delay,
+        delay: +delay,
       })
       .then((response) => {
         fetchData();
