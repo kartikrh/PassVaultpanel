@@ -473,7 +473,7 @@ const Commentary = (props) => {
             [ON_STRIKE]: newOnStrikePlayer,
             [NON_STRIKE]: newNonStrikePlayer,
         }
-        const updatedOver = { ...currentOver, "teamScore": "", "isComplete": true }
+        const updatedOver = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore}/${teams[BATTING_TEAM]?.teamWicket}`, "isComplete": true }
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         setOnPitchPlayers(updatedOnPitchPlayer)
@@ -1143,8 +1143,11 @@ const Commentary = (props) => {
             else if (isUndoBall === OVER) {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 updatedBallHistory = getBallsForGivenOver(ballHistory, teams[BATTING_TEAM]?.teamOver, true)
+                const newCurrentOver = updatedOverHistory[updatedOverHistory.length - 1]
+                newCurrentOver["teamScore"] = ""
+                newCurrentOver["isComplete"] = false
                 setOverHistory(updatedOverHistory)
-                setCurrentOver(updatedOverHistory[updatedOverHistory.length - 1])
+                setCurrentOver(newCurrentOver)
             }
             else {
                 updatedBallHistory = overBallByBallDisplay.slice(0, -1)
