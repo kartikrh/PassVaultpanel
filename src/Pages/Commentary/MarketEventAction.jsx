@@ -464,37 +464,40 @@ export const MarketEventAction = () => {
                                     </Col>
                                     }
                                 </Row>
-                                <Row>
-                                    <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
-                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
-                                    </Col>
-                                    <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
-                                    </Col>
-                                    <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
-                                    </Col>
-                                    <Col className="p-0" xs={12} md={3} lg={2}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
-                                        <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
-                                    </Col>
-                                    <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
-                                        <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
-                                        <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <ListingElement
-                                            columns={columns}
-                                            dataSource={data}
-                                            tableElement={tableElement}
-                                        />
-                                    </Col>
-                                </Row>
+                                {data.length > 0 ? <>
+                                    <Row>
+                                        <Col className="p-0" xs={12} md={3} lg={2}>
+                                            <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
+                                            <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
+                                        </Col>
+                                        <Col className="p-0" xs={12} md={3} lg={2}>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
+                                            <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
+                                        </Col>
+                                        <Col className="p-0" xs={12} md={3} lg={2}>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
+                                            <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
+                                        </Col>
+                                        <Col className="p-0" xs={12} md={3} lg={2}>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
+                                            <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
+                                        </Col>
+                                        <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
+                                            <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <ListingElement
+                                                columns={columns}
+                                                dataSource={data}
+                                                tableElement={tableElement}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </> : <div className=" m-4 text-center">No record found</div>}
+
                             </CardBody>
                         </Card>
                     </Row>
