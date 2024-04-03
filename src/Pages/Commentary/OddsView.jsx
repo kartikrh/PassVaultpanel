@@ -10,6 +10,7 @@ import axiosInstance from "../../Features/axios";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
+import { MARKET_STATUS } from "./CommentartConst";
 
 const tableElement = {
     title: "oddsView",
@@ -43,7 +44,8 @@ export const OddsView = () => {
                                     yesRate: marketRunner.yesRate,
                                     noPoint: marketRunner.noPoint,
                                     yesPoint: marketRunner.yesPoint
-                                }
+                                },
+                                "status": MARKET_STATUS[eventMarket.status]
                             }
                         else return null
                     }).filter(x => x)
@@ -81,6 +83,13 @@ export const OddsView = () => {
             title: "Fancy",
             dataIndex: "fancy",
             key: "fancy",
+            style: { width: "35%" },
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            style: { width: "10%" },
         },
         {
             title: "Odds",

@@ -66,18 +66,18 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log({ overBallByBallDisplay })
-        console.log({ saveToDb })
+        // console.log({ overBallByBallDisplay })
+        // console.log({ saveToDb })
         // console.log(commentaryDetails, matchTypeDetails)
-        // console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
-        // console.log("Batting Team: ", teams?.[BATTING_TEAM])
+        console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
+        console.log("Batting Team: ", teams?.[BATTING_TEAM])
         // //     // console.log(currentOver, currentBall)
-        // console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
+        console.log("Histories: ", { ballHistory, overHistory, wicketHistory, partnershipHistory })
         // // console.log({ onPitchPlayers, teams })
         //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     })
     const checkForOverSwitch = (ballcount) => {
-        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails.ballsPerOver)) setShowChangeOverModal(true)
+        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
     const checkInningsSwitch = (checkFor) => {
         const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
@@ -473,7 +473,7 @@ const Commentary = (props) => {
             [ON_STRIKE]: newOnStrikePlayer,
             [NON_STRIKE]: newNonStrikePlayer,
         }
-        const updatedOver = { ...currentOver, "teamScore": "", "isComplete": true }
+        const updatedOver = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore}/${teams[BATTING_TEAM]?.teamWicket}`, "isComplete": true }
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         setOnPitchPlayers(updatedOnPitchPlayer)
@@ -1143,8 +1143,11 @@ const Commentary = (props) => {
             else if (isUndoBall === OVER) {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 updatedBallHistory = getBallsForGivenOver(ballHistory, teams[BATTING_TEAM]?.teamOver, true)
+                const newCurrentOver = updatedOverHistory[updatedOverHistory.length - 1]
+                newCurrentOver["teamScore"] = ""
+                newCurrentOver["isComplete"] = false
                 setOverHistory(updatedOverHistory)
-                setCurrentOver(updatedOverHistory[updatedOverHistory.length - 1])
+                setCurrentOver(newCurrentOver)
             }
             else {
                 updatedBallHistory = overBallByBallDisplay.slice(0, -1)
@@ -1304,10 +1307,14 @@ const Commentary = (props) => {
             if (isEmpty(currentPartnership) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
                 && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
                 apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams })
-            if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId)
+            if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
+                console.log("from here", {
+                    commentaryDetails, onPitchPlayers, teams: currentInningsTeams
+                });
                 apiCallObj["commentaryOvers"] = generateOver({
                     commentaryDetails, onPitchPlayers, teams: currentInningsTeams
                 })
+            }
             if (!isEmpty(apiCallObj)) {
                 dispatch(addCommentaryScreenData({
                     ...apiCallObj,
