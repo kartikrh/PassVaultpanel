@@ -18,7 +18,10 @@ import {
   ERROR,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import {
+  checkPermission,
+  convertDateUTCToLocal,
+} from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "./CloseModal";
 
@@ -40,6 +43,7 @@ const Index = () => {
   const [competitionId, setCompetitionId] = useState(null);
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+  const [delay, setDelay] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -200,11 +204,49 @@ const Index = () => {
         setCheckedList([]);
       });
   };
+
+  const handleDelay = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/eventMarket/setdelay`, {
+        eventMarketId: checekedList,
+        delay: +delay,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setCheckedList([]);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setCheckedList([]);
+      });
+  };
+
   const handleReset = (value) => {
     fetchData(value);
   };
   const handleEdit = (id) => {
     navigate("/addEventMarket", { state: { userId: id } });
+  };
+  const handleSL = (id) => {
+    navigate("/marketLogs", { state: { userId: id } });
+  };
+  const handleDS = (id) => {
+    navigate("/marketDataLogs", { state: { userId: id } });
   };
   const handleClose = async (record) => {
     setCloseModalData(record);
@@ -230,6 +272,37 @@ const Index = () => {
         return "Unknown";
     }
   };
+
+  const statusList = [
+    {
+      statusType: "NotOpen",
+      statusId: 0
+    },
+    {
+      statusType: "Open",
+      statusId: 1
+    },
+    {
+      statusType: "Inactive",
+      statusId: 2
+    },
+    {
+      statusType: "Suspend",
+      statusId: 3
+    },
+    {
+      statusType: "Close",
+      statusId: 4
+    },
+    {
+      statusType: "Settled",
+      statusId: 5
+    },
+    {
+      statusType: "Cancel",
+      statusId: 6
+    }
+  ]
   //table columns
   const columns = [
     {
@@ -271,15 +344,18 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-    && {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
       key: "edit",
-      render: (text, record) => <i className="bx bx-edit"
-        onClick={() => {
-          handleEdit(record.eventMarketId);
-        }}
-      ></i>,
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleEdit(record.eventMarketId);
+          }}
+        ></i>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -354,6 +430,13 @@ const Index = () => {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
+      title: "Delay",
+      dataIndex: "delay",
+      key: "delay",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Is Allow",
       key: "isAllow",
       render: (text, record) => (
@@ -410,6 +493,33 @@ const Index = () => {
       ),
       style: { width: "5%", textAlign: "center" },
     },
+    {
+      render: (text, record) => (
+        <>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleSL(record?.eventMarketId);
+            }}
+          >
+            SL
+          </Button>{" "}
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleDS(record?.eventMarketId);
+            }}
+          >
+            DS
+          </Button>
+        </>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },
   ];
   //elements required
   const tableElement = {
@@ -418,7 +528,9 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
+    statusListSelect: true,
     resetButton: true,
+    delayTextBox: true,
     importExport: false,
     teamsList: false,
   };
@@ -465,12 +577,20 @@ const Index = () => {
             eventTypes={eventTypes}
             competitionList={competitionList}
             eventList={eventList}
+            statusList={statusList}
             setEventTypeActive={setEventTypeActive}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
             reFetchData={fetchData}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            delay={delay}
+            setDelay={setDelay}
+            handleDelay={handleDelay}
+            isAddPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_ADD
+            )}
             isDeletePermission={checkPermission(
               permissionObj,
               pageName,

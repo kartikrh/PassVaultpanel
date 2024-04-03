@@ -1,3 +1,3 @@
-npm install --force
-npm run build
+yarn
+yarn build
 pm2-runtime start app.config.json

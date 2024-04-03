@@ -18,7 +18,7 @@ export const CommentaryScreen = ({
             const isWicket = +element?.isWicket !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
             const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
-            return <div className={` over-ball-display ${ballColor}`}>{`${element.value} ${ballTypeAdd ? ("| " + ballTypeAdd) : ""}`}</div>
+            return <div className={` over-ball-display ${ballColor}`}>{`${element.value > 0 ? element.value : ""} ${(element.value > 0 && ballTypeAdd) ? "| " : ""} ${ballTypeAdd ? (ballTypeAdd) : ""}`}</div>
         })
     }
     const handleKeyPress = (event) => {
@@ -183,7 +183,7 @@ export const CommentaryScreen = ({
                         < Col xs={12} md={12} lg={12}>
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
-                    {<Col className="d-flex" xs={12} md={12} lg={12}>
+                    {<Col className="ball-by-ball-display" xs={12} md={12} lg={12}>
                         {generateBallfromArray(overBalls)}
                     </Col>}
                 </Row>
