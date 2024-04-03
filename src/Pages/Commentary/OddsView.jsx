@@ -49,7 +49,7 @@ export const OddsView = () => {
                             }
                         else return null
                     }).filter(x => x)
-                    updatedDatalist = _.orderBy(updatedDatalist, ['fancy'], ['asc']);
+                    updatedDatalist = _.orderBy(updatedDatalist, ['fancy'], ['desc']);
                     setData(updatedDatalist);
                 }
                 // setIsLoading(false);
