@@ -50,6 +50,7 @@ import EventMarkets from "../Pages/EventMarkets";
 import AddEventMarket from "../Pages/EventMarkets/AddEventMarket.jsx";
 import UnsettledMarket from "../Pages/UnsettledMarket";
 import SetMarketResult from '../Pages/SetMarketResult';
+import Vendor from "../Pages/Vendor"
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -78,6 +79,8 @@ import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.j
 import { OddsView } from "../Pages/Commentary/OddsView.jsx";
 import MarketLogs from "../Pages/EventMarkets/MarketLogs.jsx";
 import MarketDataLogs from "../Pages/EventMarkets/MarketDataLogs.jsx";
+import AddVendor from "../Pages/Vendor/AddVendor.js";
+import VendorIpList from "../Pages/Vendor/VendorIpList.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -137,6 +140,9 @@ const authProtectedRoutes = [
   { path: "/marketDataLogs", component: <MarketDataLogs />},
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
   { path: "/setMarketResult", component: <SetMarketResult />},
+  { path: "/vendors", component: <Vendor /> },
+  { path: "/addVendor", component: <AddVendor /> },
+  { path: "/vendorIpList", component: <VendorIpList /> },
  
   {
     path: "/changePassword",
