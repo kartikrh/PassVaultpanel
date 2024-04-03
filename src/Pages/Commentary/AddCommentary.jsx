@@ -362,6 +362,8 @@ function AddCommentary() {
         if (dataToSave1 && dataToSave2) {
             const dataToSave = {
                 ...dataToSave1,
+                "isActive": dataToSave1?.isActive ? dataToSave1.isActive : false,
+                "isClientShow": dataToSave1?.isClientShow ? dataToSave1.isClientShow : false,
                 "team1Id": dataToSave2.team1Id,
                 "team2Id": dataToSave2.team2Id,
                 "team1Captain": dataToSave2.team1Captain,
