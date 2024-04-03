@@ -6,6 +6,7 @@ import { ERROR, BATTING_STATUS, BALLING_STATUS, SAVE_AND_NEXT } from '../../comp
 import CardComponent from './CardComponent'
 import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
+import { clone } from 'lodash'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection";
@@ -188,7 +189,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             };
             const newData = {
               commentaryId: commentaryDetails.commentaryId,
-              commentaryDetails: commentaryDetails,
+              commentaryDetails: clone(commentaryDetails),
               commentaryPlayers: [].concat(isPlayPlayers || [], playersToUpdate || []),
               commentaryBallByBall,
             };
