@@ -173,45 +173,44 @@ const Index = () => {
           }}
         ></i>
       ),
-      style: { width: "2%", textAlign: "center" },
+      style: { width: "2%" },
     },
     {
-      title: "Subscription Date",
-      dataIndex: "subscriptionDate",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
-        </span>
-      ),
-      key: "subscriptionDate",
-      style: { width: "5%" },
-    },
-    // {
-    //   title: "Id",
-    //   dataIndex: "vendorId",
-    //   key: "vendorId",
-    //   style: { width: "2%" },
-    // },
-    {
-      title: "Vendor Name",
+      title: "Vendor",
       dataIndex: "name",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
       key: "name",
       style: { width: "5%" },
     },
     {
       title: "Key",
       dataIndex: "key",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
       key: "key",
       style: { width: "5%" },
     },
     {
-      title: "Is Active",
+      title: "Subscription",
+      dataIndex: "subscriptionDate",
+      render: (text, record) => (
+        <span>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
+      key: "subscriptionDate",
+      style: { width: "5%" },
+    },
+    {
+      title: "Expiry",
+      dataIndex: "expiryDate",
+      render: (text, record) => (
+        <span>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
+      key: "expiryDate",
+      style: { width: "5%" },
+    },
+    {
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
         <Button
@@ -228,7 +227,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is IP Check",
+      title: "Allow Ip",
       key: "isIPCheck",
       render: (text, record) => (
         <Button
