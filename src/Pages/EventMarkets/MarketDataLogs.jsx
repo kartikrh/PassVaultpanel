@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardBody, Col, Container, Row } from "reactstrap";
+import { CardHeader, Col, Container, Row } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { ERROR } from "../../components/Common/Const";
 import Table from "../../components/Common/Table";
@@ -98,7 +98,8 @@ function MarketDataLogs() {
         const logObject = JSON.parse(text)[0];
         const logItems = Object.entries(logObject).map(([key, value]) => (
           <>
-            <strong>{key}:</strong> {value}{", "}
+            <strong>{key}:</strong> {value}
+            {", "}
           </>
         ));
         return <div>{logItems}</div>;
@@ -111,95 +112,27 @@ function MarketDataLogs() {
     title: "Market Data Logs",
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 0:
-        return "NotOpen";
-      case 1:
-        return "Open";
-      case 2:
-        return "Inactive";
-      case 3:
-        return "Suspend";
-      case 4:
-        return "Close";
-      case 5:
-        return "Settled";
-      case 6:
-        return "Cancel";
-      default:
-        return "Unknown";
-    }
-  };
-
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="EventMarket" breadcrumbItem="Market Data Logs" />
           {isLoading && <SpinnerModel />}
-          <Card>
-            <CardBody>
+          <CardHeader>
+            <Row className="g-2">
               {marketDetails && (
-                <Row>
-                  <Col md={6}>
-                    <p>
-                      <strong>Event Date:</strong>{" "}
-                      {convertDateUTCToLocal(marketDetails?.eventDate, "index")}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Id:</strong> {marketDetails?.eventMarketId}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Event Name:</strong>{" "}
-                      {marketDetails?.eventTypeName}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Competition:</strong>{" "}
-                      {marketDetails?.competitionName}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Event:</strong> {marketDetails?.eventName}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Market:</strong> {marketDetails?.marketName}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Team:</strong> {marketDetails?.teamName}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Inning:</strong> {marketDetails?.inningsId}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {getStatusText(marketDetails?.status)}
-                    </p>
-                  </Col>
-                  <Col md={6}>
-                    <p>
-                      <strong>Delay:</strong> {marketDetails?.delay}
-                    </p>
-                  </Col>
-                </Row>
+                <Col className="col-sm-auto">
+                  <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}`}</div>
+                  <div>{`Ref: ${marketDetails.eventRefId} [
+                      ${convertDateUTCToLocal(
+                        marketDetails?.eventDate,
+                        "index"
+                      )}
+                    ]`}</div>
+                </Col>
               )}
-            </CardBody>
-          </Card>
+            </Row>
+          </CardHeader>
           <Table
             columns={columns}
             dataSource={data}
