@@ -114,7 +114,7 @@ const Index = () => {
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventMarket//setMarketIsResult`, {
+      .post(`/admin/eventMarket/setMarketIsResult`, {
         eventMarketId: record.eventMarketId,
         [pType]: cState ? false : true,
       })
