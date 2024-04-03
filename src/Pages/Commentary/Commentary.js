@@ -463,7 +463,7 @@ const Commentary = (props) => {
         }
         const updateBowler = {
             ...onPitchPlayers[CURRENT_BOWLER],
-            "isPlay": false,
+            "isPlay": null,
             "bowlerOver": Math.ceil(+onPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
             "bowlerMaidenOver": currentOver.totalRun < 1 ? 1 : 0
         }
