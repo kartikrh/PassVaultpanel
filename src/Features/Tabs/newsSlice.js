@@ -23,11 +23,17 @@ const newsSlice = createSlice({
         isSaved: undefined,
         isLoading: false,
         error: null,
+        saveCommentaryLog: []
     },
     reducers: {
         updateSavedState: (state, action) => {
             state.isSaved = action.payload;
-        }
+        },
+        addSaveCommentaryLog: (state, action) => {
+            console.log("HHHHHHHHHHH");
+            const prevValue = state.saveCommentaryLog
+            state.saveCommentaryLog = [].concat(prevValue, action.payload)
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -45,5 +51,5 @@ const newsSlice = createSlice({
     }
 });
 
-export const { updateSavedState } = newsSlice.actions;
+export const { updateSavedState, addSaveCommentaryLog } = newsSlice.actions;
 export default newsSlice.reducer;
