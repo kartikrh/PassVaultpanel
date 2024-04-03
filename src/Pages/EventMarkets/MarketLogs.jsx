@@ -159,7 +159,7 @@ function MarketLogs() {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="EventMarket" breadcrumbItem="Market Data Logs" />
+          <Breadcrumbs title="EventMarket" breadcrumbItem="Market Logs" />
           {isLoading && <SpinnerModel />}
           <Card>
             <CardBody>
