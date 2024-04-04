@@ -27,7 +27,7 @@ import {
 } from "../../components/Common/Const";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { addVendorToDb, updateSavedState } from "../../Features/Tabs/addVendorSlice";
 
@@ -101,6 +101,7 @@ function AddVendor() {
       const finalData = {
         ...impKeys,
         ...dataToSave,
+        expiryDate: convertDateLocalToUTC(dataToSave?.expiryDate)
       };
       dispatch(addVendorToDb(finalData));
       setCurrentSaveAction(saveAction);
