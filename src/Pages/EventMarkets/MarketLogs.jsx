@@ -130,8 +130,12 @@ function MarketLogs() {
       style: { width: "5%" },
     },
   ];
+  const MarketDetailsDate = convertDateUTCToLocal(
+    marketDetails?.eventDate,
+    "index"
+  );
   const tableElement = {
-    title: "Market Logs",
+    title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
   };
 
   return (
@@ -146,10 +150,7 @@ function MarketLogs() {
                 <Col className="col-sm-auto">
                   <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}`}</div>
                   <div>{`Ref: ${marketDetails.eventRefId} [
-                      ${convertDateUTCToLocal(
-                        marketDetails?.eventDate,
-                        "index"
-                      )}
+                      ${MarketDetailsDate}
                     ]`}</div>
                 </Col>
               )}

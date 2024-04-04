@@ -30,11 +30,12 @@ const VendorIpList = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [vendorDetails, setVendorDetails] = useState(null);
   const location = useLocation();
   const [vendorId, setVendorId] = useState(location.state?.vendorId || "0");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const fetchData = async (id) => {
     setIsLoading(true);
     await axiosInstance
@@ -61,6 +62,23 @@ const VendorIpList = () => {
           })
         );
         setIsLoading(false);
+      });
+  };
+
+  const fetchVendorData = async (id) => {
+    await axiosInstance
+      .post("/admin/vendor/byId", { vendorId: id })
+      .then((response) => {
+        setVendorDetails(response?.result);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -108,7 +126,7 @@ const VendorIpList = () => {
   const handleBackClick = () => {
     navigate("/vendors");
   };
- 
+  
   const onGenerateClick = async () => {
     try {
       const payload = {
@@ -217,19 +235,13 @@ const VendorIpList = () => {
       style: { width: "2%" },
     },
     {
-      title: "Id",
-      dataIndex: "vendorIpId",
-      key: "vendorIpId",
-      style: { width: "5%" },
-    },
-    {
       title: "Ip Address",
       dataIndex: "ipAddress",
       key: "ipAddress",
-      style: { width: "5%" },
+      style: { width: "90%" },
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
         <Button
@@ -243,12 +255,12 @@ const VendorIpList = () => {
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
-      style: { width: "2%"},
+      style: { width: "5%", textAlign: "center" },
     },
   ];
   //elements required
   const tableElement = {
-    title: "Vendor Ip List",
+    title: `${vendorDetails?.name} Ip List`,
     resetButton: true,
   };
 
@@ -261,6 +273,7 @@ const VendorIpList = () => {
   useEffect(() => {
     if (vendorId !== "0") {
       fetchData(vendorId);
+      fetchVendorData(vendorId);
     }
   }, [setVendorId]);
 
@@ -268,22 +281,28 @@ const VendorIpList = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Vendor Ip List" />
+          <Breadcrumbs
+            title="ScoreCard"
+            breadcrumbItem={`${vendorDetails?.name} Ip List`}
+          />
           {isLoading && <SpinnerModel />}
-          <Row>
-            <Col
-              className="mb-3"
-              xs={12}
-              md={{ span: 4, offset: 11 }}
-              lg={{ span: 3, offset: 11 }}
-            >
-              <button className="btn btn-danger mx-1" onClick={handleBackClick}>
-                Back
-              </button>
-            </Col>
-          </Row>
           <Card>
             <CardBody>
+              <Row>
+                <Col
+                  className="mb-3"
+                  xs={12}
+                  md={{ span: 4, offset: 11 }}
+                  lg={{ span: 3, offset: 11 }}
+                >
+                  <button
+                    className="btn btn-danger mx-1"
+                    onClick={handleBackClick}
+                  >
+                    Back
+                  </button>
+                </Col>
+              </Row>
               <FormBuilder
                 ref={finalizeRef}
                 fields={VendorIpListFileds}
