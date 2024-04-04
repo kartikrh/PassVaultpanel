@@ -49,8 +49,10 @@ import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
 import AddEventMarket from "../Pages/EventMarkets/AddEventMarket.jsx";
 import UnsettledMarket from "../Pages/UnsettledMarket";
-import SetMarketResult from '../Pages/SetMarketResult';
-import Vendor from "../Pages/Vendor"
+import SetMarketResult from "../Pages/SetMarketResult";
+import Vendor from "../Pages/Vendor";
+import DisplayStatus from "../Pages/DisplayStatus";
+import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -110,7 +112,10 @@ const authProtectedRoutes = [
   { path: "/shortCommentary", component: <ShortCommentary /> },
   { path: "/updateCommentaryFeature", component: <CommentaryFeatures /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
-  { path: "/commentaryMarketTemplate", component: <CommentaryMarketTemplate /> },
+  {
+    path: "/commentaryMarketTemplate",
+    component: <CommentaryMarketTemplate />,
+  },
   { path: "/marketEventAction", component: <MarketEventAction /> },
   { path: "/oddsView", component: <OddsView /> },
   { path: "/importMarket", component: <ImportMarket /> },
@@ -133,17 +138,19 @@ const authProtectedRoutes = [
   { path: "/subscribers", component: <Subscribers /> },
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
-  { path: "/marketTemplateRunner", component: <MarketTemplateRunner />},
+  { path: "/marketTemplateRunner", component: <MarketTemplateRunner /> },
   { path: "/eventMarkets", component: <EventMarkets /> },
-  { path: "/addEventMarket", component: <AddEventMarket />},
-  { path: "/marketLogs", component: <MarketLogs />},
-  { path: "/marketDataLogs", component: <MarketDataLogs />},
+  { path: "/addEventMarket", component: <AddEventMarket /> },
+  { path: "/marketLogs", component: <MarketLogs /> },
+  { path: "/marketDataLogs", component: <MarketDataLogs /> },
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
-  { path: "/setMarketResult", component: <SetMarketResult />},
+  { path: "/setMarketResult", component: <SetMarketResult /> },
   { path: "/vendors", component: <Vendor /> },
   { path: "/addVendor", component: <AddVendor /> },
   { path: "/vendorIpList", component: <VendorIpList /> },
- 
+  { path: "/displaystatus", component: <DisplayStatus /> },
+  { path: "/addDisplayStatus", component: <AddDisplayStatus /> },
+
   {
     path: "/changePassword",
     component: <ChangePassword />,
