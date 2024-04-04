@@ -3,11 +3,11 @@ import axiosInstance from '../axios';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { updateToastData } from '../toasterSlice';
 
-export const addNewsToDb = createAsyncThunk(
-    'news/addNews',
+export const addVendorToDb = createAsyncThunk(
+    'vendors/addVendor',
     async (data, { rejectWithValue, dispatch }) => {
         try {
-            const response = await axiosInstance.post('/admin/news/save', data);
+            const response = await axiosInstance.post('/admin/vendor/save', data);
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
@@ -17,39 +17,33 @@ export const addNewsToDb = createAsyncThunk(
     }
 );
 
-const newsSlice = createSlice({
-    name: 'news',
+const addVendorSlice = createSlice({
+    name: 'vendors',
     initialState: {
         isSaved: undefined,
         isLoading: false,
         error: null,
-        saveCommentaryLog: []
     },
     reducers: {
         updateSavedState: (state, action) => {
             state.isSaved = action.payload;
-        },
-        addSaveCommentaryLog: (state, action) => {
-            console.log("HHHHHHHHHHH");
-            const prevValue = state.saveCommentaryLog
-            state.saveCommentaryLog = [].concat(prevValue, action.payload)
-        },
+        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(addNewsToDb.pending, (state) => {
+            .addCase(addVendorToDb.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(addNewsToDb.fulfilled, (state, action) => {
+            .addCase(addVendorToDb.fulfilled, (state, action) => {
                 state.isSaved = true
                 state.isLoading = false;
             })
-            .addCase(addNewsToDb.rejected, (state, action) => {
+            .addCase(addVendorToDb.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export const { updateSavedState, addSaveCommentaryLog } = newsSlice.actions;
-export default newsSlice.reducer;
+export const { updateSavedState } = addVendorSlice.actions;
+export default addVendorSlice.reducer;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
-import _, { isEmpty, isEqual } from "lodash"
+import _, { clone, isEmpty, isEqual } from "lodash"
 import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, RETIRED_OUT, RUN, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
@@ -66,7 +66,7 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        // console.log({ overBallByBallDisplay })
+        // console.log({ playerUpdateList })
         // console.log({ saveToDb })
         // console.log(commentaryDetails, matchTypeDetails)
         console.log("Current things: ", { currentBall, currentOver, currentPartnership, currentWicket, onPitchPlayers })
@@ -294,6 +294,13 @@ const Commentary = (props) => {
         }
         if (!freezePlayers) checkForOverSwitch(updateOver.ballCount)
         updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
+        // const freeAllPlayer = []
+        // players[BOWLING_TEAM]?.map(player => {
+        //     if (player.isPlay === false) {
+        //         freeAllPlayer.push({ ...player, isPlay: null })
+        //     } return player
+        // })
+        // setPlayerUpdateList([].concat(freeAllPlayer, playerUpdateList || []))
         setPlayers({
             [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
             [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
@@ -313,8 +320,8 @@ const Commentary = (props) => {
     }
     const updateExtras = (type, runs, isBoundary = false) => {
         setCurrentBall({})
-        const bowler = onPitchPlayers[CURRENT_BOWLER]
-        const batter = onPitchPlayers[ON_STRIKE]
+        const bowler = clone(onPitchPlayers[CURRENT_BOWLER])
+        const batter = clone(onPitchPlayers[ON_STRIKE])
         const updateBattingTeam = {}
         const updateOver = {}
         const updateBall = {}
@@ -433,8 +440,8 @@ const Commentary = (props) => {
         updateBall["batStrikeId"] = onPitchPlayers[ON_STRIKE].commentaryPlayerId
         updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
         const updatedOnStrike = { ...onPitchPlayers[ON_STRIKE], ...batter }
-        const updateBatter = isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike
-        const updateNonStriker = !isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike
+        const updateBatter = clone(isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike)
+        const updateNonStriker = clone(!isStrikeChange ? onPitchPlayers[NON_STRIKE] : updatedOnStrike)
         updateBatter["onStrike"] = true
         updateNonStriker["onStrike"] = false
         setOnPitchPlayers((prevData) => {
@@ -463,7 +470,7 @@ const Commentary = (props) => {
         }
         const updateBowler = {
             ...onPitchPlayers[CURRENT_BOWLER],
-            "isPlay": false,
+            "isPlay": null,
             "bowlerOver": Math.ceil(+onPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
             "bowlerMaidenOver": currentOver.totalRun < 1 ? 1 : 0
         }
@@ -1321,6 +1328,7 @@ const Commentary = (props) => {
                     "commentaryId": commentaryDetails.commentaryId,
                 }))
             }
+
         }
     }, [])
     useEffect(() => {
@@ -1416,7 +1424,7 @@ const Commentary = (props) => {
             }}
             overBalls={overBallByBallDisplay}
             anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
-                || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || changePlayerList}
+                || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
         />
         {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}

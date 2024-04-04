@@ -1,50 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Card, CardBody, Col, Container, Row } from "reactstrap";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  ERROR,
-  PERMISSION_VIEW,
-  TAB_EVENT_MARKETS,
-} from "../../components/Common/Const";
+import { CardHeader, Col, Container, Row } from "reactstrap";
+import { useDispatch } from "react-redux";
+import { ERROR } from "../../components/Common/Const";
 import axiosInstance from "../../Features/axios";
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import {
-  checkPermission,
-  convertDateUTCToLocal,
-} from "../../components/Common/Reusables/reusableMethods";
-import { isEqual } from "lodash";
+import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
 function MarketLogs() {
-  const pageName = TAB_EVENT_MARKETS;
   const [data, setData] = useState([]);
-  const [checekedList, setCheckedList] = useState([]);
-  const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
-  let navigate = useNavigate();
-  const location = useLocation();
-  const [id, setId] = useState(location.state?.userId || "0");
-  useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard");
-    }
-  }, []);
+  const eventMarketId = +localStorage.getItem("EventMarketLogId") || "0";
+  const [marketDetails, setMarketDetails] = useState(null);
 
   useEffect(() => {
-    if (id !== "0") {
-      fetchData(id);
+    if (eventMarketId !== "0") {
+      fetchData(eventMarketId);
+      fetchMarketData(eventMarketId);
     }
-  }, [id]);
+  }, [eventMarketId]);
 
-  const fetchData = async (id) => {
+  const fetchData = async (eventMarketId) => {
     setIsLoading(true);
     await axiosInstance
-      .post("/admin/eventMarket/getSLReport", { eventMarketId: id })
+      .post("/admin/eventMarket/getSLReport", { eventMarketId })
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -52,8 +34,6 @@ function MarketLogs() {
           apiDataIdList.push(ele?.logId);
         });
         setData(apiData);
-        setDataIndexList(apiDataIdList);
-        setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -68,8 +48,21 @@ function MarketLogs() {
       });
   };
 
-  const handleBackClick = () => {
-    navigate("/eventMarkets");
+  const fetchMarketData = async (id) => {
+    await axiosInstance
+      .post("/admin/eventMarket/byId", { eventMarketId: id })
+      .then((response) => {
+        setMarketDetails(response?.result);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   function mapActionType(status) {
@@ -82,63 +75,14 @@ function MarketLogs() {
         return "marketCancel";
       case 4:
         return "closeMarket";
-      case 5: 
+      case 5:
         return "closeMarketOnTossWin";
       default:
         return "-";
     }
   }
 
-  const handleSingleCheck = (e) => {
-    let updateSingleCheck = [];
-    if (checekedList.includes(e.logId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.logId);
-    } else {
-      updateSingleCheck = [...checekedList, e.logId];
-    }
-    setCheckedList(updateSingleCheck);
-  };
-
   const columns = [
-    {
-      title: (
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="chk_child"
-            value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
-          />
-        </div>
-      ),
-      render: (text, record) => (
-        <div className="form-check d-flex align-items-center justify-between">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="chk_child"
-            value="option1"
-            checked={checekedList.includes(record.logId)}
-            onChange={() => {
-              handleSingleCheck(record);
-            }}
-          />
-        </div>
-      ),
-      key: "select",
-      style: { width: "2%" },
-    },
     {
       title: "Date",
       dataIndex: "createdDate",
@@ -148,7 +92,7 @@ function MarketLogs() {
         </span>
       ),
       key: "createdDate",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     {
@@ -162,7 +106,7 @@ function MarketLogs() {
       title: "Market Name",
       dataIndex: "marketName",
       key: "marketName",
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Action",
@@ -171,49 +115,52 @@ function MarketLogs() {
         <span style={{ cursor: "pointer" }}>{mapActionType(text)}</span>
       ),
       key: "actionType",
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Action Value",
       dataIndex: "value",
       key: "value",
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "User",
       dataIndex: "userName",
       key: "userName",
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
   ];
+  const MarketDetailsDate = convertDateUTCToLocal(
+    marketDetails?.eventDate,
+    "index"
+  );
   const tableElement = {
-    title: "Market Logs",
+    title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
   };
 
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="EventMarket" breadcrumbItem="Market Data Logs" />
+          <Breadcrumbs title="EventMarket" breadcrumbItem="Market Logs" />
           {isLoading && <SpinnerModel />}
-          <Row>
-            <Col
-              className="mb-3"
-              xs={12}
-              md={{ span: 4, offset: 11 }}
-              lg={{ span: 3, offset: 11 }}
-            >
-              <button className="btn btn-danger mx-1" onClick={handleBackClick}>
-                Back
-              </button>
-            </Col>
-          </Row>
+          <CardHeader>
+            <Row className="g-2">
+              {marketDetails && (
+                <Col className="col-sm-auto">
+                  <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}`}</div>
+                  <div>{`Ref: ${marketDetails.eventRefId} [
+                      ${MarketDetailsDate}
+                    ]`}</div>
+                </Col>
+              )}
+            </Row>
+          </CardHeader>
           <Table
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
             reFetchData={fetchData}
-            singleCheck={checekedList}
           />
         </Container>
       </div>

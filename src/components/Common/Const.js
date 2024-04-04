@@ -46,6 +46,8 @@ export const TAB_MARKET_TEMPLATE = "Market Templates"
 export const TAB_MARKET_TEMPLATE_RUNNER = "Market Template Runner"
 export const TAB_EVENT_MARKETS = "Event Markets"
 export const TAB_SET_MARKETS_RESULT = "Set Market Result"
+export const TAB_VENDOR = "Vendors"
+
 // Permission Type
 export const PERMISSION_ADD = "isAdd"
 export const PERMISSION_EDIT = "isEdit"
