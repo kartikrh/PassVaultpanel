@@ -31,6 +31,7 @@ import {
   ERROR,
   TEXT_BUTTON,
   BUTTON,
+  COLOR_PICKER,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form, Button } from "reactstrap";
@@ -39,6 +40,7 @@ import MyUploadAdapter from "./MyUploadAdapter.js";
 import { updateToastData } from "../../../Features/toasterSlice.js";
 import { useDispatch } from "react-redux";
 import MyEditor from "./MyEditor.js";
+import { ColorPicker } from "antd";
 
 const FormBuilder = forwardRef(
   (
@@ -624,6 +626,13 @@ const FormBuilder = forwardRef(
                         field={field}
                         handleImageChange={handleImageChange}
                         src={viewImage?.[field.name]}
+                      />
+                    )}
+                    {field.type === COLOR_PICKER && (
+                      <ColorPicker
+                        value={formData[field.name] || "#35499C"}
+                        onChange={(color) => handleChange(field, color.toHexString())}
+                        className="ml-2"
                       />
                     )}
                     {field.type === BUTTON && (
