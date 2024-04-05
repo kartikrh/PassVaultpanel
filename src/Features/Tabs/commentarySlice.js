@@ -23,11 +23,11 @@ export const addCommentaryDetailsToDb = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            dispatch(addSaveCommentaryLog({ api: "addCommentaryDetails", req: data, res: response?.result }))
+            // dispatch(addSaveCommentaryLog({ api: "addCommentaryDetails", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            dispatch(addSaveCommentaryLog({ api: "addCommentaryDetails", req: data, res: error?.message }))
+            // dispatch(addSaveCommentaryLog({ api: "addCommentaryDetails", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -37,11 +37,11 @@ export const addCommentaryScreenData = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
-            dispatch(addSaveCommentaryLog({ api: "addCommentaryScreenData", req: data, res: response?.result }))
+            // dispatch(addSaveCommentaryLog({ api: "addCommentaryScreenData", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            dispatch(addSaveCommentaryLog({ api: "addCommentaryScreenData", req: data, res: error?.message }))
+            // dispatch(addSaveCommentaryLog({ api: "addCommentaryScreenData", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -51,11 +51,11 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/updateCommentaryStatus', data);
-            dispatch(addSaveCommentaryLog({ api: "updateCommentaryDisplayStatus", req: data, res: response?.result }))
+            // dispatch(addSaveCommentaryLog({ api: "updateCommentaryDisplayStatus", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            dispatch(addSaveCommentaryLog({ api: "updateCommentaryDisplayStatus", req: data, res: error?.message }))
+            // dispatch(addSaveCommentaryLog({ api: "updateCommentaryDisplayStatus", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -65,11 +65,11 @@ export const changeBowlerFromCommentary = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/changeBowler', data);
-            dispatch(addSaveCommentaryLog({ api: "changeBowlerFromCommentary", req: data, res: response?.result }))
+            // dispatch(addSaveCommentaryLog({ api: "changeBowlerFromCommentary", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            dispatch(addSaveCommentaryLog({ api: "changeBowlerFromCommentary", req: data, res: error?.message }))
+            // dispatch(addSaveCommentaryLog({ api: "changeBowlerFromCommentary", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -79,11 +79,11 @@ export const saveShortCommentary = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveShortCommentary', data);
-            dispatch(addSaveCommentaryLog({ api: "saveShortCommentary", req: data, res: response?.result }))
+            // dispatch(addSaveCommentaryLog({ api: "saveShortCommentary", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            dispatch(addSaveCommentaryLog({ api: "saveShortCommentary", req: data, res: error?.message }))
+            // dispatch(addSaveCommentaryLog({ api: "saveShortCommentary", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
