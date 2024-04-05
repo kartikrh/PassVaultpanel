@@ -1,4 +1,4 @@
-import { IMAGE, MULTI_SELECT, SELECT, TEXT } from "../../components/Common/Const";
+import { IMAGE, MULTI_SELECT, SELECT, TEXT, COLOR_PICKER } from "../../components/Common/Const";
 
 export const TeamFields = [
     {
@@ -68,5 +68,11 @@ export const TeamFields = [
         showSelectAll: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: COLOR_PICKER,
+        name: "teamColor",
+        label: "Team Color",
+        parentclassName: "",
     },
 ]

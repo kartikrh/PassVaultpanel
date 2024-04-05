@@ -1,14 +1,20 @@
 import {
   DATE_TIME_PICKER,
   IMAGE,
-  MULTI_SELECT,
-  SELECT,
   SWITCH,
   TEXT,
   TEXT_EDITOR,
 } from "../../components/Common/Const";
 
 export const newsFields = [
+  {
+    name: "tags",
+    label: "Tag",
+    isRequired: true,
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+  },
   {
     name: "title",
     label: "Title",
