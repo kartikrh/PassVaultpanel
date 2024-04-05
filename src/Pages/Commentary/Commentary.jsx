@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { AccordionBody, AccordionHeader, AccordionItem, Col, Row, UncontrolledAccordion } from "reactstrap"
+import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE } from "./CommentartConst"
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import { generateBallLabelFromBall } from "./functions"
-import { useSelector } from "react-redux"
+import CommentaryAction from "./CommentaryModels/CommentaryAction"
 // import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
@@ -14,8 +14,9 @@ export const CommentaryScreen = ({
     overBalls }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
-    const [renderApi, setRenderApi] = useState({})
-    const { saveCommentaryLog } = useSelector(state => state.tabsData.news);
+    const [actionPopup, setActionPopup] = useState(undefined)
+    // const [renderApi, setRenderApi] = useState({})
+    // const { saveCommentaryLog } = useSelector(state => state.tabsData.news);
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
             const isWicket = +element?.isWicket !== 0
@@ -24,11 +25,11 @@ export const CommentaryScreen = ({
             return <div className={` over-ball-display ${ballColor}`}>{`${element.value > 0 ? element.value : ""} ${(element.value > 0 && ballTypeAdd) ? "| " : ""} ${ballTypeAdd ? (ballTypeAdd) : ""}`}</div>
         })
     }
-    useEffect(() => {
-        if (saveCommentaryLog?.length > 0) {
-            setRenderApi(saveCommentaryLog[saveCommentaryLog.length - 1])
-        }
-    }, [saveCommentaryLog])
+    // useEffect(() => {
+    //     if (saveCommentaryLog?.length > 0) {
+    //         setRenderApi(saveCommentaryLog[saveCommentaryLog.length - 1])
+    //     }
+    // }, [saveCommentaryLog])
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -250,29 +251,11 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => updateExtras(NO_BALL_BYE)}>
-                        No Ball Bye
-                        {/* <img className="button-icon" src="icons/wide-ball.png" alt="Icon" /> */}
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_LEG_BYE)}>
                         <img className="button-icon" src="icons/leg-by.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => updateExtras(NO_BALL_LEG_BYE)}>
-                        No Ball Leg Bye
-                        {/* <img className="button-icon" src="icons/no-ball.png" alt="Icon" /> */}
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={changeOver}>
-                        <img className="button-icon" src="icons/end-over.png" alt="Icon" />
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={endInnings}>
-                        <img className="button-icon" src="icons/end-innings.png" alt="Icon" />
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(0)}>
+                        onClick={() => setActionPopup(true)}>
                         <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
                     <Col role="button" className="color-out score-button" xs={3} md={3} lg={3}
@@ -282,33 +265,48 @@ export const CommentaryScreen = ({
                 </Row>
             </Col>
             <Col xs={12} md={6} lg={6}>
+
+            </Col>
+        </Row >
+        {/* <Row className="mt-4 width-full">
+            <Col>
                 <Row>
                     <UncontrolledAccordion defaultOpen="0">
                         <AccordionItem>
-                            <AccordionHeader targetId='ApiData'>ApiData</AccordionHeader>
+                            <AccordionHeader targetId='ApiData'>Api</AccordionHeader>
                             <AccordionBody accordionId="ApiData">
                                 {(saveCommentaryLog || []).map(element => {
                                     return <div style={{ cursor: "pointer" }} onClick={() => setRenderApi(element)}>{element.api}</div>
                                 })}
+                                <UncontrolledAccordion defaultOpen="0">
+                                    <AccordionItem>
+                                        <AccordionHeader targetId='reqRes'>Request and Response</AccordionHeader>
+                                        <AccordionBody accordionId="reqRes">
+                                            <Row>
+                                                <Col xs={12} md={6} lg={6}>
+                                                    <span>Request</span>
+                                                    <div>{JSON.stringify(renderApi.req || {})}</div>
+                                                </Col>
+                                                <Col xs={12} md={6} lg={6}>
+                                                    <span>Response</span>
+                                                    <div>{JSON.stringify(renderApi.res || {})}</div>
+                                                </Col>
+                                            </Row>
+                                        </AccordionBody>
+                                    </AccordionItem >
+                                </UncontrolledAccordion>
                             </AccordionBody>
                         </AccordionItem >
                     </UncontrolledAccordion>
                 </Row>
-                <Row>
-                    <Col xs={12} md={6} lg={6}>
-                        <span>Request</span>
-                        <div>{JSON.stringify(renderApi.req || {})}</div>
-                    </Col>
-                    <Col xs={12} md={6} lg={6}>
-                        <span>Response</span>
-                        <div>{JSON.stringify(renderApi.res || {})}</div>
-                    </Col>
-                </Row>
+
                 <img role="button" className="sticky-button"
                     onClick={() => setStatusPopup(true)}
                     src="icons/commentary.png" alt="Icon" />
             </Col>
-        </Row >
+        </Row > */}
+
+
         {isBoundary &&
             <IsBoundaryModal
                 isOpen={isBoundary}
@@ -329,6 +327,21 @@ export const CommentaryScreen = ({
             onSubmit={(displayStatus) => {
                 setStatusPopup(undefined)
                 updateDisplayStatus(displayStatus)
+            }}
+        />}
+        {actionPopup && <CommentaryAction
+            toggle={() => setActionPopup(false)}
+            changeOver={() => {
+                changeOver()
+                setActionPopup(false)
+            }}
+            endInnings={() => {
+                endInnings()
+                setActionPopup(false)
+            }}
+            updateExtras={(extraType) => {
+                updateExtras(extraType)
+                setActionPopup(false)
             }}
         />}
     </React.Fragment >
