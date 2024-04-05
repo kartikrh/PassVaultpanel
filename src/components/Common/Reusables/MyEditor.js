@@ -31,8 +31,7 @@ const MyEditor = ({ field, formData, handleChange, fieldErrors }) => {
     const rawContentState = draftToHtml(
       convertToRaw(editorState.getCurrentContent())
     );
-    console.log("rawContentState", rawContentState);
-    handleChange(field, JSON.stringify(rawContentState));
+    handleChange(field, rawContentState);
   };
 
   function dataURLtoBlob(dataURL) {
