@@ -248,12 +248,11 @@ export const TeamDetailsFields = [
     {
         name: "addSystemPlayer",
         label: "Is System Players",
-        defaultValue: true,
+        defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 1, lg: 1 },
         type: SWITCH,
     },
-
     {
         name: "systemPlayerCount",
         label: false,
