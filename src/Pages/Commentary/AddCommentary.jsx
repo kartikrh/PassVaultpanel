@@ -246,7 +246,8 @@ function AddCommentary() {
                     ...response?.result,
                     team1Players: formatMultiSelectDataPlayers(response?.result?.team1Players),
                     team2Players: formatMultiSelectDataPlayers(response?.result?.team2Players),
-                    eventDate: convertDateLocalToUTC(response?.result?.eventDate)
+                    eventDate: convertDateLocalToUTC(response?.result?.eventDate),
+                    addSystemPlayer: +response?.result?.systemPlayerCount > 0
                 }
                 // Fetch Competition Options based on EventTypeId
                 await axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId: updateScreenData["eventTypeId"] })
@@ -372,7 +373,7 @@ function AddCommentary() {
                 "team2Kipper": dataToSave2.team2Kipper,
                 "team1Players": dataToSave2.team1Players,
                 "team2Players": dataToSave2.team2Players,
-                "addSystemPlayer" : dataToSave2.addSystemPlayer,
+                "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
                 "systemPlayerCount" :dataToSave2.addSystemPlayer?dataToSave2.systemPlayerCount : "0" 
             }
             const extraData = {

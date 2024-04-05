@@ -101,6 +101,23 @@ const Index = () => {
       });
   };
 
+  const handleSystemPlayer = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/player/updateSystemPlayer`, {
+        playerId: record.playerId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -238,6 +255,23 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "System Player",
+      key: "isSystemPlayer",
+      render: (text, record) => (
+        <Button
+          color={`${record.isSystemPlayer ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleSystemPlayer("isSystemPlayer", record, record.isSystemPlayer);
+          }}
+        >
+          <i className={`bx ${record.isSystemPlayer ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
