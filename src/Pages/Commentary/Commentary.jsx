@@ -265,7 +265,9 @@ export const CommentaryScreen = ({
                 </Row>
             </Col>
             <Col xs={12} md={6} lg={6}>
-
+                <img role="button" className="sticky-button"
+                    onClick={() => setStatusPopup(true)}
+                    src="icons/commentary.png" alt="Icon" />
             </Col>
         </Row >
         {/* <Row className="mt-4 width-full">
@@ -300,9 +302,7 @@ export const CommentaryScreen = ({
                     </UncontrolledAccordion>
                 </Row>
 
-                <img role="button" className="sticky-button"
-                    onClick={() => setStatusPopup(true)}
-                    src="icons/commentary.png" alt="Icon" />
+                
             </Col>
         </Row > */}
 
