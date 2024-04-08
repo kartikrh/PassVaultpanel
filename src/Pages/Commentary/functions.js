@@ -242,3 +242,17 @@ export const generateOverUnder = (dataObj) => {
   }
   return dataToSend
 }
+
+
+export const fetchWinnerMessage = ({ team, matchTypeDetails, commentaryDetails, winningTeam, isBattingTeamWon }) => {
+  const battingTeam = team[BATTING_TEAM]
+  const bowlingTeam = team[BOWLING_TEAM]
+  if (isBattingTeamWon) {
+    const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
+    const wicketRemaining = maxNoOfWicket - (+battingTeam.teamWicket || 0)
+    return `${battingTeam.shortName} has won by ${wicketRemaining} wickets.`
+  } else {
+    const runsLeft = +commentaryDetails.target - battingTeam.teamScore - 1
+    return `${bowlingTeam.shortName} has won by ${runsLeft} runs.`
+  }
+}
