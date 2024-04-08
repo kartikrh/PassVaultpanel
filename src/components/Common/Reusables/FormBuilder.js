@@ -630,7 +630,7 @@ const FormBuilder = forwardRef(
                     )}
                     {field.type === COLOR_PICKER && (
                       <ColorPicker
-                        value={formData[field.name] || "#35499C"}
+                        value={formData[field.name]}
                         onChange={(color) => handleChange(field, color.toHexString())}
                         className="ml-2"
                       />
