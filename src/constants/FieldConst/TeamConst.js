@@ -75,4 +75,10 @@ export const TeamFields = [
         label: "Team Color",
         parentclassName: "",
     },
+    {
+        type: COLOR_PICKER,
+        name: "backgroundColor",
+        label: "Background Color",
+        parentclassName: "",
+    },
 ]

@@ -128,10 +128,15 @@ function AddTeams() {
       });
   };
   const handleSaveClick = async (saveAction) => {
-    const dataToSave = finalizeRef.current.finalizeData()
-    if (dataToSave) {
+    const dataToSave1 = finalizeRef.current.finalizeData()
+    if (dataToSave1) {
       const extraData = {
         teamId
+      }
+      const dataToSave = {
+        ...dataToSave1,
+        teamColor: dataToSave1?.teamColor ? dataToSave1.teamColor : "#1677FF",
+        backgroundColor: dataToSave1?.backgroundColor ? dataToSave1.backgroundColor : "#1677FF" 
       }
       setCurrentSaveAction(saveAction);
       dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
