@@ -172,8 +172,7 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": [
                 { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
-                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, }
             ],
         }
         dispatch(addCommentaryScreenData(objToSave))
@@ -199,8 +198,7 @@ const Commentary = (props) => {
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": [
                 { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
-                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, }
             ],
         }
         dispatch(addCommentaryScreenData(objToSave))
