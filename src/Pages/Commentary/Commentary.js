@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { fetchNextPlayerOrder, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForGivenOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -116,8 +116,8 @@ const Commentary = (props) => {
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === commentaryDetails.target - 1
         const isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= commentaryDetails.target
         const WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
-        const WINNING_MESSAGE = isMatchTie ? `Match Between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName} is Tied.`
-            : "Match won by " + teams?.[WINNING_TEAM].teamName
+        const WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
+            : fetchWinnerMessage({ team: teams, matchTypeDetails, commentaryDetails, winningTeam: WINNING_TEAM, isBattingTeamWon })
         const teamUpdates = [
             { ...teams?.[BATTING_TEAM], isBattingComplete: true, isWin: isBattingTeamWon },
             { ...teams?.[BOWLING_TEAM], isWin: !isBattingTeamWon }]
@@ -138,7 +138,6 @@ const Commentary = (props) => {
             "commentaryPlayers": [
                 { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
                 { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
-                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
             ],
         }
         dispatch(addCommentaryScreenData(objToSave))
@@ -1207,6 +1206,8 @@ const Commentary = (props) => {
                     },
                     "commentaryTeams": [teams[BATTING_TEAM]],
                 }
+                if (objToSave.deleteCommentaryBallByBallId) delete objToSave.commentaryBallByBall
+                if (objToSave.deleteOverId) delete objToSave.commentaryOvers
                 dispatch(addCommentaryScreenData(objToSave))
                 setSaveToDb(false)
                 checkInningsSwitch(RUN)

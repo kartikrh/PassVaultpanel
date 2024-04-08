@@ -22,7 +22,13 @@ export const CommentaryScreen = ({
             const isWicket = +element?.isWicket !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
             const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
-            return <div className={` over-ball-display ${ballColor}`}>{`${element.value > 0 ? element.value : ""} ${(element.value > 0 && ballTypeAdd) ? "| " : ""} ${ballTypeAdd ? (ballTypeAdd) : ""}`}</div>
+            const ballValue = ballTypeAdd ?
+                element.value > 0 ?
+                    element.value : ""
+                : element.value
+            return <div className={` over-ball-display ${ballColor}`}>
+                {`${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`}
+            </div>
         })
     }
     // useEffect(() => {
