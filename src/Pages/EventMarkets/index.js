@@ -50,6 +50,7 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    setEventTypeActive(tableActions?.isActive)
     await axiosInstance
       .post(`/admin/eventMarket/all`, {
         ...(latestValueFromTable || tableActions),
@@ -549,7 +550,9 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    fetchEventTypeData();
+    if(EventTypeActive){
+     fetchEventTypeData();
+    }
   }, [EventTypeActive]);
 
   useEffect(() => {
@@ -584,7 +587,6 @@ const Index = () => {
             competitionList={competitionList}
             eventList={eventList}
             statusList={statusList}
-            setEventTypeActive={setEventTypeActive}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
