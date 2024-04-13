@@ -57,6 +57,11 @@
     color: darkgoldenrod;
 }
 
+.overs-header {
+    background-color: rgba(117, 219, 253, 0.473);
+    color: rgb(11, 112, 184);
+}
+
 .team-2 {
     background-color: #64ff1689;
     color: darkgreen;
@@ -107,6 +112,10 @@
 
 .button-icon {
     height: 40%;
+}
+
+.button-icon-lg {
+    height: 75%;
 }
 
 .decision-Button {
@@ -327,6 +336,13 @@
 
 .odds-column {
     padding: 0 !important;
+}
+
+.over-render {
+    border-style: solid;
+    border-top: none;
+    border-color: transparent;
+    padding: 0 0 0 1rem;
 }
 
 /* http://localhost:3000/oddsView?commentaryId=601 */
