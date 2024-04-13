@@ -18,6 +18,7 @@ const tableElement = {
 };
 export const MarketEventAction = () => {
     const [data, setData] = useState([]);
+    const [lineRatio, setLineRatio] = useState(undefined);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
@@ -31,8 +32,10 @@ export const MarketEventAction = () => {
         const dataToSend = []
         dataToChange.forEach(record => {
             let workingRecord = _.clone(record)
+            const lineRatioToSend = 5 / (lineRatio || 5)
             const recordMarketRunner = {
                 ...record.marketRunners[0],
+                "lineRatio": +lineRatioToSend.toFixed(2),
                 "line": +record.line,
                 "margin": +record.margin,
                 "overRate": +record.overRate,
@@ -149,7 +152,29 @@ export const MarketEventAction = () => {
         await axiosInstance
             .post("/admin/commentary/getEventDetailsByCId", { commentaryId })
             .then((response) => {
-                if (response?.result?.es) setCommentaryInfo(response?.result?.es)
+                if (response?.result?.es) setCommentaryInfo(response.result.es)
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsLoading(false);
+            });
+    }
+
+    const fetchLineRatio = async () => {
+        setIsLoading(true);
+        await axiosInstance
+            .post("/admin/matchTypePredictor/getByMatchTypeId", { matchTypeId: commentaryInfo.mtyi || 2 })
+            .then((response) => {
+                if (response?.result?.predictorData) {
+                    const predictorData = response.result.predictorData || []
+                    let predictorBallsValue = 0
+                    predictorData.forEach(ball => predictorBallsValue += +ball.runPerBall)
+                    const lastMarketData = data[data.length - 1] || {}
+                    const lastMarketLine = (lastMarketData.marketRunners[0]?.line) || predictorBallsValue
+                    const defaultValue = (predictorBallsValue * 5) / lastMarketLine
+                    setLineRatio(defaultValue.toFixed(2))
+                }
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -161,6 +186,7 @@ export const MarketEventAction = () => {
     const handleBackClick = () => {
         navigate("/commentary");
     };
+
     const columns = [
         {
             title: "Inning",
@@ -196,7 +222,7 @@ export const MarketEventAction = () => {
                     }}
                 >
                     {Object.entries(MARKET_STATUS).map(([key, value]) =>
-                        <option value={key}>{value}</option>
+                        <option key={key} value={key}>{value}</option>
                     )}
                 </select>
             ),
@@ -400,6 +426,25 @@ export const MarketEventAction = () => {
         },
     ];
 
+    const generateExtraField = <>
+        <Col xs={3} md={3} lg={2}>
+            <div><b>Line Ratio :</b></div>
+        </Col>
+        <Col xs={3} md={2} lg={2}>
+            <Input
+                className="form-control small-text-fields"
+                type="number"
+                step={0.1}
+                min={0}
+                max={10}
+                value={lineRatio || ""}
+                onChange={(e) => {
+                    setLineRatio(e.target.value)
+                }}
+            />
+        </Col>
+    </>
+
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
@@ -428,6 +473,12 @@ export const MarketEventAction = () => {
     }, []);
 
     useEffect(() => {
+        if (!lineRatio && commentaryInfo && data.length > 0) {
+            fetchLineRatio()
+        }
+    }, [data, commentaryInfo])
+
+    useEffect(() => {
         if (isAutoUpdate) {
             intervalIdRef.current = setInterval(() => {
                 if (commentaryId !== "0") {
@@ -441,6 +492,7 @@ export const MarketEventAction = () => {
             clearInterval(intervalIdRef.current);
         };
     }, [isAutoUpdate])
+
     return (
         <React.Fragment>
             <div className="page-content">
@@ -493,6 +545,7 @@ export const MarketEventAction = () => {
                                                 columns={columns}
                                                 dataSource={data}
                                                 tableElement={tableElement}
+                                                tableExtras={generateExtraField}
                                             />
                                         </Col>
                                     </Row>

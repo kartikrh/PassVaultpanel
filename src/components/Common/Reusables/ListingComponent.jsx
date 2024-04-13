@@ -2,7 +2,7 @@ import React from "react";
 import "../Table/style.css"
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-export const ListingElement = ({ columns, dataSource = [], tableElement, }) => {
+export const ListingElement = ({ columns, dataSource = [], tableElement, tableExtras }) => {
     document.title = `${tableElement?.title}`;
     return (
         <Row>
@@ -15,10 +15,11 @@ export const ListingElement = ({ columns, dataSource = [], tableElement, }) => {
                                     <span>
                                         {dataSource?.length} Records
                                     </span>
-                                    <div className="d-flex align-items-center justify-content-end"></div>
                                 </Col>
                             </Row>
-
+                            <Row>
+                                {tableExtras && <>{tableExtras}</>}
+                            </Row>
                             <div
                                 className="table-responsive table-card mt-3 mb-1"
                                 id="myTable"
