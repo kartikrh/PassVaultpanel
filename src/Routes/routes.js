@@ -53,6 +53,7 @@ import SetMarketResult from "../Pages/SetMarketResult";
 import Vendor from "../Pages/Vendor";
 import DisplayStatus from "../Pages/DisplayStatus";
 import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
+import ClientSocket from "../Pages/ClientSocket"
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -83,6 +84,7 @@ import MarketLogs from "../Pages/EventMarkets/MarketLogs.jsx";
 import MarketDataLogs from "../Pages/EventMarkets/MarketDataLogs.jsx";
 import AddVendor from "../Pages/Vendor/AddVendor.js";
 import VendorIpList from "../Pages/Vendor/VendorIpList.js";
+import AddClientSocket from "../Pages/ClientSocket/AddClientSocket.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -150,6 +152,8 @@ const authProtectedRoutes = [
   { path: "/vendorIpList", component: <VendorIpList /> },
   { path: "/displaystatus", component: <DisplayStatus /> },
   { path: "/addDisplayStatus", component: <AddDisplayStatus /> },
+  { path: "/clientSocket", component: <ClientSocket /> },
+  { path: "/addClientSocket", component: <AddClientSocket /> },
 
   {
     path: "/changePassword",
