@@ -55,13 +55,16 @@ const Index = forwardRef(
       competitionList,
       eventList,
       statusList,
-      setEventTypeActive,
       setEventTypeId,
       setCompetitionId,
       reFetchData,
       delay,
       setDelay,
       handleDelay,
+      selectedClientSocket,
+      setSelectedClientSocket,
+      handleClientSocketChange,
+      actionTypeOptions,
       handleReset,
       competitions,
       onAddNavigate,
@@ -147,7 +150,6 @@ const Index = forwardRef(
     const handleTableActions = (key, id) => {
       if (key === "isActive") {
         setStatusSwitch(id);
-        setEventTypeActive(id);
         setTableActions((preValue) => {
           return {
             ...preValue,
@@ -928,6 +930,48 @@ const Index = forwardRef(
                             )}
                             classNamePrefix="select2-selection"
                           />
+                        ) : null}
+                         {tableElement?.actionType ? (
+                          <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                          <div className="d-flex flex-column">
+                            <Select
+                              placeholder="Action Type"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }),
+                              }}
+                              onChange={(e) => {
+                                setSelectedClientSocket({
+                                  actionType: e?.value,
+                                  clientSocketId: singleCheck,
+                                });
+                              }}
+                              options={actionTypeOptions}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                          <button
+                            className="btn btn-primary"
+                            onClick={(e) => {
+                              e.preventDefault()
+                                singleCheck.length > 0
+                                  ? handleClientSocketChange()
+                                  : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                            }}
+                            type="delay"
+                            id="create-btn"
+                          >
+                            Save
+                          </button>
+                        </div>
                         ) : null}
                         {tableElement?.isActive ? (
                           <div className="d-flex align-items-center">

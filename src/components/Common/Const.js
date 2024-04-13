@@ -49,6 +49,7 @@ export const TAB_EVENT_MARKETS = "Event Markets";
 export const TAB_SET_MARKETS_RESULT = "Set Market Result";
 export const TAB_VENDOR = "Vendors";
 export const TAB_DISPLAYSTATUS = "DisplayStatus";
+export const TAB_ClientSocket = "ClientSocket";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";

@@ -22,6 +22,8 @@ import marketTemplateSlice from "./marketTemplateSlice";
 import eventMarketSlice from "./eventMarketSlice";
 import addVendorSlice from "./addVendorSlice";
 import displayStatusSlice from "./displayStatusSlice";
+import clientSocketSlice from './clientSocketSlice';
+
 const rootReducer = combineReducers({
   tab: TabSlice,
   commentary: CommentarySlice,
@@ -46,6 +48,7 @@ const rootReducer = combineReducers({
   eventMarket: eventMarketSlice,
   vendors: addVendorSlice,
   displayStatus: displayStatusSlice,
+  clientSocket : clientSocketSlice,
 });
 
 export default rootReducer;
