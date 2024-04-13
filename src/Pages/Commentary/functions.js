@@ -216,14 +216,14 @@ export const getBallsForAllOver = (ballHistory = []) => {
 
 export const generateBallLabelFromBall = (ballType, isWicket) => {
   let toReturn = undefined
-  if (ballType === BALL_TYPE_WIDE) toReturn = "Wd"
+  if (ballType === BALL_TYPE_WIDE) toReturn = "WB"
   else if (ballType === BALL_TYPE_BYE) toReturn = "B"
-  else if (ballType === BALL_TYPE_LEG_BYE) toReturn = "Lb"
-  else if (ballType === BALL_TYPE_NO_BALL) toReturn = "Nb"
-  else if (ballType === BALL_TYPE_NO_BALL_BYE) toReturn = "NbB"
-  else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) toReturn = "NbLb"
+  else if (ballType === BALL_TYPE_LEG_BYE) toReturn = "LB"
+  else if (ballType === BALL_TYPE_NO_BALL) toReturn = "NB"
+  else if (ballType === BALL_TYPE_NO_BALL_BYE) toReturn = "NBB"
+  else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) toReturn = "NLB"
   else if (ballType === BALL_TYPE_PANELTY_RUN) toReturn = "P"
-  else if (isWicket) toReturn = "Wk"
+  else if (isWicket) toReturn = "WK"
   return toReturn
 }
 
