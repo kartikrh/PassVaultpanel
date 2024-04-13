@@ -63,16 +63,16 @@ export const CommentaryScreen = ({
             case '6':
                 setIsBoundary(6);
                 break;
-            case 'q':
+            case '/':
                 updateExtras(BALL_WIDE)
                 break;
-            case 'w':
+            case '*':
                 updateExtras(NO_BALL);
                 break;
-            case 'e':
+            case '+':
                 updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
                 break;
-            case 'r':
+            case '-':
                 setStatusPopup(true)
                 break;
             case 'a':
@@ -96,7 +96,7 @@ export const CommentaryScreen = ({
             case 'c':
                 console.log("Actions")
                 break;
-            case 'v':
+            case '.':
                 onWicketClick();
                 break;
             default:
@@ -238,81 +238,43 @@ export const CommentaryScreen = ({
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_WIDE)}>
-                        <img className="button-icon" src="icons/wide-ball.png" alt="Icon" />
+                        <img className="button-icon-lg" src="icons/wide-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(NO_BALL)}>
-                        <img className="button-icon" src="icons/no-ball.png" alt="Icon" />
+                        <img className="button-icon-lg" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => setStatusPopup(true)}>
-                        <img className="button-icon" src="icons/s.png" alt="Icon" />
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => updateExtras(BALL_BYE)}>
-                        <img className="button-icon" src="icons/bye-ball.png" alt="Icon" />
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => updateExtras(BALL_LEG_BYE)}>
-                        <img className="button-icon" src="icons/leg-by.png" alt="Icon" />
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => setActionPopup(true)}>
                         <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
-                    <Col role="button" className="color-out score-button" xs={3} md={3} lg={3}
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => updateExtras(BALL_BYE)}>
+                        <img className="button-icon-lg" src="icons/bye-ball.png" alt="Icon" />
+                    </Col>
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => updateExtras(BALL_LEG_BYE)}>
+                        <img className="button-icon-lg" src="icons/leg-by.png" alt="Icon" />
+                    </Col>
+                    <Col role="button" className="color-out score-button" xs={6} md={6} lg={6}
                         onClick={onWicketClick}>
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>
                 </Row>
             </Col>
-            <Col xs={12} md={6} lg={6}>
+            <Col className="over-render" xs={12} md={6} lg={6}>
+                <Row>
+                    <Col className="team-name overs-header" xs={12} md={12} lg={12}>Overs</Col>
+                </Row>
                 <img role="button" className="sticky-button"
                     onClick={() => setStatusPopup(true)}
                     src="icons/commentary.png" alt="Icon" />
             </Col>
         </Row >
-        {/* <Row className="mt-4 width-full">
-            <Col>
-                <Row>
-                    <UncontrolledAccordion defaultOpen="0">
-                        <AccordionItem>
-                            <AccordionHeader targetId='ApiData'>Api</AccordionHeader>
-                            <AccordionBody accordionId="ApiData">
-                                {(saveCommentaryLog || []).map(element => {
-                                    return <div style={{ cursor: "pointer" }} onClick={() => setRenderApi(element)}>{element.api}</div>
-                                })}
-                                <UncontrolledAccordion defaultOpen="0">
-                                    <AccordionItem>
-                                        <AccordionHeader targetId='reqRes'>Request and Response</AccordionHeader>
-                                        <AccordionBody accordionId="reqRes">
-                                            <Row>
-                                                <Col xs={12} md={6} lg={6}>
-                                                    <span>Request</span>
-                                                    <div>{JSON.stringify(renderApi.req || {})}</div>
-                                                </Col>
-                                                <Col xs={12} md={6} lg={6}>
-                                                    <span>Response</span>
-                                                    <div>{JSON.stringify(renderApi.res || {})}</div>
-                                                </Col>
-                                            </Row>
-                                        </AccordionBody>
-                                    </AccordionItem >
-                                </UncontrolledAccordion>
-                            </AccordionBody>
-                        </AccordionItem >
-                    </UncontrolledAccordion>
-                </Row>
-
-                
-            </Col>
-        </Row > */}
-
-
         {isBoundary &&
             <IsBoundaryModal
                 isOpen={isBoundary}

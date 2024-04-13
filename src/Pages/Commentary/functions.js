@@ -175,12 +175,12 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
       }
     }
     // else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
-    else if (ballType === BALL_TYPE_WIDE) displayStatus = `WD + ${extraRun}`
-    else if (ballType === BALL_TYPE_BYE) displayStatus = `BYE + ${extraRun}`
-    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `L-BYE + ${extraRun}`
-    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `NB + ${extraRun}`
-    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `NB BYE + ${extraRun}`
-    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `NB L-BYE + ${extraRun}`
+    else if (ballType === BALL_TYPE_WIDE) displayStatus = `WD + ${run}`
+    else if (ballType === BALL_TYPE_BYE) displayStatus = `${run}B`
+    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `${run}LB`
+    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `NB + ${run}`
+    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `NB + ${run}B`
+    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `NB + ${run}LB`
   }
   return displayStatus
 }
@@ -204,17 +204,26 @@ export const getBallsForGivenOver = (ballHistory, overToFindFor, isUndoBall = fa
   })
   return toReturn?.filter((e) => e);
 }
+export const getBallsForAllOver = (ballHistory = []) => {
+  let toReturn = {}
+  ballHistory.forEach(ball => {
+    const overToLogBallFor = Math.ceil(+ball.overCount)
+    if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = ball
+  })
+  console.log(toReturn)
+  return toReturn;
+}
 
 export const generateBallLabelFromBall = (ballType, isWicket) => {
   let toReturn = undefined
-  if (ballType === BALL_TYPE_WIDE) toReturn = "Wd"
-  else if (ballType === BALL_TYPE_BYE) toReturn = "By"
-  else if (ballType === BALL_TYPE_LEG_BYE) toReturn = "Lby"
-  else if (ballType === BALL_TYPE_NO_BALL) toReturn = "Nb"
-  else if (ballType === BALL_TYPE_NO_BALL_BYE) toReturn = "NbBy"
-  else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) toReturn = "NbLby"
+  if (ballType === BALL_TYPE_WIDE) toReturn = "WB"
+  else if (ballType === BALL_TYPE_BYE) toReturn = "B"
+  else if (ballType === BALL_TYPE_LEG_BYE) toReturn = "LB"
+  else if (ballType === BALL_TYPE_NO_BALL) toReturn = "NB"
+  else if (ballType === BALL_TYPE_NO_BALL_BYE) toReturn = "NBB"
+  else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) toReturn = "NLB"
   else if (ballType === BALL_TYPE_PANELTY_RUN) toReturn = "P"
-  else if (isWicket) toReturn = "Wk"
+  else if (isWicket) toReturn = "WK"
   return toReturn
 }
 
@@ -244,7 +253,7 @@ export const generateOverUnder = (dataObj) => {
 }
 
 
-export const fetchWinnerMessage = ({ team, matchTypeDetails, commentaryDetails, winningTeam, isBattingTeamWon }) => {
+export const fetchWinnerMessage = ({ team, matchTypeDetails, commentaryDetails, isBattingTeamWon }) => {
   const battingTeam = team[BATTING_TEAM]
   const bowlingTeam = team[BOWLING_TEAM]
   if (isBattingTeamWon) {
