@@ -20,6 +20,7 @@ export const ChangeActionTypeModel = ({
     { label: "Disconnect", value: 2 },
   ];
 
+  const defaultOption = actionTypeOptions.find(option => option.value === selectedClientSocket.actionType);
   return (
     <Modal
       isOpen={changeModelVisible}
@@ -50,15 +51,16 @@ export const ChangeActionTypeModel = ({
               classNamePrefix="select2-selection"
               id="actionType"
               name="actionType"
+              placeholder= "Action Type"
               defaultValue={{
-                label: selectedClientSocket?.actionType,
-                value: selectedClientSocket?.eventRefId,
+                label: defaultOption?.label,
+                value: defaultOption?.value,
               }}
               options={actionTypeOptions}
               onChange={(e) => {
                 setSelectedClientSocket({
                   actionType: e?.value,
-                  clientSocketId: [selectedClientSocket?.clientSocketId],
+                  clientSocketId: selectedClientSocket?.clientSocketId,
                 });
               }}
               required={true}
