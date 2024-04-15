@@ -1214,7 +1214,7 @@ const Index = forwardRef(
                               <tr>
                                 {columns.map((column) => (
                                   <th key={column.key} style={column.style}>
-                                    <div className="d-flex">
+                                    <div className="d-flex" style={{visibility: column?.key === "select" && "hidden"}}>
                                       <span>{column.title}</span>
                                       {column.sort ? (
                                         <span className="d-flex flex-column align-items-center">
@@ -1319,7 +1319,7 @@ const Index = forwardRef(
                         <tr>
                           {columns.map((column) => (
                             <th key={column.key} style={column.style} className={column.className}>
-                              <div className="d-flex">
+                              <div className="d-flex" style={{visibility: column?.key === "select" && "hidden"}}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
                                   <span className="d-flex flex-column align-items-center">
