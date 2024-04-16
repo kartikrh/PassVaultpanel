@@ -18,7 +18,7 @@ const tableElement = {
 };
 export const MarketEventAction = () => {
     const [data, setData] = useState([]);
-    const [lineRatio, setLineRatio] = useState(undefined);
+    const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
@@ -35,7 +35,6 @@ export const MarketEventAction = () => {
             const lineRatioToSend = 5 / (lineRatio || 5)
             const recordMarketRunner = {
                 ...record.marketRunners[0],
-                "lineRatio": +lineRatioToSend.toFixed(2),
                 "line": +record.line,
                 "margin": +record.margin,
                 "overRate": +record.overRate,
@@ -48,6 +47,7 @@ export const MarketEventAction = () => {
             workingRecord = _.omit(workingRecord,
                 ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
             workingRecord["marketRunners"] = [recordMarketRunner]
+            workingRecord["lineRatio"] = +lineRatioToSend.toFixed(2)
             dataToSend.push(workingRecord)
         })
         return dataToSend
@@ -121,6 +121,16 @@ export const MarketEventAction = () => {
             });
     };
 
+    const handleLineRatio = (value) => {
+        setLineRatio(value)
+        const lineRatioToSend = (value || 5) / 5
+        const updatedData = data?.map(market => {
+            market["lineRatio"] = +lineRatioToSend.toFixed(2)
+            return market
+        })
+        setData(updatedData)
+    }
+
     const fetchTableData = async (commentaryId) => {
         // setIsLoading(true);
         await axiosInstance
@@ -128,7 +138,9 @@ export const MarketEventAction = () => {
             .then((response) => {
                 if (response?.result) {
                     const dataList = response?.result || []
+                    let highestLineRatio = 0
                     let updatedDatalist = dataList.map(eventMarket => {
+                        if (highestLineRatio < (+eventMarket.lineRatio || 0)) highestLineRatio = +eventMarket.lineRatio
                         if (eventMarket.marketRunners)
                             return {
                                 ...eventMarket,
@@ -138,6 +150,7 @@ export const MarketEventAction = () => {
                     }).filter(x => x)
                     updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
                     setData(updatedDatalist);
+                    setLineRatio(highestLineRatio * 5)
                 }
                 // setIsLoading(false);
             })
@@ -153,28 +166,6 @@ export const MarketEventAction = () => {
             .post("/admin/commentary/getEventDetailsByCId", { commentaryId })
             .then((response) => {
                 if (response?.result?.es) setCommentaryInfo(response.result.es)
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                setIsLoading(false);
-            });
-    }
-
-    const fetchLineRatio = async () => {
-        setIsLoading(true);
-        await axiosInstance
-            .post("/admin/matchTypePredictor/getByMatchTypeId", { matchTypeId: commentaryInfo.mtyi || 2 })
-            .then((response) => {
-                if (response?.result?.predictorData) {
-                    const predictorData = response.result.predictorData || []
-                    let predictorBallsValue = 0
-                    predictorData.forEach(ball => predictorBallsValue += +ball.runPerBall)
-                    const lastMarketData = data[data.length - 1] || {}
-                    const lastMarketLine = (lastMarketData.marketRunners[0]?.line) || predictorBallsValue
-                    const defaultValue = (predictorBallsValue * 5) / lastMarketLine
-                    setLineRatio(defaultValue.toFixed(2))
-                }
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -418,6 +409,21 @@ export const MarketEventAction = () => {
             style: { width: "2%", textAlign: "center" },
         },
         {
+            title: "L-Ratio",
+            dataIndex: "lineRatio",
+            render: (text, record) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="number"
+                    step={0.1}
+                    min={0}
+                    value={text || 0}
+                    onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
+                />
+            ),
+            key: "underRate",
+        },
+        {
             title: "Save",
             render: (text, record) => (
                 <Button color="primary" className="small-button" onClick={() => updateRecords(record)}>Save</Button>
@@ -437,9 +443,9 @@ export const MarketEventAction = () => {
                 step={0.1}
                 min={0}
                 max={10}
-                value={lineRatio || ""}
+                value={lineRatio || 0}
                 onChange={(e) => {
-                    setLineRatio(e.target.value)
+                    handleLineRatio(e.target.value)
                 }}
             />
         </Col>
@@ -471,12 +477,6 @@ export const MarketEventAction = () => {
         };
         fetchConfigAll();
     }, []);
-
-    useEffect(() => {
-        if (!lineRatio && commentaryInfo && data.length > 0) {
-            fetchLineRatio()
-        }
-    }, [data, commentaryInfo])
 
     useEffect(() => {
         if (isAutoUpdate) {

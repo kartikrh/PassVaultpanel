@@ -1,30 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
 import {
   Button,
   Card,
-  CardBody,
-  CardText,
-  CardTitle,
   Col,
   Container,
-  Nav,
-  NavItem,
-  NavLink,
   Row,
-  TabContent,
-  TabPane,
-  CardHeader,
 } from "reactstrap";
-import SpinnerModel from "../../components/Model/SpinnerModel";
-import axiosInstance from "../../Features/axios";
-import classnames from "classnames";
 import CardComponent from "./CardComponent";
 import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, SAVE_AND_NEXT } from "../../components/Common/Const";
+import { ERROR } from "../../components/Common/Const";
 const Index = ({ data, next, save }) => {
   document.title = "Toss";
   const [commentaryDetails, setCommentaryDetails] = useState({});
