@@ -123,7 +123,8 @@ function AddTabs() {
         const dataToSave = finalizeRef.current.finalizeData()
         if (dataToSave) {
             const extraData = {
-                id: id
+                id: id,
+                iconName: dataToSave?.iconName && `mdi mdi-${dataToSave.iconName}`
             }
             setCurrentSaveAction(saveAction);
             dispatch(addTabToDb({ ...dataToSave, ...extraData }))
