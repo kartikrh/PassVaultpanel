@@ -32,7 +32,6 @@ export const MarketEventAction = () => {
         const dataToSend = []
         dataToChange.forEach(record => {
             let workingRecord = _.clone(record)
-            const lineRatioToSend = 5 / (lineRatio || 5)
             const recordMarketRunner = {
                 ...record.marketRunners[0],
                 "line": +record.line,
@@ -47,7 +46,6 @@ export const MarketEventAction = () => {
             workingRecord = _.omit(workingRecord,
                 ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
             workingRecord["marketRunners"] = [recordMarketRunner]
-            workingRecord["lineRatio"] = +lineRatioToSend.toFixed(2)
             dataToSend.push(workingRecord)
         })
         return dataToSend
