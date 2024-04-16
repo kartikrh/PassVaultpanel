@@ -36,6 +36,10 @@ const Index = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [resultModalData, setResultModalData] = useState(null);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+  });
 
   const navigate = useNavigate();
   const fetchData = async (latestValueFromTable) => {
@@ -45,6 +49,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/all`, {
         ...(latestValueFromTable || tableActions),
+        ...dateRange,
       })
       .then((response) => {
         const apiData = response?.result;
@@ -290,6 +295,7 @@ const Index = () => {
     competitionsListSelect: true,
     eventListSelect: true,
     resetButton: true,
+    dateRange: true,
   };
 
   useEffect(() => {
@@ -338,6 +344,8 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
             reFetchData={fetchData}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
           />
         </Container>
         <CancelModal
