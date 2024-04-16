@@ -1,6 +1,10 @@
 import React,{useState, useEffect} from 'react'
 import {Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import Flatpickr from "react-flatpickr";
+import axiosInstance from '../../../Features/axios';
+import { updateToastData } from '../../../Features/toasterSlice';
+import { ERROR } from '../../Common/Const';
+import { Select } from 'antd';
 
 
 export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleClone, setCloneName, singleCheck}) => {
@@ -57,3 +61,70 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
   )
 }
 
+export const MarketTemplateClone = ({cloneModelVisible, cloneValues, setCloneModelVisible, handleClone, setCloneValues, singleCheck}) => {
+    const [matchType, setMatchType] = useState([]);
+    const handleCloneValues = (event) =>{
+        const value = event
+        setCloneValues((preValue)=>{
+            return {
+                ...preValue,
+                matchTypeID:value
+            }
+        })
+    }
+    const fetchData = async () => {
+        await axiosInstance
+          .post("admin/matchType/all", {})
+          .then((response) => {
+            setMatchType(
+              response.result?.map((item) => {
+                return { label: item.matchType, value: item.matchTypeId };
+              })
+            )
+          })
+          .catch((error) => {
+            dispatchEvent(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+    };
+    useEffect(()=>{
+    fetchData();
+    },[])
+    const defaultOption = matchType.find((item)=> item.value === cloneValues?.matchTypeID);
+    return (
+    <Modal isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
+    <div className="tablelist-form">
+        <ModalBody>
+          <div className="d-flex flex-column justify-content-center p-4">
+              <h4 className="form-label text-left text-lg">Clone New Market Template</h4>
+              <h6 className='text-left mt-4'>Match Type</h6>
+              <Select
+              classNamePrefix="select2-selection"
+              placeholder="Match Type"
+              defaultValue={{
+                label: defaultOption?.label,
+                value: defaultOption?.value,
+              }}
+              id="matchTypeId"
+              name="matchTypeId"
+              options={matchType}
+              onChange={handleCloneValues}
+              required={true}
+            />
+            </div>
+            <div className="hstack gap-2 justify-content-end">
+                <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
+                {singleCheck.length===1?
+                <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Clone Market Template</button>
+                :null}
+            </div>
+        </ModalBody>
+    </div>
+</Modal>
+  )
+}

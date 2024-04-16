@@ -11,6 +11,7 @@ import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_MARKET_TEMPLATE } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { MarketTemplateClone } from "../../components/Model/Clone";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
@@ -23,6 +24,11 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [matchType, setMatchType] = useState(undefined)
+  const [cloneModelVisible, setCloneModelVisible] = useState(false);
+  const [cloneValues, setCloneValues] = useState({
+    marketTemplateId: "",
+    matchTypeID: ""
+  });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (value) => {
@@ -65,6 +71,44 @@ const Index = () => {
       updateSingleCheck = [...checekedList, e.marketTemplateId];
     }
     setCheckedList(updateSingleCheck)
+  };
+  const handleClone = async () => {
+    if (cloneValues.matchTypeID !== "") {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/marketTemplate/clone`, {
+          marketTemplateId: checekedList?.[0],
+          ...cloneValues,
+        })
+        .then((response) => {
+          fetchData();
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+          setCloneModelVisible(false);
+        })
+        .catch((error) => {
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    } else {
+      dispatch(
+        updateToastData({
+          data: "MatchType is required",
+          title: "Required",
+          type: ERROR,
+        })
+      );
+    }
   };
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
@@ -163,6 +207,10 @@ const Index = () => {
             checked={checekedList.includes(record.marketTemplateId)}
             onChange={() => {
               handleSingleCheck(record);
+              setCloneValues({
+                marketTemplateId: record?.marketTemplateId,
+                matchTypeID: record?.matchTypeID,
+              });
             }}
           />
         </div>
@@ -271,6 +319,7 @@ const Index = () => {
     isActive: true,
     matchTypeSelect: true,
     resetButton: true,
+    clone: true,
   };
 
   useEffect(() => {
@@ -294,6 +343,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            cloneModelFunction={setCloneModelVisible}
             matchType = {matchType}
             reFetchData={fetchData}
             singleCheck={checekedList}
@@ -306,6 +356,14 @@ const Index = () => {
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
+            singleCheck={checekedList}
+          />
+          <MarketTemplateClone
+            cloneModelVisible={cloneModelVisible}
+            setCloneModelVisible={setCloneModelVisible}
+            handleClone={handleClone}
+            setCloneValues={setCloneValues}
+            cloneValues={cloneValues}
             singleCheck={checekedList}
           />
         </Container>
