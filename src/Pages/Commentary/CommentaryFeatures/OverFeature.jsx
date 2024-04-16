@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Row } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
-import { TEAM_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
+import { OVER_FEATURE_FIELD } from "../../../constants/FieldConst/CommentaryConst"
 
 export const OverFeature = ({ overList, handleValueChange, updatedData }) => {
     const onValueChange = (overInfo, key, value) => {
@@ -24,7 +24,7 @@ export const OverFeature = ({ overList, handleValueChange, updatedData }) => {
                         <FieldRenderer
                             key={index}
                             index={index}
-                            fields={TEAM_FEATURE_FIELDS}
+                            fields={OVER_FEATURE_FIELD}
                             value={updatedData[overInfo.overId] || overInfo}
                             onChange={(field, value) => onValueChange(overInfo, field.name, value)}
                         />

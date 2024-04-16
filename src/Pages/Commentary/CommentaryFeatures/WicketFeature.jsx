@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Row } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
-import { TEAM_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
+import { WICKET_FEATURE_FIELD } from "../../../constants/FieldConst/CommentaryConst"
 
 export const WicketFeature = ({ wicketList, handleValueChange, updatedData }) => {
     const onValueChange = (wicketInfo, key, value) => {
@@ -24,7 +24,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData }) =>
                         <FieldRenderer
                             key={index}
                             index={index}
-                            fields={TEAM_FEATURE_FIELDS}
+                            fields={WICKET_FEATURE_FIELD}
                             value={updatedData[wicketInfo.commentaryWicketId] || wicketInfo}
                             onChange={(field, value) => onValueChange(wicketInfo, field.name, value)}
                         />

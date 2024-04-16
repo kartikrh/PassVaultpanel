@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Row } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
-import { TEAM_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
+import { PARTNERSHIP_FEATURE_FIELD } from "../../../constants/FieldConst/CommentaryConst"
 
 export const PartnershipFeature = ({ partnershipList, handleValueChange, updatedData }) => {
     const onValueChange = (partnershipInfo, key, value) => {
@@ -24,7 +24,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                         <FieldRenderer
                             key={index}
                             index={index}
-                            fields={TEAM_FEATURE_FIELDS}
+                            fields={PARTNERSHIP_FEATURE_FIELD}
                             value={updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo}
                             onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
                         />

@@ -15,6 +15,7 @@ import { TeamFeature } from "./CommentaryFeatures/TeamFeature.jsx"
 import { OverFeature } from "./CommentaryFeatures/OverFeature.jsx"
 import { PartnershipFeature } from "./CommentaryFeatures/PartnershipFeature.jsx"
 import { WicketFeature } from "./CommentaryFeatures/WicketFeature.jsx"
+import _ from "lodash"
 
 const navigateTo = "/commentary"
 export const CommentaryFeatures = () => {
@@ -55,6 +56,10 @@ export const CommentaryFeatures = () => {
         await axiosInstance.post('/admin/commentary/detailsById', { commentaryId })
             .then(async (response) => {
                 commentaryDataToUpdate = response?.result
+                const updatedBallByBall = _.orderBy(commentaryDataToUpdate.commentaryBallByBall, ["commentaryBallByBallId"], ["desc"])
+                const updatedOverHistory = _.orderBy(commentaryDataToUpdate.commentaryOvers, ["overId"], ["desc"])
+                commentaryDataToUpdate["commentaryBallByBall"] = updatedBallByBall || []
+                commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
             }).catch((error) => {
