@@ -173,9 +173,8 @@
 
 .over-ball-display {
     min-width: 7%;
-    border-style: solid;
-    border-radius: 3rem;
-    margin: 0 1%;
+    border-radius: 0.2rem;
+    margin: 0%;
     padding: 0 2%;
 }
 
@@ -318,6 +317,7 @@
 
 
 .ball-by-ball-display {
+    padding: 8px 0;
     display: flex !important;
     flex-wrap: wrap;
     gap: 10px;
@@ -362,6 +362,10 @@
     padding: 0 0.3rem !important;
     width: 70% !important;
     height: 50%;
+}
+
+.background-nth {
+    background-color: #f6f7fb;
 }
 
 /* http://localhost:3000/oddsView?commentaryId=601 */

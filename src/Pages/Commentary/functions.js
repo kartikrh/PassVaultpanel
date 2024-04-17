@@ -215,7 +215,7 @@ export const getBallsForAllOver = (ballHistory = []) => {
     const ballsInCurrentOver = toReturn[overToLogBallFor]
     if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
       [
-        { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false }
+        { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false }
       ])
   })
   return toReturn;

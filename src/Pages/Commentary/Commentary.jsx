@@ -16,38 +16,29 @@ export const CommentaryScreen = ({
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [actionPopup, setActionPopup] = useState(undefined)
-    // const [renderApi, setRenderApi] = useState({})
-    // const { saveCommentaryLog } = useSelector(state => state.tabsData.news);
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
             const isWicket = +element?.isWicket !== 0
+            const isBoundary = +element?.isBoundary !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
-            const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
+            const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
             const ballValue = ballTypeAdd ?
                 element.value > 0 ?
                     element.value : ""
                 : element.value
-            return <div className={` over-ball-display ${ballColor}`}>
+            return <div className={` px-3 py - md - 2 py - 1 shadow - sm rounded mx - 1 over-ball-display ${ballColor}`}>
                 {`${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`}
             </div>
         })
     }
 
     const generateRightSideOvers = () => {
-        return Object.keys(overBalls).map(over => <div>
-            {`Over : ${over.split(STRING_SEPERATOR)?.[2]}`}
-            <div className="ball-by-ball-display" xs={12} md={12} lg={12}>
-                {console.log({ balls: overBalls[over], over })}
-                {generateBallfromArray(overBalls[over])}
-            </div>
-        </div>)
+        return Object.keys(overBalls).map((over, index) => <div className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
+            <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
+            {generateBallfromArray(overBalls[over])}
+        </div >)
     }
 
-    // useEffect(() => {
-    //     if (saveCommentaryLog?.length > 0) {
-    //         setRenderApi(saveCommentaryLog[saveCommentaryLog.length - 1])
-    //     }
-    // }, [saveCommentaryLog])
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -210,9 +201,6 @@ export const CommentaryScreen = ({
                         < Col xs={12} md={12} lg={12}>
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
-                    {<Col className="ball-by-ball-display" xs={12} md={12} lg={12}>
-                        {generateBallfromArray(overBalls?.[overBalls?.length - 1] || [])}
-                    </Col>}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
