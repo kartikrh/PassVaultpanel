@@ -529,7 +529,7 @@ const Commentary = (props) => {
     const handleWicket = (wicketData) => {
         // if (!wicketData.isExtraWicket) 
         setCurrentBall({})
-        const ballToUpdateOnWicket = wicketData.isExtraWicket ? 0 : 1
+        const ballToUpdateOnWicket = (wicketData.isExtraWicket || (wicketData.wicketType === RETIRED_OUT)) ? 0 : 1
         setIsWicketChange(true)
         const updateBattingTeam = {}
         const updateBall = {}
