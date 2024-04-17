@@ -187,25 +187,6 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   return displayStatus
 }
 
-export const getBallsForGivenOver = (ballHistory, overToFindFor, isUndoBall = false) => {
-  const latestBalls = ballHistory.slice(-LATEST_BALLS_TO_FIND_BALL_HISTORY);
-  let toReturn = []
-  for (let i = latestBalls.length - 1; i >= 0; i--) {
-    if ((latestBalls[i].ballType === BALL_TYPE_OVER_COMPLETE) && (Math.floor(+(latestBalls[i].overCount || 0)) === Math.floor(+overToFindFor))) {
-      toReturn = latestBalls?.slice(i);
-    }
-  }
-  toReturn?.shift();
-  if (isUndoBall) {
-    toReturn?.pop();
-  }
-  toReturn = toReturn?.map((element) => {
-    return element.ballType !== BALL_TYPE_OVER_COMPLETE ? {
-      type: element.ballType, value: element.ballRun, isWicket: element.ballWicketType || false
-    } : null
-  })
-  return toReturn?.filter((e) => e);
-}
 
 export const getBallsForAllOver = (ballHistory = []) => {
   ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"])
