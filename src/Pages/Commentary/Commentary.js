@@ -20,6 +20,7 @@ import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx
 import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
 import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
 import OnPitchPlayerModal from "./CommentaryModels/OnPitchPlayerModal.jsx"
+import { STRING_SEPERATOR } from "../../components/Common/Const.js"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -1153,12 +1154,12 @@ const Commentary = (props) => {
                 setOverHistory(updatedOverHistory)
                 setCurrentOver(newCurrentOver)
             }
-            else {
-                updatedBallHistory = overBallByBallDisplay.slice(0, -1)
-            }
+            // else {
+            //     updatedBallHistory = overBallByBallDisplay.slice(0, -1)
+            // }
             const updatedBallHistoryList = ballHistory.slice(0, -1)
             dispatch(clearUndoFlag())
-            setOverBallByBallDisplay(updatedBallHistory)
+            // setOverBallByBallDisplay(updatedBallHistory)
             setBallHistory(updatedBallHistoryList)
             setCurrentBall(updatedBallHistoryList[updatedBallHistoryList.length - 1])
             setIsUndoBall(undefined)
@@ -1172,7 +1173,7 @@ const Commentary = (props) => {
     }, [redirectOnScreenChange, isCommentaryDataUpdated])
     useEffect(() => {
         if (changeOverOnPopupClick) {
-            setOverBallByBallDisplay([])
+            // setOverBallByBallDisplay([])
             // TODO add check
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
@@ -1299,8 +1300,8 @@ const Commentary = (props) => {
             setTeams(currentInningsTeams)
             setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
             setOnPitchPlayers(onPitchPlayers)
-            setOverBallByBallDisplay(getBallsForGivenOver(ballByBallHistoryData, currentOver))
-            getBallsForAllOver(ballByBallHistoryData)
+            setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData))
+            // getBallsForAllOver(ballByBallHistoryData)
             setBallHistory(ballByBallHistoryData || [])
             setOverHistory(props.data.commentaryData.commentaryOvers || [])
             setPartnershipHistory(props.data.commentaryData.commentaryPartnership)
@@ -1359,12 +1360,12 @@ const Commentary = (props) => {
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
-                if (commentaryDataToUpdate.commentaryBallByBallDetails.ballType !== BALL_TYPE_OVER_COMPLETE)
-                    setOverBallByBallDisplay([].concat(overBallByBallDisplay, [{
-                        type: commentaryDataToUpdate.commentaryBallByBallDetails.ballType,
-                        value: commentaryDataToUpdate.commentaryBallByBallDetails.ballRun,
-                        isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType || false
-                    }]))
+                // if (commentaryDataToUpdate.commentaryBallByBallDetails.ballType !== BALL_TYPE_OVER_COMPLETE)
+                //     setOverBallByBallDisplay([].concat(overBallByBallDisplay, [{
+                //         type: commentaryDataToUpdate.commentaryBallByBallDetails.ballType,
+                //         value: commentaryDataToUpdate.commentaryBallByBallDetails.ballRun,
+                //         isWicket: commentaryDataToUpdate.commentaryBallByBallDetails.ballWicketType || false
+                //     }]))
             }
             // Add partnershot to the partnership history when new Partnershi created
             if (!isEmpty(commentaryDataToUpdate.commentaryPartnershipDetails) && currentPartnership.commentaryPartnershipId
@@ -1389,11 +1390,23 @@ const Commentary = (props) => {
             dispatch(clearAddCommentaryScreenData())
         }
     }, [commentaryDataToUpdate])
+
     useEffect(() => {
         if (!onPitchPlayers[ON_STRIKE] || !onPitchPlayers[NON_STRIKE] || !onPitchPlayers[CURRENT_BOWLER]) {
             setSelectMissingPlayer(true)
         } else if (selectMissingPlayer) setSelectMissingPlayer(false)
     }, [onPitchPlayers])
+
+    useEffect(() => {
+        if (currentOver.overId) {
+            let getCurrentOverToBallStatus = getBallsForAllOver(ballHistory)
+            const overToCheckFor = currentOver.currentInnings + STRING_SEPERATOR + teams[BATTING_TEAM].teamId + STRING_SEPERATOR + (+currentOver.over + 1)
+            console.log({ overToCheckFor });
+            if (!getCurrentOverToBallStatus[overToCheckFor]) getCurrentOverToBallStatus = { [overToCheckFor]: [], ...getCurrentOverToBallStatus }
+            setOverBallByBallDisplay(getCurrentOverToBallStatus)
+        }
+    }, [currentOver, ballHistory])
+
     return <>
         <CommentaryScreen
             teamDetails={teams}

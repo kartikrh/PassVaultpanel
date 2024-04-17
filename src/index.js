@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import "./i18n";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import store from './store';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

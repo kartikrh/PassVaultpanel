@@ -6,7 +6,7 @@ import { updateToastData } from "../../Features/toasterSlice.js"
 import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const.js"
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
-import { clearLoadingAndError } from "../../Features/Tabs/commentarySlice.js"
+import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, Row, Col, Container, CardBody } from 'reactstrap';
 import { BALL_FEATURE, OVER_FEATURE, PARTNERSHIP_FEATURE, TEAM_FEATURE, WICKET_FEATURE } from "./CommentartConst.js"
 import Breadcrumbs from "../../components/Common/Breadcrumb.js"
@@ -15,6 +15,7 @@ import { TeamFeature } from "./CommentaryFeatures/TeamFeature.jsx"
 import { OverFeature } from "./CommentaryFeatures/OverFeature.jsx"
 import { PartnershipFeature } from "./CommentaryFeatures/PartnershipFeature.jsx"
 import { WicketFeature } from "./CommentaryFeatures/WicketFeature.jsx"
+import _, { isEmpty } from "lodash"
 
 const navigateTo = "/commentary"
 export const CommentaryFeatures = () => {
@@ -22,11 +23,15 @@ export const CommentaryFeatures = () => {
     const [activeTab, setActiveTab] = useState(TEAM_FEATURE);
     const [commentaryData, setCommentaryData] = useState(undefined);
     const [isDataLoading, setIsDataLoading] = useState(false)
-    const [ballByBallData, setBallByBallData] = useState({})
     const [teamsData, setTeamsData] = useState({})
+    const [ballByBallData, setBallByBallData] = useState({})
+    const [deleteBallByBall, setDeleteBallByBall] = useState([])
     const [overData, setOverData] = useState({})
+    const [deleteOver, setDeleteOver] = useState([])
     const [wicketData, setWicketData] = useState({})
+    const [deleteWicket, setDeleteWicket] = useState([])
     const [partnershipData, setPartnershipData] = useState({})
+    const [deletePartnership, setDeletePartnership] = useState([])
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
     const location = useLocation();
@@ -39,6 +44,9 @@ export const CommentaryFeatures = () => {
             Navigate("/dashboard")
         }
         dispatch(clearLoadingAndError())
+        return () => {
+            dispatch(clearLoadingAndError())
+        }
     }, []);
 
     useEffect(() => {
@@ -55,6 +63,10 @@ export const CommentaryFeatures = () => {
         await axiosInstance.post('/admin/commentary/detailsById', { commentaryId })
             .then(async (response) => {
                 commentaryDataToUpdate = response?.result
+                const updatedBallByBall = _.orderBy(commentaryDataToUpdate.commentaryBallByBall, ["commentaryBallByBallId"], ["desc"])
+                const updatedOverHistory = _.orderBy(commentaryDataToUpdate.commentaryOvers, ["overId"], ["desc"])
+                commentaryDataToUpdate["commentaryBallByBall"] = updatedBallByBall || []
+                commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
             }).catch((error) => {
@@ -65,13 +77,29 @@ export const CommentaryFeatures = () => {
     const handleBackClick = () => {
         navigate(navigateTo);
     };
-    const handleSaveClick = () => {
-        console.log("Save");
-    };
 
-    useEffect(() => {
-        console.log(ballByBallData)
-    })
+    const handleSaveClick = () => {
+        const objToSave = {}
+        const deleteObjToSave = {}
+        if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
+        if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
+        if (!isEmpty(deleteBallByBall)) deleteObjToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
+        if (!isEmpty(overData)) objToSave["commentaryOvers"] = Object.values(overData)
+        if (!isEmpty(deleteOver)) deleteObjToSave["deleteOvers"] = Object.values(deleteOver)
+        if (!isEmpty(wicketData)) objToSave["commentaryWickets"] = Object.values(wicketData)
+        if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
+        if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
+        if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
+        if (!isEmpty(objToSave)) {
+            dispatch(saveCommentaryFeatures(objToSave))
+        }
+        if (!isEmpty(deleteObjToSave)) {
+            dispatch(deleteCommentaryFeatures(deleteObjToSave))
+        }
+        if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
+            handleBackClick()
+        }
+    };
     return <>
         <React.Fragment>
             <div className="page-content">
@@ -140,6 +168,8 @@ export const CommentaryFeatures = () => {
                                                 overList={commentaryData?.commentaryOvers || []}
                                                 updatedData={overData || {}}
                                                 handleValueChange={updatedData => setOverData({ ...updatedData })}
+                                                deletedList={deleteOver}
+                                                handleDeleteChange={(overId) => setDeleteOver([].concat(deleteOver, [overId]))}
                                             />
                                         </TabPane>
                                         <TabPane tabId={BALL_FEATURE}>
@@ -147,6 +177,11 @@ export const CommentaryFeatures = () => {
                                                 ballList={commentaryData?.commentaryBallByBall || []}
                                                 updatedData={ballByBallData || {}}
                                                 handleValueChange={updatedData => setBallByBallData({ ...updatedData })}
+                                                deletedList={deleteBallByBall}
+                                                handleDeleteChange={(ballId) => {
+                                                    console.log(ballId)
+                                                    setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))
+                                                }}
                                             />
                                         </TabPane>
                                         <TabPane tabId={WICKET_FEATURE}>
@@ -154,6 +189,8 @@ export const CommentaryFeatures = () => {
                                                 wicketList={commentaryData?.commentaryWicket || []}
                                                 updatedData={wicketData || {}}
                                                 handleValueChange={updatedData => setWicketData({ ...updatedData })}
+                                                deletedList={deleteWicket}
+                                                handleDeleteChange={(wicketId) => setDeleteWicket([].concat(deleteWicket, [wicketId]))}
                                             />
                                         </TabPane>
                                         <TabPane tabId={PARTNERSHIP_FEATURE}>
@@ -161,6 +198,8 @@ export const CommentaryFeatures = () => {
                                                 partnershipList={commentaryData?.commentaryPartnership || []}
                                                 updatedData={partnershipData || {}}
                                                 handleValueChange={updatedData => setPartnershipData({ ...updatedData })}
+                                                deletedList={deletePartnership}
+                                                handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
                                             />
                                         </TabPane>
                                     </TabContent>
