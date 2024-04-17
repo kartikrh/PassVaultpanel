@@ -80,11 +80,15 @@ export const CommentaryFeatures = () => {
 
     const handleSaveClick = () => {
         const objToSave = {}
-        if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
+        if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
+        if (!isEmpty(deleteBallByBall)) objToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
         if (!isEmpty(overData)) objToSave["commentaryOvers"] = Object.values(overData)
+        if (!isEmpty(deleteOver)) objToSave["deleteOvers"] = Object.values(deleteOver)
         if (!isEmpty(wicketData)) objToSave["commentaryWickets"] = Object.values(wicketData)
+        if (!isEmpty(deleteWicket)) objToSave["deleteWickets"] = Object.values(deleteWicket)
         if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
+        if (!isEmpty(deletePartnership)) objToSave["deletePartnership"] = Object.values(deletePartnership)
         if (!isEmpty(objToSave)) {
             console.log(objToSave)
             // dispatch(saveCommentaryFeatures(objToSave))
@@ -160,6 +164,7 @@ export const CommentaryFeatures = () => {
                                                 overList={commentaryData?.commentaryOvers || []}
                                                 updatedData={overData || {}}
                                                 handleValueChange={updatedData => setOverData({ ...updatedData })}
+                                                deletedList={deleteOver}
                                                 handleDeleteChange={(overId) => setDeleteOver([].concat(deleteOver, [overId]))}
                                             />
                                         </TabPane>
@@ -168,7 +173,11 @@ export const CommentaryFeatures = () => {
                                                 ballList={commentaryData?.commentaryBallByBall || []}
                                                 updatedData={ballByBallData || {}}
                                                 handleValueChange={updatedData => setBallByBallData({ ...updatedData })}
-                                                handleDeleteChange={(ballId) => setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))}
+                                                deletedList={deleteBallByBall}
+                                                handleDeleteChange={(ballId) => {
+                                                    console.log(ballId)
+                                                    setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))
+                                                }}
                                             />
                                         </TabPane>
                                         <TabPane tabId={WICKET_FEATURE}>
@@ -176,6 +185,7 @@ export const CommentaryFeatures = () => {
                                                 wicketList={commentaryData?.commentaryWicket || []}
                                                 updatedData={wicketData || {}}
                                                 handleValueChange={updatedData => setWicketData({ ...updatedData })}
+                                                deletedList={deleteWicket}
                                                 handleDeleteChange={(wicketId) => setDeleteWicket([].concat(deleteWicket, [wicketId]))}
                                             />
                                         </TabPane>
@@ -184,6 +194,7 @@ export const CommentaryFeatures = () => {
                                                 partnershipList={commentaryData?.commentaryPartnership || []}
                                                 updatedData={partnershipData || {}}
                                                 handleValueChange={updatedData => setPartnershipData({ ...updatedData })}
+                                                deletedList={deletePartnership}
                                                 handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
                                             />
                                         </TabPane>

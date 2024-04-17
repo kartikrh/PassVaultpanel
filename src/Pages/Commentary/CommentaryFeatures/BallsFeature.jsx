@@ -2,7 +2,7 @@ import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
 import { BALL_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
 
-export const BallFeature = ({ ballList, handleValueChange, updatedData, handleDeleteChange }) => {
+export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedList, handleDeleteChange }) => {
 
     const onValueChange = (ballInfo, key, value) => {
         const dataToSend = updatedData
@@ -21,8 +21,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, handleDe
             <Row>
                 {ballList.length === 0 && <div className="text-center">No balls data to show</div>}
                 {ballList?.map((ballInfo, index) => {
-
-                    return <Row>
+                    const renderBalls = <Row>
                         <hr />
                         <Col xs={1} md={1} lg={1}>
                             <div className="header-section">{`${+(ballInfo.overCount || 0)} : `}</div>
@@ -36,14 +35,16 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, handleDe
                                     value={updatedData[ballInfo.commentaryBallByBallId] || ballInfo}
                                     onChange={(field, value) => onValueChange(ballInfo, field.name, value)}
                                 />
-                                {/* <Col xs={1} md={1} lg={1}>
-                                    <Button onClick={handleDeleteChange(ballInfo.commentaryBallByBallId)}>
-                                        <i class="bi-trash"></i>
+                                <Col xs={1} md={1} lg={1}>
+                                    <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(ballInfo.commentaryBallByBallId)}>
+                                        <i class="bi bi-trash"></i>
                                     </Button>
-                                </Col> */}
+                                </Col>
                             </Row>
                         </Col >
                     </Row>
+                    if (deletedList.includes(ballInfo.commentaryBallByBallId)) return <></>
+                    else return renderBalls
                 })}
             </Row>
         </CardBody>
