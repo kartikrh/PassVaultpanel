@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Row } from "reactstrap"
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
 import { TEAM_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
 
@@ -14,21 +14,29 @@ export const TeamFeature = ({ teamlist, handleValueChange, updatedData }) => {
     return <Card>
         <CardHeader className="feature-card-header">
             Teams
+            <div className="section-info">[Score - Wicket - Over - WD - B - LB - NB - Status]</div>
         </CardHeader>
         <CardBody>
             <Row>
                 {teamlist.length === 0 && <div className="text-center">No team data to show</div>}
                 {teamlist?.map((teamInfo, index) => {
-                    return <>
-                        <div className="section-header">{`Team :  ${teamInfo.teamName}`}</div>
-                        <FieldRenderer
-                            key={index}
-                            index={index}
-                            fields={TEAM_FEATURE_FIELDS}
-                            value={updatedData[teamInfo.commentaryTeamId] || teamInfo}
-                            onChange={(field, value) => onValueChange(teamInfo, field.name, value)}
-                        />
-                    </>
+                    return <Row>
+                        <hr />
+                        <Col xs={6} md={4} lg={3}>
+                            <div className="header-section">{`${teamInfo.teamName} : `}</div>
+                        </Col>
+                        <Col xs={12} md={8} lg={9}>
+                            <Row>
+                                <FieldRenderer
+                                    key={index}
+                                    index={index}
+                                    fields={TEAM_FEATURE_FIELDS}
+                                    value={updatedData[teamInfo.commentaryTeamId] || teamInfo}
+                                    onChange={(field, value) => onValueChange(teamInfo, field.name, value)}
+                                />
+                            </Row>
+                        </Col>
+                    </Row>
                 })}
             </Row>
         </CardBody>

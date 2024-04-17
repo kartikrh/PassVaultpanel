@@ -213,6 +213,13 @@
     font-weight: 600;
 }
 
+.header-section {
+    padding: 0.2rem;
+    margin: 0 0 1rem 0;
+    font-size: large;
+    font-weight: 600;
+}
+
 .table-Row-dark {
     background: lightgray;
     padding: 0.2rem;
@@ -343,6 +350,12 @@
     border-top: none;
     border-color: transparent;
     padding: 0 0 0 1rem;
+}
+
+.section-info {
+    font-size: medium !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
 }
 
 /* http://localhost:3000/oddsView?commentaryId=601 */

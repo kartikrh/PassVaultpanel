@@ -1,5 +1,5 @@
 import { Col, Input } from "reactstrap"
-import { COUNTER, SELECT, TEXT } from "../Const"
+import { COUNTER, SELECT, TEXT, SWITCH } from "../Const"
 import Select from "react-select";
 
 export const FieldRenderer = ({ fields, value, onChange, index }) => {
@@ -27,7 +27,7 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                 lg={field.fieldColspan?.lg || 4}
             >
                 {field.type === TEXT && <Input
-                    className="form-control"
+                    className="form-control  small-text-fields"
                     style={field?.customStyle}
                     placeholder={field?.placeholder}
                     type="text"
@@ -60,6 +60,21 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                         required={field.isRequired}
                         isMulti={field.isMulti}
                     />
+                )}
+                {field.type === SWITCH && (
+                    <div className="form-check form-switch form-switch-lg mb-3">
+                        <input
+                            className="form-check-input"
+                            style={field?.customStyle}
+                            type="checkbox"
+                            id="customSwitchsizelg"
+                            checked={value[field.name]}
+                            onChange={(e) => {
+                                onChange(field, !value[field.name]);
+                            }}
+                            value={value[field.name]}
+                        />
+                    </div>
                 )}
             </Col>
         </>
