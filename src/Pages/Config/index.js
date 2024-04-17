@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import DeleteAllModel from "../../components/Model/DeleteAllModel";
+// import PanelLoadDataModel from "../../components/Model/PanelLoadDataModel";
+// import ClientLoadDataModel from "../../components/Model/ClientLoadDataModel";
 
 const Index = () => {
   const pageName = TAB_CONFIG
@@ -24,9 +26,11 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteAllModelVisable, setDeleteAllModelVisable] = useState(false);
+  // const [loadPanelModelVisable, setLoadPanelModelVisable] = useState(false);
+  // const [loadClientModelVisable, setLoadClientModelVisable] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [run, setRun] = useState(null);
+  // const [run, setRun] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -95,6 +99,60 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+  //load client data
+  const handleLoadClientData = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/loadClientData`)
+      .then((response) => {
+        fetchData();
+        // setLoadClientModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  //load panel data
+  const handleLoadPanelData = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/loadData`)
+      .then((response) => {
+        fetchData();
+        // setLoadPanelModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   //delete All Commentary
@@ -300,6 +358,8 @@ const Index = () => {
             tableElement={tableElement}
             deleteAllModelFunction={setDeleteAllModelVisable}
             deleteModelFunction={setDeleteModelVisable}
+            loadPanelModelFunction={handleLoadPanelData} 
+            loadClientModelFunction={handleLoadClientData}
             singleCheck={checekedList}
             reFetchData={fetchData}
             onAddNavigate={"/addConfig"}
@@ -307,7 +367,19 @@ const Index = () => {
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             isDeleteAllPermission={checkPermission(permissionObj,pageName,PERMISSION_EDIT)}
           />
-           <DeleteAllModel
+          {/* <PanelLoadDataModel
+            loadPanelModelVisable={loadPanelModelVisable}
+            setLoadPanelModelVisable={setLoadPanelModelVisable}
+            handleLoadPanelData={handleLoadPanelData}
+            singleCheck={checekedList}
+          /> */}
+          {/* <ClientLoadDataModel
+            loadClientModelVisable={loadClientModelVisable}
+            setLoadClientModelVisable={setLoadClientModelVisable}
+            handleLoadClientData={handleLoadClientData}
+            singleCheck={checekedList}
+          /> */}
+          <DeleteAllModel
             deleteAllModelVisable={deleteAllModelVisable}
             setDeleteAllModelVisable={setDeleteAllModelVisable}
             handleDeleteAll={handleDeleteAll}

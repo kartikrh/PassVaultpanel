@@ -60,7 +60,7 @@ const MyEditor = ({ field, formData, handleChange, fieldErrors }) => {
             .post("/imgUpload", formData)
             .then((response) => {
               const imageUrl = response?.result?.path;
-              console.log("imageUrl", imageUrl);
+              // console.log("imageUrl", imageUrl);
               resolve({
                 data: {
                   link: imageUrl,

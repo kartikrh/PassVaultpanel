@@ -44,6 +44,10 @@ const Index = () => {
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [delay, setDelay] = useState(null);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -54,6 +58,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/all`, {
         ...(latestValueFromTable || tableActions),
+        ...dateRange,
       })
       .then((response) => {
         const apiData = response?.result;
@@ -540,6 +545,7 @@ const Index = () => {
     delayTextBox: true,
     importExport: false,
     teamsList: false,
+    dateRange: true,
   };
 
   useEffect(() => {
@@ -604,6 +610,8 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

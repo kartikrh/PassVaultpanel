@@ -38,6 +38,10 @@ const Index = () => {
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -48,6 +52,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/pendingMarketList`, {
         ...(latestValueFromTable || tableActions),
+        ...dateRange,
       })
       .then((response) => {
         const apiData = response?.result;
@@ -300,6 +305,7 @@ const Index = () => {
     resetButton: true,
     importExport: false,
     teamsList: false,
+    dateRange: true,
   };
 
   useEffect(() => {
@@ -361,6 +367,8 @@ const Index = () => {
               PERMISSION_DELETE
             )}
             // teams={teams}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
