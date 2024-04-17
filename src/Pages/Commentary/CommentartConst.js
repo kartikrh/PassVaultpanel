@@ -84,7 +84,7 @@ export const WICKET_TYPE_LIST = [
 
 export const EXTRAS_WICKET_TYPE = [
     { label: RUN_OUT_LABEL, value: RUN_OUT },
-    { label: RETIRED_OUT_LABEL, value: RETIRED_OUT },
+    { label: STUMP_LABEL, value: STUMP },
 ]
 
 
