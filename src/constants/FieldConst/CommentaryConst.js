@@ -1,4 +1,4 @@
-import { PLAYER, TEAM } from "../../Pages/Commentary/CommentartConst";
+import { OVER, PARTNERSHIP, PLAYER, TEAM, WICKET, WICKET_TYPE_LIST } from "../../Pages/Commentary/CommentartConst";
 import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH, COUNTER, LABEL } from "../../components/Common/Const";
 
 export const MatchDetailFields = [
@@ -275,7 +275,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamWicket",
@@ -283,7 +282,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamOver",
@@ -291,7 +289,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamStatus",
@@ -304,7 +301,6 @@ export const SHORT_COMMENTARY_TEAM = [
             { label: "Bowling", value: 2 },
         ],
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamTrialRuns",
@@ -312,7 +308,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamLeadRuns",
@@ -320,7 +315,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamWideRuns",
@@ -328,7 +322,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamByRuns",
@@ -336,7 +329,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamLegByRuns",
@@ -344,7 +336,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
     {
         name: "teamNoBallRuns",
@@ -352,7 +343,6 @@ export const SHORT_COMMENTARY_TEAM = [
         formName: TEAM,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 4, lg: 2 },
-
     },
 
 ]
@@ -548,133 +538,272 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
 
 export const BALL_FEATURE_FIELDS = [
     {
+        name: "overCount",
+        placeholder: "O-Count",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "currentOverBalls",
+        placeholder: "O-Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
         name: "ballRun",
-        label: "Run",
         placeholder: "Run",
         formName: PLAYER,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 1, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
         name: "ballExtraRun",
-        label: "Extra",
         placeholder: "Extra",
         formName: PLAYER,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 1, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
         name: "ballFour",
-        label: "Four",
         placeholder: "Four",
         formName: PLAYER,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 1, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
     {
         name: "ballSix",
-        label: "Six",
         placeholder: "Six",
         formName: PLAYER,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 1, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
 ]
 
 export const TEAM_FEATURE_FIELDS = [
     {
         name: "teamScore",
-        label: "Score",
         placeholder: "Score",
         formName: TEAM,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "teamWicket",
-        label: "/",
         placeholder: "Wicket",
         formName: TEAM,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "teamOver",
-        label: "Over",
         placeholder: "Over",
         formName: TEAM,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "teamStatus",
-        label: "Status",
-        placeholder: "Status",
-        formName: TEAM,
-        type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "teamTrialRuns",
-        label: "Trial",
-        placeholder: "Trial",
-        formName: TEAM,
-        type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "teamLeadRuns",
-        label: "Lead",
-        placeholder: "Lead",
-        formName: TEAM,
-        type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "teamWideRuns",
-        label: "Wide",
         placeholder: "Wide",
         formName: TEAM,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "teamByRuns",
-        label: "By",
         placeholder: "By",
         formName: TEAM,
         type: COUNTER,
-        labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "teamLegByRuns",
-        label: "Leg Bye",
         placeholder: "Leg Bye",
         formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "teamNoBallRuns",
+        placeholder: "No Ball",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "teamStatus",
+        type: SELECT,
+        defaultValue: 1,
+        options: [
+            { label: "Batting", value: 1 },
+            { label: "Bowling", value: 2 },
+        ],
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    }
+]
+
+export const OVER_FEATURE_FIELD = [
+    {
+        name: "ballCount",
+        placeholder: "Ball Count",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalRun",
+        placeholder: "Runs",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalFour",
+        placeholder: "Fours",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalSix",
+        placeholder: "Sixes",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalWideBall",
+        placeholder: "WD Balls",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalWideRun",
+        placeholder: "WD Runs",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalNoball",
+        placeholder: "NB Balls",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalNoBallRun",
+        placeholder: "NN Runs",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalByesRun",
+        placeholder: "B Runs",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalLegByesRun",
+        placeholder: "LB Runs",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "totalWicket",
+        placeholder: "WK",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "dotBall",
+        placeholder: "Dot Balls",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "teamScore",
+        placeholder: "Team Score",
+        formName: OVER,
+        type: TEXT,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "isComplete",
+        formName: OVER,
+        type: SWITCH,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+]
+
+export const WICKET_FEATURE_FIELD = [
+    {
+        name: "wicketType",
+        formName: WICKET,
+        type: SELECT,
+        defaultValue: 1,
+        options: WICKET_TYPE_LIST,
+        fieldColspan: { xs: 3, md: 4, lg: 3 },
+    }
+]
+
+export const PARTNERSHIP_FEATURE_FIELD = [
+    {
+        name: "totalRuns",
+        placeholder: "Runs",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "totalBalls",
+        placeholder: "Balls",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "extras",
+        placeholder: "Extras",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+]
+
+export const PLAYER_FEATURE_FIELD = [
+    {
+        name: "totalRuns",
+        label: "Runs",
+        placeholder: "Runs",
+        formName: PARTNERSHIP,
         type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "teamNoBallRuns",
-        label: "No Ball",
-        placeholder: "No Ball",
-        formName: TEAM,
+        name: "totalBalls",
+        label: "Balls",
+        placeholder: "Balls",
+        formName: PARTNERSHIP,
         type: COUNTER,
         labelColspan: { xs: 3, md: 2, lg: 1 },
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-
+    {
+        name: "extras",
+        label: "Extras",
+        placeholder: "Extras",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        labelColspan: { xs: 3, md: 2, lg: 1 },
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
 ]

@@ -6,12 +6,13 @@ import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
+import { STRING_SEPERATOR } from "../../components/Common/Const"
 // import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup,
-    overBalls }) => {
+    overBalls = {} }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [actionPopup, setActionPopup] = useState(undefined)
@@ -31,6 +32,17 @@ export const CommentaryScreen = ({
             </div>
         })
     }
+
+    const generateRightSideOvers = () => {
+        return Object.keys(overBalls).map(over => <div>
+            {`Over : ${over.split(STRING_SEPERATOR)?.[2]}`}
+            <div className="ball-by-ball-display" xs={12} md={12} lg={12}>
+                {console.log({ balls: overBalls[over], over })}
+                {generateBallfromArray(overBalls[over])}
+            </div>
+        </div>)
+    }
+
     // useEffect(() => {
     //     if (saveCommentaryLog?.length > 0) {
     //         setRenderApi(saveCommentaryLog[saveCommentaryLog.length - 1])
@@ -126,7 +138,7 @@ export const CommentaryScreen = ({
         };
     }, [onPitchPlayers, onUndoClick, anyPopup, isBoundary, statusPopup]);
     return <React.Fragment>
-        <Row className="width-full">
+        <Row>
             {/* {isLoading && <SpinnerModel />} */}
             <Col xs={12} md={6} lg={6}>
                 <Row>
@@ -199,7 +211,7 @@ export const CommentaryScreen = ({
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
                     {<Col className="ball-by-ball-display" xs={12} md={12} lg={12}>
-                        {generateBallfromArray(overBalls)}
+                        {generateBallfromArray(overBalls?.[overBalls?.length - 1] || [])}
                     </Col>}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
@@ -268,7 +280,10 @@ export const CommentaryScreen = ({
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
                 <Row>
-                    <Col className="team-name overs-header" xs={12} md={12} lg={12}>Overs</Col>
+                    <div className="team-name overs-header">Overs</div>
+                </Row>
+                <Row>
+                    {generateRightSideOvers()}
                 </Row>
                 <img role="button" className="sticky-button"
                     onClick={() => setStatusPopup(true)}

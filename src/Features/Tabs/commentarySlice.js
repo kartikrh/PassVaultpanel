@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
-import { addSaveCommentaryLog } from './newsSlice';
 
 export const addCommentaryToDb = createAsyncThunk(
     'commentary/addCommentary',
@@ -23,11 +22,9 @@ export const addCommentaryDetailsToDb = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            // dispatch(addSaveCommentaryLog({ api: "addCommentaryDetails", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            // dispatch(addSaveCommentaryLog({ api: "addCommentaryDetails", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -37,11 +34,9 @@ export const addCommentaryScreenData = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
-            // dispatch(addSaveCommentaryLog({ api: "addCommentaryScreenData", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            // dispatch(addSaveCommentaryLog({ api: "addCommentaryScreenData", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -51,11 +46,9 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/updateCommentaryStatus', data);
-            // dispatch(addSaveCommentaryLog({ api: "updateCommentaryDisplayStatus", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            // dispatch(addSaveCommentaryLog({ api: "updateCommentaryDisplayStatus", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -65,11 +58,9 @@ export const changeBowlerFromCommentary = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/changeBowler', data);
-            // dispatch(addSaveCommentaryLog({ api: "changeBowlerFromCommentary", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            // dispatch(addSaveCommentaryLog({ api: "changeBowlerFromCommentary", req: data, res: error?.message }))
             return rejectWithValue(error?.message);
         }
     }
@@ -79,11 +70,35 @@ export const saveShortCommentary = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveShortCommentary', data);
-            // dispatch(addSaveCommentaryLog({ api: "saveShortCommentary", req: data, res: response?.result }))
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            // dispatch(addSaveCommentaryLog({ api: "saveShortCommentary", req: data, res: error?.message }))
+            return rejectWithValue(error?.message);
+        }
+    }
+);
+export const deleteCommentaryFeatures = createAsyncThunk(
+    'commentary/deleteCommentaryFeatures',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/deleteCommentaryDetails', data);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
+export const saveCommentaryFeatures = createAsyncThunk(
+    'commentary/saveCommentaryFeatures',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/saveCommentaryDetails', data);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             return rejectWithValue(error?.message);
         }
     }
@@ -187,6 +202,28 @@ const commentarySlice = createSlice({
                 state.isRedirect = true
             })
             .addCase(saveShortCommentary.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isLoading = false
+            })
+            .addCase(saveCommentaryFeatures.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(saveCommentaryFeatures.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isRedirect = true
+            })
+            .addCase(saveCommentaryFeatures.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isLoading = false
+            })
+            .addCase(deleteCommentaryFeatures.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(deleteCommentaryFeatures.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isRedirect = true
+            })
+            .addCase(deleteCommentaryFeatures.rejected, (state, action) => {
                 state.error = action.payload;
                 state.isLoading = false
             })
