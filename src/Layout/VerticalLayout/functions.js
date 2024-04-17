@@ -1,7 +1,7 @@
 export const validateTabResponse = (tabs, parentId = "0") => {
   const result = [];
   for (const tab of tabs) {
-    console.log(tabs)
+    // console.log(tabs)
     const tabId = tab.encryptedTabId;
     const tabData = {
       tabId: tabId,

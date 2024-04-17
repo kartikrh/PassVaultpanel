@@ -49,6 +49,8 @@ const Index = forwardRef(
       suspendModelFunction,
       closeModelFunction,
       deleteAllModelFunction,
+      loadPanelModelFunction,
+      loadClientModelFunction,
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
@@ -584,6 +586,21 @@ const Index = forwardRef(
                             Add
                           </Button>
                         )}
+                        {tableElement?.isActive ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolStatus />}
+                              checkedIcon={<OnSymbolStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isActive", !statusSwitch);
+                              }}
+                              checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
                         {tableElement?.clone ? (
                           <Button
                             color="warning"
@@ -660,16 +677,6 @@ const Index = forwardRef(
                             }}
                           >
                             Close
-                          </Button>
-                        )}
-                         {isDeleteAllPermission && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              deleteAllModelFunction(true)
-                            }}
-                          >
-                            Delete All
                           </Button>
                         )}
                         {isDeletePermission && (
@@ -973,21 +980,6 @@ const Index = forwardRef(
                           </button>
                         </div>
                         ) : null}
-                        {tableElement?.isActive ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolStatus />}
-                              checkedIcon={<OnSymbolStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isActive", !statusSwitch);
-                              }}
-                              checked={statusSwitch}
-                            />
-                          </div>
-                        ) : null}
                         {tableElement?.isShowContent ? (
                           <div className="d-flex align-items-center">
                             <Switch
@@ -1033,6 +1025,46 @@ const Index = forwardRef(
                             </span>
                           </div>
                         ) : null}
+                      </div>
+                    </Col>
+                    <Col className="col-sm-auto ms-auto">
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        {isDeleteAllPermission && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadPanelModelFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Panel Data
+                          </Button>
+                        )}
+                         {isDeleteAllPermission && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadClientModelFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Client Data
+                          </Button>
+                        )}
+                         {isDeleteAllPermission && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              deleteAllModelFunction(true)
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-delete-bin-2-line"></i>
+                            Delete All
+                          </Button>
+                        )}
                       </div>
                     </Col>
                   </Row>
