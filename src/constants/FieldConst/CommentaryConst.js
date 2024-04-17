@@ -569,14 +569,14 @@ export const BALL_FEATURE_FIELDS = [
         name: "ballFour",
         placeholder: "Four",
         formName: PLAYER,
-        type: SWITCH,
+        type: COUNTER,
         fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
     {
         name: "ballSix",
         placeholder: "Six",
         formName: PLAYER,
-        type: SWITCH,
+        type: COUNTER,
         fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
 ]

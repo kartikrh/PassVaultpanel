@@ -6,7 +6,7 @@ import { updateToastData } from "../../Features/toasterSlice.js"
 import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const.js"
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
-import { clearLoadingAndError, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
+import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, Row, Col, Container, CardBody } from 'reactstrap';
 import { BALL_FEATURE, OVER_FEATURE, PARTNERSHIP_FEATURE, TEAM_FEATURE, WICKET_FEATURE } from "./CommentartConst.js"
 import Breadcrumbs from "../../components/Common/Breadcrumb.js"
@@ -80,19 +80,23 @@ export const CommentaryFeatures = () => {
 
     const handleSaveClick = () => {
         const objToSave = {}
+        const deleteObjToSave = {}
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
         if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
-        if (!isEmpty(deleteBallByBall)) objToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
+        if (!isEmpty(deleteBallByBall)) deleteObjToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
         if (!isEmpty(overData)) objToSave["commentaryOvers"] = Object.values(overData)
-        if (!isEmpty(deleteOver)) objToSave["deleteOvers"] = Object.values(deleteOver)
+        if (!isEmpty(deleteOver)) deleteObjToSave["deleteOvers"] = Object.values(deleteOver)
         if (!isEmpty(wicketData)) objToSave["commentaryWickets"] = Object.values(wicketData)
-        if (!isEmpty(deleteWicket)) objToSave["deleteWickets"] = Object.values(deleteWicket)
+        if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
         if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
-        if (!isEmpty(deletePartnership)) objToSave["deletePartnership"] = Object.values(deletePartnership)
+        if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
         if (!isEmpty(objToSave)) {
-            console.log(objToSave)
-            // dispatch(saveCommentaryFeatures(objToSave))
-        } else {
+            dispatch(saveCommentaryFeatures(objToSave))
+        }
+        if (!isEmpty(deleteObjToSave)) {
+            dispatch(deleteCommentaryFeatures(deleteObjToSave))
+        }
+        if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
             handleBackClick()
         }
     };
