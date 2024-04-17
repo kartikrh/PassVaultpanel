@@ -6,36 +6,39 @@ import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
+import { STRING_SEPERATOR } from "../../components/Common/Const"
 // import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup,
-    overBalls }) => {
+    overBalls = {} }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [actionPopup, setActionPopup] = useState(undefined)
-    // const [renderApi, setRenderApi] = useState({})
-    // const { saveCommentaryLog } = useSelector(state => state.tabsData.news);
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
             const isWicket = +element?.isWicket !== 0
+            const isBoundary = +element?.isBoundary !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
-            const ballColor = isWicket ? "ball-red" : ballTypeAdd ? "ball-blue" : "ball-white"
+            const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
             const ballValue = ballTypeAdd ?
                 element.value > 0 ?
                     element.value : ""
                 : element.value
-            return <div className={` over-ball-display ${ballColor}`}>
+            return <div className={` px-3 py - md - 2 py - 1 shadow - sm rounded mx - 1 over-ball-display ${ballColor}`}>
                 {`${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`}
             </div>
         })
     }
-    // useEffect(() => {
-    //     if (saveCommentaryLog?.length > 0) {
-    //         setRenderApi(saveCommentaryLog[saveCommentaryLog.length - 1])
-    //     }
-    // }, [saveCommentaryLog])
+
+    const generateRightSideOvers = () => {
+        return Object.keys(overBalls).map((over, index) => <div className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
+            <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
+            {generateBallfromArray(overBalls[over])}
+        </div >)
+    }
+
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -126,7 +129,7 @@ export const CommentaryScreen = ({
         };
     }, [onPitchPlayers, onUndoClick, anyPopup, isBoundary, statusPopup]);
     return <React.Fragment>
-        <Row className="width-full">
+        <Row>
             {/* {isLoading && <SpinnerModel />} */}
             <Col xs={12} md={6} lg={6}>
                 <Row>
@@ -198,9 +201,6 @@ export const CommentaryScreen = ({
                         < Col xs={12} md={12} lg={12}>
                             &nbsp;&nbsp;&nbsp; Yet to start Over
                         </Col>}
-                    {<Col className="ball-by-ball-display" xs={12} md={12} lg={12}>
-                        {generateBallfromArray(overBalls)}
-                    </Col>}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
@@ -268,7 +268,10 @@ export const CommentaryScreen = ({
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
                 <Row>
-                    <Col className="team-name overs-header" xs={12} md={12} lg={12}>Overs</Col>
+                    <div className="team-name overs-header">Overs</div>
+                </Row>
+                <Row>
+                    {generateRightSideOvers()}
                 </Row>
                 <img role="button" className="sticky-button"
                     onClick={() => setStatusPopup(true)}

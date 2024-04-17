@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
 import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LATEST_BALLS_TO_FIND_BALL_HISTORY, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
@@ -204,13 +206,18 @@ export const getBallsForGivenOver = (ballHistory, overToFindFor, isUndoBall = fa
   })
   return toReturn?.filter((e) => e);
 }
+
 export const getBallsForAllOver = (ballHistory = []) => {
+  ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"])
   let toReturn = {}
   ballHistory.forEach(ball => {
-    const overToLogBallFor = Math.ceil(+ball.overCount)
-    if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = ball
+    const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(+ball.overCount)
+    const ballsInCurrentOver = toReturn[overToLogBallFor]
+    if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
+      [
+        { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false }
+      ])
   })
-  console.log(toReturn)
   return toReturn;
 }
 
