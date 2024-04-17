@@ -105,7 +105,7 @@ const Index = () => {
   const handleLoadClientData = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/loadClientData`)
+      .post(`/loadClientData`)
       .then((response) => {
         fetchData();
         // setLoadClientModelVisable(false);
@@ -132,7 +132,7 @@ const Index = () => {
   const handleLoadPanelData = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/loadData`)
+      .post(`/loadData`)
       .then((response) => {
         fetchData();
         // setLoadPanelModelVisable(false);
