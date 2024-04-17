@@ -21,6 +21,7 @@ import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
 import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
 import OnPitchPlayerModal from "./CommentaryModels/OnPitchPlayerModal.jsx"
 import { STRING_SEPERATOR } from "../../components/Common/Const.js"
+import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -53,6 +54,7 @@ const Commentary = (props) => {
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
     const [showSwitchBatterModal, setShowSwitchBatterModal] = useState(undefined)
     const [isUndoBall, setIsUndoBall] = useState(undefined)
+    const [undoErrorModal, setUndoErrorModal] = useState(undefined)
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
     const [updateRunsFromWicket, setUpdateRunFromWicket] = useState(undefined)
     const [isSwapPlayer, setIsSwapPlayer] = useState(undefined)
@@ -991,6 +993,8 @@ const Commentary = (props) => {
                 setIsUndoBall(undoType)
                 setSaveToDb(true)
             }
+        } else {
+            setUndoErrorModal(`OverCount in ball: ${+currentBall.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
         }
     }
     const updatePlayerAfterUndoWicket = () => {
@@ -1538,6 +1542,10 @@ const Commentary = (props) => {
                 toggle={() => setSelectMissingPlayer(false)}
             />
         }
+        {undoErrorModal && <UndoErrorModal
+            toggle={() => { setUndoErrorModal(null) }}
+            undoError={undoErrorModal}
+        />}
     </>
 }
 
