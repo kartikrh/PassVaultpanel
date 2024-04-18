@@ -96,7 +96,7 @@ function MarketDataLogs() {
       dataIndex: "data",
       render: (text, record) => {
         const logObject = JSON.parse(text);
-        const logItems = Object.entries(logObject).map(([key, value]) => (
+        const logItems = logObject && Object.entries(logObject).map(([key, value]) => (
           <span key={key}>
             <strong>{key}:</strong>{" "}
             {typeof value === "object" ? JSON.stringify(value) : value}{" "}
