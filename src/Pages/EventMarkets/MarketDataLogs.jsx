@@ -94,24 +94,24 @@ function MarketDataLogs() {
     {
       title: "Log",
       dataIndex: "data",
-      render: (text, record) => {
-        const logObject = JSON.parse(text)[0];
-        const logItems = Object.entries(logObject).map(([key, value]) => (
-          <>
-            <strong>{key}:</strong> {value}
-            {", "}
-          </>
-        ));
-        return <div>{logItems}</div>;
-      },
+      // render: (text, record) => {
+      //   const logObject = JSON.parse(text)[0];
+      //   const logItems = Object.entries(logObject).map(([key, value]) => (
+      //     <>
+      //       <strong>{key}:</strong> {value}
+      //       {", "}
+      //     </>
+      //   ));
+      //   return <div>{logItems}</div>;
+      // },
       key: "data",
       style: { width: "10%" },
     },
   ];
-  const MarketDetailsDate = convertDateUTCToLocal(
+  const MarketDetailsDate = marketDetails ? convertDateUTCToLocal(
     marketDetails?.eventDate,
     "index"
-  );
+  ) : "";
   const tableElement = {
     title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
   };
