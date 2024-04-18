@@ -19,7 +19,7 @@ import {
   ERROR,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_NEWS;
@@ -245,27 +245,43 @@ const Index = () => {
       style: { width: "10%" },
       sort: true,
     },
+    // {
+    //   title: "News",
+    //   dataIndex: "news",
+    //   render: (text, record) => (
+    //     <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+    //   ),
+    //   key: "news",
+    //   style: { width: "80%" },
+    // },
     {
-      title: "News",
-      dataIndex: "news",
-      render: (text, record) => (
-        <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
-      ),
-      key: "news",
-      style: { width: "80%" },
+      title: "Views",
+      dataIndex: "viewCount",
+      key: "viewCount",
+      style: { width: "20%" },
     },
-    // {
-    //   title: "Start Date",
-    //   dataIndex: "startDate",
-    //   key: "startDate",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "End Date",
-    //   dataIndex: "endDate",
-    //   key: "endDate",
-    //   style: { width: "30%" },
-    // },
+    {
+      title: "Start Date",
+      dataIndex: "startDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
+      key: "startDate",
+      style: { width: "20%" },
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
+      key: "endDate",
+      style: { width: "20%" },
+    },
     // {
     //   title: "Created By",
     //   dataIndex: "createdBy",

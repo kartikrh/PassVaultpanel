@@ -130,10 +130,9 @@ function MarketLogs() {
       style: { width: "5%" },
     },
   ];
-  const MarketDetailsDate = convertDateUTCToLocal(
-    marketDetails?.eventDate,
-    "index"
-  );
+  const MarketDetailsDate = marketDetails?.eventDate
+    ? convertDateUTCToLocal(marketDetails.eventDate, "index")
+    : "";
   const tableElement = {
     title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
   };
