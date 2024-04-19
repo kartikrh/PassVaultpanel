@@ -118,3 +118,17 @@ export const OVER_FEATURE = "Overs"
 export const TEAM_FEATURE = "Team"
 export const WICKET_FEATURE = "Wicket"
 export const PARTNERSHIP_FEATURE = "Partnership"
+export const PLAYER_FEATURE = "Players"
+export const BALL = "BALL"
+
+export const BALL_TYPE_LIST = [
+    { label: "Over Complete", value: BALL_TYPE_OVER_COMPLETE, },
+    { label: "Regular", value: BALL_TYPE_REGULAR, },
+    { label: "WD", value: BALL_TYPE_WIDE, },
+    { label: "B", value: BALL_TYPE_BYE, },
+    { label: "LB", value: BALL_TYPE_LEG_BYE, },
+    { label: "NB", value: BALL_TYPE_NO_BALL, },
+    { label: "NB B", value: BALL_TYPE_NO_BALL_BYE, },
+    { label: "NB LB", value: BALL_TYPE_NO_BALL_LEG_BYE, },
+    { label: "Panelty", value: BALL_TYPE_PANELTY_RUN, },
+]

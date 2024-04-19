@@ -250,7 +250,7 @@ const Index = () => {
   };
   const handleMarketEventActionClick = (id) => {
     localStorage.setItem('openMarketCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/marketEventAction");
+    const url = new URL(window.location.origin + "/openMarket");
     url.searchParams.append("commentaryId", id);
     window.open(url.href, '_blank');
   };
