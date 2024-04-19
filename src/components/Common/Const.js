@@ -74,7 +74,7 @@ export const BALLING_STATUS = 2;
 
 export const STRING_SEPERATOR = "_##_";
 export const CONTENT_IMAGE_TYPE = {
-    BLOCKS: "Blocks"
+  BLOCKS: "Blocks"
 }
-export const CONNECT = "connect";
-export const OPEN_MARKET_DATA = "openMarketData";
+export const OPEN_MARKET_CONNECT = "connectEventMarket";
+export const OPEN_MARKET_DATA = "updateMarketData";

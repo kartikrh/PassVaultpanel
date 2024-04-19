@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { CONNECT, ERROR, SUCCESS } from "../../components/Common/Const";
+import { OPEN_MARKET_CONNECT, ERROR, OPEN_MARKET_DATA, SUCCESS } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -10,9 +10,9 @@ import axiosInstance from "../../Features/axios";
 import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE } from "./CommentartConst";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
-import _, { isEmpty } from "lodash";
+import _, { isEmpty, isEqual } from "lodash";
 import { generateOverUnder } from "./functions";
-import socket from "../../Features/socket";
+import createSocket from "../../Features/socket";
 
 const tableElement = {
     title: "Predefined",
@@ -30,10 +30,8 @@ export const OpenMarket = () => {
     const dispatch = useDispatch();
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
+    const socket = createSocket();
 
-    const socketInitConfig = () => {
-
-    }
 
     const formatDataBeforeSend = (dataToChange = []) => {
         const dataToSend = []
@@ -463,10 +461,17 @@ export const OpenMarket = () => {
         }
 
         if (socket) {
-            if (socket?.connected) { socketInitConfig() }
-            else { socket?.on(CONNECT, () => socketInitConfig()); }
+            socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
             setIsSocketConnected(true)
-        }
+            socket.on(OPEN_MARKET_DATA, (socketData) => {
+                if (!isEqual(socketData, data)) setData(socketData)
+                console.log({ socketData });
+            });
+            return () => {
+                socket.off(OPEN_MARKET_DATA);
+            };
+        } else setIsSocketConnected(false)
+
 
         const fetchConfigAll = async () => {
             setIsLoading(true);
@@ -504,7 +509,8 @@ export const OpenMarket = () => {
         return () => {
             clearInterval(intervalIdRef.current);
         };
-    }, [isAutoUpdate])
+    }, [isAutoUpdate, isSocketConnected])
+
 
     return (
         <React.Fragment>
