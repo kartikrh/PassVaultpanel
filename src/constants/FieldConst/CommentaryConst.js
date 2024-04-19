@@ -1,4 +1,4 @@
-import { OVER, PARTNERSHIP, PLAYER, TEAM, WICKET, WICKET_TYPE_LIST } from "../../Pages/Commentary/CommentartConst";
+import { BALL, BALL_TYPE_LIST, OVER, PARTNERSHIP, PLAYER, TEAM, WICKET, WICKET_TYPE_LIST } from "../../Pages/Commentary/CommentartConst";
 import { DATE_TIME_PICKER, MULTI_SELECT, SELECT, TEXT, SWITCH, COUNTER, LABEL } from "../../components/Common/Const";
 
 export const MatchDetailFields = [
@@ -538,44 +538,52 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
 
 export const BALL_FEATURE_FIELDS = [
     {
+        name: "ballType",
+        type: SELECT,
+        formName: BALL,
+        defaultValue: 0,
+        options: BALL_TYPE_LIST,
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
         name: "overCount",
         placeholder: "O-Count",
-        formName: PLAYER,
+        formName: BALL,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
         name: "currentOverBalls",
         placeholder: "O-Ball",
-        formName: PLAYER,
+        formName: BALL,
         type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "ballRun",
         placeholder: "Run",
-        formName: PLAYER,
+        formName: BALL,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
         name: "ballExtraRun",
         placeholder: "Extra",
-        formName: PLAYER,
+        formName: BALL,
         type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "ballFour",
         placeholder: "Four",
-        formName: PLAYER,
+        formName: BALL,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
     {
         name: "ballSix",
         placeholder: "Six",
-        formName: PLAYER,
+        formName: BALL,
         type: COUNTER,
         fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
