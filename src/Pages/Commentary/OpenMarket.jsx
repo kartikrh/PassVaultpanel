@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { CONNECT, ERROR, SUCCESS } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -12,21 +12,28 @@ import { ListingElement } from "../../components/Common/Reusables/ListingCompone
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
+import socket from "../../Features/socket";
+
 const tableElement = {
     title: "Predefined",
     displayTitle: true
 };
-export const MarketEventAction = () => {
+export const OpenMarket = () => {
     const [data, setData] = useState([]);
     const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
     const [autoInterval, setAutoInterval] = useState(500)
+    const [isSocketConnected, setIsSocketConnected] = useState(false)
     let navigate = useNavigate();
     const dispatch = useDispatch();
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
+
+    const socketInitConfig = () => {
+
+    }
 
     const formatDataBeforeSend = (dataToChange = []) => {
         const dataToSend = []
@@ -110,7 +117,7 @@ export const MarketEventAction = () => {
             .then((response) => {
                 fetchTableData(commentaryId);
                 setIsLoading(false);
-                setIsAutoUpdate(true)
+                // setIsAutoUpdate(true)
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             })
             .catch((error) => {
@@ -454,6 +461,13 @@ export const MarketEventAction = () => {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
         }
+
+        if (socket) {
+            if (socket?.connected) { socketInitConfig() }
+            else { socket?.on(CONNECT, () => socketInitConfig()); }
+            setIsSocketConnected(true)
+        }
+
         const fetchConfigAll = async () => {
             setIsLoading(true);
             try {
@@ -473,11 +487,12 @@ export const MarketEventAction = () => {
                 setIsLoading(false);
             }
         };
+
         fetchConfigAll();
     }, []);
 
     useEffect(() => {
-        if (isAutoUpdate) {
+        if (isAutoUpdate && !isSocketConnected) {
             intervalIdRef.current = setInterval(() => {
                 if (commentaryId !== "0") {
                     fetchTableData(commentaryId);
