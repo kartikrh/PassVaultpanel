@@ -209,7 +209,7 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
                             <CardBody>
                                 <Row>
                                     <Col xs={6} md={8} lg={9} className="mt-3 mt-lg-4 mt-md-4">
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Short Commentary" page="updatecp" />
+                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Short Score" page="updatecp" />
                                     </Col>
                                     <Col xs={6} md={4} lg={3} className="mt-3 mt-lg-2 mt-md-2">
                                         <Button color='primary' className="table-header-button" onClick={handleSaveData}>Save</Button>

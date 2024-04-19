@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { AccordionBody, AccordionHeader, AccordionItem, Col, Input, Row, UncontrolledAccordion } from "reactstrap";
-import { COUNTER, STRING_SEPERATOR } from "../../components/Common/Const";
+import { AccordionBody, AccordionHeader, AccordionItem, Col, Row, UncontrolledAccordion } from "reactstrap";
+import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { PLAYER, TEAM } from "./CommentartConst";
 import { SHORT_COMMENTARY_BATTING_PLAYER, SHORT_COMMENTARY_BOWLING_PLAYER, SHORT_COMMENTARY_TEAM } from "../../constants/FieldConst/CommentaryConst";
 import "./CommentaryCss.css"
@@ -40,7 +40,7 @@ export const ShortCommentaryTeams = forwardRef(({ teamDetails }, ref) => {
         return playerList.map((batter, index) => {
             const uniqueId = teamUniqueId + STRING_SEPERATOR + batter.commentaryPlayerId
             return <>
-                <Row className={`pt-4 ${index % 2 === 0 ? "table-Row-dark" : "table-Row-light"}`}>
+                <Row>
                     <Col xs={12} md={4} lg={3}>
                         <div>{batter.playerName}</div>
                     </Col>

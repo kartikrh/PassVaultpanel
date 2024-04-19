@@ -8,7 +8,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
 import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, Row, Col, Container, CardBody } from 'reactstrap';
-import { BALL_FEATURE, OVER_FEATURE, PARTNERSHIP_FEATURE, TEAM_FEATURE, WICKET_FEATURE } from "./CommentartConst.js"
+import { BALL_FEATURE, OVER_FEATURE, PARTNERSHIP_FEATURE, PLAYER_FEATURE, TEAM_FEATURE, WICKET_FEATURE } from "./CommentartConst.js"
 import Breadcrumbs from "../../components/Common/Breadcrumb.js"
 import { BallFeature } from "./CommentaryFeatures/BallsFeature.jsx"
 import { TeamFeature } from "./CommentaryFeatures/TeamFeature.jsx"
@@ -16,6 +16,7 @@ import { OverFeature } from "./CommentaryFeatures/OverFeature.jsx"
 import { PartnershipFeature } from "./CommentaryFeatures/PartnershipFeature.jsx"
 import { WicketFeature } from "./CommentaryFeatures/WicketFeature.jsx"
 import _, { isEmpty } from "lodash"
+import { PlayerFeature } from "./CommentaryFeatures/PlayerFeature.jsx"
 
 const navigateTo = "/commentary"
 export const CommentaryFeatures = () => {
@@ -31,6 +32,7 @@ export const CommentaryFeatures = () => {
     const [wicketData, setWicketData] = useState({})
     const [deleteWicket, setDeleteWicket] = useState([])
     const [partnershipData, setPartnershipData] = useState({})
+    const [playerData, setPlayerData] = useState({})
     const [deletePartnership, setDeletePartnership] = useState([])
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
@@ -82,6 +84,7 @@ export const CommentaryFeatures = () => {
         const objToSave = {}
         const deleteObjToSave = {}
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
+        if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData)
         if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
         if (!isEmpty(deleteBallByBall)) deleteObjToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
         if (!isEmpty(overData)) objToSave["commentaryOvers"] = Object.values(overData)
@@ -115,6 +118,12 @@ export const CommentaryFeatures = () => {
                                         <Button color='primary' className="table-header-button" onClick={handleSaveClick}>Save</Button>
                                         <Button color='danger' className="table-header-button" onClick={handleBackClick}>Exit</Button>
                                     </Col>
+                                </Row>
+                                <Row>
+                                    {!isEmpty(commentaryData?.commentaryDetails) && <Col className='mb-3'>
+                                        <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
+                                        <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                                    </Col>}
                                 </Row>
                                 <Row>
                                     {(isDataLoading || isLoading) && <SpinnerModel />}
@@ -152,6 +161,13 @@ export const CommentaryFeatures = () => {
                                                 onClick={() => { setActiveTab(PARTNERSHIP_FEATURE) }}
                                             >
                                                 {PARTNERSHIP_FEATURE}
+                                            </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink role="button"
+                                                onClick={() => { setActiveTab(PLAYER_FEATURE) }}
+                                            >
+                                                {PLAYER_FEATURE}
                                             </NavLink>
                                         </NavItem>
                                     </Nav>
@@ -200,6 +216,13 @@ export const CommentaryFeatures = () => {
                                                 handleValueChange={updatedData => setPartnershipData({ ...updatedData })}
                                                 deletedList={deletePartnership}
                                                 handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
+                                            />
+                                        </TabPane>
+                                        <TabPane tabId={PLAYER_FEATURE}>
+                                            <PlayerFeature
+                                                playerList={commentaryData?.commentaryPlayers || []}
+                                                updatedData={playerData || {}}
+                                                handleValueChange={updatedData => setPlayerData({ ...updatedData })}
                                             />
                                         </TabPane>
                                     </TabContent>

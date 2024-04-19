@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ERROR } from "../../components/Common/Const";
+import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -11,6 +11,7 @@ import { ListingElement } from "../../components/Common/Reusables/ListingCompone
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { MARKET_STATUS } from "./CommentartConst";
+import createSocket from "../../Features/socket";
 
 const tableElement = {
     title: "oddsView",
@@ -21,43 +22,49 @@ export const OddsView = () => {
     const [data, setData] = useState([]);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    // const [autoInterval, setAutoInterval] = useState(500)
+    const [isSocketConnected, setIsSocketConnected] = useState(false)
     let navigate = useNavigate();
     const dispatch = useDispatch();
     const commentaryId = +localStorage.getItem('oddsViewCommentaryId') || "0";
-    const intervalIdRef = useRef(null);
+    const socket = createSocket();
+
+    const formatDataForState = (responseData) => {
+        let updatedDatalist = responseData.map(eventMarket => {
+            const marketRunner = eventMarket.runner[0]
+            if (marketRunner)
+                return {
+                    "fancy": eventMarket.marketName + " " + eventMarket.teamName,
+                    "odds": {
+                        noRate: marketRunner.no,
+                        yesRate: marketRunner.yes,
+                        noPoint: marketRunner.noPoint,
+                        yesPoint: marketRunner.yesPoint
+                    },
+                    "status": MARKET_STATUS[eventMarket.status]
+                }
+            else return null
+        }).filter(x => x)
+        updatedDatalist = _.orderBy(updatedDatalist, ['fancy'], ['desc']);
+        return updatedDatalist
+    }
 
     const fetchTableData = async (commentaryId) => {
-        // setIsLoading(true);
+        setIsLoading(true);
         await axiosInstance
-            .post("/admin/eventMarket/marketListByCId", { commentaryId })
+            .post("/admin/eventMarket/getMarketDataByCId", { commentaryId })
             .then((response) => {
                 if (response?.result) {
                     const dataList = response?.result || []
-                    let updatedDatalist = dataList.map(eventMarket => {
-                        const marketRunner = eventMarket.marketRunners[0]
-                        if (eventMarket.marketRunners)
-                            return {
-                                "fancy": eventMarket.marketName + " " + eventMarket.teamName,
-                                "odds": {
-                                    noRate: marketRunner.noRate,
-                                    yesRate: marketRunner.yesRate,
-                                    noPoint: marketRunner.noPoint,
-                                    yesPoint: marketRunner.yesPoint
-                                },
-                                "status": MARKET_STATUS[eventMarket.status]
-                            }
-                        else return null
-                    }).filter(x => x)
-                    updatedDatalist = _.orderBy(updatedDatalist, ['fancy'], ['desc']);
-                    setData(updatedDatalist);
+                    const updatedData = formatDataForState(dataList)
+                    setData(updatedData);
+                    setIsLoading(false);
                 }
-                // setIsLoading(false);
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                // setIsLoading(false);
+                setIsLoading(false);
             });
+
     };
 
     const fetchCommentaryInfo = async () => {
@@ -114,30 +121,20 @@ export const OddsView = () => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
+            if (socket) {
+                socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+                setIsSocketConnected(true)
+                socket.on(OPEN_MARKET_DATA, (socketData) => {
+                    setData(formatDataForState(socketData || []))
+                    console.log({ socketData });
+                });
+            } else setIsSocketConnected(false)
         }
-        const fetchConfigAll = async () => {
-            setIsLoading(true);
-            try {
-                intervalIdRef.current = setInterval(() => {
-                    if (commentaryId !== "0") {
-                        fetchTableData(commentaryId);
-                    }
-                }, 1000);
-            } catch (error) {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchConfigAll();
         return () => {
-            clearInterval(intervalIdRef.current);
+            socket.off(OPEN_MARKET_DATA);
         };
     }, []);
 
-    useEffect(() => {
-
-    }, [])
     return (
         <React.Fragment>
             <div className="page-content">
@@ -157,6 +154,7 @@ export const OddsView = () => {
                                 <Row>
                                     <div className="odds-page-header">{!isEmpty(commentaryInfo) && commentaryInfo.en}</div>
                                 </Row>
+                                <Row>{isSocketConnected ? "Live" : "Disconnected"}</Row>
                                 <Row>
                                     <Col>
                                         <ListingElement
