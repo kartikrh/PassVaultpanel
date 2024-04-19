@@ -70,7 +70,7 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                             id="customSwitchsizelg"
                             checked={value[field.name]}
                             onChange={(e) => {
-                                onChange(field, !value[field.name]);
+                                onChange(field, value[field.name] ? null : true);
                             }}
                             value={value[field.name]}
                         />

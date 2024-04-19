@@ -125,8 +125,8 @@ export const OddsView = () => {
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
-                    setData(formatDataForState(socketData || []))
                     console.log({ socketData });
+                    setData(formatDataForState(socketData || []))
                 });
             } else setIsSocketConnected(false)
         }
