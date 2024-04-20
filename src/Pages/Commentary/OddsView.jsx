@@ -29,8 +29,8 @@ export const OddsView = () => {
     const socket = createSocket();
 
     const formatDataForState = (responseData) => {
-        if (typeof responseData === "string") responseData = JSON.parse(responseData)
         let updatedDatalist = responseData.map(eventMarket => {
+            if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
             const marketRunner = eventMarket.runner[0]
             if (marketRunner)
                 return {
@@ -126,7 +126,6 @@ export const OddsView = () => {
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
-                    console.log({ socketData });
                     setData(formatDataForState(socketData || []))
                 });
             } else setIsSocketConnected(false)
