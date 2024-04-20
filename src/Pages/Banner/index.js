@@ -42,14 +42,14 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/news/all`, {
+      .post(`/admin/banner/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
-          apiDataIdList.push(ele?.newsId);
+          apiDataIdList.push(ele?.bannerId);
         });
         setData(apiData);
         setDataIndexList(apiDataIdList);
@@ -82,10 +82,10 @@ const Index = () => {
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.newsId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.newsId);
+    if (checekedList.includes(e.bannerId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.bannerId);
     } else {
-      updateSingleCheck = [...checekedList, e.newsId];
+      updateSingleCheck = [...checekedList, e.bannerId];
     }
     setCheckedList(updateSingleCheck);
   };
@@ -93,8 +93,8 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/news/activeInactiveNews`, {
-        newsId: record.newsId,
+      .post(`/admin/banner/activeInactiveBanner`, {
+        bannerId: record.bannerId,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -122,8 +122,8 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/news/delete`, {
-        newsId: checekedList,
+      .post(`/admin/banner/delete`, {
+        bannerId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -150,11 +150,27 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    navigate("/addNews", { state: { newsId: id } });
+    navigate("/addBanner", { state: { bannerId: id } });
   };
   const handleReset = (value) => {
     fetchData(value);
   };
+
+  const getBannerType = (status) => {
+    switch (status) {
+      case 1:
+        return "Top";
+      case 2:
+        return "Left";
+      case 3:
+        return "Right";
+      case 4:
+        return "Bottom";
+      default:
+        return "Unknown";
+    }
+  };
+
   //table columns
   const columns = [
     {
@@ -186,7 +202,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.newsId)}
+            checked={checekedList.includes(record.bannerId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -204,7 +220,7 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.newsId);
+            handleEdit(record.bannerId);
           }}
         ></i>
       ),
@@ -245,19 +261,23 @@ const Index = () => {
       style: { width: "10%" },
       sort: true,
     },
-    // {
-    //   title: "News",
-    //   dataIndex: "news",
-    //   render: (text, record) => (
-    //     <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
-    //   ),
-    //   key: "news",
-    //   style: { width: "80%" },
-    // },
+    {
+      title: "Type",
+      dataIndex: "bannerType",
+      key: "bannerType",
+      style: { width: "20%" },
+      render: (text, record) => <span>{getBannerType(record.bannerType)}</span>,
+    },
     {
       title: "Views",
       dataIndex: "viewerCount",
       key: "viewerCount",
+      style: { width: "20%" },
+    },
+    {
+      title: "Link",
+      dataIndex: "link",
+      key: "link",
       style: { width: "20%" },
     },
     {
@@ -292,18 +312,6 @@ const Index = () => {
     //   title: "Created Date",
     //   dataIndex: "createdDate",
     //   key: "createdDate",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "Modify By",
-    //   dataIndex: "modifyBy",
-    //   key: "modifyBy",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "Modify Date",
-    //   dataIndex: "modifyDate",
-    //   key: "modifyDate",
     //   style: { width: "30%" },
     // },
     // {
@@ -342,7 +350,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "News",
+    title: "Banner",
     isActive: true,
   };
 
@@ -357,7 +365,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="News" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Banner" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -366,7 +374,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addNews"}
+            onAddNavigate={"/addBanner"}
             handleReset={handleReset}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
