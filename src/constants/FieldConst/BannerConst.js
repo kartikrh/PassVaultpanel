@@ -1,0 +1,90 @@
+import {
+    DATE_TIME_PICKER,
+    IMAGE,
+    SELECT,
+    SWITCH,
+    TEXT,
+  } from "../../components/Common/Const";
+  
+  export const bannerFields = [
+    {
+      name: "title",
+      label: "Title",
+      isRequired: true,
+      type: TEXT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      name: "bannerType",
+      label: "Banner Type",
+      options: [
+        { label: "Select Banner Type", value: "0" },
+        { label: "Top", value: 1 },
+        { label: "Left", value: 2 },
+        { label: "Right", value: 3 },
+        { label: "Bottom", value: 4 },
+      ],
+      isRequired: true,
+      type: SELECT,
+      defaultValue: false,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      type: SWITCH,
+      name: "isPermanent",
+      label: "IsPermanent",
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      type: SWITCH,
+      name: "isActive",
+      label: "IsActive",
+      defaultValue: true,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      name: "startDate",
+      label: "From",
+      isRequired: true,
+      // customStyle: {
+      //   maxWidth: "600px",
+      // },
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+      type: DATE_TIME_PICKER,
+    },
+    {
+      name: "endDate",
+      label: "To",
+      isRequired: true,
+      // customStyle: {
+      //   maxWidth: "600px",
+      // },
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+      type: DATE_TIME_PICKER,
+    },
+    {
+      name: "link",
+      label: "Link",
+      type: TEXT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      type: IMAGE,
+      name: "image",
+      label: "Image",
+      // customStyle: {
+      //     maxWidth: "200px",
+      //     paddingLeft:"0px"
+      //   },
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+  ];
+  

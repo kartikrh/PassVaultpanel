@@ -44,6 +44,7 @@ import MenuList from "../Pages/menuList";
 import AddMenuType from "../Pages/menuList/AddMenuType.js";
 import AddMenuItem from "../Pages/menuList/AddMenuItem.js";
 import News from "../Pages/News";
+import Banner from "../Pages/Banner";
 import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
@@ -85,6 +86,7 @@ import MarketDataLogs from "../Pages/EventMarkets/MarketDataLogs.jsx";
 import AddVendor from "../Pages/Vendor/AddVendor.js";
 import VendorIpList from "../Pages/Vendor/VendorIpList.js";
 import AddClientSocket from "../Pages/ClientSocket/AddClientSocket.jsx";
+import AddBanner from "../Pages/Banner/AddBanner.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -154,6 +156,8 @@ const authProtectedRoutes = [
   { path: "/addDisplayStatus", component: <AddDisplayStatus /> },
   { path: "/clientSocket", component: <ClientSocket /> },
   { path: "/addClientSocket", component: <AddClientSocket /> },
+  { path: "/banner", component: <Banner /> },
+  { path: "/addBanner", component: <AddBanner /> },
 
   {
     path: "/changePassword",
