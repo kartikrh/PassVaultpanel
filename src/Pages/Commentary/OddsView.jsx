@@ -29,6 +29,7 @@ export const OddsView = () => {
     const socket = createSocket();
 
     const formatDataForState = (responseData) => {
+        if (typeof responseData === "string") responseData = JSON.parse(responseData)
         let updatedDatalist = responseData.map(eventMarket => {
             const marketRunner = eventMarket.runner[0]
             if (marketRunner)
