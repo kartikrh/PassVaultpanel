@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA } from "../../components/Common/Const";

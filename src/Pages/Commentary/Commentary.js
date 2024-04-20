@@ -294,13 +294,6 @@ const Commentary = (props) => {
         }
         if (!freezePlayers) checkForOverSwitch(updateOver.ballCount)
         updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
-        // const freeAllPlayer = []
-        // players[BOWLING_TEAM]?.map(player => {
-        //     if (player.isPlay === false) {
-        //         freeAllPlayer.push({ ...player, isPlay: null })
-        //     } return player
-        // })
-        // setPlayerUpdateList([].concat(freeAllPlayer, playerUpdateList || []))
         setPlayers({
             [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
             [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
@@ -519,7 +512,7 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(updatedOnPitchPlyer),
         }
         if (playerType === CURRENT_BOWLER) {
-            if (!currentOver)
+            if (!currentOver || currentOver.isComplete)
                 objToSave["commentaryOvers"] = generateOver({ commentaryDetails, onPitchPlayers: updatedOnPitchPlyer, teams })
         }
         setOnPitchPlayers(updatedOnPitchPlyer)
@@ -1232,6 +1225,7 @@ const Commentary = (props) => {
             }
             dispatch(addCommentaryScreenData(objToSave))
             setIsOverChange(undefined)
+            setPlayerUpdateList([])
         }
     }, [isOverChange])
     useEffect(() => {
