@@ -20,7 +20,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
             setTimeout(() => {
                 const inputElement = document.getElementById('playerNameInput');
                 if (inputElement) inputElement.focus();
-            }, 150); // Adjust timing as needed
+            }, 150);
         }
     }, [isOpen]);
     return (
