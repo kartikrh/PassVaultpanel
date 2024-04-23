@@ -66,7 +66,10 @@ export const PenaltyModal = ({ toggle, isOpen, selectedPenalty }) => {
                     </thead>
                     <tbody>
                         {(penaltyList || data)?.map(penalty => <tr key={penalty.id}>
-                            <td role='button' onClick={() => selectedPenalty(penalty.value)} >{penalty.label}</td>
+                            <td role='button' onClick={() => selectedPenalty(penalty.value)} >
+                                <b>Penalty: </b>{penalty.label} &nbsp;&nbsp;&nbsp;
+                                <b>Runs: </b>{penalty.value}
+                            </td>
                         </tr>)}
                     </tbody>
                 </Table>
