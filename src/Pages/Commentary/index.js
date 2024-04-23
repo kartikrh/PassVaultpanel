@@ -512,9 +512,11 @@ const Index = () => {
       dataIndex: "eventRefId",
       render: (text, record) => (
         <span
-          style={{ cursor: "pointer" }}
+          style={{ cursor: (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) && "pointer" }}
           onClick={() => {
-            handleOddsViewClick(record.commentaryId);
+            if (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) {
+              handleOddsViewClick(record.commentaryId);
+            }
           }}
         >
           {text}
@@ -528,7 +530,7 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
+        <span>
           {convertDateUTCToLocal(text, "index")}
         </span>
       ),
@@ -541,9 +543,11 @@ const Index = () => {
       dataIndex: "eventName",
       render: (text, record) => (
         <span
-          style={{ cursor: "pointer" }}
+          style={{ cursor: (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) && "pointer" }}
           onClick={() => {
-            handleMarketEventActionClick(record.commentaryId);
+            if (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) {
+              handleMarketEventActionClick(record.commentaryId);
+            }
           }}
         >
           {text}
@@ -571,7 +575,7 @@ const Index = () => {
       title: "Status",
       dataIndex: "commentaryStatus",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{mapCommentaryStatus(text)}</span>
+        <span>{mapCommentaryStatus(text)}</span>
       ),
       key: "commentaryStatus",
       sort: true,
