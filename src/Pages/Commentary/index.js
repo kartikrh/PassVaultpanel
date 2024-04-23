@@ -30,6 +30,7 @@ import {
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
 import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
+import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -41,9 +42,11 @@ const Index = () => {
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [changeModelVisible, setChangeModelVisible] = useState(false);
   const [delayModelVisible, setDelayModelVisible] = useState(false);
+  const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
+  const [selectedEventRef, setSelectedEventRef] = useState({});
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -360,6 +363,34 @@ const Index = () => {
         );
       });
   };
+  const handleChangeEventRef = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeEventRefId`, {
+        ...selectedEventRef,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setEventRefModelVisible(false);
+      })
+      .catch((error) => {
+        setEventRefModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleActiveInactive = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -494,40 +525,8 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
-      title: "Edit",
-      key: "edit",
-      render: (text, record) => (
-        <i
-          className="bx bx-edit"
-          onClick={() => {
-            handleEdit(record.commentaryId);
-          }}
-        ></i>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
     {
-      title: "Event Id",
-      dataIndex: "eventRefId",
-      render: (text, record) => (
-        <span
-          style={{ cursor: (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) && "pointer" }}
-          onClick={() => {
-            if (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) {
-              handleOddsViewClick(record.commentaryId);
-            }
-          }}
-        >
-          {text}
-        </span>
-      ),
-      key: "eventRefId",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Event Date",
+      title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
@@ -539,13 +538,63 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Event Name",
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      // render: (text, record) => (
+      //   <div className="d-flex align-items-center gap-1">
+      //   <span
+      //     style={{ cursor: record.isPredictMarket && "pointer" }}
+      //     onClick={() => {
+      //       if (record.isPredictMarket) {
+      //         handleOddsViewClick(record.commentaryId);
+      //       }
+      //     }}
+      //   >
+      //     {text}
+      //   </span>
+      //   <a
+      //   className="bx bx-edit-alt"
+      //   style={{ cursor: "pointer" }}
+      //   onClick={() => {
+      //     setEventRefModelVisible(true);
+      //     setSelectedEventRef(record);
+      //   }}
+      //   ></a>
+      //   </div>
+      // ),
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-1">
+          <span
+            style={{ cursor: record.isPredictMarket && "pointer" }}
+            onClick={() => {
+              if (record.isPredictMarket) {
+                handleOddsViewClick(record.commentaryId);
+              }
+            }}
+          >
+            {text}
+          </span>
+          <span 
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setEventRefModelVisible(true);
+              setSelectedEventRef(record);
+            }}> {<a className="bx bx-edit-alt"></a>}
+          </span>
+        </div>
+      ),
+      key: "eventRefId",
+      sort: true,
+      style: { width: "10%" },
+    }, 
+    {
+      title: "Event",
       dataIndex: "eventName",
       render: (text, record) => (
         <span
-          style={{ cursor: (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) && "pointer" }}
+          style={{ cursor: record.isPredictMarket && "pointer" }}
           onClick={() => {
-            if (record.isPredictMarket && parseInt(record.commentaryStatus) === 1) {
+            if (record.isPredictMarket) {
               handleMarketEventActionClick(record.commentaryId);
             }
           }}
@@ -558,18 +607,22 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Team",
-      dataIndex: "team1Name",
-      key: "team1Name",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Competitor",
-      dataIndex: "team2Name",
-      key: "team2Name",
-      sort: true,
-      style: { width: "10%" },
+      title: "Scoring",
+      key: "commentaryDetails",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"warning"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleDetailsClick(record.commentaryId);
+          }}
+        >
+          <i class='bx bxs-right-arrow' ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Status",
@@ -600,41 +653,134 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Event Delay",
-      dataIndex: "delay",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setDelayModelVisible(true);
-            setSelectedDelay(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {<a className="bx bx-edit-alt"></a>}
-        </span>
-      ),
-      key: "delay",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Scoring",
-      key: "commentaryDetails",
-      printType: "ignore",
+      title: "Show",
+      key: "isClientShow",
       render: (text, record) => (
         <Button
-          color={"warning"}
+          color={`${record.isClientShow ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handleDetailsClick(record.commentaryId);
+            handlePermissions("isClientShow", record, record?.isClientShow);
           }}
         >
-          <i class='bx bxs-right-arrow' ></i>
+          <i
+            className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Active",
+      key: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleActiveInactive("isActive", record, record?.isActive);
+          }}
+        >
+          <i
+            className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Player",
+      key: "updatePlayers",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color={"info"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleUpdatePlayersClick(record);
+          }}
+        >
+          <i class='bx bxs-up-arrow-square' ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    // {
+    //   title: "Team",
+    //   dataIndex: "team1Name",
+    //   key: "team1Name",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
+    // {
+    //   title: "Competitor",
+    //   dataIndex: "team2Name",
+    //   key: "team2Name",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
+    {
+      title: "Predicate",
+      key: "isPredictMarket",
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-2">
+        <Button
+          color={`${record.isPredictMarket ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            updatePredictMarket(
+              "isPredictMarket",
+              record,
+              record?.isPredictMarket
+            );
+          }}
+        >
+          <i
+            className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
+              }`}
+          ></i>
+        </Button>
+        {record.isPredictMarket &&
+         <Button
+         color={"primary"}
+         size="sm"
+         className="btn"
+         onClick={() => {
+           handleCommentaryMarketTemplateClick(record.commentaryId);
+         }}
+       >
+         <i class='bx bxs-store' ></i>
+       </Button>
+      }
+       </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    // {
+    //   title: "P-Market",
+    //   key: "marketTemplate",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Button
+    //       color={"primary"}
+    //       size="sm"
+    //       disabled={
+    //         !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
+    //       }
+    //       className="btn"
+    //       onClick={() => {
+    //         handleCommentaryMarketTemplateClick(record.commentaryId);
+    //       }}
+    //     >
+    //       <i class='bx bxs-store' ></i>
+    //     </Button>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
       title: "S-Score",
       key: "shortCommentary",
@@ -672,103 +818,33 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "P-Update",
-      key: "updatePlayers",
-      printType: "ignore",
+      title: "Delay",
+      dataIndex: "delay",
       render: (text, record) => (
-        <Button
-          color={"info"}
-          size="sm"
-          className="btn"
+        <span
           onClick={() => {
-            handleUpdatePlayersClick(record);
+            setDelayModelVisible(true);
+            setSelectedDelay(record);
           }}
+          style={{ cursor: "pointer" }}
         >
-          <i class='bx bxs-up-arrow-square' ></i>
-        </Button>
+          {text} {<a className="bx bx-edit-alt"></a>}
+        </span>
       ),
-      style: { width: "2%", textAlign: "center" },
+      key: "delay",
+      sort: true,
+      style: { width: "10%" },
     },
-    {
-      title: "P-Market",
-      key: "marketTemplate",
-      printType: "ignore",
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
+      title: "Edit",
+      key: "edit",
       render: (text, record) => (
-        <Button
-          color={"primary"}
-          size="sm"
-          disabled={
-            !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
-          }
-          className="btn"
+        <i
+          className="bx bx-edit"
           onClick={() => {
-            handleCommentaryMarketTemplateClick(record.commentaryId);
+            handleEdit(record.commentaryId);
           }}
-        >
-          <i class='bx bxs-store' ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is P-Market",
-      key: "isPredictMarket",
-      render: (text, record) => (
-        <Button
-          color={`${record.isPredictMarket ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            updatePredictMarket(
-              "isPredictMarket",
-              record,
-              record?.isPredictMarket
-            );
-          }}
-        >
-          <i
-            className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
-              }`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is C-Show",
-      key: "isClientShow",
-      render: (text, record) => (
-        <Button
-          color={`${record.isClientShow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isClientShow", record, record?.isClientShow);
-          }}
-        >
-          <i
-            className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Active",
-      key: "isActive",
-      render: (text, record) => (
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleActiveInactive("isActive", record, record?.isActive);
-          }}
-        >
-          <i
-            className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
+        ></i>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -908,6 +984,16 @@ const Index = () => {
               singleCheck={checekedList}
               selectedDelay={selectedDelay}
               setSelectedDelay={setSelectedDelay}
+            />
+          )}
+          {eventRefModelVisible && (
+            <ChangeEventRefIdModel
+              eventRefModelVisible={eventRefModelVisible}
+              setEventRefModelVisible={setEventRefModelVisible}
+              handleChange={handleChangeEventRef}
+              singleCheck={checekedList}
+              selectedEventRef={selectedEventRef}
+              setSelectedEventRef={setSelectedEventRef}
             />
           )}
         </Container>
