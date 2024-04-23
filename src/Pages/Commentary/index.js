@@ -723,7 +723,7 @@ const Index = () => {
     //   style: { width: "10%" },
     // },
     {
-      title: "Predicate",
+      title: "Predict",
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
