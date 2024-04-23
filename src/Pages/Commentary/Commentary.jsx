@@ -11,7 +11,7 @@ import { STRING_SEPERATOR } from "../../components/Common/Const"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
-    onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup,
+    onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup, showPaneltyRuns,
     overBalls = {} }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
@@ -60,9 +60,6 @@ export const CommentaryScreen = ({
             case '4':
                 setIsBoundary(4);
                 break;
-            case '5':
-                handleRuns(5, 1);
-                break;
             case '6':
                 setIsBoundary(6);
                 break;
@@ -84,18 +81,6 @@ export const CommentaryScreen = ({
             case 's':
                 updateExtras(NO_BALL_BYE);
                 break;
-            case 'd':
-                updateExtras(BALL_LEG_BYE);
-                break;
-            case 'f':
-                updateExtras(NO_BALL_LEG_BYE);
-                break;
-            case 'z':
-                changeOver();
-                break;
-            case 'x':
-                endInnings();
-                break;
             case 'c':
                 console.log("Actions")
                 break;
@@ -106,11 +91,8 @@ export const CommentaryScreen = ({
                 break;
         }
     }
+
     const handleRuns = (run, ball, isBoundary = false) => {
-        if (!onPitchPlayers || Object.keys(onPitchPlayers).length === 0) {
-            console.error("onPitchPlayers is empty");
-            return;
-        }
         updateRuns(
             {
                 run: run,
@@ -128,6 +110,7 @@ export const CommentaryScreen = ({
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [onPitchPlayers, onUndoClick, anyPopup, isBoundary, statusPopup]);
+
     return <React.Fragment>
         <Row>
             {/* {isLoading && <SpinnerModel />} */}
@@ -233,8 +216,8 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => handleRuns(5, 1)}>
-                        <img className="button-icon" src="icons/5.png" alt="Icon" />
+                        onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
+                        <img className="button-icon" src="icons/b.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_WIDE)}>
@@ -244,11 +227,7 @@ export const CommentaryScreen = ({
                         onClick={() => updateExtras(NO_BALL)}>
                         <img className="button-icon-lg" src="icons/no-ball.png" alt="Icon" />
                     </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
-                        <img className="button-icon" src="icons/b.png" alt="Icon" />
-                    </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                    <Col role="button" className=" score-button" xs={6} md={6} lg={6}
                         onClick={() => setActionPopup(true)}>
                         <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
@@ -313,6 +292,14 @@ export const CommentaryScreen = ({
             updateExtras={(extraType) => {
                 updateExtras(extraType)
                 setActionPopup(false)
+            }}
+            handleRuns={(run, ball) => {
+                handleRuns(run, ball)
+                setActionPopup(false)
+            }}
+            paneltyRuns={() => {
+                setActionPopup(false)
+                showPaneltyRuns(true)
             }}
         />}
     </React.Fragment >
