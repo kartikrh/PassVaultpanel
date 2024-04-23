@@ -1,15 +1,34 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row, Table } from 'reactstrap';
 import { BALL_WIDE, EXTRAS, NO_BALL, WICKET } from '../CommentartConst';
 import "../CommentaryCss.css"
+
 const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
     const defaultValue = (extraType === BALL_WIDE || extraType === NO_BALL) ? 0 : 1
     const [run, setRun] = useState(defaultValue)
     const [isBoundary, setIsBoundary] = useState(undefined)
     const handleSubmit = (type) => {
-        const objToSend = { run, type, isBoundary: ((+run === 4) || (+run === 6)) ? isBoundary : false }
+        const objToSend = { run: +run, type, isBoundary: ((+run === 4) || (+run === 6)) ? isBoundary : false }
         updateExtras(objToSend)
     }
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && e.shiftKey) toggle();
+        else if (e.key === 'Enter') handleSubmit(EXTRAS)
+    };
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [run])
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                const inputElement = document.getElementById('runs');
+                if (inputElement) inputElement.focus();
+            }, 150);
+        }
+    }, [isOpen]);
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader className='normal-header' toggle={toggle}>

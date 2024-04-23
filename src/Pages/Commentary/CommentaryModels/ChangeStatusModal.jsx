@@ -21,7 +21,7 @@ const ChangeStatusModal = ({ statusList, toggle, isOpen, onSubmit }) => {
             setTimeout(() => {
                 const inputElement = document.getElementById('statusInput');
                 if (inputElement) inputElement.focus();
-            }, 150); // Adjust timing as needed
+            }, 150);
         }
     }, [isOpen]);
 
