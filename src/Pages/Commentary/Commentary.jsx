@@ -33,10 +33,16 @@ export const CommentaryScreen = ({
     }
 
     const generateRightSideOvers = () => {
-        return Object.keys(overBalls).map((over, index) => <div className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
+        return Object.keys(overBalls).map((over, index) =>
+            <>
+            {/* <span>{onPitchPlayers[ON_STRIKE]?.playerName}</span> */}
+            <div className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
             <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
+            {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
+                <> Yet to start Over </>
+            }
             {generateBallfromArray(overBalls[over])}
-        </div >)
+        </div > </>)
     }
 
     const handleKeyPress = (event) => {
@@ -180,10 +186,10 @@ export const CommentaryScreen = ({
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
-                    {(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0 &&
+                    {/* {(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0 &&
                         < Col xs={12} md={12} lg={12}>
                             &nbsp;&nbsp;&nbsp; Yet to start Over
-                        </Col>}
+                        </Col>} */}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
