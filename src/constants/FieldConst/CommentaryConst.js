@@ -640,6 +640,20 @@ export const TEAM_FEATURE_FIELDS = [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
+        name: "teamTrialRuns",
+        placeholder: "Trial",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "teamLeadRuns",
+        placeholder: "Lead",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "teamStatus",
         type: SELECT,
         defaultValue: 1,

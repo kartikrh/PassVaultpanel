@@ -241,7 +241,7 @@ export const generateOverUnder = (dataObj) => {
 }
 
 
-export const fetchWinnerMessage = ({ team, matchTypeDetails, commentaryDetails, isBattingTeamWon }) => {
+export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTeamWon }) => {
   const battingTeam = team[BATTING_TEAM]
   const bowlingTeam = team[BOWLING_TEAM]
   if (isBattingTeamWon) {
@@ -249,7 +249,7 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, commentaryDetails, 
     const wicketRemaining = maxNoOfWicket - (+battingTeam.teamWicket || 0)
     return `${battingTeam.shortName} has won by ${wicketRemaining} wickets.`
   } else {
-    const runsLeft = +commentaryDetails.target - battingTeam.teamScore - 1
+    const runsLeft = target - battingTeam.teamScore - 1
     return `${bowlingTeam.shortName} has won by ${runsLeft} runs.`
   }
 }
