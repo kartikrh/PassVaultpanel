@@ -73,8 +73,8 @@ const Header = (props) => {
                 <span className="logo-sm">
                   <img src={logoSm} alt="logo-sm-dark" height="22" />
                 </span>
-                <span className="logo-lg">
-                  <img src={logoDark} alt="logo-dark" height="24" />
+                <span className="logo-lg text-black" style={{fontSize: "medium"}}>
+                  <img src={logoDark} alt="logo-dark" height="24" /> <strong>Panel</strong>
                 </span>
               </Link>
 
