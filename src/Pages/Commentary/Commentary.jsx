@@ -16,6 +16,7 @@ export const CommentaryScreen = ({
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [actionPopup, setActionPopup] = useState(undefined)
+    const reactApplicationPhase = process.env.NODE_ENV;
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
             const isWicket = +element?.isWicket !== 0
@@ -264,7 +265,10 @@ export const CommentaryScreen = ({
             </Col>
         </Row >
         <Row className="mt-5">
-        <iframe src={`https://deployed.live/scoreboard2?id=${commentaryId}&color=000`} frameborder="0"></iframe>
+        {reactApplicationPhase === "development" ?
+        <iframe src={`https://uat.deployed.live/scoreboard2?id=${commentaryId}&color=000`} frameborder="0"></iframe>
+        : <iframe src={`https://deployed.live/scoreboard2?id=${commentaryId}&color=000`} frameborder="0"></iframe> 
+        }
         </Row>
         {isBoundary &&
             <IsBoundaryModal
