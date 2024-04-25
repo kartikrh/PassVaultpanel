@@ -38,6 +38,10 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
             }
         })
     }
+    const handleCloseModal = () => {
+      setCloneModelVisible(false);
+      setCloneValues({});
+    }
     return (
     <Modal isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
     <div className="tablelist-form">
@@ -50,7 +54,7 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
                 <input type="text" onChange={handleCloneValues} value={cloneValues?.eventRefId} name="eventRefId" className="form-control" required />
             </div>
             <div className="hstack gap-2 justify-content-end">
-                <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
+                <button type="button" className="btn btn-light" onClick={handleCloseModal}>Close</button>
                 {singleCheck.length===1?
                 <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Clone Commentary</button>
                 :null}

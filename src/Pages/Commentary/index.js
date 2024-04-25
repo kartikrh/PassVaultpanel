@@ -513,10 +513,12 @@ const Index = () => {
             checked={checekedList.includes(record.commentaryId)}
             onChange={() => {
               handleSingleCheck(record);
-              setCloneValues({
-                eventName: record?.eventName,
-                eventRefId: record?.eventRefId,
-              });
+              if (!checekedList.includes(record.commentaryId)) {
+                setCloneValues({
+                  eventName: record?.eventName,
+                  eventRefId: record?.eventRefId,
+                });
+              }
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
