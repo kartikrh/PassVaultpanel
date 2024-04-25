@@ -70,7 +70,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
-
+    const commentaryId = props.data.commentaryData.commentaryDetails.eid;
     useEffect(() => {
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -627,7 +627,7 @@ const Commentary = (props) => {
     const onExtrasChange = (dataFromModal) => {
         updateExtras(extrasType, +dataFromModal.run, dataFromModal.isBoundary)
         if (dataFromModal.type === WICKET) setShowWicketModal(true)
-        setExtrasType(undefined)
+        else setExtrasType(undefined)
     }
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
@@ -1467,6 +1467,7 @@ const Commentary = (props) => {
     return <>
         <CommentaryScreen
             teamDetails={teams}
+            commentaryId={commentaryId}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
             statusList={statusList}
