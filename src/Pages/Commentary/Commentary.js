@@ -70,7 +70,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
-
+    const commentaryId = props.data.commentaryData.commentaryDetails.eid;
     useEffect(() => {
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -1467,6 +1467,7 @@ const Commentary = (props) => {
     return <>
         <CommentaryScreen
             teamDetails={teams}
+            commentaryId={commentaryId}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
             statusList={statusList}

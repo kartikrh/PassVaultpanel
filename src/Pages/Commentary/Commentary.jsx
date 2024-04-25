@@ -10,7 +10,7 @@ import { STRING_SEPERATOR } from "../../components/Common/Const"
 // import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
-    teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
+    teamDetails, commentaryId, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup, showPaneltyRuns,
     overBalls = {} }) => {
     const [isBoundary, setIsBoundary] = useState(false)
@@ -263,6 +263,9 @@ export const CommentaryScreen = ({
                     src="icons/commentary.png" alt="Icon" />
             </Col>
         </Row >
+        <Row className="mt-5">
+        <iframe src={`https://deployed.live/scoreboard2?id=${commentaryId}&color=000`} frameborder="0"></iframe>
+        </Row>
         {isBoundary &&
             <IsBoundaryModal
                 isOpen={isBoundary}
