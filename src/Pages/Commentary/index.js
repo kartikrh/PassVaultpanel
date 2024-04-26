@@ -289,6 +289,7 @@ const Index = () => {
           setCloneModelVisible(false);
         })
         .catch((error) => {
+          setIsLoading(false);
           dispatch(
             updateToastData({
               data: error?.message,

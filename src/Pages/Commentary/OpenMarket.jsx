@@ -179,26 +179,26 @@ export const OpenMarket = () => {
 
     const columns = [
         {
-            title: "Inning",
-            dataIndex: "inningsId",
-            render: (text) => (<span>{`Innings ${text}`}</span>),
-            key: "inningsId",
-        },
-        {
-            title: "M-Id",
-            dataIndex: "eventMarketId",
-            key: "eventMarketId",
-        },
-        {
             title: "Team",
             dataIndex: "teamName",
-            // render: (text) => (<span>{fetchTeamName(text)}</span>),
+            render: (text,record) => (
+              <>
+                <div>{text}</div>
+                <div>{`Innings ${record?.inningsId}`}</div>
+              </>
+            ),
             key: "teamName",
         },
         {
             title: "Market",
-            dataIndex: "marketName",
-            key: "marketName",
+            dataIndex: "eventMarketId",
+            render: (text,record) => (
+              <>
+                <div>{text}</div>
+                <div>{record?.marketName}</div>
+              </>
+            ),
+            key: "eventMarketId",
         },
         {
             title: "Status",
@@ -239,44 +239,6 @@ export const OpenMarket = () => {
             title: "R-Rate",
             render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2) || 0}`}</span>),
             key: "inningsId",
-        },
-        {
-            title: "Margin",
-            dataIndex: "margin",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields"
-                    value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "margin", newValue)}
-                />
-            ),
-            key: "margin",
-        },
-        {
-            title: "Under",
-            dataIndex: "underRate",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-under-field"
-                    value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "underRate", newValue)}
-                />
-            ),
-            key: "underRate",
-            className: "input-under-field"
-        },
-        {
-            title: "Over",
-            dataIndex: "overRate",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-over-field"
-                    value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "overRate", newValue)}
-                />
-            ),
-            key: "overRate",
-            className: "input-over-field"
         },
         {
             title: "R-No",
@@ -405,6 +367,44 @@ export const OpenMarket = () => {
             ),
             key: "isSendData",
         },
+        {
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "margin", newValue)}
+                />
+            ),
+            key: "margin",
+        },
+        {
+            title: "Under",
+            dataIndex: "underRate",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields input-under-field"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "underRate", newValue)}
+                />
+            ),
+            key: "underRate",
+            className: "input-under-field"
+        },
+        {
+            title: "Over",
+            dataIndex: "overRate",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields input-over-field"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "overRate", newValue)}
+                />
+            ),
+            key: "overRate",
+            className: "input-over-field"
+        },
     ];
 
     const generateExtraField = <>
@@ -418,7 +418,7 @@ export const OpenMarket = () => {
                 step={0.1}
                 min={0}
                 max={10}
-                value={lineRatio || 0}
+                value={Number(lineRatio).toFixed(2) || 0}
                 onChange={(e) => {
                     handleLineRatio(e.target.value)
                 }}
