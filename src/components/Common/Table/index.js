@@ -25,6 +25,7 @@ import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 import { RSelect } from "../Reusables/FormElements";
 import { DatePicker, Space } from "antd";
 import moment from "moment";
+import { convertDateUTCToLocal } from "../Reusables/reusableMethods";
 const { RangePicker } = DatePicker;
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
@@ -795,14 +796,14 @@ const Index = forwardRef(
                               value={selectedTableElements?.eventName}
                               placeholder="Event List"
                               onChange={(e) => {
-                                handleTableActions("eventTypeId", e);
+                                handleTableActions("eventId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
                                   eventName: e,
                                 });
                               }}
                               options={eventList?.map((item) => ({
-                                label: item?.eventName,
+                                label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
                                 value: item?.eventId,
                               }))}
                               classNamePrefix="select2-selection"
