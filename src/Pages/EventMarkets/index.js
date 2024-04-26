@@ -383,14 +383,28 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Id",
-      dataIndex: "eventMarketId",
-      key: "eventMarketId",
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
       style: { width: "10%" },
       sort: true,
     },
+    // {
+    //   title: "Id",
+    //   dataIndex: "eventMarketId",
+    //   key: "eventMarketId",
+    //   style: { width: "10%" },
+    //   sort: true,
+    // },
     {
-      title: "Event Name",
+      title: "Center ID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Event Type",
       dataIndex: "eventTypeName",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>{text}</span>
@@ -431,7 +445,7 @@ const Index = () => {
       title: "Inning",
       dataIndex: "inningsId",
       key: "inningsId",
-      style: { width: "10%" },
+      style: { width: "10%", textAlign: "center" },
       sort: true,
     },
     {

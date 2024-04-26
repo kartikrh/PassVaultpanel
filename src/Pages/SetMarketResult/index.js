@@ -223,6 +223,13 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Center ID",
       dataIndex: "commentaryId",
       key: "commentaryId",
@@ -268,7 +275,7 @@ const Index = () => {
       title: "Inning",
       dataIndex: "inningsId",
       key: "inningsId",
-      style: { width: "10%" },
+      style: { width: "10%", textAlign: "center" },
       sort: true,
     },
     {

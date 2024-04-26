@@ -12,6 +12,7 @@ import { ListingElement } from "../../components/Common/Reusables/ListingCompone
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
+import CustomInput from "../../components/Common/Reusables/CustomInput";
 const tableElement = {
     title: "Predefined",
     displayTitle: true
@@ -221,17 +222,14 @@ export const OpenMarket = () => {
             title: "Line",
             dataIndex: "line",
             render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields input-line-field"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => {
-                        handleValueChange(record, "line", e.target.value)
-                        handleValueChange(record, "noRate", Math.round(+e.target.value))
-                        handleValueChange(record, "yesRate", Math.round(+e.target.value) + 1)
-                    }}
+                <CustomInput
+                  className="form-control small-text-fields input-line-field"
+                  value={text || ""}
+                  onChange={(newValue) => {
+                    handleValueChange(record, "line", newValue);
+                    handleValueChange(record, "noRate", Math.round(+newValue));
+                    handleValueChange(record, "yesRate", Math.round(+newValue) + 1);
+                  }}
                 />
             ),
             key: "line",
@@ -246,13 +244,10 @@ export const OpenMarket = () => {
             title: "Margin",
             dataIndex: "margin",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "margin", newValue)}
                 />
             ),
             key: "margin",
@@ -261,13 +256,10 @@ export const OpenMarket = () => {
             title: "Under",
             dataIndex: "underRate",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-under-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "underRate", newValue)}
                 />
             ),
             key: "underRate",
@@ -277,13 +269,10 @@ export const OpenMarket = () => {
             title: "Over",
             dataIndex: "overRate",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-over-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "overRate", newValue)}
                 />
             ),
             key: "overRate",
@@ -293,13 +282,10 @@ export const OpenMarket = () => {
             title: "R-No",
             dataIndex: "noRate",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "noRate", newValue)}
                 />
             ),
             key: "noRate",
@@ -309,13 +295,10 @@ export const OpenMarket = () => {
             title: "R-Yes",
             dataIndex: "yesRate",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "yesRate", newValue)}
                 />
             ),
             key: "yesRate",
@@ -325,13 +308,10 @@ export const OpenMarket = () => {
             title: "P-No",
             dataIndex: "noPoint",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "noPoint", newValue)}
                 />
             ),
             key: "noPoint",
@@ -341,13 +321,10 @@ export const OpenMarket = () => {
             title: "P-Yes",
             dataIndex: "yesPoint",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "yesPoint", newValue)}
                 />
             ),
             key: "yesPoint",
