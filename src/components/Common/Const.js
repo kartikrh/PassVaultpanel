@@ -78,3 +78,7 @@ export const CONTENT_IMAGE_TYPE = {
 }
 export const OPEN_MARKET_CONNECT = "connectEventMarket";
 export const OPEN_MARKET_DATA = "updateMarketData";
+export const COMMENTARY_STATUS_OPEN = 1;
+export const COMMENTARY_STATUS_TOSS_DONE = 2;
+export const COMMENTARY_STATUS_IN_PROGRESS = 3;
+export const COMMENTARY_STATUS_END = 4;

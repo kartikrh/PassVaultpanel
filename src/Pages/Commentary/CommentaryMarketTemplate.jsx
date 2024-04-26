@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
+import { COMMENTARY_STATUS_OPEN, ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Button, Card, CardBody, CardHeader, Col, Container, Input, Row } from "reactstrap";
+import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import Table from "../../components/Common/Table";
 import { MARKET_STATUS } from "./CommentartConst";
 import { generateOverUnder } from "./functions";
+import { isEqual } from "lodash";
 
 
 const CommentaryMarketTemplate = () => {
@@ -134,10 +135,18 @@ const CommentaryMarketTemplate = () => {
                     const predefinedOverFalseMarket = marketTemplate?.filter(value => value?.isPredefineMarket && !value?.isOver);
                     const eventMarket = response?.result?.eventMarket;
                     if (teamAndPlayers?.length) {
-                        const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
-                        setAllInnings(uniqueInnings.map(option => ({ label: `Inning ${option.currentInnings}`, value: option.currentInnings })))
-                        const uniqueTeams = teamAndPlayers?.filter(value => value.currentInnings === 1)
-                        setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId, fullName: option.teamName })))
+                        if (commentary.commentaryStatus === COMMENTARY_STATUS_OPEN) {
+                            const uniqueInnings = teamAndPlayers?.filter(value => value.teamId === teamAndPlayers[0].teamId)
+                            setAllInnings(uniqueInnings.map(option => ({ label: `Inning ${option.currentInnings}`, value: option.currentInnings })))
+                            const uniqueTeams = teamAndPlayers?.filter(value => isEqual(value.currentInnings, commentary.currentInnings))
+                            setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId, fullName: option.teamName })))
+                        }
+                        else {
+                            setAllInnings([{ label: `Inning ${commentary.currentInnings}`, value: commentary.currentInnings }])
+                            const uniqueTeams = teamAndPlayers?.filter(value => ((value.teamStatus === 1) && isEqual(value.currentInnings, commentary.currentInnings)))
+                            setAllTeams(uniqueTeams.map(option => ({ label: option.shortName, value: option.teamId, fullName: option.teamName })))
+                        }
+
                     }
                     let newData = [];
                     predefinedOverMarket.forEach((market) => {
