@@ -44,6 +44,7 @@ const Index = () => {
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [delay, setDelay] = useState(null);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -55,11 +56,21 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     setEventTypeActive(tableActions?.isActive)
-    await axiosInstance
-      .post(`/admin/eventMarket/all`, {
-        ...(latestValueFromTable || tableActions),
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
         ...dateRange,
-      })
+      };
+    }
+    if (latestValueFromTable?.eventTypeId === null) {
+      payload.competitionId = null;
+      payload.eventId = null;
+    }
+    await axiosInstance
+      .post(`/admin/eventMarket/all`, payload)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -559,7 +570,7 @@ const Index = () => {
     delayTextBox: true,
     importExport: false,
     teamsList: false,
-    dateRange: true,
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -567,7 +578,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [isSearch]);
 
   useEffect(() => {
     if(EventTypeActive){
@@ -626,6 +637,8 @@ const Index = () => {
             )}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

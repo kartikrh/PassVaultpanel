@@ -82,6 +82,8 @@ const Index = forwardRef(
       teams,
       setDateRange,
       dateRange,
+      isSearch,
+      setIsSearch,
       matchType,
       isPagination = true
     },
@@ -748,10 +750,13 @@ const Index = forwardRef(
                                 setEventTypeId(e?.value);
                                 setCompetitionId(null);
                               }}
-                              options={eventTypes?.map((item) => ({
-                                label: item?.eventType,
-                                value: item?.eventTypeId,
-                              }))}
+                              options={[
+                                { label: "Select Event Type", value: null },
+                                ...eventTypes?.map((item) => ({
+                                  label: item?.eventType,
+                                  value: item?.eventTypeId,
+                                })),
+                              ]}
                               classNamePrefix="select2-selection"
                             />
                           </div>
@@ -999,7 +1004,7 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
-                        {tableElement?.resetButton ? (
+                        {!tableElement?.isDateRange && tableElement?.resetButton ? (
                           <div>
                             <button
                               className="btn btn-primary"
@@ -1117,6 +1122,82 @@ const Index = forwardRef(
                       {/* </Col> */}
                     </Row>
                   ) : null}
+                  {tableElement?.isDateRange ? (
+                    <Row className="g-2">
+                      {/* <Col className="bg-white p-2 m-2"> */}
+                      <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                        <Button
+                            color={`${isSearch ? "primary" : "danger"}`}
+                            size="sm"
+                            className="btn"
+                            onClick={() => {setIsSearch(!isSearch)}}
+                          >
+                            <i
+                              className={`bx ${
+                                isSearch ? "bx-check" : "bx-block"
+                              }`}
+                            ></i>
+                        </Button>
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="datetime-local"
+                            defaultValue={dateRange?.startDate}
+                            onChange={(startDate) => {
+                              setDateRange({
+                                ...dateRange,
+                                startDate: startDate?.target?.value,
+                              });
+                            }}
+                            id="example-datetime-local-input"
+                          />
+                        </div>
+                        <span>To</span>
+                        <div className="d-flex flex-column">
+                          <input
+                            className="form-control"
+                            type="datetime-local"
+                            defaultValue={dateRange?.endDate}
+                            onChange={(startDate) => {
+                              setDateRange({
+                                ...dateRange,
+                                endDate: startDate?.target?.value,
+                              });
+                            }}
+                            id="example-datetime-local-input"
+                          />
+                        </div>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            reFetchData();
+                          }}
+                          disabled={!isSearch}
+                          type="reset"
+                          id="create-btn"
+                        >
+                          Search
+                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                        </button>
+                      {tableElement?.resetButton ? (
+                          <div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handleTableReset();
+                              }}
+                              type="reset"
+                              id="create-btn"
+                            >
+                              Reset
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                          </div>
+                      ) : null}
+                      </div>
+                      {/* </Col> */}
+                    </Row>
+                  ) : null} 
                     {tableElement?.delayTextBox ? (
                     <Row className="">
                       <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
