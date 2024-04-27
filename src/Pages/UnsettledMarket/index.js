@@ -36,6 +36,7 @@ const Index = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [resultModalData, setResultModalData] = useState(null);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -46,11 +47,21 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     setEventTypeActive(tableActions?.isActive)
-    await axiosInstance
-      .post(`/admin/eventMarket/all`, {
-        ...(latestValueFromTable || tableActions),
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
         ...dateRange,
-      })
+      };
+    }
+    if (latestValueFromTable?.eventTypeId === null) {
+      payload.competitionId = null;
+      payload.eventId = null;
+    }
+    await axiosInstance
+      .post(`/admin/eventMarket/all`, payload)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -309,7 +320,7 @@ const Index = () => {
     competitionsListSelect: true,
     eventListSelect: true,
     resetButton: true,
-    dateRange: true,
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -317,7 +328,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [isSearch]);
 
   useEffect(() => {
     if(EventTypeActive){
@@ -360,6 +371,8 @@ const Index = () => {
             reFetchData={fetchData}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
         </Container>
         <CancelModal
