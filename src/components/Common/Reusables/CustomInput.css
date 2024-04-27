@@ -1,0 +1,44 @@
+.spin-buttons-container {
+.small-text-fields::-webkit-inner-spin-button,
+.small-text-fields::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+}
+.spin-buttons-container {
+  position: relative;
+}
+
+.spin-button {
+  position: absolute; 
+  right: 4px; 
+  border: none; 
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spin-buttons-container:hover .spin-button {
+  opacity: 1;
+}
+
+.spin-button.up::before {
+  content: '\25B2'; 
+  display: block;
+  border: none;
+  color: #333;
+  font-size: 8px;
+  width: 5px;
+  text-align: center;
+  line-height: 8px;
+}
+
+.spin-button.down::before {
+  content: '\25BC';
+  display: block;
+  border: none;
+  color: #333; 
+  font-size: 8px;
+  width: 5px;
+  text-align: center;
+  line-height: 8px;
+}
