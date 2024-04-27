@@ -318,7 +318,7 @@ export const CommentaryScreen = ({
         />
         {showIframe && (
          <iframe
-           src={`https://${reactApplicationPhase === "development" && "uat."}deployed.live/scoreboard?id=${commentaryId}&color=000`}
+           src={`https://${reactApplicationPhase === "development" && "uat."}deployed.live/scoreboard?id=${commentaryId}`}
            frameborder="0"
            style={{ minHeight: "200px"}}
          ></iframe>
