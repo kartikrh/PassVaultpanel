@@ -7,6 +7,7 @@ import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import { STRING_SEPERATOR } from "../../components/Common/Const"
+import Switch from "react-switch";
 // import { generateBallLabelFromBall } from "./functions"
 
 export const CommentaryScreen = ({
@@ -16,6 +17,7 @@ export const CommentaryScreen = ({
     const [isBoundary, setIsBoundary] = useState(false)
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [actionPopup, setActionPopup] = useState(undefined)
+    const [showIframe, setShowIframe] = useState(true);
     const reactApplicationPhase = process.env.NODE_ENV;
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
@@ -45,6 +47,44 @@ export const CommentaryScreen = ({
             {generateBallfromArray(overBalls[over])}
         </div > </>)
     }
+
+    const OffsymbolStatus = () => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              fontSize: 10,
+              color: "#fff",
+              // paddingRight: 2,
+            }}
+          >
+            {" "}
+            inActive
+          </div>
+        );
+      };
+    
+      const OnSymbolStatus = () => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              fontSize: 12,
+              color: "#fff",
+              // paddingRight: 4,
+            }}
+          >
+            {" "}
+            active
+          </div>
+        );
+      };
 
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
@@ -264,11 +304,25 @@ export const CommentaryScreen = ({
                     src="icons/commentary.png" alt="Icon" />
             </Col>
         </Row >
-        <Row className="mt-5">
-        {reactApplicationPhase === "development" ?
-        <iframe src={`https://uat.deployed.live/scoreboard2?id=${commentaryId}&color=000`} frameborder="0"></iframe>
-        : <iframe src={`https://deployed.live/scoreboard2?id=${commentaryId}&color=000`} frameborder="0"></iframe> 
-        }
+        <Row>
+        <Switch
+          width={70}
+          uncheckedIcon={<OffsymbolStatus />}
+          checkedIcon={<OnSymbolStatus />}
+          className="pe-0 my-3"
+          onColor="#02a499"
+          onChange={() => {
+            setShowIframe(!showIframe);
+          }}
+          checked={showIframe}
+        />
+        {showIframe && (
+         <iframe
+           src={`https://${reactApplicationPhase === "development" && "uat."}deployed.live/scoreboard?id=${commentaryId}`}
+           frameborder="0"
+           style={{ minHeight: "200px"}}
+         ></iframe>
+        )}
         </Row>
         {isBoundary &&
             <IsBoundaryModal
