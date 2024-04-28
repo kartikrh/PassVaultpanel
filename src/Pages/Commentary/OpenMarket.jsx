@@ -12,6 +12,7 @@ import { ListingElement } from "../../components/Common/Reusables/ListingCompone
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
+import CustomInput from "../../components/Common/Reusables/CustomInput";
 const tableElement = {
     title: "Predefined",
     displayTitle: true
@@ -178,26 +179,26 @@ export const OpenMarket = () => {
 
     const columns = [
         {
-            title: "Inning",
-            dataIndex: "inningsId",
-            render: (text) => (<span>{`Innings ${text}`}</span>),
-            key: "inningsId",
-        },
-        {
-            title: "M-Id",
-            dataIndex: "eventMarketId",
-            key: "eventMarketId",
-        },
-        {
             title: "Team",
             dataIndex: "teamName",
-            // render: (text) => (<span>{fetchTeamName(text)}</span>),
+            render: (text,record) => (
+              <>
+                <div>{text}</div>
+                <div>{`Innings ${record?.inningsId}`}</div>
+              </>
+            ),
             key: "teamName",
         },
         {
             title: "Market",
-            dataIndex: "marketName",
-            key: "marketName",
+            dataIndex: "eventMarketId",
+            render: (text,record) => (
+              <>
+                <div>{text}</div>
+                <div>{record?.marketName}</div>
+              </>
+            ),
+            key: "eventMarketId",
         },
         {
             title: "Status",
@@ -221,17 +222,14 @@ export const OpenMarket = () => {
             title: "Line",
             dataIndex: "line",
             render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields input-line-field"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => {
-                        handleValueChange(record, "line", e.target.value)
-                        handleValueChange(record, "noRate", Math.round(+e.target.value))
-                        handleValueChange(record, "yesRate", Math.round(+e.target.value) + 1)
-                    }}
+                <CustomInput
+                  className="form-control small-text-fields input-line-field"
+                  value={text || ""}
+                  onChange={(newValue) => {
+                    handleValueChange(record, "line", newValue);
+                    handleValueChange(record, "noRate", Math.round(+newValue));
+                    handleValueChange(record, "yesRate", Math.round(+newValue) + 1);
+                  }}
                 />
             ),
             key: "line",
@@ -243,63 +241,13 @@ export const OpenMarket = () => {
             key: "inningsId",
         },
         {
-            title: "Margin",
-            dataIndex: "margin",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "margin", e.target.value)}
-                />
-            ),
-            key: "margin",
-        },
-        {
-            title: "Under",
-            dataIndex: "underRate",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields input-under-field"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "underRate", e.target.value)}
-                />
-            ),
-            key: "underRate",
-            className: "input-under-field"
-        },
-        {
-            title: "Over",
-            dataIndex: "overRate",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields input-over-field"
-                    type="number"
-                    step={1}
-                    min={0}
-                    value={text || ""}
-                    onChange={(e) => handleValueChange(record, "overRate", e.target.value)}
-                />
-            ),
-            key: "overRate",
-            className: "input-over-field"
-        },
-        {
             title: "R-No",
             dataIndex: "noRate",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "noRate", newValue)}
                 />
             ),
             key: "noRate",
@@ -309,13 +257,10 @@ export const OpenMarket = () => {
             title: "R-Yes",
             dataIndex: "yesRate",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "yesRate", newValue)}
                 />
             ),
             key: "yesRate",
@@ -325,13 +270,10 @@ export const OpenMarket = () => {
             title: "P-No",
             dataIndex: "noPoint",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "noPoint", newValue)}
                 />
             ),
             key: "noPoint",
@@ -341,13 +283,10 @@ export const OpenMarket = () => {
             title: "P-Yes",
             dataIndex: "yesPoint",
             render: (text, record) => (
-                <Input
+                <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    type="number"
-                    step={1}
-                    min={0}
                     value={text || ""}
-                    onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
+                    onChange={(newValue) => handleValueChange(record, "yesPoint", newValue)}
                 />
             ),
             key: "yesPoint",
@@ -428,6 +367,44 @@ export const OpenMarket = () => {
             ),
             key: "isSendData",
         },
+        {
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "margin", newValue)}
+                />
+            ),
+            key: "margin",
+        },
+        {
+            title: "Under",
+            dataIndex: "underRate",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields input-under-field"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "underRate", newValue)}
+                />
+            ),
+            key: "underRate",
+            className: "input-under-field"
+        },
+        {
+            title: "Over",
+            dataIndex: "overRate",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields input-over-field"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "overRate", newValue)}
+                />
+            ),
+            key: "overRate",
+            className: "input-over-field"
+        },
     ];
 
     const generateExtraField = <>
@@ -441,7 +418,7 @@ export const OpenMarket = () => {
                 step={0.1}
                 min={0}
                 max={10}
-                value={lineRatio || 0}
+                value={Number(lineRatio).toFixed(2) || 0}
                 onChange={(e) => {
                     handleLineRatio(e.target.value)
                 }}

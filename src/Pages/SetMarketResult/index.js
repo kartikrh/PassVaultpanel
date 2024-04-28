@@ -1,25 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-// import { Avatar } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
-import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
 import {
   TAB_SET_MARKETS_RESULT,
-  // PERMISSION_ADD,
-  PERMISSION_DELETE,
-  // PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
@@ -31,13 +25,12 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
   const [eventList, setEventList] = useState([]);
-  const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -49,11 +42,21 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     setEventTypeActive(tableActions?.isActive)
-    await axiosInstance
-      .post(`/admin/eventMarket/pendingMarketList`, {
-        ...(latestValueFromTable || tableActions),
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
         ...dateRange,
-      })
+      };
+    }
+    if (latestValueFromTable?.eventTypeId === null) {
+      payload.competitionId = null;
+      payload.eventId = null;
+    }
+    await axiosInstance
+      .post(`/admin/eventMarket/pendingMarketList`, payload)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -61,7 +64,6 @@ const Index = () => {
           apiDataIdList.push(ele?.eventMarketId);
         });
         setData(apiData);
-        setDataIndexList(apiDataIdList);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -103,19 +105,6 @@ const Index = () => {
       })
       .catch((error) => {});
   };
-  //checkbox function
-  const handleSingleCheck = (e) => {
-    let updateSingleCheck = [];
-    if (checekedList.includes(e.eventMarketId)) {
-      updateSingleCheck = checekedList.filter(
-        (item) => item !== e.eventMarketId
-      );
-    } else {
-      updateSingleCheck = [...checekedList, e.eventMarketId];
-    }
-    setCheckedList(updateSingleCheck);
-  };
-
 
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -171,45 +160,6 @@ const Index = () => {
   };
   //table columns
   const columns = [
-    // {
-    //   title: (
-    //     <div className="form-check">
-    //       <input
-    //         className="form-check-input"
-    //         type="checkbox"
-    //         name="chk_child"
-    //         value="option1"
-    //         checked={
-    //           data?.length > 0 &&
-    //           isEqual(checekedList?.sort(), dataIndexList?.sort())
-    //         }
-    //         onChange={() => {
-    //           setCheckedList(
-    //             isEqual(checekedList?.sort(), dataIndexList?.sort())
-    //               ? []
-    //               : dataIndexList
-    //           );
-    //         }}
-    //       />
-    //     </div>
-    //   ),
-    //   render: (text, record) => (
-    //     <div className="form-check d-flex align-items-center justify-between">
-    //       <input
-    //         className="form-check-input"
-    //         type="checkbox"
-    //         name="chk_child"
-    //         value="option1"
-    //         checked={checekedList.includes(record.eventMarketId)}
-    //         onChange={() => {
-    //           handleSingleCheck(record);
-    //         }}
-    //       />
-    //     </div>
-    //   ),
-    //   key: "select",
-    //   style: { width: "2%" },
-    // },
     {
       title: "Event Date",
       dataIndex: "eventDate",
@@ -221,6 +171,13 @@ const Index = () => {
       key: "eventDate",
       sort: true,
       style: { width: "10%" },
+    },
+    {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
+      style: { width: "10%" },
+      sort: true,
     },
     {
       title: "Center ID",
@@ -268,7 +225,14 @@ const Index = () => {
       title: "Inning",
       dataIndex: "inningsId",
       key: "inningsId",
-      style: { width: "10%" },
+      style: { width: "10%", textAlign: "center" },
+      sort: true,
+    },
+    {
+      title: "Result",
+      dataIndex: "result",
+      key: "result",
+      style: { width: "10%", textAlign: "center" },
       sort: true,
     },
     {
@@ -305,7 +269,7 @@ const Index = () => {
     resetButton: true,
     importExport: false,
     teamsList: false,
-    dateRange: true,
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -313,7 +277,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [isSearch]);
 
   useEffect(() => {
     if(EventTypeActive){
@@ -346,7 +310,6 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             eventTypes={eventTypes}
             competitionList={competitionList}
@@ -356,24 +319,10 @@ const Index = () => {
             onAddNavigate={"/addEventMarkets"}
             handleReset={handleReset}
             reFetchData={fetchData}
-            // isAddPermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_ADD
-            // )}
-            isDeletePermission={checkPermission(
-              permissionObj,
-              pageName,
-              PERMISSION_DELETE
-            )}
-            // teams={teams}
             setDateRange={setDateRange}
             dateRange={dateRange}
-          />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            singleCheck={checekedList}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
         </Container>
       </div>
