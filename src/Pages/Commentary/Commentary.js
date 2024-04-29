@@ -1340,7 +1340,8 @@ const Commentary = (props) => {
             });
             // console.log(props.data.commentaryData.commentaryOvers)
             props.data.commentaryData.commentaryOvers.forEach(overDetails => {
-                if (isEqual(+overDetails.over, +currentOver)) {
+                if (isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) && isEqual(+overDetails.over, +currentOver)) {
+                    // if (isEqual(+overDetails.over, +currentOver)) {
                     currentOverToUpdate = overDetails
                 }
             });
