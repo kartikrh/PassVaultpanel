@@ -72,7 +72,6 @@ const Commentary = (props) => {
     let navigate = useNavigate();
     const commentaryId = props.data.commentaryData.commentaryDetails.eid;
     useEffect(() => {
-        console.log({ isChangeBowler })
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
         // console.log(commentaryDetails, matchTypeDetails)
