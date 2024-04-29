@@ -569,7 +569,7 @@ const Index = forwardRef(
       <Row>
         <Col lg={12}>
           <Card>
-            {tableElement?.title !== "Import Events" && (
+            {(tableElement?.title !== "Auto Events" && tableElement?.title !== "Manual Events") && (
               <CardHeader>
                 <form>
                   <Row className="g-2">
