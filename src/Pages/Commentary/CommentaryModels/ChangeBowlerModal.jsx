@@ -2,9 +2,9 @@ import React from 'react'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import "../CommentaryCss.css"
 import { CHANGE_BOWLER, SWITCH_BOWLER } from '../CommentartConst';
-const ChangeBowlerModal = ({ isOpen, toggle, onBowlerChange }) => {
+const ChangeBowlerModal = ({ toggle, onBowlerChange }) => {
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
             <ModalHeader toggle={toggle}>
                 Change Bowler
             </ModalHeader>

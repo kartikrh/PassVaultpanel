@@ -72,6 +72,7 @@ const Commentary = (props) => {
     let navigate = useNavigate();
     const commentaryId = props.data.commentaryData.commentaryDetails.eid;
     useEffect(() => {
+        console.log({ isChangeBowler })
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
         // console.log(commentaryDetails, matchTypeDetails)
@@ -806,10 +807,9 @@ const Commentary = (props) => {
         setCurrentOver(UpdatedOver)
         setPlayers({ ...players, [BOWLING_TEAM]: updatedPlayerList })
         setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: updatedNewBowler })
-        setIsChangeBowler({})
         setChangePlayerList(undefined)
         setPlayerToChange(undefined)
-        setIsChangeBowler({ isChange: false, isChangePopup: false, updateAfterSave: true })
+        setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
     }
     const onBowlerChange = (newPlayerId) => {
         if (isChangeBowler.popupOption === SWITCH_BOWLER) switchBowler(newPlayerId)
@@ -1485,7 +1485,7 @@ const Commentary = (props) => {
             onUndoClick={handleUndoClick}
             isLoading={isCommentaryBallLoading}
             changeBowler={() => {
-                setIsChangeBowler({ isChange: false, isChangePopup: true })
+                setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
             }}
             updateDisplayStatus={(displayStatus) => {
                 dispatch(updateCommentaryDisplayStatus({
@@ -1569,10 +1569,9 @@ const Commentary = (props) => {
             }}
         />}
         {isChangeBowler.isChangePopup && <ChangeBowlerModal
-            isOpen={isChangeBowler.isChangePopup}
-            toggle={() => { setIsChangeBowler({ isChange: false, isChangePopup: false }) }}
+            toggle={() => { setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null }) }}
             onBowlerChange={(selectedOption) => {
-                setIsChangeBowler({ isChange: true, isChangePopup: false, popupOption: selectedOption })
+                setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: selectedOption })
                 changePlayer(CURRENT_BOWLER)
             }}
         />}
@@ -1581,7 +1580,7 @@ const Commentary = (props) => {
             toggle={() => { setUndoOverPopup(undefined) }}
             onChangebowlerClick={() => {
                 setUndoOverPopup(undefined)
-                setIsChangeBowler({ isChange: true, isChangePopup: false, popupOption: SWITCH_BOWLER })
+                setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: SWITCH_BOWLER })
                 changePlayer(CURRENT_BOWLER)
             }}
             onLastOverClick={() => {
