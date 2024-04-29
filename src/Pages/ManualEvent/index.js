@@ -1,59 +1,49 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
-import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
-import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import _, { isEqual } from "lodash";
+import _ from "lodash";
 import {
   ERROR,
-  PERMISSION_ADD,
-  PERMISSION_DELETE,
-  PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
-  TAB_AUTO_EVENT,
+  TAB_MANUAL_EVENT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {
-  resetTabSliceData,
   setSelectedMarketHistory,
   setSelectedMarket,
-} from "../../Features/Tabs/importMarketSlice";
+} from "../../Features/Tabs/manualEventSlice";
 
 const Index = () => {
-  const pageName = TAB_AUTO_EVENT;
+  const pageName = TAB_MANUAL_EVENT;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =
-    "Auto Events";
+    "Manual Events";
   const [data, setData] = useState([]);
-  const [dataIndexList, setDataIndexList] = useState([]);
-  const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
   const { selectedMarket, selectedMarketHistory } = useSelector(
-    (state) => state.tabsData?.importMarket
+    (state) => state.tabsData?.manualEvent
   );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/ImportMarket/marketList`, { ...selectedMarket })
+      .post(`/admin/manualEvent/marketList`, { ...selectedMarket })
       .then((response) => {
         const apiData = response?.result?.appdata;
         setData(apiData);
@@ -68,7 +58,7 @@ const Index = () => {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/ImportMarket/importEvent`, { ...val })
+      .post(`/admin/manualEvent/importEvent`, { ...val })
       .then((response) => {
         dispatch(
           updateToastData({
@@ -96,13 +86,13 @@ const Index = () => {
     {
       title: `Ref Id`,
       dataIndex: `${selectedMarket?.isCompitition
-        ? "competition"
-        : "eventType"
+        ? "competitionID"
+        : "eventTypeID"
         }`,
-      render: (text, record) => <span>{text?.id}</span>,
+      render: (text, record) => <span>{text}</span>,
       key: `${selectedMarket?.isCompitition
-        ? "competitionId"
-        : "eventTypeId"
+        ? "competitionID"
+        : "eventTypeID"
         }`,
       sort: true,
       style: { width: "20%" },
@@ -122,8 +112,8 @@ const Index = () => {
           onClick={() => {
             setData([])
             let currentRecord = [{
-              label: text?.name, value: {
-                refID: text?.id,
+              label: text, value: {
+                refID: selectedMarket?.isCompitition ? record?.competitionID : record?.eventTypeID,
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
@@ -135,7 +125,7 @@ const Index = () => {
             dispatch(setSelectedMarketHistory(historyList));
             dispatch(
               setSelectedMarket({
-                refID: text?.id,
+                refID: selectedMarket?.isCompitition ? record?.competitionID : record?.eventTypeID,
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
@@ -153,17 +143,17 @@ const Index = () => {
                 : selectedMarket?.isEvent
                   ? "eventId"
                   : "eventTypeId"
-                }`]: text?.id,
+                }`]: selectedMarket?.isCompitition ? record?.competitionID : selectedMarket?.isEvent ? record?.eventID : record?.eventTypeID,
               [`${selectedMarket?.isCompitition
                 ? "competitionName"
                 : selectedMarket?.isEvent
                   ? "eventName"
                   : "eventTypeName"
-                }`]: text?.name,
+                }`]: text,
             });
           }}
         >
-          <span>{text?.name}</span>
+          <span>{text}</span>
         </div>
       ),
       key: `${selectedMarket?.isCompitition
@@ -286,7 +276,7 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title: "Auto Events",
+    title: "Manual Events",
     headerSelect: false,
     isActive: false,
     dragDrop: false,
@@ -340,36 +330,17 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Auto Events" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Manual Events" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
             columns={selectedMarket?.isEvent ? columnsB : columnsA}
             dataSource={data}
             tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="eventType"
-            singleCheck={checekedList}
             reFetchData={fetchData}
-            // onAddNavigate={"/addEventType"}
-            // isAddPermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_ADD
-            // )}
-            isDeletePermission={checkPermission(
-              permissionObj,
-              pageName,
-              PERMISSION_DELETE
-            )}
             onBreadCrumbsClick={handleBreadCrumbsClick}
             breadCrumbs={selectedMarketHistory}
-          />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            // handleDelete={handleDelete}
-            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}

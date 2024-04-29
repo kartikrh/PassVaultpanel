@@ -17,6 +17,7 @@ import Events from "../Pages/Events";
 import Commentary from "../Pages/Commentary";
 import Users from "../Pages/Users";
 import ImportMarket from "../Pages/ImportMarket";
+import ManualEvent from "../Pages/ManualEvent";
 import AddTabs from "../Pages/Tabs/AddTabs.jsx";
 import AddRoles from "../Pages/Roles/AddRoles.jsx";
 import AddEventTypes from "../Pages/EventTypes/AddEventType.jsx";
@@ -122,7 +123,8 @@ const authProtectedRoutes = [
   },
   { path: "/openMarket", component: <OpenMarket /> },
   { path: "/oddsView", component: <OddsView /> },
-  { path: "/importMarket", component: <ImportMarket /> },
+  { path: "/autoEvent", component: <ImportMarket /> },
+  { path: "/manualEvent", component: <ManualEvent /> },
   { path: "/Toss", component: <Toss /> },
   { path: "/users", component: <Users /> },
   { path: "/addUsers", component: <AddUsers /> },
