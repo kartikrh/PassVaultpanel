@@ -66,6 +66,12 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const tabelNoteDisplay = <>
+    <b><i>Note :</i></b>
+    <div>Click on Event Id to open <b>Odds View</b> page  </div>
+    <div>Click on Event Name to open <b>Open Market</b> page </div>
+  </>
+
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
@@ -577,7 +583,7 @@ const Index = () => {
           >
             {text}
           </span>
-          <span 
+          <span
             style={{ cursor: "pointer" }}
             onClick={() => {
               setEventRefModelVisible(true);
@@ -589,7 +595,7 @@ const Index = () => {
       key: "eventRefId",
       sort: true,
       style: { width: "10%" },
-    }, 
+    },
     {
       title: "Event",
       dataIndex: "eventName",
@@ -730,36 +736,36 @@ const Index = () => {
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-        <Button
-          color={`${record.isPredictMarket ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            updatePredictMarket(
-              "isPredictMarket",
-              record,
-              record?.isPredictMarket
-            );
-          }}
-        >
-          <i
-            className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
-              }`}
-          ></i>
-        </Button>
-        {record.isPredictMarket &&
-         <Button
-         color={"primary"}
-         size="sm"
-         className="btn"
-         onClick={() => {
-           handleCommentaryMarketTemplateClick(record.commentaryId);
-         }}
-       >
-         <i class='bx bxs-store' ></i>
-       </Button>
-      }
-       </div>
+          <Button
+            color={`${record.isPredictMarket ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              updatePredictMarket(
+                "isPredictMarket",
+                record,
+                record?.isPredictMarket
+              );
+            }}
+          >
+            <i
+              className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
+                }`}
+            ></i>
+          </Button>
+          {record.isPredictMarket &&
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleCommentaryMarketTemplateClick(record.commentaryId);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          }
+        </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -883,6 +889,7 @@ const Index = () => {
       },
     ],
     dateRange: true,
+    compToRender: tabelNoteDisplay
   };
 
   useEffect(() => {
@@ -979,7 +986,7 @@ const Index = () => {
               setSelectedCommentary={setSelectedCommentary}
             />
           )}
-           {delayModelVisible && (
+          {delayModelVisible && (
             <ChangeDelayModel
               delayModelVisible={delayModelVisible}
               setDelayModelVisible={setDelayModelVisible}
