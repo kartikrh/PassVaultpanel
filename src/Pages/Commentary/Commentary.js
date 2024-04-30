@@ -1467,7 +1467,6 @@ const Commentary = (props) => {
     return <>
         <CommentaryScreen
             teamDetails={teams}
-            commentaryId={commentaryId}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
             statusList={statusList}

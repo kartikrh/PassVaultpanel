@@ -41,6 +41,7 @@ function CommentaryMaster() {
     let navigate = useNavigate();
     const location = useLocation();
     const commentaryId = location.state?.commentaryId || "0";
+    const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
 
     useEffect(() => {
         if (commentaryId !== "0") {
@@ -77,6 +78,11 @@ function CommentaryMaster() {
                 setIsDataLoading(false)
             });
 
+    };
+
+    const openIframePopup = () => {
+        const url = `${scoreCardUrl}/scoreboard2?id=${commentaryData?.commentaryDetails?.eid}&color=000`
+        window.open(url, '_blank', 'width=600,height=400');
     };
 
     const handleSaveClick = async (dataToSave, nextScreen, nextData) => {
@@ -116,7 +122,10 @@ function CommentaryMaster() {
                                     <Col>
                                         <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                                         {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
-                                            <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
+                                            <>
+                                                <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
+                                                <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
+                                            </>}
                                     </Col>
                                 </Row>
                                 <Row>
