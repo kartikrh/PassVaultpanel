@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card, CardBody, Col, Container, Row } from 'reactstrap';
+import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, TAB_COMMENTARY } from '../../components/Common/Const';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
+import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
-import { addCommentaryDetailsToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryDetailsToDb, clearLoadingAndError, loadCommentaryFeature, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
 
@@ -35,18 +35,20 @@ function CommentaryMaster() {
     const [isDataLoading, setIsDataLoading] = useState(false)
     const [nextScreen, setNextScreen] = useState(undefined);
     const [nextData, setNextData] = useState(undefined);
-    const { isSaved, isLoading, error } = useSelector(state => state.tabsData.commentary);
+    const { isSaved, isLoading } = useSelector(state => state.tabsData.commentary);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
     const commentaryId = location.state?.commentaryId || "0";
+    const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
 
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchData(commentaryId);
         }
     }, [commentaryId]);
+
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -78,6 +80,11 @@ function CommentaryMaster() {
 
     };
 
+    const openIframePopup = () => {
+        const url = `${scoreCardUrl}/scoreboard2?id=${commentaryData?.commentaryDetails?.eid}&color=000`
+        window.open(url, '_blank', 'width=600,height=400');
+    };
+
     const handleSaveClick = async (dataToSave, nextScreen, nextData) => {
         if (dataToSave) {
             dispatch(addCommentaryDetailsToDb(dataToSave))
@@ -92,6 +99,9 @@ function CommentaryMaster() {
     };
     const handleBackClick = () => {
         navigate(navigateTo);
+    };
+    const handleLoadCommentaryClick = () => {
+        dispatch(loadCommentaryFeature({ commentaryId }))
     };
 
     const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
@@ -109,7 +119,14 @@ function CommentaryMaster() {
                                             <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
                                             <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
                                         </Col>}
-                                    <Col>  <button className="btn btn-danger mx-1 text-right " onClick={handleBackClick}>Exit</button></Col>
+                                    <Col>
+                                        <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
+                                        {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                                            <>
+                                                <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
+                                                <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
+                                            </>}
+                                    </Col>
                                 </Row>
                                 <Row>
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN &&

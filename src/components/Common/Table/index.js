@@ -664,7 +664,7 @@ const Index = forwardRef(
                             Suspend
                           </Button>
                         )}
-                         {isClosePermission && (
+                        {isClosePermission && (
                           <Button
                             color="danger"
                             onClick={() => {
@@ -815,7 +815,7 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
-                          {tableElement?.statusListSelect ? (
+                        {tableElement?.statusListSelect ? (
                           <div className="">
                             <Select
                               styles={{
@@ -944,31 +944,31 @@ const Index = forwardRef(
                             classNamePrefix="select2-selection"
                           />
                         ) : null}
-                         {tableElement?.actionType ? (
+                        {tableElement?.actionType ? (
                           <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
-                          <div className="d-flex flex-column">
-                            <Select
-                              placeholder="Action Type"
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 200,
-                                }),
-                              }}
-                              onChange={(e) => {
-                                setSelectedClientSocket({
-                                  actionType: e?.value,
-                                  clientSocketId: singleCheck,
-                                });
-                              }}
-                              options={actionTypeOptions}
-                              classNamePrefix="select2-selection"
-                            />
-                          </div>
-                          <button
-                            className="btn btn-primary"
-                            onClick={(e) => {
-                              e.preventDefault()
+                            <div className="d-flex flex-column">
+                              <Select
+                                placeholder="Action Type"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 200,
+                                  }),
+                                }}
+                                onChange={(e) => {
+                                  setSelectedClientSocket({
+                                    actionType: e?.value,
+                                    clientSocketId: singleCheck,
+                                  });
+                                }}
+                                options={actionTypeOptions}
+                                classNamePrefix="select2-selection"
+                              />
+                            </div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={(e) => {
+                                e.preventDefault()
                                 singleCheck.length > 0
                                   ? handleClientSocketChange()
                                   : dispatch(
@@ -978,13 +978,13 @@ const Index = forwardRef(
                                       type: ERROR,
                                     })
                                   );
-                            }}
-                            type="delay"
-                            id="create-btn"
-                          >
-                            Save
-                          </button>
-                        </div>
+                              }}
+                              type="delay"
+                              id="create-btn"
+                            >
+                              Save
+                            </button>
+                          </div>
                         ) : null}
                         {tableElement?.isShowContent ? (
                           <div className="d-flex align-items-center">
@@ -1047,7 +1047,7 @@ const Index = forwardRef(
                             Load Panel Data
                           </Button>
                         )}
-                         {isDeleteAllPermission && (
+                        {isDeleteAllPermission && (
                           <Button
                             color="warning"
                             onClick={() => {
@@ -1059,7 +1059,7 @@ const Index = forwardRef(
                             Load Client Data
                           </Button>
                         )}
-                         {isDeleteAllPermission && (
+                        {isDeleteAllPermission && (
                           <Button
                             color="danger"
                             onClick={() => {
@@ -1127,16 +1127,15 @@ const Index = forwardRef(
                       {/* <Col className="bg-white p-2 m-2"> */}
                       <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
                         <Button
-                            color={`${isSearch ? "primary" : "danger"}`}
-                            size="sm"
-                            className="btn"
-                            onClick={() => {setIsSearch(!isSearch)}}
-                          >
-                            <i
-                              className={`bx ${
-                                isSearch ? "bx-check" : "bx-block"
+                          color={`${isSearch ? "primary" : "danger"}`}
+                          size="sm"
+                          className="btn"
+                          onClick={() => { setIsSearch(!isSearch) }}
+                        >
+                          <i
+                            className={`bx ${isSearch ? "bx-check" : "bx-block"
                               }`}
-                            ></i>
+                          ></i>
                         </Button>
                         <div className="d-flex flex-column">
                           <input
@@ -1179,7 +1178,7 @@ const Index = forwardRef(
                           Search
                           {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                         </button>
-                      {tableElement?.resetButton ? (
+                        {tableElement?.resetButton ? (
                           <div>
                             <button
                               className="btn btn-primary"
@@ -1193,12 +1192,12 @@ const Index = forwardRef(
                               {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                             </button>
                           </div>
-                      ) : null}
+                        ) : null}
                       </div>
                       {/* </Col> */}
                     </Row>
-                  ) : null} 
-                    {tableElement?.delayTextBox ? (
+                  ) : null}
+                  {tableElement?.delayTextBox ? (
                     <Row className="">
                       <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
                         <div className="d-flex flex-column">
@@ -1328,7 +1327,7 @@ const Index = forwardRef(
                               <tr>
                                 {columns.map((column) => (
                                   <th key={column.key} style={column.style}>
-                                    <div className="d-flex" style={{visibility: column?.key === "select" && "hidden"}}>
+                                    <div className="d-flex" style={{ visibility: column?.key === "select" && "hidden" }}>
                                       <span>{column.title}</span>
                                       {column.sort ? (
                                         <span className="d-flex flex-column align-items-center">
@@ -1433,12 +1432,12 @@ const Index = forwardRef(
                         <tr>
                           {columns.map((column) => (
                             <th key={column.key} style={column.style} className={column.className}>
-                              <div className="d-flex" style={{visibility: column?.key === "select" && "hidden"}}>
+                              <div className="d-flex" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
                                   <span className="d-flex flex-column align-items-center">
                                     <i
-                                      className={"bx bx-caret-up "+column.className}
+                                      className={"bx bx-caret-up " + column.className}
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
@@ -1462,7 +1461,7 @@ const Index = forwardRef(
                                       }}
                                     ></i>
                                     <i
-                                      className={"bx bx-caret-down "+column.className}
+                                      className={"bx bx-caret-down " + column.className}
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
@@ -1527,16 +1526,19 @@ const Index = forwardRef(
                   </div>
                 </div>
                 {data.length > 0 ? (
-                  <div className="d-flex justify-content-end">
-                    {isPagination ? (<Pagination
-                      total={total}
-                      pageSize={pageSize}
-                      currentPage={currentPage}
-                      fetchData={fetchData}
-                      setCurrentPage={setCurrentPage}
-                      setPageSize={setPageSize}
-                    />) : null}
-                  </div>
+                  <Row>
+                    <Col >{tableElement?.compToRender}</Col>
+                    <Col className="d-flex justify-content-end">
+                      {isPagination ? (<Pagination
+                        total={total}
+                        pageSize={pageSize}
+                        currentPage={currentPage}
+                        fetchData={fetchData}
+                        setCurrentPage={setCurrentPage}
+                        setPageSize={setPageSize}
+                      />) : null}
+                    </Col>
+                  </Row>
                 ) : (
                   <div className="d-flex justify-content-center">
                     <span style={{ color: "lightgray" }}>

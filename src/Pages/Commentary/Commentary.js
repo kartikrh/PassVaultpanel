@@ -131,7 +131,7 @@ const Commentary = (props) => {
             "winnerId": teams?.[WINNING_TEAM].commentaryTeamId,
             "winnerName": teams?.[WINNING_TEAM].teamName,
             "displayStatus": "",
-            "rmk": WINNING_MESSAGE
+            "result": WINNING_MESSAGE
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
@@ -154,6 +154,7 @@ const Commentary = (props) => {
     const onInningsChange = () => {
         let teamUpdates = undefined
         let commentaryUpdates = undefined
+        let playersToUpdate = []
         if (teams[BOWLING_TEAM].isBattingComplete && !isLastInnigs) {
             setShowUpdateInnings(true)
         } else {
@@ -169,6 +170,8 @@ const Commentary = (props) => {
             }
             setRedirectOnScreenChange(true)
         }
+        if (onPitchPlayers[ON_STRIKE]) playersToUpdate.push({ ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null })
+        if (onPitchPlayers[NON_STRIKE]) playersToUpdate.push({ ...onPitchPlayers[NON_STRIKE], isPlay: null, })
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
@@ -176,10 +179,7 @@ const Commentary = (props) => {
                 ...commentaryUpdates
             },
             "commentaryTeams": teamUpdates,
-            "commentaryPlayers": [
-                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, }
-            ],
+            "commentaryPlayers": playersToUpdate,
         }
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
@@ -1467,7 +1467,6 @@ const Commentary = (props) => {
     return <>
         <CommentaryScreen
             teamDetails={teams}
-            commentaryId={commentaryId}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
             statusList={statusList}
