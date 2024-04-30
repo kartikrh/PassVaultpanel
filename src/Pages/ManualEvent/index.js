@@ -167,17 +167,17 @@ const Index = () => {
   const columnsB = [
     {
       title: "Date",
-      dataIndex: `event`,
-      render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
+      dataIndex: `eventDate`,
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
       sort: true,
-      key: "date",
+      key: "eventDate",
       style: { width: "30%" },
     },
     {
       title: `Ref Id`,
-      dataIndex: `event`,
-      render: (text, record) => <span>{text?.id}</span>,
-      key: 'eventId',
+      dataIndex: `eventID`,
+      render: (text, record) => <span>{text}</span>,
+      key: 'eventID',
       sort: true,
       style: { width: "20%" },
     },
@@ -189,8 +189,8 @@ const Index = () => {
         style={{cursor:"pointer"}}
           onClick={() => {
             let currentRecord = [{
-              label: text?.name, value: {
-                refID: text?.id,
+              label: text, value: {
+                refID: record?.eventID,
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
@@ -202,7 +202,7 @@ const Index = () => {
             dispatch(setSelectedMarketHistory(historyList));
             dispatch(
               setSelectedMarket({
-                refID: text?.id,
+                refID: record?.eventID,
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
@@ -215,17 +215,17 @@ const Index = () => {
                 : selectedMarket?.isEvent
                   ? "eventId"
                   : "eventTypeId"
-                }`]: text?.id,
+                }`]: selectedMarket?.isCompitition ? record?.competitionID : selectedMarket?.isEvent ? record?.eventID : record?.eventTypeID,
               [`${selectedMarket?.isCompitition
                 ? "competitionName"
                 : selectedMarket?.isEvent
                   ? "eventName"
                   : "eventTypeName"
-                }`]: text?.name,
+                }`]: text,
             });
           }}
         >
-          <span>{text?.name}</span>
+          <span>{text}</span>
         </div>
       ),
       key: "event",
@@ -248,21 +248,21 @@ const Index = () => {
           onClick={() => {
             setDataToDB({
               ...dataToDB,
-              eventName: text?.name,
-              eventId: text?.id,
-              timeZone: text?.timezone,
-              countryCode: text?.countryCode || "",
-              openDate: text?.openDate,
-              venue: text?.venue || "",
+              eventName: text,
+              eventId: record?.eventID,
+              timeZone: record?.timezone || "",
+              countryCode: record?.countryCode || "",
+              openDate: record?.eventDate,
+              venue: record?.venue || "",
             });
             addData({
               ...dataToDB,
-              eventName: text?.name,
-              eventId: text?.id,
-              timeZone: text?.timezone,
-              countryCode: text?.countryCode || "",
-              openDate: text?.openDate,
-              venue: text?.venue || "",
+              eventName: text,
+              eventId: record?.eventID,
+              timeZone: record?.timezone || "",
+              countryCode: record?.countryCode || "",
+              openDate: record?.eventDate,
+              venue: record?.venue || "",
             });
           }}
         >
