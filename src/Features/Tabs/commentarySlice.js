@@ -103,6 +103,19 @@ export const saveCommentaryFeatures = createAsyncThunk(
         }
     }
 );
+export const loadCommentaryFeature = createAsyncThunk(
+    'commentary/loadCommentaryFeature',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/loadcommentaryapi', data);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 const commentarySlice = createSlice({
     name: 'commentary',
     initialState: {
@@ -224,6 +237,16 @@ const commentarySlice = createSlice({
                 state.isRedirect = true
             })
             .addCase(deleteCommentaryFeatures.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isLoading = false
+            })
+            .addCase(loadCommentaryFeature.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(loadCommentaryFeature.fulfilled, (state, action) => {
+                state.isLoading = false
+            })
+            .addCase(loadCommentaryFeature.rejected, (state, action) => {
                 state.error = action.payload;
                 state.isLoading = false
             })

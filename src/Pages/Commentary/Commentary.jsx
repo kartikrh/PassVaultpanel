@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Col, Row } from "reactstrap";
 import "./CommentaryCss.css";
 import {
@@ -11,8 +11,6 @@ import {
     CURRENT_BOWLER,
     NON_STRIKE,
     NO_BALL,
-    NO_BALL_BYE,
-    NO_BALL_LEG_BYE,
     ON_STRIKE,
 } from "./CommentartConst";
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal";
