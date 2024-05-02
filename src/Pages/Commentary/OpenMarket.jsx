@@ -181,22 +181,22 @@ export const OpenMarket = () => {
         {
             title: "Team",
             dataIndex: "teamName",
-            render: (text,record) => (
-              <>
-                <div>{text}</div>
-                <div>{`Innings ${record?.inningsId}`}</div>
-              </>
+            render: (text, record) => (
+                <>
+                    <div>{text}</div>
+                    <div>{`Innings ${record?.inningsId}`}</div>
+                </>
             ),
             key: "teamName",
         },
         {
             title: "Market",
             dataIndex: "eventMarketId",
-            render: (text,record) => (
-              <>
-                <div>{text}</div>
-                <div>{record?.marketName}</div>
-              </>
+            render: (text, record) => (
+                <>
+                    <div>{text}</div>
+                    <div>{record?.marketName}</div>
+                </>
             ),
             key: "eventMarketId",
         },
@@ -223,13 +223,13 @@ export const OpenMarket = () => {
             dataIndex: "line",
             render: (text, record) => (
                 <CustomInput
-                  className="form-control small-text-fields input-line-field"
-                  value={text || ""}
-                  onChange={(newValue) => {
-                    handleValueChange(record, "line", newValue);
-                    handleValueChange(record, "noRate", Math.round(+newValue));
-                    handleValueChange(record, "yesRate", Math.round(+newValue) + 1);
-                  }}
+                    className="form-control small-text-fields input-line-field"
+                    value={text || ""}
+                    onChange={(newValue) => {
+                        handleValueChange(record, "line", newValue);
+                        handleValueChange(record, "noRate", Math.round(+newValue));
+                        handleValueChange(record, "yesRate", Math.round(+newValue) + 1);
+                    }}
                 />
             ),
             key: "line",
@@ -415,7 +415,7 @@ export const OpenMarket = () => {
             <Input
                 className="form-control small-text-fields"
                 type="number"
-                step={0.1}
+                step={0.05}
                 min={0}
                 max={10}
                 value={Number(lineRatio).toFixed(2) || 0}
