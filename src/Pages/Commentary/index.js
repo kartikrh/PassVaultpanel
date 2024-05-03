@@ -616,6 +616,13 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Competition",
+      dataIndex: "competitionName",
+      key: "competitionName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Scoring",
       key: "commentaryDetails",
       printType: "ignore",
