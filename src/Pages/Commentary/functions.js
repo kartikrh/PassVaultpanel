@@ -192,7 +192,8 @@ export const getBallsForAllOver = (ballHistory = []) => {
   ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"])
   let toReturn = {}
   ballHistory.forEach(ball => {
-    const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(+ball.overCount)
+    const overCount = +ball.overCount % 1 === 0 ? (+ball.overCount + 0.1) : +ball.overCount
+    const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(overCount)
     const ballsInCurrentOver = toReturn[overToLogBallFor]
     if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
       [
