@@ -617,7 +617,7 @@ const Index = () => {
     },
     {
       title: "Competition",
-      dataIndex: "competitionName",
+      dataIndex: "competition",
       key: "competitionName",
       sort: true,
       style: { width: "10%" },
