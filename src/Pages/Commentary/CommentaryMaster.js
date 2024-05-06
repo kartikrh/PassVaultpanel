@@ -9,9 +9,10 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
-import { addCommentaryDetailsToDb, clearLoadingAndError, loadCommentaryFeature, updateSavedState } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryDetailsToDb, loadCommentaryFeature, updateCommentaryDisplayStatus, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
+import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -35,6 +36,8 @@ function CommentaryMaster() {
     const [isDataLoading, setIsDataLoading] = useState(false)
     const [nextScreen, setNextScreen] = useState(undefined);
     const [nextData, setNextData] = useState(undefined);
+    const [statusPopup, setStatusPopup] = useState(undefined)
+    const [statusList, setStatusList] = useState([])
     const { isSaved, isLoading } = useSelector(state => state.tabsData.commentary);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
@@ -43,6 +46,12 @@ function CommentaryMaster() {
     const commentaryId = location.state?.commentaryId || "0";
     const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
 
+    const updateDisplayStatus = (displayStatus) => {
+        dispatch(updateCommentaryDisplayStatus({
+            "commentaryId": commentaryId,
+            "displayStatus": displayStatus
+        }))
+    }
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchData(commentaryId);
@@ -72,6 +81,7 @@ function CommentaryMaster() {
                 commentaryDataToUpdate = response?.result
                 setCurrentScreen(commentaryDataToUpdate?.commentaryDetails?.commentaryStatus || 1)
                 setCommentaryData(commentaryDataToUpdate)
+                setStatusList(commentaryDataToUpdate.commentaryDisplayStatus)
                 setIsDataLoading(false)
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -148,6 +158,20 @@ function CommentaryMaster() {
                                             onInningsChange={handleInningsChange}
                                             isDataLoading={isDataLoading}
                                         />}
+                                    <Col xs={12} md={6} lg={6}>
+
+                                        <img role="button" className="sticky-button"
+                                            onClick={() => setStatusPopup(true)}
+                                            src="icons/commentary.png" alt="Icon" />
+                                    </Col>
+                                    {statusPopup && <ChangeStatusModal
+                                        statusList={statusList}
+                                        toggle={() => setStatusPopup(undefined)}
+                                        onSubmit={(displayStatus) => {
+                                            setStatusPopup(undefined)
+                                            updateDisplayStatus(displayStatus)
+                                        }}
+                                    />}
                                 </Row>
                             </CardBody>
                         </Card>

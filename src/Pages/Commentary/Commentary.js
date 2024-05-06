@@ -68,9 +68,7 @@ const Commentary = (props) => {
     const matchTypeDetails = props.data.commentaryData.matchTypeDetails
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
-    const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
-    const commentaryId = props.data.commentaryData.commentaryDetails.eid;
     useEffect(() => {
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -1469,7 +1467,6 @@ const Commentary = (props) => {
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
-            statusList={statusList}
             changePlayer={(type) => {
                 setIsSwapPlayer(true)
                 changePlayer(type)

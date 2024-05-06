@@ -3,17 +3,15 @@ import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, ON_STRIKE } from "./CommentartConst"
 import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
-import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import { STRING_SEPERATOR } from "../../components/Common/Const"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
-    onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, statusList, anyPopup, showPaneltyRuns,
+    onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls = {} }) => {
     const [isBoundary, setIsBoundary] = useState(false)
-    const [statusPopup, setStatusPopup] = useState(undefined)
     const [actionPopup, setActionPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map(element => {
@@ -257,9 +255,6 @@ export const CommentaryScreen = ({
                 <Row>
                     {generateRightSideOvers()}
                 </Row>
-                <img role="button" className="sticky-button"
-                    onClick={() => setStatusPopup(true)}
-                    src="icons/commentary.png" alt="Icon" />
             </Col>
         </Row >
         {isBoundary &&
@@ -275,15 +270,7 @@ export const CommentaryScreen = ({
                     setIsBoundary(undefined)
                 }}
             />}
-        {statusPopup && <ChangeStatusModal
-            statusList={statusList}
-            toggle={() => setStatusPopup(undefined)}
-            isOpen={true}
-            onSubmit={(displayStatus) => {
-                setStatusPopup(undefined)
-                updateDisplayStatus(displayStatus)
-            }}
-        />}
+
         {actionPopup && <CommentaryAction
             toggle={() => setActionPopup(false)}
             changeOver={() => {
