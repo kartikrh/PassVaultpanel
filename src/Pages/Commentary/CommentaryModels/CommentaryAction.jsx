@@ -30,10 +30,12 @@ const CommentaryAction = ({ toggle, updateExtras, handleRuns, changeOver, endInn
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={changeOver}>
                         <img className="button-icon" src="icons/end-over.png" alt="Icon" />
+                        End Over
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={endInnings}>
                         <img className="button-icon" src="icons/end-innings.png" alt="Icon" />
+                        End Innings
                     </Col>
                 </Row>
             </ModalBody>
