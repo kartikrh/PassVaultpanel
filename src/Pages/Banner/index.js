@@ -258,21 +258,21 @@ const Index = () => {
       render: (text, record) => (
         <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      style: { width: "10%" },
+      style: { width: "20%" },
       sort: true,
     },
     {
       title: "Type",
       dataIndex: "bannerType",
       key: "bannerType",
-      style: { width: "20%" },
+      style: { width: "5%" },
       render: (text, record) => <span>{getBannerType(record.bannerType)}</span>,
     },
     {
       title: "Views",
       dataIndex: "viewerCount",
       key: "viewerCount",
-      style: { width: "20%" },
+      style: { width: "5%", textAlign: "center" },
     },
     {
       title: "Link",
