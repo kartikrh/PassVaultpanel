@@ -61,10 +61,12 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     }
 
     const checkIfRequiredError = () => {
+        const fieldsToCheck = showFields
         let isRequiredError = false
         if (!wicketData.wicketType) isRequiredError = true
-        Object.keys(showFields).forEach(field => {
-            if (showFields[field] && !wicketData[field]) isRequiredError = true
+        if (wicketData.wicketType === RUN_OUT) fieldsToCheck["fielder2"] = false
+        Object.keys(fieldsToCheck).forEach(field => {
+            if (fieldsToCheck[field] && !wicketData[field]) isRequiredError = true
         })
         return isRequiredError
     }
