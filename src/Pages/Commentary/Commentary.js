@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, RETIRED_OUT, RUN, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -68,9 +68,7 @@ const Commentary = (props) => {
     const matchTypeDetails = props.data.commentaryData.matchTypeDetails
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
-    const statusList = props.data.commentaryData.commentaryDisplayStatus
     let navigate = useNavigate();
-    const commentaryId = props.data.commentaryData.commentaryDetails.eid;
     useEffect(() => {
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -579,7 +577,9 @@ const Commentary = (props) => {
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateOver["totalWicket"] = (currentOver.totalWicket || 0) + 1
         updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) + 1
-        updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
+        if ((wicketData.wicketType !== RUN_OUT) && (wicketData.wicketType !== RETIRED_OUT)) {
+            updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
+        }
         updateBall["ballPlayerId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterName"] = wicketPlayerDetails.playerName
@@ -874,7 +874,9 @@ const Commentary = (props) => {
                     undoType = WICKET
                     updateOver["totalWicket"] = (currentOver.totalWicket || 0) - 1
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
-                    updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
+                    if ((currentBall.ballWicketType !== RUN_OUT) && (currentBall.ballWicketType !== RETIRED_OUT)) {
+                        updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
+                    }
                     updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2] }
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
@@ -1469,7 +1471,6 @@ const Commentary = (props) => {
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
-            statusList={statusList}
             changePlayer={(type) => {
                 setIsSwapPlayer(true)
                 changePlayer(type)

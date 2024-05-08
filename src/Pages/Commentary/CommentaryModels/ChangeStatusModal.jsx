@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { Input, Modal, ModalBody, ModalHeader, Row, Table } from 'reactstrap';
 import "../CommentaryCss.css"
 
-const ChangeStatusModal = ({ statusList, toggle, isOpen, onSubmit }) => {
+const ChangeStatusModal = ({ statusList, toggle, onSubmit }) => {
     const [updatedStatusList, setUpadtedStatusList] = useState(statusList);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
         setSearch("");
         setUpadtedStatusList(statusList);
-    }, [isOpen, statusList]);
+    }, [statusList]);
 
     useEffect(() => {
         const filteredStatusList = statusList?.filter(value => value.displayStatus.toLowerCase().includes(search.toLowerCase()));
@@ -17,16 +17,14 @@ const ChangeStatusModal = ({ statusList, toggle, isOpen, onSubmit }) => {
     }, [search])
 
     useEffect(() => {
-        if (isOpen) {
-            setTimeout(() => {
-                const inputElement = document.getElementById('statusInput');
-                if (inputElement) inputElement.focus();
-            }, 150);
-        }
-    }, [isOpen]);
+        setTimeout(() => {
+            const inputElement = document.getElementById('statusInput');
+            if (inputElement) inputElement.focus();
+        }, 150);
+    }, []);
 
     return (
-        <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}> <div className='modal-header-style'>Status</div> </ModalHeader>
             <ModalBody>
                 Update Commentary Display Status
