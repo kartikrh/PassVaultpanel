@@ -140,6 +140,7 @@ const PlayerCommentary = () => {
                         <TeamPlayerCard
                           commentaryId={commentaryId}
                           teamDetails={teamDetails}
+                          fetchData={fetchData}
                         />
                       </div>
                     ))}
