@@ -178,7 +178,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                Avg :{" "}
                                <input
                                  type="number"
-                                 style={{ width: "40px" }}
+                                 style={{ width: "45px" }}
                                  value={
                                    +editedPlayers[player.playerId]?.batsmanAverage ||
                                    +player.batsmanAverage
@@ -192,7 +192,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                Strike Rate :{" "}
                                <input
                                  type="number"
-                                 style={{ width: "40px" }}
+                                 style={{ width: "45px" }}
                                  value={
                                    +editedPlayers[player.playerId]?.batsmanStrikeRate ||
                                    +player.batsmanStrikeRate
