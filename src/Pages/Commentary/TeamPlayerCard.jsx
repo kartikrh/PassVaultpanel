@@ -161,6 +161,16 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                     </Col>
                 </Row>
                 <Row className="rounded py-3">
+                <div class="row d-flex align-items-center my-2 ">
+                  <div class="col-2"></div>
+                  <div class="col-10 ps-4">
+                    <div className="row">
+                       <div className="col-6">Player</div>
+                       <div className="col-3">Avg</div>
+                       <div className="col-3">SR</div>
+                    </div>
+                  </div>
+                  </div>
                     {commentaryTeamPlayers?.map((player, index) => (
                         <div key={index} class="row d-flex align-items-center my-2 ">
                             <div class="col-2">
@@ -173,12 +183,11 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                             </div>
                             <div class="col-10 ps-4">
                            <div className="row">
-                             <div className="col-4">{player?.playerName}</div>
+                             <div className="col-6">{player?.playerName}</div>
                              <div className="col-3">
-                               Avg :{" "}
                                <input
                                  type="number"
-                                 style={{ width: "45px" }}
+                                 style={{ width: "65px" }}
                                  value={
                                    +editedPlayers[player.playerId]?.batsmanAverage ||
                                    +player.batsmanAverage
@@ -188,11 +197,10 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                  }
                                />
                              </div>
-                             <div className="col-5">
-                               Strike Rate :{" "}
+                             <div className="col-3">
                                <input
                                  type="number"
-                                 style={{ width: "45px" }}
+                                 style={{ width: "65px" }}
                                  value={
                                    +editedPlayers[player.playerId]?.batsmanStrikeRate ||
                                    +player.batsmanStrikeRate
