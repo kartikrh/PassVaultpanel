@@ -10,7 +10,7 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
-  TAB_NEWS,
+  TAB_BANNER,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -22,10 +22,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
-  const pageName = TAB_NEWS;
+  const pageName = TAB_BANNER;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_NEWS;
+  document.title = TAB_BANNER;
   const [data, setData] = useState([]);
 
   const [dataIndexList, setDataIndexList] = useState([]);
