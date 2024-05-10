@@ -25,6 +25,8 @@ import displayStatusSlice from "./displayStatusSlice";
 import clientSocketSlice from './clientSocketSlice';
 import bannerSlice from "./bannerSlice";
 import manualEventSlice from "./manualEventSlice";
+import addApiSlice from "./addApiSlice";
+import addApiEndpointSlice from "./addApiEndpointSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -53,6 +55,8 @@ const rootReducer = combineReducers({
   clientSocket : clientSocketSlice,
   banner: bannerSlice,
   manualEvent: manualEventSlice,
+  apis: addApiSlice,
+  apiEndpoints: addApiEndpointSlice,
 });
 
 export default rootReducer;
