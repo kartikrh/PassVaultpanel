@@ -371,4 +371,33 @@
 .w-100{
     width: 100% !important;
 }
+
+.live-css {
+    color: green; 
+    width: 10px; 
+    height: 10px;
+    display: inline-block;
+    border-radius: 50%; 
+    background: green; 
+    text-align: center; 
+    line-height: 10px;
+}
+.live-text {
+    color: green; 
+    font-weight: bold;
+}
+.disconnected-css {
+    color: #ff3d60; 
+    width: 10px; 
+    height: 10px;
+    display: inline-block;
+    border-radius: 50%; 
+    background: #ff3d60; 
+    text-align: center; 
+    line-height: 10px;
+}
+.disconnected-text {
+    color: #ff3d60; 
+    font-weight: bold;
+}
 /* http://localhost:3000/oddsView?commentaryId=601 */

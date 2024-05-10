@@ -143,18 +143,34 @@ export const OddsView = () => {
                         <Card>
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
-                                <Row>
+                                <Row className="d-flex align-items-center">
                                     <Col className="mt-3 mt-lg-4 mt-md-4">
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Odds View" page="updatecp" />
+                                    </Col>
+                                    <Col>
+                                        <div className="odds-page-header">{!isEmpty(commentaryInfo) && commentaryInfo.en}</div>
                                     </Col>
                                     <Col className="odds-page-header">
                                         <button className="btn btn-danger text-right" onClick={handleBackClick}>Back</button>
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <div className="odds-page-header">{!isEmpty(commentaryInfo) && commentaryInfo.en}</div>
+                                    {isSocketConnected ? (
+                                      <div>
+                                        <span className="live-css">
+                                            {/* &#x1F7E2; */}
+                                        </span>{" "}
+                                        <span className="live-text">Live</span>{" "}
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <span className="disconnected-css">
+                                            {/* &#x1F534; */}
+                                        </span>{" "}
+                                        <span className="disconnected-text">Disconnected</span>{" "}
+                                      </div>
+                                    )}
                                 </Row>
-                                <Row>{isSocketConnected ? "Live" : "Disconnected"}</Row>
                                 <Row>
                                     <Col>
                                         <ListingElement
