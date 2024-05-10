@@ -559,7 +559,12 @@ export const OpenMarket = () => {
                                         <Col className="p-0 d-flex" xs={12} md={3} lg={2}>
                                             <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
                                             {isSocketConnected ?
-                                                <div className="table-header-button text-center">Live</div> :
+                                                <div className="table-header-button text-center">
+                                                    <span className="live-css">
+                                                       {/* &#x1F7E2; */}
+                                                    </span>{" "}
+                                                    <span className="live-text">Live</span>{" "}
+                                                </div> :
                                                 <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
                                             }
                                         </Col>
