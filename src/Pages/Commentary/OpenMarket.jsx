@@ -31,6 +31,7 @@ export const OpenMarket = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const socket = createSocket();
+    const statusListToInclude = [1, 2, 3]
 
     const fetchConfigAll = async () => {
         setIsLoading(true);
@@ -173,7 +174,8 @@ export const OpenMarket = () => {
             let updatedDatalist = responseData.map(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
                 const marketRunner = eventMarket.runner[0]
-                if (marketRunner) {
+                const status = eventMarket.status
+                if (statusListToInclude.includes(status) && marketRunner) {
                     return {
                         id: eventMarket.id,
                         line: marketRunner.line,
