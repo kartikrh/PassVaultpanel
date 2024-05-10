@@ -124,11 +124,13 @@ function CommentaryMaster() {
                             <CardBody>
                                 {(isLoading || isDataLoading) && <SpinnerModel />}
                                 <Row className='mb-3'>
-                                    {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
-                                        <Col className="pt-2" xs={12} md={6} lg={6} >
-                                            <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
-                                            <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
-                                        </Col>}
+                                    <Col className="pt-2" xs={12} md={6} lg={6} >
+                                        {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                                            <>
+                                                <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
+                                                <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
+                                            </>}
+                                    </Col>
                                     <Col className="pt-2" xs={12} md={6} lg={6}>
                                         <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                                         {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
