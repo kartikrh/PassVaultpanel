@@ -32,15 +32,6 @@ export const OpenMarket = () => {
     const dispatch = useDispatch();
     const socket = createSocket();
 
-    const getDataForGivenMarketId = (id) => {
-        let marketData = undefined
-        for (const mkData in data) {
-            if (mkData.eventMarketId === id) marketData = mkData
-            if (!isEmpty(marketData)) break
-        }
-        return marketData
-    }
-
     const fetchConfigAll = async () => {
         setIsLoading(true);
         try {
@@ -183,9 +174,8 @@ export const OpenMarket = () => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
                 const marketRunner = eventMarket.runner[0]
                 if (marketRunner) {
-                    const dataForGivenId = getDataForGivenMarketId(eventMarket.id)
                     return {
-                        ...dataForGivenId,
+                        id: eventMarket.id,
                         line: marketRunner.line,
                         overRate: marketRunner.over,
                         underRate: marketRunner.under,
@@ -197,7 +187,17 @@ export const OpenMarket = () => {
                 }
                 else return null
             }).filter(x => x)
-            setData(updatedDatalist)
+            setData((prevData) => {
+                const prevDataObj = {}
+                prevData?.forEach(element => prevDataObj[element.eventMarketId] = element)
+                const listToReturn = updatedDatalist?.map(element => {
+                    return {
+                        ...prevDataObj[element.id],
+                        ...element
+                    }
+                })
+                return listToReturn
+            })
         }
     }
 
@@ -213,7 +213,7 @@ export const OpenMarket = () => {
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                // setIsLoading(false);
+                // setIsLading(false);
             });
     };
 
