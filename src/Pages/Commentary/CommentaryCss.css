@@ -368,4 +368,7 @@
     background-color: #f6f7fb;
 }
 
+.w-100{
+    width: 100% !important;
+}
 /* http://localhost:3000/oddsView?commentaryId=601 */

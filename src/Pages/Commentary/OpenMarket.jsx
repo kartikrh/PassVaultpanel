@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -12,6 +12,7 @@ import { ListingElement } from "../../components/Common/Reusables/ListingCompone
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
+import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 const tableElement = {
     title: "Predefined",
@@ -24,10 +25,41 @@ export const OpenMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
     const [autoInterval, setAutoInterval] = useState(500)
-    let navigate = useNavigate();
-    const dispatch = useDispatch();
+    const [isSocketConnected, setIsSocketConnected] = useState(false)
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const socket = createSocket();
+
+    const getDataForGivenMarketId = (id) => {
+        let marketData = undefined
+        for (const mkData in data) {
+            if (mkData.eventMarketId === id) marketData = mkData
+            if (!isEmpty(marketData)) break
+        }
+        return marketData
+    }
+
+    const fetchConfigAll = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post("/admin/config/all", { isActive: true });
+
+            const isMarketRepetitionCall = response.result.find(config => config.key === 'ISMARKETREPETITIONCALL')?.value;
+            const repetitionCallInterval = response.result.find(config => config.key === 'REPETITIONCALLINTERVAL')?.value;
+
+            if (isMarketRepetitionCall === 'true' && repetitionCallInterval) {
+                const interval = parseInt(repetitionCallInterval);
+                setAutoInterval(interval || 1000)
+
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const formatDataBeforeSend = (dataToChange = []) => {
         const dataToSend = []
@@ -130,28 +162,54 @@ export const OpenMarket = () => {
         setData(updatedData)
     }
 
+    const formatAPIDataForState = (responseData) => {
+        let highestLineRatio = 0
+        let updatedDatalist = responseData.map(eventMarket => {
+            if (highestLineRatio < (+eventMarket.lineRatio || 0)) highestLineRatio = +eventMarket.lineRatio
+            if (eventMarket.marketRunners)
+                return {
+                    ...eventMarket,
+                    ...eventMarket.marketRunners[0]
+                }
+            else return null
+        }).filter(x => x)
+        updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
+        return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
+    }
+
+    const formatSocketDataForState = (responseData) => {
+        if (!isEmpty(responseData)) {
+            let updatedDatalist = responseData.map(eventMarket => {
+                if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
+                const marketRunner = eventMarket.runner[0]
+                if (marketRunner) {
+                    const dataForGivenId = getDataForGivenMarketId(eventMarket.id)
+                    return {
+                        ...dataForGivenId,
+                        line: marketRunner.line,
+                        overRate: marketRunner.over,
+                        underRate: marketRunner.under,
+                        yesRate: marketRunner.yes,
+                        yesPoint: marketRunner.yesPoint,
+                        noRate: marketRunner.no,
+                        noPoint: marketRunner.noPoint,
+                    }
+                }
+                else return null
+            }).filter(x => x)
+            setData(updatedDatalist)
+        }
+    }
+
     const fetchTableData = async (commentaryId) => {
-        // setIsLoading(true);
         await axiosInstance
             .post("/admin/eventMarket/marketListByCId", { commentaryId })
             .then((response) => {
                 if (response?.result) {
-                    const dataList = response?.result || []
-                    let highestLineRatio = 0
-                    let updatedDatalist = dataList.map(eventMarket => {
-                        if (highestLineRatio < (+eventMarket.lineRatio || 0)) highestLineRatio = +eventMarket.lineRatio
-                        if (eventMarket.marketRunners)
-                            return {
-                                ...eventMarket,
-                                ...eventMarket.marketRunners[0]
-                            }
-                        else return null
-                    }).filter(x => x)
-                    updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
-                    setData(updatedDatalist);
-                    setLineRatio(highestLineRatio * 5)
+                    const formattedData = formatAPIDataForState(response?.result || [])
+                    setData(formattedData.data);
+                    setLineRatio(formattedData.lineRatio)
                 }
-                // setIsLoading(false);
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -430,31 +488,24 @@ export const OpenMarket = () => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
-        }
-        const fetchConfigAll = async () => {
-            setIsLoading(true);
-            try {
-                const response = await axiosInstance.post("/admin/config/all", { isActive: true });
-
-                const isMarketRepetitionCall = response.result.find(config => config.key === 'ISMARKETREPETITIONCALL')?.value;
-                const repetitionCallInterval = response.result.find(config => config.key === 'REPETITIONCALLINTERVAL')?.value;
-
-                if (isMarketRepetitionCall === 'true' && repetitionCallInterval) {
-                    const interval = parseInt(repetitionCallInterval);
-                    setAutoInterval(interval || 1000)
-
-                }
-            } catch (error) {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            } finally {
-                setIsLoading(false);
+            if (socket) {
+                socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+                setIsSocketConnected(true)
+                socket.on(OPEN_MARKET_DATA, (socketData) => {
+                    formatSocketDataForState(socketData || [])
+                });
+            } else {
+                setIsSocketConnected(false)
+                fetchConfigAll();
             }
+        }
+        return () => {
+            socket.off(OPEN_MARKET_DATA);
         };
-        fetchConfigAll();
     }, []);
 
     useEffect(() => {
-        if (isAutoUpdate) {
+        if (isAutoUpdate && !isSocketConnected) {
             intervalIdRef.current = setInterval(() => {
                 if (commentaryId !== "0") {
                     fetchTableData(commentaryId);
@@ -466,7 +517,7 @@ export const OpenMarket = () => {
         return () => {
             clearInterval(intervalIdRef.current);
         };
-    }, [isAutoUpdate])
+    }, [isAutoUpdate, isSocketConnected])
 
     return (
         <React.Fragment>
@@ -505,9 +556,12 @@ export const OpenMarket = () => {
                                             <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
                                             <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
                                         </Col>
-                                        <Col className="p-0" xs={12} md={3} lg={2}>
+                                        <Col className="p-0 d-flex" xs={12} md={3} lg={2}>
                                             <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
-                                            <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
+                                            {isSocketConnected ?
+                                                <div className="table-header-button text-center">Live</div> :
+                                                <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
+                                            }
                                         </Col>
                                         <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
                                             <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
