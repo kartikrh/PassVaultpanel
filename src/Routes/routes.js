@@ -92,6 +92,7 @@ import AddClientSocket from "../Pages/ClientSocket/AddClientSocket.jsx";
 import AddBanner from "../Pages/Banner/AddBanner.jsx";
 import AddAPI from "../Pages/API/AddAPI.jsx";
 import AddAPIEndpoint from "../Pages/APIEndpoints/AddAPIEndpoint.jsx";
+import PredictorApiLogs from "../Pages/Commentary/PredictorApiLogs.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -121,6 +122,7 @@ const authProtectedRoutes = [
   { path: "/shortCommentary", component: <ShortCommentary /> },
   { path: "/updateCommentaryFeature", component: <CommentaryFeatures /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
+  { path: "/predictorApiLogs", component: <PredictorApiLogs /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
