@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Input, Modal, ModalBody, ModalHeader, Row, Table } from 'reactstrap';
+import { Button, Col, Input, Modal, ModalBody, ModalHeader, Row, Table } from 'reactstrap';
 import "../CommentaryCss.css"
 
 const ChangeStatusModal = ({ statusList, toggle, onSubmit }) => {
     const [updatedStatusList, setUpadtedStatusList] = useState(statusList);
     const [search, setSearch] = useState("");
+    const [customStatus, setCustomStatus] = useState("");
 
     useEffect(() => {
         setSearch("");
@@ -28,6 +29,25 @@ const ChangeStatusModal = ({ statusList, toggle, onSubmit }) => {
             <ModalHeader toggle={toggle}> <div className='modal-header-style'>Status</div> </ModalHeader>
             <ModalBody>
                 Update Commentary Display Status
+                <Row className="pt-2">
+                    <Col xs={9} md={9} lg={10}>
+                        <Input
+                            id="customStatus"
+                            className="form-control mb-3"
+                            type="text"
+                            placeholder='Custom Status'
+                            value={customStatus}
+                            onChange={(e) => {
+                                setCustomStatus(e.target.value)
+                            }}
+                        />
+                    </Col>
+                    <Col xs={3} md={3} lg={2}>
+                        <Button className=" btn btn-success w-100" onClick={() => onSubmit(customStatus)} >
+                            Save
+                        </Button>
+                    </Col>
+                </Row>
                 <Row>
                     <Table responsive>
                         <thead>
