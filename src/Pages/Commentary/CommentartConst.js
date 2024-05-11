@@ -132,3 +132,22 @@ export const BALL_TYPE_LIST = [
     { label: "NB LB", value: BALL_TYPE_NO_BALL_LEG_BYE, },
     { label: "Panelty", value: BALL_TYPE_PANELTY_RUN, },
 ]
+
+export const getStatusColor = (status) => {
+    switch (status) {
+        case 1: 
+            return "#d7eed7"; //light green (open)
+        case 2: 
+            return "#d7d5d5"; //light gray (inActive)
+        case 3: 
+            return "#f6ddcf"; //light orange (suspend)
+        case 4: 
+            return "#d7ebf1"; //light blue (close)
+        case 5: 
+            return "#f9f9e8"; //light yellow (settled)
+        case 6:
+            return "#f6e0e0"; //light red (cancel)
+        default:
+            return ""; 
+    }
+};

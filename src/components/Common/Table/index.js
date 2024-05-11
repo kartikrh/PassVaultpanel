@@ -26,6 +26,7 @@ import { RSelect } from "../Reusables/FormElements";
 import { DatePicker, Space } from "antd";
 import moment from "moment";
 import { convertDateUTCToLocal } from "../Reusables/reusableMethods";
+import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
 const { RangePicker } = DatePicker;
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
@@ -1493,7 +1494,7 @@ const Index = forwardRef(
                       </thead>
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
-                          <tr key={index} className={`hover`}>
+                          <tr key={index} className={`hover`} style={{backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status) }}>
                             {columns.map((column) => (
                               <td key={column.key} style={column.style}>
                                 {column.render
