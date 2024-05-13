@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Navigate, useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../../Features/axios.js"
 import { updateToastData } from "../../Features/toasterSlice.js"
 import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const.js"
@@ -43,7 +43,7 @@ export const CommentaryFeatures = () => {
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-            Navigate("/dashboard")
+            navigate("/dashboard")
         }
         dispatch(clearLoadingAndError())
         return () => {
