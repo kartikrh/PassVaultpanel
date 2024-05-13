@@ -43,6 +43,7 @@ export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_MANUAL_EVENT = "Manual Event";
 export const Tab_Menu_List = "Menu List";
 export const TAB_NEWS = "News";
+export const TAB_BANNER = "Banner";
 export const TAB_SUBSCRIBERS = "Subscribers";
 export const TAB_MARKET_TEMPLATE = "Market Templates";
 export const TAB_MARKET_TEMPLATE_RUNNER = "Market Template Runner";
@@ -51,6 +52,8 @@ export const TAB_SET_MARKETS_RESULT = "Set Market Result";
 export const TAB_VENDOR = "Vendors";
 export const TAB_DISPLAYSTATUS = "DisplayStatus";
 export const TAB_ClientSocket = "ClientSocket";
+export const TAB_API = "API";
+export const TAB_API_ENDPOINTS = "API Endpoints";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";

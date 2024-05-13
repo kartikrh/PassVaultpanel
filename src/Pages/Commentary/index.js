@@ -254,6 +254,13 @@ const Index = () => {
       },
     });
   };
+  const handlePredictorDetailsClick = (commentaryId) => {
+    navigate("/predictorApiLogs", {
+      state: {
+        commentaryId: commentaryId,
+      },
+    });
+  };
   const handleCommentaryMarketTemplateClick = (id) => {
     navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
   };
@@ -761,6 +768,7 @@ const Index = () => {
             ></i>
           </Button>
           {record.isPredictMarket &&
+          <>
             <Button
               color={"primary"}
               size="sm"
@@ -771,6 +779,17 @@ const Index = () => {
             >
               <i class='bx bxs-store' ></i>
             </Button>
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handlePredictorDetailsClick(record.commentaryId);
+              }}
+            >
+             <i class='bx bxs-up-arrow-square' ></i>
+            </Button>
+          </>
           }
         </div>
       ),

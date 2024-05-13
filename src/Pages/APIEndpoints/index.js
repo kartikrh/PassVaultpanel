@@ -16,17 +16,17 @@ import {
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
-  TAB_DISPLAYSTATUS,
+  TAB_API_ENDPOINTS,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-  const pageName = TAB_DISPLAYSTATUS;
+  const pageName = TAB_API_ENDPOINTS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Display status";
+  document.title = "API Endpoints";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -40,14 +40,14 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/displayStatus/all`, {
+      .post(`/admin/apiEndpoint/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
-          apiDataIdList.push(ele?.displayStatusId);
+          apiDataIdList.push(ele?.apiEndPointId);
         });
         setData(apiData);
         setDataIndexList(apiDataIdList);
@@ -61,25 +61,25 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.displayStatusId)) {
+    if (checekedList.includes(e.apiEndPointId)) {
       updateSingleCheck = checekedList.filter(
-        (item) => item !== e.displayStatusId
+        (item) => item !== e.apiEndPointId
       );
     } else {
-      updateSingleCheck = [...checekedList, e.displayStatusId];
+      updateSingleCheck = [...checekedList, e.apiEndPointId];
     }
     setCheckedList(updateSingleCheck);
   };
 
-  const handleEdit = (displayStatusId) => {
-    navigate("/addDisplayStatus", { state: { displayStatusId } });
+  const handleEdit = (apiEndPointId) => {
+    navigate("/addApiEndpoint", { state: { apiEndPointId } });
   };
 
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/displayStatus/save`, {
-        displayStatusId: record.displayStatusId,
+      .post(`/admin/apiEndpoint/activeInactiveApiEndpoints`, {
+        apiEndPointId: record.apiEndPointId,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -102,6 +102,24 @@ const Index = () => {
           })
         );
       });
+  };
+  const getServiceType = (status) => {
+    switch (status) {
+      case 1:
+        return "clientAPI";
+      case 2:
+        return "dataProviderAPI";
+      default:
+        return "Unknown";
+    } 
+  };
+  const getModuleType = (status) => {
+    switch (status) {
+      case 1:
+        return "commentaryUpdate";
+      default:
+        return "Unknown";
+    } 
   };
   //table columns
   const columns = [
@@ -134,7 +152,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.displayStatusId)}
+            checked={checekedList.includes(record.apiEndPointId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -152,21 +170,45 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.displayStatusId);
+            handleEdit(record.apiEndPointId);
           }}
         ></i>
       ),
       style: { width: "2%" },
     },
     {
-      title: "DisplayStatus",
-      dataIndex: "displayStatus",
+      title: "Service Type",
+      dataIndex: "serviceType",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span>{getServiceType(record?.serviceType)}</span>
       ),
-      key: "displayStatus",
+      key: "serviceType",
       sort: true,
-      style: { width: "90%" },
+      style: { width: "20%" },
+    },
+    {
+      title: "Endpoint",
+      dataIndex: "endPoint",
+      key: "endPoint",
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
+      title: "Module Type",
+      dataIndex: "moduleType",
+      render: (text, record) => (
+        <span>{getModuleType(record?.moduleType)}</span>
+      ),
+      key: "moduleType",
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
+      title: "TimeOut",
+      dataIndex: "timeOut",
+      key: "timeOut",
+      sort: true,
+      style: { width: "10%" },
     },
     {
       title: "Is Active",
@@ -188,7 +230,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Display Status",
+    title: "API Endpoints",
     headerSelect: false,
     isActive: true,
     clone: false,
@@ -198,8 +240,8 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/displayStatus/delete`, {
-        displayStatusId: checekedList,
+      .post(`/admin/apiEndpoint/delete`, {
+        apiEndPointId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -234,7 +276,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Display Status" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="API Endpoints" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -244,7 +286,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
-            onAddNavigate={"/addDisplayStatus"}
+            onAddNavigate={"/addApiEndpoint"}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,

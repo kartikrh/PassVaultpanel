@@ -8,11 +8,12 @@ import { ERROR } from '../../components/Common/Const';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import "./CommentaryCss.css";
 
-const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
+const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false);
+    const [editedPlayers, setEditedPlayers] = useState({});
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -79,6 +80,48 @@ const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
             });
     };
 
+    const handleSave = async () => {
+        setIsLoading(true);
+        try {
+            const playerDataArray = Object.keys(editedPlayers).map(playerId => {
+                let { batsmanAverage, batsmanStrikeRate } = editedPlayers[playerId];
+                if(!batsmanAverage){
+                    batsmanAverage = commentaryTeamPlayers.find((item)=>+item.playerId === +playerId)?.batsmanAverage || 0
+                }
+                if(!batsmanStrikeRate){
+                    batsmanStrikeRate = commentaryTeamPlayers.find((item)=>+item.playerId === +playerId)?.batsmanStrikeRate || 0
+                }
+                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate };
+            });
+            await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
+            setIsLoading(false);
+            fetchData(commentaryId);
+            setEditedPlayers({});
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            setIsLoading(false);
+        }
+    };
+
+    const handleAvgChange = (playerId, avg) => {
+        setEditedPlayers(prevState => ({
+            ...prevState,
+            [playerId]: {
+                ...prevState[playerId],
+                batsmanAverage: +avg,
+            }
+        }));
+    };
+
+    const handleStrikeRateChange = (playerId, strikeRate) => {
+        setEditedPlayers(prevState => ({
+            ...prevState,
+            [playerId]: {
+                ...prevState[playerId],
+                batsmanStrikeRate: +strikeRate,
+            }
+        }));
+    };
     return (
         <Card>
             {isLoading && <SpinnerModel />}
@@ -118,6 +161,16 @@ const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
                     </Col>
                 </Row>
                 <Row className="rounded py-3">
+                <div class="row d-flex align-items-center my-2 ">
+                  <div class="col-2"></div>
+                  <div class="col-10 ps-4">
+                    <div className="row">
+                       <div className="col-6">Player</div>
+                       <div className="col-3">Avg</div>
+                       <div className="col-3">SR</div>
+                    </div>
+                  </div>
+                  </div>
                     {commentaryTeamPlayers?.map((player, index) => (
                         <div key={index} class="row d-flex align-items-center my-2 ">
                             <div class="col-2">
@@ -129,11 +182,49 @@ const TeamPlayerCard = ({ teamDetails, commentaryId }) => {
                                 </Button>
                             </div>
                             <div class="col-10 ps-4">
-                                {player?.playerName}
-                            </div>
-                        </div>)
+                           <div className="row">
+                             <div className="col-6">{player?.playerName}</div>
+                             <div className="col-3">
+                               <input
+                                 type="number"
+                                 style={{ width: "65px" }}
+                                 value={
+                                   +editedPlayers[player.playerId]?.batsmanAverage ||
+                                   +player.batsmanAverage
+                                 }
+                                 onChange={(e) =>
+                                   handleAvgChange(player.playerId, e.target.value)
+                                 }
+                               />
+                             </div>
+                             <div className="col-3">
+                               <input
+                                 type="number"
+                                 style={{ width: "65px" }}
+                                 value={
+                                   +editedPlayers[player.playerId]?.batsmanStrikeRate ||
+                                   +player.batsmanStrikeRate
+                                 }
+                                 onChange={(e) =>
+                                   handleStrikeRateChange(
+                                     player.playerId,
+                                     e.target.value
+                                   )
+                                 }
+                               />
+                             </div>
+                           </div>
+                         </div>
+                       </div>)
                     )}
                 </Row>
+                <Button
+                  color="success"
+                  className="btn-sm px-3"
+                  onClick={handleSave}
+                >
+                  Save
+                </Button>
             </CardBody>
         </Card>
     )

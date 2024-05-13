@@ -16,17 +16,17 @@ import {
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
-  TAB_DISPLAYSTATUS,
+  TAB_API,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-  const pageName = TAB_DISPLAYSTATUS;
+  const pageName = TAB_API;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Display status";
+  document.title = "APIS";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -40,14 +40,14 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/displayStatus/all`, {
+      .post(`/admin/api/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
-          apiDataIdList.push(ele?.displayStatusId);
+          apiDataIdList.push(ele?.apiId);
         });
         setData(apiData);
         setDataIndexList(apiDataIdList);
@@ -61,25 +61,25 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.displayStatusId)) {
+    if (checekedList.includes(e.apiId)) {
       updateSingleCheck = checekedList.filter(
-        (item) => item !== e.displayStatusId
+        (item) => item !== e.apiId
       );
     } else {
-      updateSingleCheck = [...checekedList, e.displayStatusId];
+      updateSingleCheck = [...checekedList, e.apiId];
     }
     setCheckedList(updateSingleCheck);
   };
 
-  const handleEdit = (displayStatusId) => {
-    navigate("/addDisplayStatus", { state: { displayStatusId } });
+  const handleEdit = (apiId) => {
+    navigate("/addApi", { state: { apiId } });
   };
 
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/displayStatus/save`, {
-        displayStatusId: record.displayStatusId,
+      .post(`/admin/api/activeInactiveApi`, {
+        apiId: record.apiId,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -102,6 +102,16 @@ const Index = () => {
           })
         );
       });
+  };
+  const getType = (status) => {
+    switch (status) {
+      case 1:
+        return "clientAPI";
+      case 2:
+        return "dataProviderAPI";
+      default:
+        return "Unknown";
+    }
   };
   //table columns
   const columns = [
@@ -134,7 +144,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.displayStatusId)}
+            checked={checekedList.includes(record.apiId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -152,21 +162,28 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.displayStatusId);
+            handleEdit(record.apiId);
           }}
         ></i>
       ),
       style: { width: "2%" },
     },
     {
-      title: "DisplayStatus",
-      dataIndex: "displayStatus",
+      title: "Type",
+      dataIndex: "type",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span>{getType(record?.type)}</span>
       ),
-      key: "displayStatus",
+      key: "type",
       sort: true,
-      style: { width: "90%" },
+      style: { width: "10%" },
+    },
+    {
+      title: "Api",
+      dataIndex: "api",
+      key: "api",
+      sort: true,
+      style: { width: "80%" },
     },
     {
       title: "Is Active",
@@ -188,7 +205,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Display Status",
+    title: "APIS",
     headerSelect: false,
     isActive: true,
     clone: false,
@@ -198,8 +215,8 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/displayStatus/delete`, {
-        displayStatusId: checekedList,
+      .post(`/admin/api/delete`, {
+        apiId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -234,7 +251,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Display Status" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="APIS" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -244,7 +261,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
-            onAddNavigate={"/addDisplayStatus"}
+            onAddNavigate={"/addApi"}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,

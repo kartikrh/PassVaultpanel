@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
+import { DisplayStatusConst } from "../../constants/FieldConst/DisplayStatusConst";
 import {
   Button,
   ButtonDropdown,
@@ -22,34 +23,40 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  TAB_BANNER,
+  TAB_API_ENDPOINTS,
 } from "../../components/Common/Const";
-import { addBannerToDb, updateSavedState } from "../../Features/Tabs/bannerSlice";
+import {
+  addApiEndpointToDb,
+  updateSavedState,
+} from "../../Features/Tabs/addApiEndpointSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { bannerFields } from "../../constants/FieldConst/BannerConst";
+import { APIEndpointConst } from "../../constants/FieldConst/APIEndpointConst";
 
-const AddBanner = () => {
-  const pageName = TAB_BANNER;
+function AddAPIEndpoint() {
+  const pageName = TAB_API_ENDPOINTS;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector((state) => state.tabsData.banner);
+  const { isSaved, isLoading } = useSelector(
+    (state) => state.tabsData.apiEndpoints
+  );
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [bannerId, setBannerId] = useState(location.state?.bannerId || "0");
-  const [fields, setFields] = useState(bannerFields || [])
+  const [apiEndPointId, setdisplayStatusId] = useState(
+    location.state?.apiEndPointId || "0"
+  );
+
   useEffect(() => {
-    if (bannerId !== 0) {
-      fetchData(bannerId);
+    if (apiEndPointId !== "0") {
+      fetchData(apiEndPointId);
     }
-  }, [bannerId]);
+  }, [apiEndPointId]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -60,20 +67,19 @@ const AddBanner = () => {
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
-      if (currentSaveAction === SAVE_AND_CLOSE) {
-        navigate("/banner");
-      } else if (currentSaveAction === SAVE_AND_NEW) {
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/apiEndpoints");
+      else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({});
-        setBannerId("0");
+        setdisplayStatusId("0");
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined);
     }
   }, [isSaved]);
 
-  const fetchData = async (bannerId) => {
+  const fetchData = async (apiEndPointId) => {
     await axiosInstance
-      .post("/admin/banner/byId", { bannerId })
+      .post("/admin/apiEndpoint/byId", { apiEndPointId })
       .then((response) => {
         setInitialEditData(response?.result);
       })
@@ -87,30 +93,20 @@ const AddBanner = () => {
         );
       });
   };
-  
-  const handleFormBDataChange = (val) => {
-    if(val?.isPermanent){
-      const filteredFields = bannerFields.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")
-      setFields(filteredFields)
-    }else if (!val?.isPermanent){
-      setFields(bannerFields)
-    }
-  };
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
       const extraData = {
-        bannerId: bannerId,
+        apiEndPointId: apiEndPointId,
       };
-      dispatch(
-        addBannerToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
-      );
+      dispatch(addApiEndpointToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };
+
   const handleBackClick = () => {
-    navigate("/banner");
+    navigate("/apiEndpoints");
   };
 
   return (
@@ -119,7 +115,7 @@ const AddBanner = () => {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Banner</h3>
+              <h3>API Endpoints</h3>
             </Col>
             <Card>
               <CardBody>
@@ -201,9 +197,8 @@ const AddBanner = () => {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={fields}
+                  fields={APIEndpointConst}
                   editFormData={initialEditData}
-                  onFormDataChange={handleFormBDataChange}
                 />
               </CardBody>
             </Card>
@@ -212,6 +207,6 @@ const AddBanner = () => {
       </div>
     </React.Fragment>
   );
-};
+}
 
-export default AddBanner;
+export default AddAPIEndpoint;

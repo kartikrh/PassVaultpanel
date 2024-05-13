@@ -46,6 +46,8 @@ import AddMenuType from "../Pages/menuList/AddMenuType.js";
 import AddMenuItem from "../Pages/menuList/AddMenuItem.js";
 import News from "../Pages/News";
 import Banner from "../Pages/Banner";
+import API from "../Pages/API";
+import APIEndpoints from "../Pages/APIEndpoints";
 import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
@@ -88,6 +90,9 @@ import AddVendor from "../Pages/Vendor/AddVendor.js";
 import VendorIpList from "../Pages/Vendor/VendorIpList.js";
 import AddClientSocket from "../Pages/ClientSocket/AddClientSocket.jsx";
 import AddBanner from "../Pages/Banner/AddBanner.jsx";
+import AddAPI from "../Pages/API/AddAPI.jsx";
+import AddAPIEndpoint from "../Pages/APIEndpoints/AddAPIEndpoint.jsx";
+import PredictorApiLogs from "../Pages/Commentary/PredictorApiLogs.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -117,6 +122,7 @@ const authProtectedRoutes = [
   { path: "/shortCommentary", component: <ShortCommentary /> },
   { path: "/updateCommentaryFeature", component: <CommentaryFeatures /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
+  { path: "/predictorApiLogs", component: <PredictorApiLogs /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
@@ -160,6 +166,10 @@ const authProtectedRoutes = [
   { path: "/addClientSocket", component: <AddClientSocket /> },
   { path: "/banner", component: <Banner /> },
   { path: "/addBanner", component: <AddBanner /> },
+  { path: "/apis", component: <API /> },
+  { path: "/addApi", component: <AddAPI /> },
+  { path: "/apiEndpoints", component: <APIEndpoints /> },
+  { path: "/addApiEndpoint", component: <AddAPIEndpoint /> },
 
   {
     path: "/changePassword",
