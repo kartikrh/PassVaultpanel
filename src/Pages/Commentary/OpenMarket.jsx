@@ -296,6 +296,45 @@ export const OpenMarket = () => {
             className: "input-line-field"
         },
         {
+            title: "",
+            dataIndex: "lineVal",
+            render: (text, record) => (
+            <div className="d-flex align-items-center gap-1">   
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line - 2)}
+            >
+                {Math.round(record?.line) - 2}
+            </Button>
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line - 1)}
+            >
+                {Math.round(record?.line) - 1}
+            </Button>
+            <Button
+                className="form-control line-center-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line)}
+            >
+                {Math.round(record?.line)}
+            </Button>
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line + 1)}
+            >
+                {Math.round(record?.line) + 1}
+            </Button>
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line + 2)}
+            >
+                {Math.round(record?.line) + 2}
+            </Button>
+            </div>
+            ),
+            key: "lineVal",
+        },
+        {
             title: "R-Rate",
             render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2) || 0}`}</span>),
             key: "inningsId",
