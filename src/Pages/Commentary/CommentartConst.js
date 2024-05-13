@@ -151,3 +151,22 @@ export const getStatusColor = (status) => {
             return ""; 
     }
 };
+
+export const getStatusColor1 = (status) => {
+    switch (status) {
+        case 1: 
+            return ""; //white (open)
+        case 2: 
+            return "#d7d5d5"; //light gray (inActive)
+        case 3: 
+            return "#f6ddcf"; //light orange (suspend)
+        case 4: 
+            return "#d7ebf1"; //light blue (close)
+        case 5: 
+            return "#f9f9e8"; //light yellow (settled)
+        case 6:
+            return "#f6e0e0"; //light red (cancel)
+        default:
+            return ""; 
+    }
+};

@@ -1,7 +1,7 @@
 import React from "react";
 import "../Table/style.css"
 import { Card, CardBody, Col, Row } from "reactstrap";
-import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
+import { getStatusColor1 } from "../../../Pages/Commentary/CommentartConst";
 
 export const ListingElement = ({ columns, dataSource = [], tableElement, tableExtras }) => {
     document.title = `${tableElement?.title}`;
@@ -42,7 +42,7 @@ export const ListingElement = ({ columns, dataSource = [], tableElement, tableEx
                                     </thead>
                                     <tbody className="list form-check-all">
                                         {dataSource.map((record, index) => (
-                                            <tr key={index} style={{ backgroundColor: getStatusColor(+record?.status) }}>
+                                            <tr key={index} style={{ backgroundColor: getStatusColor1(+record?.status) }}>
                                                 {columns.map((column, index) => (
                                                     <td key={index}
                                                         style={column.style}
