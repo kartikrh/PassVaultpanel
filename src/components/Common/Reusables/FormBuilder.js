@@ -437,7 +437,7 @@ const FormBuilder = forwardRef(
                             isDisabled={disabledFields?.[field.name]}
                             value={formData[field.name]?.map((val) =>
                               options.find((option) => option.value === val)
-                            )}
+                            ) || []}
                             options={options}
                             onChange={(selectedOptions) => {
                               if (
