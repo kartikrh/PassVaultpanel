@@ -30,6 +30,7 @@ import {
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
 import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
+import { ChangeResultModel } from "../../components/Model/ChangeResult";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
 
 const Index = () => {
@@ -41,10 +42,12 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [changeModelVisible, setChangeModelVisible] = useState(false);
+  const [resultModelVisible, setResultModelVisible] = useState(false);
   const [delayModelVisible, setDelayModelVisible] = useState(false);
   const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
+  const [selectedResult, setSelectedResult] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
   const [cloneValues, setCloneValues] = useState({
@@ -340,6 +343,34 @@ const Index = () => {
       })
       .catch((error) => {
         setChangeModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleChangeResult = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeResult`, {
+        ...selectedResult,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setResultModelVisible(false);
+      })
+      .catch((error) => {
+        setResultModelVisible(false);
         dispatch(
           updateToastData({
             data: error?.message,
@@ -884,6 +915,37 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
+
+  const getColumns = (data) => {
+    const resultColumn = {
+      title: "Change Result",
+      dataIndex: "result",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setResultModelVisible(true);
+            setSelectedResult(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text} {<a className="bx bx-edit-alt"></a>}
+        </span>
+      ),
+      key: "result",
+      sort: true,
+      style: { width: "10%" },
+    };
+  
+    const updatedColumn = [...columns];
+  
+    if (data.some(record => record?.commentaryStatus === 4)) {
+      updatedColumn.splice(7, 0, resultColumn);
+    }
+  
+    return updatedColumn;
+  };
+
+  const updatedColumns = getColumns(data);
   //elements required
   const tableElement = {
     title: "Commentary",
@@ -933,7 +995,7 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={columns}
+            columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
@@ -1010,6 +1072,16 @@ const Index = () => {
               singleCheck={checekedList}
               selectedCommentary={selectedCommentary}
               setSelectedCommentary={setSelectedCommentary}
+            />
+          )}
+          {resultModelVisible && (
+            <ChangeResultModel
+              resultModelVisible={resultModelVisible}
+              setResultModelVisible={setResultModelVisible}
+              handleChange={handleChangeResult}
+              singleCheck={checekedList}
+              selectedResult={selectedResult}
+              setSelectedResult={setSelectedResult}
             />
           )}
           {delayModelVisible && (
