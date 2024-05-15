@@ -1184,6 +1184,9 @@ const Commentary = (props) => {
         setRedirectOnScreenChange(true)
         dispatch(addCommentaryScreenData(objToSave))
     }
+    const onRetiredHurtClick = () => {
+        console.log("retired hurt");
+    }
     useEffect(() => {
         if (updateRunsFromWicket) {
             updateRuns(updateRunsFromWicket)
@@ -1493,6 +1496,7 @@ const Commentary = (props) => {
                     "displayStatus": displayStatus
                 }))
             }}
+            handleRetiredHurt={onRetiredHurtClick}
             overBalls={overBallByBallDisplay}
             showPaneltyRuns={setIsPaneltyPopup}
             anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings

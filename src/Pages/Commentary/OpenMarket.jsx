@@ -33,6 +33,7 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
 
+    console.log({ data });
     const fetchConfigAll = async () => {
         setIsLoading(true);
         try {
@@ -185,6 +186,7 @@ export const OpenMarket = () => {
                         yesPoint: marketRunner.yesPoint,
                         noRate: marketRunner.no,
                         noPoint: marketRunner.noPoint,
+                        status: status
                     }
                 }
                 else return null
@@ -602,7 +604,7 @@ export const OpenMarket = () => {
                                             {isSocketConnected ?
                                                 <div className="table-header-button text-center">
                                                     <span className="live-css">
-                                                       {/* &#x1F7E2; */}
+                                                        {/* &#x1F7E2; */}
                                                     </span>{" "}
                                                     <span className="live-text">Live</span>{" "}
                                                 </div> :
