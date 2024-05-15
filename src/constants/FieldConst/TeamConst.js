@@ -70,6 +70,15 @@ export const TeamFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        type: MULTI_SELECT,
+        name: "competitionId",
+        label: "Select Competition",
+        options: [],
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         type: COLOR_PICKER,
         name: "teamColor",
         label: "Team Color",

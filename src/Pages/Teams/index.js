@@ -23,6 +23,9 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
+  const [competitionList, setCompetitionList] = useState([]);
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -58,6 +61,19 @@ const Index = () => {
         setIsLoading(false);
       })
       .catch((error) => { });
+  };
+
+  const fetchCompetitionList = async () => {
+    await axiosInstance
+      .post(`/admin/team/competitionListByEventTypeId`, {
+        isActive: true,
+        eventTypeId: eventTypeId,
+      })
+      .then((response) => {
+        setCompetitionList(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {});
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -222,6 +238,7 @@ const Index = () => {
     headerSelect: false,
     switch: false,
     eventTypeSelect: true,
+    competitionsListSelect: true,
     resetButton: true,
   };
 
@@ -232,6 +249,12 @@ const Index = () => {
     fetchData();
     fetchEventTypeData()
   }, []);
+
+  useEffect(() => {
+    if (eventTypeId) {
+      fetchCompetitionList();
+    }
+  }, [eventTypeId]);
 
   return (
     <React.Fragment>
@@ -248,6 +271,9 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             eventTypes={eventTypes}
+            competitionList={competitionList}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
