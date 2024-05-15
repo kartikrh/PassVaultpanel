@@ -438,7 +438,7 @@ export const OpenMarket = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleSingleAction(record, "isSendData", !record.isActive);
+                        handleSingleAction(record, "isSendData", !record.isSendData);
                     }}
                 >
                     <i className={`bx ${record.isSendData ? "bx-check" : "bx-block"}`}></i>
