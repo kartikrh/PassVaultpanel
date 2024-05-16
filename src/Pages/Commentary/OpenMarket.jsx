@@ -33,6 +33,7 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
 
+    console.log({ data });
     const fetchConfigAll = async () => {
         setIsLoading(true);
         try {
@@ -185,6 +186,7 @@ export const OpenMarket = () => {
                         yesPoint: marketRunner.yesPoint,
                         noRate: marketRunner.no,
                         noPoint: marketRunner.noPoint,
+                        status: status
                     }
                 }
                 else return null
@@ -296,6 +298,45 @@ export const OpenMarket = () => {
             className: "input-line-field"
         },
         {
+            title: "",
+            dataIndex: "lineVal",
+            render: (text, record) => (
+            <div className="d-flex align-items-center gap-1">   
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line - 2)}
+            >
+                {Math.round(record?.line) - 2}
+            </Button>
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line - 1)}
+            >
+                {Math.round(record?.line) - 1}
+            </Button>
+            <Button
+                className="form-control line-center-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line)}
+            >
+                {Math.round(record?.line)}
+            </Button>
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line + 1)}
+            >
+                {Math.round(record?.line) + 1}
+            </Button>
+            <Button
+                className="form-control line-text-fields"
+                onClick={() => handleValueChange(record, "line", record?.line + 2)}
+            >
+                {Math.round(record?.line) + 2}
+            </Button>
+            </div>
+            ),
+            key: "lineVal",
+        },
+        {
             title: "R-Rate",
             render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2) || 0}`}</span>),
             key: "inningsId",
@@ -397,7 +438,7 @@ export const OpenMarket = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleSingleAction(record, "isSendData", !record.isActive);
+                        handleSingleAction(record, "isSendData", !record.isSendData);
                     }}
                 >
                     <i className={`bx ${record.isSendData ? "bx-check" : "bx-block"}`}></i>
@@ -563,7 +604,7 @@ export const OpenMarket = () => {
                                             {isSocketConnected ?
                                                 <div className="table-header-button text-center">
                                                     <span className="live-css">
-                                                       {/* &#x1F7E2; */}
+                                                        {/* &#x1F7E2; */}
                                                     </span>{" "}
                                                     <span className="live-text">Live</span>{" "}
                                                 </div> :

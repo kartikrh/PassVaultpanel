@@ -10,7 +10,7 @@ import { STRING_SEPERATOR } from "../../components/Common/Const"
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls = {} }) => {
+    overBalls, handleRetiredHurt = {} }) => {
     const [isBoundary, setIsBoundary] = useState(false)
     const [actionPopup, setActionPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
@@ -293,6 +293,7 @@ export const CommentaryScreen = ({
                 setActionPopup(false)
                 showPaneltyRuns(true)
             }}
+            retiredHurt={handleRetiredHurt}
         />}
     </React.Fragment >
 }

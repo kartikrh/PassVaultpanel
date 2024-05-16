@@ -244,6 +244,20 @@
     font-size: 12px !important;
 }
 
+.line-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 1.8rem !important;
+    line-height: 16px !important;
+    font-size: 10px !important;
+}
+
+.line-center-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 2.5rem !important;
+    line-height: 26px !important;
+    font-size: 12px !important;
+}
+
 .small-labels {
     word-break: break-word;
     padding: 0;
