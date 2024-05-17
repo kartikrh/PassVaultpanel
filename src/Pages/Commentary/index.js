@@ -32,6 +32,7 @@ import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
 import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
 import { ChangeResultModel } from "../../components/Model/ChangeResult";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
+import { DlsModal } from "./CommentaryModels/DlsModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -50,6 +51,7 @@ const Index = () => {
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
+  const [dlsModalCommentary, setDlsModalCommentary] = useState(false)
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -689,18 +691,16 @@ const Index = () => {
       style: { width: "40%" },
     },
     {
-      title: "Match Type",
-      dataIndex: "matchType",
+      title: "DLS",
+      dataIndex: "dls",
       render: (text, record) => (
-        <span
-          onClick={() => {
-            setChangeModelVisible(true);
-            setSelectedCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {<a className="bx bx-edit-alt"></a>}
-        </span>
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => { setDlsModalCommentary(record) }}>
+          <i class='bx bxs-right-arrow' ></i>
+        </Button>
       ),
       key: "matchType",
       sort: true,
@@ -799,28 +799,28 @@ const Index = () => {
             ></i>
           </Button>
           {record.isPredictMarket &&
-          <>
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleCommentaryMarketTemplateClick(record.commentaryId);
-              }}
-            >
-              <i class='bx bxs-store' ></i>
-            </Button>
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handlePredictorDetailsClick(record.commentaryId);
-              }}
-            >
-             <i class='bx bxs-up-arrow-square' ></i>
-            </Button>
-          </>
+            <>
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handleCommentaryMarketTemplateClick(record.commentaryId);
+                }}
+              >
+                <i class='bx bxs-store' ></i>
+              </Button>
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handlePredictorDetailsClick(record.commentaryId);
+                }}
+              >
+                <i class='bx bxs-up-arrow-square' ></i>
+              </Button>
+            </>
           }
         </div>
       ),
@@ -905,12 +905,17 @@ const Index = () => {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
-        <i
-          className="bx bx-edit"
+        <span
+          style={{ cursor: "pointer" }}
           onClick={() => {
             handleEdit(record.commentaryId);
           }}
-        ></i>
+        >
+          <i
+            className="bx bx-edit"
+
+          ></i>
+        </span>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -1104,6 +1109,10 @@ const Index = () => {
               setSelectedEventRef={setSelectedEventRef}
             />
           )}
+          {dlsModalCommentary && <DlsModal
+            commentaryDetails={dlsModalCommentary}
+            toggle={() => { setDlsModalCommentary(false) }}
+          />}
         </Container>
       </div>
     </React.Fragment>

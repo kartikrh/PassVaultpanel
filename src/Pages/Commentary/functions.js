@@ -248,9 +248,9 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTe
   if (isBattingTeamWon) {
     const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
     const wicketRemaining = maxNoOfWicket - (+battingTeam.teamWicket || 0)
-    return `${battingTeam.shortName} has won by ${wicketRemaining} wickets.`
+    return `${battingTeam.shortName} won by ${wicketRemaining} wickets.`
   } else {
     const runsLeft = target - battingTeam.teamScore - 1
-    return `${bowlingTeam.shortName} has won by ${runsLeft} runs.`
+    return `${bowlingTeam.shortName} won by ${runsLeft} runs.`
   }
 }
