@@ -33,6 +33,7 @@ import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
 import { ChangeResultModel } from "../../components/Model/ChangeResult";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
 import { DlsModal } from "./CommentaryModels/DlsModal";
+import "./CommentaryCss.css"
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -695,11 +696,10 @@ const Index = () => {
       dataIndex: "dls",
       render: (text, record) => (
         <Button
-          color={"primary"}
           size="sm"
-          className="btn"
+          className="dls-button btn"
           onClick={() => { setDlsModalCommentary(record) }}>
-          <i class='bx bxs-right-arrow' ></i>
+          <i class='bx bx-cloud-light-rain'></i>
         </Button>
       ),
       key: "matchType",
