@@ -87,7 +87,7 @@ const Commentary = (props) => {
         const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
         const isOverLimitReached = () => {
             return matchTypeDetails.isLimitedOvers &&
-                (Math.ceil(+currentOver.over || 0) + 1) >= matchTypeDetails.oversPerInings;
+                (Math.ceil(+currentOver.over || 0) + 1) >= teams[BATTING_TEAM]?.teamMaxOver;
         };
 
         const isWicketLimitReached = () => {
@@ -271,7 +271,7 @@ const Commentary = (props) => {
             ((+teams[BATTING_TEAM].teamOver || 0) + 0.1).toFixed(1) : teams[BATTING_TEAM].teamOver
         if (matchTypeDetails.isLimitedOvers && (target > 0)) {
             updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                currentOver, matchTypeDetails.ballsPerOver, target, matchTypeDetails.oversPerInings)
+                currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
         }
         if (run === 0) {
             updateBall["ballIsDot"] = true
@@ -433,7 +433,7 @@ const Commentary = (props) => {
         }
         if (matchTypeDetails.isLimitedOvers && (target > 0)) {
             updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                currentOver, matchTypeDetails.ballsPerOver, target, matchTypeDetails.oversPerInings)
+                currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
         }
         const isStrikeChange = runs % 2 !== 0
         updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
@@ -471,7 +471,7 @@ const Commentary = (props) => {
         updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver }, matchTypeDetails.ballsPerOver)
         if (matchTypeDetails.isLimitedOvers && (target > 0)) {
             updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                currentOver, matchTypeDetails.ballsPerOver, target, matchTypeDetails.oversPerInings)
+                currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
         }
         updateBall["commentaryBallByBallId"] = "0"
         updateBall["ballIsCount"] = false
@@ -852,7 +852,7 @@ const Commentary = (props) => {
                 updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver }, matchTypeDetails.ballsPerOver)
                 if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                     updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                        currentOver, matchTypeDetails.ballsPerOver, target, matchTypeDetails.oversPerInings)
+                        currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
                 }
                 setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
                 const objToSave = {
@@ -910,7 +910,7 @@ const Commentary = (props) => {
                     updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                         updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                            currentOver, matchTypeDetails.ballsPerOver, target, matchTypeDetails.oversPerInings)
+                            currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
                     }
                     if (currentBall.ballFour === 1 && currentBall.ballIsBoundry) {
                         updateBatter["batFour"] = (batter.batFour || 0) - 1
@@ -1015,7 +1015,7 @@ const Commentary = (props) => {
                     }
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                         updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                            currentOver, matchTypeDetails.ballsPerOver, target, matchTypeDetails.oversPerInings)
+                            currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
                     }
                     updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
                     updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.totalBalls, matchTypeDetails.ballsPerOver)
