@@ -144,7 +144,7 @@ export const getStatusColor = (status) => {
         case 4: 
             return "#d7ebf1"; //light blue (close)
         case 5: 
-            return "#f9f9e8"; //light yellow (settled)
+            return "#fbfbdd"; //light yellow (settled)
         case 6:
             return "#f6e0e0"; //light red (cancel)
         default:
@@ -163,7 +163,7 @@ export const getStatusColor1 = (status) => {
         case 4: 
             return "#d7ebf1"; //light blue (close)
         case 5: 
-            return "#f9f9e8"; //light yellow (settled)
+            return "#fbfbdd"; //light yellow (settled)
         case 6:
             return "#f6e0e0"; //light red (cancel)
         default:
