@@ -273,13 +273,13 @@ const Index = () => {
   const handleMarketEventActionClick = (id) => {
     localStorage.setItem('openMarketCommentaryId', "" + id);
     const url = new URL(window.location.origin + "/openMarket");
-    url.searchParams.append("commentaryId", id);
+    // url.searchParams.append("commentaryId", id);
     window.open(url.href, '_blank');
   };
   const handleOddsViewClick = (id) => {
     localStorage.setItem('oddsViewCommentaryId', "" + id);
     const url = new URL(window.location.origin + "/oddsView");
-    url.searchParams.append("commentaryId", id);
+    // url.searchParams.append("commentaryId", id);
     window.open(url.href, '_blank');
   };
   const handleShortCommentaryClick = (id) => {
