@@ -196,6 +196,11 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                         />
                     </Col>
                 </Row>}
+                {teams[BATTING_TEAM]?.teamMaxOver &&
+                    <Row>
+                        <i>Current max overs : <b>{teams[BATTING_TEAM]?.teamMaxOver} Overs</b></i>
+                        <i>Current match type : <b>{commentaryData?.commentaryDetails?.matchType}</b></i>
+                    </Row>}
             </ModalBody>
             <ModalFooter>
                 <Button color="primary" className="decision-Button" onClick={handleSaveClick}>Save</Button>
