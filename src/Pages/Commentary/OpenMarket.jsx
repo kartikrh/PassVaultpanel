@@ -23,7 +23,6 @@ export const OpenMarket = () => {
     const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [teams, setTeams] = useState({});
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
     const [autoInterval, setAutoInterval] = useState(500)
     const [isSocketConnected, setIsSocketConnected] = useState(false)
@@ -158,9 +157,7 @@ export const OpenMarket = () => {
 
     const formatAPIDataForState = (responseData) => {
         let highestLineRatio = 0
-        const teamsObj = {}
         let updatedDatalist = responseData.map(eventMarket => {
-            teamsObj[eventMarket.teamId] = eventMarket.teamName
             if (highestLineRatio < (+eventMarket.lineRatio || 0)) highestLineRatio = +eventMarket.lineRatio
             if (eventMarket.marketRunners)
                 return {
@@ -170,7 +167,6 @@ export const OpenMarket = () => {
             else return null
         }).filter(x => x)
         updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
-        setTeams(teamsObj)
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
 
@@ -183,7 +179,9 @@ export const OpenMarket = () => {
                 if (statusListToInclude.includes(status) && marketRunner) {
                     return {
                         id: eventMarket.id,
-                        teamName: teams[eventMarket.teamId],
+                        inningsId: eventMarket.inningsId,
+                        teamId: eventMarket.teamId,
+                        marketName: eventMarket.marketName,
                         line: marketRunner.line,
                         overRate: marketRunner.over,
                         underRate: marketRunner.under,
@@ -198,10 +196,15 @@ export const OpenMarket = () => {
             }).filter(x => x)
             setData((prevData) => {
                 const prevDataObj = {}
-                prevData?.forEach(element => prevDataObj[element.eventMarketId] = element)
+                const teamObj = {}
+                prevData?.forEach(element => {
+                    prevDataObj[element.eventMarketId] = element
+                    teamObj[element.teamId] = element.teamName
+                })
                 const listToReturn = updatedDatalist?.map(element => {
                     return {
                         ...prevDataObj[element.id],
+                        teamName: teamObj[element.teamId],
                         ...element
                     }
                 })
