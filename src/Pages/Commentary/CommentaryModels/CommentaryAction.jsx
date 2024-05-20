@@ -26,6 +26,7 @@ const CommentaryAction = ({ toggle, updateExtras, handleRuns, changeOver, endInn
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={paneltyRuns}>
                         <img className="button-icon" src="icons/p.png" alt="Icon" />
+                        enalty
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={changeOver}>

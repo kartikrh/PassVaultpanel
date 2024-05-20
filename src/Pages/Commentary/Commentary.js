@@ -476,6 +476,7 @@ const Commentary = (props) => {
         updateBall["commentaryBallByBallId"] = "0"
         updateBall["ballIsCount"] = false
         updateBall["ballRun"] = runs
+        updateBall["ballExtraRun"] = runs
         updateBall["ballType"] = BALL_TYPE_PANELTY_RUN
         setCurrentBall(updateBall)
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })

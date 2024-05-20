@@ -919,6 +919,24 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Match Type",
+      dataIndex: "matchType",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangeModelVisible(true);
+            setSelectedCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text} {<a className="bx bx-edit-alt"></a>}
+        </span>
+      ),
+      key: "matchType",
+      sort: true,
+      style: { width: "10%" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -940,13 +958,13 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     };
-  
+
     const updatedColumn = [...columns];
-  
+
     if (data.some(record => record?.commentaryStatus === 4)) {
       updatedColumn.splice(7, 0, resultColumn);
     }
-  
+
     return updatedColumn;
   };
 
