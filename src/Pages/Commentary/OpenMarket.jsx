@@ -178,8 +178,10 @@ export const OpenMarket = () => {
                 const status = eventMarket.status
                 if (statusListToInclude.includes(status) && marketRunner) {
                     return {
-
+                        ...eventMarket,
+                        ...marketRunner,
                         id: eventMarket.id,
+                        eventMarketId: eventMarket.id,
                         inningsId: eventMarket.inningsId,
                         teamId: eventMarket.teamId,
                         marketName: eventMarket.marketName,
