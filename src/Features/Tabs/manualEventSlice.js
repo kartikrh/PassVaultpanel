@@ -31,6 +31,7 @@ const manualSlice = createSlice({
       state.selectedMarket.isAustralian = action.payload.isAustralian
       state.selectedMarket.isEvent = action.payload.isEvent
       state.selectedMarket.isCompitition = action.payload.isCompitition
+      state.selectedMarket.isMarket = action.payload.isMarket
     },
     setSelectedMarketHistory: (state, action) => {
       state.selectedMarketHistory = action.payload;
