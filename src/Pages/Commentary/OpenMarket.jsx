@@ -59,7 +59,7 @@ export const OpenMarket = () => {
         dataToChange.forEach(record => {
             let workingRecord = _.clone(record)
             const recordMarketRunner = {
-                ...record.marketRunners[0],
+                ...record.marketRunners?.[0],
                 "line": +record.line,
                 "margin": +record.margin,
                 "overRate": +record.overRate,
@@ -189,7 +189,8 @@ export const OpenMarket = () => {
                         yesPoint: marketRunner.yesPoint,
                         noRate: marketRunner.no,
                         noPoint: marketRunner.noPoint,
-                        status: status
+                        status: status,
+                        over: eventMarket.over
                     }
                 }
                 else return null
@@ -201,13 +202,15 @@ export const OpenMarket = () => {
                     prevDataObj[element.eventMarketId] = element
                     teamObj[element.teamId] = element.teamName
                 })
-                const listToReturn = updatedDatalist?.map(element => {
+                let listToReturn = updatedDatalist?.map(element => {
                     return {
                         ...prevDataObj[element.id],
                         teamName: teamObj[element.teamId],
                         ...element
                     }
                 })
+                listToReturn = _.orderBy(listToReturn, ['id'], ['asc']);
+                console.log({ listToReturn });
                 return listToReturn
             })
         }
