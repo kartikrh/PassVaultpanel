@@ -702,8 +702,6 @@ const Index = () => {
           <i class='bx bx-cloud-light-rain'></i>
         </Button>
       ),
-      key: "matchType",
-      sort: true,
       style: { width: "10%" },
     },
     {
