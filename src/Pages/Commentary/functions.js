@@ -197,7 +197,7 @@ export const getBallsForAllOver = (ballHistory = []) => {
     const ballsInCurrentOver = toReturn[overToLogBallFor]
     if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
       [
-        { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false , overCount: ball.overCount}
+        { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false, overCount: ball.overCount }
       ])
   })
   return toReturn;
@@ -253,4 +253,12 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTe
     const runsLeft = target - battingTeam.teamScore - 1
     return `${bowlingTeam.shortName} won by ${runsLeft} runs.`
   }
+}
+
+export const generateRemainingRuns = (team, ballsPerOver) => {
+  const totalOverRemaining = team.teamMaxOver - Math.floor(team.teamOver || 0)
+  const ballsInCurrentOver = (team.teamOver || 0) * 10 % 10
+  const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
+  const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
+  return `${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.`
 }

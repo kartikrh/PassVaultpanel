@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateWicket, getBallsForAllOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -219,7 +219,14 @@ const Commentary = (props) => {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
-                "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall })
+                "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall }),
+                "rmk": teams[BATTING_TEAM].teamTrialRuns ?
+                    generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver) :
+                    ""
+            },
+            "commentaryOvers": {
+                ...currentOver,
+                "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`
             },
             "commentaryTeams": [teams[BATTING_TEAM]],
             "commentaryPartnership": updatedPartnership,
@@ -508,7 +515,6 @@ const Commentary = (props) => {
             [NON_STRIKE]: newNonStrikePlayer,
         }
         const updatedOver = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`, "isComplete": true }
-        // chnge here
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         setOnPitchPlayers(updatedOnPitchPlayer)
@@ -1206,7 +1212,7 @@ const Commentary = (props) => {
             else if (isUndoBall === OVER) {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 const newCurrentOver = updatedOverHistory[updatedOverHistory.length - 1]
-                newCurrentOver["teamScore"] = ""
+                newCurrentOver["teamScore"] = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`, "isComplete": true }
                 newCurrentOver["isComplete"] = false
                 setOverHistory(updatedOverHistory)
                 setCurrentOver(newCurrentOver)
@@ -1263,7 +1269,10 @@ const Commentary = (props) => {
                     "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
                     "commentaryDetails": {
                         ...commentaryDetails,
-                        "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall })
+                        "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall }),
+                        "rmk": teams[BATTING_TEAM].teamTrialRuns ?
+                            generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver) :
+                            ""
                     },
                     "commentaryTeams": [teams[BATTING_TEAM]],
                 }
