@@ -379,7 +379,7 @@ const Index = () => {
               marketTypeName: record?.marketTypeName,
               marketType: record?.marketType,
               runner: record?.runner,
-              openDate: record?.matchDate,
+              rateSource: 4, 
             });
             addMarketData({
               ...dataToDB,
@@ -389,7 +389,7 @@ const Index = () => {
               marketTypeName: record?.marketTypeName,
               marketType: record?.marketType,
               runner: record?.runner,
-              openDate: record?.matchDate,
+              rateSource: 4,
             });
           }}
         >
