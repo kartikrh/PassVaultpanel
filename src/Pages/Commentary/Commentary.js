@@ -507,7 +507,8 @@ const Commentary = (props) => {
             [ON_STRIKE]: newOnStrikePlayer,
             [NON_STRIKE]: newNonStrikePlayer,
         }
-        const updatedOver = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore}/${teams[BATTING_TEAM]?.teamWicket}`, "isComplete": true }
+        const updatedOver = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`, "isComplete": true }
+        // chnge here
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         setOnPitchPlayers(updatedOnPitchPlayer)
@@ -1195,7 +1196,6 @@ const Commentary = (props) => {
     }, [updateRunsFromWicket])
     useEffect(() => {
         if (isUndoCompleted) {
-            let updatedBallHistory = []
             if (isUndoBall === WICKET) {
                 const updatedWicketHistory = wicketHistory.slice(0, -1)
                 const updaterPartnershipHistory = partnershipHistory.slice(0, -1)
@@ -1255,7 +1255,10 @@ const Commentary = (props) => {
                     ...objToSave,
                     "commentaryId": commentaryDetails.commentaryId,
                     "commentaryBallByBall": generatedBallByBall,
-                    "commentaryOvers": currentOver,
+                    "commentaryOvers": {
+                        ...currentOver,
+                        "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`
+                    },
                     "commentaryPlayers": [].concat(playerUpdateList, [onPitchPlayers[CURRENT_BOWLER], onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE]]).filter(x => x),
                     "commentaryPartnership": generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership, teams }),
                     "commentaryDetails": {
