@@ -20,6 +20,7 @@ const tableElement = {
 };
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
+    const [teams, setTeams] = useState({});
     const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -174,15 +175,14 @@ export const OpenMarket = () => {
         if (!isEmpty(responseData)) {
             let updatedDatalist = responseData.map(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
-                const marketRunner = eventMarket.runner[0]
+                // console.log({ eventMarket });
+                const marketRunner = eventMarket.marketRunners[0]
                 const status = eventMarket.status
                 if (statusListToInclude.includes(status) && marketRunner) {
+                    // console.log({ teamName: teams[eventMarket.teamId], eventMarket });
                     return {
-
-                        id: eventMarket.id,
-                        inningsId: eventMarket.inningsId,
-                        teamId: eventMarket.teamId,
-                        marketName: eventMarket.marketName,
+                        ...eventMarket,
+                        teamName: teams[eventMarket.teamId],
                         line: marketRunner.line,
                         overRate: marketRunner.over,
                         underRate: marketRunner.under,
@@ -190,30 +190,12 @@ export const OpenMarket = () => {
                         yesPoint: marketRunner.yesPoint,
                         noRate: marketRunner.no,
                         noPoint: marketRunner.noPoint,
-                        status: status,
-                        over: eventMarket.over
                     }
                 }
                 else return null
             }).filter(x => x)
-            setData((prevData) => {
-                const prevDataObj = {}
-                const teamObj = {}
-                prevData?.forEach(element => {
-                    prevDataObj[element.eventMarketId] = element
-                    teamObj[element.teamId] = element.teamName
-                })
-                let listToReturn = updatedDatalist?.map(element => {
-                    return {
-                        ...prevDataObj[element.id],
-                        teamName: teamObj[element.teamId],
-                        ...element
-                    }
-                })
-                listToReturn = _.orderBy(listToReturn, ['id'], ['asc']);
-                console.log({ listToReturn });
-                return listToReturn
-            })
+            updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
+            setData(updatedDatalist)
         }
     }
 
@@ -222,7 +204,10 @@ export const OpenMarket = () => {
             .post("/admin/eventMarket/marketListByCId", { commentaryId })
             .then((response) => {
                 if (response?.result) {
-                    const formattedData = formatAPIDataForState(response?.result || [])
+                    const formattedData = formatAPIDataForState(response?.result?.marketList || [])
+                    const teamsObj = {}
+                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    setTeams(teamsObj)
                     setData(formattedData.data);
                     setLineRatio(formattedData.lineRatio)
                 }
@@ -543,6 +528,11 @@ export const OpenMarket = () => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isEmpty(teams)) {
             if (socket) {
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
@@ -557,7 +547,7 @@ export const OpenMarket = () => {
         return () => {
             socket.off(OPEN_MARKET_DATA);
         };
-    }, []);
+    }, [teams])
 
     useEffect(() => {
         if (isAutoUpdate && !isSocketConnected) {
