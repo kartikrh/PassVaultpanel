@@ -251,6 +251,9 @@ const Index = () => {
                   ? "eventName"
                   : "eventTypeName"
                 }`]: text,
+              [`${selectedMarket?.isEvent
+                  && "openDate"
+                }`]: selectedMarket?.isEvent && record?.eventDate
             });
           }}
         >
