@@ -183,13 +183,7 @@ export const OpenMarket = () => {
                     return {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
-                        line: marketRunner.line,
-                        overRate: marketRunner.over,
-                        underRate: marketRunner.under,
-                        yesRate: marketRunner.yes,
-                        yesPoint: marketRunner.yesPoint,
-                        noRate: marketRunner.no,
-                        noPoint: marketRunner.noPoint,
+                        ...eventMarket.runner[0]
                     }
                 }
                 else return null
