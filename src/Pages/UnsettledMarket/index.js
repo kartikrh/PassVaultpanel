@@ -54,6 +54,7 @@ const Index = () => {
       payload = {
         ...payload,
         ...dateRange,
+        status: 4,
       };
     }
     if (latestValueFromTable?.eventTypeId === null) {
@@ -68,8 +69,7 @@ const Index = () => {
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.eventMarketId);
         });
-        const closeStatusData = apiData.filter((ele) => ele.status === 4);
-        setData(closeStatusData);
+        setData(apiData);
         setDataIndexList(apiDataIdList);
         setCheckedList([]);
         setIsLoading(false);

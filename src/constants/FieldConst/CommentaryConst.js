@@ -654,6 +654,13 @@ export const TEAM_FEATURE_FIELDS = [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
+        name: "teamMaxOver",
+        placeholder: "Max overs",
+        formName: TEAM,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "teamStatus",
         type: SELECT,
         defaultValue: 1,

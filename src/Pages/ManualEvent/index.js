@@ -38,7 +38,7 @@ const Index = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
@@ -59,6 +59,33 @@ const Index = () => {
     finalizeRef.current.getTableAction();
     await axiosInstance
       .post(`/admin/manualEvent/importEvent`, { ...val })
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const addMarketData = async (val) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`/admin/manualEvent/importEventWithMarket`, { ...val })
       .then((response) => {
         dispatch(
           updateToastData({
@@ -108,7 +135,7 @@ const Index = () => {
         }`,
       render: (text, record) => (
         <div
-        style={{cursor:"pointer"}}
+          style={{ cursor: "pointer" }}
           onClick={() => {
             setData([])
             let currentRecord = [{
@@ -186,14 +213,15 @@ const Index = () => {
       dataIndex: "event",
       render: (text, record) => (
         <div
-        style={{cursor:"pointer"}}
+          style={{ cursor: "pointer" }}
           onClick={() => {
             let currentRecord = [{
               label: text, value: {
                 refID: record?.eventID,
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
-                isCompitition: Boolean(!selectedMarket?.isCompitition),
+                isCompitition: Boolean(selectedMarket?.isCompitition),
+                isMarket: Boolean(selectedMarket?.isEvent)
               }
             }];
             let historyList = selectedMarketHistory
@@ -205,7 +233,8 @@ const Index = () => {
                 refID: record?.eventID,
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
-                isCompitition: Boolean(!selectedMarket?.isCompitition),
+                isCompitition: Boolean(selectedMarket?.isCompitition),
+                isMarket: Boolean(selectedMarket?.isEvent)
               })
             );
             setDataToDB({
@@ -222,6 +251,9 @@ const Index = () => {
                   ? "eventName"
                   : "eventTypeName"
                 }`]: text,
+              [`${selectedMarket?.isEvent
+                  && "openDate"
+                }`]: selectedMarket?.isEvent && record?.eventDate
             });
           }}
         >
@@ -271,6 +303,104 @@ const Index = () => {
       ),
       key: "eventTypeId",
       style: { width: "80%" },
+    },
+  ];
+  const columnsC = [
+    {
+      title: "Date",
+      dataIndex: `matchDate`,
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
+      sort: true,
+      key: "matchDate",
+      style: { width: "10%" },
+    },
+    {
+      title: `Ref Id`,
+      dataIndex: `marketID`,
+      key: 'marketID',
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Market",
+      dataIndex: "marketName",
+      key: "marketName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Market Type",
+      dataIndex: "marketTypeName",
+      key: "marketTypeName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Match",
+      dataIndex: "matchName",
+      key: "matchName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Runner",
+      dataIndex: "runner",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems = logObject && Object.entries(logObject).map(([key, value]) => (
+          <span key={key}>
+            <strong>{key}:</strong>{" "}
+            {typeof value === "object" ? JSON.stringify(value) : value}<br />
+          </span>
+        ));
+        return <div>{logItems}</div>;
+      },
+      key: "runner",
+      style: { width: "10%" },
+    },
+    selectedMarket?.isMarket && {
+      title: "Import",
+      dataIndex: `${selectedMarket?.isMarket
+        ? "marketName"
+        : selectedMarket?.isCompitition
+          ? "competition"
+          : selectedMarket?.isEvent
+            ? "event"
+            : "eventType"
+        }`,
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={() => {
+            setDataToDB({
+              ...dataToDB,
+              marketName: text,
+              marketID: record?.marketID,
+              marketStatus: record?.marketStatus,
+              marketTypeName: record?.marketTypeName,
+              marketType: record?.marketType,
+              runner: record?.runner,
+              rateSource: 4, 
+            });
+            addMarketData({
+              ...dataToDB,
+              marketName: text,
+              marketID: record?.marketID,
+              marketStatus: record?.marketStatus,
+              marketTypeName: record?.marketTypeName,
+              marketType: record?.marketType,
+              runner: record?.runner,
+              rateSource: 4,
+            });
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+      key: "marketType",
+      style: { width: "10%" },
     },
   ];
 
@@ -334,7 +464,7 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={selectedMarket?.isEvent ? columnsB : columnsA}
+            columns={selectedMarket?.isEvent ? columnsB : selectedMarket?.isMarket ? columnsC : columnsA}
             dataSource={data}
             tableElement={tableElement}
             changeOrderApiName="eventType"

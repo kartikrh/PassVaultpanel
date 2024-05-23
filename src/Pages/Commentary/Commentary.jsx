@@ -11,10 +11,13 @@ export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, handleRetiredHurt = {} }) => {
+    document.title = "Scoring";
     const [isBoundary, setIsBoundary] = useState(false)
     const [actionPopup, setActionPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
-        return ballArray?.map(element => {
+        return ballArray?.map((element, index) => {
+            const previousValue = ballArray[index - 1]
+            const nextValue = ballArray[index + 1]
             const isWicket = +element?.isWicket !== 0
             const isBoundary = +element?.isBoundary !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
@@ -23,8 +26,24 @@ export const CommentaryScreen = ({
                 element.value > 0 ?
                     element.value : ""
                 : element.value
+            if (previousValue && previousValue.isWicket && previousValue.overCount === element.overCount) {
+                return null;
+            }
+            let displayValue
+            if (isWicket && nextValue && nextValue.overCount === element.overCount) {
+                const nextIsWicket = +nextValue?.isWicket !== 0
+                const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
+                const nextBallValue = nextBallTypeAdd ?
+                    nextValue.value > 0 ?
+                        nextValue.value : ""
+                    : nextValue.value
+                displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`
+            } else {
+                displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
+            }
             return <div className={` px-3 py - md - 2 py - 1 shadow - sm rounded mx - 1 over-ball-display ${ballColor}`}>
-                {`${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`}
+                {/* {`${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`} */}
+                {displayValue}
             </div>
         })
     }

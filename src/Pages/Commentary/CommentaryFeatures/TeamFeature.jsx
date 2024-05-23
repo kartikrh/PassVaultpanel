@@ -14,7 +14,7 @@ export const TeamFeature = ({ teamlist, handleValueChange, updatedData }) => {
     return <Card>
         <CardHeader className="feature-card-header">
             Teams
-            <div className="section-info">[Score - Wicket - Over - WD - B - LB - NB - Trial - Lead - Status]</div>
+            <div className="section-info">[Score - Wicket - Over - WD - B - LB - NB - Trial - Lead - MaxOvers - Status]</div>
         </CardHeader>
         <CardBody>
             <Row>

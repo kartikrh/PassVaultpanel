@@ -15,11 +15,12 @@ import { generateOverUnder } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 const tableElement = {
-    title: "Predefined",
+    title: "Open Market",
     displayTitle: true
 };
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
+    const [teams, setTeams] = useState({});
     const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +34,6 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
 
-    console.log({ data });
     const fetchConfigAll = async () => {
         setIsLoading(true);
         try {
@@ -59,7 +59,7 @@ export const OpenMarket = () => {
         dataToChange.forEach(record => {
             let workingRecord = _.clone(record)
             const recordMarketRunner = {
-                ...record.marketRunners[0],
+                ...record.runner?.[0],
                 "line": +record.line,
                 "margin": +record.margin,
                 "overRate": +record.overRate,
@@ -70,15 +70,15 @@ export const OpenMarket = () => {
                 "noPoint": +(record.noPoint || 100),
             }
             workingRecord = _.omit(workingRecord,
-                ["marketRunners", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionId", "selectionStatus", "lastUpdate"])
-            workingRecord["marketRunners"] = [recordMarketRunner]
+                ["runner", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionStatus", "lastUpdate"])
+            workingRecord["runner"] = [recordMarketRunner]
             dataToSend.push(workingRecord)
         })
         return dataToSend
     }
 
     const handleValueChange = (record, key, value) => {
-        const indexOfData = data.findIndex(i => i.eventMarketId === record.eventMarketId)
+        const indexOfData = data.findIndex(i => i.marketId === record.marketId)
         if (indexOfData !== -1) {
             if (key === 'line' || key === 'margin') {
                 const datatoSave = [
@@ -155,18 +155,19 @@ export const OpenMarket = () => {
         setData(updatedData)
     }
 
-    const formatAPIDataForState = (responseData) => {
+    const formatAPIDataForState = ({ responseData, teamData }) => {
         let highestLineRatio = 0
         let updatedDatalist = responseData.map(eventMarket => {
             if (highestLineRatio < (+eventMarket.lineRatio || 0)) highestLineRatio = +eventMarket.lineRatio
-            if (eventMarket.marketRunners)
+            if (eventMarket.runner)
                 return {
                     ...eventMarket,
-                    ...eventMarket.marketRunners[0]
+                    teamName: teamData[eventMarket.teamId],
+                    ...eventMarket.runner[0]
                 }
             else return null
         }).filter(x => x)
-        updatedDatalist = _.orderBy(updatedDatalist, ['eventMarketId'], ['asc']);
+        updatedDatalist = _.orderBy(updatedDatalist, ['marketId'], ['asc']);
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
 
@@ -174,34 +175,21 @@ export const OpenMarket = () => {
         if (!isEmpty(responseData)) {
             let updatedDatalist = responseData.map(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
+                // console.log({ eventMarket });
                 const marketRunner = eventMarket.runner[0]
                 const status = eventMarket.status
                 if (statusListToInclude.includes(status) && marketRunner) {
+                    // console.log({ teamName: teams[eventMarket.teamId], eventMarket });
                     return {
-                        id: eventMarket.id,
-                        line: marketRunner.line,
-                        overRate: marketRunner.over,
-                        underRate: marketRunner.under,
-                        yesRate: marketRunner.yes,
-                        yesPoint: marketRunner.yesPoint,
-                        noRate: marketRunner.no,
-                        noPoint: marketRunner.noPoint,
-                        status: status
+                        ...eventMarket,
+                        teamName: teams[eventMarket.teamId],
+                        ...eventMarket.runner[0]
                     }
                 }
                 else return null
             }).filter(x => x)
-            setData((prevData) => {
-                const prevDataObj = {}
-                prevData?.forEach(element => prevDataObj[element.eventMarketId] = element)
-                const listToReturn = updatedDatalist?.map(element => {
-                    return {
-                        ...prevDataObj[element.id],
-                        ...element
-                    }
-                })
-                return listToReturn
-            })
+            updatedDatalist = _.orderBy(updatedDatalist, ['marketId'], ['asc']);
+            setData(updatedDatalist)
         }
     }
 
@@ -210,7 +198,10 @@ export const OpenMarket = () => {
             .post("/admin/eventMarket/marketListByCId", { commentaryId })
             .then((response) => {
                 if (response?.result) {
-                    const formattedData = formatAPIDataForState(response?.result || [])
+                    const teamsObj = {}
+                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
+                    setTeams(teamsObj)
                     setData(formattedData.data);
                     setLineRatio(formattedData.lineRatio)
                 }
@@ -253,14 +244,14 @@ export const OpenMarket = () => {
         },
         {
             title: "Market",
-            dataIndex: "eventMarketId",
+            dataIndex: "marketId",
             render: (text, record) => (
                 <>
                     <div>{text}</div>
                     <div>{record?.marketName}</div>
                 </>
             ),
-            key: "eventMarketId",
+            key: "marketId",
         },
         {
             title: "Status",
@@ -301,38 +292,38 @@ export const OpenMarket = () => {
             title: "",
             dataIndex: "lineVal",
             render: (text, record) => (
-            <div className="d-flex align-items-center gap-1">   
-            <Button
-                className="form-control line-text-fields"
-                onClick={() => handleValueChange(record, "line", record?.line - 2)}
-            >
-                {Math.round(record?.line) - 2}
-            </Button>
-            <Button
-                className="form-control line-text-fields"
-                onClick={() => handleValueChange(record, "line", record?.line - 1)}
-            >
-                {Math.round(record?.line) - 1}
-            </Button>
-            <Button
-                className="form-control line-center-text-fields"
-                onClick={() => handleValueChange(record, "line", record?.line)}
-            >
-                {Math.round(record?.line)}
-            </Button>
-            <Button
-                className="form-control line-text-fields"
-                onClick={() => handleValueChange(record, "line", record?.line + 1)}
-            >
-                {Math.round(record?.line) + 1}
-            </Button>
-            <Button
-                className="form-control line-text-fields"
-                onClick={() => handleValueChange(record, "line", record?.line + 2)}
-            >
-                {Math.round(record?.line) + 2}
-            </Button>
-            </div>
+                <div className="d-flex align-items-center gap-1">
+                    <Button
+                        className="form-control line-text-fields"
+                        onClick={() => handleValueChange(record, "line", record?.line - 2)}
+                    >
+                        {Math.round(record?.line) - 2}
+                    </Button>
+                    <Button
+                        className="form-control line-text-fields"
+                        onClick={() => handleValueChange(record, "line", record?.line - 1)}
+                    >
+                        {Math.round(record?.line) - 1}
+                    </Button>
+                    <Button
+                        className="form-control line-center-text-fields"
+                        onClick={() => handleValueChange(record, "line", record?.line)}
+                    >
+                        {Math.round(record?.line)}
+                    </Button>
+                    <Button
+                        className="form-control line-text-fields"
+                        onClick={() => handleValueChange(record, "line", record?.line + 1)}
+                    >
+                        {Math.round(record?.line) + 1}
+                    </Button>
+                    <Button
+                        className="form-control line-text-fields"
+                        onClick={() => handleValueChange(record, "line", record?.line + 2)}
+                    >
+                        {Math.round(record?.line) + 2}
+                    </Button>
+                </div>
             ),
             key: "lineVal",
         },
@@ -531,6 +522,11 @@ export const OpenMarket = () => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isEmpty(teams)) {
             if (socket) {
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
@@ -545,7 +541,7 @@ export const OpenMarket = () => {
         return () => {
             socket.off(OPEN_MARKET_DATA);
         };
-    }, []);
+    }, [teams])
 
     useEffect(() => {
         if (isAutoUpdate && !isSocketConnected) {
