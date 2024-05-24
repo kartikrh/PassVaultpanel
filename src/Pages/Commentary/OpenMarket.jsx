@@ -134,7 +134,6 @@ export const OpenMarket = () => {
                 eventMarket: dataToSave,
             })
             .then((response) => {
-                fetchTableData(commentaryId);
                 setIsLoading(false);
                 setIsAutoUpdate(true)
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));

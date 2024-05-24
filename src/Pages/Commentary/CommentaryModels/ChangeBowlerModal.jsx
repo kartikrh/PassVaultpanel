@@ -13,9 +13,9 @@ const ChangeBowlerModal = ({ toggle, onBowlerChange }) => {
             </ModalBody>
             <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button"
-                    onClick={() => { onBowlerChange(SWITCH_BOWLER) }}>Change bowler for current over</Button>
+                    onClick={() => { onBowlerChange(SWITCH_BOWLER) }}>Change Bowler</Button>
                 <Button color="danger" className="decision-Button text-right"
-                    onClick={() => { onBowlerChange(CHANGE_BOWLER) }}>Continue over with differnt bowler</Button>
+                    onClick={() => { onBowlerChange(CHANGE_BOWLER) }}>Continue with new Bowler</Button>
             </ModalFooter>
         </Modal >
     )
