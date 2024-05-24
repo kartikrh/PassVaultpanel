@@ -1,0 +1,80 @@
+import React, { useState } from 'react'
+import { Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
+import "../CommentaryCss.css"
+import CardComponent from '../CardComponent';
+import { NON_STRIKE, ON_STRIKE, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER } from '../CommentartConst';
+import SelectPlayerModal from './SelectPlayerModal';
+const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList }) => {
+    const [changePlayerType, setChangePlayerType] = useState(false);
+
+    const onSubmitClick = (newPlayerId) => {
+        const oldPlayer = onPitchplayers[changePlayerType]
+        let toSend = {
+            ...onPitchplayers,
+            [RETIRED_HURT_BATTER]: oldPlayer,
+            [PREV_ON_STRIKE]: onPitchplayers[ON_STRIKE],
+            [PREV_NON_STRIKE]: onPitchplayers[NON_STRIKE]
+        }
+        toSend[PLAYER_LIST] = playerList.map(player => {
+            let updatedPlayer = player
+            if (player.commentaryPlayerId === newPlayerId) {
+                updatedPlayer = {
+                    ...player,
+                    "isPlay": true,
+                    "onStrike": changePlayerType === ON_STRIKE ? true : null
+                }
+                toSend[changePlayerType] = updatedPlayer
+            }
+            if (player.commentaryPlayerId === oldPlayer.commentaryPlayerId) {
+                updatedPlayer = {
+                    ...oldPlayer,
+                    "isPlay": null,
+                    "onStrike": null
+                }
+            }
+            return updatedPlayer
+        })
+        setChangePlayerType(null)
+        onsubmit(toSend)
+    }
+
+    return (
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
+            <ModalHeader toggle={toggle}>
+                Retired Hurt
+            </ModalHeader>
+            <ModalBody>
+                Please select a batter:
+                <Row>
+                    <Col xs={6} md={6} lg={6} onClick={() => setChangePlayerType(ON_STRIKE)}>
+                        <CardComponent
+                            title={onPitchplayers?.[ON_STRIKE]?.playerName}
+                            selectIcon={"bx bxs-check-circle"}
+                            onClickColor={"#099680"}
+                            bgColor={"#55c6b4"}
+                        />
+                    </Col>
+                    <Col xs={6} md={6} lg={6} onClick={() => setChangePlayerType(NON_STRIKE)}>
+                        <CardComponent
+                            title={onPitchplayers?.[NON_STRIKE]?.playerName}
+                            selectIcon={"bx bxs-check-circle"}
+                            onClickColor={"#099680"}
+                            bgColor={"#55c6b4"}
+                        />
+                    </Col>
+                </Row>
+            </ModalBody>
+            {changePlayerType &&
+                <SelectPlayerModal
+                    isOpen={true}
+                    toggle={() => {
+                        setChangePlayerType(null)
+                    }}
+                    playerList={playerList}
+                    selectPlayer={onSubmitClick}
+                />}
+        </Modal >
+    )
+}
+
+export default RetiredHurtModal

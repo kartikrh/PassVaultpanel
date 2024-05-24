@@ -312,7 +312,10 @@ export const CommentaryScreen = ({
                 setActionPopup(false)
                 showPaneltyRuns(true)
             }}
-            retiredHurt={handleRetiredHurt}
+            retiredHurt={() => {
+                setActionPopup(false)
+                handleRetiredHurt()
+            }}
         />}
     </React.Fragment >
 }
