@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTER_TYPE, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -23,6 +23,7 @@ import OnPitchPlayerModal from "./CommentaryModels/OnPitchPlayerModal.jsx"
 import { STRING_SEPERATOR } from "../../components/Common/Const.js"
 import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
+import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -64,6 +65,7 @@ const Commentary = (props) => {
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
     const [selectMissingPlayer, setSelectMissingPlayer] = useState([])
+    const [showRretiredHurt, setShowRretiredHurt] = useState(false)
     const [target, setTarget] = useState(0)
     const matchTypeDetails = props.data.commentaryData.matchTypeDetails
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
@@ -852,6 +854,7 @@ const Commentary = (props) => {
                 setUndoInningsPopup(true)
             } else if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) setUndoOverPopup(true)
+            else if (currentBall.ballType === BALL_TYPE_RETIRED_HURT) undoRetiredHurt()
             else if (currentBall.ballType === BALL_TYPE_PANELTY_RUN) {
                 const updateBattingTeam = teams[BATTING_TEAM]
                 const run = currentBall.ballExtraRun
@@ -1192,9 +1195,60 @@ const Commentary = (props) => {
         setRedirectOnScreenChange(true)
         dispatch(addCommentaryScreenData(objToSave))
     }
-    const onRetiredHurtClick = () => {
-        console.log("retired hurt");
+    const onRetiredHurtClick = (retiredHurtData) => {
+        const updateBall = {}
+        updateBall["commentaryBallByBallId"] = "0"
+        updateBall["ballIsCount"] = false
+        updateBall["ballRun"] = 0
+        updateBall["ballExtraRun"] = 0
+        updateBall["batStrikeId"] = retiredHurtData[PREV_ON_STRIKE]?.commentaryPlayerId
+        updateBall["batNonStrikeId"] = retiredHurtData[PREV_NON_STRIKE]?.commentaryPlayerId
+        updateBall["ballType"] = BALL_TYPE_RETIRED_HURT
+        const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
+        const objToSave = {
+            "commentaryBallByBall": generatedBallByBall,
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setCurrentBall(updateBall)
+        setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: retiredHurtData[ON_STRIKE], [NON_STRIKE]: retiredHurtData[NON_STRIKE] })
+        setPlayers({ ...players, [BATTING_TEAM]: retiredHurtData[PLAYER_LIST] })
+        setShowRretiredHurt(false)
     }
+
+    const undoRetiredHurt = () => {
+        let updatedPlayerList = players[BATTING_TEAM] || []
+        const playersToChange = {}
+        let updatedOnPitchPlayer = {}
+        updatedPlayerList = updatedPlayerList.map(player => {
+            let updatedPlayer = player
+            if (player.isPlay || player.onStrike) {
+                updatedPlayer = { ...updatedPlayer, isPlay: null, onStrike: null }
+                playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
+            }
+
+            if (player.commentaryPlayerId === currentBall.batStrikeId) {
+                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: true }
+                updatedOnPitchPlayer[ON_STRIKE] = updatedPlayer
+                playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
+            } else if (player.commentaryPlayerId === currentBall.batNonStrikeId) {
+                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: null }
+                updatedOnPitchPlayer[NON_STRIKE] = updatedPlayer
+                playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
+            }
+            return updatedPlayer
+        })
+        const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPlayers": Object.values(playersToChange),
+            "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setPlayers({ ...players, [BATTING_TEAM]: updatedPlayerList })
+        setOnPitchPlayers({ ...onPitchPlayers, ...updatedOnPitchPlayer })
+    }
+
     useEffect(() => {
         if (updateRunsFromWicket) {
             updateRuns(updateRunsFromWicket)
@@ -1509,7 +1563,7 @@ const Commentary = (props) => {
                     "displayStatus": displayStatus
                 }))
             }}
-            handleRetiredHurt={onRetiredHurtClick}
+            handleRetiredHurt={() => setShowRretiredHurt(true)}
             overBalls={overBallByBallDisplay}
             showPaneltyRuns={setIsPaneltyPopup}
             anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
@@ -1624,6 +1678,12 @@ const Commentary = (props) => {
                 updatePanelty(selectedPenalty)
                 setIsPaneltyPopup(null)
             }}
+        />}
+        {showRretiredHurt && <RetiredHurtModal
+            toggle={() => setShowRretiredHurt(false)}
+            onsubmit={onRetiredHurtClick}
+            onPitchplayers={onPitchPlayers}
+            playerList={players[BATTING_TEAM]}
         />}
     </>
 }

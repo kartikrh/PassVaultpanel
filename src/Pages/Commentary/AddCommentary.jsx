@@ -33,6 +33,8 @@ function AddCommentary() {
     const finalizeRef2 = useRef(null);
     const [savedFormState, setSavedFormState] = useState({});
     const [activeTab, setactiveTab] = useState(1);
+    const [isApiLoading, setIsApiLoading] = useState(false);
+    const [isFetchApiLoading, setIsFetchApiLoading] = useState(false);
     const [passedSteps, setPassedSteps] = useState([1]);
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
@@ -99,6 +101,7 @@ function AddCommentary() {
                 "competitionId": [],
             }));
             if (newFormData["eventTypeId"] !== "0") {
+                setIsApiLoading(true);
                 axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId: newFormData["eventTypeId"] })
                     .then((response) => {
                         const resultData = fetchResult(response)
@@ -109,8 +112,10 @@ function AddCommentary() {
                             ...preData,
                             "competitionId": formattedData,
                         }));
+                        setIsApiLoading(false);
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsApiLoading(false);
                     });
             } else {
                 setMasterData((preData) => ({
@@ -124,6 +129,7 @@ function AddCommentary() {
                 "eventId": [],
             }));
             if (newFormData["competitionId"] !== "0") {
+                setIsApiLoading(true);
                 axiosInstance.post('/admin/commentary/eventListByCompetitionId', { competitionId: newFormData["competitionId"] })
                     .then((response) => {
                         const resultData = fetchResult(response)
@@ -134,8 +140,10 @@ function AddCommentary() {
                             ...preData,
                             "eventId": formattedData,
                         }));
+                        setIsApiLoading(false);
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsApiLoading(false);
                     });
             } else {
                 setMasterData((preData) => ({
@@ -155,6 +163,7 @@ function AddCommentary() {
                 ...resetData
             }));
             if (newFormData["eventId"] !== "0") {
+                setIsApiLoading(true);
                 axiosInstance.post('/admin/commentary/eventDataById', { eventId: newFormData["eventId"] })
                     .then((response) => {
                         const updatedData = {
@@ -168,8 +177,10 @@ function AddCommentary() {
                             ...updatedData
                         }));
                         finalizeRef1.current.updateFormFromParent(updatedData)
+                        setIsApiLoading(false);
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsApiLoading(false);
                     });
             } else {
                 setMasterData((preData) => ({
@@ -185,6 +196,7 @@ function AddCommentary() {
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
+                setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team1Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
@@ -196,8 +208,10 @@ function AddCommentary() {
                             "team1Kipper": formattedData,
                             "team1Players": formattedData
                         }));
+                        setIsApiLoading(false);
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsApiLoading(false);
                     });
             }
             else {
@@ -210,6 +224,7 @@ function AddCommentary() {
             }
         } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
+                setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team2Id"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
@@ -221,9 +236,10 @@ function AddCommentary() {
                             "team2Kipper": formattedData,
                             "team2Players": formattedData
                         }));
-
+                        setIsApiLoading(false);
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsApiLoading(false);
                     });
             } else {
                 setMasterData((preData) => ({
@@ -240,6 +256,7 @@ function AddCommentary() {
         let updateScreenData = {}
         let newMasterData = {}
         // setInitialEditData(response?.result);
+        setIsFetchApiLoading(true);
         await axiosInstance.post('/admin/commentary/byId', { commentaryId: id })
             .then(async (response) => {
                 updateScreenData = {
@@ -299,9 +316,10 @@ function AddCommentary() {
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
+                setIsFetchApiLoading(false);
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-
+                setIsFetchApiLoading(false);
             });
         setMasterData((preData) => ({
             ...preData,
@@ -314,6 +332,7 @@ function AddCommentary() {
     };
 
     const fetchMasterData = async () => {
+        setIsApiLoading(true);
         axiosInstance.post('/admin/commentary/matchTypeList')
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
@@ -324,9 +343,12 @@ function AddCommentary() {
                     "matchTypeId": formattedData
 
                 }));
+                setIsApiLoading(false);
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
             });
+        setIsApiLoading(true);
         axiosInstance.post('/admin/commentary/teamList', {})
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
@@ -337,10 +359,12 @@ function AddCommentary() {
                     "team1Id": formattedData,
                     "team2Id": formattedData
                 }));
-
+                setIsApiLoading(false);
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
             });
+        setIsApiLoading(true);
         axiosInstance.post('/admin/commentary/eventTypeList', {})
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
@@ -350,8 +374,10 @@ function AddCommentary() {
                     ...preData,
                     "eventTypeId": formattedData,
                 }));
+                setIsApiLoading(false);
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
             });
     };
 
@@ -410,10 +436,9 @@ function AddCommentary() {
                         <Col xs={12} md={8} lg={9}>
                             <h3>Commentary </h3>
                         </Col>
-
+                        {(isLoading || isApiLoading || isFetchApiLoading) && <SpinnerModel />}
                         <Card>
                             <CardBody>
-                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3 text-end' xs={12}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>

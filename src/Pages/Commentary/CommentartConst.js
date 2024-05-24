@@ -15,6 +15,8 @@ export const BALL_TYPE_NO_BALL = 5;
 export const BALL_TYPE_NO_BALL_BYE = 6;
 export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
 export const BALL_TYPE_PANELTY_RUN = 8;
+export const BALL_TYPE_RETIRED_HURT = 9;
+
 export const LATEST_BALLS_TO_FIND_BALL_HISTORY = 30
 // Out Type
 export const BOLD = 1;
@@ -43,6 +45,10 @@ export const NON_STRIKE = "NON_STRIKE"
 export const CURRENT_BOWLER = "CURRENT_BOWLER"
 export const BATTING_TEAM = "BATTING_TEAM"
 export const BOWLING_TEAM = "BOWLING_TEAM"
+export const RETIRED_HURT_BATTER = "RETIRED_HURT_BATTER"
+export const PLAYER_LIST = "PLAYER_LIST"
+export const PREV_ON_STRIKE = "PREV_ON_STRIKE"
+export const PREV_NON_STRIKE = "PREV_NON_STRIKE"
 
 export const FOUR = "FOUR"
 export const SIX = "SIX"
@@ -135,38 +141,38 @@ export const BALL_TYPE_LIST = [
 
 export const getStatusColor = (status) => {
     switch (status) {
-        case 1: 
+        case 1:
             return "#d7eed7"; //light green (open)
-        case 2: 
+        case 2:
             return "#d7d5d5"; //light gray (inActive)
-        case 3: 
+        case 3:
             return "#f6ddcf"; //light orange (suspend)
-        case 4: 
+        case 4:
             return "#d7ebf1"; //light blue (close)
-        case 5: 
+        case 5:
             return "#fbfbdd"; //light yellow (settled)
         case 6:
             return "#f6e0e0"; //light red (cancel)
         default:
-            return ""; 
+            return "";
     }
 };
 
 export const getStatusColor1 = (status) => {
     switch (status) {
-        case 1: 
+        case 1:
             return ""; //white (open)
-        case 2: 
+        case 2:
             return "#d7d5d5"; //light gray (inActive)
-        case 3: 
+        case 3:
             return "#f6ddcf"; //light orange (suspend)
-        case 4: 
+        case 4:
             return "#d7ebf1"; //light blue (close)
-        case 5: 
+        case 5:
             return "#fbfbdd"; //light yellow (settled)
         case 6:
             return "#f6e0e0"; //light red (cancel)
         default:
-            return ""; 
+            return "";
     }
 };
