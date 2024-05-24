@@ -13,7 +13,7 @@ const ChangeInningsModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
         };
     }, [])
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
+        <Modal backdrop="static" className="commentary-modal red-warning-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
                 Change Innings
             </ModalHeader>
