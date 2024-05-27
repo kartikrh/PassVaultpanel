@@ -30,7 +30,7 @@ const Index = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
-  const [rateSource, setRateSource] = useState(true);
+  const [rateSource, setRateSource] = useState(2);
   const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
   const { selectedMarket, selectedMarketHistory } = useSelector(
