@@ -30,6 +30,7 @@ const Index = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
+  const [rateSource, setRateSource] = useState(true);
   const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
   const { selectedMarket, selectedMarketHistory } = useSelector(
@@ -382,7 +383,7 @@ const Index = () => {
               marketTypeName: record?.marketTypeName,
               marketType: record?.marketType,
               runner: record?.runner,
-              rateSource: 4, 
+              rateSource: rateSource, 
             });
             addMarketData({
               ...dataToDB,
@@ -392,7 +393,7 @@ const Index = () => {
               marketTypeName: record?.marketTypeName,
               marketType: record?.marketType,
               runner: record?.runner,
-              rateSource: 4,
+              rateSource: rateSource,
             });
           }}
         >
