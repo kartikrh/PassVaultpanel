@@ -423,6 +423,11 @@
     border-color: rgb(172, 120, 251) !important;
 }
 
+.red-warning-button {
+    background-color: #f5d3d3;
+    border-color: #f5d3d3;
+}
+
 .red-warning-modal>.modal-content {
     background-color: #f5d3d3;
     border-color: #f5d3d3;
@@ -430,6 +435,20 @@
 
 .red-warning-modal>.modal-content>div {
     border-color: #f5d3d3;
+}
+
+.green-success-button {
+    background-color: #e1fad8;
+    border-color: #e1fad8;
+}
+
+.green-success-modal>.modal-content {
+    background-color: #e1fad8;
+    border-color: #e1fad8;
+}
+
+.green-success-modal>.modal-content>div {
+    border-color: #e1fad8;
 }
 
 /* http://localhost:3000/oddsView?commentaryId=601 */

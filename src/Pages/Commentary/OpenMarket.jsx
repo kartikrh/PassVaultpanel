@@ -64,13 +64,13 @@ export const OpenMarket = () => {
                 "margin": +record.margin,
                 "overRate": +record.overRate,
                 "underRate": +record.underRate,
-                "yesRate": +record.yesRate,
-                "yesPoint": +(record.yesPoint || 100),
-                "noRate": +record.noRate,
-                "noPoint": +(record.noPoint || 100),
+                "backPrice": +record.backPrice,
+                "backSize": +(record.backSize || 100),
+                "layPrice": +record.layPrice,
+                "laySize": +(record.laySize || 100),
             }
             workingRecord = _.omit(workingRecord,
-                ["runner", "line", "overRate", "underRate", "yesRate", "yesPoint", "noRate", "noPoint", "runner", "runnerId", "selectionStatus", "lastUpdate"])
+                ["runner", "line", "overRate", "underRate", "backPrice", "backSize", "layPrice", "laySize", "runner", "runnerId", "selectionStatus", "lastUpdate"])
             workingRecord["runner"] = [recordMarketRunner]
             dataToSend.push(workingRecord)
         })
@@ -279,8 +279,8 @@ export const OpenMarket = () => {
                     value={text || ""}
                     onChange={(newValue) => {
                         handleValueChange(record, "line", newValue);
-                        handleValueChange(record, "noRate", Math.round(+newValue));
-                        handleValueChange(record, "yesRate", Math.round(+newValue) + 1);
+                        handleValueChange(record, "layPrice", Math.round(+newValue));
+                        handleValueChange(record, "backPrice", Math.round(+newValue) + 1);
                     }}
                 />
             ),
@@ -333,54 +333,54 @@ export const OpenMarket = () => {
         },
         {
             title: "R-No",
-            dataIndex: "noRate",
+            dataIndex: "layPrice",
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-no-field"
                     value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "noRate", newValue)}
+                    onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                 />
             ),
-            key: "noRate",
+            key: "layPrice",
             className: "input-no-field"
         },
         {
             title: "R-Yes",
-            dataIndex: "yesRate",
+            dataIndex: "backPrice",
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-yes-field"
                     value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "yesRate", newValue)}
+                    onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                 />
             ),
-            key: "yesRate",
+            key: "backPrice",
             className: "input-yes-field"
         },
         {
             title: "P-No",
-            dataIndex: "noPoint",
+            dataIndex: "laySize",
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-no-field"
                     value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "noPoint", newValue)}
+                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                 />
             ),
-            key: "noPoint",
+            key: "laySize",
             className: "input-no-field"
         },
         {
             title: "P-Yes",
-            dataIndex: "yesPoint",
+            dataIndex: "backSize",
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-yes-field"
                     value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "yesPoint", newValue)}
+                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                 />
             ),
-            key: "yesPoint",
+            key: "backSize",
             className: "input-yes-field"
         },
         {

@@ -13,7 +13,7 @@ const ChangeOverModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
         };
     }, [])
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
+        <Modal backdrop="static" className="commentary-modal green-success-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader toggle={toggle}>
                 Change Over
             </ModalHeader>

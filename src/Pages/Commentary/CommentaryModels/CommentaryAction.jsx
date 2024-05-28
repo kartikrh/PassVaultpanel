@@ -28,12 +28,12 @@ const CommentaryAction = ({ toggle, updateExtras, handleRuns, changeOver, endInn
                         <img className="button-icon" src="icons/p.png" alt="Icon" />
                         enalty
                     </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                    <Col role="button" className=" score-button green-success-button" xs={3} md={3} lg={3}
                         onClick={changeOver}>
                         <img className="button-icon" src="icons/end-over.png" alt="Icon" />
                         End Over
                     </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                    <Col role="button" className=" score-button red-warning-button" xs={3} md={3} lg={3}
                         onClick={endInnings}>
                         <img className="button-icon" src="icons/end-innings.png" alt="Icon" />
                         End Innings

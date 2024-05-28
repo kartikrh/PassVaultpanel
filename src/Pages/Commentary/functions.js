@@ -232,10 +232,10 @@ export const generateOverUnder = (dataObj) => {
   const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
   const dataToSend = {
     ...dataObj,
-    yesRate: roundedLine + 1 || 0,
-    noRate: roundedLine || 0,
-    yesPoint: dataObj?.yesPoint || 100,
-    noPoint: dataObj?.noPoint || 100,
+    backPrice: roundedLine + 1 || 0,
+    layPrice: roundedLine || 0,
+    backSize: dataObj?.backSize || 100,
+    laySize: dataObj?.laySize || 100,
     overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
     underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
   }
