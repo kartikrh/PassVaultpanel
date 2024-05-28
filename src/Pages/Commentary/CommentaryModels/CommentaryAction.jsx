@@ -2,7 +2,7 @@ import React from 'react'
 import { Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
 import "../CommentaryCss.css"
 import { NO_BALL_BYE, NO_BALL_LEG_BYE } from '../CommentartConst';
-const CommentaryAction = ({ toggle, updateExtras, handleRuns, changeOver, endInnings, paneltyRuns, retiredHurt }) => {
+const CommentaryAction = ({ toggle, updateExtras, handleRuns, changeOver, endInnings, paneltyRuns, retiredHurt, updateRemark }) => {
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
             <ModalHeader toggle={toggle}>
@@ -40,7 +40,8 @@ const CommentaryAction = ({ toggle, updateExtras, handleRuns, changeOver, endInn
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={retiredHurt}>
-                        Retired Hurt
+                        <img className="button-icon" src="icons/r.png" alt="Icon" />
+                        etired Hurt
                     </Col>
                 </Row>
             </ModalBody>
