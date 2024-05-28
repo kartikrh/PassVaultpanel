@@ -160,10 +160,10 @@ const MarketTemplateRunner = () => {
         line: +newFormData?.line,
         overRate: +newFormData?.overRate,
         underRate: +newFormData?.underRate,
-        yesRate: +newFormData?.yesRate,
-        noRate: +newFormData?.noRate,
-        yesPoint: +newFormData?.yesPoint,
-        noPoint: +newFormData?.noPoint,
+        backPrice: +newFormData?.backPrice,
+        layPrice: +newFormData?.layPrice,
+        backSize: +newFormData?.backSize,
+        laySize: +newFormData?.laySize,
       };
       const dataToSave = finalizeRef.current.finalizeData();
       if (dataToSave) {
@@ -280,26 +280,26 @@ const MarketTemplateRunner = () => {
     },
     {
       title: "Yes Rate",
-      dataIndex: "yesRate",
-      key: "yesRate",
+      dataIndex: "backPrice",
+      key: "backPrice",
       style: { width: "10%" },
     },
     {
       title: "Yes Point",
-      dataIndex: "yesPoint",
-      key: "yesPoint",
+      dataIndex: "backSize",
+      key: "backSize",
       style: { width: "10%" },
     },
     {
       title: "No Rate",
-      dataIndex: "noRate",
-      key: "noRate",
+      dataIndex: "layPrice",
+      key: "layPrice",
       style: { width: "10%" },
     },
     {
       title: "No Point",
-      dataIndex: "noPoint",
-      key: "noPoint",
+      dataIndex: "laySize",
+      key: "laySize",
       style: { width: "10%" },
     },
   ];

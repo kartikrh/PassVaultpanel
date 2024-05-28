@@ -238,8 +238,8 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
-                        <img className="button-icon" src="icons/b.png" alt="Icon" />
+                        onClick={() => setActionPopup(true)}>
+                        <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_WIDE)}>
@@ -249,9 +249,13 @@ export const CommentaryScreen = ({
                         onClick={() => updateExtras(NO_BALL)}>
                         <img className="button-icon-lg" src="icons/no-ball.png" alt="Icon" />
                     </Col>
-                    <Col role="button" className=" score-button" xs={6} md={6} lg={6}
-                        onClick={() => setActionPopup(true)}>
-                        <img className="button-icon" src="icons/action.png" alt="Icon" />
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
+                        onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
+                        <img className="button-icon" src="icons/b.png" alt="Icon" />
+                    </Col>
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}>
+                        <img className="button-icon" src="icons/r.png" alt="Icon" />
+                        emark
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateExtras(BALL_BYE)}>

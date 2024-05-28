@@ -258,10 +258,10 @@ const CommentaryMarketTemplate = () => {
                 updatedRecord = {
                     ...updatedRecord,
                     [selectedField]: fieldValue,
-                    yesRate: Math.round(roundedLine) + 1 || 0,
-                    noRate: Math.round(roundedLine) || 0,
-                    yesPoint: record.yesPoint ? record.yesPoint : 100,
-                    noPoint: record.noPoint ? record.noPoint : 100,
+                    backPrice: Math.round(roundedLine) + 1 || 0,
+                    layPrice: Math.round(roundedLine) || 0,
+                    backSize: record.backSize || 100,
+                    laySize: record.laySize ? record.laySize : 100,
                     overRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(fieldValue - thresholdValue))))).toFixed(2)) || 0),
                     underRate: record.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(fieldValue - thresholdValue))))).toFixed(2)) || 0),
                 };
@@ -462,81 +462,81 @@ const CommentaryMarketTemplate = () => {
         },
         {
             title: "No Rate",
-            dataIndex: "noRate",
+            dataIndex: "layPrice",
             render: (text = "", record) => (
                 <>
                     <Input
                         className="form-control small-text-fields input-no-field"
                         type="text"
                         value={text}
-                        onChange={(e) => handleValueChange(record, "noRate", e.target.value)}
+                        onChange={(e) => handleValueChange(record, "layPrice", e.target.value)}
                     />
                     <span className="text-danger">
-                        {record?.error?.noRate}
+                        {record?.error?.layPrice}
                     </span>
                 </>
             ),
-            key: "noRate",
+            key: "layPrice",
             style: { width: "10%" },
             className: "input-no-field"
         },
         {
             title: "Yes Rate",
-            dataIndex: "yesRate",
+            dataIndex: "backPrice",
             render: (text = "", record) => (
                 <>
                     <Input
                         className="form-control small-text-fields input-yes-field"
                         type="text"
                         value={text}
-                        onChange={(e) => handleValueChange(record, "yesRate", e.target.value)}
+                        onChange={(e) => handleValueChange(record, "backPrice", e.target.value)}
                     />
                     <span className="text-danger">
-                        {record?.error?.yesRate}
+                        {record?.error?.backPrice}
                     </span>
                 </>
             ),
-            key: "yesRate",
+            key: "backPrice",
             style: { width: "10%" },
             className: "input-yes-field"
         },
         {
             title: "No Point",
-            dataIndex: "noPoint",
+            dataIndex: "laySize",
             render: (text = "100", record) => (
                 <>
                     <Input
                         className="form-control small-text-fields input-no-field"
                         type="text"
                         value={text}
-                        onChange={(e) => handleValueChange(record, "noPoint", e.target.value)}
+                        onChange={(e) => handleValueChange(record, "laySize", e.target.value)}
                     />
                     <span className="text-danger">
-                        {record?.error?.noPoint}
+                        {record?.error?.laySize}
                     </span>
                 </>
             ),
-            key: "noPoint",
+            key: "laySize",
             style: { width: "10%" },
             className: "input-no-field"
         },
         {
             title: "Yes Point",
-            dataIndex: "yesPoint",
+            dataIndex: "backSize",
             render: (text = "100", record) => (
                 <>
                     <Input
                         className="form-control small-text-fields input-yes-field"
                         type="text"
                         value={text}
-                        onChange={(e) => handleValueChange(record, "yesPoint", e.target.value)}
+                        onChange={(e) => handleValueChange(record, "backSize", e.target.value)}
                     />
                     <span className="text-danger">
-                        {record?.error?.yesPoint}
+                        {record?.error?.backSize}
                     </span>
                 </>
             ),
-            key: "yesPoint",
+            key: "backSize",
             style: { width: "10%" },
             className: "input-yes-field",
         },
@@ -615,8 +615,8 @@ const CommentaryMarketTemplate = () => {
                                                 <option value="line">Line</option>
                                                 <option value="overRate">Over</option>
                                                 <option value="underRate">Under</option>
-                                                <option value="yesPoint">Yes Point</option>
-                                                <option value="noPoint">No Point</option>
+                                                <option value="backSize">Yes Point</option>
+                                                <option value="laySize">No Point</option>
                                             </select>
                                             <input
                                                 type="text"
