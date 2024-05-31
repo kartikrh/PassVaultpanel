@@ -134,8 +134,15 @@ export const OpenMarket = () => {
                 eventMarket: dataToSave,
             })
             .then((response) => {
+                if (response?.result) {
+                    const teamsObj = {}
+                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
+                    setTeams(teamsObj)
+                    setData(formattedData.data);
+                }
                 setIsLoading(false);
-                setIsAutoUpdate(true)
+                // setIsAutoUpdate(true)
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             })
             .catch((error) => {
