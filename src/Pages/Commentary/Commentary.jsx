@@ -202,10 +202,6 @@ export const CommentaryScreen = ({
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
-                    {/* {(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0 &&
-                        < Col xs={12} md={12} lg={12}>
-                            &nbsp;&nbsp;&nbsp; Yet to start Over
-                        </Col>} */}
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
@@ -252,6 +248,7 @@ export const CommentaryScreen = ({
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
                         onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
+                        all Start
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}>
                         <img className="button-icon" src="icons/r.png" alt="Icon" />
