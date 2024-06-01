@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LATEST_BALLS_TO_FIND_BALL_HISTORY, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LATEST_BALLS_TO_FIND_BALL_HISTORY, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -26,7 +26,7 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "overId": currentOver.overId,
     "overCount": teams?.[BATTING_TEAM].teamOver || "0",
     "currentOverBalls": currentOver.ballCount || 0,
-    "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId || 0,
+    "bowlerId": currentBall.bowlerId || onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId || 0,
     "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || 0,
     "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId || 0,
     "ballIsCount": currentBall.ballIsCount || false,
@@ -213,6 +213,7 @@ export const generateBallLabelFromBall = (ballType, isWicket) => {
   else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) toReturn = "NLB"
   else if (ballType === BALL_TYPE_PANELTY_RUN) toReturn = "P"
   else if (ballType === BALL_TYPE_RETIRED_HURT) toReturn = "RH"
+  else if (ballType === BALL_TYPE_BOWLER_RETIRED_HURT) toReturn = "BRH"
   else if (isWicket) toReturn = "WK"
   return toReturn
 }
@@ -232,10 +233,10 @@ export const generateOverUnder = (dataObj) => {
   const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
   const dataToSend = {
     ...dataObj,
-    yesRate: roundedLine + 1 || 0,
-    noRate: roundedLine || 0,
-    yesPoint: dataObj?.yesPoint || 100,
-    noPoint: dataObj?.noPoint || 100,
+    backPrice: roundedLine + 1 || 0,
+    layPrice: roundedLine || 0,
+    backSize: dataObj?.backSize || 100,
+    laySize: dataObj?.laySize || 100,
     overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
     underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
   }

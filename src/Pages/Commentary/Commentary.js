@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTER_TYPE, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTER_TYPE, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -820,9 +820,76 @@ const Commentary = (props) => {
         setPlayerToChange(undefined)
         setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
     }
+    const sameOverNewBaller = (newPlayerId) => {
+        const playersToChangeList = []
+        const updateBall = {
+            "commentaryBallByBallId": "0",
+            "ballIsCount": false,
+            "ballRun": 0,
+            "ballExtraRun": 0,
+            "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId,
+            "batStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
+            "batNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
+            "ballType": BALL_TYPE_BOWLER_RETIRED_HURT
+        }
+        let updatedOnPitchPlayer = onPitchPlayers
+        const updatedPlayerList = players[BOWLING_TEAM]?.map(player => {
+            const updatedPlayer = player
+            if (player.isPlay || player.onStrike) {
+                updatedPlayer["isPlay"] = null
+                updatedPlayer["onStrike"] = null
+                playersToChangeList.push(updatedPlayer)
+            }
+            if (updatedPlayer.commentaryPlayerId === newPlayerId) {
+                updatedPlayer["isPlay"] = true
+                playersToChangeList.push(updatedPlayer)
+                updatedOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
+            }
+            return updatedPlayer
+        })
+        const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: { ...onPitchPlayers }, teams })
+        const objToSave = {
+            "commentaryBallByBall": generatedBallByBall,
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPlayers": playersToChangeList,
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setCurrentBall(updateBall)
+        setPlayers({ ...players, [BOWLING_TEAM]: updatedPlayerList })
+        setOnPitchPlayers(updatedOnPitchPlayer)
+        setChangePlayerList(undefined)
+        setPlayerToChange(undefined)
+        setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
+    }
+    const undoSameOverNewBaller = () => {
+        const playersToChangeList = []
+        let updatedOnPitchPlayer = onPitchPlayers
+        const updatedPlayerList = players[BOWLING_TEAM]?.map(player => {
+            const updatedPlayer = player
+            if (player.isPlay || player.onStrike) {
+                updatedPlayer["isPlay"] = null
+                updatedPlayer["onStrike"] = null
+                playersToChangeList.push(updatedPlayer)
+            }
+            if (updatedPlayer.commentaryPlayerId === currentBall.bowlerId) {
+                updatedPlayer["isPlay"] = true
+                playersToChangeList.push(updatedPlayer)
+                updatedOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
+            }
+            return updatedPlayer
+        })
+        const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPlayers": playersToChangeList,
+            "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setPlayers({ ...players, [BOWLING_TEAM]: updatedPlayerList })
+        setOnPitchPlayers(updatedOnPitchPlayer)
+    }
     const onBowlerChange = (newPlayerId) => {
         if (isChangeBowler.popupOption === SWITCH_BOWLER) switchBowler(newPlayerId)
-        else if (isChangeBowler.popupOption === CHANGE_BOWLER) console.log(newPlayerId)
+        else if (isChangeBowler.popupOption === CHANGE_BOWLER) sameOverNewBaller(newPlayerId)
     }
     const changeOnStrikePlayer = (commentaryPlayerId) => {
         const isPlayerOnNonstrike = compareNumStringValues(onPitchPlayers[NON_STRIKE].commentaryPlayerId, commentaryPlayerId)
@@ -855,6 +922,7 @@ const Commentary = (props) => {
             } else if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) setUndoOverPopup(true)
             else if (currentBall.ballType === BALL_TYPE_RETIRED_HURT) undoRetiredHurt()
+            else if (currentBall.ballType === BALL_TYPE_BOWLER_RETIRED_HURT) undoSameOverNewBaller()
             else if (currentBall.ballType === BALL_TYPE_PANELTY_RUN) {
                 const updateBattingTeam = teams[BATTING_TEAM]
                 const run = currentBall.ballExtraRun
@@ -1196,14 +1264,15 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
     }
     const onRetiredHurtClick = (retiredHurtData) => {
-        const updateBall = {}
-        updateBall["commentaryBallByBallId"] = "0"
-        updateBall["ballIsCount"] = false
-        updateBall["ballRun"] = 0
-        updateBall["ballExtraRun"] = 0
-        updateBall["batStrikeId"] = retiredHurtData[PREV_ON_STRIKE]?.commentaryPlayerId
-        updateBall["batNonStrikeId"] = retiredHurtData[PREV_NON_STRIKE]?.commentaryPlayerId
-        updateBall["ballType"] = BALL_TYPE_RETIRED_HURT
+        const updateBall = {
+            "commentaryBallByBallId": "0",
+            "ballIsCount": false,
+            "ballRun": 0,
+            "ballExtraRun": 0,
+            "batStrikeId": retiredHurtData[PREV_ON_STRIKE]?.commentaryPlayerId,
+            "batNonStrikeId": retiredHurtData[PREV_NON_STRIKE]?.commentaryPlayerId,
+            "ballType": BALL_TYPE_RETIRED_HURT
+        }
         const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
         const objToSave = {
             "commentaryBallByBall": generatedBallByBall,

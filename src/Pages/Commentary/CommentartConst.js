@@ -16,6 +16,7 @@ export const BALL_TYPE_NO_BALL_BYE = 6;
 export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
 export const BALL_TYPE_PANELTY_RUN = 8;
 export const BALL_TYPE_RETIRED_HURT = 9;
+export const BALL_TYPE_BOWLER_RETIRED_HURT = 10;
 
 export const LATEST_BALLS_TO_FIND_BALL_HISTORY = 30
 // Out Type

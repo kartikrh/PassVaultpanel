@@ -3,7 +3,7 @@ import { BUTTON, TEXT } from "../../components/Common/Const";
 export const MarketTemplateRunnerFileds = [
     {
         name: "runner",
-        label:"Runner",
+        label: "Runner",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter runner.",
@@ -12,7 +12,7 @@ export const MarketTemplateRunnerFileds = [
     },
     {
         name: "line",
-        label:"Line",
+        label: "Line",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter line.",
@@ -21,7 +21,7 @@ export const MarketTemplateRunnerFileds = [
     },
     {
         name: "overRate",
-        label:"Over Rate",
+        label: "Over Rate",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter overRate.",
@@ -30,7 +30,7 @@ export const MarketTemplateRunnerFileds = [
     },
     {
         name: "underRate",
-        label:"Under Rate",
+        label: "Under Rate",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter underRate.",
@@ -38,8 +38,8 @@ export const MarketTemplateRunnerFileds = [
         fieldColspan: { xs: 12, md: 2, lg: 2 }
     },
     {
-        name: "yesRate",
-        label:"Yes Rate",
+        name: "backPrice",
+        label: "Yes Rate",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter yesRate.",
@@ -47,8 +47,8 @@ export const MarketTemplateRunnerFileds = [
         fieldColspan: { xs: 12, md: 2, lg: 2 }
     },
     {
-        name: "yesPoint",
-        label:"Yes Point",
+        name: "backSize",
+        label: "Yes Point",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter yesPoint.",
@@ -56,8 +56,8 @@ export const MarketTemplateRunnerFileds = [
         fieldColspan: { xs: 12, md: 2, lg: 2 }
     },
     {
-        name: "noRate",
-        label:"No Rate",
+        name: "layPrice",
+        label: "No Rate",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter noRate.",
@@ -65,8 +65,8 @@ export const MarketTemplateRunnerFileds = [
         fieldColspan: { xs: 12, md: 2, lg: 2 }
     },
     {
-        name: "noPoint",
-        label:"No Point",
+        name: "laySize",
+        label: "No Point",
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter noPoint.",
@@ -76,7 +76,7 @@ export const MarketTemplateRunnerFileds = [
     {
         name: "generate",
         type: BUTTON,
-        btnLable:"Update",
+        btnLable: "Update",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 10, lg: 2 }
     },

@@ -36,10 +36,10 @@ export const OddsView = () => {
                 return {
                     "fancy": eventMarket.marketName + " " + eventMarket.teamName,
                     "odds": {
-                        noRate: marketRunner.no,
-                        yesRate: marketRunner.yes,
-                        noPoint: marketRunner.noPoint,
-                        yesPoint: marketRunner.yesPoint
+                        layPrice: marketRunner.layPrice,
+                        backPrice: marketRunner.backPrice,
+                        laySize: marketRunner.laySize,
+                        backSize: marketRunner.backSize
                     },
                     "status": MARKET_STATUS[eventMarket.status]
                 }
@@ -105,12 +105,12 @@ export const OddsView = () => {
             render: (text, record) => (
                 <div className=" odds-container">
                     <div className="input-no-field odds-box">
-                        <div>{text.noRate || "-"}</div>
-                        <div>{`[${text.noPoint || "-"}]`}</div>
+                        <div>{text.layPrice || "-"}</div>
+                        <div>{`[${text.laySize || "-"}]`}</div>
                     </div>
                     <div className="input-yes-field odds-box">
-                        <div>{text.yesRate || "-"}</div>
-                        <div>{`[${text.yesPoint || "-"}]`}</div>
+                        <div>{text.backPrice || "-"}</div>
+                        <div>{`[${text.backSize || "-"}]`}</div>
                     </div>
                 </div>
             ),
@@ -156,19 +156,19 @@ export const OddsView = () => {
                                 </Row>
                                 <Row>
                                     {isSocketConnected ? (
-                                      <div>
-                                        <span className="live-css">
-                                            {/* &#x1F7E2; */}
-                                        </span>{" "}
-                                        <span className="live-text">Live</span>{" "}
-                                      </div>
+                                        <div>
+                                            <span className="live-css">
+                                                {/* &#x1F7E2; */}
+                                            </span>{" "}
+                                            <span className="live-text">Live</span>{" "}
+                                        </div>
                                     ) : (
-                                      <div>
-                                        <span className="disconnected-css">
-                                            {/* &#x1F534; */}
-                                        </span>{" "}
-                                        <span className="disconnected-text">Disconnected</span>{" "}
-                                      </div>
+                                        <div>
+                                            <span className="disconnected-css">
+                                                {/* &#x1F534; */}
+                                            </span>{" "}
+                                            <span className="disconnected-text">Disconnected</span>{" "}
+                                        </div>
                                     )}
                                 </Row>
                                 <Row>
