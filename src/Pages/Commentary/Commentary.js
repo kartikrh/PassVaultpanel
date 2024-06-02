@@ -24,6 +24,7 @@ import { STRING_SEPERATOR } from "../../components/Common/Const.js"
 import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
+import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -67,6 +68,7 @@ const Commentary = (props) => {
     const [selectMissingPlayer, setSelectMissingPlayer] = useState([])
     const [showRretiredHurt, setShowRretiredHurt] = useState(false)
     const [target, setTarget] = useState(0)
+    const [superOverModal, setSuperOverModal] = useState(0)
     const matchTypeDetails = props.data.commentaryData.matchTypeDetails
     const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
@@ -116,6 +118,18 @@ const Commentary = (props) => {
             if (teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
             else setShowInningsChangePopup(true);
         }
+    }
+    const completeMatch = () => {
+        const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
+        if (isMatchTie) setSuperOverModal(true)
+        else checkWinner()
+        setCompleteMatchModal(false)
+        setChangePlayerList(undefined)
+
+    }
+    const handleSuperOver = (overs) => {
+        setSuperOverModal(false)
+        console.log("Super over for : ", overs);
     }
     const checkWinner = () => {
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
@@ -1638,7 +1652,7 @@ const Commentary = (props) => {
             anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
         />
-        {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings) &&
+        {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={() => { setChangePlayerList(undefined) }}
                 playerList={changePlayerList}
@@ -1697,7 +1711,7 @@ const Commentary = (props) => {
             isOpen={completeMatchModal}
             toggle={() => { setCompleteMatchModal(undefined) }}
             onNoClick={() => { setCompleteMatchModal(undefined) }}
-            onYesClick={checkWinner}
+            onYesClick={completeMatch}
         />}
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}
@@ -1728,7 +1742,7 @@ const Commentary = (props) => {
                 updateAfterOverUndo()
             }}
         />}
-        {selectMissingPlayer && !changePlayerList &&
+        {selectMissingPlayer && !(changePlayerList || superOverModal || winnerAnnouncement) &&
             <OnPitchPlayerModal
                 onPitchPlayers={onPitchPlayers}
                 players={players}
@@ -1754,6 +1768,19 @@ const Commentary = (props) => {
             onPitchplayers={onPitchPlayers}
             playerList={players[BATTING_TEAM]}
         />}
+        {superOverModal &&
+            <SuperOverModal
+                toggle={() => {
+                    setSuperOverModal(false)
+                    // handleUndoClick()
+                }}
+                onSuperOverClick={handleSuperOver}
+                onResultClick={() => {
+                    setSuperOverModal(false)
+                    checkWinner()
+                }}
+            />
+        }
     </>
 }
 
