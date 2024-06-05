@@ -39,6 +39,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
+  const [rateSource, setRateSource] = useState(2);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
@@ -69,6 +70,33 @@ const Index = () => {
     finalizeRef.current.getTableAction();
     await axiosInstance
       .post(`/admin/ImportMarket/importEvent`, { ...val })
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const addMarketData = async (val) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`/admin/ImportMarket/importEventWithMarket`, { ...val })
       .then((response) => {
         dispatch(
           updateToastData({
@@ -204,6 +232,7 @@ const Index = () => {
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
+                isMarket: Boolean(selectedMarket?.isEvent)
               }
             }];
             let historyList = selectedMarketHistory
@@ -216,6 +245,7 @@ const Index = () => {
                 isAustralian: false,
                 isEvent: Boolean(selectedMarket?.isCompitition),
                 isCompitition: Boolean(!selectedMarket?.isCompitition),
+                isMarket: Boolean(selectedMarket?.isEvent)
               })
             );
             setDataToDB({
@@ -283,7 +313,104 @@ const Index = () => {
       style: { width: "80%" },
     },
   ];
-
+  const columnsC = [
+    {
+      title: "Date",
+      dataIndex: `matchDate`,
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
+      sort: true,
+      key: "matchDate",
+      style: { width: "10%" },
+    },
+    {
+      title: `Ref Id`,
+      dataIndex: `marketID`,
+      key: 'marketID',
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Market",
+      dataIndex: "marketName",
+      key: "marketName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Market Type",
+      dataIndex: "marketTypeName",
+      key: "marketTypeName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Match",
+      dataIndex: "matchName",
+      key: "matchName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Runner",
+      dataIndex: "runner",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems = logObject && Object.entries(logObject).map(([key, value]) => (
+          <span key={key}>
+            <strong>{key}:</strong>{" "}
+            {typeof value === "object" ? JSON.stringify(value) : value}<br />
+          </span>
+        ));
+        return <div>{logItems}</div>;
+      },
+      key: "runner",
+      style: { width: "10%" },
+    },
+    selectedMarket?.isMarket && {
+      title: "Import",
+      dataIndex: `${selectedMarket?.isMarket
+        ? "marketName"
+        : selectedMarket?.isCompitition
+          ? "competition"
+          : selectedMarket?.isEvent
+            ? "event"
+            : "eventType"
+        }`,
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={() => {
+            setDataToDB({
+              ...dataToDB,
+              marketName: text,
+              marketID: record?.marketID,
+              marketStatus: record?.marketStatus,
+              marketTypeName: record?.marketTypeName,
+              marketType: record?.marketType,
+              runner: record?.runner,
+              rateSource: rateSource, 
+            });
+            addMarketData({
+              ...dataToDB,
+              marketName: text,
+              marketID: record?.marketID,
+              marketStatus: record?.marketStatus,
+              marketTypeName: record?.marketTypeName,
+              marketType: record?.marketType,
+              runner: record?.runner,
+              rateSource: rateSource,
+            });
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+      key: "marketType",
+      style: { width: "10%" },
+    },
+  ];
   //elements required
   const tableElement = {
     title: "Auto Events",
@@ -344,7 +471,7 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={selectedMarket?.isEvent ? columnsB : columnsA}
+            columns={selectedMarket?.isEvent ? columnsB : selectedMarket?.isMarket ? columnsC : columnsA}
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
