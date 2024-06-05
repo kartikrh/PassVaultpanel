@@ -136,7 +136,7 @@ export const OpenMarket = () => {
             .then((response) => {
                 if (response?.result) {
                     const teamsObj = {}
-                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    response?.result?.teams?.forEach(team => { teamsObj[team?.teamId] = team?.teamName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setTeams(teamsObj)
                     setData(formattedData.data);
@@ -189,18 +189,23 @@ export const OpenMarket = () => {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
                         ...eventMarket.runner[0],
+                        isNewSocketData: true
                     }
                     newMarketData[eventMarket.marketId] = updatedMarketData
                 }
             })
             setData((prevData) => {
                 let prevMarketData = {}
-                console.log({ newMarketData });
                 prevData.forEach(mrket => { prevMarketData[mrket.marketId] = mrket })
                 prevMarketData = {
                     ...prevMarketData,
                     ...newMarketData
                 }
+                setTimeout(() => {
+                    setData((storedData) => {
+                        return storedData.map(element => ({ ...element, isNewSocketData: false }))
+                    });
+                }, 3000);
                 return _.orderBy(Object.values(prevMarketData), ['marketId'], ['asc']);
             })
         }
@@ -261,7 +266,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <>
                     <div>{text}</div>
-                    <div>{record?.marketName}</div>
+                    <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </>
             ),
             key: "marketId",
