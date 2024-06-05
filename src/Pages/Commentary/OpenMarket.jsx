@@ -136,7 +136,7 @@ export const OpenMarket = () => {
             .then((response) => {
                 if (response?.result) {
                     const teamsObj = {}
-                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    response?.result?.teams?.forEach(team => { teamsObj[team?.teamId] = team?.teamName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setTeams(teamsObj)
                     setData(formattedData.data);
@@ -179,23 +179,35 @@ export const OpenMarket = () => {
 
     const formatSocketDataForState = (responseData) => {
         if (!isEmpty(responseData)) {
-            let updatedDatalist = responseData.map(eventMarket => {
+            const newMarketData = {}
+            responseData.forEach(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
-                // console.log({ eventMarket });
                 const marketRunner = eventMarket.runner[0]
                 const status = eventMarket.status
                 if (statusListToInclude.includes(status) && marketRunner) {
-                    // console.log({ teamName: teams[eventMarket.teamId], eventMarket });
-                    return {
+                    const updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
-                        ...eventMarket.runner[0]
+                        ...eventMarket.runner[0],
+                        isNewSocketData: true
                     }
+                    newMarketData[eventMarket.marketId] = updatedMarketData
                 }
-                else return null
-            }).filter(x => x)
-            updatedDatalist = _.orderBy(updatedDatalist, ['marketId'], ['asc']);
-            setData(updatedDatalist)
+            })
+            setData((prevData) => {
+                let prevMarketData = {}
+                prevData.forEach(mrket => { prevMarketData[mrket.marketId] = mrket })
+                prevMarketData = {
+                    ...prevMarketData,
+                    ...newMarketData
+                }
+                setTimeout(() => {
+                    setData((storedData) => {
+                        return storedData.map(element => ({ ...element, isNewSocketData: false }))
+                    });
+                }, 3000);
+                return _.orderBy(Object.values(prevMarketData), ['marketId'], ['asc']);
+            })
         }
     }
 
@@ -254,7 +266,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <>
                     <div>{text}</div>
-                    <div>{record?.marketName}</div>
+                    <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </>
             ),
             key: "marketId",
