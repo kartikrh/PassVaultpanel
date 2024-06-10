@@ -13,6 +13,7 @@ const initialSliceState = {
         isAustralian: false,
         isEvent: false,
         isCompitition: false,
+        isMarket:false,
      },
     selectedMarketHistory: [{
         label: "Home", 
@@ -21,6 +22,7 @@ const initialSliceState = {
             isAustralian: false,
             isEvent: false,
             isCompitition: false,
+            isMarket: false
          }
     }]
 }
@@ -33,6 +35,7 @@ const marketSlice = createSlice({
             state.selectedMarket.isAustralian = action.payload.isAustralian
             state.selectedMarket.isEvent = action.payload.isEvent
             state.selectedMarket.isCompitition = action.payload.isCompitition
+            state.selectedMarket.isMarket = action.payload.isMarket
         },
         setSelectedMarketHistory: (state, action) => {
             state.selectedMarketHistory = action.payload

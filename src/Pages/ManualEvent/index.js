@@ -4,12 +4,14 @@ import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
+import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
 import {
   ERROR,
   PERMISSION_VIEW,
+  PERMISSION_DELETE,
   SUCCESS,
   TAB_MANUAL_EVENT,
 } from "../../components/Common/Const";
@@ -28,9 +30,11 @@ const Index = () => {
   document.title =
     "Manual Events";
   const [data, setData] = useState([]);
+  const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [rateSource, setRateSource] = useState(2);
+  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
   const { selectedMarket, selectedMarketHistory } = useSelector(
@@ -469,9 +473,21 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             changeOrderApiName="eventType"
+            singleCheck={checekedList}
             reFetchData={fetchData}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
             onBreadCrumbsClick={handleBreadCrumbsClick}
             breadCrumbs={selectedMarketHistory}
+          />
+           <DeleteTabModel
+            deleteModelVisable={deleteModelVisable}
+            setDeleteModelVisable={setDeleteModelVisable}
+            // handleDelete={handleDelete}
+            singleCheck={checekedList}
           />
           <TabModel
             addModelVisable={addModelVisable}

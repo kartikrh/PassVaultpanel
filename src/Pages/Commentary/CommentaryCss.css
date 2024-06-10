@@ -451,4 +451,6 @@
     border-color: #e1fad8;
 }
 
-/* http://localhost:3000/oddsView?commentaryId=601 */
+.bg-yellow {
+    background-color: yellow;
+}
