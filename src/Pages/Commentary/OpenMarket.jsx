@@ -110,28 +110,35 @@ export const OpenMarket = () => {
                 dataToUpdate.push({ ...record, [key]: value })
         })
         dataToUpdate = formatDataBeforeSend(dataToUpdate)
-        saveData(dataToUpdate)
+        if (!isEmpty(dataToUpdate))
+            saveData({ dataToSave: dataToUpdate, isSendAll: key === "isSendData" })
     }
 
     const updateRecords = (record) => {
         let dataToSend = []
+        let isSaveAll = false
         if (record) dataToSend = [record]
-        else dataToSend = data
+        else {
+            dataToSend = data
+            isSaveAll = true
+        }
         dataToSend = formatDataBeforeSend(dataToSend)
-        saveData(dataToSend)
+        saveData({ dataToSave: dataToSend, isSaveAll })
     }
 
     const handleSingleAction = (record, key, value) => {
         const updatedRecord = { ...record, [key]: value }
         const dataToSend = formatDataBeforeSend([updatedRecord])
-        saveData(dataToSend)
+        saveData({ dataToSave: dataToSend })
     }
 
-    const saveData = async (dataToSave) => {
+    const saveData = async ({ dataToSave, isSaveAll = false, isSendAll = false }) => {
         setIsLoading(true);
         await axiosInstance
             .post(`/admin/eventMarket/updateMarketRate`, {
                 eventMarket: dataToSave,
+                isSave: isSaveAll,
+                isSend: isSendAll
             })
             .then((response) => {
                 if (response?.result) {
@@ -142,7 +149,6 @@ export const OpenMarket = () => {
                     setData(formattedData.data);
                 }
                 setIsLoading(false);
-                // setIsAutoUpdate(true)
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             })
             .catch((error) => {
