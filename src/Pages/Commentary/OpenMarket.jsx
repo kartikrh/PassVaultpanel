@@ -110,7 +110,8 @@ export const OpenMarket = () => {
                 dataToUpdate.push({ ...record, [key]: value })
         })
         dataToUpdate = formatDataBeforeSend(dataToUpdate)
-        saveData(dataToUpdate)
+        if (!isEmpty(dataToUpdate))
+            saveData(dataToUpdate)
     }
 
     const updateRecords = (record) => {
