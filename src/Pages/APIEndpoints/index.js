@@ -117,6 +117,10 @@ const Index = () => {
     switch (status) {
       case 1:
         return "commentaryUpdate";
+      case 2:
+        return "vendorUpdate";
+      case 3:
+        return "vendorIpUpdate";
       default:
         return "Unknown";
     } 

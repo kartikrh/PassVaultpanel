@@ -30,6 +30,8 @@ export const APIEndpointConst = [
     options: [
       { label: "Select Module Type", value: "0" },
       { label: "commentaryUpdate", value: 1 },
+      { label: "vendorUpdate", value: 2 },
+      { label: "vendorIpUpdate", value: 3 },
     ],
     isRequired: true,
     type: SELECT,
