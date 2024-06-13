@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_SET_MARKETS_RESULT;
@@ -278,11 +279,13 @@ const Index = () => {
             setResultModelVisible(true);
             setSelectedResult(record);
           }}
-          className="d-flex justify-content-center gap-3"
+          className="d-flex justify-content-center gap-2"
           style={{ cursor: "pointer" }}
         >
           <div>{text}</div>
-          <div>{<a className="bx bx-edit-alt"></a>}</div>
+          <div><Tooltip title="Edit Result" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+           <i className="bx bx-edit-alt"></i>
+          </Tooltip></div>
         </span>
       ),
       style: { width: "10%", textAlign: "center" },
