@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
 
 const Index = () => {
   const pageName = TAB_SET_MARKETS_RESULT;
@@ -31,6 +32,8 @@ const Index = () => {
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
+  const [resultModelVisible, setResultModelVisible] = useState(false);
+  const [selectedResult, setSelectedResult] = useState({});
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -135,6 +138,36 @@ const Index = () => {
       });
   };
 
+  const handleChangeResult = async (val) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/eventMarket/UpdateResulOrApproveMarketResult`, {
+        ...selectedResult,
+        isResult: val
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setResultModelVisible(false);
+      })
+      .catch((error) => {
+        setResultModelVisible(false);
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleReset = (value) => {
     fetchData(value);
   };
@@ -239,6 +272,19 @@ const Index = () => {
       title: "Result",
       dataIndex: "result",
       key: "result",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setResultModelVisible(true);
+            setSelectedResult(record);
+          }}
+          className="d-flex justify-content-center gap-3"
+          style={{ cursor: "pointer" }}
+        >
+          <div>{text}</div>
+          <div>{<a className="bx bx-edit-alt"></a>}</div>
+        </span>
+      ),
       style: { width: "10%", textAlign: "center" },
       sort: true,
     },
@@ -331,6 +377,16 @@ const Index = () => {
             isSearch={isSearch}
             setIsSearch={setIsSearch}
           />
+           {resultModelVisible && (
+            <ChangeMarketResultModel
+              resultModelVisible={resultModelVisible}
+              setResultModelVisible={setResultModelVisible}
+              handleChange={handleChangeResult}
+              singleCheck={checekedList}
+              selectedResult={selectedResult}
+              setSelectedResult={setSelectedResult}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

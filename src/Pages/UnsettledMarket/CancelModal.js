@@ -13,42 +13,52 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import CloseMarketModel from "../../components/Model/CloseMarketModel";
 
 const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
   const [password, setPassword] = useState("");
+  const [closeModelVisable, setCloseModelVisable] = useState(false);
   const dispatch = useDispatch();
 
-  const handleYesClick = async () => {
-    await axiosInstance
-      .post("/admin/eventMarket/setMarketCancel", {
-        eventMarketId: data.eventMarketId,
-        commentaryId: data.commentaryId,
-        password: password,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-    setPassword("");
+  const handleYesClick = () => {
+    setCloseModelVisable(true)
     toggle();
   };
 
+  const handleClose = async () => {
+    await axiosInstance
+    .post("/admin/eventMarket/setMarketCancel", {
+      eventMarketId: data.eventMarketId,
+      commentaryId: data.commentaryId,
+      password: password,
+    })
+    .then((response) => {
+      fetchData();
+      setCloseModelVisable(false);
+      setPassword("");
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    })
+    .catch((error) => {
+      setCloseModelVisable(false);
+      setPassword("");
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    });
+  };
+
   return (
+    <>
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
       <ModalHeader toggle={toggle}>Cancel Market</ModalHeader>
       <ModalBody>
@@ -98,6 +108,12 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
         </Button>
       </ModalFooter>
     </Modal>
+    <CloseMarketModel
+      closeModelVisible={closeModelVisable}
+      setCloseModelVisable={setCloseModelVisable}
+      handleClose={handleClose}
+    />
+    </>
   );
 };
 

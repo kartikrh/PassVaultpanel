@@ -36,7 +36,7 @@ const Index = ({
             id="modal-id"
           >
             <span className="mt-4 mb-4">
-              Are you sure you want to close this commentary?
+              Are you sure you want to close this market?
             </span>
             <div className="hstack gap-2 justify-content-center">
               <button
