@@ -116,6 +116,20 @@ export const loadCommentaryFeature = createAsyncThunk(
         }
     }
 );
+
+export const addSuperOverCall = createAsyncThunk(
+    'commentary/superOverCall',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/addSuperOver', data);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 const commentarySlice = createSlice({
     name: 'commentary',
     initialState: {
@@ -127,7 +141,8 @@ const commentarySlice = createSlice({
         isUndoCompleted: undefined,
         isBowlerChanged: undefined,
         isCommentaryBallLoading: undefined,
-        isRedirect: undefined
+        isRedirect: undefined,
+        superOverApiData: undefined
     },
     reducers: {
         updateSavedState: (state, action) => {
@@ -147,6 +162,7 @@ const commentarySlice = createSlice({
             state.isLoading = undefined
             state.error = undefined
             state.isRedirect = undefined
+            state.superOverApiData = undefined
         },
     },
     extraReducers: (builder) => {
@@ -249,6 +265,18 @@ const commentarySlice = createSlice({
             .addCase(loadCommentaryFeature.rejected, (state, action) => {
                 state.error = action.payload;
                 state.isLoading = false
+            })
+            .addCase(addSuperOverCall.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addSuperOverCall.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.superOverApiData = action.payload
+            })
+            .addCase(addSuperOverCall.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isLoading = false
+                state.superOverApiData = false
             })
     }
 });
