@@ -105,6 +105,8 @@ const CommentaryMarketTemplate = () => {
                 return {
                     ...element,
                     "eventMarketId": +element.eventMarketId,
+                    "isActive": element.isDefaultMarketActive || false,
+                    "isAllow": element.isDefaultBetAllowed || false,
                 }
             })
             await axiosInstance
@@ -542,38 +544,38 @@ const CommentaryMarketTemplate = () => {
         },
         {
             title: "Is Active",
-            dataIndex: "isActive",
+            dataIndex: "isDefaultMarketActive",
             render: (text, record) => (
                 <Button
-                    color={`${record.isActive ? "primary" : "danger"}`}
+                    color={`${record.isDefaultMarketActive ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isActive", !record.isActive);
+                        handleValueChange(record, "isDefaultMarketActive", !record.isDefaultMarketActive);
                     }}
                 >
-                    <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+                    <i className={`bx ${record.isDefaultMarketActive ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
-            key: "isActive",
+            key: "isDefaultMarketActive",
             style: { width: "2%", textAlign: "center" },
         },
         {
             title: "Market Allow",
-            dataIndex: "isAllow",
+            dataIndex: "isDefaultBetAllowed",
             render: (text, record) => (
                 <Button
-                    color={`${record.isAllow ? "primary" : "danger"}`}
+                    color={`${record.isDefaultBetAllowed ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isAllow", !record.isAllow);
+                        handleValueChange(record, "isDefaultBetAllowed", !record.isDefaultBetAllowed);
                     }}
                 >
-                    <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+                    <i className={`bx ${record.isDefaultBetAllowed ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
-            key: "isAllow",
+            key: "isDefaultBetAllowed",
             style: { width: "2%", textAlign: "center" },
         },
     ];
