@@ -290,7 +290,6 @@ export const CommentaryScreen = ({
                     setIsBoundary(undefined)
                 }}
             />}
-
         {actionPopup && <CommentaryAction
             toggle={() => setActionPopup(false)}
             changeOver={() => {
