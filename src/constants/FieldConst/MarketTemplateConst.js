@@ -268,8 +268,24 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        name: "isDefaultBetAllowed",
+        label: "Is Bet Allowed",
+        type: SWITCH,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "isDefaultMarketActive",
+        label: "Is Market Active",
+        type: SWITCH,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
         name: "isActive",
-        label: "IsActive",
+        label: "Is Active",
         type: SWITCH,
         defaultValue: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },

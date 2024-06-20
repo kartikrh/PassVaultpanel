@@ -23,7 +23,7 @@ import { updateToastData } from "../../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
 import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 import { RSelect } from "../Reusables/FormElements";
-import { DatePicker, Space } from "antd";
+import { DatePicker, Space, Tooltip } from "antd";
 import moment from "moment";
 import { convertDateUTCToLocal } from "../Reusables/reusableMethods";
 import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
@@ -1278,10 +1278,13 @@ const Index = forwardRef(
                             data={generateSimplifiedData().csvData}
                             filename={tableElement.title + ".csv"}
                           >
+                            <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
                             <Button size="small" className="btn border">
                               <i className="fas fa-file-csv"></i>
                             </Button>
+                            </Tooltip>
                           </CSVLink>
+                          <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
                           <Button
                             size="large"
                             className="btn border mx-1"
@@ -1289,9 +1292,12 @@ const Index = forwardRef(
                           >
                             <i className="fas fa-file-excel"></i>
                           </Button>
+                          </Tooltip>
+                          <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
                           <Button onClick={generatePDF} className="btn border">
                             <i className="bx bxs-file-pdf"></i>
                           </Button>
+                          </Tooltip>
                         </div>
                       )}
                       <div className="">

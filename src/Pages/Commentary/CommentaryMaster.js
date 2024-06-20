@@ -161,7 +161,6 @@ function CommentaryMaster() {
                                             isDataLoading={isDataLoading}
                                         />}
                                     <Col xs={12} md={6} lg={6}>
-
                                         <img role="button" className="sticky-button"
                                             onClick={() => setStatusPopup(true)}
                                             src="icons/commentary.png" alt="Icon" />

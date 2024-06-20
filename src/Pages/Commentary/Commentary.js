@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getEconomyRate, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
@@ -28,6 +28,9 @@ import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
+    const [propsData, setPropsData] = useState(undefined)
+    const [commentaryDetails, setCommentaryDetails] = useState(undefined)
+    const [matchTypeDetails, setMatchTypeDetails] = useState(undefined)
     const [isLastInnigs, setIsLastInnings] = useState(undefined)
     const [ballHistory, setBallHistory] = useState([])
     const [overHistory, setOverHistory] = useState([])
@@ -69,11 +72,10 @@ const Commentary = (props) => {
     const [showRretiredHurt, setShowRretiredHurt] = useState(false)
     const [target, setTarget] = useState(0)
     const [superOverModal, setSuperOverModal] = useState(0)
-    const matchTypeDetails = props.data.commentaryData.matchTypeDetails
-    const commentaryDetails = { ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" }
-    const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
+    const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
     useEffect(() => {
+        console.log({ propsData, commentaryDetails, matchTypeDetails });
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
         // console.log(commentaryDetails, matchTypeDetails)
@@ -129,6 +131,11 @@ const Commentary = (props) => {
     }
     const handleSuperOver = (overs) => {
         setSuperOverModal(false)
+        const objToSend = {
+            commentaryId: commentaryDetails.commentaryId,
+            teamMaxOver: overs
+        }
+        dispatch(addSuperOverCall(objToSend))
         console.log("Super over for : ", overs);
     }
     const checkWinner = () => {
@@ -200,7 +207,7 @@ const Commentary = (props) => {
     }
     const handleInningsUpdate = (battingTeamId) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
-        props.data.commentaryData?.commentaryTeams?.forEach(team => {
+        propsData.commentaryData?.commentaryTeams?.forEach(team => {
             if (team.currentInnings === (commentaryDetails.currentInnings + 1)) {
                 // Issue check
                 const updatedTeamStatus = team.teamId === battingTeamId ? 1 : 2
@@ -1331,7 +1338,122 @@ const Commentary = (props) => {
         setPlayers({ ...players, [BATTING_TEAM]: updatedPlayerList })
         setOnPitchPlayers({ ...onPitchPlayers, ...updatedOnPitchPlayer })
     }
-
+    const initialDataLoad = () => {
+        const currentInningsTeams = {}
+        const battingTeam = []
+        const bowlingTeam = []
+        const onPitchPlayers = {}
+        let currentPartnership = {}
+        const apiCallObj = {}
+        let currentOver = 0
+        let currentOverToUpdate = 0
+        propsData.commentaryData.commentaryTeams.forEach(teamDetails => {
+            if (isEqual(teamDetails.currentInnings, commentaryDetails.currentInnings)) {
+                const isBattingTeam = teamDetails.teamStatus === BAT
+                currentInningsTeams[isBattingTeam ? BATTING_TEAM : BOWLING_TEAM] = teamDetails
+                if (isBattingTeam) {
+                    currentOver = Math.floor(teamDetails?.teamOver)
+                    const trail = (+teamDetails?.teamTrialRuns || 0)
+                    if (trail > 0) setTarget(trail + 1)
+                }
+            }
+        });
+        propsData.commentaryData.commentaryPlayers.forEach(playerDetails => {
+            if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
+                const isBattingTeam = playerDetails.teamId === currentInningsTeams[BATTING_TEAM].teamId
+                // If player is from batting team, add them to the batting object list
+                if (isBattingTeam) {
+                    if (playerDetails.isPlay === true) {
+                        if (!playerDetails.batterOrder) {
+                            playerDetails = { ...playerDetails, batterOrder: playerDetails.onStrike === true ? 1 : 2 }
+                            apiCallObj["commentaryPlayers"] = [].concat((apiCallObj.commentaryPlayers || []), [playerDetails])
+                        }
+                        onPitchPlayers[playerDetails.onStrike === true ? ON_STRIKE : NON_STRIKE] = playerDetails
+                    }
+                    battingTeam.push(playerDetails)
+                }
+                else {
+                    if (playerDetails.isPlay === true) {
+                        if (!playerDetails.bowlerOrder) {
+                            playerDetails = { ...playerDetails, bowlerOrder: 1 }
+                            apiCallObj["commentaryPlayers"] = [].concat((apiCallObj.commentaryPlayers || []), [playerDetails])
+                        }
+                        onPitchPlayers[CURRENT_BOWLER] = playerDetails
+                    }
+                    bowlingTeam.push(playerDetails)
+                }
+            }
+        });
+        propsData.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
+            if (
+                (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) &&
+                    isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)) ||
+                (
+                    isEqual(partnershipDetails.batter1Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId) &&
+                    isEqual(partnershipDetails.batter2Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId)
+                )) {
+                currentPartnership = partnershipDetails
+            }
+        });
+        // console.log(propsData.commentaryData.commentaryOvers)
+        propsData.commentaryData.commentaryOvers.forEach(overDetails => {
+            if (isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) && isEqual(+overDetails.over, +currentOver)) {
+                // if (isEqual(+overDetails.over, +currentOver)) {
+                currentOverToUpdate = overDetails
+            }
+        });
+        const partnershipDetails = {
+            "batter1Id": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
+            "batter1Name": onPitchPlayers[ON_STRIKE]?.playerName,
+            "batter2Id": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
+            "batter2Name": onPitchPlayers[NON_STRIKE]?.playerName,
+        }
+        const ballData = propsData.commentaryData.commentaryBallByBall || []
+        let ballByBallHistoryData = ballData?.commentaryBallByBallId ? [ballData] : ballData
+        ballByBallHistoryData = _.orderBy(ballByBallHistoryData, ["commentaryBallByBallId"], ["asc"])
+        const overData = propsData.commentaryData.commentaryOvers || []
+        let overHistoryData = overData.overId ? [overData] : overData
+        overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
+        const partnershipData = propsData.commentaryData.commentaryPartnership || []
+        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : partnershipData
+        partnershipHistoryData = _.orderBy(partnershipHistoryData, ["commentaryPartnershipId"], ["asc"])
+        setTeams(currentInningsTeams)
+        setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
+        setOnPitchPlayers(onPitchPlayers)
+        setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData))
+        setBallHistory(ballByBallHistoryData)
+        setOverHistory(overHistoryData)
+        setPartnershipHistory(partnershipHistoryData)
+        setWicketHistory(propsData.commentaryData.commentaryWicket)
+        setCurrentPartnership({ ...partnershipDetails, ...currentPartnership })
+        setCurrentOver(currentOverToUpdate)
+        setCurrentBall(_.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined)
+        // checkInningsSwitch(ALL)
+        setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
+        if (isEmpty(currentPartnership) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
+            && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
+            apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams })
+        if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
+            apiCallObj["commentaryOvers"] = generateOver({
+                commentaryDetails, onPitchPlayers, teams: currentInningsTeams
+            })
+        }
+        if (!isEmpty(apiCallObj)) {
+            dispatch(addCommentaryScreenData({
+                ...apiCallObj,
+                "commentaryId": commentaryDetails.commentaryId,
+            }))
+        }
+        if (superOverApiData) {
+            dispatch(clearLoadingAndError())
+            handleInningsUpdate()
+        }
+    }
+    useEffect(() => {
+        if (superOverApiData) {
+            setPropsData(superOverApiData)
+        }
+    }, [superOverApiData])
     useEffect(() => {
         if (updateRunsFromWicket) {
             updateRuns(updateRunsFromWicket)
@@ -1436,115 +1558,18 @@ const Commentary = (props) => {
         }
     }, [isOverChange])
     useEffect(() => {
-        if (props.data) {
-            const currentInningsTeams = {}
-            const battingTeam = []
-            const bowlingTeam = []
-            const onPitchPlayers = {}
-            let currentPartnership = {}
-            const apiCallObj = {}
-            let currentOver = 0
-            let currentOverToUpdate = 0
-            props.data.commentaryData.commentaryTeams.forEach(teamDetails => {
-                if (isEqual(teamDetails.currentInnings, commentaryDetails.currentInnings)) {
-                    const isBattingTeam = teamDetails.teamStatus === BAT
-                    currentInningsTeams[isBattingTeam ? BATTING_TEAM : BOWLING_TEAM] = teamDetails
-                    if (isBattingTeam) {
-                        currentOver = Math.floor(teamDetails?.teamOver)
-                        const trail = (+teamDetails?.teamTrialRuns || 0)
-                        if (trail > 0) setTarget(trail + 1)
-                    }
-                }
-            });
-            props.data.commentaryData.commentaryPlayers.forEach(playerDetails => {
-                if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
-                    const isBattingTeam = playerDetails.teamId === currentInningsTeams[BATTING_TEAM].teamId
-                    // If player is from batting team, add them to the batting object list
-                    if (isBattingTeam) {
-                        if (playerDetails.isPlay === true) {
-                            if (!playerDetails.batterOrder) {
-                                playerDetails = { ...playerDetails, batterOrder: playerDetails.onStrike === true ? 1 : 2 }
-                                apiCallObj["commentaryPlayers"] = [].concat((apiCallObj.commentaryPlayers || []), [playerDetails])
-                            }
-                            onPitchPlayers[playerDetails.onStrike === true ? ON_STRIKE : NON_STRIKE] = playerDetails
-                        }
-                        battingTeam.push(playerDetails)
-                    }
-                    else {
-                        if (playerDetails.isPlay === true) {
-                            if (!playerDetails.bowlerOrder) {
-                                playerDetails = { ...playerDetails, bowlerOrder: 1 }
-                                apiCallObj["commentaryPlayers"] = [].concat((apiCallObj.commentaryPlayers || []), [playerDetails])
-                            }
-                            onPitchPlayers[CURRENT_BOWLER] = playerDetails
-                        }
-                        bowlingTeam.push(playerDetails)
-                    }
-                }
-            });
-            props.data.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
-                if (
-                    (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) &&
-                        isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)) ||
-                    (
-                        isEqual(partnershipDetails.batter1Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId) &&
-                        isEqual(partnershipDetails.batter2Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId)
-                    )) {
-                    currentPartnership = partnershipDetails
-                }
-            });
-            // console.log(props.data.commentaryData.commentaryOvers)
-            props.data.commentaryData.commentaryOvers.forEach(overDetails => {
-                if (isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) && isEqual(+overDetails.over, +currentOver)) {
-                    // if (isEqual(+overDetails.over, +currentOver)) {
-                    currentOverToUpdate = overDetails
-                }
-            });
-            const partnershipDetails = {
-                "batter1Id": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
-                "batter1Name": onPitchPlayers[ON_STRIKE]?.playerName,
-                "batter2Id": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
-                "batter2Name": onPitchPlayers[NON_STRIKE]?.playerName,
-            }
-            const ballData = props.data.commentaryData.commentaryBallByBall || []
-            let ballByBallHistoryData = ballData?.commentaryBallByBallId ? [ballData] : ballData
-            ballByBallHistoryData = _.orderBy(ballByBallHistoryData, ["commentaryBallByBallId"], ["asc"])
-            const overData = props.data.commentaryData.commentaryOvers || []
-            let overHistoryData = overData.overId ? [overData] : overData
-            overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
-            const partnershipData = props.data.commentaryData.commentaryPartnership || []
-            let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : partnershipData
-            partnershipHistoryData = _.orderBy(partnershipHistoryData, ["commentaryPartnershipId"], ["asc"])
-            setTeams(currentInningsTeams)
-            setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
-            setOnPitchPlayers(onPitchPlayers)
-            setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData))
-            setBallHistory(ballByBallHistoryData)
-            setOverHistory(overHistoryData)
-            setPartnershipHistory(partnershipHistoryData)
-            setWicketHistory(props.data.commentaryData.commentaryWicket)
-            setCurrentPartnership({ ...partnershipDetails, ...currentPartnership })
-            setCurrentOver(currentOverToUpdate)
-            setCurrentBall(_.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined)
-            // checkInningsSwitch(ALL)
-            setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
-            if (isEmpty(currentPartnership) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
-                && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
-                apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentBall: {}, currentPartnership: partnershipDetails, teams: currentInningsTeams })
-            if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
-                apiCallObj["commentaryOvers"] = generateOver({
-                    commentaryDetails, onPitchPlayers, teams: currentInningsTeams
-                })
-            }
-            if (!isEmpty(apiCallObj)) {
-                dispatch(addCommentaryScreenData({
-                    ...apiCallObj,
-                    "commentaryId": commentaryDetails.commentaryId,
-                }))
-            }
-
+        console.log(propsData, props.data);
+        if (isEmpty(propsData) && !isEmpty(props.data)) {
+            setPropsData(props.data)
+            setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
+            setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
     }, [])
+    useEffect(() => {
+        if (!isEmpty(propsData)) {
+            initialDataLoad()
+        }
+    }, [propsData])
     useEffect(() => {
         if (!isEmpty(commentaryDataToUpdate)) {
             // if (isUndoBall) dispatch(undoBallFromCommentary({ "commentaryBallByBallId": currentBall.commentaryBallByBallId }))
@@ -1694,7 +1719,7 @@ const Commentary = (props) => {
             isOpen={showUpdateInnings}
             toggle={() => { setShowUpdateInnings(undefined) }}
             onsubmit={handleInningsUpdate}
-            currentInningTeams={props.data.commentaryData?.commentaryTeams?.filter(team => team.currentInnings === (commentaryDetails.currentInnings + 1))}
+            currentInningTeams={propsData.commentaryData?.commentaryTeams?.filter(team => team.currentInnings === (commentaryDetails.currentInnings + 1))}
         />}
         {showSwitchBatterModal && <UpdateStrikeModal
             isOpen={showSwitchBatterModal}
