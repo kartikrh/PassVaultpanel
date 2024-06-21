@@ -10,11 +10,19 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import CloseMarketModel from "../../components/Model/CloseMarketModel";
+import { useState } from "react";
 
 const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
+  const [closeModelVisable, setCloseModelVisable] = useState(false);
   const dispatch = useDispatch();
 
-  const handleYesClick = async () => {
+  const handleYesClick = () => {
+    setCloseModelVisable(true)
+    toggle();
+  };
+
+  const handleClose = async () => {
     await axiosInstance
       .post(`/admin/eventMarket/setMarketClose`, {
         eventMarketId: data.eventMarketId,
@@ -22,6 +30,7 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
       })
       .then((response) => {
         fetchData();
+        setCloseModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -31,6 +40,7 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
         );
       })
       .catch((error) => {
+        setCloseModelVisable(false);
         dispatch(
           updateToastData({
             data: error?.message,
@@ -38,11 +48,11 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
             type: ERROR,
           })
         );
-      });
-    toggle();
+    });
   };
 
   return (
+    <>
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
       <ModalHeader toggle={toggle}>Close Market</ModalHeader>
       <ModalBody>
@@ -81,6 +91,12 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
         </Button>
       </ModalFooter>
     </Modal>
+    <CloseMarketModel
+      closeModelVisible={closeModelVisable}
+      setCloseModelVisable={setCloseModelVisable}
+      handleClose={handleClose}
+    />
+    </>
   );
 };
 
