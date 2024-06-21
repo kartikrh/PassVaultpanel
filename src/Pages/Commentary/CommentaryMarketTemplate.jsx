@@ -105,8 +105,8 @@ const CommentaryMarketTemplate = () => {
                 return {
                     ...element,
                     "eventMarketId": +element.eventMarketId,
-                    "isActive": element.isDefaultMarketActive || false,
-                    "isAllow": element.isDefaultBetAllowed || false,
+                    "isActive": element.isActive || false,
+                    "isAllow": element.isAllow || false,
                 }
             })
             await axiosInstance
@@ -161,7 +161,6 @@ const CommentaryMarketTemplate = () => {
                                 underRate: "",
                                 margin: "",
                                 line: "",
-                                isAllow: true,
                                 data: "", // not getting from market
                                 playerId: null, // not getting from market
                                 ...market,
@@ -170,6 +169,8 @@ const CommentaryMarketTemplate = () => {
                                 marketName: market.templateName,
                                 teamId: team.teamId,
                                 inningsId: team.currentInnings,
+                                isActive: market.isDefaultMarketActive,
+                                isAllow: market.isDefaultBetAllowed,
                             }))
                         });
                     });
@@ -182,7 +183,6 @@ const CommentaryMarketTemplate = () => {
                             underRate: "",
                             margin: "",
                             line: "",
-                            isAllow: true,
                             data: "", // not getting from market
                             playerId: null, // not getting from market
                             ...market,
@@ -191,6 +191,8 @@ const CommentaryMarketTemplate = () => {
                             marketName: market.templateName,
                             teamId: "0",
                             inningsId: "0",
+                            isActive: market.isDefaultMarketActive,
+                            isAllow: market.isDefaultBetAllowed,
                         }))
                     });
                     newData = newData.sort((a, b) => {
@@ -544,38 +546,38 @@ const CommentaryMarketTemplate = () => {
         },
         {
             title: "Is Active",
-            dataIndex: "isDefaultMarketActive",
+            dataIndex: "isActive",
             render: (text, record) => (
                 <Button
-                    color={`${record.isDefaultMarketActive ? "primary" : "danger"}`}
+                    color={`${record.isActive ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isDefaultMarketActive", !record.isDefaultMarketActive);
+                        handleValueChange(record, "isActive", !record.isActive);
                     }}
                 >
-                    <i className={`bx ${record.isDefaultMarketActive ? "bx-check" : "bx-block"}`}></i>
+                    <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
-            key: "isDefaultMarketActive",
+            key: "isActive",
             style: { width: "2%", textAlign: "center" },
         },
         {
             title: "Market Allow",
-            dataIndex: "isDefaultBetAllowed",
+            dataIndex: "isAllow",
             render: (text, record) => (
                 <Button
-                    color={`${record.isDefaultBetAllowed ? "primary" : "danger"}`}
+                    color={`${record.isAllow ? "primary" : "danger"}`}
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleValueChange(record, "isDefaultBetAllowed", !record.isDefaultBetAllowed);
+                        handleValueChange(record, "isAllow", !record.isAllow);
                     }}
                 >
-                    <i className={`bx ${record.isDefaultBetAllowed ? "bx-check" : "bx-block"}`}></i>
+                    <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
                 </Button>
             ),
-            key: "isDefaultBetAllowed",
+            key: "isAllow",
             style: { width: "2%", textAlign: "center" },
         },
     ];
