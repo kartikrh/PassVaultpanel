@@ -49,12 +49,12 @@ const Index = () => {
     setEventTypeActive(tableActions?.isActive)
     let payload = {
       ...(latestValueFromTable || tableActions),
+      status: 4,
     };
     if (isSearch) {
       payload = {
         ...payload,
         ...dateRange,
-        status: 4,
       };
     }
     if (latestValueFromTable?.eventTypeId === null) {
