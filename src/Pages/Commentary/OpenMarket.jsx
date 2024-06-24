@@ -189,8 +189,7 @@ export const OpenMarket = () => {
             responseData.forEach(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
                 const marketRunner = eventMarket.runner[0]
-                const status = eventMarket.status
-                if (statusListToInclude.includes(status) && marketRunner) {
+                if (marketRunner) {
                     const updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
@@ -202,6 +201,7 @@ export const OpenMarket = () => {
             })
             setData((prevData) => {
                 let prevMarketData = {}
+                let finalDataToSet = []
                 prevData.forEach(mrket => { prevMarketData[mrket.marketId] = mrket })
                 prevMarketData = {
                     ...prevMarketData,
@@ -212,7 +212,8 @@ export const OpenMarket = () => {
                         return storedData.map(element => ({ ...element, isNewSocketData: false }))
                     });
                 }, 3000);
-                return _.orderBy(Object.values(prevMarketData), ['marketId'], ['asc']);
+                finalDataToSet = Object.values(prevMarketData).filter(e => statusListToInclude.includes(e.status))
+                return _.orderBy(finalDataToSet, ['marketId'], ['asc']);
             })
         }
     }
