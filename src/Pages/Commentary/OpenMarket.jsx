@@ -254,6 +254,11 @@ export const OpenMarket = () => {
         navigate("/commentary");
     };
 
+    const updateLineAndDependency = (record, newValue) => {
+        handleValueChange(record, "line", newValue);
+        handleValueChange(record, "layPrice", Math.round(+newValue));
+        handleValueChange(record, "backPrice", Math.round(+newValue) + 1);
+    }
     const columns = [
         {
             title: "Team",
@@ -302,11 +307,7 @@ export const OpenMarket = () => {
                 <CustomInput
                     className="form-control small-text-fields input-line-field"
                     value={text || ""}
-                    onChange={(newValue) => {
-                        handleValueChange(record, "line", newValue);
-                        handleValueChange(record, "layPrice", Math.round(+newValue));
-                        handleValueChange(record, "backPrice", Math.round(+newValue) + 1);
-                    }}
+                    onChange={(newValue) => updateLineAndDependency(record, newValue)}
                 />
             ),
             key: "line",
@@ -319,31 +320,31 @@ export const OpenMarket = () => {
                 <div className="d-flex align-items-center gap-1">
                     <Button
                         className="form-control line-text-fields"
-                        onClick={() => handleValueChange(record, "line", record?.line - 2)}
+                        onClick={() => updateLineAndDependency(record, record?.line - 2)}
                     >
                         {Math.round(record?.line) - 2}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
-                        onClick={() => handleValueChange(record, "line", record?.line - 1)}
+                        onClick={() => updateLineAndDependency(record, record?.line - 1)}
                     >
                         {Math.round(record?.line) - 1}
                     </Button>
                     <Button
                         className="form-control line-center-text-fields"
-                        onClick={() => handleValueChange(record, "line", record?.line)}
+                        onClick={() => updateLineAndDependency(record, record?.line)}
                     >
                         {Math.round(record?.line)}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
-                        onClick={() => handleValueChange(record, "line", record?.line + 1)}
+                        onClick={() => updateLineAndDependency(record, record?.line + 1)}
                     >
                         {Math.round(record?.line) + 1}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
-                        onClick={() => handleValueChange(record, "line", record?.line + 2)}
+                        onClick={() => updateLineAndDependency(record, record?.line + 2)}
                     >
                         {Math.round(record?.line) + 2}
                     </Button>
