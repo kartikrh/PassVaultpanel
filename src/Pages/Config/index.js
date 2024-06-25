@@ -155,6 +155,31 @@ const Index = () => {
         );
       });
   };
+  const handleSignalRToggle = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/signalr/toggle`)
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.status,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   //delete All Commentary
   const handleDeleteAll = async (e) => {
     setIsLoading(true);
@@ -360,6 +385,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             loadPanelModelFunction={handleLoadPanelData} 
             loadClientModelFunction={handleLoadClientData}
+            loadSignalRToggleFunction={handleSignalRToggle}
             singleCheck={checekedList}
             reFetchData={fetchData}
             onAddNavigate={"/addConfig"}
