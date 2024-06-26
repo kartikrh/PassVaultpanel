@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
+import { AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
@@ -21,6 +21,8 @@ const tableElement = {
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
     const [teams, setTeams] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [categorisedData, setCategorisedData] = useState([]);
     const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -224,10 +226,13 @@ export const OpenMarket = () => {
             .then((response) => {
                 if (response?.result) {
                     const teamsObj = {}
+                    const newCategoryObj = {}
                     response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setTeams(teamsObj)
                     setData(formattedData.data);
+                    setCategories(newCategoryObj)
                     setLineRatio(formattedData.lineRatio)
                 }
             })
@@ -584,6 +589,18 @@ export const OpenMarket = () => {
         };
     }, [isAutoUpdate, isSocketConnected])
 
+    useEffect(() => {
+        const tempCategorisedData = {}
+        if (!isEmpty(data)) {
+            data.forEach(market => {
+                tempCategorisedData[categories[market.marketTypeCategoryId]] =
+                    [].concat(
+                        tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
+                    )
+            })
+            setCategorisedData(tempCategorisedData)
+        }
+    }, [data])
     return (
         <React.Fragment>
             <div className="page-content">
@@ -607,7 +624,7 @@ export const OpenMarket = () => {
                                     </Col>
                                     }
                                 </Row>
-                                {data.length > 0 ? <>
+                                {data.length > 0 &&
                                     <Row>
                                         <Col className="p-0" xs={12} md={3} lg={2}>
                                             <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
@@ -626,7 +643,6 @@ export const OpenMarket = () => {
                                             {isSocketConnected ?
                                                 <div className="table-header-button text-center">
                                                     <span className="live-css">
-                                                        {/* &#x1F7E2; */}
                                                     </span>{" "}
                                                     <span className="live-text">Live</span>{" "}
                                                 </div> :
@@ -637,19 +653,29 @@ export const OpenMarket = () => {
                                             <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
                                             <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <ListingElement
-                                                columns={columns}
-                                                dataSource={data}
-                                                tableElement={tableElement}
-                                                tableExtras={generateExtraField}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </> : <div className=" m-4 text-center">No record found</div>}
-
+                                    </Row>}
+                                {Object.keys(categorisedData).map((category, index) => {
+                                    return <UncontrolledAccordion defaultOpen="0" className="market-category-accordian">
+                                        <AccordionItem >
+                                            <AccordionHeader className="market-category-header" targetId={index}>{category}</AccordionHeader>
+                                            <AccordionBody accordionId={index}>
+                                                {categorisedData?.[category].length > 0 ? <>
+                                                    <Row>
+                                                        <Col>
+                                                            <ListingElement
+                                                                columns={columns}
+                                                                dataSource={categorisedData?.[category] || []}
+                                                                tableElement={tableElement}
+                                                                tableExtras={generateExtraField}
+                                                            />
+                                                        </Col>
+                                                    </Row>
+                                                </> : <div className=" m-4 text-center">No record found</div>}
+                                            </AccordionBody>
+                                        </AccordionItem >
+                                    </UncontrolledAccordion>
+                                })
+                                }
                             </CardBody>
                         </Card>
                     </Row>
