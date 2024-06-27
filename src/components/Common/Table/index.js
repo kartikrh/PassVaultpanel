@@ -53,6 +53,7 @@ const Index = forwardRef(
       deleteAllModelFunction,
       loadPanelModelFunction,
       loadClientModelFunction,
+      loadSignalRToggleFunction,
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
@@ -1036,6 +1037,18 @@ const Index = forwardRef(
                     </Col>
                     <Col className="col-sm-auto ms-auto">
                       <div className="d-flex flex-wrap align-items-center gap-2">
+                        {isDeleteAllPermission && (
+                          <Button
+                            color="success"
+                            onClick={() => {
+                              loadSignalRToggleFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            SignalR Toggle
+                          </Button>
+                        )}
                         {isDeleteAllPermission && (
                           <Button
                             color="warning"

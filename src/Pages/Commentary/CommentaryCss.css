@@ -454,3 +454,12 @@
 .bg-yellow {
     background-color: yellow;
 }
+
+.market-category-accordian {
+    margin-top: 0.75rem;
+    background-color: beige;
+}
+
+.market-category-header {
+    text-transform: capitalize;
+}
