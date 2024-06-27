@@ -35,6 +35,7 @@ export const OpenMarket = () => {
     const dispatch = useDispatch();
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
+    const lineRatioForMarketCategoryId = 23
 
     const fetchConfigAll = async () => {
         setIsLoading(true);
@@ -170,9 +171,11 @@ export const OpenMarket = () => {
     }
 
     const formatAPIDataForState = ({ responseData, teamData }) => {
-        let highestLineRatio = 0
+        let highestLineRatio = 1
         let updatedDatalist = responseData.map(eventMarket => {
-            if (highestLineRatio < (+eventMarket.lineRatio || 0)) highestLineRatio = +eventMarket.lineRatio
+            if ((eventMarket.marketTypeCategoryId === lineRatioForMarketCategoryId)
+                && (highestLineRatio < (+eventMarket.lineRatio || 0)))
+                highestLineRatio = +eventMarket.lineRatio
             if (eventMarket.runner)
                 return {
                     ...eventMarket,
@@ -530,7 +533,7 @@ export const OpenMarket = () => {
         },
     ];
 
-    const generateExtraField = <>
+    const lineRatioField = <>
         <Col xs={3} md={3} lg={2}>
             <div><b>Line Ratio :</b></div>
         </Col>
@@ -625,7 +628,7 @@ export const OpenMarket = () => {
                                     }
                                 </Row>
                                 {data.length > 0 &&
-                                    <Row>
+                                    <Row className="px-2">
                                         <Col className="p-0" xs={12} md={3} lg={2}>
                                             <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
                                             <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
@@ -653,6 +656,9 @@ export const OpenMarket = () => {
                                             <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
                                             <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
                                         </Col>
+                                        <Col className="px-1 py-3">
+                                            {lineRatioField}
+                                        </Col>
                                     </Row>}
                                 {Object.keys(categorisedData).map((category, index) => {
                                     return <UncontrolledAccordion defaultOpen="0" className="market-category-accordian">
@@ -666,7 +672,6 @@ export const OpenMarket = () => {
                                                                 columns={columns}
                                                                 dataSource={categorisedData?.[category] || []}
                                                                 tableElement={tableElement}
-                                                                tableExtras={generateExtraField}
                                                             />
                                                         </Col>
                                                     </Row>
