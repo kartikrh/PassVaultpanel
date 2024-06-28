@@ -7,7 +7,7 @@ import { AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, 
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE } from "./CommentartConst";
+import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
@@ -643,16 +643,20 @@ export const OpenMarket = () => {
                                         </Col>
                                         <Col className="p-0 d-flex" xs={12} md={3} lg={2}>
                                             <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish</Button>
+                                        </Col>
+                                        <Col className="p-0 d-flex" xs={12} md={3} lg={2}>
                                             {isSocketConnected ?
                                                 <div className="table-header-button text-center">
                                                     <span className="live-css">
-                                                    </span>{" "}
-                                                    <span className="live-text">Live</span>{" "}
+                                                    </span>
+                                                    <span className="live-text">Live</span>
                                                 </div> :
                                                 <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
                                             }
+                                            {/* <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish Market</Button> */}
                                         </Col>
-                                        <Col className="p-0" xs={12} md={3} lg={{ span: 1, offset: 1 }}>
+                                        <Col className="p-0" xs={12} md={3} lg={2}>
                                             <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
                                             <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
                                         </Col>
