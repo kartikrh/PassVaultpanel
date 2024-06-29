@@ -684,8 +684,7 @@ export const OpenMarket = () => {
                                             </AccordionBody>
                                         </AccordionItem >
                                     </UncontrolledAccordion>
-                                })
-                                }
+                                })}
                             </CardBody>
                         </Card>
                     </Row>

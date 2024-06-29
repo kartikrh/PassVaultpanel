@@ -161,10 +161,7 @@ const Commentary = (props) => {
                 ...commentaryUpdates
             },
             "commentaryTeams": teamUpdates,
-            "commentaryPlayers": [
-                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
-            ],
+            "commentaryPlayers": Object.values(onPitchPlayers).filter(x => x),
         }
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
