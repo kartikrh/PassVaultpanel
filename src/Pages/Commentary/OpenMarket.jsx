@@ -110,7 +110,12 @@ export const OpenMarket = () => {
     const handleAction = (changeIn, key, value) => {
         let dataToUpdate = []
         changeIn.forEach(record => {
-            if (!_.isEqual(+record[key], +value))
+            if (key === "status" && value === OPEN_VALUE) {
+                if (record.status === SUSPEND_VALUE) {
+                    dataToUpdate.push({ ...record, status: OPEN_VALUE })
+                }
+            }
+            else if (!_.isEqual(+record[key], +value))
                 dataToUpdate.push({ ...record, [key]: value })
         })
         dataToUpdate = formatDataBeforeSend(dataToUpdate)
@@ -655,7 +660,6 @@ export const OpenMarket = () => {
                                                 </div> :
                                                 <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
                                             }
-                                            {/* <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish Market</Button> */}
                                         </Col>
                                         <Col className="p-0" xs={12} md={3} lg={2}>
                                             <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
