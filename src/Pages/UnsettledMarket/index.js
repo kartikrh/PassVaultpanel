@@ -315,7 +315,7 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Unsettled Market",
-    isActive: true,
+    // isActive: true,
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
