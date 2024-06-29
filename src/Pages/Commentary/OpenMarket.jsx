@@ -71,6 +71,7 @@ export const OpenMarket = () => {
                 "backSize": +(record.backSize || 100),
                 "layPrice": +record.layPrice,
                 "laySize": +(record.laySize || 100),
+                "status": +record.status
             }
             workingRecord = _.omit(workingRecord,
                 ["runner", "line", "overRate", "underRate", "backPrice", "backSize", "layPrice", "laySize", "runner", "runnerId", "selectionStatus", "lastUpdate"])
