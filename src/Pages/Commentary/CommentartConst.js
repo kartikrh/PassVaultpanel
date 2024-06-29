@@ -118,6 +118,7 @@ export const ACTIVE = "Active"
 export const DEACTIVE = "Deactive"
 export const INACTIVE_VALUE = 2
 export const SUSPEND_VALUE = 3
+export const OPEN_VALUE = 1
 export const REFRESH = "Refresh"
 export const SEND_ALL = "Send all"
 export const BALL_FEATURE = "Ball by Ball"
