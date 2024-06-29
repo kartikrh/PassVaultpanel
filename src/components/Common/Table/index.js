@@ -1513,7 +1513,7 @@ const Index = forwardRef(
                       </thead>
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
-                          <tr key={index} className={`hover`} style={{backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status) }}>
+                          <tr key={index} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status) }}>
                             {columns.map((column) => (
                               <td key={column.key} style={column.style}>
                                 {column.render
