@@ -13,7 +13,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
-import CloseMarketModel from "../../components/Model/CloseMarketModel";
+import CancelMarketModel from "../../components/Model/CancelMarketModel";
 
 const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
   const [password, setPassword] = useState("");
@@ -108,7 +108,7 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
         </Button>
       </ModalFooter>
     </Modal>
-    <CloseMarketModel
+    <CancelMarketModel
       closeModelVisible={closeModelVisable}
       setCloseModelVisable={setCloseModelVisable}
       handleClose={handleClose}
