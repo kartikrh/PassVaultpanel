@@ -980,6 +980,10 @@ const Index = () => {
     resetButton: true,
     statusOptions: [
       {
+        label: "All",
+        value: null,
+      },
+      {
         label: "Open",
         value: 1,
       },
