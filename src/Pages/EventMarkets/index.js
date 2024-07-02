@@ -299,11 +299,11 @@ const Index = () => {
   const statusList = [
     {
       statusType: "All",
-      statusId: null
+      statusId: 0
     },
     {
       statusType: "NotOpen",
-      statusId: 0
+      statusId: 7
     },
     {
       statusType: "Open",

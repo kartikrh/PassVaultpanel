@@ -981,7 +981,7 @@ const Index = () => {
     statusOptions: [
       {
         label: "All",
-        value: null,
+        value: 0,
       },
       {
         label: "Open",
