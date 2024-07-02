@@ -95,7 +95,7 @@ const Index = () => {
         setDataIndexList(apiDataIdList);
         setCheckedList([]);
         setIsLoading(false);
-        setEventTypes(eventTypes);
+        // setEventTypes(eventTypes);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -106,7 +106,7 @@ const Index = () => {
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
-      .post(`/admin/commentary/eventTypeList`, {})
+      .post(`/admin/commentary/eventTypeList`, {isActive: true})
       .then((response) => {
         setEventTypes(response.result);
       })
