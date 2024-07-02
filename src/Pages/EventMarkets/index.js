@@ -298,6 +298,10 @@ const Index = () => {
 
   const statusList = [
     {
+      statusType: "All",
+      statusId: null
+    },
+    {
       statusType: "NotOpen",
       statusId: 0
     },
