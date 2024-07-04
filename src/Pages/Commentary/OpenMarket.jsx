@@ -399,32 +399,6 @@ export const OpenMarket = () => {
             className: "input-yes-field"
         },
         {
-            title: "P-No",
-            dataIndex: "laySize",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-no-field"
-                    value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
-                />
-            ),
-            key: "laySize",
-            className: "input-no-field"
-        },
-        {
-            title: "P-Yes",
-            dataIndex: "backSize",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-yes-field"
-                    value={text || ""}
-                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
-                />
-            ),
-            key: "backSize",
-            className: "input-yes-field"
-        },
-        {
             title: "Active",
             dataIndex: "isActive",
             render: (text, record) => (
@@ -537,13 +511,39 @@ export const OpenMarket = () => {
             key: "overRate",
             className: "input-over-field"
         },
+        {
+            title: "P-No",
+            dataIndex: "laySize",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields input-no-field"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
+                />
+            ),
+            key: "laySize",
+            className: "input-no-field"
+        },
+        {
+            title: "P-Yes",
+            dataIndex: "backSize",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields input-yes-field"
+                    value={text || ""}
+                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
+                />
+            ),
+            key: "backSize",
+            className: "input-yes-field"
+        },
     ];
 
     const lineRatioField = <>
-        <Col xs={3} md={3} lg={2}>
-            <div><b>Line Ratio :</b></div>
+        <Col className="mt-2" xs={3} md={2} lg={1}>
+            <div><b>Line Ratio:</b></div>
         </Col>
-        <Col xs={3} md={2} lg={2}>
+        <Col className="mt-2" xs={3} md={2} lg={2}>
             <Input
                 className="form-control small-text-fields"
                 type="number"
@@ -634,46 +634,47 @@ export const OpenMarket = () => {
                                     }
                                 </Row>
                                 {data.length > 0 &&
-                                    <Row className="px-2">
-                                        <Col className="p-0" xs={12} md={3} lg={2}>
-                                            <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
-                                            <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
-                                        </Col>
-                                        <Col className="p-0" xs={12} md={3} lg={2}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
-                                            <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
-                                        </Col>
-                                        <Col className="p-0" xs={12} md={3} lg={2}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
-                                            <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
-                                        </Col>
-                                        <Col className="p-0 d-flex" xs={12} md={3} lg={2}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish</Button>
-                                        </Col>
-                                        <Col className="p-0 d-flex" xs={12} md={3} lg={2}>
-                                            {isSocketConnected ?
-                                                <div className="table-header-button text-center">
-                                                    <span className="live-css">
-                                                    </span>
-                                                    <span className="live-text">Live</span>
-                                                </div> :
-                                                <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
-                                            }
-                                        </Col>
-                                        <Col className="p-0" xs={12} md={3} lg={2}>
-                                            <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
-                                        </Col>
-                                        <Col className="px-1 py-3">
+                                    <>
+                                        <Row className="px-2 pb-3">
+                                            <Col className="p-0" xs={12} md={3} lg={3}>
+                                                <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
+                                                <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
+                                            </Col>
+                                            <Col className="p-0" xs={12} md={3} lg={3}>
+                                                <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
+                                                <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
+                                            </Col>
+                                            <Col className="p-0" xs={12} md={3} lg={3}>
+                                                <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
+                                                <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
+                                            </Col>
+                                            <Col className="p-0 d-flex" xs={12} md={3} lg={3}>
+                                                {isSocketConnected ?
+                                                    <div className="table-header-button text-center">
+                                                        <span className="live-css">
+                                                        </span>
+                                                        <span className="live-text">Live</span>
+                                                    </div> :
+                                                    <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
+                                                }
+                                                <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
+
+                                            </Col>
+                                        </Row>
+                                        <Row className="pb-3">
                                             {lineRatioField}
-                                        </Col>
-                                    </Row>}
+                                            <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
+                                                <Button color="primary" className="table-header-button py-2" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
+                                                <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish</Button>
+                                                <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
+                                            </Col>
+                                        </Row>
+                                    </>}
                                 {Object.keys(categorisedData).map((category, index) => {
                                     return <UncontrolledAccordion defaultOpen="0" className="market-category-accordian">
                                         <AccordionItem >
                                             <AccordionHeader className="market-category-header" targetId={index}>{category}</AccordionHeader>
-                                            <AccordionBody accordionId={index}>
+                                            <AccordionBody className="market-category-body" accordionId={index}>
                                                 {categorisedData?.[category].length > 0 ? <>
                                                     <Row>
                                                         <Col>
@@ -681,6 +682,8 @@ export const OpenMarket = () => {
                                                                 columns={columns}
                                                                 dataSource={categorisedData?.[category] || []}
                                                                 tableElement={tableElement}
+                                                                tableClassName="open-market-table-class"
+                                                                hideHeader={true}
                                                             />
                                                         </Col>
                                                     </Row>

@@ -460,6 +460,15 @@
     background-color: beige;
 }
 
-.market-category-header {
+.market-category-header>button {
     text-transform: capitalize;
+    padding: 0.2rem 1rem !important;
+}
+
+.market-category-body>div {
+    padding: 0 !important;
+}
+
+.open-market-table-class {
+    padding: 0 1rem !important;
 }

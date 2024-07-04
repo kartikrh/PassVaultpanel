@@ -3,24 +3,26 @@ import "../Table/style.css"
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { getStatusColor1 } from "../../../Pages/Commentary/CommentartConst";
 
-export const ListingElement = ({ columns, dataSource = [], tableElement, tableExtras }) => {
+export const ListingElement = ({ columns, dataSource = [], tableElement, tableExtras, tableClassName, hideHeader = false }) => {
     document.title = `${tableElement?.title}`;
     return (
         <Row>
             <Col lg={12}>
                 <Card>
-                    <CardBody>
+                    <CardBody className={tableClassName}>
                         {dataSource.length > 0 ? <div id="customerList">
-                            <Row className="g-2 d-flex align-items-center">
-                                <Col className="col-sm-auto">
-                                    <span>
-                                        {dataSource?.length} Records
-                                    </span>
-                                </Col>
-                            </Row>
-                            <Row>
-                                {tableExtras && <>{tableExtras}</>}
-                            </Row>
+                            {!hideHeader &&
+                                <> <Row className="g-2 d-flex align-items-center">
+                                    <Col className="col-sm-auto">
+                                        <span>
+                                            {dataSource?.length} Records
+                                        </span>
+                                    </Col>
+                                </Row>
+                                    <Row>
+                                        {tableExtras && <>{tableExtras}</>}
+                                    </Row>
+                                </>}
                             <div
                                 className="table-responsive table-card mt-3 mb-1"
                                 id="myTable"
