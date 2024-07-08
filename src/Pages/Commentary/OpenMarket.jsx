@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
+import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
@@ -29,6 +29,7 @@ export const OpenMarket = () => {
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
     const [autoInterval, setAutoInterval] = useState(500)
     const [isSocketConnected, setIsSocketConnected] = useState(false)
+    const [openAccordions, setOpenAccordions] = useState(["Session"]);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -285,6 +286,8 @@ export const OpenMarket = () => {
                 </>
             ),
             key: "teamName",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "Market",
@@ -296,6 +299,8 @@ export const OpenMarket = () => {
                 </>
             ),
             key: "marketId",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "Status",
@@ -314,6 +319,8 @@ export const OpenMarket = () => {
                 </select>
             ),
             key: "status",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "Line",
@@ -326,7 +333,8 @@ export const OpenMarket = () => {
                 />
             ),
             key: "line",
-            className: "input-line-field"
+            className: "p-0 input-line-field",
+            columnClassName: "p-1"
         },
         {
             title: "",
@@ -366,11 +374,15 @@ export const OpenMarket = () => {
                 </div>
             ),
             key: "lineVal",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "R-Rate",
             render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2) || 0}`}</span>),
             key: "inningsId",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "R-No",
@@ -383,7 +395,9 @@ export const OpenMarket = () => {
                 />
             ),
             key: "layPrice",
-            className: "input-no-field"
+            className: "p-0 input-no-field",
+            columnClassName: "p-1"
+
         },
         {
             title: "R-Yes",
@@ -396,7 +410,9 @@ export const OpenMarket = () => {
                 />
             ),
             key: "backPrice",
-            className: "input-yes-field"
+            className: "p-0 input-yes-field",
+            columnClassName: "p-1"
+
         },
         {
             title: "Active",
@@ -414,6 +430,8 @@ export const OpenMarket = () => {
                 </Button>
             ),
             key: "isActive",
+            className: "p-0",
+            columnClassName: "p-1",
             style: { width: "2%", textAlign: "center" },
         },
         {
@@ -432,6 +450,8 @@ export const OpenMarket = () => {
                 </Button>
             ),
             key: "isAllow",
+            className: "p-0",
+            columnClassName: "p-1",
             style: { width: "2%", textAlign: "center" },
         },
         {
@@ -450,6 +470,8 @@ export const OpenMarket = () => {
                 </Button>
             ),
             style: { width: "2%", textAlign: "center" },
+            className: "p-0",
+            columnClassName: "p-1",
         },
         {
             title: "L-Ratio",
@@ -465,6 +487,8 @@ export const OpenMarket = () => {
                 />
             ),
             key: "underRate",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "Save",
@@ -472,6 +496,8 @@ export const OpenMarket = () => {
                 <Button color="primary" className="small-button" onClick={() => updateRecords(record)}>Save</Button>
             ),
             key: "isSendData",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "Margin",
@@ -484,6 +510,8 @@ export const OpenMarket = () => {
                 />
             ),
             key: "margin",
+            className: "p-0",
+            columnClassName: "p-1"
         },
         {
             title: "Under",
@@ -496,7 +524,9 @@ export const OpenMarket = () => {
                 />
             ),
             key: "underRate",
-            className: "input-under-field"
+            className: "p-0 input-under-field",
+            columnClassName: "p-1"
+
         },
         {
             title: "Over",
@@ -509,7 +539,9 @@ export const OpenMarket = () => {
                 />
             ),
             key: "overRate",
-            className: "input-over-field"
+            className: "p-0 input-over-field",
+            columnClassName: "p-1"
+
         },
         {
             title: "P-No",
@@ -522,7 +554,9 @@ export const OpenMarket = () => {
                 />
             ),
             key: "laySize",
-            className: "input-no-field"
+            className: "p-0 input-no-field",
+            columnClassName: "p-1"
+
         },
         {
             title: "P-Yes",
@@ -535,12 +569,14 @@ export const OpenMarket = () => {
                 />
             ),
             key: "backSize",
-            className: "input-yes-field"
+            className: "p-0 input-yes-field",
+            columnClassName: "p-1"
+
         },
     ];
 
     const lineRatioField = <>
-        <Col className="mt-2" xs={3} md={2} lg={1}>
+        <Col className="mt-2" xs={3} md={2} lg={2}>
             <div><b>Line Ratio:</b></div>
         </Col>
         <Col className="mt-2" xs={3} md={2} lg={2}>
@@ -610,6 +646,15 @@ export const OpenMarket = () => {
             setCategorisedData(tempCategorisedData)
         }
     }, [data])
+    const toggleAccordion = (id) => {
+        setOpenAccordions((prevOpenAccordions) => {
+            if (prevOpenAccordions.includes(id)) {
+                return prevOpenAccordions.filter((accordionId) => accordionId !== id);
+            } else {
+                return [...prevOpenAccordions, id];
+            }
+        });
+    };
     return (
         <React.Fragment>
             <div className="page-content">
@@ -618,63 +663,54 @@ export const OpenMarket = () => {
                         <Card>
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
-                                <Row className=''>
-                                    <Col className="mt-3 mt-lg-4 mt-md-4">
+                                <Row>
+                                    <Col >
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Open Market" page="updatecp" />
                                     </Col>
-                                    <Col className="mt-3 mt-lg-3 mt-md-3">
-                                        <button className="btn btn-danger text-right" onClick={handleBackClick}>Back</button>
+                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                        <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
+                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
+                                    </Col>
+                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
+                                    </Col>
+                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
+                                    </Col>
+                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                        {isSocketConnected ?
+                                            <span className="mx-3 live-css" /> :
+                                            <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "AE" : "AS"}</Button>
+                                        }
+                                        <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>
+                                            <i className='bx bx-refresh'></i></Button>
+                                    </Col>
+                                    <Col className="p-0" xs={2} md={1} lg={1}>
+                                        <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
                                     </Col>
                                 </Row>
                                 <Row>
-                                    {!isEmpty(commentaryInfo) && <Col className="mb-3">
-                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ ${commentaryInfo.en}`}</div>
-                                        <div>{`Ref: ${commentaryInfo.eid} [ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
+                                    {!isEmpty(commentaryInfo) && <Col className="mb-1">
+                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ ${commentaryInfo.en}/ Ref: ${commentaryInfo.eid} [ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
                                     </Col>
                                     }
                                 </Row>
                                 {data.length > 0 &&
-                                    <>
-                                        <Row className="px-2 pb-3">
-                                            <Col className="p-0" xs={12} md={3} lg={3}>
-                                                <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
-                                                <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
-                                            </Col>
-                                            <Col className="p-0" xs={12} md={3} lg={3}>
-                                                <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
-                                                <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
-                                            </Col>
-                                            <Col className="p-0" xs={12} md={3} lg={3}>
-                                                <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
-                                                <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
-                                            </Col>
-                                            <Col className="p-0 d-flex" xs={12} md={3} lg={3}>
-                                                {isSocketConnected ?
-                                                    <div className="table-header-button text-center">
-                                                        <span className="live-css">
-                                                        </span>
-                                                        <span className="live-text">Live</span>
-                                                    </div> :
-                                                    <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "Auto End" : "Auto Start"}</Button>
-                                                }
-                                                <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>{REFRESH}</Button>
-
-                                            </Col>
-                                        </Row>
-                                        <Row className="pb-3">
-                                            {lineRatioField}
-                                            <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
-                                                <Button color="primary" className="table-header-button py-2" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
-                                                <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish</Button>
-                                                <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
-                                            </Col>
-                                        </Row>
-                                    </>}
+                                    <Row>
+                                        {lineRatioField}
+                                        <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
+                                        </Col>
+                                    </Row>}
                                 {Object.keys(categorisedData).map((category, index) => {
-                                    return <UncontrolledAccordion defaultOpen="0" className="market-category-accordian">
+                                    return <Accordion open={openAccordions} toggle={toggleAccordion} key={category} className="market-category-accordian">
                                         <AccordionItem >
-                                            <AccordionHeader className="market-category-header" targetId={index}>{category}</AccordionHeader>
-                                            <AccordionBody className="market-category-body" accordionId={index}>
+                                            <AccordionHeader className="market-category-header" targetId={category}><b>{category}</b></AccordionHeader>
+                                            <AccordionBody className="market-category-body" accordionId={category}>
                                                 {categorisedData?.[category].length > 0 ? <>
                                                     <Row>
                                                         <Col>
@@ -690,7 +726,7 @@ export const OpenMarket = () => {
                                                 </> : <div className=" m-4 text-center">No record found</div>}
                                             </AccordionBody>
                                         </AccordionItem >
-                                    </UncontrolledAccordion>
+                                    </Accordion>
                                 })}
                             </CardBody>
                         </Card>
