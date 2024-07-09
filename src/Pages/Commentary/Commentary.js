@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTER_TYPE, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -224,6 +224,7 @@ const Commentary = (props) => {
                 { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
                 { ...onPitchPlayers[NON_STRIKE], isPlay: null, }
             ],
+            "isEndInnings": true
         }
         dispatch(addCommentaryScreenData(objToSave))
         setShowUpdateInnings(undefined)

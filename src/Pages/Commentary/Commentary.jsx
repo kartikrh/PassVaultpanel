@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, ON_STRIKE } from "./CommentartConst"
-import IsBoundaryModal from "./CommentaryModels/IsBoundaryModal"
 import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import { STRING_SEPERATOR } from "../../components/Common/Const"
@@ -12,7 +11,6 @@ export const CommentaryScreen = ({
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, handleRetiredHurt = {} }) => {
     document.title = "Scoring";
-    const [isBoundary, setIsBoundary] = useState(false)
     const [actionPopup, setActionPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map((element, index) => {
@@ -226,11 +224,11 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/3.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => setIsBoundary(4)}>
+                        onClick={() => handleRuns(4, 1, true)}>
                         <img className="button-icon" src="icons/4.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        onClick={() => setIsBoundary(6)}>
+                        onClick={() => handleRuns(6, 1, true)}>
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
@@ -277,19 +275,6 @@ export const CommentaryScreen = ({
                 </Row>
             </Col>
         </Row >
-        {isBoundary &&
-            <IsBoundaryModal
-                isOpen={isBoundary}
-                toggle={() => { setIsBoundary(undefined) }}
-                onNoClick={() => {
-                    handleRuns(isBoundary, 1)
-                    setIsBoundary(undefined)
-                }}
-                onYesClick={() => {
-                    handleRuns(isBoundary, 1, true)
-                    setIsBoundary(undefined)
-                }}
-            />}
         {actionPopup && <CommentaryAction
             toggle={() => setActionPopup(false)}
             changeOver={() => {
