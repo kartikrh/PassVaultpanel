@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, ON_STRIKE } from "./CommentartConst"
@@ -9,7 +9,7 @@ import { STRING_SEPERATOR } from "../../components/Common/Const"
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, handleRetiredHurt = {} }) => {
+    overBalls, anyPopup, handleRetiredHurt = {} }) => {
     document.title = "Scoring";
     const [actionPopup, setActionPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
@@ -59,58 +59,58 @@ export const CommentaryScreen = ({
                 </div > </>)
     }
 
-    // const handleKeyPress = (event) => {
-    //     const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
-    //     switch (key) {
-    //         case '0':
-    //             handleRuns(0, 1);
-    //             break;
-    //         case '1':
-    //             handleRuns(1, 1);
-    //             break;
-    //         case '2':
-    //             handleRuns(2, 1);
-    //             break;
-    //         case 'u':
-    //             onUndoClick();
-    //             break;
-    //         case '3':
-    //             handleRuns(3, 1);
-    //             break;
-    //         case '4':
-    //             setIsBoundary(4);
-    //             break;
-    //         case '6':
-    //             setIsBoundary(6);
-    //             break;
-    //         case '/':
-    //             updateExtras(BALL_WIDE)
-    //             break;
-    //         case '*':
-    //             updateExtras(NO_BALL);
-    //             break;
-    //         case '+':
-    //             updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
-    //             break;
-    //         case '-':
-    //             setStatusPopup(true)
-    //             break;
-    //         case 'a':
-    //             updateExtras(BALL_BYE)
-    //             break;
-    //         case 's':
-    //             updateExtras(NO_BALL_BYE);
-    //             break;
-    //         case 'c':
-    //             console.log("Actions")
-    //             break;
-    //         case '.':
-    //             onWicketClick();
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
+    const handleKeyPress = (event) => {
+        const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
+        switch (key) {
+            case '0':
+                handleRuns(0, 1);
+                break;
+            case '1':
+                handleRuns(1, 1);
+                break;
+            case '2':
+                handleRuns(2, 1);
+                break;
+            case '-':
+                onUndoClick();
+                break;
+            case '3':
+                handleRuns(3, 1);
+                break;
+            case '4':
+                handleRuns(4, 1, true);
+                break;
+            case '6':
+                handleRuns(6, 1, true);
+                break;
+            // case '/':
+            //     updateExtras(BALL_WIDE)
+            //     break;
+            // case '*':
+            //     updateExtras(NO_BALL);
+            //     break;
+            case '+':
+                updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
+                break;
+            // case '-':
+            //     setStatusPopup(true)
+            //     break;
+            // case 'a':
+            //     updateExtras(BALL_BYE)
+            //     break;
+            // case 's':
+            //     updateExtras(NO_BALL_BYE);
+            //     break;
+            // case 'c':
+            //     console.log("Actions")
+            //     break;
+            // case '.':
+            //     onWicketClick();
+            //     break;
+            default:
+                break;
+        }
+    }
 
     const handleRuns = (run, ball, isBoundary = false) => {
         updateRuns(
@@ -123,13 +123,13 @@ export const CommentaryScreen = ({
             }
         )
     }
-    // useEffect(() => {
-    //     if (anyPopup || isBoundary || statusPopup) window.removeEventListener('keydown', handleKeyPress);
-    //     else { window.addEventListener('keydown', handleKeyPress); }
-    //     return () => {
-    //         window.removeEventListener('keydown', handleKeyPress);
-    //     };
-    // }, [onPitchPlayers, onUndoClick, anyPopup, isBoundary, statusPopup]);
+    useEffect(() => {
+        if (anyPopup || actionPopup) window.removeEventListener('keydown', handleKeyPress);
+        else { window.addEventListener('keydown', handleKeyPress); }
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
 
     return <React.Fragment>
         <Row>

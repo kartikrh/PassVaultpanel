@@ -1672,10 +1672,12 @@ const Commentary = (props) => {
             handleRetiredHurt={() => setShowRretiredHurt(true)}
             overBalls={overBallByBallDisplay}
             showPaneltyRuns={setIsPaneltyPopup}
-            anyPopup={inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
-                || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
+            anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
+                || superOverModal || showRretiredHurt || isPaneltyPopup
+                || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
         />
-        {!(inningsChangePopup || props.isDataLoading || winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
+        {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+            winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={() => { setChangePlayerList(undefined) }}
                 playerList={changePlayerList}
