@@ -159,6 +159,7 @@ function CommentaryMaster() {
                                             data={{ commentaryData }}
                                             onInningsChange={handleInningsChange}
                                             isDataLoading={isDataLoading}
+                                            statusPopup={statusPopup}
                                         />}
                                     <Col xs={12} md={6} lg={6}>
                                         <img role="button" className="sticky-button"
