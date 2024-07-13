@@ -4,14 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { COMMENTARY_STATUS_OPEN, ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
+import { AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import Table from "../../components/Common/Table";
 import { MARKET_STATUS } from "./CommentartConst";
 import { generateOverUnder } from "./functions";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 
 
 const CommentaryMarketTemplate = () => {
@@ -29,6 +29,8 @@ const CommentaryMarketTemplate = () => {
     const [allTeams, setAllTeams] = useState([]);
     const [selectedField, setSelectedField] = useState("");
     const [fieldValue, setFieldValue] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [categorisedData, setCategorisedData] = useState([]);
 
     useEffect(() => {
         setCheckedList(data.filter(i => i.isCreate).map(i => i.index))
@@ -130,9 +132,11 @@ const CommentaryMarketTemplate = () => {
             .post("/admin/eventMarket/getDetailsByCId", { commentaryId })
             .then((response) => {
                 if (response?.result) {
+                    const newCategoryObj = {}
                     const teamAndPlayers = response?.result?.teamAndPlayers;
                     const marketTemplate = response?.result?.marketTemplate;
                     const commentary = response?.result?.commentary;
+                    response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const predefinedOverMarket = marketTemplate?.filter(value => value?.isPredefineMarket && value?.isOver);
                     const predefinedOverFalseMarket = marketTemplate?.filter(value => value?.isPredefineMarket && !value?.isOver);
                     const eventMarket = response?.result?.eventMarket;
@@ -224,6 +228,7 @@ const CommentaryMarketTemplate = () => {
                         }
                     });
                     setData(newData);
+                    setCategories(newCategoryObj)
                 }
                 setIsLoading(false);
             })
@@ -590,7 +595,19 @@ const CommentaryMarketTemplate = () => {
             fetchData(commentaryId);
         }
     }, []);
-
+    useEffect(() => {
+        const tempCategorisedData = {}
+        if (!isEmpty(data)) {
+            data.forEach(market => {
+                tempCategorisedData[categories[market.marketTypeCategoryId]] =
+                    [].concat(
+                        tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
+                    )
+            })
+            setCategorisedData(tempCategorisedData)
+            console.log({ tempCategorisedData });
+        }
+    }, [data])
     return (
         <React.Fragment>
             <div className="page-content">
@@ -650,24 +667,37 @@ const CommentaryMarketTemplate = () => {
                                         />
                                     </Col>
                                 </Row>
-                                {allTeams?.map(teamData =>
-                                    <Row>
-                                        <Col>
-                                            <Table
-                                                ref={finalizeRef}
-                                                columns={columns.filter(item => item.dataIndex !== "teamId")}
-                                                dataSource={data.filter(tId => tId.teamId === teamData.value)}
-                                                tableElement={{ ...tableElement, title: teamData.fullName }}
-                                                singleCheck={checekedList}
-                                                isPagination={false}
-                                            />
-                                        </Col>
-                                    </Row>)}
+                                {allTeams?.map(teamData => {
+                                    return Object.keys(categorisedData).map((category, index) => {
+                                        return <UncontrolledAccordion defaultOpen="0" className="market-category-accordian">
+                                            <AccordionItem >
+                                                <AccordionHeader className="market-category-header" targetId={index}>{category}</AccordionHeader>
+                                                <AccordionBody accordionId={index}>
+                                                    {categorisedData?.[category].length > 0 ? <>
+                                                        <Row>
+                                                            <Col>
+                                                                <Table
+                                                                    ref={finalizeRef}
+                                                                    columns={columns.filter(item => item.dataIndex !== "teamId")}
+                                                                    dataSource={data.filter(tId => tId.teamId === teamData.value)}
+                                                                    tableElement={{ ...tableElement, title: teamData.fullName }}
+                                                                    singleCheck={checekedList}
+                                                                    isPagination={false}
+                                                                />
+                                                            </Col>
+                                                        </Row>
+                                                    </> : <div className=" m-4 text-center">No record found</div>}
+                                                </AccordionBody>
+                                            </AccordionItem >
+                                        </UncontrolledAccordion>
+                                    })
+                                })}
                                 <Row className='mb-3'>
                                     <Col className="mt-3 mt-lg-3 mt-md-3">
                                         <Button color="primary" className="btn text-right" onClick={handleSave}>Save</Button>
                                     </Col>
                                 </Row>
+
                             </CardBody>
                         </Card>
                     </Row>

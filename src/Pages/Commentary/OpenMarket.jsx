@@ -294,7 +294,7 @@ export const OpenMarket = () => {
             dataIndex: "marketId",
             render: (text, record) => (
                 <>
-                    <div>{text}</div>
+                    <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </>
             ),
