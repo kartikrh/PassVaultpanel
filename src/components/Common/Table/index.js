@@ -60,6 +60,9 @@ const Index = forwardRef(
       competitionList,
       eventList,
       statusList,
+      rateSourceList,
+      ratesource,
+      setRatesource,
       setEventTypeId,
       setCompetitionId,
       reFetchData,
@@ -510,6 +513,10 @@ const Index = forwardRef(
         isActive: true,
       });
       setSelectedTableElements({
+        rateSourceType: { 
+          value: 1,
+          label: "Ratesource",
+        },
         eventName: {
           value: 0,
           label: "Event List",
@@ -550,9 +557,16 @@ const Index = forwardRef(
         });
       }
       setStatusSwitch(true);
+      if (tableElement?.rateSourceListSelect) {
+        handleReset({
+          isActive: true,
+          rateSourceRefId: 1,
+        });
+      } else{
       handleReset({
         isActive: true,
       });
+      }
     };
 
     const getTableAction = () => {
@@ -726,6 +740,35 @@ const Index = forwardRef(
                                   value: item?.value,
                                 })
                               )}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                         {tableElement?.rateSourceListSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.rateSourceType}
+                              placeholder={ratesource?.rateSourceType}
+                              onChange={(e) => {
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  rateSourceType: e,
+                                });
+                                setRatesource({
+                                  rateSourceType: e?.label,
+                                  rateSourceRefId: e?.value,
+                                })
+                              }}
+                              options={rateSourceList?.map((item) => ({
+                                label: item?.rateSourceType,
+                                value: item?.rateSourceRefId,
+                              }))}
                               classNamePrefix="select2-selection"
                             />
                           </div>
