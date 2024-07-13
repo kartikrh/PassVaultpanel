@@ -49,7 +49,10 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
-
+  const [ratesource, setRatesource] = useState({
+    rateSourceRefId: 1,
+    rateSourceType: "Ratesource"
+  })
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
@@ -58,6 +61,7 @@ const Index = () => {
     setEventTypeActive(tableActions?.isActive)
     let payload = {
       ...(latestValueFromTable || tableActions),
+      rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
     };
     if (isSearch) {
       payload = {
@@ -330,6 +334,17 @@ const Index = () => {
       statusId: 6
     }
   ]
+
+  const rateSourceList = [
+    {
+      rateSourceType: "Ratesource",
+      rateSourceRefId: 1
+    },
+    {
+      rateSourceType: "External",
+      rateSourceRefId: 2
+    }
+  ]
   //table columns
   const columns = [
     {
@@ -570,6 +585,7 @@ const Index = () => {
     competitionsListSelect: true,
     eventListSelect: true,
     statusListSelect: true,
+    rateSourceListSelect: true,
     resetButton: true,
     delayTextBox: true,
     importExport: false,
@@ -582,7 +598,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, [isSearch]);
+  }, [isSearch, ratesource]);
 
   useEffect(() => {
     if(EventTypeActive){
@@ -622,6 +638,7 @@ const Index = () => {
             competitionList={competitionList}
             eventList={eventList}
             statusList={statusList}
+            rateSourceList={rateSourceList}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
@@ -641,6 +658,8 @@ const Index = () => {
             )}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            ratesource={ratesource}
+            setRatesource={setRatesource}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
           />
