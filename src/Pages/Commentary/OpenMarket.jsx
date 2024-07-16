@@ -294,7 +294,7 @@ export const OpenMarket = () => {
             dataIndex: "marketId",
             render: (text, record) => (
                 <>
-                    <div>{text}</div>
+                    <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </>
             ),
@@ -593,6 +593,25 @@ export const OpenMarket = () => {
             />
         </Col>
     </>
+    const handleKeyPress = (event) => {
+        const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
+        switch (key) {
+            case '+':
+                handleAction(data, "isSendData", true);
+                break;
+            default:
+                break;
+        }
+    }
+    const toggleAccordion = (id) => {
+        setOpenAccordions((prevOpenAccordions) => {
+            if (prevOpenAccordions.includes(id)) {
+                return prevOpenAccordions.filter((accordionId) => accordionId !== id);
+            } else {
+                return [...prevOpenAccordions, id];
+            }
+        });
+    };
 
     useEffect(() => {
         if (commentaryId !== "0") {
@@ -637,6 +656,7 @@ export const OpenMarket = () => {
     useEffect(() => {
         const tempCategorisedData = {}
         if (!isEmpty(data)) {
+            window.addEventListener('keydown', handleKeyPress);
             data.forEach(market => {
                 tempCategorisedData[categories[market.marketTypeCategoryId]] =
                     [].concat(
@@ -644,17 +664,13 @@ export const OpenMarket = () => {
                     )
             })
             setCategorisedData(tempCategorisedData)
+        } else {
+            window.removeEventListener('keydown', handleKeyPress);
         }
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
     }, [data])
-    const toggleAccordion = (id) => {
-        setOpenAccordions((prevOpenAccordions) => {
-            if (prevOpenAccordions.includes(id)) {
-                return prevOpenAccordions.filter((accordionId) => accordionId !== id);
-            } else {
-                return [...prevOpenAccordions, id];
-            }
-        });
-    };
     return (
         <React.Fragment>
             <div className="page-content">
