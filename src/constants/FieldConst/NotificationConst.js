@@ -1,4 +1,4 @@
-import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const NotificationConst = [
   {
@@ -19,9 +19,7 @@ export const NotificationConst = [
   {
     name: "commentaryId",
     label: "Commentary Type",
-    options: [
-      { label: "Select Commentary Type", value: "0" },
-    ],
+    options: [{ label: "Select Commentary Type", value: "0" }],
     isRequired: true,
     type: SELECT,
     defaultValue: "0",
@@ -39,10 +37,31 @@ export const NotificationConst = [
   },
   {
     name: "description",
-    label: "Description",
+    label: "Message",
     type: TEXT,
     isRequired: true,
-    requiredErrorMessage: "Please enter Description.",
+    requiredErrorMessage: "Please enter Message.",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    type: IMAGE,
+    name: "image",
+    label: "Image",
+    parentclassName: "",
+  },
+  {
+    type: IMAGE,
+    name: "icon",
+    label: "Icon",
+    parentclassName: "",
+  },
+  {
+    name: "url",
+    label: "Url",
+    type: TEXT,
+    isRequired: true,
+    requiredErrorMessage: "Please enter Url.",
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
