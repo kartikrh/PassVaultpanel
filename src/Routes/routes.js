@@ -48,6 +48,7 @@ import News from "../Pages/News";
 import Banner from "../Pages/Banner";
 import API from "../Pages/API";
 import APIEndpoints from "../Pages/APIEndpoints";
+import Notification from "../Pages/Notification";
 import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
@@ -93,6 +94,7 @@ import AddBanner from "../Pages/Banner/AddBanner.jsx";
 import AddAPI from "../Pages/API/AddAPI.jsx";
 import AddAPIEndpoint from "../Pages/APIEndpoints/AddAPIEndpoint.jsx";
 import PredictorApiLogs from "../Pages/Commentary/PredictorApiLogs.jsx";
+import AddNotification from "../Pages/Notification/AddNotification.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -170,6 +172,8 @@ const authProtectedRoutes = [
   { path: "/addApi", component: <AddAPI /> },
   { path: "/apiEndpoints", component: <APIEndpoints /> },
   { path: "/addApiEndpoint", component: <AddAPIEndpoint /> },
+  { path: "/notification", component: <Notification /> },
+  { path: "/addNotification", component: <AddNotification /> },
 
   {
     path: "/changePassword",
