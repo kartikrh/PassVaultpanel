@@ -75,6 +75,34 @@ const Index = () => {
     navigate("/addNotification", { state: { notificationId } });
   };
 
+  const handleSendNotification = async (record) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/notification/sendNotification`, {
+        notificationId: record.notificationId,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const getSendType = (status) => {
     switch (status) {
       case 1:
@@ -145,9 +173,7 @@ const Index = () => {
     {
       title: "Send Type",
       dataIndex: "sendType",
-      render: (text, record) => (
-        <span>{getSendType(record?.sendType)}</span>
-      ),
+      render: (text, record) => <span>{getSendType(record?.sendType)}</span>,
       key: "sendType",
       sort: true,
       style: { width: "10%" },
@@ -160,11 +186,28 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
-      title: "Description",
+      title: "Message",
       dataIndex: "description",
       key: "description",
       sort: true,
       style: { width: "60%" },
+    },
+    {
+      title: "Send",
+      key: "send",
+      render: (text, record) => (
+        <Button
+          color="primary"
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleSendNotification(record);
+          }}
+        >
+          S
+        </Button>
+      ),
+      style: { width: "6%", textAlign: "center" },
     },
   ];
   //elements required
