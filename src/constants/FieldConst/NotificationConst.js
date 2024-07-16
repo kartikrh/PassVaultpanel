@@ -1,0 +1,67 @@
+import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+
+export const NotificationConst = [
+  {
+    name: "sendType",
+    label: "Send Type",
+    options: [
+      { label: "Select Send Type", value: "0" },
+      { label: "all", value: 1 },
+      { label: "onlyLoggedInUser", value: 2 },
+      { label: "pushNotification", value: 3 },
+    ],
+    isRequired: true,
+    type: SELECT,
+    defaultValue: false,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "commentaryId",
+    label: "Commentary Type",
+    options: [
+      { label: "Select Commentary Type", value: "0" },
+    ],
+    isRequired: true,
+    type: SELECT,
+    defaultValue: "0",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "title",
+    label: "Title",
+    type: TEXT,
+    isRequired: true,
+    requiredErrorMessage: "Please enter Title.",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "description",
+    label: "Description",
+    type: TEXT,
+    isRequired: true,
+    requiredErrorMessage: "Please enter Description.",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "isSendNow",
+    label: "Send Now",
+    parentclassName: "",
+    defaultValue: false,
+    type: SWITCH,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  // {
+  //   name: "isActive",
+  //   label: "Is Active",
+  //   parentclassName: "",
+  //   defaultValue: true,
+  //   type: SWITCH,
+  //   labelColspan: { xs: 12, md: 2, lg: 2 },
+  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
+  // },
+];

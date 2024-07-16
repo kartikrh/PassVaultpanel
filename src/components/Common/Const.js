@@ -54,6 +54,7 @@ export const TAB_DISPLAYSTATUS = "DisplayStatus";
 export const TAB_ClientSocket = "ClientSocket";
 export const TAB_API = "API";
 export const TAB_API_ENDPOINTS = "API Endpoints";
+export const TAB_NOTIFICATION = "Notification";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";
