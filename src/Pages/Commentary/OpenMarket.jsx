@@ -599,6 +599,30 @@ export const OpenMarket = () => {
             case '+':
                 handleAction(data, "isSendData", true);
                 break;
+            case '-':
+                handleAction(data, "status", OPEN_VALUE);
+                break;
+            case '*':
+                updateRecords();
+                break;
+            case 'i':
+                handleAction(data, "status", INACTIVE_VALUE)
+                break;
+            case 's':
+                handleAction(data, "status", SUSPEND_VALUE)
+                break;
+            case 'l':
+                handleAction(data, "isAllow", true)
+                break;
+            case 'n':
+                handleAction(data, "isAllow", false)
+                break;
+            case 'a':
+                handleAction(data, "isActive", true)
+                break;
+            case 'd':
+                handleAction(data, "isActive", false)
+                break;
             default:
                 break;
         }
@@ -717,9 +741,9 @@ export const OpenMarket = () => {
                                     <Row>
                                         {lineRatioField}
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{SEND_ALL}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>Publish</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>Save All</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{`${SEND_ALL} (+)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>{`Publish (-)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>{`Save All (*)`}</Button>
                                         </Col>
                                     </Row>}
                                 {Object.keys(categorisedData).map((category, index) => {
