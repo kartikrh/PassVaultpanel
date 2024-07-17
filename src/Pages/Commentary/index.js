@@ -73,7 +73,7 @@ const Index = () => {
 
   const tabelNoteDisplay = <>
     <b><i>Note :</i></b>
-    <div>Click on Event Id to open <b>Odds View</b> page  </div>
+    {/* <div>Click on Event Id to open <b>Odds View</b> page  </div> */}
     <div>Click on Event Name to open <b>Open Market</b> page </div>
   </>
 
@@ -106,7 +106,7 @@ const Index = () => {
   };
   const fetchEventTypeData = async () => {
     await axiosInstance
-      .post(`/admin/commentary/eventTypeList`, {isActive: true})
+      .post(`/admin/commentary/eventTypeList`, { isActive: true })
       .then((response) => {
         setEventTypes(response.result);
       })
@@ -615,11 +615,11 @@ const Index = () => {
         <div className="d-flex align-items-center gap-1">
           <span
             style={{ cursor: record.isPredictMarket && "pointer" }}
-            onClick={() => {
-              if (record.isPredictMarket) {
-                handleOddsViewClick(record.commentaryId);
-              }
-            }}
+          // onClick={() => {
+          //   if (record.isPredictMarket) {
+          //     handleOddsViewClick(record.commentaryId);
+          //   }
+          // }}
           >
             {text}
           </span>
