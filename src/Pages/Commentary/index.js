@@ -33,6 +33,7 @@ import { ChangeResultModel } from "../../components/Model/ChangeResult";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
 import { DlsModal } from "./CommentaryModels/DlsModal";
 import "./CommentaryCss.css"
+import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -68,6 +69,9 @@ const Index = () => {
   const [closeModelVisable, setCloseModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
+  const [runnerModelVisible, setRunnerModelVisible] = useState(false);
+  const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -354,6 +358,34 @@ const Index = () => {
         );
       });
   };
+  const handleChangeRunner = async () => {
+    setIsLoading(true);
+    const payload = [selectedCommentaryRunner?.team1, selectedCommentaryRunner?.team2]
+    await axiosInstance
+      .post(`/admin/ImportMarket/updateTeamId`, payload)
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setRunnerModelVisible(false);
+      })
+      .catch((error) => {
+        setRunnerModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setIsLoading(false);
+      })
+  };
   const handleChangeResult = async () => {
     setIsLoading(true);
     await axiosInstance
@@ -471,6 +503,34 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/commentary/updateShowClient`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleTeamPredictionPermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/updateTeamPrediction`, {
         commentaryId: record?.commentaryId,
         [pType]: cState ? false : true,
       })
@@ -934,6 +994,44 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
+    {
+      title: "Set Runner",
+      dataIndex: "setRunner",
+      render: (text, record) => (
+        <Button
+          color={"warning"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            setRunnerModelVisible(true);
+            setSelectedCommentaryRunner(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          <i class='bx bxs-up-arrow-square' ></i>
+        </Button>
+      ),
+      key: "setRunner",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Is Team Prediction",
+      key: "isTeamPredictionOn",
+      render: (text, record) => (
+        <Button
+          color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
+          }}
+        >
+          <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -1126,6 +1224,16 @@ const Index = () => {
               singleCheck={checekedList}
               selectedEventRef={selectedEventRef}
               setSelectedEventRef={setSelectedEventRef}
+            />
+          )}
+          {runnerModelVisible && (
+            <ChangeRunnerModel
+              runnerModelVisible={runnerModelVisible}
+              setRunnerModelVisible={setRunnerModelVisible}
+              handleChange={handleChangeRunner}
+              singleCheck={checekedList}
+              selectedCommentaryRunner={selectedCommentaryRunner}
+              setSelectedCommentaryRunner={setSelectedCommentaryRunner}
             />
           )}
           {dlsModalCommentary && <DlsModal

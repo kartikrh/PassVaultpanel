@@ -39,6 +39,7 @@ function AddNotification() {
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
+  const [disabledFields, setDisabledFields] = useState({});
   const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const { isSaved, isLoading } = useSelector(
@@ -59,6 +60,14 @@ function AddNotification() {
   }, [notificationId]);
 
   useEffect(() => {
+    if (notificationId !== "0" && initialEditData?.isSend) {
+      setDisabledFields({
+        "isSend":true,
+      })
+    }
+  },[initialEditData?.isSend])
+
+  useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
@@ -70,6 +79,7 @@ function AddNotification() {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/notification");
       else if (currentSaveAction === SAVE_AND_NEW) {
+        setDisabledFields({});
         setInitialEditData({});
         setdisplayStatusId("0");
         finalizeRef.current.resetForm();
@@ -122,7 +132,7 @@ function AddNotification() {
     if (dataToSave) {
       const extraData = {
         notificationId: notificationId,
-        "isSendNow": dataToSave?.isSendNow ? dataToSave.isSendNow : false,
+        "isSend": dataToSave?.isSend ? dataToSave.isSend : false,
       };
       dispatch(addNotificationToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
@@ -224,6 +234,7 @@ function AddNotification() {
                   fields={NotificationConst}
                   editFormData={initialEditData}
                   masterData={masterData}
+                  disabledFields={disabledFields}
                 />
               </CardBody>
             </Card>
