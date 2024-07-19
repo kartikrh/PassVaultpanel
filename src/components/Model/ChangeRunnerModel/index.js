@@ -79,8 +79,8 @@ export const ChangeRunnerModel = ({
   }, []);
 
   const handleSave = () => {
-    const team1Selected = selectedCommentaryRunner?.team1?.selectionID;
-    const team2Selected = selectedCommentaryRunner?.team2?.selectionID;
+    const team1Selected = selectedCommentaryRunner?.team1?.selectionId;
+    const team2Selected = selectedCommentaryRunner?.team2?.selectionId;
 
     if (!team1Selected) {
       setIsTeam1Selected(false);
@@ -137,7 +137,7 @@ export const ChangeRunnerModel = ({
                     setSelectedCommentaryRunner((prev) => ({
                       ...prev,
                       team1: {
-                        selectionID: (e?.value).toString(),
+                        selectionId: (e?.value).toString(),
                         teamId: team1?.teamId,
                       },
                     }));
@@ -166,7 +166,7 @@ export const ChangeRunnerModel = ({
                     setSelectedCommentaryRunner((prev) => ({
                       ...prev,
                       team2: {
-                        selectionID: (e?.value).toString(),
+                        selectionId: (e?.value).toString(),
                         teamId: team2?.teamId,
                       },
                     }));
