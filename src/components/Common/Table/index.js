@@ -54,6 +54,7 @@ const Index = forwardRef(
       loadPanelModelFunction,
       loadClientModelFunction,
       loadSignalRToggleFunction,
+      isSignalRStarted,
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
@@ -1082,14 +1083,14 @@ const Index = forwardRef(
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         {isDeleteAllPermission && (
                           <Button
-                            color="success"
+                            color={isSignalRStarted ? "success" : "danger"}
                             onClick={() => {
                               loadSignalRToggleFunction();
                             }}
                             className="d-flex align-items-center gap-1"
                           >
                             <i className="ri-refresh-line"></i>
-                            SignalR Toggle
+                            {isSignalRStarted ? "SignalR Started" : "SignalR Stopped"}
                           </Button>
                         )}
                         {isDeleteAllPermission && (
