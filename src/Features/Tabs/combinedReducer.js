@@ -28,6 +28,7 @@ import manualEventSlice from "./manualEventSlice";
 import addApiSlice from "./addApiSlice";
 import addApiEndpointSlice from "./addApiEndpointSlice";
 import addNotificationSlice from "./addNotificationSlice";
+import addTemplateSlice from "./addTemplateSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -59,6 +60,7 @@ const rootReducer = combineReducers({
   apis: addApiSlice,
   apiEndpoints: addApiEndpointSlice,
   notification: addNotificationSlice,
+  template: addTemplateSlice,
 });
 
 export default rootReducer;
