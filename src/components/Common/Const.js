@@ -55,6 +55,7 @@ export const TAB_ClientSocket = "ClientSocket";
 export const TAB_API = "API";
 export const TAB_API_ENDPOINTS = "API Endpoints";
 export const TAB_NOTIFICATION = "Notification";
+export const TAB_TEMPLATE = "Template";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";
