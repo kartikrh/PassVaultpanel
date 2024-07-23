@@ -30,6 +30,7 @@ const Index = () => {
   // const [loadClientModelVisable, setLoadClientModelVisable] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [isSignalRStarted, setIsSignalRStarted] = useState(true);
   // const [run, setRun] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -155,12 +156,25 @@ const Index = () => {
         );
       });
   };
+  const handleSignalRCheckStatus = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/signalr/checkStatus`)
+      .then((response) => {
+        const status = response?.data?.isSignalRStarted
+        setIsSignalRStarted(status)
+      })
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  };
   const handleSignalRToggle = async (e) => {
     setIsLoading(true);
     await axiosInstance
       .post(`/signalr/toggle`)
       .then((response) => {
         fetchData();
+        handleSignalRCheckStatus()
         dispatch(
           updateToastData({
             data: response?.status,
@@ -368,6 +382,7 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
+    handleSignalRCheckStatus()
   }, []);
 
   return (
@@ -386,6 +401,7 @@ const Index = () => {
             loadPanelModelFunction={handleLoadPanelData} 
             loadClientModelFunction={handleLoadClientData}
             loadSignalRToggleFunction={handleSignalRToggle}
+            isSignalRStarted={isSignalRStarted}
             singleCheck={checekedList}
             reFetchData={fetchData}
             onAddNavigate={"/addConfig"}
