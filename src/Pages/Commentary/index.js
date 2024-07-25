@@ -855,8 +855,8 @@ const Index = () => {
                 }`}
             ></i>
           </Button>
-          {record.isPredictMarket &&
-            <>
+          <>
+            {record.isPredictMarket &&
               <Button
                 color={"primary"}
                 size="sm"
@@ -866,19 +866,18 @@ const Index = () => {
                 }}
               >
                 <i class='bx bxs-store' ></i>
-              </Button>
-              <Button
-                color={"primary"}
-                size="sm"
-                className="btn"
-                onClick={() => {
-                  handlePredictorDetailsClick(record.commentaryId);
-                }}
-              >
-                <i class='bx bxs-up-arrow-square' ></i>
-              </Button>
-            </>
-          }
+              </Button>}
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handlePredictorDetailsClick(record.commentaryId);
+              }}
+            >
+              <i class='bx bxs-up-arrow-square' ></i>
+            </Button>
+          </>
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
