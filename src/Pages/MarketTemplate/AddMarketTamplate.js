@@ -93,7 +93,12 @@ function AddMarketTemaplate() {
     await axiosInstance
       .post("/admin/marketTemplate/byId", { marketTemplateId: id })
       .then((response) => {
-        setInitialEditData({ ...response?.result });
+        const data = {
+          ...response?.result,
+          create : response?.result?.create === 0 ? "0.00" : response?.result?.create,
+          autoOpen :  response?.result?.autoOpen === 0 ? "0.00" : response?.result?.autoOpen,
+        }
+        setInitialEditData({ ...data});
       })
       .catch((error) => {
         dispatch(
