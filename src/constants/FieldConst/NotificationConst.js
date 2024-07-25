@@ -66,7 +66,7 @@ export const NotificationConst = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-    name: "isSendNow",
+    name: "isSend",
     label: "Send Now",
     parentclassName: "",
     defaultValue: false,

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { NotificationConst } from "../../constants/FieldConst/NotificationConst";
 import {
   Button,
   ButtonDropdown,
@@ -23,63 +22,53 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  TAB_NOTIFICATION,
+  TAB_TEMPLATE,
 } from "../../components/Common/Const";
 import {
-  addNotificationToDb,
+  addTemplateToDb,
   updateSavedState,
-} from "../../Features/Tabs/addNotificationSlice";
+} from "../../Features/Tabs/addTemplateSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { TemplateConst } from "../../constants/FieldConst/TemplateConst";
 
-function AddNotification() {
-  const pageName = TAB_NOTIFICATION;
+function AddTemplate() {
+  const pageName = TAB_TEMPLATE;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
-  const [disabledFields, setDisabledFields] = useState({});
   const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const { isSaved, isLoading } = useSelector(
-    (state) => state.tabsData.notification
+    (state) => state.tabsData.template
   );
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [notificationId, setdisplayStatusId] = useState(
-    location.state?.notificationId || "0"
+  const [templateId, setdisplayStatusId] = useState(
+    location.state?.templateId || "0"
   );
 
   useEffect(() => {
-    if (notificationId !== "0") {
-      fetchData(notificationId);
+    if (templateId !== "0") {
+      fetchData(templateId);
     }
-  }, [notificationId]);
-
-  useEffect(() => {
-    if (notificationId !== "0" && initialEditData?.isSend) {
-      setDisabledFields({
-        "isSend":true,
-      })
-    }
-  },[initialEditData?.isSend])
+  }, [templateId]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-    fetchMasterData()
   }, []);
 
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
-      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/notification");
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/template");
       else if (currentSaveAction === SAVE_AND_NEW) {
-        setDisabledFields({});
         setInitialEditData({});
         setdisplayStatusId("0");
         finalizeRef.current.resetForm();
@@ -88,9 +77,9 @@ function AddNotification() {
     }
   }, [isSaved]);
 
-  const fetchData = async (notificationId) => {
+  const fetchData = async (templateId) => {
     await axiosInstance
-      .post("/admin/notification/byId", { notificationId })
+      .post("/admin/template/byId", { templateId })
       .then((response) => {
         setInitialEditData(response?.result);
       })
@@ -105,42 +94,42 @@ function AddNotification() {
       });
   };
 
-  const fetchMasterData = async () => {
-    axiosInstance
-      .post("admin/notification/eventList", {})
-      .then((response) => {
-        setMasterData((prevData) => ({
-          ...prevData,
-          commentaryId: response?.result?.map((item) => {
-            return { label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal(item?.eventDate, "index")}`, value: item.commentaryId };
-          }),
+  const handleFormDataChange = async (newFormData) => {
+    if (
+      newFormData?.templateType != undefined &&
+      newFormData?.templateType != 0
+    ) {
+      if (newFormData?.templateType == 1) {
+        setMasterData((preData) => ({
+          ...preData,
+          type: [{ label: "Registration Otp", value: 1 }],
         }));
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
+      } else if (newFormData?.templateType == 2) {
+        setMasterData((preData) => ({
+          ...preData,
+          type: [
+            { label: "Welcome", value: 1 },
+            { label: "Verify", value: 2 },
+            { label: "Newsletter", value: 3 },
+          ],
+        }));
+      }
+    }
   };
 
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
       const extraData = {
-        notificationId: notificationId,
-        "isSend": dataToSave?.isSend ? dataToSave.isSend : false,
+        templateId: templateId,
       };
-      dispatch(addNotificationToDb({ ...dataToSave, ...extraData }));
+      dispatch(addTemplateToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };
 
   const handleBackClick = () => {
-    navigate("/notification");
+    navigate("/template");
   };
 
   return (
@@ -149,7 +138,7 @@ function AddNotification() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Notification</h3>
+              <h3>Template</h3>
             </Col>
             <Card>
               <CardBody>
@@ -231,10 +220,10 @@ function AddNotification() {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={NotificationConst}
+                  fields={TemplateConst}
                   editFormData={initialEditData}
                   masterData={masterData}
-                  disabledFields={disabledFields}
+                  onFormDataChange={handleFormDataChange}
                 />
               </CardBody>
             </Card>
@@ -245,4 +234,4 @@ function AddNotification() {
   );
 }
 
-export default AddNotification;
+export default AddTemplate;
