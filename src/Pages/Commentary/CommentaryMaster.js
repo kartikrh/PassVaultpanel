@@ -9,7 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import Toss from './Toss';
 import PlayerSelection from './PlayerSelection';
-import { addCommentaryDetailsToDb, loadCommentaryFeature, updateCommentaryDisplayStatus, updateSavedState } from '../../Features/Tabs/commentarySlice';
+import { addCommentaryScreenData, loadCommentaryFeature, updateCommentaryDisplayStatus, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
@@ -38,7 +38,7 @@ function CommentaryMaster() {
     const [nextData, setNextData] = useState(undefined);
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [statusList, setStatusList] = useState([])
-    const { isSaved, isLoading } = useSelector(state => state.tabsData.commentary);
+    const { isCommentaryDataUpdated, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
@@ -66,12 +66,12 @@ function CommentaryMaster() {
     }, []);
 
     useEffect(() => {
-        if (isSaved) {
+        if (isCommentaryDataUpdated && currentScreen !== 3) {
             dispatch(updateSavedState(undefined))
             setCurrentScreen(nextScreen);
             setCommentaryData(nextData)
         }
-    }, [isSaved]);
+    }, [isCommentaryDataUpdated]);
 
     const fetchData = async () => {
         setIsDataLoading(true)
@@ -97,7 +97,7 @@ function CommentaryMaster() {
 
     const handleSaveClick = async (dataToSave, nextScreen, nextData) => {
         if (dataToSave) {
-            dispatch(addCommentaryDetailsToDb(dataToSave))
+            dispatch(addCommentaryScreenData(dataToSave))
             setNextData(nextData)
             setNextScreen(nextScreen)
         }
@@ -114,15 +114,18 @@ function CommentaryMaster() {
         dispatch(loadCommentaryFeature({ commentaryId }))
     };
 
-    const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+    // const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
     return (
         <React.Fragment>
             <div className="page-content">
+                {console.log({ currentScreen })}
                 <Container fluid={true}>
                     <Row>
                         <Card>
                             <CardBody>
-                                {(isLoading || isDataLoading) && <SpinnerModel />}
+                                {(
+                                    (isCommentaryBallLoading && currentScreen !== 3)
+                                    || isDataLoading) && <SpinnerModel />}
                                 <Row className='mb-3'>
                                     <Col className="pt-2" xs={12} md={6} lg={6} >
                                         {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
