@@ -76,12 +76,12 @@ const Commentary = (props) => {
     let navigate = useNavigate();
     useEffect(() => {
         // console.log({
-        //     aCurrPartnershipBallId: currentPartnership,
-        //     // aCurrPartnershipBallId: currentPartnership.commentaryBallByBallId,
-        //     bCurrBallId: currentBall,
-        //     // bCurrBallId: currentBall.commentaryBallByBallId,
-        //     partnershipHistory,
-        //     ballHistory,
+        //     // aCurrPartnershipBallId: currentPartnership,
+        //     pbbi: currentPartnership.commentaryBallByBallId,
+        //     // bCurrBallId: currentBall,
+        //     bbi: currentBall.commentaryBallByBallId,
+        //     // partnershipHistory,
+        //     // ballHistory, 
         // });
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
@@ -270,6 +270,7 @@ const Commentary = (props) => {
             [ON_STRIKE]: onPitchPlayers[ON_STRIKE].isPlay ? onPitchPlayers[ON_STRIKE] : null,
             [NON_STRIKE]: onPitchPlayers[NON_STRIKE].isPlay ? onPitchPlayers[NON_STRIKE] : null
         })
+        setPartnershipHistory([].concat((partnershipHistory || []), [updatedPartnership]))
         setUpdateRunFromWicket(undefined)
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
     }
@@ -705,6 +706,7 @@ const Commentary = (props) => {
                 "batter1Name": updatedOnPitchPlayer[ON_STRIKE]?.playerName,
                 "batter2Id": updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId,
                 "batter2Name": updatedOnPitchPlayer[NON_STRIKE]?.playerName,
+                "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0")
             }
             const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
             const objToSave = {
@@ -939,9 +941,9 @@ const Commentary = (props) => {
         setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
-        console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
-        console.log(currentOver, currentBall, players[BATTING_TEAM])
+        // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
+        // console.log(currentBall.commentaryBallByBallId, +currentBall.overCount, +teams[BATTING_TEAM].teamOver)
+        // console.log(currentOver, currentBall, players[BATTING_TEAM])
         if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
@@ -1612,7 +1614,7 @@ const Commentary = (props) => {
             if (
                 (isEmpty(currentPartnership) || !currentPartnership?.commentaryPartnershipId || (+currentPartnership?.commentaryPartnershipId === 0))
                 &&
-                ((!isEmpty(partnershipFromApi) || partnershipFromApi?.commentaryPartnershipId || (+partnershipFromApi?.commentaryPartnershipId !== 0)))) {
+                (!isEmpty(partnershipFromApi) || partnershipFromApi?.commentaryPartnershipId || (+partnershipFromApi?.commentaryPartnershipId !== 0))) {
                 const newPartnership = {
                     ...commentaryDataToUpdate.commentaryPartnershipDetails,
                     "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId)
