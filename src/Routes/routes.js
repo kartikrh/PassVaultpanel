@@ -50,6 +50,8 @@ import API from "../Pages/API";
 import APIEndpoints from "../Pages/APIEndpoints";
 import Notification from "../Pages/Notification";
 import Template from "../Pages/Template";
+import RegisteredUsers from "../Pages/RegisteredUsers";
+import RegistrationPending from "../Pages/RegistrationPending";
 import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
@@ -97,6 +99,8 @@ import AddAPIEndpoint from "../Pages/APIEndpoints/AddAPIEndpoint.jsx";
 import PredictorApiLogs from "../Pages/Commentary/PredictorApiLogs.jsx";
 import AddNotification from "../Pages/Notification/AddNotification.jsx";
 import AddTemplate from "../Pages/Template/AddTemplate.jsx";
+import AddRegisteredUsers from "../Pages/RegisteredUsers/AddRegisteredUsers.jsx";
+import AddRegistrationPending from "../Pages/RegistrationPending/AddRegistrationPending.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -178,6 +182,10 @@ const authProtectedRoutes = [
   { path: "/addNotification", component: <AddNotification /> },
   { path: "/template", component: <Template /> },
   { path: "/addTemplate", component: <AddTemplate /> },
+  { path: "/registeredUsers", component: <RegisteredUsers /> },
+  { path: "/addRegisteredUsers", component: <AddRegisteredUsers /> },
+  { path: "/registrationPending", component: <RegistrationPending /> },
+  { path: "/addRegistrationPending", component: <AddRegistrationPending /> },
 
   {
     path: "/changePassword",

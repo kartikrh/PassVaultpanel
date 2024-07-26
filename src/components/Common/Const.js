@@ -56,6 +56,7 @@ export const TAB_API = "API";
 export const TAB_API_ENDPOINTS = "API Endpoints";
 export const TAB_NOTIFICATION = "Notification";
 export const TAB_TEMPLATE = "Template";
+export const TAB_CLIENT = "Client";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";
