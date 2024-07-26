@@ -118,7 +118,6 @@ function CommentaryMaster() {
     return (
         <React.Fragment>
             <div className="page-content">
-                {console.log({ currentScreen })}
                 <Container fluid={true}>
                     <Row>
                         <Card>
