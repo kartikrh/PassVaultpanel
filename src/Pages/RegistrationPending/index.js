@@ -42,10 +42,10 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/client/all`, {
         ...(latestValueFromTable || tableActions),
-        isUserActive: 0
+        isUserActive: 0,
       })
       .then((response) => {
-        const clientData = response?.result?.filter((item)=> item.registrationProcessStatus !== 3 && !item.isUserActive);
+        const clientData = response?.result;
         let clientDataIdList = [];
         clientData.forEach((ele) => {
           clientDataIdList.push(ele?.clientId);
@@ -103,6 +103,42 @@ const Index = () => {
     navigate("/addRegistrationPending", { state: { clientId } });
   };
 
+  const getProviderType = (status) => {
+    switch (status) {
+      case 1:
+        return "Manual";
+      case 2:
+        return "Google";
+      case 3:
+        return "Facebook";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const getUserStatus = (status) => {
+    switch (status) {
+      case 0:
+        return "Inactive";
+      case 1:
+        return "Active";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const getProcessStatus = (status) => {
+    switch (status) {
+      case 1:
+        return "Added User Details";
+      case 2:
+        return "Mobile/Email Verified";
+      case 3:
+        return "Password set";
+      default:
+        return "Unknown";
+    }
+  };
   //table columns
   const columns = [
     {
@@ -265,13 +301,19 @@ const Index = () => {
     {
       title: "Process Status",
       dataIndex: "registrationProcessStatus",
+      render: (text, record) => (
+        <span>{getProcessStatus(record?.registrationProcessStatus)}</span>
+      ),
       key: "registrationProcessStatus",
       sort: true,
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "User Active",
+      title: "User Status",
       dataIndex: "isUserActive",
+      render: (text, record) => (
+        <span>{getUserStatus(record?.isUserActive)}</span>
+      ),
       key: "isUserActive",
       sort: true,
       style: { width: "5%", textAlign: "center" },
@@ -279,6 +321,9 @@ const Index = () => {
     {
       title: "Provider",
       dataIndex: "provider",
+      render: (text, record) => (
+        <span>{getProviderType(record?.provider)}</span>
+      ),
       key: "provider",
       sort: true,
       style: { width: "5%", textAlign: "center" },
