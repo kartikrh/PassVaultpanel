@@ -264,7 +264,6 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(onPitchPlayers),
         }
         dispatch(addCommentaryScreenData(objToSave))
-        setSaveToDb(false)
         setOnPitchPlayers({
             ...onPitchPlayers,
             [ON_STRIKE]: onPitchPlayers[ON_STRIKE].isPlay ? onPitchPlayers[ON_STRIKE] : null,
@@ -274,6 +273,7 @@ const Commentary = (props) => {
         setPartnershipHistory([].concat((updaterPartnershipHistory || []), [updatedPartnership]))
         setUpdateRunFromWicket(undefined)
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
+        setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
         if (!freezePlayers) setCurrentBall({})
