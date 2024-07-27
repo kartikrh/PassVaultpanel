@@ -1,4 +1,4 @@
-import { SWITCH, TEXT } from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const ClientConst = [
   {
@@ -76,27 +76,43 @@ export const ClientConst = [
   {
     name: "registrationProcessStatus",
     label: "Process Status",
-    type: TEXT,
+    options: [
+      { label: "Select Process Status", value: "0" },
+      { label: "Added User Details", value: 1 },
+      { label: "Mobile/Email Verified", value: 2 },
+      { label: "Password set", value: 3 },
+    ],
     isRequired: true,
-    requiredErrorMessage: "Please enter Registration Process Status.",
+    type: SELECT,
+    defaultValue: "0",
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-    name: "isUserActive",
-    label: "User Active",
-    type: TEXT,
+    name: "provider",
+    label: "Provider",
+    options: [
+      { label: "Select Provider Type", value: "0" },
+      { label: "Manual", value: 1 },
+      { label: "Google", value: 2 },
+      { label: "Facebook", value: 3 },
+    ],
     isRequired: true,
-    requiredErrorMessage: "Please enter User Active.",
+    type: SELECT,
+    defaultValue: "0",
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   }, 
   {
-    name: "provider",
-    label: "Provider",
-    type: TEXT,
-    isRequired: true,
-    requiredErrorMessage: "Please enter Provider.",
+    name: "isUserActive",
+    label: "User Status",
+    options: [
+      // { label: "Select User Status", value: "0" },
+      { label: "Inactive", value: "0" },
+      { label: "Active", value: 1 },
+    ],
+    type: SELECT,
+    defaultValue: "0",
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
