@@ -75,14 +75,14 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
     useEffect(() => {
-        // console.log({
-        //     // aCurrPartnershipBallId: currentPartnership,
-        //     pbbi: currentPartnership.commentaryBallByBallId,
-        //     // bCurrBallId: currentBall,
-        //     bbi: currentBall.commentaryBallByBallId,
-        //     // partnershipHistory,
-        //     // ballHistory, 
-        // });
+        console.log({
+            // aCurrPartnershipBallId: currentPartnership,
+            pbbi: currentPartnership.commentaryPartnershipId,
+            // bCurrBallId: currentBall,
+            // bbi: currentBall.commentaryBallByBallId,
+            partnershipHistory,
+            // ballHistory, 
+        });
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -270,7 +270,8 @@ const Commentary = (props) => {
             [ON_STRIKE]: onPitchPlayers[ON_STRIKE].isPlay ? onPitchPlayers[ON_STRIKE] : null,
             [NON_STRIKE]: onPitchPlayers[NON_STRIKE].isPlay ? onPitchPlayers[NON_STRIKE] : null
         })
-        setPartnershipHistory([].concat((partnershipHistory || []), [updatedPartnership]))
+        const updaterPartnershipHistory = partnershipHistory.slice(0, -1)
+        setPartnershipHistory([].concat((updaterPartnershipHistory || []), [updatedPartnership]))
         setUpdateRunFromWicket(undefined)
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
     }
