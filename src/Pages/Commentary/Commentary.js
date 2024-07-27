@@ -75,14 +75,14 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
     useEffect(() => {
-        console.log({
-            // aCurrPartnershipBallId: currentPartnership,
-            pbbi: currentPartnership.commentaryPartnershipId,
-            // bCurrBallId: currentBall,
-            // bbi: currentBall.commentaryBallByBallId,
-            partnershipHistory,
-            // ballHistory, 
-        });
+        // console.log({
+        // aCurrPartnershipBallId: currentPartnership,
+        // pbbi: currentPartnership.commentaryPartnershipId,
+        // bCurrBallId: currentBall,
+        // bbi: currentBall.commentaryBallByBallId,
+        // partnershipHistory,
+        // ballHistory, 
+        // });
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
