@@ -6,7 +6,7 @@ import { PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const";
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import "./CommentaryCss.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
@@ -54,30 +54,23 @@ function PredictorApiLogs() {
 
   const columns = [
     {
+      title: "Date",
+      dataIndex: "wrRequestStartTime",
+      render: (text, record) => (
+        <span>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
+      key: "wrRequestStartTime",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Endpoint",
       dataIndex: "wrEndpoint",
       key: "wrEndpoint",
       sort: true,
       style: { width: "10%" },
-    },
-    {
-      title: "Request Body",
-      dataIndex: "wrRequestBody",
-      render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-            </span>
-          ));
-        return <div>{logItems}</div>;
-      },
-      key: "wrRequestBody",
-      sort: true,
-      style: { width: "20%" },
     },
     {
       title: "Response",
@@ -95,6 +88,25 @@ function PredictorApiLogs() {
           ));
         return <div>{logItems}</div>;
       },
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
+      title: "Request Body",
+      dataIndex: "wrRequestBody",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+            </span>
+          ));
+        return <div>{logItems}</div>;
+      },
+      key: "wrRequestBody",
       sort: true,
       style: { width: "20%" },
     },
