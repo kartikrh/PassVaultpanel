@@ -13,6 +13,7 @@ import { addCommentaryScreenData, loadCommentaryFeature, updateCommentaryDisplay
 import Commentary from './Commentary';
 import "./CommentaryCss.css"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
+import NetworkStatus from '../../components/Common/Reusables/NetworkStatus';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -137,6 +138,7 @@ function CommentaryMaster() {
                                         <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                                         {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                             <>
+                                                <NetworkStatus />
                                                 <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
                                                 <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
                                             </>}
