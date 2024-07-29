@@ -100,7 +100,7 @@ function AddRegistrationPending() {
         isDelete: dataToSave?.isDelete || false,
         isEmailVerified: dataToSave?.isEmailVerified || false,
         isMobileVerified: dataToSave?.isMobileVerified || false,
-        isUserActive: dataToSave?.isUserActive === "0" ? 0 : 1,
+        isUserActive: parseInt(dataToSave?.isUserActive),
         isActive: dataToSave?.isActive || false,
       };
       dispatch(addClientToDb({ ...dataToSave, ...extraData }));
