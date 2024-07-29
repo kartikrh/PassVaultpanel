@@ -1,4 +1,4 @@
-import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT, TEXT_EDITOR } from "../../components/Common/Const";
 
 export const TemplateConst = [
   {
@@ -35,15 +35,6 @@ export const TemplateConst = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-    name: "description",
-    label: "Message",
-    type: TEXT,
-    isRequired: true,
-    requiredErrorMessage: "Please enter Message.",
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
-  {
     name: "isActive",
     label: "Is Active",
     parentclassName: "",
@@ -51,5 +42,13 @@ export const TemplateConst = [
     type: SWITCH,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "description",
+    label: "Message",
+    parentclassName: "",
+    type: TEXT_EDITOR,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
   },
 ];
