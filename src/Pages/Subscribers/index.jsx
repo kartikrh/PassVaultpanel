@@ -35,7 +35,8 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/subscribeDomain/all`, {
-        ...(latestValueFromTable || tableActions)
+        ...(latestValueFromTable || tableActions),
+        isApproved: latestValueFromTable?.isApproved !== undefined ? latestValueFromTable?.isApproved : true
       })
       .then((response) => {
         const apiData = response?.result
@@ -205,6 +206,7 @@ const Index = () => {
   const tableElement = {
     title: "Subscribers",
     // isActive: true,
+    isApproved: true
   };
 
   useEffect(() => {

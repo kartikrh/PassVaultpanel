@@ -155,6 +155,44 @@ const Index = forwardRef(
         </div>
       );
     };
+
+    const OffsymbolApprovedStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 8,
+            color: "#fff",
+            // paddingRight: 2,
+          }}
+        >
+          {" "}
+          not approved
+        </div>
+      );
+    };
+    const OnSymbolApprovedStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 9,
+            color: "#fff",
+            // paddingRight: 4,
+          }}
+        >
+          {" "}
+          approved
+        </div>
+      );
+    };
+
     const styles = {
       menu: ({ width, ...css }) => ({ ...css }),
     };
@@ -170,6 +208,18 @@ const Index = forwardRef(
         reFetchData({
           ...tableActions,
           isActive: id,
+        });
+      } else if (key === "isApproved") {
+        setStatusSwitch(id);
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id,
+          };
+        });
+        reFetchData({
+          ...tableActions,
+          isApproved: id,
         });
       } else {
         if (key === "isShowContent") {
@@ -616,6 +666,21 @@ const Index = forwardRef(
                               onColor="#02a499"
                               onChange={() => {
                                 handleTableActions("isActive", !statusSwitch);
+                              }}
+                              checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.isApproved ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolApprovedStatus />}
+                              checkedIcon={<OnSymbolApprovedStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isApproved", !statusSwitch);
                               }}
                               checked={statusSwitch}
                             />
