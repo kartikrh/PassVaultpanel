@@ -7,7 +7,6 @@ import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusabl
 
 const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
   const dispatch = useDispatch();
-
   const handleSetResult = async () => {
     await axiosInstance
       .post(`/admin/eventMarket/setMarketIsResult`, {
