@@ -136,7 +136,7 @@ const Index = () => {
       case 3:
         return "Password set";
       default:
-        return "Unknown";
+        return "";
     }
   };
   //table columns
