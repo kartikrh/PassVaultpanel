@@ -489,7 +489,7 @@ const Index = () => {
       title: "Delay",
       dataIndex: "delay",
       key: "delay",
-      style: { width: "10%" },
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
     {
@@ -548,6 +548,13 @@ const Index = () => {
         </>
       ),
       style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Result",
+      dataIndex: "result",
+      key: "result",
+      style: { width: "5%", textAlign: "center" },
+      sort: true,
     },
     {
       render: (text, record) => (

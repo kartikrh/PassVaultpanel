@@ -17,6 +17,7 @@ import { checkPermission, convertDateUTCToLocal } from "../../components/Common/
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
 import { Tooltip } from "antd";
+import SetResultModal from "./SetResultModal";
 
 const Index = () => {
   const pageName = TAB_SET_MARKETS_RESULT;
@@ -35,6 +36,8 @@ const Index = () => {
   const [isSearch, setIsSearch] = useState(true);
   const [resultModelVisible, setResultModelVisible] = useState(false);
   const [selectedResult, setSelectedResult] = useState({});
+  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [resultModalData, setResultModalData] = useState(null);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -110,34 +113,34 @@ const Index = () => {
       .catch((error) => {});
   };
 
-  const handleAllowPermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/setMarketIsResult`, {
-        eventMarketId: record.eventMarketId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
+  // const handleAllowPermissions = async (pType, record, cState) => {
+  //   setIsLoading(true);
+  //   await axiosInstance
+  //     .post(`/admin/eventMarket/setMarketIsResult`, {
+  //       eventMarketId: record.eventMarketId,
+  //       [pType]: cState ? false : true,
+  //     })
+  //     .then((response) => {
+  //       fetchData();
+  //       dispatch(
+  //         updateToastData({
+  //           data: response?.message,
+  //           title: response?.title,
+  //           type: SUCCESS,
+  //         })
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       setIsLoading(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: error?.message,
+  //           title: error?.title,
+  //           type: ERROR,
+  //         })
+  //       );
+  //     });
+  // };
 
   const handleChangeResult = async (val) => {
     setIsLoading(true);
@@ -307,7 +310,8 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handleAllowPermissions("isResult", record, record.isResult);
+            setIsResultModalOpen(true);
+            setResultModalData(record);
           }}
         >
           <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
@@ -380,7 +384,7 @@ const Index = () => {
             isSearch={isSearch}
             setIsSearch={setIsSearch}
           />
-           {resultModelVisible && (
+          {resultModelVisible && (
             <ChangeMarketResultModel
               resultModelVisible={resultModelVisible}
               setResultModelVisible={setResultModelVisible}
@@ -388,6 +392,14 @@ const Index = () => {
               singleCheck={checekedList}
               selectedResult={selectedResult}
               setSelectedResult={setSelectedResult}
+            />
+          )}
+          {isResultModalOpen && (
+            <SetResultModal
+             isOpen={isResultModalOpen}
+             toggle={() => setIsResultModalOpen(!isResultModalOpen)}
+             data={resultModalData}
+             fetchData={fetchData}
             />
           )}
         </Container>

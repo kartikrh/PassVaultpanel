@@ -136,7 +136,7 @@ const Index = () => {
       case 3:
         return "Password set";
       default:
-        return "Unknown";
+        return "";
     }
   };
   //table columns
@@ -217,6 +217,7 @@ const Index = () => {
           color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
+          disabled
           // onClick={() => {
           //   handlePermissions("isAllowMultiLogin", record, record.isAllowMultiLogin);
           // }}
@@ -236,6 +237,7 @@ const Index = () => {
           color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
+          disabled
           // onClick={() => {
           //   handlePermissions("isDelete", record, record.isDelete);
           // }}
@@ -255,6 +257,7 @@ const Index = () => {
           color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
+          disabled
           // onClick={() => {
           //   handlePermissions("isEmailVerified", record, record.isEmailVerified);
           // }}
@@ -281,6 +284,7 @@ const Index = () => {
           color={`${text ? "primary" : "danger"}`}
           size="sm"
           className="btn"
+          disabled
           // onClick={() => {
           //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
           // }}

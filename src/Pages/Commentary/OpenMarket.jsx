@@ -58,10 +58,17 @@ export const OpenMarket = () => {
         }
     };
 
+    useEffect(() => {
+        console.log("current data: ", { data });
+    }, [data])
+
     const formatDataBeforeSend = (dataToChange = []) => {
         const dataToSend = []
+        // let isRunnerIdPresented
         dataToChange.forEach(record => {
             let workingRecord = _.clone(record)
+            // isRunnerIdPresented = record.runner?.[0]?.runnerId
+            console.log("To send:", { record, needToChk: record.runner?.[0] });
             const recordMarketRunner = {
                 ...record.runner?.[0],
                 "line": +record.line,
@@ -72,11 +79,13 @@ export const OpenMarket = () => {
                 "backSize": +(record.backSize || 100),
                 "layPrice": +record.layPrice,
                 "laySize": +(record.laySize || 100),
-                "status": +record.status
+                "status": +record.status,
+                "runnerId": +record.runnerId,
             }
             workingRecord = _.omit(workingRecord,
                 ["runner", "line", "overRate", "underRate", "backPrice", "backSize", "layPrice", "laySize", "runner", "runnerId", "selectionStatus", "lastUpdate"])
             workingRecord["runner"] = [recordMarketRunner]
+            // if (isRunnerIdPresented) 
             dataToSend.push(workingRecord)
         })
         return dataToSend
@@ -200,6 +209,7 @@ export const OpenMarket = () => {
             const newMarketData = {}
             responseData.forEach(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
+                console.log("from socket: ", { eventMarket });
                 const marketRunner = eventMarket.runner[0]
                 if (marketRunner) {
                     const updatedMarketData = {
