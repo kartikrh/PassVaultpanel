@@ -88,7 +88,7 @@ function CommentaryMaster() {
                     dispatch(
                       updateToastData({
                         data: response?.result?.callPrediction?.predictionMessage,
-                        title: "callPrediction",
+                        title: "Call Prediction",
                         type: WARNING,
                       })
                     );

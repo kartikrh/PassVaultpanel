@@ -12,7 +12,7 @@ export const addCommentaryToDb = createAsyncThunk(
                 dispatch(
                   updateToastData({
                     data: response?.result?.callPrediction?.predictionMessage,
-                    title: "callPrediction",
+                    title: "Call Prediction",
                     type: WARNING,
                   })
                 );
@@ -62,7 +62,7 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
                 dispatch(
                   updateToastData({
                     data: prediction.predictionMessage,
-                    title: "callPrediction",
+                    title: "Call Prediction",
                     type: WARNING,
                   })
                 );
@@ -135,7 +135,7 @@ export const loadCommentaryFeature = createAsyncThunk(
                 dispatch(
                   updateToastData({
                     data: response?.result?.callPrediction?.predictionMessage,
-                    title: "callPrediction",
+                    title: "Call Prediction",
                     type: WARNING,
                   })
                 );
