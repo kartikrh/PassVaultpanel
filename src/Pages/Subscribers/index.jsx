@@ -36,7 +36,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/subscribeDomain/all`, {
         ...(latestValueFromTable || tableActions),
-        isApproved: latestValueFromTable?.isApproved !== undefined ? latestValueFromTable?.isApproved : true
+        isApproved: latestValueFromTable?.isApproved !== undefined ? latestValueFromTable?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
       })
       .then((response) => {
         const apiData = response?.result

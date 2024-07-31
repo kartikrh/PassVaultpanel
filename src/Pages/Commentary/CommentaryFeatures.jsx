@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../../Features/axios.js"
 import { updateToastData } from "../../Features/toasterSlice.js"
-import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const.js"
+import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY, WARNING } from "../../components/Common/Const.js"
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
 import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
@@ -71,6 +71,15 @@ export const CommentaryFeatures = () => {
                 commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
+                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    dispatch(
+                      updateToastData({
+                        data: response?.result?.callPrediction?.predictionMessage,
+                        title: "callPrediction",
+                        type: WARNING,
+                      })
+                    );
+                }
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)

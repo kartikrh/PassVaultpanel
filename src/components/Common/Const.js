@@ -22,6 +22,7 @@ export const LABEL = "LABEL";
 export const LABEL_PARTATION = "LABEL_PARTATION";
 export const BUTTON = "BUTTON";
 export const COLOR_PICKER = "COLOR_PICKER";
+export const WARNING = "WARNING";
 
 // Tab names
 export const TAB_TABS = "Tabs";
