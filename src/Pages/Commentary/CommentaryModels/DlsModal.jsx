@@ -133,7 +133,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
             .then(async (response) => {
                 setIsDataLoading(false)
                 toggle()
-                if(response?.result?.callPredictions.length > 0) {
+                if(response?.result?.callPredictions?.length > 0) {
                     response.result.callPredictions.forEach((prediction) => {
                      if(prediction?.predictioncallSuccess === false) {
                       dispatch(

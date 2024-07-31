@@ -205,7 +205,7 @@ const PlayerSelection = forwardRef((props, ref) => {
               commentaryOvers: [{ ...commentaryOvers, overId }]
             })
           }
-          if(response?.result?.callPredictions.length > 0) {
+          if(response?.result?.callPredictions?.length > 0) {
             response.result.callPredictions.forEach((prediction) => {
              if(prediction?.predictioncallSuccess === false) {
               dispatch(

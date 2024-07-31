@@ -31,7 +31,7 @@ export const addCommentaryScreenData = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
-            if(response?.result?.callPredictions.length > 0) {
+            if(response?.result?.callPredictions?.length > 0) {
                 response.result.callPredictions.forEach((prediction) => {
                  if(prediction?.predictioncallSuccess === false) {
                   dispatch(
@@ -56,7 +56,7 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/updateCommentaryStatus', data);
-            if(response?.result?.callPredictions.length > 0) {
+            if(response?.result?.callPredictions?.length > 0) {
               response.result.callPredictions.forEach((prediction) => {
                if(prediction?.predictioncallSuccess === false) {
                 dispatch(
