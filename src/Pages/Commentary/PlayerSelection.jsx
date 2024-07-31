@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useState } from 'react'
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
-import { ERROR, BATTING_STATUS, BALLING_STATUS, SAVE_AND_NEXT } from '../../components/Common/Const'
+import { ERROR, BATTING_STATUS, BALLING_STATUS, SAVE_AND_NEXT, WARNING } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
 import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
@@ -204,6 +204,19 @@ const PlayerSelection = forwardRef((props, ref) => {
               ],
               commentaryOvers: [{ ...commentaryOvers, overId }]
             })
+          }
+          if(response?.result?.callPredictions.length > 0) {
+            response.result.callPredictions.forEach((prediction) => {
+             if(prediction?.predictioncallSuccess === false) {
+              dispatch(
+                updateToastData({
+                  data: prediction?.predictionMessage,
+                  title: prediction?.predictioonAPI,
+                  type: WARNING,
+                })
+              );
+             }
+            });
           }
         })
         .catch((error) => {

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../../Features/axios"
 import { updateToastData } from "../../Features/toasterSlice"
-import { ERROR, PERMISSION_VIEW, STRING_SEPERATOR, TAB_COMMENTARY } from "../../components/Common/Const"
+import { ERROR, PERMISSION_VIEW, STRING_SEPERATOR, TAB_COMMENTARY, WARNING } from "../../components/Common/Const"
 import ShortCommentaryScreen from "./ShortCommentary.jsx"
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { isEqual } from "lodash"
@@ -46,6 +46,15 @@ export const ShortCommentary = () => {
                 commentaryDataToUpdate = response?.result
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
+                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    dispatch(
+                      updateToastData({
+                        data: response?.result?.callPrediction?.predictionMessage,
+                        title: "callPrediction",
+                        type: WARNING,
+                      })
+                    );
+                }
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)

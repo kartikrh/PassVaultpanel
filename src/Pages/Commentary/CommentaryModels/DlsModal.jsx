@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Col, Input, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "reactstrap";
-import { COMMENTARY_STATUS_OPEN, ERROR } from "../../../components/Common/Const";
+import { COMMENTARY_STATUS_OPEN, ERROR, WARNING } from "../../../components/Common/Const";
 import axiosInstance from "../../../Features/axios";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { isEqual } from "lodash";
@@ -24,6 +24,15 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
             .then(async (response) => {
                 formatDataInitialize(response?.result)
                 setIsDataLoading(false)
+                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    dispatch(
+                      updateToastData({
+                        data: response?.result?.callPrediction?.predictionMessage,
+                        title: "callPrediction",
+                        type: WARNING,
+                      })
+                    );
+                }
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)
@@ -124,6 +133,19 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
             .then(async (response) => {
                 setIsDataLoading(false)
                 toggle()
+                if(response?.result?.callPredictions.length > 0) {
+                    response.result.callPredictions.forEach((prediction) => {
+                     if(prediction?.predictioncallSuccess === false) {
+                      dispatch(
+                        updateToastData({
+                          data: prediction?.predictionMessage,
+                          title: prediction?.predictioonAPI,
+                          type: WARNING,
+                        })
+                      );
+                     }
+                    });
+                }
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)

@@ -1,14 +1,25 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
-import { ERROR, SUCCESS } from '../../components/Common/Const';
+import { ERROR, SUCCESS, WARNING } from '../../components/Common/Const';
 
 export const addMarketTemplateToDb = createAsyncThunk(
     'marketTemplate/addMarketTemplate',
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/marketTemplate/save', data);
-            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+              dispatch(
+                updateToastData({
+                  data: response?.result?.callPrediction?.predictionMessage,
+                  title: "callPrediction",
+                  type: WARNING,
+                })
+              );
+            }
+            else {
+              dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            }
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));

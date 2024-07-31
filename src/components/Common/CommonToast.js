@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearToastData } from '../../Features/toasterSlice';
 import { Toast, ToastBody, ToastHeader } from 'reactstrap';
-import { SUCCESS } from './Const';
+import { SUCCESS, WARNING } from './Const';
 
 const CommonToast = () => {
     const dispatch = useDispatch();
@@ -36,12 +36,12 @@ const CommonToast = () => {
     return (
         <div className="position-fixed top-0 end-0 p-3 " style={{ zIndex: "5000" }}>
             <Toast
-                style={{ border: `solid ${toastData.type === SUCCESS ? "Green" : "Red"} 2px` }}
+                style={{ border: `solid ${toastData.type === SUCCESS ? "Green" : toastData.type === WARNING ? "#ffc107" : "Red"} 2px` }}
                 isOpen={toastData.isVisible} >
                 <ToastHeader toggle={() => {
                     handleToastClose()
                 }}>
-                    {toastData.title || (toastData.type === SUCCESS ? "Success" : "Error")}
+                    {toastData.title || (toastData.type === SUCCESS ? "Success" : toastData.type === WARNING ? "Warning" : "Error")}
                 </ToastHeader>
                 <ToastBody color="danger">
                     <>{toastData.data}</>

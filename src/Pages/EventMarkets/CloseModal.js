@@ -7,7 +7,7 @@ import {
 } from "reactstrap";
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { ERROR, SUCCESS, WARNING } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import CloseMarketModel from "../../components/Model/CloseMarketModel";
@@ -31,6 +31,15 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
       .then((response) => {
         fetchData();
         setCloseModelVisable(false);
+        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+          dispatch(
+            updateToastData({
+              data: response?.result?.callPrediction?.predictionMessage,
+              title: "callPrediction",
+              type: WARNING,
+            })
+          );
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -38,6 +47,7 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
             type: SUCCESS,
           })
         );
+       }
       })
       .catch((error) => {
         setCloseModelVisable(false);
