@@ -181,7 +181,7 @@ const Index = () => {
             dispatch(
               updateToastData({
                 data: prediction.predictionMessage,
-                title: "callPrediction",
+                title: "Call Prediction",
                 type: WARNING,
               })
             );
@@ -221,7 +221,7 @@ const Index = () => {
           dispatch(
             updateToastData({
               data: response?.result?.callPrediction?.predictionMessage,
-              title: "callPrediction",
+              title: "Call Prediction",
               type: WARNING,
             })
           );
@@ -261,7 +261,7 @@ const Index = () => {
             dispatch(
               updateToastData({
                 data: prediction.predictionMessage,
-                title: "callPrediction",
+                title: "Call Prediction",
                 type: WARNING,
               })
             );
@@ -381,7 +381,7 @@ const Index = () => {
           dispatch(
             updateToastData({
               data: response?.result?.callPrediction?.predictionMessage,
-              title: "callPrediction",
+              title: "Call Prediction",
               type: WARNING,
             })
           );
@@ -475,7 +475,7 @@ const Index = () => {
           dispatch(
             updateToastData({
               data: response?.result?.callPrediction?.predictionMessage,
-              title: "callPrediction",
+              title: "Call Prediction",
               type: WARNING,
             })
           );
@@ -513,7 +513,7 @@ const Index = () => {
           dispatch(
             updateToastData({
               data: response?.result?.callPrediction?.predictionMessage,
-              title: "callPrediction",
+              title: "Call Prediction",
               type: WARNING,
             })
           );
