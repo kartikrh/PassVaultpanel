@@ -175,7 +175,7 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setLoadModelVisable(false);
-        if(response?.result?.callPredictions.length > 0) {
+        if(response?.result?.callPredictions?.length > 0) {
           response.result.callPredictions.forEach((prediction) => {
            if(prediction?.predictioncallSuccess === false) {
             dispatch(
@@ -255,7 +255,7 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setCloseModelVisable(false);
-        if(response?.result?.callPredictions.length > 0) {
+        if(response?.result?.callPredictions?.length > 0) {
           response.result.callPredictions.forEach((prediction) => {
            if(prediction?.predictioncallSuccess === false) {
             dispatch(
