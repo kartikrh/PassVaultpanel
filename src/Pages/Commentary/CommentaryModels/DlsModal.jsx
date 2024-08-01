@@ -25,9 +25,11 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                 formatDataInitialize(response?.result)
                 setIsDataLoading(false)
                 if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                    const endPoint = response?.result?.callPrediction?.endPoint;
                     dispatch(
                       updateToastData({
-                        data: response?.result?.callPrediction?.predictionMessage,
+                        data: `${endPoint}\n${predictionMessage}`,
                         title: "Call Prediction",
                         type: WARNING,
                       })
@@ -136,9 +138,11 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                 if(response?.result?.callPredictions?.length > 0) {
                     response.result.callPredictions.forEach((prediction) => {
                      if(prediction?.predictioncallSuccess === false) {
+                      const predictionMessage = prediction?.predictionMessage;
+                      const endPoint = prediction?.endPoint;
                       dispatch(
                         updateToastData({
-                          data: prediction?.predictionMessage,
+                          data: `${endPoint}\n${predictionMessage}`,
                           title: prediction?.predictioonAPI,
                           type: WARNING,
                         })

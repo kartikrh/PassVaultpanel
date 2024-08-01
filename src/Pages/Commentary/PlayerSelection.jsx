@@ -208,9 +208,11 @@ const PlayerSelection = forwardRef((props, ref) => {
           if(response?.result?.callPredictions?.length > 0) {
             response.result.callPredictions.forEach((prediction) => {
              if(prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
               dispatch(
                 updateToastData({
-                  data: prediction?.predictionMessage,
+                  data: `${endPoint}\n${predictionMessage}`,
                   title: prediction?.predictioonAPI,
                   type: WARNING,
                 })
