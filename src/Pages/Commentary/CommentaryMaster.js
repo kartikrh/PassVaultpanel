@@ -85,9 +85,11 @@ function CommentaryMaster() {
                 setStatusList(commentaryDataToUpdate.commentaryDisplayStatus)
                 setIsDataLoading(false)
                 if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                    const endPoint = response?.result?.callPrediction?.endPoint;
                     dispatch(
                       updateToastData({
-                        data: response?.result?.callPrediction?.predictionMessage,
+                        data: `${endPoint}\n${predictionMessage}`,
                         title: "Call Prediction",
                         type: WARNING,
                       })

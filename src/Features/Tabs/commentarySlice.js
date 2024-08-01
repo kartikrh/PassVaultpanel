@@ -9,9 +9,11 @@ export const addCommentaryToDb = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/commentary/save', data);
             if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                const endPoint = response?.result?.callPrediction?.endPoint;
                 dispatch(
                   updateToastData({
-                    data: response?.result?.callPrediction?.predictionMessage,
+                    data: `${endPoint}\n${predictionMessage}`,
                     title: "Call Prediction",
                     type: WARNING,
                   })
@@ -34,9 +36,11 @@ export const addCommentaryScreenData = createAsyncThunk(
             if(response?.result?.callPredictions?.length > 0) {
                 response.result.callPredictions.forEach((prediction) => {
                  if(prediction?.predictioncallSuccess === false) {
+                  const predictionMessage = prediction?.predictionMessage;
+                  const endPoint = prediction?.endPoint;
                   dispatch(
                     updateToastData({
-                      data: prediction?.predictionMessage,
+                      data: `${endPoint}\n${predictionMessage}`,
                       title: prediction?.predictioonAPI,
                       type: WARNING,
                     })
@@ -59,9 +63,11 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
             if(response?.result?.callPredictions?.length > 0) {
               response.result.callPredictions.forEach((prediction) => {
                if(prediction?.predictioncallSuccess === false) {
+                const predictionMessage = prediction?.predictionMessage;
+                const endPoint = prediction?.endPoint;
                 dispatch(
                   updateToastData({
-                    data: prediction.predictionMessage,
+                    data: `${endPoint}\n${predictionMessage}`,
                     title: "Call Prediction",
                     type: WARNING,
                   })
@@ -132,9 +138,11 @@ export const loadCommentaryFeature = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/commentary/loadcommentaryapi', data);
             if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                const endPoint = response?.result?.callPrediction?.endPoint;
                 dispatch(
                   updateToastData({
-                    data: response?.result?.callPrediction?.predictionMessage,
+                    data: `${endPoint}\n${predictionMessage}`,
                     title: "Call Prediction",
                     type: WARNING,
                   })

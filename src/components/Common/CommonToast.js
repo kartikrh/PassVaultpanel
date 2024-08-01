@@ -33,6 +33,19 @@ const CommonToast = () => {
         return null;
     }
 
+    const formatToastData = (data) => {
+        if (data.includes('\n')) {
+            return data.split('\n').map((item, index) => (
+              <React.Fragment key={index}>
+                {item}
+                <br />
+              </React.Fragment>
+            ));
+        } else {
+            return data;
+        }
+    };
+
     return (
         <div className="position-fixed top-0 end-0 p-3 " style={{ zIndex: "5000" }}>
             <Toast
@@ -44,7 +57,7 @@ const CommonToast = () => {
                     {toastData.title || (toastData.type === SUCCESS ? "Success" : toastData.type === WARNING ? "Warning" : "Error")}
                 </ToastHeader>
                 <ToastBody color="danger">
-                    <>{toastData.data}</>
+                    <>{formatToastData(toastData.data)}</>
                 </ToastBody>
             </Toast>
         </div>

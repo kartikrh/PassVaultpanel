@@ -9,9 +9,11 @@ export const addMarketTemplateToDb = createAsyncThunk(
         try {
             const response = await axiosInstance.post('/admin/marketTemplate/save', data);
             if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+              const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+              const endPoint = response?.result?.callPrediction?.endPoint;
               dispatch(
                 updateToastData({
-                  data: response?.result?.callPrediction?.predictionMessage,
+                  data: `${endPoint}\n${predictionMessage}`,
                   title: "Call Prediction",
                   type: WARNING,
                 })
