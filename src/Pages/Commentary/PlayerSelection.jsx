@@ -372,7 +372,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                     title={"Bowler"}
                     check={selectedBowler?.playerName}
                     name={selectedBowler?.playerName}
-                    onClick={() => openModel(BALLING_STATUS)}
+                    onClick={() => openModel(BOWLING_STATUS)}
                     bgColor={"#FCC042"}
                     onClickColor={"#CB8F00"}
                     isPlayerName={true}
