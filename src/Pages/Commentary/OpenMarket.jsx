@@ -58,17 +58,12 @@ export const OpenMarket = () => {
         }
     };
 
-    useEffect(() => {
-        console.log("current data: ", { data });
-    }, [data])
-
     const formatDataBeforeSend = (dataToChange = []) => {
         const dataToSend = []
         // let isRunnerIdPresented
         dataToChange.forEach(record => {
             let workingRecord = _.clone(record)
             // isRunnerIdPresented = record.runner?.[0]?.runnerId
-            console.log("To send:", { record, needToChk: record.runner?.[0] });
             const recordMarketRunner = {
                 ...record.runner?.[0],
                 "line": +record.line,
@@ -209,7 +204,6 @@ export const OpenMarket = () => {
             const newMarketData = {}
             responseData.forEach(eventMarket => {
                 if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
-                console.log("from socket: ", { eventMarket });
                 const marketRunner = eventMarket.runner[0]
                 if (marketRunner) {
                     const updatedMarketData = {
@@ -606,13 +600,13 @@ export const OpenMarket = () => {
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
-            case '+':
+            case 's':
                 handleAction(data, "isSendData", true);
                 break;
-            case '-':
+            case 'd':
                 handleAction(data, "status", OPEN_VALUE);
                 break;
-            case '*':
+            case 'a':
                 updateRecords();
                 break;
             case 'i':
@@ -751,9 +745,9 @@ export const OpenMarket = () => {
                                     <Row>
                                         {lineRatioField}
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{`${SEND_ALL} (+)`}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>{`Publish (-)`}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>{`Save All (*)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{`${SEND_ALL} (S)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>{`Publish (D)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>{`Save All (A)`}</Button>
                                         </Col>
                                     </Row>}
                                 {Object.keys(categorisedData).map((category, index) => {
