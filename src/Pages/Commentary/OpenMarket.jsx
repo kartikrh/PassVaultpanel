@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS } from "../../components/Common/Const";
+import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -168,7 +168,19 @@ export const OpenMarket = () => {
                     setData(formattedData.data);
                 }
                 setIsLoading(false);
+                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                    const endPoint = response?.result?.callPrediction?.endPoint;
+                    dispatch(
+                      updateToastData({
+                        data: `${endPoint}\n${predictionMessage}`,
+                        title: "Call Prediction",
+                        type: WARNING,
+                      })
+                    );
+                } else {
                 dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                }
             })
             .catch((error) => {
                 setIsLoading(false);

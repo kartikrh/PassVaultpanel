@@ -20,6 +20,7 @@ import {
   PERMISSION_VIEW,
   SUCCESS,
   TAB_COMMENTARY,
+  WARNING,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -173,7 +174,22 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        setDeleteModelVisable(false);
+        setLoadModelVisable(false);
+        if(response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+           if(prediction?.predictioncallSuccess === false) {
+            const predictionMessage = prediction?.predictionMessage;
+            const endPoint = prediction?.endPoint;
+            dispatch(
+              updateToastData({
+                data: `${endPoint}\n${predictionMessage}`,
+                title: "Call Prediction",
+                type: WARNING,
+              })
+            );
+           }
+          });
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -181,6 +197,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+       }
       })
       .catch((error) => {
         setIsLoading(false);
@@ -202,6 +219,17 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setSuspendModelVisable(false);
+        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -209,6 +237,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+       }
       })
       .catch((error) => {
         setIsLoading(false);
@@ -230,6 +259,21 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setCloseModelVisable(false);
+        if(response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+           if(prediction?.predictioncallSuccess === false) {
+            const predictionMessage = prediction?.predictionMessage;
+            const endPoint = prediction?.endPoint;
+            dispatch(
+              updateToastData({
+                data: `${endPoint}\n${predictionMessage}`,
+                title: "Call Prediction",
+                type: WARNING,
+              })
+            );
+           }
+          });
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -237,6 +281,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+       }
       })
       .catch((error) => {
         setIsLoading(false);
@@ -338,6 +383,17 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
+        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -345,6 +401,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+       }
         setChangeModelVisible(false);
       })
       .catch((error) => {
@@ -422,6 +479,17 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
+        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -429,6 +497,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+       }
         setDelayModelVisible(false);
       })
       .catch((error) => {
@@ -450,6 +519,17 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
+        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
         dispatch(
           updateToastData({
             data: response?.message,
@@ -457,6 +537,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+       }
         setEventRefModelVisible(false);
       })
       .catch((error) => {

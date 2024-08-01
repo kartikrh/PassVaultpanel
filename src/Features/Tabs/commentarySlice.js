@@ -1,14 +1,26 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
-import { ERROR, SUCCESS } from '../../components/Common/Const';
+import { ERROR, SUCCESS, WARNING } from '../../components/Common/Const';
 
 export const addCommentaryToDb = createAsyncThunk(
     'commentary/addCommentary',
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/save', data);
+            if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                const endPoint = response?.result?.callPrediction?.endPoint;
+                dispatch(
+                  updateToastData({
+                    data: `${endPoint}\n${predictionMessage}`,
+                    title: "Call Prediction",
+                    type: WARNING,
+                  })
+                );
+            } else {
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            }
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -21,6 +33,21 @@ export const addCommentaryScreenData = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
+            if(response?.result?.callPredictions?.length > 0) {
+                response.result.callPredictions.forEach((prediction) => {
+                 if(prediction?.predictioncallSuccess === false) {
+                  const predictionMessage = prediction?.predictionMessage;
+                  const endPoint = prediction?.endPoint;
+                  dispatch(
+                    updateToastData({
+                      data: `${endPoint}\n${predictionMessage}`,
+                      title: prediction?.predictioonAPI,
+                      type: WARNING,
+                    })
+                  );
+                 }
+                });
+            }
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -33,6 +60,21 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/updateCommentaryStatus', data);
+            if(response?.result?.callPredictions?.length > 0) {
+              response.result.callPredictions.forEach((prediction) => {
+               if(prediction?.predictioncallSuccess === false) {
+                const predictionMessage = prediction?.predictionMessage;
+                const endPoint = prediction?.endPoint;
+                dispatch(
+                  updateToastData({
+                    data: `${endPoint}\n${predictionMessage}`,
+                    title: "Call Prediction",
+                    type: WARNING,
+                  })
+                );
+               }
+              });
+            }
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -95,7 +137,19 @@ export const loadCommentaryFeature = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/loadcommentaryapi', data);
+            if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                const endPoint = response?.result?.callPrediction?.endPoint;
+                dispatch(
+                  updateToastData({
+                    data: `${endPoint}\n${predictionMessage}`,
+                    title: "Call Prediction",
+                    type: WARNING,
+                  })
+                );
+            } else {
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            }
             return response?.result;
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, TAB_COMMENTARY } from '../../components/Common/Const';
+import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, TAB_COMMENTARY, WARNING } from '../../components/Common/Const';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -84,6 +84,17 @@ function CommentaryMaster() {
                 setCommentaryData(commentaryDataToUpdate)
                 setStatusList(commentaryDataToUpdate.commentaryDisplayStatus)
                 setIsDataLoading(false)
+                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                    const endPoint = response?.result?.callPrediction?.endPoint;
+                    dispatch(
+                      updateToastData({
+                        data: `${endPoint}\n${predictionMessage}`,
+                        title: "Call Prediction",
+                        type: WARNING,
+                      })
+                    );
+                }
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)

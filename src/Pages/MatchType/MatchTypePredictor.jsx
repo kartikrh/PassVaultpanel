@@ -25,6 +25,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   TAB_MATCH_TYPE,
+  WARNING,
 } from "../../components/Common/Const";
 import {
   updateSavedState,
@@ -177,6 +178,17 @@ const MatchTypePredictor = () => {
         );
 
         console.log("Save & Close successful:", response);
+        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        }
         if (saveAction === SAVE_AND_CLOSE) {
           navigate("/matchType");
         }
