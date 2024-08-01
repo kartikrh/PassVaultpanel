@@ -359,6 +359,14 @@ export const MatchTypeFields = [
         label: "Last Man Standing",
         type: SWITCH,
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 3 }
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "isStrikeChangeonOverComplete",
+        label: "Strike Change On Over Complete",
+        defaultValue: true,
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 4, lg: 3 },
+        fieldColspan: { xs: 12, md: 2, lg: 3 }
     },
 ];
