@@ -362,11 +362,25 @@ export const MatchTypeFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "isStrikeChangeonOverComplete",
-        label: "Strike Change On Over Complete",
-        defaultValue: true,
+        name: "isAutoChangeStriker",
+        label: "Auto Change Striker",
+        defaultValue: false,
         type: SWITCH,
-        labelColspan: { xs: 12, md: 4, lg: 3 },
-        fieldColspan: { xs: 12, md: 2, lg: 3 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 1, lg: 1 }
+    },
+    {
+        name: "autoChangeStrikerAfterBall",
+        label: false,
+        dependsOnField: "isAutoChangeStriker",
+        dependsOnValue: true,
+        type: COUNTER,
+        min: 0,
+        max: 100,
+        step: 1,
+        isRequired: true,
+        defaultValue: 6,
+        requiredErrorMessage: "Please enter value",
+        fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
 ];
