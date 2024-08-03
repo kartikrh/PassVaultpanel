@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useState } from 'react'
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
 import { useDispatch } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
-import { ERROR, BATTING_STATUS, BALLING_STATUS, SAVE_AND_NEXT, WARNING } from '../../components/Common/Const'
+import { ERROR, BATTING_STATUS, BOWLING_STATUS, WARNING } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
 import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
@@ -205,19 +205,19 @@ const PlayerSelection = forwardRef((props, ref) => {
               commentaryOvers: [{ ...commentaryOvers, overId }]
             })
           }
-          if(response?.result?.callPredictions?.length > 0) {
+          if (response?.result?.callPredictions?.length > 0) {
             response.result.callPredictions.forEach((prediction) => {
-             if(prediction?.predictioncallSuccess === false) {
-              const predictionMessage = prediction?.predictionMessage;
-              const endPoint = prediction?.endPoint;
-              dispatch(
-                updateToastData({
-                  data: `${endPoint}\n${predictionMessage}`,
-                  title: prediction?.predictioonAPI,
-                  type: WARNING,
-                })
-              );
-             }
+              if (prediction?.predictioncallSuccess === false) {
+                const predictionMessage = prediction?.predictionMessage;
+                const endPoint = prediction?.endPoint;
+                dispatch(
+                  updateToastData({
+                    data: `${endPoint}\n${predictionMessage}`,
+                    title: prediction?.predictioonAPI,
+                    type: WARNING,
+                  })
+                );
+              }
             });
           }
         })
@@ -372,7 +372,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                     title={"Bowler"}
                     check={selectedBowler?.playerName}
                     name={selectedBowler?.playerName}
-                    onClick={() => openModel(BALLING_STATUS)}
+                    onClick={() => openModel(BOWLING_STATUS)}
                     bgColor={"#FCC042"}
                     onClickColor={"#CB8F00"}
                     isPlayerName={true}

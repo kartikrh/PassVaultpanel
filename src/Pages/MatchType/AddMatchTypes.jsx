@@ -72,7 +72,8 @@ function AddTabs() {
                 totalOvers = -1
             const extraData = {
                 matchTypeId: id,
-                totalOversInMatch: totalOvers
+                totalOversInMatch: totalOvers,
+                isAutoChangeStriker: dataToSave?.isAutoChangeStriker || false,
             }
             setCurrentSaveAction(saveAction);
             dispatch(addMatchTypeToDb({ ...dataToSave, ...extraData }))

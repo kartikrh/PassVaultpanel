@@ -39,8 +39,7 @@ export const CommentaryScreen = ({
             } else {
                 displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
             }
-            return <div className={` px-3 py - md - 2 py - 1 shadow - sm rounded mx - 1 over-ball-display ${ballColor}`}>
-                {/* {`${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`} */}
+            return <div key={`ball ${index}`} className={` px-3 py - md - 2 py - 1 shadow - sm rounded mx - 1 over-ball-display ${ballColor}`}>
                 {displayValue}
             </div>
         })
@@ -49,14 +48,14 @@ export const CommentaryScreen = ({
     const generateRightSideOvers = () => {
         return Object.keys(overBalls).map((over, index) =>
             <>
-                {/* <span>{onPitchPlayers[ON_STRIKE]?.playerName}</span> */}
-                <div className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
+                <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
                     <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
                     {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
                         <> Yet to start Over </>
                     }
                     {generateBallfromArray(overBalls[over])}
-                </div > </>)
+                </div >
+            </>)
     }
 
     const handleKeyPress = (event) => {
@@ -133,7 +132,6 @@ export const CommentaryScreen = ({
 
     return <React.Fragment>
         <Row>
-            {/* {isLoading && <SpinnerModel />} */}
             <Col xs={12} md={6} lg={6}>
                 <Row>
                     <Col className="team-name team-1" xs={6} md={6} lg={6}>
