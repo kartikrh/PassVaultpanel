@@ -46,7 +46,8 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "overIsMaiden": currentBall.overIsMaiden || false,
     "nextBatStrikeId": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId || 0,
     "nextBatNonStrikeId": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || 0,
-    "currentInnings": commentaryDetails.currentInnings
+    "currentInnings": commentaryDetails.currentInnings,
+    "autoStrikeBallCount": currentBall.autoStrikeBallCount || 0
   }
 }
 
