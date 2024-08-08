@@ -11,7 +11,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     }, [isOpen, playerList]);
 
     useEffect(() => {
-        const filteredPlayers = playerList?.filter(value => value.playerName.toLowerCase().includes(search.toLowerCase()));
+        const filteredPlayers = playerList?.filter(value => value.playerName?.toLowerCase().includes(search.toLowerCase()));
         setPlayers(filteredPlayers)
     }, [search])
 
