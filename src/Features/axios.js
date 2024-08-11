@@ -71,22 +71,27 @@ axiosInstance.interceptors.response.use(
     error => {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         let message;
-        switch (error.response.status) {
-            case 500:
-                message = "Internal Server Error";
-                break;
-            case 401:
-                message = "Invalid credentials";
-                const ignoreMessage = ["Sign In", "Sign Out"]
-                if (!ignoreMessage.includes(error?.response?.data?.title)) {
-                    window.location.href = LOGOUT
-                }
-                break;
-            case 404:
-                message = "Sorry! the data you are looking for could not be found";
-                break;
-            default:
-                message = error?.message || error;
+        if (error.response?.status){
+            switch (error.response.status) {
+                case 500:
+                    message = "Internal Server Error";
+                    break;
+                case 401:
+                    message = "Invalid credentials";
+                    const ignoreMessage = ["Sign In", "Sign Out"]
+                    if (!ignoreMessage.includes(error?.response?.data?.title)) {
+                        window.location.href = LOGOUT
+                    }
+                    break;
+                case 404:
+                    message = "Sorry! the data you are looking for could not be found";
+                    break;
+                default:
+                    message = error?.message || error;
+            }
+        }
+        else{
+            message = "Unidentified Error, Please reload the page.";
         }
         if (error?.response?.data) error = error.response.data;
         return Promise.reject(error);
