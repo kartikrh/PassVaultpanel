@@ -101,7 +101,7 @@ const Commentary = (props) => {
         //     // console.log(onPitchPlayers, players?.[BATTING_TEAM], players?.[BOWLING_TEAM])
     })
     const checkForOverSwitch = (ballcount) => {
-        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver - 1 || 5)) setShowChangeOverModal(true)
+        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
     const checkInningsSwitch = (checkFor) => {
         const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
