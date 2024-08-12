@@ -88,6 +88,35 @@ const Index = () => {
       });
   };
 
+  const handleDefaultActive = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/template/updateIsDefault`, {
+        templateId: record.templateId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
     if (checekedList.includes(e.templateId)) {
@@ -224,6 +253,25 @@ const Index = () => {
       key: "description",
       sort: true,
       style: { width: "60%" },
+    },
+    {
+      title: "Is Default",
+      key: "isDefault",
+      dataIndex: "isDefault",
+      render: (text, record) => (
+        <Button
+          color={`${text ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleDefaultActive("isDefault", record, record.isDefault);
+          }}
+        >
+          {" "}
+          <i className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Is Active",
