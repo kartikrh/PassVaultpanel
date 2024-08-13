@@ -82,10 +82,10 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log({
-            _currentOver,
-            _currentPartnership, _onPitchPlayers, _players, _teams
-        });
+        // console.log({
+        //     players,
+        //     // _currentPartnership, _onPitchPlayers, _players, _teams
+        // });
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -365,8 +365,8 @@ const Commentary = (props) => {
         _setPlayers((prevValue) => {
             const actualPrevData = isEmpty(prevValue) ? players : prevValue
             return {
-                [BOWLING_TEAM]: actualPrevData?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
-                [BATTING_TEAM]: actualPrevData?.[BATTING_TEAM].map(player => {
+                [BOWLING_TEAM]: actualPrevData?.[BOWLING_TEAM]?.map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
+                [BATTING_TEAM]: actualPrevData?.[BATTING_TEAM]?.map(player => {
                     if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
                         return updateBatter
                     else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
@@ -592,35 +592,43 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
     }
     const changeStrike = () => {
-        const newOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: true }
-        const newNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
-        const updatedOnPitchPlayer = {
-            ...onPitchPlayers,
-            [ON_STRIKE]: newOnStrikePlayer,
-            [NON_STRIKE]: newNonStrikePlayer,
-        }
-        _setOnPitchPlayers(updatedOnPitchPlayer)
-        _setPlayers((prevValue) => {
+        _setOnPitchPlayers((prevValue) => {
+            const syncOnPitchPlayer = isEmpty(prevValue) ? onPitchPlayers : prevValue
             return {
-                ...prevValue,
-                [BATTING_TEAM]: prevValue?.[BATTING_TEAM].map(player => {
-                    if (compareNumStringValues(player.commentaryPlayerId, newOnStrikePlayer.commentaryPlayerId))
-                        return newOnStrikePlayer
-                    else if (compareNumStringValues(player.commentaryPlayerId, newNonStrikePlayer.commentaryPlayerId))
-                        return newNonStrikePlayer
-                    else return player
-                })
+                ...syncOnPitchPlayer,
+                [ON_STRIKE]: { ...syncOnPitchPlayer[NON_STRIKE], onStrike: true },
+                [NON_STRIKE]: { ...syncOnPitchPlayer[ON_STRIKE], onStrike: false }
             }
         })
-        const objToSave = {
-            "commentaryId": commentaryDetails.commentaryId,
-            "commentaryDetails": {
-                ...commentaryDetails,
-                "displayStatus": "Strike Changed"
-            },
-            "commentaryPlayers": [newOnStrikePlayer, newNonStrikePlayer],
-        }
-        dispatch(addCommentaryScreenData(objToSave))
+        _setOnPitchPlayers((prevValue) => {
+            const syncOnPitchPlayer = isEmpty(prevValue) ? onPitchPlayers : prevValue
+            const objToSave = {
+                "commentaryId": commentaryDetails.commentaryId,
+                "commentaryDetails": {
+                    ...commentaryDetails,
+                    "displayStatus": "Strike Changed"
+                },
+                "commentaryPlayers": Object.values(syncOnPitchPlayer),
+            }
+            dispatch(addCommentaryScreenData(objToSave))
+            _setPlayers((prevValue) => {
+                const syncPlayers = isEmpty(prevValue) ? players : prevValue
+                const updatedList = {
+                    ...syncPlayers,
+                    [BATTING_TEAM]: syncPlayers?.[BATTING_TEAM].map(player => {
+                        if (compareNumStringValues(player.commentaryPlayerId, syncOnPitchPlayer[ON_STRIKE].commentaryPlayerId))
+                            return syncOnPitchPlayer[ON_STRIKE]
+                        else if (compareNumStringValues(player.commentaryPlayerId, syncOnPitchPlayer[NON_STRIKE].commentaryPlayerId))
+                            return syncOnPitchPlayer[NON_STRIKE]
+                        else return player
+                    })
+                }
+                return updatedList
+
+            })
+            return prevValue
+        })
+
     }
     const handleMissingPlayerChange = (playerType, player) => {
         const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true } }
@@ -1083,8 +1091,8 @@ const Commentary = (props) => {
                     updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
                     _setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
                     _setPlayers({
-                        [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
-                        [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
+                        [BOWLING_TEAM]: players?.[BOWLING_TEAM]?.map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
+                        [BATTING_TEAM]: players?.[BATTING_TEAM]?.map(player => {
                             if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
                                 return updateBatter
                             else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
