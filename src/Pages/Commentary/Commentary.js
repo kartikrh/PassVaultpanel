@@ -83,11 +83,8 @@ const Commentary = (props) => {
 
     useEffect(() => {
         console.log({
-            _currentOver,
-            _currentPartnership,
-            _onPitchPlayers,
-            _players,
-            _teams
+            tempTeamWciket: _teams?.[BATTING_TEAM].teamWicket,
+            teamWicket: teams?.[BATTING_TEAM].teamWicket
         });
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
@@ -373,7 +370,7 @@ const Commentary = (props) => {
         })
         _setOnPitchPlayers({ [ON_STRIKE]: isChangeStrike ? updateNonStriker : updateBatter, [NON_STRIKE]: isChangeStrike ? updateBatter : updateNonStriker, [CURRENT_BOWLER]: updateBowler })
         _setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
-        setCurrentBall({ ...currentBall, ...updateBall })
+        setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall } })
         _setCurrentOver({ ...currentOver, ...updateOver, })
         _setCurrentPartnership({ ...currentPartnership, ...updatePartnership, })
         setSaveToDb(true)
@@ -1222,7 +1219,7 @@ const Commentary = (props) => {
             }
             return updatedPlayer
         })
-        _setPlayers({ ..._players, [BATTING_TEAM]: updatedBattingPlayerList })
+        _setPlayers({ ...players, [BATTING_TEAM]: updatedBattingPlayerList })
         updatedOnPitchPlayer[CURRENT_BOWLER] = onPitchPlayers[CURRENT_BOWLER]
         setPlayerUpdateList([].concat(playerListToSendToDb, playerUpdateList || []))
         return updatedOnPitchPlayer
