@@ -16,17 +16,17 @@ import {
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
-  TAB_TEMPLATE,
+  TAB_MAIL_SETTINGS,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
-  const pageName = TAB_TEMPLATE;
+  const pageName = TAB_MAIL_SETTINGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Template";
+  document.title = "Mail Settings";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -40,17 +40,17 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/template/all`, {
+      .post(`/admin/mailSettings/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const templateData = response?.result;
-        let templateDataIdList = [];
-        templateData.forEach((ele) => {
-          templateDataIdList.push(ele?.templateId);
+        const mailSettingsData = response?.result;
+        let mailSettingsDataIdList = [];
+        mailSettingsData.forEach((ele) => {
+          mailSettingsDataIdList.push(ele?.id);
         });
-        setData(templateData);
-        setDataIndexList(templateDataIdList);
+        setData(mailSettingsData);
+        setDataIndexList(mailSettingsDataIdList);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -62,8 +62,8 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/template/activeInactiveTemplate`, {
-        templateId: record.templateId,
+      .post(`/admin/mailSettings/activeInactiveApi`, {
+        id: record.id,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -87,12 +87,11 @@ const Index = () => {
         );
       });
   };
-
   const handleDefaultActive = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/template/updateIsDefault`, {
-        templateId: record.templateId,
+      .post(`/admin/mailSettings/isDefault`, {
+        id: record.id,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -116,55 +115,31 @@ const Index = () => {
         );
       });
   };
-
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.templateId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.templateId);
+    if (checekedList.includes(e.id)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.id);
     } else {
-      updateSingleCheck = [...checekedList, e.templateId];
+      updateSingleCheck = [...checekedList, e.id];
     }
     setCheckedList(updateSingleCheck);
   };
 
-  const handleEdit = (templateId) => {
-    navigate("/addTemplate", { state: { templateId } });
+  const handleEdit = (id) => {
+    navigate("/addMailSetting", { state: { id } });
   };
 
-  const getTemplateType = (status) => {
+  const getMailType = (status) => {
     switch (status) {
       case 1:
-        return "MobileNo";
+        return "Gmail";
       case 2:
-        return "Email";
+        return "Smtp";
       default:
         return "Unknown";
     }
   };
 
-  const getType = (status, template) => {
-    if (template === 1) {
-      switch (status) {
-        case 1:
-          return "Registration Otp";
-        default:
-          return "Unknown";
-      }
-    } else if (template === 2) {
-      switch (status) {
-        case 1:
-          return "Welcome";
-        case 2:
-          return "Verify";
-        case 3:
-          return "Newsletter";
-        default:
-          return "Unknown";
-      }
-    } else {
-      return null;
-    }
-  };
   //table columns
   const columns = [
     {
@@ -196,7 +171,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.templateId)}
+            checked={checekedList.includes(record.id)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -214,45 +189,73 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.templateId);
+            handleEdit(record.id);
           }}
         ></i>
       ),
       style: { width: "2%" },
     },
     {
-      title: "Template Type",
-      dataIndex: "templateType",
-      render: (text, record) => (
-        <span>{getTemplateType(record?.templateType)}</span>
-      ),
-      key: "templateType",
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
       sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      render: (text, record) => (
-        <span>{getType(record?.type, record?.templateType)}</span>
-      ),
-      key: "type",
+      title: "User Name",
+      dataIndex: "userName",
+      key: "userName",
       sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
+      title: "Password",
+      dataIndex: "password",
+      key: "password",
       sort: true,
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
-      title: "Message",
-      dataIndex: "description",
-      key: "description",
+      title: "Mail Type",
+      dataIndex: "mailType",
+      render: (text, record) => (
+        <span>{getMailType(record?.mailType)}</span>
+      ),
+      key: "mailType",
       sort: true,
-      style: { width: "60%" },
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Smtp Address",
+      dataIndex: "smtpAddress",
+      key: "smtpAddress",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Port",
+      dataIndex: "portNumber",
+      key: "portNumber",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    }, 
+    {
+      title: "Enable SSL",
+      dataIndex: "isEnableSSL",
+      key: "isEnableSSL",
+      render: (text, record) => (
+        <Button
+          color={`${text ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          {" "}
+          <i className={`bx ${record.isAllowMultiLogin ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Is Default",
@@ -295,7 +298,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Template",
+    title: "Mail Settings",
     headerSelect: false,
     isActive: true,
     clone: false,
@@ -305,8 +308,8 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/template/delete`, {
-        templateId: checekedList,
+      .post(`/admin/mailSettings/delete`, {
+        id: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -341,7 +344,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Template" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Mail Settings" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -351,7 +354,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
-            onAddNavigate={"/addTemplate"}
+            onAddNavigate={"/addMailSetting"}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
