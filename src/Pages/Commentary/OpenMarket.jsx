@@ -112,7 +112,7 @@ export const OpenMarket = () => {
         }
     }
 
-    const handleAction = (changeIn, key, value) => {
+    const handleAction = ({ changeIn, key, value, action }) => {
         let dataToUpdate = []
         changeIn.forEach(record => {
             if (key === "status" && value === OPEN_VALUE) {
@@ -125,7 +125,7 @@ export const OpenMarket = () => {
         })
         dataToUpdate = formatDataBeforeSend(dataToUpdate)
         if (!isEmpty(dataToUpdate))
-            saveData({ dataToSave: dataToUpdate, isSendAll: key === "isSendData" })
+            saveData({ dataToSave: dataToUpdate, action })
     }
 
     const updateRecords = (record) => {
@@ -137,7 +137,7 @@ export const OpenMarket = () => {
             isSaveAll = true
         }
         dataToSend = formatDataBeforeSend(dataToSend)
-        saveData({ dataToSave: dataToSend, isSaveAll })
+        saveData({ dataToSave: dataToSend, action: isSaveAll ? "SAVE_ALL" : false })
     }
 
     const handleSingleAction = (record, key, value) => {
@@ -146,13 +146,12 @@ export const OpenMarket = () => {
         saveData({ dataToSave: dataToSend })
     }
 
-    const saveData = async ({ dataToSave, isSaveAll = false, isSendAll = false }) => {
+    const saveData = async ({ dataToSave, action }) => {
         setIsLoading(true);
         await axiosInstance
             .post(`/admin/eventMarket/updateMarketRate`, {
                 eventMarket: dataToSave,
-                isSave: isSaveAll,
-                isSend: isSendAll
+                action
             })
             .then((response) => {
                 if (response?.result) {
@@ -163,18 +162,18 @@ export const OpenMarket = () => {
                     setData(formattedData.data);
                 }
                 setIsLoading(false);
-                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
                     const endPoint = response?.result?.callPrediction?.endPoint;
                     dispatch(
-                      updateToastData({
-                        data: `${endPoint}\n${predictionMessage}`,
-                        title: "Call Prediction",
-                        type: WARNING,
-                      })
+                        updateToastData({
+                            data: `${endPoint}\n${predictionMessage}`,
+                            title: "Call Prediction",
+                            type: WARNING,
+                        })
                     );
                 } else {
-                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
                 }
             })
             .catch((error) => {
@@ -612,32 +611,17 @@ export const OpenMarket = () => {
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
-            case 's':
-                handleAction(data, "isSendData", true);
-                break;
-            case 'd':
-                handleAction(data, "status", OPEN_VALUE);
-                break;
             case 'a':
                 updateRecords();
                 break;
-            case 'i':
-                handleAction(data, "status", INACTIVE_VALUE)
-                break;
             case 's':
-                handleAction(data, "status", SUSPEND_VALUE)
-                break;
-            case 'l':
-                handleAction(data, "isAllow", true)
-                break;
-            case 'n':
-                handleAction(data, "isAllow", false)
-                break;
-            case 'a':
-                handleAction(data, "isActive", true)
+                handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
                 break;
             case 'd':
-                handleAction(data, "isActive", false)
+                handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
+                break;
+            case 'z':
+                handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" });
                 break;
             default:
                 break;
@@ -724,16 +708,16 @@ export const OpenMarket = () => {
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Open Market" page="updatecp" />
                                     </Col>
                                     <Col className="p-0" xs={2} md={2} lg={1}>
-                                        <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction(data, "status", INACTIVE_VALUE)}>{INACTIVE}</button>
-                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction(data, "status", SUSPEND_VALUE)}>{SUSPEND}</button>
+                                        <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
+                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND}</button>
                                     </Col>
                                     <Col className="p-0" xs={2} md={2} lg={1}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isAllow", true)}>{ALLOW}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isAllow", false)}>{NOT_ALLOW}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: false })}>{NOT_ALLOW}</Button>
                                     </Col>
                                     <Col className="p-0" xs={2} md={2} lg={1}>
-                                        <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isActive", true)}>{ACTIVE}</Button>
-                                        <Button color="danger" className="table-header-button" onClick={() => handleAction(data, "isActive", false)}>{DEACTIVE}</Button>
+                                        <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: true })}>{ACTIVE}</Button>
+                                        <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: false })}>{DEACTIVE}</Button>
                                     </Col>
                                     <Col className="p-0" xs={2} md={2} lg={1}>
                                         {isSocketConnected ?
@@ -757,8 +741,8 @@ export const OpenMarket = () => {
                                     <Row>
                                         {lineRatioField}
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "isSendData", true)}>{`${SEND_ALL} (S)`}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction(data, "status", OPEN_VALUE)}>{`Publish (D)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}>{`${SEND_ALL} (S)`}</Button>
+                                            <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}>{`Publish (D)`}</Button>
                                             <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>{`Save All (A)`}</Button>
                                         </Col>
                                     </Row>}
