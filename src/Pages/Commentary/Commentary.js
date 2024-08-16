@@ -82,10 +82,10 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        // console.log({
-        //     players,
-        //     // _currentPartnership, _onPitchPlayers, _players, _teams
-        // });
+        console.log({
+            ballCountForStrike,
+            // _currentPartnership, _onPitchPlayers, _players, _teams
+        });
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -1200,7 +1200,7 @@ const Commentary = (props) => {
                     _setCurrentPartnership({ ...currentPartnership, ...updatePartnership })
                 }
                 if (isBallCount) {
-                    setBallCountForStrike(ballCountForStrike - 1)
+                    setBallCountForStrike(currentBall.autoStrikeBallCount || 0)
                 }
                 setIsUndoBall(undoType)
                 setSaveToDb(true)
