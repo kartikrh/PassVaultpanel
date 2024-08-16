@@ -76,6 +76,7 @@ const Index = forwardRef(
       actionTypeOptions,
       handleReset,
       competitions,
+      commentary,
       onAddNavigate,
       changeOrderApiName,
       isAddPermission,
@@ -576,6 +577,10 @@ const Index = forwardRef(
           value: 0,
           label: "Competition",
         },
+        commentary: {
+          value: 0,
+          label: "Commentary",
+        },
         eventType: {
           value: 0,
           label: "Event Type",
@@ -1000,6 +1005,32 @@ const Index = forwardRef(
                               options={competitions?.map((item) => ({
                                 label: item?.competition,
                                 value: item?.competitionId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.commentarySelect ? (
+                          <div className="">
+                            <Select
+                              value={selectedTableElements?.commentary}
+                              placeholder="Commentary"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                handleTableActions("commentaryId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  commentary: e,
+                                });
+                              }}
+                              options={commentary?.map((item) => ({
+                                label: item?.eventName,
+                                value: item?.commentaryId,
                               }))}
                               classNamePrefix="select2-selection"
                             />
