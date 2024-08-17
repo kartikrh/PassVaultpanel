@@ -31,6 +31,9 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
   const fetchData = async (latestValueFromTable) => {
@@ -40,6 +43,8 @@ const Index = () => {
       .post(`/admin/log/errorLogs`, {
         ...(latestValueFromTable || tableActions),
         ...dateRange,
+        page: currentPage+1,
+        limit: pageSize,
       })
       .then((response) => {
         const logsData = response?.result?.data;
@@ -48,6 +53,7 @@ const Index = () => {
           logsDataIdList.push(ele?.errId);
         });
         setData(logsData);
+        setTotal(response?.result?.totalPages || 0); 
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -139,7 +145,8 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Error Logs",
-    dateRange: true
+    dateRange: true,
+    isServerPagination: true,
   };
 
   useEffect(() => {
@@ -147,7 +154,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [currentPage, pageSize]);
 
   return (
     <React.Fragment>
@@ -165,6 +172,11 @@ const Index = () => {
             reFetchData={fetchData}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
