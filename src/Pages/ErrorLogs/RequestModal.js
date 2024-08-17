@@ -7,7 +7,7 @@ const RequestModal = ({ isOpen, toggle, data, fetchData }) => {
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-json-modal">
-        <ModalHeader toggle={toggle}>Response Modal</ModalHeader>
+        <ModalHeader toggle={toggle}>Request Modal</ModalHeader>
         <ModalBody className="modal-body">
           {data && (
             <>
