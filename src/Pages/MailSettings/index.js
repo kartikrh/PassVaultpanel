@@ -252,7 +252,7 @@ const Index = () => {
           disabled
         >
           {" "}
-          <i className={`bx ${record.isAllowMultiLogin ? "bx-check" : "bx-block"}`}></i>
+          <i className={`bx ${record.isEnableSSL ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
