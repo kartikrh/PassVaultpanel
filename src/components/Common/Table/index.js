@@ -76,6 +76,12 @@ const Index = forwardRef(
       actionTypeOptions,
       handleReset,
       competitions,
+      commentary,
+      serverCurrentPage,
+      serverPageSize,
+      serverTotal,
+      setServerCurrentPage,
+      setServerPageSize,
       onAddNavigate,
       changeOrderApiName,
       isAddPermission,
@@ -521,7 +527,23 @@ const Index = forwardRef(
       },
     ];
     const fetchData = () => {
-      if (isPagination) {
+      if(tableElement?.isServerPagination) {
+        const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
+        let sliced;
+        if (serverCurrentPage < possibleNoOfPages) {
+          sliced = dataSource.slice(
+            serverCurrentPage * serverPageSize,
+            serverCurrentPage * serverPageSize + serverPageSize
+          );
+        } else {
+          const pageToJump = possibleNoOfPages - 1;
+          sliced = dataSource.slice(
+            pageToJump * serverPageSize,
+            pageToJump * serverPageSize + serverPageSize
+          );
+        }
+        setData(sliced);
+      } else if (isPagination) {
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
         let sliced;
 
@@ -575,6 +597,10 @@ const Index = forwardRef(
         competition: {
           value: 0,
           label: "Competition",
+        },
+        commentary: {
+          value: 0,
+          label: "Commentary",
         },
         eventType: {
           value: 0,
@@ -1005,6 +1031,32 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
+                        {tableElement?.commentarySelect ? (
+                          <div className="">
+                            <Select
+                              value={selectedTableElements?.commentary}
+                              placeholder="Commentary"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                handleTableActions("commentaryId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  commentary: e,
+                                });
+                              }}
+                              options={commentary?.map((item) => ({
+                                label: item?.eventName,
+                                value: item?.commentaryId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
                         {tableElement?.teamsList ? (
                           <Select
                             value={selectedTableElements?.team}
@@ -1380,7 +1432,64 @@ const Index = forwardRef(
                     updateClickedId={onBreadCrumbsClick}
                   />
                 )}
-                {isPagination ? (<Row className="g-2 d-flex align-items-center">
+                {
+                tableElement?.isServerPagination ?(<Row className="g-2 d-flex align-items-center">
+                  <Col className="col-sm-auto">
+                    <span>
+                      Showing {serverCurrentPage * serverPageSize + 1} -{" "}
+                      {serverCurrentPage * serverPageSize + data.length} of{" "}
+                      {tableElement.title === "Tabs"
+                        ? data?.length
+                        : dataSource?.length}{" "}
+                      entries
+                    </span>
+                    <div className="d-flex align-items-center justify-content-end"></div>
+                  </Col>
+                  <Col className="col-sm">
+                    <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
+                      {tableElement.title !== "Import Events" && (
+                        <div className="me-1 d-flex">
+                          <CSVLink
+                            data={generateSimplifiedData().csvData}
+                            filename={tableElement.title + ".csv"}
+                          >
+                            <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+                            <Button size="small" className="btn border">
+                              <i className="fas fa-file-csv"></i>
+                            </Button>
+                            </Tooltip>
+                          </CSVLink>
+                          <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+                          <Button
+                            size="large"
+                            className="btn border mx-1"
+                            onClick={downloadExcel}
+                          >
+                            <i className="fas fa-file-excel"></i>
+                          </Button>
+                          </Tooltip>
+                          <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+                          <Button onClick={generatePDF} className="btn border">
+                            <i className="bx bxs-file-pdf"></i>
+                          </Button>
+                          </Tooltip>
+                        </div>
+                      )}
+                      <div className="">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Search Min. 2 characters"
+                          value={searchTerm}
+                          onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                          }}
+                        />
+                        {/* <i className="ri-search-line search-icon"></i> */}
+                      </div>
+                    </div>
+                  </Col>
+                </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
                   <Col className="col-sm-auto">
                     <span>
                       Showing {currentPage * pageSize + 1} -{" "}
@@ -1658,7 +1767,15 @@ const Index = forwardRef(
                   <Row>
                     <Col >{tableElement?.compToRender}</Col>
                     <Col className="d-flex justify-content-end">
-                      {isPagination ? (<Pagination
+                      {
+                      tableElement?.isServerPagination ? (<Pagination
+                        total={serverTotal}
+                        pageSize={serverPageSize}
+                        currentPage={serverCurrentPage}
+                        fetchData={fetchData}
+                        setCurrentPage={setServerCurrentPage}
+                        setPageSize={setServerPageSize}
+                      />) : isPagination ? (<Pagination
                         total={total}
                         pageSize={pageSize}
                         currentPage={currentPage}

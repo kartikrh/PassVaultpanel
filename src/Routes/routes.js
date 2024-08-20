@@ -52,6 +52,7 @@ import Notification from "../Pages/Notification";
 import Template from "../Pages/Template";
 import RegisteredUsers from "../Pages/RegisteredUsers";
 import RegistrationPending from "../Pages/RegistrationPending";
+import MailSettings from "../Pages/MailSettings";
 import Subscribers from "../Pages/Subscribers";
 import MarketTemplate from "../Pages/MarketTemplate";
 import EventMarkets from "../Pages/EventMarkets";
@@ -101,6 +102,10 @@ import AddNotification from "../Pages/Notification/AddNotification.jsx";
 import AddTemplate from "../Pages/Template/AddTemplate.jsx";
 import AddRegisteredUsers from "../Pages/RegisteredUsers/AddRegisteredUsers.jsx";
 import AddRegistrationPending from "../Pages/RegistrationPending/AddRegistrationPending.jsx";
+import AddMailSettings from "../Pages/MailSettings/AddMailSettings.jsx";
+import CommentaryLogs from "../Pages/CommentaryLogs";
+import ThirdpartyLogs from "../Pages/ThirdpartyLogs";
+import ErrorLogs from "../Pages/ErrorLogs";
 
 const authProtectedRoutes = [
   //dashboard
@@ -186,6 +191,11 @@ const authProtectedRoutes = [
   { path: "/addRegisteredUsers", component: <AddRegisteredUsers /> },
   { path: "/registrationPending", component: <RegistrationPending /> },
   { path: "/addRegistrationPending", component: <AddRegistrationPending /> },
+  { path: "/mailSettings", component: <MailSettings /> },
+  { path: "/addMailSetting", component: <AddMailSettings /> },
+  { path: "/commentaryLogs", component: <CommentaryLogs /> },
+  { path: "/thirdpartyLogs", component: <ThirdpartyLogs /> },
+  { path: "/errorLogs", component: <ErrorLogs /> },
 
   {
     path: "/changePassword",

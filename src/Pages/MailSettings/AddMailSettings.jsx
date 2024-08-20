@@ -22,41 +22,38 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  TAB_TEMPLATE,
+  TAB_MAIL_SETTINGS,
 } from "../../components/Common/Const";
 import {
-  addTemplateToDb,
+  addMailSettingsToDb,
   updateSavedState,
-} from "../../Features/Tabs/addTemplateSlice";
+} from "../../Features/Tabs/addMailSettingsSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { TemplateConst } from "../../constants/FieldConst/TemplateConst";
+import { MailSettingsConst } from "../../constants/FieldConst/MailSettingsConst";
 
-function AddTemplate() {
-  const pageName = TAB_TEMPLATE;
+function AddMailSettings() {
+  const pageName = TAB_MAIL_SETTINGS;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
-  const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector(
-    (state) => state.tabsData.template
-  );
+  const { isSaved, isLoading } = useSelector((state) => state.tabsData.mailSettings);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [templateId, setdisplayStatusId] = useState(
-    location.state?.templateId || "0"
+  const [id, setdisplayStatusId] = useState(
+    location.state?.id || "0"
   );
 
   useEffect(() => {
-    if (templateId !== "0") {
-      fetchData(templateId);
+    if (id !== "0") {
+      fetchData(id);
     }
-  }, [templateId]);
+  }, [id]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -67,7 +64,7 @@ function AddTemplate() {
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
-      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/template");
+      if (currentSaveAction === SAVE_AND_CLOSE) navigate("/mailSettings");
       else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({});
         setdisplayStatusId("0");
@@ -77,9 +74,9 @@ function AddTemplate() {
     }
   }, [isSaved]);
 
-  const fetchData = async (templateId) => {
+  const fetchData = async (id) => {
     await axiosInstance
-      .post("/admin/template/byId", { templateId })
+      .post("/admin/mailSettings/byId", { id })
       .then((response) => {
         setInitialEditData(response?.result);
       })
@@ -94,44 +91,22 @@ function AddTemplate() {
       });
   };
 
-  const handleFormDataChange = async (newFormData) => {
-    if (
-      newFormData?.templateType != undefined &&
-      newFormData?.templateType != 0
-    ) {
-      if (newFormData?.templateType == 1) {
-        setMasterData((preData) => ({
-          ...preData,
-          type: [{ label: "Registration Otp", value: 1 }],
-        }));
-      } else if (newFormData?.templateType == 2) {
-        setMasterData((preData) => ({
-          ...preData,
-          type: [
-            { label: "Welcome", value: 1 },
-            { label: "Verify", value: 2 },
-            { label: "Newsletter", value: 3 },
-          ],
-        }));
-      }
-    }
-  };
-
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
       const extraData = {
-        templateId: templateId,
+        id: id,
+        isEnableSSL: dataToSave?.isEnableSSL || false,
         isDefault: dataToSave?.isDefault || false,
         isActive: dataToSave?.isActive || false,
       };
-      dispatch(addTemplateToDb({ ...dataToSave, ...extraData }));
+      dispatch(addMailSettingsToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };
 
   const handleBackClick = () => {
-    navigate("/template");
+    navigate("/mailSettings");
   };
 
   return (
@@ -140,7 +115,7 @@ function AddTemplate() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Template</h3>
+              <h3>Mail Settings</h3>
             </Col>
             <Card>
               <CardBody>
@@ -222,10 +197,8 @@ function AddTemplate() {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={TemplateConst}
+                  fields={MailSettingsConst}
                   editFormData={initialEditData}
-                  masterData={masterData}
-                  onFormDataChange={handleFormDataChange}
                 />
               </CardBody>
             </Card>
@@ -236,4 +209,4 @@ function AddTemplate() {
   );
 }
 
-export default AddTemplate;
+export default AddMailSettings;

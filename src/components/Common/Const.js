@@ -58,6 +58,10 @@ export const TAB_API_ENDPOINTS = "API Endpoints";
 export const TAB_NOTIFICATION = "Notification";
 export const TAB_TEMPLATE = "Template";
 export const TAB_CLIENT = "Client";
+export const TAB_MAIL_SETTINGS = "MailSettings";
+export const TAB_COMMENTARY_LOGS = "CommentaryLogs";
+export const TAB_THIRDPARTY_LOGS = "ThirdpartyLogs";
+export const TAB_ERROR_LOGS = "ErrorLogs";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";
