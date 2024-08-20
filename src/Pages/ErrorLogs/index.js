@@ -13,6 +13,7 @@ import {
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import RequestModal from "./RequestModal";
 
 const Index = () => {
   const pageName = TAB_ERROR_LOGS;
@@ -24,10 +25,15 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [reqModelVisible, setReqModelVisible] = useState(false);
+  const [reqBodyData, setReqBodyData] = useState(null);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
   const fetchData = async (latestValueFromTable) => {
@@ -37,6 +43,8 @@ const Index = () => {
       .post(`/admin/log/errorLogs`, {
         ...(latestValueFromTable || tableActions),
         ...dateRange,
+        page: currentPage+1,
+        limit: pageSize,
       })
       .then((response) => {
         const logsData = response?.result?.data;
@@ -45,6 +53,7 @@ const Index = () => {
           logsDataIdList.push(ele?.errId);
         });
         setData(logsData);
+        setTotal(response?.result?.totalPages || 0); 
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -115,7 +124,18 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div>{logItems}</div>;
+        return <div 
+        onClick={() => {
+          setReqModelVisible(true);
+          setReqBodyData(record?.requestBody);
+        }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis' 
+        }}>{logItems}</div>;
       },
       key: "requestBody",
       sort: true,
@@ -125,7 +145,8 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Error Logs",
-    dateRange: true
+    dateRange: true,
+    isServerPagination: true,
   };
 
   useEffect(() => {
@@ -133,7 +154,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [currentPage, pageSize]);
 
   return (
     <React.Fragment>
@@ -151,6 +172,11 @@ const Index = () => {
             reFetchData={fetchData}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -161,6 +187,14 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
+          {reqModelVisible && (
+            <RequestModal
+              isOpen={reqModelVisible}
+              toggle={() => setReqModelVisible(!reqModelVisible)}
+              data={reqBodyData}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

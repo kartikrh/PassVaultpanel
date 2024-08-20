@@ -13,6 +13,8 @@ import {
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import ResponseModal from "./ResponseModal";
+import RequestModal from "./RequestModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LOGS;
@@ -24,10 +26,20 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+  const [commentary, setCommentary] = useState([]);
+  const [resModelVisible, setResModelVisible] = useState(false);
+  const [resBodyData, setResBodyData] = useState(null);
+  const [reqModelVisible, setReqModelVisible] = useState(false);
+  const [reqBodyData, setReqBodyData] = useState(null);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
   const fetchData = async (latestValueFromTable) => {
@@ -37,6 +49,8 @@ const Index = () => {
       .post(`/admin/log/commentaryLogs`, {
         ...(latestValueFromTable || tableActions),
         ...dateRange,
+        page: currentPage+1,
+        limit: pageSize,
       })
       .then((response) => {
         const logsData = response?.result?.data;
@@ -45,14 +59,49 @@ const Index = () => {
           logsDataIdList.push(ele?.id);
         });
         setData(logsData);
+        setTotal(response?.result?.totalPages || 0); 
         setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
       });
+    if (latestValueFromTable?.eventTypeId) {
+      fetchCompetitionData(latestValueFromTable?.eventTypeId);
+    }
+    if(latestValueFromTable?.competitionId) {
+      fetchCommentaryData(latestValueFromTable?.competitionId);
+    }
   };
-
+  
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/log/eventTypeList`, { isActive: true })
+      .then((response) => {
+        setEventTypes(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/competitionListByEventTypeId`, {
+        eventTypeId: value,
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCommentaryData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/getComByCompetition`, {
+        competitionId: value,
+      })
+      .then((response) => {
+        setCommentary(response.result);
+      })
+      .catch((error) => { });
+  };
   //table columns
   const columns = [
     {
@@ -87,7 +136,19 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div>{logItems}</div>;
+        return <div 
+        onClick={() => {
+                  setReqModelVisible(true);
+                  setReqBodyData(record?.requestBody);
+                }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis',
+          cursor: "pointer" 
+        }}>{logItems}</div>;
       },
       key: "requestBody",
       sort: true,
@@ -106,7 +167,19 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div>{logItems}</div>;
+        return <div 
+        onClick={() => {
+                  setResModelVisible(true);
+                  setResBodyData(record?.response);
+                }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          cursor: "pointer"
+        }}>{logItems}</div>;
       },
       key: "response",
       sort: true,
@@ -116,7 +189,12 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Commentary Logs",
-    dateRange: true
+    dateRange: true,
+    eventTypeSelect: true,
+    competitionsSelect: true,
+    commentarySelect: true,
+    resetButton: true,
+    isServerPagination: true,
   };
 
   useEffect(() => {
@@ -124,7 +202,13 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+    fetchEventTypeData();
+  }, [currentPage, pageSize]);
+
+  const handleReset = (value) => {
+    fetchData();
+    fetchEventTypeData();
+  };
 
   return (
     <React.Fragment>
@@ -138,10 +222,19 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            eventTypes={eventTypes}
+            competitions={competitions}
+            commentary={commentary}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReset={handleReset}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -152,6 +245,22 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
+          {reqModelVisible && (
+            <RequestModal
+              isOpen={reqModelVisible}
+              toggle={() => setReqModelVisible(!reqModelVisible)}
+              data={reqBodyData}
+              fetchData={fetchData}
+            />
+          )}
+          {resModelVisible && (
+            <ResponseModal
+              isOpen={resModelVisible}
+              toggle={() => setResModelVisible(!resModelVisible)}
+              data={resBodyData}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

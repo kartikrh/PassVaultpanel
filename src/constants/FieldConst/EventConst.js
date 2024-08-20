@@ -57,8 +57,6 @@ export const EventFields = [
         name: "countryCode",
         label: "Country Code",
         parentclassName: "",
-        regex: /^.{1,20}$/,
-        regexErrorMessage: "Max allowed Characters 20,",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
