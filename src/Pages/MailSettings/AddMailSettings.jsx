@@ -40,6 +40,7 @@ function AddMailSettings() {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+  const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading } = useSelector((state) => state.tabsData.mailSettings);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
@@ -52,6 +53,9 @@ function AddMailSettings() {
   useEffect(() => {
     if (id !== "0") {
       fetchData(id);
+      setDisabledFields({
+        "password": true,
+      })
     }
   }, [id]);
 
@@ -66,6 +70,7 @@ function AddMailSettings() {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/mailSettings");
       else if (currentSaveAction === SAVE_AND_NEW) {
+        setDisabledFields({});
         setInitialEditData({});
         setdisplayStatusId("0");
         finalizeRef.current.resetForm();
@@ -199,6 +204,7 @@ function AddMailSettings() {
                   ref={finalizeRef}
                   fields={MailSettingsConst}
                   editFormData={initialEditData}
+                  disabledFields={disabledFields}
                 />
               </CardBody>
             </Card>
