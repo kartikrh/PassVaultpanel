@@ -209,13 +209,13 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
-    {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
-      sort: true,
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "Password",
+    //   dataIndex: "password",
+    //   key: "password",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
     {
       title: "Mail Type",
       dataIndex: "mailType",
