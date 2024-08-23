@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import DeleteAllModel from "../../components/Model/DeleteAllModel";
+import { Tooltip } from "antd";
 // import PanelLoadDataModel from "../../components/Model/PanelLoadDataModel";
 // import ClientLoadDataModel from "../../components/Model/ClientLoadDataModel";
 
@@ -333,6 +334,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Config"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -344,6 +346,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -353,6 +356,7 @@ const Index = () => {
       key: "isForAdmin",
       dataIndex: "isForAdmin",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive For Admin"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -364,6 +368,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.isForAdmin ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

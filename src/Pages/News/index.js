@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -326,6 +326,7 @@ const Index = () => {
       title: "IsActive",
       key: "IsActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive News"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -336,6 +337,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

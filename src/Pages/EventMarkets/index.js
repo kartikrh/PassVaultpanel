@@ -24,6 +24,7 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "./CloseModal";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -496,6 +497,7 @@ const Index = () => {
       title: "Is Allow",
       key: "isAllow",
       render: (text, record) => (
+      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isAllow ? "primary" : "danger"}`}
           size="sm"
@@ -506,6 +508,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -513,6 +516,7 @@ const Index = () => {
       title: "Is Active",
       key: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -527,6 +531,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -535,6 +540,7 @@ const Index = () => {
       key: "close",
       render: (text, record) => (
         <>
+        <Tooltip title={"Close Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="danger"
             size="sm"
@@ -545,6 +551,7 @@ const Index = () => {
           >
             C
           </Button>{" "}
+        </Tooltip>
         </>
       ),
       style: { width: "5%", textAlign: "center" },
@@ -559,6 +566,7 @@ const Index = () => {
     {
       render: (text, record) => (
         <>
+        <Tooltip title={"View Status Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="primary"
             size="sm"
@@ -568,7 +576,9 @@ const Index = () => {
             }}
           >
             SL
-          </Button>{" "}
+          </Button>
+        </Tooltip>{" "}
+        <Tooltip title={"View Data Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="primary"
             size="sm"
@@ -579,6 +589,7 @@ const Index = () => {
           >
             DS
           </Button>
+        </Tooltip>
         </>
       ),
       style: { width: "10%", textAlign: "center" },

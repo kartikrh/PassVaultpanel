@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeActionTypeModel } from "../../components/Model/ChangeActionType";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_ClientSocket
@@ -258,6 +259,7 @@ const Index = () => {
       title: "Is Active",
       key: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Client Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -268,6 +270,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

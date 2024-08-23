@@ -16,6 +16,7 @@ import { checkPermission, convertDateUTCToLocal } from "../../components/Common/
 import CancelModal from "./CancelModal";
 import ResultModal from "./ResultModal";
 import "./modal.css";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -286,6 +287,7 @@ const Index = () => {
     {
       render: (text, record) => (
         <>
+        <Tooltip title={"Cancel Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="danger"
             size="sm"
@@ -295,7 +297,9 @@ const Index = () => {
             }}
           >
             C
-          </Button>{" "}
+          </Button>
+        </Tooltip>{" "}
+        <Tooltip title={"Set Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="primary"
             size="sm"
@@ -306,6 +310,7 @@ const Index = () => {
           >
             R
           </Button>
+        </Tooltip>
         </>
       ),
       style: { width: "10%", textAlign: "center" },

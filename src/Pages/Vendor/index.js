@@ -12,6 +12,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_VENDOR
@@ -213,6 +214,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Vendor"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -223,6 +225,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -230,6 +233,7 @@ const Index = () => {
       title: "Allow Ip",
       key: "isIPCheck",
       render: (text, record) => (
+      <Tooltip title={"Allow/Disable Ip"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isIPCheck ? "primary" : "danger"}`}
           size="sm"
@@ -247,6 +251,7 @@ const Index = () => {
               }`}
           ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -255,6 +260,7 @@ const Index = () => {
       key: "venderIpList",
       printType: "ignore",
       render: (text, record) => (
+      <Tooltip title={"View Vendor Ip List"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"primary"}
           size="sm"
@@ -268,6 +274,7 @@ const Index = () => {
         >
           <i class='bx bxs-store' ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 import Table from "../../components/Common/Table";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
@@ -190,6 +190,7 @@ const Index = () => {
       key: "isHighlight",
       dataIndex: "isHighlight",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Highlights"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -202,6 +203,7 @@ const Index = () => {
             className={`bx ${record.isHighlight ? "bx-check" : "bx-block"}`}
           ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -210,6 +212,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Event Type"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -221,6 +224,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

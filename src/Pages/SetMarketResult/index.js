@@ -305,6 +305,7 @@ const Index = () => {
       title: "Is Result",
       key: "isResult",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isResult ? "primary" : "danger"}`}
           size="sm"
@@ -316,6 +317,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
