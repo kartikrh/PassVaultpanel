@@ -13,6 +13,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_PANELTY_RUNS
@@ -192,6 +193,7 @@ const Index = () => {
               setRun(prev => ({ ...prev, [record.paneltyId]: e.target.value }));
             }}
           />
+         <Tooltip title={"Save Penalty Runs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <button
             className="btn btn-primary sm btn-sm"
             onClick={(e) => {
@@ -203,6 +205,7 @@ const Index = () => {
           >
             <i className="bx bxs-like" />
           </button>
+         </Tooltip>
         </div>
       ),
       style: { width: "80%", textAlign: "center" },
@@ -211,6 +214,7 @@ const Index = () => {
       title: "Is Active",
       key: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Penalty Runs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -221,6 +225,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

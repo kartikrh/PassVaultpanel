@@ -134,7 +134,8 @@ const Index = () => {
           maxWidth: '400px',
           whiteSpace: 'nowrap', 
           overflow: 'hidden', 
-          textOverflow: 'ellipsis' 
+          textOverflow: 'ellipsis',
+          cursor: "pointer"
         }}>{logItems}</div>;
       },
       key: "requestBody",
