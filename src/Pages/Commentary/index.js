@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from "./functions";
-import { Button, Container, Tooltip } from "reactstrap";
+import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
@@ -35,6 +35,7 @@ import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
 import { DlsModal } from "./CommentaryModels/DlsModal";
 import "./CommentaryCss.css"
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -769,7 +770,7 @@ const Index = () => {
             onClick={() => {
               setEventRefModelVisible(true);
               setSelectedEventRef(record);
-            }}> {<a className="bx bx-edit-alt"></a>}
+            }}> <Tooltip title="Edit Event Id" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
           </span>
         </div>
       ),
@@ -808,6 +809,7 @@ const Index = () => {
       key: "commentaryDetails",
       printType: "ignore",
       render: (text, record) => (
+      <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"warning"}
           size="sm"
@@ -818,6 +820,7 @@ const Index = () => {
         >
           <i class='bx bxs-right-arrow' ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -835,12 +838,14 @@ const Index = () => {
       title: "DLS",
       dataIndex: "dls",
       render: (text, record) => (
+      <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           size="sm"
           className="dls-button btn"
           onClick={() => { setDlsModalCommentary(record) }}>
           <i class='bx bx-cloud-light-rain'></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "10%" },
     },
@@ -848,6 +853,7 @@ const Index = () => {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
+      <Tooltip title={"Show/Hide Client"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isClientShow ? "primary" : "danger"}`}
           size="sm"
@@ -860,6 +866,7 @@ const Index = () => {
             className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
           ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -867,6 +874,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Commentary"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -879,6 +887,7 @@ const Index = () => {
             className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
           ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -887,6 +896,7 @@ const Index = () => {
       key: "updatePlayers",
       printType: "ignore",
       render: (text, record) => (
+      <Tooltip title={"Update Players"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"info"}
           size="sm"
@@ -897,6 +907,7 @@ const Index = () => {
         >
           <i class='bx bxs-up-arrow-square' ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -919,6 +930,7 @@ const Index = () => {
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
+        <Tooltip title={"Active/Inactive Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color={`${record.isPredictMarket ? "primary" : "danger"}`}
             size="sm"
@@ -936,8 +948,10 @@ const Index = () => {
                 }`}
             ></i>
           </Button>
+        </Tooltip>
           <>
             {record.isPredictMarket &&
+            <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
               <Button
                 color={"primary"}
                 size="sm"
@@ -947,7 +961,9 @@ const Index = () => {
                 }}
               >
                 <i class='bx bxs-store' ></i>
-              </Button>}
+              </Button>
+            </Tooltip>}
+            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
             <Button
               color={"primary"}
               size="sm"
@@ -958,6 +974,7 @@ const Index = () => {
             >
               <i class='bx bxs-up-arrow-square' ></i>
             </Button>
+            </Tooltip>
           </>
         </div>
       ),
@@ -989,6 +1006,7 @@ const Index = () => {
       key: "shortCommentary",
       printType: "ignore",
       render: (text, record) => (
+        <Tooltip title={"Short Score"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"secondary"}
           size="sm"
@@ -999,6 +1017,7 @@ const Index = () => {
         >
           <i class='bx bxs-chevrons-right'></i>
         </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -1007,6 +1026,7 @@ const Index = () => {
       key: "updateCommentary",
       printType: "ignore",
       render: (text, record) => (
+        <Tooltip title={"Update Commentary"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"success"}
           size="sm"
@@ -1017,6 +1037,7 @@ const Index = () => {
         >
           <i class='bx bx-arrow-to-right' ></i>
         </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -1031,7 +1052,8 @@ const Index = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-          {text} {<a className="bx bx-edit-alt"></a>}
+          {text} {" "}
+        <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
         </span>
       ),
       key: "delay",
@@ -1067,7 +1089,8 @@ const Index = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-          {text} {<a className="bx bx-edit-alt"></a>}
+          {text} {" "}
+          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
         </span>
       ),
       key: "matchType",
@@ -1078,6 +1101,7 @@ const Index = () => {
       title: "Set Runner",
       dataIndex: "setRunner",
       render: (text, record) => (
+      <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"warning"}
           size="sm"
@@ -1090,6 +1114,7 @@ const Index = () => {
         >
           <i class='bx bxs-up-arrow-square' ></i>
         </Button>
+      </Tooltip>
       ),
       key: "setRunner",
       sort: true,
@@ -1099,6 +1124,7 @@ const Index = () => {
       title: "Is Team Prediction",
       key: "isTeamPredictionOn",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
           size="sm"
@@ -1109,6 +1135,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

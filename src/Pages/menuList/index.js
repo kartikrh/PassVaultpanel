@@ -28,6 +28,7 @@ import {
   setSelectedMenuTypeHistory,
   setSelectedMenuType,
 } from "../../Features/Tabs/menuTypeSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = Tab_Menu_List;
@@ -323,6 +324,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Menu List"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -333,6 +335,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

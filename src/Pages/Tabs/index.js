@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { resetTabSliceData, setSelectedTabHistory, setSelectedTab } from "../../Features/Tabs/tabsSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_TABS
@@ -223,6 +224,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "IsActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Tab"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsActive ? "primary" : "danger"}`}
           size="sm"
@@ -233,6 +235,7 @@ const Index = () => {
         >
           <i className={`bx ${record.IsActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -240,6 +243,7 @@ const Index = () => {
       title: "Is Add",
       key: "IsAdd",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Add"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsAdd ? "primary" : "danger"}`}
           size="sm"
@@ -250,6 +254,7 @@ const Index = () => {
         >
           <i className={`bx ${record.IsAdd ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -257,6 +262,7 @@ const Index = () => {
       title: "Is Edit",
       key: "IsEdit",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Edit"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsEdit ? "primary" : "danger"}`}
           size="sm"
@@ -268,6 +274,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.IsEdit ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -275,6 +282,7 @@ const Index = () => {
       title: "Is Delete",
       key: "IsDelete",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Delete"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsDelete ? "primary" : "danger"}`}
           size="sm"
@@ -285,6 +293,7 @@ const Index = () => {
         >
           <i className={`bx ${record.IsDelete ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

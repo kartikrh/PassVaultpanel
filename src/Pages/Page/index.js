@@ -13,6 +13,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_V
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_PAGE
@@ -175,6 +176,7 @@ const Index = () => {
       key: "isDefault",
       dataIndex: "isDefault",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Page Default"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -186,6 +188,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

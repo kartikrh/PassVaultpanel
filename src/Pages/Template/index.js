@@ -21,6 +21,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_TEMPLATE;
@@ -259,6 +260,7 @@ const Index = () => {
       key: "isDefault",
       dataIndex: "isDefault",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Default Template"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -270,6 +272,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -278,6 +281,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Template"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -289,6 +293,7 @@ const Index = () => {
           {" "}
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
