@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { MarketTemplateClone } from "../../components/Model/Clone";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_MARKET_TEMPLATE
@@ -254,6 +255,7 @@ const Index = () => {
       title: "Is Active",
       key: "isActive",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Market Template"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -264,6 +266,7 @@ const Index = () => {
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -271,6 +274,7 @@ const Index = () => {
       title: "Is P-Runner Value",
       key: "isPredefineRunnerValue",
       render: (text, record) => (
+      <Tooltip title={"Active/Inactive Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPredefineRunnerValue ? "primary" : "danger"}`}
           size="sm"
@@ -288,6 +292,7 @@ const Index = () => {
               }`}
           ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -296,6 +301,7 @@ const Index = () => {
       key: "marketTemplate",
       printType: "ignore",
       render: (text, record) => (
+      <Tooltip title={"View Market Template Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"primary"}
           size="sm"
@@ -309,6 +315,7 @@ const Index = () => {
         >
           <i class='bx bxs-store' ></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },

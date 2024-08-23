@@ -21,6 +21,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_MATCH_TYPE;
@@ -198,6 +199,7 @@ const Index = () => {
       key: "predictor",
       printType: "ignore",
       render: (text, record) => (
+      <Tooltip title={"View Test Event Predictor"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"primary"}
           size="sm"
@@ -208,6 +210,7 @@ const Index = () => {
         >
           <i className="bx bx-plus"></i>
         </Button>
+      </Tooltip>
       ),
       style: { width: "8%", textAlign: "center" },
     },

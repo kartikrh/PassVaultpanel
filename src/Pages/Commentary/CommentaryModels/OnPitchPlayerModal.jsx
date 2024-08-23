@@ -17,7 +17,11 @@ const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, tog
     const onSubmitClick = (newPlayerId) => {
         let playerToAdd = {}
         playerList.map(player => {
-            if (player.commentaryPlayerId === newPlayerId) playerToAdd = player
+            if (player.commentaryPlayerId === newPlayerId) playerToAdd = {
+                ...player,
+                isPlay: true,
+                onStrike: changePlayerType === ON_STRIKE ? true : false
+            }
             return player
         })
         setPlayerList(null)

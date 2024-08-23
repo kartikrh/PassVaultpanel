@@ -21,6 +21,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_NOTIFICATION;
@@ -196,6 +197,7 @@ const Index = () => {
       title: "Send",
       key: "send",
       render: (text, record) => (
+      <Tooltip title={"Send Notification"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color="primary"
           size="sm"
@@ -206,6 +208,7 @@ const Index = () => {
         >
           S
         </Button>
+      </Tooltip>
       ),
       style: { width: "6%", textAlign: "center" },
     },
