@@ -725,12 +725,11 @@ const Commentary = (props) => {
     const onPlayerChange = (newPlayerId) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         const updateOrderKey = playerToChange === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
-        let newPlayer = undefined
-        const playerToChangeId = currentWicket?.batterId
+        let updatedOnPitchPlayer = { ...onPitchPlayers }
         const secondPitchPlayerId = teamType === BATTING_TEAM
-            ? isEqual(onPitchPlayers[ON_STRIKE]?.commentaryPlayerId, playerToChangeId)
-                ? onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
-                : onPitchPlayers[NON_STRIKE]?.commentaryPlayerId
+            ? isEqual(onPitchPlayers[ON_STRIKE]?.commentaryPlayerId, currentWicket?.batterId)
+                ? onPitchPlayers[NON_STRIKE]?.commentaryPlayerId
+                : onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
             : null
         // const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
         const allPlayersToUpdate = []
@@ -739,30 +738,14 @@ const Commentary = (props) => {
             [teamType]: players[teamType]?.map((player) => {
                 // condition to set for new selected player for both batter and bowler
                 if (isEqual(player.commentaryPlayerId, newPlayerId)) {
-                    newPlayer = player
                     const updatedPlayer = {
-                        ...player, "isPlay": true, "onStrike": false,
+                        ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false,
                         [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, players[teamType])
                     }
-                    newPlayer = updatedPlayer
+                    updatedOnPitchPlayer[playerToChange] = updatedPlayer
                     return updatedPlayer
                 }
-                // condition to set for new selected player for out scenario
-                else if ((teamType === BATTING_TEAM) && (isEqual(player.commentaryPlayerId, playerToChangeId))) {
-                    newPlayer = player
-                    const updatedPlayer = { ...player, "isPlay": false, "onStrike": false, }
-                    newPlayer = updatedPlayer
-                    return updatedPlayer
-                }
-                // condition to set for new selected player for not out scenario
-                else if (isEqual(player.commentaryPlayerId, secondPitchPlayerId)) {
-                    newPlayer = player
-                    const updatedPlayer = { ...player, "isPlay": true, }
-                    newPlayer = updatedPlayer
-                    return updatedPlayer
-                }
-                // condition to set for all to make then unplay
-                else if (player.isPlay || player.onStrike) {
+                else if (!isEqual(player.commentaryPlayerId, secondPitchPlayerId) && (player.isPlay || player.onStrike)) {
                     const playerToUpdate = { ...player, "isPlay": null, "onStrike": null }
                     allPlayersToUpdate.push(playerToUpdate)
                     return playerToUpdate
@@ -771,8 +754,8 @@ const Commentary = (props) => {
             })
         }
         setPlayers(playerToUpdate)
-        const updatedOnPitchPlayer = { ...onPitchPlayers, [playerToChange]: newPlayer }
         setOnPitchPlayers(updatedOnPitchPlayer)
+        console.log({ updatedOnPitchPlayer });
         setPlayerUpdateList([].concat(allPlayersToUpdate, playerUpdateList || []))
         if (playerToChange === CURRENT_BOWLER) setIsOverChange(true)
         if (isWicketChange) {
@@ -788,7 +771,7 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "commentaryPartnership": updatedPartnership,
                 "commentaryDetails": commentaryDetails,
-                "commentaryPlayers": [].concat(Object.values(updatedOnPitchPlayer), allPlayersToUpdate),
+                "commentaryPlayers": [].concat(allPlayersToUpdate, Object.values(updatedOnPitchPlayer)),
             }
             checkForOverSwitch()
             dispatch(addCommentaryScreenData(objToSave))
