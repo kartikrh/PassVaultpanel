@@ -101,18 +101,19 @@ const Commentary = (props) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
     const checkInningsSwitch = (checkFor) => {
-        const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
+        const teamToCheck = _teams || teams
+        const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
         const isOverLimitReached = () => {
             return matchTypeDetails.isLimitedOvers &&
-                (Math.ceil(+currentOver.over || 0) + 1) >= teams[BATTING_TEAM]?.teamMaxOver;
+                (Math.ceil(+currentOver.over || 0) + 1) >= teamToCheck[BATTING_TEAM]?.teamMaxOver;
         };
 
         const isWicketLimitReached = () => {
-            return teams?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 2;
+            return teamToCheck?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 2;
         };
 
         const isRunTargetAchieved = () => {
-            return isLastInnigs && target !== 0 && teams?.[BATTING_TEAM]?.teamScore >= target;
+            return isLastInnigs && target !== 0 && teamToCheck?.[BATTING_TEAM]?.teamScore >= target;
         };
 
         let conditionsToCheck = [];
@@ -128,7 +129,7 @@ const Commentary = (props) => {
             default: break;
         }
         if (conditionsToCheck.some(condition => condition)) {
-            if (teams?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
+            if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
             else setShowInningsChangePopup(true);
         }
     }
@@ -1633,7 +1634,6 @@ const Commentary = (props) => {
                 if (objToSave.deleteCommentaryBallByBallId) delete objToSave.commentaryBallByBall
                 if (objToSave.deleteOverId) delete objToSave.commentaryOvers
                 dispatch(addCommentaryScreenData(objToSave))
-                checkInningsSwitch(RUN)
                 setSaveToDb(false)
             }
         }
@@ -1712,6 +1712,7 @@ const Commentary = (props) => {
             // }
             updateTempToMain()
             setPlayerUpdateList(undefined)
+            checkInningsSwitch(RUN)
             dispatch(clearAddCommentaryScreenData())
         }
     }, [commentaryDataToUpdate])
