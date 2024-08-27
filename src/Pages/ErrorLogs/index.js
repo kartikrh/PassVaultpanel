@@ -77,6 +77,13 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      sort: true,
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
       title: "Err Message",
       dataIndex: "errMessage",
       key: "errMessage",

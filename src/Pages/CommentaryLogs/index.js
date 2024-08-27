@@ -117,11 +117,18 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "commentaryId",
+      title: "CommentaryId",
       dataIndex: "commentaryId",
       key: "commentaryId",
       sort: true,
       style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
     },
     {
       title: "Request Body",
