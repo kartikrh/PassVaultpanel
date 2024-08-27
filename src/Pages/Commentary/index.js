@@ -302,22 +302,32 @@ const Index = () => {
     navigate("/commentaryMaster", { state: { commentaryId: id } });
   };
   const handleUpdatePlayersClick = (details) => {
-    navigate("/updateCommentaryPlayer", {
-      state: {
-        commentaryId: details?.commentaryId,
-        commentaryDetails: details,
-      },
-    });
+    // navigate("/updateCommentaryPlayer", {
+    //   state: {
+    //     commentaryId: details?.commentaryId,
+    //     commentaryDetails: details,
+    //   },
+    // });
+    localStorage.setItem('updatePlayerCommentaryId', "" + details?.commentaryId);
+    localStorage.setItem('updatePlayerCommentaryDetails', "" + JSON.stringify(details));
+    const url = new URL(window.location.origin + "/updateCommentaryPlayer");
+    window.open(url.href, '_blank');
   };
   const handlePredictorDetailsClick = (commentaryId) => {
-    navigate("/predictorApiLogs", {
-      state: {
-        commentaryId: commentaryId,
-      },
-    });
+    // navigate("/predictorApiLogs", {
+    //   state: {
+    //     commentaryId: commentaryId,
+    //   },
+    // });
+    localStorage.setItem('predictorApiLogsCommentaryId', "" + commentaryId);
+    const url = new URL(window.location.origin + "/predictorApiLogs");
+    window.open(url.href, '_blank');
   };
   const handleCommentaryMarketTemplateClick = (id) => {
-    navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
+    // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
+    localStorage.setItem('marketTemplateCommentaryId', "" + id);
+    const url = new URL(window.location.origin + "/commentaryMarketTemplate");
+    window.open(url.href, '_blank');
   };
   const handleMarketEventActionClick = (id) => {
     localStorage.setItem('openMarketCommentaryId', "" + id);
@@ -332,10 +342,16 @@ const Index = () => {
     window.open(url.href, '_blank');
   };
   const handleShortCommentaryClick = (id) => {
-    navigate("/shortCommentary", { state: { commentaryId: id } });
+    // navigate("/shortCommentary", { state: { commentaryId: id } });
+    localStorage.setItem('shortCommentaryId', "" + id);
+    const url = new URL(window.location.origin + "/shortCommentary");
+    window.open(url.href, '_blank');
   };
   const handleUpdateCommentaryClick = (id) => {
-    navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
+    // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
+    localStorage.setItem('updateCommentaryId', "" + id);
+    const url = new URL(window.location.origin + "/updateCommentaryFeature");
+    window.open(url.href, '_blank');
   };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {

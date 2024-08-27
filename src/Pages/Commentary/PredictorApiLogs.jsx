@@ -19,7 +19,8 @@ function PredictorApiLogs() {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   let navigate = useNavigate();
   const location = useLocation();
-  const commentaryId = location.state?.commentaryId || "0";
+  // const commentaryId = location.state?.commentaryId || "0";
+  const commentaryId = +localStorage.getItem('predictorApiLogsCommentaryId') || "0";
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -77,16 +78,33 @@ function PredictorApiLogs() {
       dataIndex: "wrResponse",
       key: "wrResponse",
       render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-            </span>
-          ));
-        return <div>{logItems}</div>;
+        // const logObject = text;
+        // const logItems =
+        //   logObject &&
+        //   Object.entries(logObject).map(([key, value]) => (
+        //     <span key={key}>
+        //       <strong>{key}:</strong>{" "}
+        //       {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+        //     </span>
+        //   ));
+        const renderContent = () => {
+          if (typeof text === 'string') {
+            return <span>{text}</span>;
+          }
+    
+          if (typeof text === 'object' && text !== null) {
+            const logItems = Object.entries(text).map(([key, value]) => (
+              <span key={key}>
+                <strong>{key}:</strong>{" "}
+                {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              </span>
+            ));
+            return <div>{logItems}</div>;
+          }
+    
+          return null;
+        };
+        return <div>{renderContent()}</div>;
       },
       sort: true,
       style: { width: "20%" },

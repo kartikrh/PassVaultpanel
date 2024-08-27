@@ -62,6 +62,7 @@ export const TAB_MAIL_SETTINGS = "MailSettings";
 export const TAB_COMMENTARY_LOGS = "CommentaryLogs";
 export const TAB_THIRDPARTY_LOGS = "ThirdpartyLogs";
 export const TAB_ERROR_LOGS = "ErrorLogs";
+export const TAB_PREDICTOR_LOGS = "PredictorLogs";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";

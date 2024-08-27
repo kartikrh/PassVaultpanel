@@ -23,8 +23,10 @@ const PlayerCommentary = () => {
   const location = useLocation();
   let navigate = useNavigate();
   const [isDataLoading, setIsDataLoading] = useState(false);
-  const commentaryId = location.state?.commentaryId || "0";
-  const commentaryDetails = location.state?.commentaryDetails;
+  const commentaryId = +localStorage.getItem('updatePlayerCommentaryId') || "0";
+  const commentaryDetails = JSON.parse(localStorage.getItem('updatePlayerCommentaryDetails'));
+  // const commentaryId = location.state?.commentaryId || "0";
+  // const commentaryDetails = location.state?.commentaryDetails;
   const dispatch = useDispatch();
   const [teams, setTeams] = useState([]);
 
