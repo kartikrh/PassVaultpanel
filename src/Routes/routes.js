@@ -106,6 +106,7 @@ import AddMailSettings from "../Pages/MailSettings/AddMailSettings.jsx";
 import CommentaryLogs from "../Pages/CommentaryLogs";
 import ThirdpartyLogs from "../Pages/ThirdpartyLogs";
 import ErrorLogs from "../Pages/ErrorLogs";
+import PredictorLogs from "../Pages/PredictorLogs";
 
 const authProtectedRoutes = [
   //dashboard
@@ -196,6 +197,7 @@ const authProtectedRoutes = [
   { path: "/commentaryLogs", component: <CommentaryLogs /> },
   { path: "/thirdpartyLogs", component: <ThirdpartyLogs /> },
   { path: "/errorLogs", component: <ErrorLogs /> },
+  { path: "/predictorLogs", component: <PredictorLogs /> },
 
   {
     path: "/changePassword",
