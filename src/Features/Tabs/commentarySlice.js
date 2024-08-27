@@ -187,6 +187,7 @@ const commentarySlice = createSlice({
     },
     reducers: {
         updateSavedState: (state, action) => {
+            state.isSaved = action.payload;
             state.isCommentaryDataUpdated = action.payload;
         },
         clearAddCommentaryScreenData: (state, action) => {
