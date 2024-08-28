@@ -325,6 +325,7 @@ const Index = () => {
     competitionsListSelect: true,
     eventListSelect: true,
     resetButton: true,
+    reloadButton: true,
     isDateRange: true,
   };
 
@@ -334,6 +335,10 @@ const Index = () => {
     }
     fetchData();
   }, [isSearch]);
+
+  const handleReload = (value) => {
+    fetchData();
+  };
 
   useEffect(() => {
     if(EventTypeActive){
@@ -373,6 +378,7 @@ const Index = () => {
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
+            handleReload={handleReload}
             reFetchData={fetchData}
             setDateRange={setDateRange}
             dateRange={dateRange}

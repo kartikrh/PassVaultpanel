@@ -198,6 +198,7 @@ const Index = () => {
   const tableElement = {
     title: "Page Format",
     // headerSelect: false,
+    reloadButton: true,
     // isActive: true,
     // clone: false,
   };
@@ -209,6 +210,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -220,6 +224,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
+            handleReload={handleReload}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}

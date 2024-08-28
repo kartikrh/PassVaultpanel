@@ -605,6 +605,7 @@ const Index = () => {
     statusListSelect: true,
     rateSourceListSelect: true,
     resetButton: true,
+    reloadButton: true,
     delayTextBox: true,
     importExport: false,
     teamsList: false,
@@ -617,6 +618,10 @@ const Index = () => {
     }
     fetchData();
   }, [isSearch, ratesource]);
+
+  const handleReload = (value) => {
+    fetchData();
+  };
 
   useEffect(() => {
     if(EventTypeActive){
@@ -660,6 +665,7 @@ const Index = () => {
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             handleReset={handleReset}
+            handleReload={handleReload}
             reFetchData={fetchData}
             delay={delay}
             setDelay={setDelay}

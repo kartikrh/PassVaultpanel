@@ -193,6 +193,7 @@ const Index = () => {
   const tableElement = {
     title: "Display Status",
     headerSelect: false,
+    reloadButton: true,
     isActive: true,
     clone: false,
   };
@@ -233,6 +234,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -247,6 +251,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addDisplayStatus"}
             isAddPermission={checkPermission(
               permissionObj,

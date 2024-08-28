@@ -329,9 +329,14 @@ const Index = () => {
     competitionsListSelect: true,
     eventListSelect: true,
     resetButton: true,
+    reloadButton: true,
     importExport: false,
     teamsList: false,
     isDateRange: true,
+  };
+
+  const handleReload = (value) => {
+    fetchData();
   };
 
   useEffect(() => {
@@ -380,6 +385,7 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             onAddNavigate={"/addEventMarkets"}
             handleReset={handleReset}
+            handleReload={handleReload}
             reFetchData={fetchData}
             setDateRange={setDateRange}
             dateRange={dateRange}

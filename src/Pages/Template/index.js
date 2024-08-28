@@ -303,7 +303,12 @@ const Index = () => {
     title: "Template",
     headerSelect: false,
     isActive: true,
+    reloadButton: true,
     clone: false,
+  };
+
+  const handleReload = (value) => {
+    fetchData();
   };
 
   //delete row
@@ -356,6 +361,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addTemplate"}
             isAddPermission={checkPermission(
               permissionObj,

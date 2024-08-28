@@ -283,6 +283,7 @@ const Index = () => {
   const tableElement = {
     title: "Vendors",
     isActive: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -292,7 +293,9 @@ const Index = () => {
     fetchData({ isActive: true });
   }, []);
 
-
+  const handleReload = (value) => {
+    fetchData({ isActive: true });
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -308,6 +311,7 @@ const Index = () => {
             reFetchData={fetchData}
             singleCheck={checekedList}
             handleReset={handleReset}
+            handleReload={handleReload}
             onAddNavigate={"/addVendor"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
