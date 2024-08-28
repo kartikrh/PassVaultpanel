@@ -9,7 +9,7 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
-  TAB_COMMENTARY_LOGS,
+  TAB_PREDICTOR_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
@@ -17,10 +17,10 @@ import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 
 const Index = () => {
-  const pageName = TAB_COMMENTARY_LOGS;
+  const pageName = TAB_PREDICTOR_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Commentary Logs";
+  document.title = "Predictor Logs";
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +46,7 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/log/commentaryLogs`, {
+      .post(`/admin/log/predictorLogs`, {
         ...(latestValueFromTable || tableActions),
         ...dateRange,
         page: currentPage+1,
@@ -106,29 +106,77 @@ const Index = () => {
   const columns = [
     {
       title: "Date",
-      dataIndex: "createdDate",
+      dataIndex: "requestStartTime",
       render: (text, record) => (
         <span>
           {convertDateUTCToLocal(text, "index")}
         </span>
       ),
-      key: "createdDate",
+      key: "requestStartTime",
       sort: true,
       style: { width: "10%" },
-    },
-    {
-      title: "CommentaryId",
-      dataIndex: "commentaryId",
-      key: "commentaryId",
-      sort: true,
-      style: { width: "5%", textAlign: "center" },
     },
     {
       title: "Created By",
       dataIndex: "createdBy",
       key: "createdBy",
       sort: true,
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "End Point",
+      dataIndex: "endPoint",
+      key: "endPoint",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Response",
+      dataIndex: "response",
+      render: (text, record) => {
+        // const logObject = text;
+        // const logItems =
+        //   logObject &&
+        //   Object.entries(logObject).map(([key, value]) => (
+        //     <span key={key}>
+        //       <strong>{key}:</strong>{" "}
+        //       {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+        //     </span>
+        //   ));
+        const renderContent = () => {
+          if (typeof text === 'string') {
+            return <span>{text}</span>;
+          }
+    
+          if (typeof text === 'object' && text !== null) {
+            const logItems = Object.entries(text).map(([key, value]) => (
+              <span key={key}>
+                <strong>{key}:</strong>{" "}
+                {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              </span>
+            ));
+            return <div>{logItems}</div>;
+          }
+    
+          return null;
+        };
+        return <div 
+        onClick={() => {
+                  setResModelVisible(true);
+                  setResBodyData(record?.response);
+                }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          cursor: "pointer"
+        }}> {renderContent()}</div>;
+      },
+      key: "response",
+      sort: true,
+      style: { width: "10%" },
     },
     {
       title: "Request Body",
@@ -161,41 +209,10 @@ const Index = () => {
       sort: true,
       style: { width: "20%" },
     },
-    {
-      title: "Response",
-      dataIndex: "response",
-      render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-            </span>
-          ));
-        return <div 
-        onClick={() => {
-                  setResModelVisible(true);
-                  setResBodyData(record?.response);
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          cursor: "pointer"
-        }}>{logItems}</div>;
-      },
-      key: "response",
-      sort: true,
-      style: { width: "20%" },
-    },
   ];
   //elements required
   const tableElement = {
-    title: "Commentary Logs",
+    title: "Predictor Logs",
     dateRange: true,
     eventTypeSelect: true,
     competitionsSelect: true,
@@ -221,7 +238,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Logs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Predictor Logs" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}

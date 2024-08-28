@@ -19,7 +19,8 @@ export const ShortCommentary = () => {
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
     const location = useLocation();
-    const commentaryId = location.state?.commentaryId || "0";
+    // const commentaryId = location.state?.commentaryId || "0";
+    const commentaryId = +localStorage.getItem('shortCommentaryId') || "0";
     const dispatch = useDispatch();
     let navigate = useNavigate();
 

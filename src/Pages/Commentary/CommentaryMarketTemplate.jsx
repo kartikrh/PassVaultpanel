@@ -20,7 +20,8 @@ const CommentaryMarketTemplate = () => {
     const location = useLocation();
     let navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const commentaryId = location.state?.commentaryId || "0";
+    // const commentaryId = location.state?.commentaryId || "0";
+    const commentaryId = +localStorage.getItem('marketTemplateCommentaryId') || "0";
     const dispatch = useDispatch();
     const finalizeRef = useRef(null);
     const [checekedList, setCheckedList] = useState([]);
