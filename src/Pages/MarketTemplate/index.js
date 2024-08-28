@@ -326,6 +326,7 @@ const Index = () => {
     isActive: true,
     matchTypeSelect: true,
     resetButton: true,
+    reloadButton: true,
     clone: true,
   };
 
@@ -337,7 +338,10 @@ const Index = () => {
     fetchMatchTypeList()
   }, []);
 
-
+  const handleReload = (value) => {
+    fetchData({ isActive: true });
+    fetchMatchTypeList();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -353,6 +357,7 @@ const Index = () => {
             cloneModelFunction={setCloneModelVisible}
             matchType = {matchType}
             reFetchData={fetchData}
+            handleReload={handleReload}
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addMarketTemplate"}

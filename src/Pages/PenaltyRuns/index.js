@@ -236,6 +236,7 @@ const Index = () => {
     headerSelect: false,
     isActive: true,
     clone: false,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -245,6 +246,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -259,6 +263,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addPenalty"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}

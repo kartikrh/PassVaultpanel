@@ -282,6 +282,7 @@ const Index = () => {
     resetButton: true,
     isActive: true,
     actionType: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -291,6 +292,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -307,6 +311,7 @@ const Index = () => {
             handleReset={handleReset}
             onAddNavigate={"/addClientSocket"}
             reFetchData={fetchData}
+            handleReload={handleReload}
             selectedClientSocket={selectedClientSocket}
             setSelectedClientSocket={setSelectedClientSocket}
             handleClientSocketChange={handleChange}

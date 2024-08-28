@@ -75,6 +75,7 @@ const Index = forwardRef(
       handleClientSocketChange,
       actionTypeOptions,
       handleReset,
+      handleReload,
       competitions,
       commentary,
       serverCurrentPage,
@@ -646,6 +647,72 @@ const Index = forwardRef(
       }
     };
 
+    const handleTableReload = () => {
+      setSearchTerm("");
+      setTableActions({
+        isActive: true,
+      });
+      setSelectedTableElements({
+        rateSourceType: { 
+          value: 1,
+          label: "Ratesource",
+        },
+        eventName: {
+          value: 0,
+          label: "Event List",
+        },
+        competition: {
+          value: 0,
+          label: "Competition",
+        },
+        commentary: {
+          value: 0,
+          label: "Commentary",
+        },
+        eventType: {
+          value: 0,
+          label: "Event Type",
+        },
+        matchType: {
+          value: 0,
+          label: "Match Type",
+        },
+        commentaryStatus: {
+          value: 0,
+          label: "Commentary Status",
+        },
+        displayType: {
+          value: 0,
+          label: "Display Type",
+        },
+        team: {
+          value: 0,
+          label: "Select Team",
+        },
+        statusType: {
+          value: 0,
+          label: "Select Status"
+        }
+      });
+      if (tableElement?.dateRange) {
+        setDateRange({
+          startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+          endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
+        });
+      }
+      setStatusSwitch(true);
+      if (tableElement?.rateSourceListSelect) {
+        handleReload({
+          isActive: true,
+          rateSourceRefId: 1,
+        });
+      } else{
+        handleReload({
+        isActive: true,
+      });
+      }
+    };
+
     const getTableAction = () => {
       return tableActions;
     };
@@ -1182,6 +1249,21 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
+                        {(!tableElement?.isDateRange && tableElement?.reloadButton && (tableElement?.title !== "Error Logs" && tableElement?.title !== "Thirdparty Logs")) ? (
+                          <div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handleTableReload();
+                              }}
+                              type="reload"
+                              id="create-btn"
+                            >
+                              Reload
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                          </div>
+                        ) : null}
                         {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
@@ -1293,6 +1375,22 @@ const Index = forwardRef(
                           Search
                           {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                         </button>
+
+                        {(tableElement?.reloadButton && (tableElement?.title === "Error Logs" || tableElement?.title === "Thirdparty Logs")) ? (
+                          <div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handleTableReload();
+                              }}
+                              type="reload"
+                              id="create-btn"
+                            >
+                              Reload
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                          </div>
+                        ) : null}
                       </div>
                       {/* </Col> */}
                     </Row>
@@ -1364,6 +1462,21 @@ const Index = forwardRef(
                               id="create-btn"
                             >
                               Reset
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                          </div>
+                        ) : null}
+                        {(tableElement?.reloadButton && (tableElement?.title !== "Error Logs" && tableElement?.title !== "Thirdparty Logs")) ? (
+                          <div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handleTableReload();
+                              }}
+                              type="reload"
+                              id="create-btn"
+                            >
+                              Reload
                               {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                             </button>
                           </div>

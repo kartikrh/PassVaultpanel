@@ -222,6 +222,7 @@ const Index = () => {
     headerSelect: false,
     switch: false,
     clone: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -231,6 +232,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -243,6 +247,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             reFetchData={fetchData}
+            handleReload={handleReload}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}

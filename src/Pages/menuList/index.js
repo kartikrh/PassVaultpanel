@@ -466,6 +466,7 @@ const Index = () => {
     switch: false,
     subTable: true,
     resetButton: true,
+    reloadButton: true,
     isActive: true,
     // displayTypes: [
     //   { label: "Admin", value: 1 },
@@ -497,6 +498,10 @@ const Index = () => {
   useEffect(() => {
     fetchData();
   }, [selectedMenuType]);
+
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -518,6 +523,7 @@ const Index = () => {
             displayTypes={displayTypes}
             singleCheck={checekedList}
             handleReset={handleReset}
+            handleReload={handleReload}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,

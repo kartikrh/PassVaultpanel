@@ -1199,6 +1199,7 @@ const Index = () => {
     commentaryStatus: true,
     competitionsSelect: true,
     resetButton: true,
+    reloadButton: true,
     statusOptions: [
       {
         label: "All",
@@ -1232,6 +1233,11 @@ const Index = () => {
     fetchData();
     fetchEventTypeData();
   }, []);
+
+  const handleReload = (value) => {
+    fetchData();
+    fetchEventTypeData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -1252,6 +1258,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReset={handleReset}
+            handleReload={handleReload}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             isAddPermission={checkPermission(

@@ -379,6 +379,7 @@ const Index = () => {
     title: "Config",
     // headerSelect: false,
     isActive: true,
+    reloadButton: true,
     // clone: false,
   };
 
@@ -390,6 +391,10 @@ const Index = () => {
     handleSignalRCheckStatus()
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+    handleSignalRCheckStatus()
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -409,6 +414,7 @@ const Index = () => {
             isSignalRStarted={isSignalRStarted}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addConfig"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
