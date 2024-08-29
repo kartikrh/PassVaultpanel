@@ -346,6 +346,7 @@ const Index = () => {
   const tableElement = {
     title: "News",
     isActive: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -355,6 +356,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -370,6 +374,7 @@ const Index = () => {
             singleCheck={checekedList}
             onAddNavigate={"/addNews"}
             handleReset={handleReset}
+            handleReload={handleReload}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,

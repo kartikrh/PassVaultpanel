@@ -155,6 +155,7 @@ const Index = () => {
     title: "Error Logs",
     dateRange: true,
     isServerPagination: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -163,6 +164,10 @@ const Index = () => {
     }
     fetchData();
   }, [currentPage, pageSize]);
+
+  const handleReload = (value) => {
+    fetchData();
+  };
 
   return (
     <React.Fragment>
@@ -178,6 +183,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             setDateRange={setDateRange}
             dateRange={dateRange}
             serverCurrentPage={currentPage}

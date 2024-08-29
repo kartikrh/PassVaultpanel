@@ -218,6 +218,7 @@ const Index = () => {
     competitionsSelect: true,
     commentarySelect: true,
     resetButton: true,
+    reloadButton: true,
     isServerPagination: true,
   };
 
@@ -230,6 +231,11 @@ const Index = () => {
   }, [currentPage, pageSize]);
 
   const handleReset = (value) => {
+    fetchData();
+    fetchEventTypeData();
+  };
+
+  const handleReload = (value) => {
     fetchData();
     fetchEventTypeData();
   };
@@ -252,6 +258,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReset={handleReset}
+            handleReload={handleReload}
             setDateRange={setDateRange}
             dateRange={dateRange}
             serverCurrentPage={currentPage}

@@ -240,6 +240,7 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsListSelect: true,
     resetButton: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -256,6 +257,11 @@ const Index = () => {
     }
   }, [eventTypeId]);
 
+  const handleReload = (value) => {
+    fetchData();
+    fetchEventTypeData()
+  };
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -270,6 +276,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             handleReset={handleReset}
+            handleReload={handleReload}
             eventTypes={eventTypes}
             competitionList={competitionList}
             setEventTypeId={setEventTypeId}

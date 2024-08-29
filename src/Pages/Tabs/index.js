@@ -306,6 +306,7 @@ const Index = () => {
     switch: false,
     subTable: true,
     resetButton: true,
+    reloadButton: true,
     isActive: true,
     displayTypes: [
       { label: "Admin", value: 1 },
@@ -327,7 +328,9 @@ const Index = () => {
     fetchData()
   }, [selectedTab])
 
-
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -346,6 +349,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             reFetchData={fetchData}
+            handleReload={handleReload}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             breadCrumbs={selectedTabHistory}
