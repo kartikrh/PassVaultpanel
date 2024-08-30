@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
-import _, { isEmpty, isEqual, isObject } from "lodash"
+import _, { isEmpty, isEqual } from "lodash"
 import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
@@ -13,7 +13,6 @@ import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
 import { compareNumStringValues } from "../../components/Common/Reusables/reusableMethods.js"
-import UpdateStrikeModal from "./CommentaryModels/UpdateStrikerModal.jsx"
 import WinnerModal from "./CommentaryModels/WinnerModal.jsx"
 import UndoInnnigsModal from "./CommentaryModels/UndoInningsModal.jsx"
 import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx"
@@ -64,7 +63,7 @@ const Commentary = (props) => {
     const [redirectOnScreenChange, setRedirectOnScreenChange] = useState(undefined)
     const [showUpdateInnings, setShowUpdateInnings] = useState(undefined)
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
-    const [showSwitchBatterModal, setShowSwitchBatterModal] = useState(undefined)
+    // const [showSwitchBatterModal, setShowSwitchBatterModal] = useState(undefined)
     const [isUndoBall, setIsUndoBall] = useState(undefined)
     const [undoErrorModal, setUndoErrorModal] = useState(undefined)
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
@@ -82,10 +81,10 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        // console.log({
-        //     // ballCountForStrike,
-        //     // _currentPartnership, _onPitchPlayers, _players, _teams
-        // });
+        console.log(
+            onPitchPlayers[ON_STRIKE], onPitchPlayers[NON_STRIKE],
+            // _currentPartnership, _onPitchPlayers, _players, _teams
+        );
         // console.log({ currentOver, commentaryDataToUpdate });
         // console.log({ playerUpdateList })
         // console.log({ saveToDb })
@@ -771,6 +770,7 @@ const Commentary = (props) => {
                         ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false,
                         [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, players[teamType])
                     }
+                    console.log({ playerToChange, updatedPlayer, previousPlayer: updatedOnPitchPlayer[playerToChange] });
                     updatedOnPitchPlayer[playerToChange] = updatedPlayer
                     return updatedPlayer
                 }
@@ -806,7 +806,7 @@ const Commentary = (props) => {
             dispatch(addCommentaryScreenData(objToSave))
             setIsWicketChange(undefined)
             setCurrentPartnership({})
-            setShowSwitchBatterModal(true)
+            // setShowSwitchBatterModal(true)
         }
         setChangePlayerList(undefined)
         setPlayerToChange(undefined)
@@ -835,6 +835,8 @@ const Commentary = (props) => {
             "batsmanAverage": oldPlayer["batsmanAverage"],
             "batsmanStrikeRate": oldPlayer["batsmanStrikeRate"],
             "bowlerAverage": oldPlayer["bowlerAverage"],
+            "batterOrder": null,
+            "bowlerOrder": null,
         }
         let updatedOldPlayer = {
             ...oldPlayer,
@@ -843,6 +845,8 @@ const Commentary = (props) => {
             "batsmanAverage": newPlayer["batsmanAverage"],
             "batsmanStrikeRate": newPlayer["batsmanStrikeRate"],
             "bowlerAverage": newPlayer["bowlerAverage"],
+            "batterOrder": newPlayer["batterOrder"],
+            "bowlerOrder": newPlayer["bowlerOrder"],
         }
 
         const listToUpdate = players[teamType]?.map((player) => {
@@ -1026,7 +1030,7 @@ const Commentary = (props) => {
             dispatch(addCommentaryScreenData(objToSave))
         }
         setCurrentWicket(undefined)
-        setShowSwitchBatterModal(undefined)
+        // setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
         // console.log(currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver))
@@ -1251,6 +1255,7 @@ const Commentary = (props) => {
                 updatedPlayerToSend["fielderId1"] = "0"
                 updatedPlayerToSend["fielderId2"] = "0"
                 updatedPlayerToSend["wicketType"] = null
+                updatedPlayerToSend["batterOrder"] = null
             }
             return updatedPlayerToSend
         }
@@ -1796,7 +1801,9 @@ const Commentary = (props) => {
             showPaneltyRuns={setIsPaneltyPopup}
             anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || superOverModal || showRretiredHurt || isPaneltyPopup
-                || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer || showSwitchBatterModal || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
+                || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
+                // || showSwitchBatterModal 
+                || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
         />
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
@@ -1842,12 +1849,6 @@ const Commentary = (props) => {
             toggle={() => { setShowUpdateInnings(undefined) }}
             onsubmit={handleInningsUpdate}
             currentInningTeams={propsData.commentaryData?.commentaryTeams?.filter(team => team.currentInnings === (commentaryDetails.currentInnings + 1))}
-        />}
-        {showSwitchBatterModal && <UpdateStrikeModal
-            isOpen={showSwitchBatterModal}
-            toggle={() => { setShowSwitchBatterModal(undefined) }}
-            onsubmit={changeOnStrikePlayer}
-            players={onPitchPlayers}
         />}
         {undoInningsPopup && <UndoInnnigsModal isOpen={undoInningsPopup}
             toggle={() => { setUndoInningsPopup(undefined) }}
