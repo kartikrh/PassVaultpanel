@@ -304,6 +304,7 @@ const Index = () => {
     isActive: true,
     eventTypeSelect: true,
     resetButton: true,
+    reloadButton: true,
     importExport: true,
     teamsList:true,
   };
@@ -316,6 +317,12 @@ const Index = () => {
     fetchEventTypeData()
     fetchTeamsData()
   }, []);
+
+  const handleReload = (value) => {
+    fetchData();
+    fetchEventTypeData()
+    fetchTeamsData()
+  };
 
   return (
     <React.Fragment>
@@ -334,6 +341,7 @@ const Index = () => {
             onAddNavigate={"/addPlayer"}
             handleReset={handleReset}
             reFetchData={fetchData}
+            handleReload={handleReload}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}

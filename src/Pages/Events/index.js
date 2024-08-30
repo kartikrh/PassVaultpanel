@@ -267,6 +267,7 @@ const Index = () => {
     competitionsSelect: true,
     isActive: true,
     resetButton: true,
+    reloadButton: true,
     dateRange: true,
   };
 
@@ -279,7 +280,11 @@ const Index = () => {
     fetchCompetitionData();
   }, []);
 
-
+  const handleReload = (value) => {
+    fetchData({ isActive: true });
+    fetchEventTypeData();
+    fetchCompetitionData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -297,6 +302,7 @@ const Index = () => {
             reFetchData={fetchData}
             singleCheck={checekedList}
             handleReset={handleReset}
+            handleReload={handleReload}
             onAddNavigate={"/addEvents"}
             setDateRange = {setDateRange}
             dateRange = {dateRange}

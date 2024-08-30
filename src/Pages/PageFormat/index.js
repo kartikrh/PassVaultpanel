@@ -201,6 +201,7 @@ const Index = () => {
     title: "Page Format",
     // headerSelect: false,
     isActive: true,
+    reloadButton: true,
     // clone: false,
   };
 
@@ -211,6 +212,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -225,6 +229,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addPageFormat"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}

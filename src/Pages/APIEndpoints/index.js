@@ -239,6 +239,7 @@ const Index = () => {
   const tableElement = {
     title: "API Endpoints",
     headerSelect: false,
+    reloadButton: true,
     isActive: true,
     clone: false,
   };
@@ -279,6 +280,10 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -293,6 +298,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addApiEndpoint"}
             isAddPermission={checkPermission(
               permissionObj,

@@ -360,6 +360,7 @@ const Index = () => {
     title: "Registration Pending",
     headerSelect: false,
     isActive: true,
+    reloadButton: true,
     clone: false,
   };
 
@@ -399,6 +400,9 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -413,6 +417,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addRegistrationPending"}
             isAddPermission={checkPermission(
               permissionObj,

@@ -235,6 +235,7 @@ const Index = () => {
     eventTypeSelect: true,
     isActive: true,
     resetButton: true,
+    reloadButton: true,
   };
 
 
@@ -246,6 +247,10 @@ const Index = () => {
     fetchEventTypeData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+    fetchEventTypeData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -261,6 +266,7 @@ const Index = () => {
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReload={handleReload}
             onAddNavigate={"/addCompetition"}
             handleReset={handleReset}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}

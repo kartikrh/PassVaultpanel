@@ -302,8 +302,12 @@ const Index = () => {
     title: "Users",
     headerSelect: false,
     isActive: true,
+    reloadButton: true,
   };
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -316,6 +320,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             reFetchData={fetchData}
+            handleReload={handleReload}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
