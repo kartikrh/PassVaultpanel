@@ -308,10 +308,12 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(_onPitchPlayers),
         }
         dispatch(addCommentaryScreenData(objToSave))
-        setOnPitchPlayers({
-            ...onPitchPlayers,
-            [ON_STRIKE]: onPitchPlayers[ON_STRIKE].isPlay ? onPitchPlayers[ON_STRIKE] : null,
-            [NON_STRIKE]: onPitchPlayers[NON_STRIKE].isPlay ? onPitchPlayers[NON_STRIKE] : null
+        _setOnPitchPlayers((prevValue) => {
+            return {
+                ...prevValue,
+                [ON_STRIKE]: prevValue[ON_STRIKE].isPlay ? prevValue[ON_STRIKE] : null,
+                [NON_STRIKE]: prevValue[NON_STRIKE].isPlay ? prevValue[NON_STRIKE] : null
+            }
         })
         const updaterPartnershipHistory = partnershipHistory.slice(0, -1)
         setPartnershipHistory([].concat((updaterPartnershipHistory || []), [updatedPartnership]))
