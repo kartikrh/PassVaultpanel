@@ -80,7 +80,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => { console.log({ playersToCheck: players?.[BATTING_TEAM] }); })
+    useEffect(() => { console.log({ playersToCheck: players?.[BATTING_TEAM], playerUpdateList }); })
     const checkForOverSwitch = (ballcount) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
@@ -269,7 +269,6 @@ const Commentary = (props) => {
             currentBall: newCurrentBall, commentaryDetails,
             currentOver: _currentOver || currentOver, onPitchPlayers: _onPitchPlayers || onPitchPlayers, teams: _teams || teams
         })
-        console.log("Form call to wicket side:", { updatedBallByBall, _onPitchPlayers });
         const updatedWicket = generateWicket({
             commentaryDetails, currentOver: _currentOver || currentOver,
             teams: _teams || teams, currentWicket, currentBall: newCurrentBall
@@ -1252,7 +1251,7 @@ const Commentary = (props) => {
             let forNewPlayers = {}
             if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[ON_STRIKE].commentaryPlayerId)
                 || compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) {
-                forNewPlayers = { isPlay: null, onStrike: null, isBatterOut: null }
+                forNewPlayers = { isPlay: null, onStrike: null, isBatterOut: null, batterOrder: null, batsmanStrikeRate: null, bowlerEconomy: null }
                 playerListToSendToDb.push({ ...player, ...forNewPlayers })
             }
             let updatedPlayer = { ...player, ...forNewPlayers }
@@ -1264,7 +1263,7 @@ const Commentary = (props) => {
             }
             else if (compareNumStringValues(player.commentaryPlayerId, currentBall.batNonStrikeId)) {
                 wicketDetails = isbatterWicket(player)
-                updatedPlayer = { ...updatedPlayer, ...wicketDetails, isPlay: true, }
+                updatedPlayer = { ...updatedPlayer, ...wicketDetails, isPlay: true, onStrike: false }
                 updatedOnPitchPlayer[NON_STRIKE] = updatedPlayer
             }
             return updatedPlayer
@@ -1313,7 +1312,6 @@ const Commentary = (props) => {
             }
             return updatedPlayer
         })
-        console.log({ previousBall, previousOver, previousOnPitchPlayer });
         _setTeams({ ...teams, [BATTING_TEAM]: updatedBattingTeam })
         _setPlayers({ [BATTING_TEAM]: updatedBattingPlayerList, [BOWLING_TEAM]: updatedBowlingPlayerList })
         _setOnPitchPlayers(previousOnPitchPlayer)
@@ -1631,7 +1629,6 @@ const Commentary = (props) => {
                     currentBall: newCurrentBall, commentaryDetails,
                     currentOver: _currentOver || currentOver, onPitchPlayers: _onPitchPlayers || onPitchPlayers, teams: _teams || teams
                 })
-                console.log("Form Save to db side:", { generatedBallByBall });
                 objToSave = {
                     ...objToSave,
                     "commentaryId": commentaryDetails.commentaryId,
@@ -1672,6 +1669,7 @@ const Commentary = (props) => {
             }
             dispatch(addCommentaryScreenData(objToSave))
             setIsOverChange(undefined)
+            console.log("PlayerList Updated from Over change");
             setPlayerUpdateList([])
         }
     }, [isOverChange])
@@ -1735,6 +1733,7 @@ const Commentary = (props) => {
             }
             // }
             updateTempToMain()
+            console.log("PlayerList Updated from Updatation ");
             setPlayerUpdateList(undefined)
             checkInningsSwitch(RUN)
             dispatch(clearAddCommentaryScreenData())
