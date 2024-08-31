@@ -24,11 +24,11 @@ export const CommentaryScreen = ({
                 element.value > 0 ?
                     element.value : ""
                 : element.value
-            if (previousValue && previousValue.isWicket && previousValue.overCount === element.overCount) {
+            if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
                 return null;
             }
             let displayValue
-            if (isWicket && nextValue && nextValue.overCount === element.overCount) {
+            if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
                 const nextIsWicket = +nextValue?.isWicket !== 0
                 const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
                 const nextBallValue = nextBallTypeAdd ?
