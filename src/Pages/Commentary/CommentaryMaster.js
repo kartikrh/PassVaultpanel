@@ -44,7 +44,8 @@ function CommentaryMaster() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const commentaryId = location.state?.commentaryId || "0";
+    // const commentaryId = location.state?.commentaryId || "0";
+    const commentaryId = +localStorage.getItem('commentaryMasterId') || "0";
     const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
 
     const updateDisplayStatus = (displayStatus) => {
