@@ -24,7 +24,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                     const renderBalls = <Row>
                         <hr />
                         <Col xs={1} md={1} lg={1}>
-                            <div className="header-section">{`${+(ballInfo.overCount || 0)} : `}</div>
+                            <div className="header-section">{`${+(ballInfo?.overCount || 0)} : `}</div>
                         </Col>
                         <Col xs={11} md={11} lg={11}>
                             <Row>

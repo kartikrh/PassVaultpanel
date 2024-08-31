@@ -80,7 +80,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => { console.log({ ballHistory }); })
+    useEffect(() => { console.log({ playersToCheck: players?.[BATTING_TEAM] }); })
     const checkForOverSwitch = (ballcount) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
@@ -1020,7 +1020,7 @@ const Commentary = (props) => {
         // setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
-        if (currentBall.commentaryBallByBallId && (+currentBall.overCount === +teams[BATTING_TEAM].teamOver)) {
+        if (currentBall.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
                 setUndoInningsPopup(true)
@@ -1230,7 +1230,7 @@ const Commentary = (props) => {
                 setSaveToDb(true)
             }
         } else {
-            setUndoErrorModal(`OverCount in ball: ${+currentBall.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
+            setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
         }
     }
     const updatePlayerAfterUndoWicket = () => {
