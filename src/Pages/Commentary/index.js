@@ -299,7 +299,10 @@ const Index = () => {
     navigate("/addCommentary", { state: { userId: id } });
   };
   const handleDetailsClick = (id) => {
-    navigate("/commentaryMaster", { state: { commentaryId: id } });
+    // navigate("/commentaryMaster", { state: { commentaryId: id } });
+    localStorage.setItem('commentaryMasterId', "" + id);
+    const url = new URL(window.location.origin + "/commentaryMaster");
+    window.open(url.href, '_blank');
   };
   const handleUpdatePlayersClick = (details) => {
     // navigate("/updateCommentaryPlayer", {
