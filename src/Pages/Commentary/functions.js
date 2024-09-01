@@ -123,11 +123,11 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
 }
 
 export const getStrikeRate = (runs, balls) => {
-  return fixDecimal(((+runs / +balls) * 100), 2)
+  const strikeRate = fixDecimal(((+runs / +balls) * 100), 2)
+  return strikeRate
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
-  console.log({ runs, totalBalls, ballsPerOver });
   const economyToReturn = fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
   return isNaN(economyToReturn) ? 0 : economyToReturn
 }

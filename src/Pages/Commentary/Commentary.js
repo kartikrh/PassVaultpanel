@@ -81,6 +81,11 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
+        // console.log("Rates:", {
+        //     StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
+        //     NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
+        //     bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
+        // });
         console.log(
             {
                 isOriginalOver: _currentOver ? false : true,
@@ -1121,7 +1126,8 @@ const Commentary = (props) => {
                     updateBowler = { ...playersOnPitch[CURRENT_BOWLER], ...updateBowler }
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
                     updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
-                    updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.totalBalls, matchTypeDetails.ballsPerOver)
+                    updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
+                    updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
                     _setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
                     _setPlayers((prevValue) => {
                         const actualPlayerValue = prevValue || players
