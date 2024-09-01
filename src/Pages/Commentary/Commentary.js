@@ -80,7 +80,7 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => { console.log({ playersToCheck: players?.[BATTING_TEAM], playerUpdateList }); })
+    useEffect(() => { console.log({ playersToCheck: players?.[BATTING_TEAM] }); })
     const checkForOverSwitch = (ballcount) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
@@ -452,7 +452,6 @@ const Commentary = (props) => {
             const runToUpdate = valueOfNoBall + runs
             updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
             updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + valueOfNoBall
-            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
             updateBattingTeam["teamNoBallRuns"] = (updateBattingTeam.teamNoBallRuns || 0) + valueOfNoBall
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runToUpdate
@@ -462,10 +461,12 @@ const Commentary = (props) => {
             updateBall["ballRun"] = runs
             updateBall["ballExtraRun"] = valueOfNoBall
             if (type === NO_BALL) {
+                updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
                 updateBall["ballType"] = BALL_TYPE_NO_BALL
                 batter["batRun"] = (batter.batRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + valueOfNoBall
             } else if (type === NO_BALL_BYE) {
+                updateBowler["bowlerRun"] = valueOfNoBall
                 updateBall["ballType"] = BALL_TYPE_NO_BALL_BYE
                 updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) + runs
                 updateOver["bowlerByeBallRun"] = (currentOver.bowlerByeBallRun || 0) + runs
@@ -474,6 +475,7 @@ const Commentary = (props) => {
             }
             else if (type === NO_BALL_LEG_BYE) {
                 updateBall["ballType"] = BALL_TYPE_NO_BALL_LEG_BYE
+                updateBowler["bowlerRun"] = valueOfNoBall
                 updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runs
                 updateOver["totalLegByesRun"] = (currentOver.totalNoBallRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + runToUpdate
@@ -1146,7 +1148,6 @@ const Commentary = (props) => {
                         batter["batBall"] = (batter.batBall || 0) - 1
                         updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) - 1
                         updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - noBallValue
-                        updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - totalRunToDelete
                         updateBattingTeam["teamNoBallRuns"] = (updateBattingTeam.teamWideRuns || 0) - noBallValue
                         updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - totalRun
                         updateOver["totalNoball"] = (currentOver.totalNoball || 0) - 1
@@ -1155,15 +1156,18 @@ const Commentary = (props) => {
                         updatePartnership["totalRuns"] = updatePartnership.totalRuns - totalRunToDelete
                         // updatePartnership["extras"] = currentPartnership.extras - currentBall.ballExtraRun
                         if (type === BALL_TYPE_NO_BALL) {
+                            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - totalRunToDelete
                             batter["batRun"] = (batter.batRun || 0) - run
                             updatePartnership["extras"] = updatePartnership.extras - noBallValue
                         } else if (type === BALL_TYPE_NO_BALL_BYE) {
+                            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - noBallValue
                             updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) - UpdatedBallRun
                             updateOver["bowlerByeBallRun"] = (currentOver.bowlerByeBallRun || 0) - UpdatedBallRun
                             updatePartnership["extras"] = updatePartnership.extras - totalRunToDelete
                             updateBattingTeam["teamByRuns"] = (updateBattingTeam.teamByRuns || 0) - UpdatedBallRun
                         }
                         else if (type === BALL_TYPE_NO_BALL_LEG_BYE) {
+                            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - noBallValue
                             updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - UpdatedBallRun
                             updateOver["totalLegByesRun"] = (currentOver.totalNoBallRun || 0) - UpdatedBallRun
                             updatePartnership["extras"] = updatePartnership.extras - totalRunToDelete
@@ -1798,7 +1802,11 @@ const Commentary = (props) => {
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
-                toggle={() => { setChangePlayerList(undefined) }}
+                toggle={() => {
+                    setChangePlayerList(undefined)
+                    setIsSwapPlayer(undefined)
+                    setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
+                }}
                 playerList={changePlayerList}
                 selectPlayer={(newPlayerId) => {
                     if (isSwapPlayer) swapPlayer(newPlayerId)

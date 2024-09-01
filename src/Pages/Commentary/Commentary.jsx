@@ -266,7 +266,11 @@ export const CommentaryScreen = ({
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
                 <Row>
-                    <div className="team-name overs-header">Overs</div>
+                    <div className="team-name overs-header">
+                        {(teamDetails?.[BATTING_TEAM]?.teamMaxOver || teamDetails?.[BATTING_TEAM]?.teamTrialRuns) ?
+                            `DLS:-  ${teamDetails?.[BATTING_TEAM]?.teamMaxOver ? "Max Overs: " + teamDetails?.[BATTING_TEAM]?.teamMaxOver : ""} ${teamDetails?.[BATTING_TEAM]?.teamTrialRuns ? "Target: " + teamDetails?.[BATTING_TEAM]?.teamTrialRuns : ""} `
+                            : "Overs"}
+                    </div>
                 </Row>
                 <Row>
                     {generateRightSideOvers()}
