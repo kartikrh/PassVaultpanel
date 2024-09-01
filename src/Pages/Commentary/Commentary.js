@@ -500,6 +500,7 @@ const Commentary = (props) => {
 
             updateBowler["bowlerOver"] = updatedBowlerOver
             updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + 1
+            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runs
             updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
             updateOver["ballCount"] = (currentOver.ballCount || 0) + 1
             batter["batBall"] = (batter.batBall || 0) + 1
@@ -531,7 +532,6 @@ const Commentary = (props) => {
                 updateBattingTeam["teamLegByRuns"] = (updateBattingTeam.teamLegByRuns || 0) + runs
             }
             setBallCountForStrike(ballCountForStrike + 1)
-            checkForOverSwitch(updateOver.ballCount)
         }
         if (matchTypeDetails.isLimitedOvers && (target > 0)) {
             updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
@@ -898,7 +898,7 @@ const Commentary = (props) => {
             "bowlerOver": +(newBowler.bowlerOver || 0) + +(currentOver.ballCount / 10),
             "bowlerTotalBall": +(newBowler.bowlerTotalBall || 0) + +(currentOver.ballCount || 0),
             "bowlerRun": +(newBowler.bowlerRun || 0) + +(currentOver.totalRun || 0),
-            "bowlerEconomy": getEconomyRate(+currentBowler.bowlerRun + +currentOver.totalRun, currentOver, matchTypeDetails.ballsPerOver),
+            "bowlerEconomy": getEconomyRate(+currentOver.totalRun, +currentOver.ballCount, matchTypeDetails.ballsPerOver),
             "bowlerDotBall": +(newBowler.bowlerDotBall || 0) + +(currentOver.dotBall || 0),
             "bowlerFour": +(newBowler.bowlerFour || 0) + +(currentOver.totalFour || 0),
             "bowlerSix": +(newBowler.bowlerSix || 0) + +(currentOver.totalSix || 0),
