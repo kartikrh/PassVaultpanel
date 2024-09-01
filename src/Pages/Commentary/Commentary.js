@@ -80,7 +80,17 @@ const Commentary = (props) => {
     const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => { console.log({ playersToCheck: players?.[BATTING_TEAM] }); })
+    useEffect(() => {
+        console.log(
+            {
+                isOriginalOver: _currentOver ? false : true,
+                overId: (_currentOver || currentOver)?.overId,
+                ballOverId: currentBall?.overId,
+                OverBallCount: (_currentOver || currentOver)?.ballCount,
+                overCount: currentBall?.overCount
+            }
+        );
+    })
     const checkForOverSwitch = (ballcount) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
@@ -466,7 +476,7 @@ const Commentary = (props) => {
                 batter["batRun"] = (batter.batRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + valueOfNoBall
             } else if (type === NO_BALL_BYE) {
-                updateBowler["bowlerRun"] = valueOfNoBall
+                updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + valueOfNoBall
                 updateBall["ballType"] = BALL_TYPE_NO_BALL_BYE
                 updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) + runs
                 updateOver["bowlerByeBallRun"] = (currentOver.bowlerByeBallRun || 0) + runs
@@ -475,7 +485,7 @@ const Commentary = (props) => {
             }
             else if (type === NO_BALL_LEG_BYE) {
                 updateBall["ballType"] = BALL_TYPE_NO_BALL_LEG_BYE
-                updateBowler["bowlerRun"] = valueOfNoBall
+                updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + valueOfNoBall
                 updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runs
                 updateOver["totalLegByesRun"] = (currentOver.totalNoBallRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + runToUpdate
@@ -1673,7 +1683,6 @@ const Commentary = (props) => {
             }
             dispatch(addCommentaryScreenData(objToSave))
             setIsOverChange(undefined)
-            console.log("PlayerList Updated from Over change");
             setPlayerUpdateList([])
         }
     }, [isOverChange])
@@ -1715,7 +1724,6 @@ const Commentary = (props) => {
                 checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
             } else if (isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
                 && !isEqual(currentBall, commentaryDataToUpdate.commentaryBallByBallDetails)) {
-                console.log("Changed Ball History from here");
                 setBallHistory([].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]))
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
@@ -1737,7 +1745,6 @@ const Commentary = (props) => {
             }
             // }
             updateTempToMain()
-            console.log("PlayerList Updated from Updatation ");
             setPlayerUpdateList(undefined)
             checkInningsSwitch(RUN)
             dispatch(clearAddCommentaryScreenData())
