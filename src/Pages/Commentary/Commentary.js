@@ -1802,7 +1802,11 @@ const Commentary = (props) => {
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
-                toggle={() => { setChangePlayerList(undefined) }}
+                toggle={() => {
+                    setChangePlayerList(undefined)
+                    setIsSwapPlayer(undefined)
+                    setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
+                }}
                 playerList={changePlayerList}
                 selectPlayer={(newPlayerId) => {
                     if (isSwapPlayer) swapPlayer(newPlayerId)
