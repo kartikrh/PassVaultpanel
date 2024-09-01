@@ -127,6 +127,7 @@ export const getStrikeRate = (runs, balls) => {
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
+  console.log({ runs, totalBalls, ballsPerOver });
   const economyToReturn = fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
   return isNaN(economyToReturn) ? 0 : economyToReturn
 }
@@ -267,4 +268,10 @@ export const generateRemainingRuns = (team, ballsPerOver) => {
   const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
   const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
   return `${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.`
+}
+
+export const getNonExtraRuns = (over) => {
+  const toReturn = (+over?.totalRun || 0) - (+over?.totalWideRun || 0) - (+over?.totalNoBallRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
+  console.log("Non-Extra Runs: ", { toReturn });
+  return toReturn
 }
