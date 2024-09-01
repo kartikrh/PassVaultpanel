@@ -1049,7 +1049,7 @@ const Commentary = (props) => {
                     updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
                         currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
                 }
-                _setTeams({ ..._teams, [BATTING_TEAM]: updateBattingTeam })
+                _setTeams({ ...(_teams || teams), [BATTING_TEAM]: updateBattingTeam })
                 const objToSave = {
                     "commentaryId": commentaryDetails.commentaryId,
                     "commentaryTeams": [updateBattingTeam],

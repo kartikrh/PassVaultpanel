@@ -145,15 +145,15 @@ export const CommentaryScreen = ({
                     <Col className="current-score-header" xs={6} md={6} lg={6}>
                         <span className="current-team-name">{teamDetails?.[BATTING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="current-team-score">
-                            {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM].teamWicket || 0}
-                            &nbsp;({teamDetails?.[BATTING_TEAM].teamOver || 0})
+                            {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM]?.teamWicket || 0}
+                            &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
                     </Col>
                     <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
                         <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="bowling-team-score">
-                            {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM].teamWicket || 0}
-                            &nbsp;({teamDetails?.[BOWLING_TEAM].teamOver || 0})
+                            {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
+                            &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
                     </Col>
                 </Row>
