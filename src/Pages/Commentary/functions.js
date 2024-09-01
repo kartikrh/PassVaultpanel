@@ -123,7 +123,8 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
 }
 
 export const getStrikeRate = (runs, balls) => {
-  return fixDecimal(((+runs / +balls) * 100), 2)
+  const strikeRate = fixDecimal(((+runs / +balls) * 100), 2)
+  return strikeRate
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
@@ -267,4 +268,10 @@ export const generateRemainingRuns = (team, ballsPerOver) => {
   const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
   const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
   return `${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.`
+}
+
+export const getNonExtraRuns = (over) => {
+  const toReturn = (+over?.totalRun || 0) - (+over?.totalWideRun || 0) - (+over?.totalNoBallRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
+  console.log("Non-Extra Runs: ", { toReturn });
+  return toReturn
 }
