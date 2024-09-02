@@ -128,19 +128,21 @@ export const getStrikeRate = (runs, balls) => {
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
-  const economyToReturn = fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
+  let economyToReturn = 0
+  if (totalBalls > 0) economyToReturn = fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
+  console.log("Economy Rates: ", { runs, totalBalls, ballsPerOver, economyToReturn });
   return isNaN(economyToReturn) ? 0 : economyToReturn
 }
 
 export const getRequiredRunRate = (runs, currentOver, ballsPerOver, total, OverInInnings) => {
   runs = total - runs
   const remainingBalls = (((+OverInInnings - +currentOver?.over) * +ballsPerOver) - currentOver?.ballCount)
-  return fixDecimal(((+runs / +remainingBalls) * +ballsPerOver), 2)
+  return remainingBalls > 0 ? fixDecimal(((+runs / +remainingBalls) * +ballsPerOver), 2) : 0
 }
 
 export const getRunRate = (runs, currentOver, ballsPerOver) => {
   const totalBalls = ((+currentOver?.over * +ballsPerOver) + currentOver?.ballCount)
-  return fixDecimal(((+runs / totalBalls) * ballsPerOver), 2)
+  return totalBalls > 0 ? fixDecimal(((+runs / totalBalls) * ballsPerOver), 2) : 0
 }
 
 export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
