@@ -97,10 +97,6 @@ const PlayerSelection = forwardRef((props, ref) => {
     setIsOpen(true)
   }
 
-  // const onPrevious = async () => {
-  //   previous()
-  // }
-
   const onNext = async () => {
     if (data) {
       const isPlayPlayers = [];
@@ -382,12 +378,6 @@ const PlayerSelection = forwardRef((props, ref) => {
             </CardBody>
           </Card>
           <Container className='d-flex justify-content-between flex-wrap' >
-            {/* <Button
-              className='m-2'
-              id="caret" color="primary" onClick={onPrevious}>
-              <i className='bx bxs-left-arrow me-1'></i>
-              <span>Previous</span>
-            </Button> */}
             {isNext && (<Button
               className='m-2 d-flex align-items-center'
               id="caret" color="primary" onClick={onNext}>
