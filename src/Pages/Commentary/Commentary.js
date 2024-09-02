@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getEconomyRate, getNonExtraRuns, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getEconomyRate, getNonExtraRuns, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -884,8 +884,8 @@ const Commentary = (props) => {
             ...currentBowler,
             "bowlerOver": +(currentBowler.bowlerOver || 0) - +(currentOver.ballCount / 10),
             "bowlerTotalBall": +currentBowler.bowlerTotalBall - +currentOver.ballCount,
-            "bowlerRun": +currentBowler.bowlerRun - getNonExtraRuns(currentOver),
-            "bowlerEconomy": getEconomyRate(+currentBowler.bowlerRun - getNonExtraRuns(currentOver), +currentBowler.bowlerTotalBall - +currentOver.ballCount, matchTypeDetails.ballsPerOver),
+            "bowlerRun": +currentBowler.bowlerRun - getBowlerOnlyRuns(currentOver),
+            "bowlerEconomy": getEconomyRate(+currentBowler.bowlerRun - getBowlerOnlyRuns(currentOver), +currentBowler.bowlerTotalBall - +currentOver.ballCount, matchTypeDetails.ballsPerOver),
             "bowlerDotBall": +currentBowler.bowlerDotBall - +currentOver.dotBall,
             "bowlerFour": +currentBowler.bowlerFour - +currentOver.totalFour,
             "bowlerSix": +currentBowler.bowlerSix - +currentOver.totalSix,
@@ -902,8 +902,8 @@ const Commentary = (props) => {
             ...newBowler,
             "bowlerOver": +(newBowler.bowlerOver || 0) + +(currentOver.ballCount / 10),
             "bowlerTotalBall": +(newBowler.bowlerTotalBall || 0) + +(currentOver.ballCount || 0),
-            "bowlerRun": +(newBowler.bowlerRun || 0) + getNonExtraRuns(currentOver),
-            "bowlerEconomy": getEconomyRate(getNonExtraRuns(currentOver), +currentOver.ballCount, matchTypeDetails.ballsPerOver),
+            "bowlerRun": +(newBowler.bowlerRun || 0) + getBowlerOnlyRuns(currentOver),
+            "bowlerEconomy": getEconomyRate(getBowlerOnlyRuns(currentOver), +currentOver.ballCount, matchTypeDetails.ballsPerOver),
             "bowlerDotBall": +(newBowler.bowlerDotBall || 0) + +(currentOver.dotBall || 0),
             "bowlerFour": +(newBowler.bowlerFour || 0) + +(currentOver.totalFour || 0),
             "bowlerSix": +(newBowler.bowlerSix || 0) + +(currentOver.totalSix || 0),
@@ -1729,8 +1729,11 @@ const Commentary = (props) => {
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
-            } else if (isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
+            } else if (
+                currentBall.commentaryBallByBallId && commentaryDataToUpdate.commentaryBallByBallDetails
+                && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
                 && !isEqual(currentBall, commentaryDataToUpdate.commentaryBallByBallDetails)) {
+                console.log("Adding Ball by Ball history and changing it:", { currentBall, newBall: commentaryDataToUpdate.commentaryBallByBallDetails });
                 setBallHistory([].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]))
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
