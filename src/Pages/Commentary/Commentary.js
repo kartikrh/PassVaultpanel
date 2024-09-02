@@ -454,6 +454,7 @@ const Commentary = (props) => {
             const actualPrevData = isEmpty(prevValue) ? teams : prevValue
             return { ...actualPrevData, [BATTING_TEAM]: { ...actualPrevData[BATTING_TEAM], ...updateBattingTeam } }
         })
+        // TODO CHeck 1
         setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall } })
         _setCurrentOver((prevValue) => {
             const actualPrevData = isEmpty(prevValue) ? currentOver : prevValue
@@ -528,7 +529,7 @@ const Commentary = (props) => {
                 updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + valueOfNoBall
                 updateBall["ballType"] = BALL_TYPE_NO_BALL_BYE
                 updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) + runs
-                updateOver["bowlerByeBallRun"] = (currentOver.bowlerByeBallRun || 0) + runs
+                updateOver["totalByesRun"] = (currentOver.totalByesRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + runToUpdate
                 updateBattingTeam["teamByRuns"] = (updateBattingTeam.teamByRuns || 0) + runs
             }
@@ -784,7 +785,7 @@ const Commentary = (props) => {
         })
         _setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
         _setCurrentOver({ ...currentOver, ...updateOver })
-        setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall, } })
+        setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall } })
         changePlayer(isOnStrikeWicket ? ON_STRIKE : NON_STRIKE)
         setCurrentWicket(updateWicket)
         setShowWicketModal(undefined)
@@ -1971,7 +1972,7 @@ const Commentary = (props) => {
             toggle={() => setShowRretiredHurt(false)}
             onsubmit={onRetiredHurtClick}
             onPitchplayers={onPitchPlayers}
-            playerList={players[BATTING_TEAM]}
+            playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
         />}
         {superOverModal &&
             <SuperOverModal
