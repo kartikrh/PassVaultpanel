@@ -1972,7 +1972,7 @@ const Commentary = (props) => {
             toggle={() => setShowRretiredHurt(false)}
             onsubmit={onRetiredHurtClick}
             onPitchplayers={onPitchPlayers}
-            playerList={players[BATTING_TEAM]}
+            playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
         />}
         {superOverModal &&
             <SuperOverModal
