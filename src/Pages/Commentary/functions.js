@@ -264,7 +264,7 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTe
 
 export const generateRemainingRuns = (team, ballsPerOver) => {
   const totalOverRemaining = team.teamMaxOver - Math.floor(team.teamOver || 0)
-  const ballsInCurrentOver = (team.teamOver || 0) * 10 % 10
+  const ballsInCurrentOver = (team.teamOve || 0) * 10 % 10
   const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
   const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
   return `${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.`
@@ -273,5 +273,11 @@ export const generateRemainingRuns = (team, ballsPerOver) => {
 export const getNonExtraRuns = (over) => {
   const toReturn = (+over?.totalRun || 0) - (+over?.totalWideRun || 0) - (+over?.totalNoBallRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
   console.log("Non-Extra Runs: ", { toReturn });
+  return toReturn
+}
+
+export const getBowlerOnlyRuns = (over) => {
+  const toReturn = (+over?.totalRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
+  console.log("Bowler only Runs: ", { toReturn });
   return toReturn
 }
