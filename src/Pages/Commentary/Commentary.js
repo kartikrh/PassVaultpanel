@@ -96,6 +96,7 @@ const Commentary = (props) => {
             }
         );
     })
+
     const checkForOverSwitch = (ballcount) => {
         if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
     }
@@ -211,38 +212,6 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
-
-    const setAllPlayerToNull = () => {
-        const playersToChange = []
-        players[BATTING_TEAM].map((player) => {
-            if (player.commentaryPlayerId === onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) {
-                playersToChange.push({ ...onPitchPlayers[ON_STRIKE], "isPlay": null, "onStrike": null })
-                return player
-            }
-            if (player.commentaryPlayerId === onPitchPlayers[NON_STRIKE]?.commentaryPlayerId) {
-                playersToChange.push({ ...onPitchPlayers[NON_STRIKE], "isPlay": null, "onStrike": null })
-                return player
-            }
-            else if (player.isPlay || player.onStrike) {
-                playersToChange.push({ ...player, "isPlay": null, "onStrike": null })
-                return player
-            }
-            return player
-        })
-        players[BOWLING_TEAM].map((player) => {
-            if (player.commentaryPlayerId === onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
-                playersToChange.push({ ...onPitchPlayers[CURRENT_BOWLER], "isPlay": null, "onStrike": null })
-                return player
-            }
-            else if (player.isPlay || player.onStrike) {
-                playersToChange.push({ ...player, "isPlay": null, "onStrike": null })
-                return player
-            }
-            return player
-        })
-        return playersToChange
-    }
-
     const handleInningsUpdate = (battingTeamId) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
         propsData.commentaryData?.commentaryTeams?.forEach(team => {
@@ -276,6 +245,36 @@ const Commentary = (props) => {
         setRedirectOnScreenChange(true)
     }
 
+    const setAllPlayerToNull = () => {
+        const playersToChange = []
+        players[BATTING_TEAM].map((player) => {
+            if (player.commentaryPlayerId === onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) {
+                playersToChange.push({ ...onPitchPlayers[ON_STRIKE], "isPlay": null, "onStrike": null })
+                return player
+            }
+            if (player.commentaryPlayerId === onPitchPlayers[NON_STRIKE]?.commentaryPlayerId) {
+                playersToChange.push({ ...onPitchPlayers[NON_STRIKE], "isPlay": null, "onStrike": null })
+                return player
+            }
+            else if (player.isPlay || player.onStrike) {
+                playersToChange.push({ ...player, "isPlay": null, "onStrike": null })
+                return player
+            }
+            return player
+        })
+        players[BOWLING_TEAM].map((player) => {
+            if (player.commentaryPlayerId === onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
+                playersToChange.push({ ...onPitchPlayers[CURRENT_BOWLER], "isPlay": null, "onStrike": null })
+                return player
+            }
+            else if (player.isPlay || player.onStrike) {
+                playersToChange.push({ ...player, "isPlay": null, "onStrike": null })
+                return player
+            }
+            return player
+        })
+        return playersToChange
+    }
     const callWicketToDB = (currentBallByBallID) => {
         const newCurrentBall = currentBall
         newCurrentBall["commentaryBallByBallId"] = currentBallByBallID
