@@ -281,3 +281,7 @@ export const getBowlerOnlyRuns = (over) => {
   console.log("Bowler only Runs: ", { toReturn });
   return toReturn
 }
+
+export const getNonNegativeValue = (value) => {
+  return value > 0 ? value : 0
+}

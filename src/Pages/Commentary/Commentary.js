@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getEconomyRate, getNonExtraRuns, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getEconomyRate, getNonExtraRuns, getNonNegativeValue, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -345,15 +345,15 @@ const Commentary = (props) => {
         updateBall["ballRun"] = run
         updateBall["batStrikeId"] = onPitchPlayers[ON_STRIKE].commentaryPlayerId
         updateBall["batNonStrikeId"] = onPitchPlayers[NON_STRIKE].commentaryPlayerId
-        updateBatter["batRun"] = (batter.batRun || 0) + run
-        updateBatter["batBall"] = (batter.batBall || 0) + ball
+        updateBatter["batRun"] = getNonNegativeValue((batter.batRun || 0) + run)
+        updateBatter["batBall"] = getNonNegativeValue((batter.batBall || 0) + ball)
         updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
-        updateBowler["bowlerRun"] = (+bowler.bowlerRun || 0) + run
-        updateBowler["bowlerTotalBall"] = (+bowler.bowlerTotalBall || 0) + ball
+        updateBowler["bowlerRun"] = getNonNegativeValue((+bowler.bowlerRun || 0) + run)
+        updateBowler["bowlerTotalBall"] = getNonNegativeValue((+bowler.bowlerTotalBall || 0) + ball)
         updateBowler["bowlerOver"] = updatedBowlerOver
         updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-        updatePartnership["totalRuns"] = (syncPartnership.totalRuns || 0) + run
-        updatePartnership["totalBalls"] = (syncPartnership.totalBalls || 0) + ball
+        updatePartnership["totalRuns"] = getNonNegativeValue((syncPartnership.totalRuns || 0) + run)
+        updatePartnership["totalBalls"] = getNonNegativeValue((syncPartnership.totalBalls || 0) + ball)
         updateOver["ballCount"] = (syncOver.ballCount || 0) + ball
         updateOver["totalRun"] = (syncOver.totalRun || 0) + run
         updateBattingTeam["teamWicket"] = (+syncTeam[BATTING_TEAM].teamWicket || 0)
@@ -1047,8 +1047,8 @@ const Commentary = (props) => {
             else if (currentBall.ballType === BALL_TYPE_PANELTY_RUN) {
                 const updateBattingTeam = teams[BATTING_TEAM]
                 const run = currentBall.ballExtraRun
-                updateBattingTeam["teamScore"] = (+teams[BATTING_TEAM].teamScore || 0) - run
-                updateBattingTeam["teamPenaltyRuns"] = (+teams[BATTING_TEAM].teamPenaltyRuns || 0) - run
+                updateBattingTeam["teamScore"] = getNonNegativeValue((+teams[BATTING_TEAM].teamScore || 0) - run)
+                updateBattingTeam["teamPenaltyRuns"] = getNonNegativeValue((+teams[BATTING_TEAM].teamPenaltyRuns || 0) - run)
                 updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver }, matchTypeDetails.ballsPerOver)
                 if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                     updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
@@ -1103,24 +1103,24 @@ const Commentary = (props) => {
                             updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) - 1
                         }
                     }
-                    updateBatter["batRun"] = (batter.batRun || 0) - run
-                    updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - run
-                    updatePartnership["totalRuns"] = (updatePartnership?.totalRuns || 0) - run
-                    updateOver["totalRun"] = (currentOver.totalRun || 0) - run
-                    updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
+                    updateBatter["batRun"] = getNonNegativeValue((batter.batRun || 0) - run)
+                    updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - run)
+                    updatePartnership["totalRuns"] = getNonNegativeValue((updatePartnership?.totalRuns || 0) - run)
+                    updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - run)
+                    updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - run)
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                         updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
                             currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
                     }
                     if (currentBall.ballFour === 1 && currentBall.ballIsBoundry) {
-                        updateBatter["batFour"] = (batter.batFour || 0) - 1
-                        updateOver["totalFour"] = (currentOver.totalFour || 0) - 1
-                        updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) - 1
+                        updateBatter["batFour"] = getNonNegativeValue((batter.batFour || 0) - 1)
+                        updateOver["totalFour"] = getNonNegativeValue((currentOver.totalFour || 0) - 1)
+                        updateBowler["bowlerFour"] = getNonNegativeValue((bowler.bowlerFour || 0) - 1)
 
                     } else if (currentBall.ballSix === 1 && currentBall.ballIsBoundry) {
-                        updateBatter["batSix"] = (batter.batSix || 0) - 1
-                        updateOver["totalSix"] = (currentOver.totalSix || 0) - 1
-                        updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) - 1
+                        updateBatter["batSix"] = getNonNegativeValue((batter.batSix || 0) - 1)
+                        updateOver["totalSix"] = getNonNegativeValue((currentOver.totalSix || 0) - 1)
+                        updateBowler["bowlerSix"] = getNonNegativeValue((bowler.bowlerSix || 0) - 1)
                     }
                     updateBatter = { ...playersOnPitch[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
                     updateBowler = { ...playersOnPitch[CURRENT_BOWLER], ...updateBowler }
@@ -1147,75 +1147,74 @@ const Commentary = (props) => {
                     _setCurrentOver({ ...currentOver, ...updateOver, })
                 } else {
                     if (type === BALL_TYPE_WIDE) {
-                        updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) - 1
-                        updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) - totalRun
-                        updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - totalRun
+                        updateBowler["bowlerWideBall"] = getNonNegativeValue((bowler.bowlerWideBall || 0) - 1)
+                        updateBowler["bowlerWideBallRun"] = getNonNegativeValue((bowler.bowlerWideBallRun || 0) - totalRun)
+                        updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - totalRun)
                         updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-                        updateBattingTeam["teamWideRuns"] = (updateBattingTeam.teamWideRuns || 0) - totalRun
-                        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - totalRun
-                        updateOver["totalWideBall"] = (currentOver.totalWideBall || 0) - 1
-                        updateOver["totalWideRun"] = (currentOver.totalWideRun || 0) - totalRun
-                        updateOver["totalRun"] = (currentOver.totalRun || 0) - totalRun
-                        updatePartnership["totalRuns"] = updatePartnership.totalRuns - totalRun
-                        updatePartnership["extras"] = updatePartnership.extras - totalRun
+                        updateBattingTeam["teamWideRuns"] = getNonNegativeValue((updateBattingTeam.teamWideRuns || 0) - totalRun)
+                        updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - totalRun)
+                        updateOver["totalWideBall"] = getNonNegativeValue((currentOver.totalWideBall || 0) - 1)
+                        updateOver["totalWideRun"] = getNonNegativeValue((currentOver.totalWideRun || 0) - totalRun)
+                        updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - totalRun)
+                        updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - totalRun)
+                        updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRun)
                     } else if (type === BALL_TYPE_NO_BALL || type === BALL_TYPE_NO_BALL_BYE || type === BALL_TYPE_NO_BALL_LEG_BYE) {
                         const noBallValue = +currentBall.ballExtraRun
                         const UpdatedBallRun = +currentBall.ballRun
                         const totalRunToDelete = UpdatedBallRun + noBallValue
-                        batter["batBall"] = (batter.batBall || 0) - 1
-                        updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) - 1
-                        updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - noBallValue
-                        updateBattingTeam["teamNoBallRuns"] = (updateBattingTeam.teamWideRuns || 0) - noBallValue
-                        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - totalRun
-                        updateOver["totalNoball"] = (currentOver.totalNoball || 0) - 1
-                        updateOver["totalNoBallRun"] = (currentOver.totalNoBallRun || 0) - noBallValue
-                        updateOver["totalRun"] = (currentOver.totalRun || 0) - totalRunToDelete
-                        updatePartnership["totalRuns"] = updatePartnership.totalRuns - totalRunToDelete
+                        batter["batBall"] = getNonNegativeValue((batter.batBall || 0) - 1)
+                        updateBowler["bowlerNoBall"] = getNonNegativeValue((bowler.bowlerNoBall || 0) - 1)
+                        updateBowler["bowlerNoBallRun"] = getNonNegativeValue((bowler.bowlerNoBallRun || 0) - noBallValue)
+                        updateBattingTeam["teamNoBallRuns"] = getNonNegativeValue((updateBattingTeam.teamWideRuns || 0) - noBallValue)
+                        updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - totalRun)
+                        updateOver["totalNoball"] = getNonNegativeValue((currentOver.totalNoball || 0) - 1)
+                        updateOver["totalNoBallRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - noBallValue)
+                        updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - totalRunToDelete)
+                        updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - totalRunToDelete)
                         // updatePartnership["extras"] = currentPartnership.extras - currentBall.ballExtraRun
                         if (type === BALL_TYPE_NO_BALL) {
-                            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - totalRunToDelete
-                            batter["batRun"] = (batter.batRun || 0) - run
-                            updatePartnership["extras"] = updatePartnership.extras - noBallValue
+                            updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - totalRunToDelete)
+                            batter["batRun"] = getNonNegativeValue((batter.batRun || 0) - run)
+                            updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - noBallValue)
                         } else if (type === BALL_TYPE_NO_BALL_BYE) {
-                            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - noBallValue
-                            updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) - UpdatedBallRun
-                            updateOver["bowlerByeBallRun"] = (currentOver.bowlerByeBallRun || 0) - UpdatedBallRun
-                            updatePartnership["extras"] = updatePartnership.extras - totalRunToDelete
-                            updateBattingTeam["teamByRuns"] = (updateBattingTeam.teamByRuns || 0) - UpdatedBallRun
+                            updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - noBallValue)
+                            updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - UpdatedBallRun)
+                            updateOver["bowlerByeBallRun"] = getNonNegativeValue((currentOver.bowlerByeBallRun || 0) - UpdatedBallRun)
+                            updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
+                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((updateBattingTeam.teamByRuns || 0) - UpdatedBallRun)
                         }
                         else if (type === BALL_TYPE_NO_BALL_LEG_BYE) {
-                            updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) - noBallValue
-                            updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) - UpdatedBallRun
-                            updateOver["totalLegByesRun"] = (currentOver.totalNoBallRun || 0) - UpdatedBallRun
-                            updatePartnership["extras"] = updatePartnership.extras - totalRunToDelete
-                            updateBattingTeam["teamLegByRuns"] = (updateBattingTeam.teamLegByRuns || 0) - UpdatedBallRun
+                            updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - noBallValue)
+                            updateBowler["bowlerNoBallRun"] = getNonNegativeValue((bowler.bowlerNoBallRun || 0) - UpdatedBallRun)
+                            updateOver["totalLegByesRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - UpdatedBallRun)
+                            updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
+                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((updateBattingTeam.teamLegByRuns || 0) - UpdatedBallRun)
                         }
                     }
                     else {
-                        batter["batBall"] = (batter.batBall || 0) - 1
-                        updateBowler["bowlerOver"] = ((+bowler.bowlerOver || 0) - 0.1).toFixed(1)
-                        updateBattingTeam["teamOver"] =
-                            ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
-                        updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
-                        updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
-                        updateOver["totalRun"] = (currentOver.totalRun || 0) - run
-                        updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) - run
-                        updatePartnership["totalRuns"] = updatePartnership.totalRuns - run
-                        updatePartnership["extras"] = updatePartnership.extras - run
-                        updatePartnership["totalBalls"] = updatePartnership.totalBalls - 1
+                        batter["batBall"] = getNonNegativeValue((batter.batBall || 0) - 1)
+                        updateBowler["bowlerOver"] = getNonNegativeValue(((+bowler.bowlerOver || 0) - 0.1).toFixed(1))
+                        updateBattingTeam["teamOver"] = getNonNegativeValue(((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1))
+                        updateBowler["bowlerTotalBall"] = getNonNegativeValue((bowler.bowlerTotalBall || 0) - 1)
+                        updateOver["ballCount"] = getNonNegativeValue((currentOver.ballCount || 0) - 1)
+                        updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - run)
+                        updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - run)
+                        updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - run)
+                        updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - run)
+                        updatePartnership["totalBalls"] = getNonNegativeValue(updatePartnership.totalBalls - 1)
                         if (type === BALL_TYPE_BYE) {
-                            updateBowler["bowlerByeBall"] = (bowler.bowlerByeBall || 0) - 1
-                            updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) - run
-                            updateOver["totalByesBall"] = (currentOver.totalByesBall || 0) - 1
-                            updateOver["totalByesRun"] = (currentOver.totalByesRun || 0) - run
-                            updateBattingTeam["teamByRuns"] = (updateBattingTeam.teamByRuns || 0) - run
+                            updateBowler["bowlerByeBall"] = getNonNegativeValue((bowler.bowlerByeBall || 0) - 1)
+                            updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - run)
+                            updateOver["totalByesBall"] = getNonNegativeValue((currentOver.totalByesBall || 0) - 1)
+                            updateOver["totalByesRun"] = getNonNegativeValue((currentOver.totalByesRun || 0) - run)
+                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((updateBattingTeam.teamByRuns || 0) - run)
                         }
                         else if (type === BALL_TYPE_LEG_BYE) {
-                            updateBowler["bowlerLegByeBall"] = (bowler.bowlerLegByeBall || 0) - 1
-                            updateBowler["bowlerLegByeBallRun"] = (bowler.bowlerLegByeBallRun || 0) - run
-                            updateOver["totalLegByesBall"] = (currentOver.totalLegByesBall || 0) - 1
-                            updateOver["totalLegByesRun"] = (currentOver.totalLegByesRun || 0) - run
-                            updateBattingTeam["teamLegByRuns"] = (updateBattingTeam.teamLegByRuns || 0) - run
+                            updateBowler["bowlerLegByeBall"] = getNonNegativeValue((bowler.bowlerLegByeBall || 0) - 1)
+                            updateBowler["bowlerLegByeBallRun"] = getNonNegativeValue((bowler.bowlerLegByeBallRun || 0) - run)
+                            updateOver["totalLegByesBall"] = getNonNegativeValue((currentOver.totalLegByesBall || 0) - 1)
+                            updateOver["totalLegByesRun"] = getNonNegativeValue((currentOver.totalLegByesRun || 0) - run)
+                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((updateBattingTeam.teamLegByRuns || 0) - run)
                         }
                     }
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
