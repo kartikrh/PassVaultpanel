@@ -6,7 +6,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
   TAB_PREDICTOR_LOGS,
@@ -33,6 +33,7 @@ const Index = () => {
   const [resBodyData, setResBodyData] = useState(null);
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -40,18 +41,36 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const commentaryId = queryParams.get('commentaryId') || 0;
+
   const navigate = useNavigate();
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    await axiosInstance
-      .post(`/admin/log/predictorLogs`, {
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+      page: currentPage+1,
+      limit: pageSize,
+    }
+    if(commentaryId !== 0) {
+      payload = {
         ...(latestValueFromTable || tableActions),
-        ...dateRange,
         page: currentPage+1,
         limit: pageSize,
-      })
+        commentaryId: commentaryId
+      };
+    }
+    if (isSearch) {
+      payload = {
+        ...payload,
+        ...dateRange,
+      };
+    }
+    await axiosInstance
+      .post(`/admin/log/predictorLogs`, payload)
       .then((response) => {
         const logsData = response?.result?.data;
         let logsDataIdList = [];
@@ -74,6 +93,14 @@ const Index = () => {
     }
   };
   
+  useEffect(()=>{
+    if(commentaryId !== 0){
+      setIsSearch(false)
+    } else {
+      setIsSearch(true)
+    }
+  },[commentaryId])
+
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/log/eventTypeList`, { isActive: true })
@@ -213,13 +240,13 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Predictor Logs",
-    dateRange: true,
     eventTypeSelect: true,
     competitionsSelect: true,
     commentarySelect: true,
     resetButton: true,
     reloadButton: true,
     isServerPagination: true,
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -228,7 +255,7 @@ const Index = () => {
     }
     fetchData();
     fetchEventTypeData();
-  }, [currentPage, pageSize]);
+  }, [isSearch, currentPage, pageSize]);
 
   const handleReset = (value) => {
     fetchData();
@@ -266,6 +293,8 @@ const Index = () => {
             serverTotal={total}
             setServerCurrentPage={setCurrentPage}
             setServerPageSize={setPageSize}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

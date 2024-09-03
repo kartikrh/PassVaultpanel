@@ -107,6 +107,7 @@ import CommentaryLogs from "../Pages/CommentaryLogs";
 import ThirdpartyLogs from "../Pages/ThirdpartyLogs";
 import ErrorLogs from "../Pages/ErrorLogs";
 import PredictorLogs from "../Pages/PredictorLogs";
+import UndoLogs from "../Pages/UndoLogs";
 
 const authProtectedRoutes = [
   //dashboard
@@ -198,6 +199,7 @@ const authProtectedRoutes = [
   { path: "/thirdpartyLogs", component: <ThirdpartyLogs /> },
   { path: "/errorLogs", component: <ErrorLogs /> },
   { path: "/predictorLogs", component: <PredictorLogs /> },
+  { path: "/undoLogs", component: <UndoLogs /> },
 
   {
     path: "/changePassword",
