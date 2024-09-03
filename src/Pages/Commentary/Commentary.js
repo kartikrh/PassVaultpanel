@@ -88,6 +88,13 @@ const Commentary = (props) => {
         //     // currentBall,
         //     // currentOver
         // });
+        // console.log({
+        //     onPitchPlayers,
+        //     currentPartnership,
+        //     partnershipHistory,
+        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
+        // });
+
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
@@ -1559,7 +1566,7 @@ const Commentary = (props) => {
         overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
         const partnershipData = propsData.commentaryData.commentaryPartnership || []
         let currentBallToUpdate = currentBall.commentaryBallByBallId ? currentBall : _.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined
-        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : isEmpty(partnershipData) ?
+        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : !isEmpty(partnershipData) ?
             [{ ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }] : partnershipData
         partnershipHistoryData = _.orderBy(partnershipHistoryData, ["commentaryPartnershipId"], ["asc"])
         const partnershipDetails = {
@@ -1781,9 +1788,9 @@ const Commentary = (props) => {
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
             if (
-                (isEmpty(currentPartnership) || !currentPartnership?.commentaryPartnershipId || (+currentPartnership?.commentaryPartnershipId === 0))
+                (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId === 0)))
                 &&
-                (!isEmpty(partnershipFromApi) || partnershipFromApi?.commentaryPartnershipId || (+partnershipFromApi?.commentaryPartnershipId !== 0))) {
+                (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId !== 0)))) {
                 const newPartnership = {
                     ...commentaryDataToUpdate.commentaryPartnershipDetails,
                     "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId)
