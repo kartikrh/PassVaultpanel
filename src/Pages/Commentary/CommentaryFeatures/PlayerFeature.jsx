@@ -22,9 +22,6 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData }) =>
                 {playerList?.map((playerInfo, index) => {
                     return <Row>
                         <hr />
-                        <Col xs={6} md={4} lg={4}>
-                            <div className="header-section">{(playerInfo.playerName || "")}</div>
-                        </Col>
                         <Col xs={11} md={11} lg={11}>
                             <Row>
                                 <FieldRenderer

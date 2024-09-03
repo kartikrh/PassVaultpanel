@@ -1,6 +1,7 @@
 import { Col, Input } from "reactstrap"
 import { COUNTER, SELECT, TEXT, SWITCH } from "../Const"
 import Select from "react-select";
+import "./CustomCss.css"
 
 export const FieldRenderer = ({ fields, value, onChange, index }) => {
     return fields.map((field, index) => {
@@ -37,7 +38,7 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     onChange={(e) => onChange(field, e.target.value)}
                 />}
                 {field.type === COUNTER && <Input
-                    className="form-control small-text-fields"
+                    className={`form-control ${field.className} small-text-fields`}
                     type="number"
                     step={1}
                     min={0}

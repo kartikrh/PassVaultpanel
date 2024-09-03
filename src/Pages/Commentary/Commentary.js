@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, RUN_OUT, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getEconomyRate, getNonExtraRuns, getNonNegativeValue, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getBowlerRelatedWickets, getEconomyRate, getNonNegativeValue, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -63,7 +63,6 @@ const Commentary = (props) => {
     const [redirectOnScreenChange, setRedirectOnScreenChange] = useState(undefined)
     const [showUpdateInnings, setShowUpdateInnings] = useState(undefined)
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
-    // const [showSwitchBatterModal, setShowSwitchBatterModal] = useState(undefined)
     const [isUndoBall, setIsUndoBall] = useState(undefined)
     const [undoErrorModal, setUndoErrorModal] = useState(undefined)
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
@@ -87,6 +86,16 @@ const Commentary = (props) => {
         //     // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
         //     // currentBall,
         //     // currentOver
+        // });
+        // console.log({
+        //     battingTeamPlayers: players?.[BATTING_TEAM],
+        //     partnership: {
+        //         batter1Id: currentPartnership?.["batter1Id"],
+        //         batter1Name: currentPartnership?.["batter1Name"],
+        //         batter2Id: currentPartnership?.["batter2Id"],
+        //         batter2Name: currentPartnership?.["batter2Name"]
+        //     },
+        //     bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // });
         // console.log({
         //     onPitchPlayers,
@@ -757,9 +766,8 @@ const Commentary = (props) => {
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateOver["totalWicket"] = (currentOver.totalWicket || 0) + 1
         updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) + 1
-        if ((wicketData.wicketType !== RUN_OUT) && (wicketData.wicketType !== RETIRED_OUT)) {
+        if (!LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(wicketData.wicketType))
             updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) + 1
-        }
         updateBall["ballPlayerId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterId"] = wicketPlayerDetails.commentaryPlayerId
         updateWicket["batterName"] = wicketPlayerDetails.playerName
@@ -947,7 +955,7 @@ const Commentary = (props) => {
             "bowlerNoBallRun": +currentBowler.bowlerNoBallRun - +currentOver.totalNoBallRun,
             "bowlerByeBallRun": +currentBowler.bowlerByeBallRun - +currentOver.totalByesRun,
             "bowlerLegByeBallRun": +currentBowler.bowlerLegByeBallRun - +currentOver.totalLegByesRun,
-            "bowlerTotalWicket": +currentBowler.bowlerTotalWicket - +currentOver.totalWicket,
+            "bowlerTotalWicket": +currentBowler.bowlerTotalWicket - getBowlerRelatedWickets(currentOver?.overId, ballHistory),
             "isPlay": null
         }
         const updatedNewBowler = {
@@ -965,7 +973,7 @@ const Commentary = (props) => {
             "bowlerNoBallRun": +(newBowler.bowlerNoBallRun || 0) + +(currentOver.totalNoBallRun || 0),
             "bowlerByeBallRun": +(newBowler.bowlerByeBallRun || 0) + +(currentOver.totalByesRun || 0),
             "bowlerLegByeBallRun": +(newBowler.bowlerLegByeBallRun || 0) + +(currentOver.totalLegByesRun || 0),
-            "bowlerTotalWicket": +(newBowler.bowlerTotalWicket || 0) + +(currentOver.totalWicket || 0),
+            "bowlerTotalWicket": +(newBowler.bowlerTotalWicket || 0) + getBowlerRelatedWickets(currentOver?.overId, ballHistory),
             "isPlay": true
         }
         const UpdatedOver = {
@@ -1085,7 +1093,6 @@ const Commentary = (props) => {
             dispatch(addCommentaryScreenData(objToSave))
         }
         setCurrentWicket(undefined)
-        // setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
@@ -1126,9 +1133,8 @@ const Commentary = (props) => {
                     undoType = WICKET
                     updateOver["totalWicket"] = (currentOver.totalWicket || 0) - 1
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
-                    if ((currentBall.ballWicketType !== RUN_OUT) && (currentBall.ballWicketType !== RETIRED_OUT)) {
+                    if (!LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(currentBall.ballWicketType))
                         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
-                    }
                     updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2] }
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
@@ -1863,7 +1869,6 @@ const Commentary = (props) => {
             anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || superOverModal || showRretiredHurt || isPaneltyPopup
                 || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
-                // || showSwitchBatterModal 
                 || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
         />
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
@@ -1980,6 +1985,7 @@ const Commentary = (props) => {
             onsubmit={onRetiredHurtClick}
             onPitchplayers={onPitchPlayers}
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
+            allBattingPlayers={players[BATTING_TEAM]}
         />}
         {superOverModal &&
             <SuperOverModal
