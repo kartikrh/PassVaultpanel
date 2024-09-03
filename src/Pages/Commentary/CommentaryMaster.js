@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, TAB_COMMENTARY, WARNING } from '../../components/Common/Const';
+import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, SUCCESS, TAB_COMMENTARY, WARNING } from '../../components/Common/Const';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -54,9 +54,23 @@ function CommentaryMaster() {
             "displayStatus": displayStatus
         }))
     }
+
+    const saveUserInfo = async () => {
+        setIsDataLoading(true)
+        await axiosInstance.post('/admin/commentaryScoringLogs/save', { commentaryId })
+            .then(async (response) => {
+                setIsDataLoading(false)
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsDataLoading(false)
+            });
+    };
+
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchData(commentaryId);
+            saveUserInfo(commentaryId);
         }
     }, [commentaryId]);
 
