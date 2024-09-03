@@ -71,21 +71,21 @@ function ScoringLogs() {
       dataIndex: "commentaryId",
       key: "commentaryId",
       sort: true,
-      style: { width: "10%" },
+      style: { width: "15%" },
     },
     {
       title: "User Id",
       dataIndex: "userId",
       key: "userId",
       sort: true,
-      style: { width: "10%" },
+      style: { width: "15%" },
     },
     {
       title: "User Name",
       dataIndex: "userName",
       key: "userName",
       sort: true,
-      style: { width: "10%" },
+      style: { width: "70%" },
     },
   ];
 
