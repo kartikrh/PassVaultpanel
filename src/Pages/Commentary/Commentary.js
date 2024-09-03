@@ -87,22 +87,22 @@ const Commentary = (props) => {
         //     // currentBall,
         //     // currentOver
         // });
-        // console.log({
-        //     battingTeamPlayers: players?.[BATTING_TEAM],
-        //     partnership: {
-        //         batter1Id: currentPartnership?.["batter1Id"],
-        //         batter1Name: currentPartnership?.["batter1Name"],
-        //         batter2Id: currentPartnership?.["batter2Id"],
-        //         batter2Name: currentPartnership?.["batter2Name"]
-        //     },
-        //     bowlingTeamPlayers: players?.[BOWLING_TEAM],
-        // });
-        // console.log({
-        //     onPitchPlayers,
-        //     currentPartnership,
-        //     partnershipHistory,
-        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
-        // });
+        console.log({
+            battingTeamPlayers: players?.[BATTING_TEAM],
+            partnership: {
+                batter1Id: currentPartnership?.["batter1Id"],
+                batter1Name: currentPartnership?.["batter1Name"],
+                batter2Id: currentPartnership?.["batter2Id"],
+                batter2Name: currentPartnership?.["batter2Name"]
+            },
+            bowlingTeamPlayers: players?.[BOWLING_TEAM],
+        });
+        console.log({
+            onPitchPlayers,
+            currentPartnership,
+            partnershipHistory,
+            PartnershiId: currentPartnership?.commentaryPartnershipId,
+        });
 
         // console.log(
         //     {
@@ -926,7 +926,16 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Batter Switched"
-            },
+            }
+        }
+        if (currentPartnership?.commentaryPartnershipId && +currentPartnership?.commentaryPartnershipId !== 0) {
+            const updatedPartnership = {
+                ...currentPartnership,
+                batter1Name: updatedOnPitchPlayer?.[ON_STRIKE]?.playerName,
+                batter2Name: updatedOnPitchPlayer?.[NON_STRIKE]?.playerName
+            }
+            objToSave["commentaryPartnership"] = updatedPartnership
+            _setCurrentPartnership(updatedPartnership)
         }
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [teamType]: listToUpdate })
