@@ -72,15 +72,15 @@ export const CommentaryFeatures = () => {
                 commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
                 setCommentaryData(commentaryDataToUpdate)
                 setIsDataLoading(false)
-                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
                     const endPoint = response?.result?.callPrediction?.endPoint;
                     dispatch(
-                      updateToastData({
-                        data: `${endPoint}\n${predictionMessage}`,
-                        title: "Call Prediction",
-                        type: WARNING,
-                      })
+                        updateToastData({
+                            data: `${endPoint}\n${predictionMessage}`,
+                            title: "Call Prediction",
+                            type: WARNING,
+                        })
                     );
                 }
             }).catch((error) => {
@@ -94,7 +94,7 @@ export const CommentaryFeatures = () => {
 
     const handleSaveClick = () => {
         const objToSave = {}
-        const deleteObjToSave = {}
+        const deleteObjToSave = { commentaryId: commentaryId }
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
         if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData)
         if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
