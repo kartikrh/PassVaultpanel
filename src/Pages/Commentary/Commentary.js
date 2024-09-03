@@ -63,7 +63,6 @@ const Commentary = (props) => {
     const [redirectOnScreenChange, setRedirectOnScreenChange] = useState(undefined)
     const [showUpdateInnings, setShowUpdateInnings] = useState(undefined)
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
-    // const [showSwitchBatterModal, setShowSwitchBatterModal] = useState(undefined)
     const [isUndoBall, setIsUndoBall] = useState(undefined)
     const [undoErrorModal, setUndoErrorModal] = useState(undefined)
     const [undoInningsPopup, setUndoInningsPopup] = useState(undefined)
@@ -87,6 +86,16 @@ const Commentary = (props) => {
         //     // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
         //     // currentBall,
         //     // currentOver
+        // });
+        // console.log({
+        //     battingTeamPlayers: players?.[BATTING_TEAM],
+        //     partnership: {
+        //         batter1Id: currentPartnership?.["batter1Id"],
+        //         batter1Name: currentPartnership?.["batter1Name"],
+        //         batter2Id: currentPartnership?.["batter2Id"],
+        //         batter2Name: currentPartnership?.["batter2Name"]
+        //     },
+        //     bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // });
         // console.log({
         //     onPitchPlayers,
@@ -1085,7 +1094,6 @@ const Commentary = (props) => {
             dispatch(addCommentaryScreenData(objToSave))
         }
         setCurrentWicket(undefined)
-        // setShowSwitchBatterModal(undefined)
     }
     const handleUndoClick = () => {
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
@@ -1863,7 +1871,6 @@ const Commentary = (props) => {
             anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || superOverModal || showRretiredHurt || isPaneltyPopup
                 || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
-                // || showSwitchBatterModal 
                 || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
         />
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
@@ -1980,6 +1987,7 @@ const Commentary = (props) => {
             onsubmit={onRetiredHurtClick}
             onPitchplayers={onPitchPlayers}
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
+            allBattingPlayers={players[BATTING_TEAM]}
         />}
         {superOverModal &&
             <SuperOverModal

@@ -4,7 +4,7 @@ import "../CommentaryCss.css"
 import CardComponent from '../CardComponent';
 import { NON_STRIKE, ON_STRIKE, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER } from '../CommentartConst';
 import SelectPlayerModal from './SelectPlayerModal';
-const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList }) => {
+const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBattingPlayers }) => {
     const [changePlayerType, setChangePlayerType] = useState(false);
 
     const onSubmitClick = (newPlayerId) => {
@@ -15,7 +15,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList }) => {
             [PREV_ON_STRIKE]: onPitchplayers[ON_STRIKE],
             [PREV_NON_STRIKE]: onPitchplayers[NON_STRIKE]
         }
-        toSend[PLAYER_LIST] = playerList.map(player => {
+        toSend[PLAYER_LIST] = allBattingPlayers.map(player => {
             let updatedPlayer = player
             if (player.commentaryPlayerId === newPlayerId) {
                 updatedPlayer = {
