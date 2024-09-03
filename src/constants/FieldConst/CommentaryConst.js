@@ -260,6 +260,7 @@ export const TeamDetailsFields = [
         dependsOnValue: true,
         defaultValue: 1,
         type: COUNTER,
+        className: "no-spinners",
         min: 0,
         max: 11,
         step: 1,
@@ -274,6 +275,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Score",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -281,6 +283,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Wicket",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -288,6 +291,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Over",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -307,6 +311,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Trial",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -314,6 +319,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Lead",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -321,6 +327,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Wide",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -328,6 +335,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "By",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -335,6 +343,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "Leg Bye",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -342,6 +351,7 @@ export const SHORT_COMMENTARY_TEAM = [
         placeholder: "No Ball",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
 
@@ -353,6 +363,7 @@ export const SHORT_COMMENTARY_BATTING_PLAYER = [
         placeholder: "Runs",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 3 },
 
     },
@@ -361,6 +372,7 @@ export const SHORT_COMMENTARY_BATTING_PLAYER = [
         placeholder: "Balls",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 3 },
 
     },
@@ -369,6 +381,7 @@ export const SHORT_COMMENTARY_BATTING_PLAYER = [
         placeholder: "Four",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -377,6 +390,7 @@ export const SHORT_COMMENTARY_BATTING_PLAYER = [
         placeholder: "Six",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -385,6 +399,7 @@ export const SHORT_COMMENTARY_BATTING_PLAYER = [
         placeholder: "Order",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -396,6 +411,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Over",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
     },
     {
@@ -403,6 +419,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Current Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -411,6 +428,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Total Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -419,6 +437,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Runs",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -427,6 +446,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Dot Balls",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -435,6 +455,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Maiden Over",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -443,6 +464,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Four",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -451,6 +473,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Six",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -459,6 +482,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Wide Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -467,6 +491,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Wide Ball Run",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -475,6 +500,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "No Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -483,6 +509,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "No Ball Run",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -491,6 +518,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Bye Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -499,6 +527,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Bye Ball Run",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -507,6 +536,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Leg Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -515,6 +545,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Leg Ball Run",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -523,6 +554,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Wickets",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -531,6 +563,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
         placeholder: "Bowler Order",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 4, lg: 2 },
 
     },
@@ -550,6 +583,7 @@ export const BALL_FEATURE_FIELDS = [
         placeholder: "O-Count",
         formName: BALL,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
@@ -557,6 +591,7 @@ export const BALL_FEATURE_FIELDS = [
         placeholder: "O-Ball",
         formName: BALL,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -564,6 +599,7 @@ export const BALL_FEATURE_FIELDS = [
         placeholder: "Run",
         formName: BALL,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
@@ -571,6 +607,7 @@ export const BALL_FEATURE_FIELDS = [
         placeholder: "Extra",
         formName: BALL,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -578,6 +615,7 @@ export const BALL_FEATURE_FIELDS = [
         placeholder: "Four",
         formName: BALL,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
     {
@@ -585,6 +623,7 @@ export const BALL_FEATURE_FIELDS = [
         placeholder: "Six",
         formName: BALL,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 1, lg: 1 },
     },
 ]
@@ -595,6 +634,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Score",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -602,6 +642,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Wicket",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -609,6 +650,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Over",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -616,6 +658,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Wide",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -623,6 +666,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "By",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -630,6 +674,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Leg Bye",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -637,6 +682,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "No Ball",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -644,6 +690,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Trial",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -651,6 +698,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Lead",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -658,6 +706,7 @@ export const TEAM_FEATURE_FIELDS = [
         placeholder: "Max overs",
         formName: TEAM,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -678,6 +727,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "Ball Count",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -685,6 +735,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "Runs",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -692,6 +743,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "Fours",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -699,6 +751,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "Sixes",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -706,6 +759,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "WD Balls",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -713,6 +767,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "WD Runs",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -720,6 +775,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "NB Balls",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -727,6 +783,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "NN Runs",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -734,6 +791,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "B Runs",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -741,6 +799,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "LB Runs",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -748,6 +807,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "WK",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -755,6 +815,7 @@ export const OVER_FEATURE_FIELD = [
         placeholder: "Dot Balls",
         formName: OVER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -789,6 +850,7 @@ export const PARTNERSHIP_FEATURE_FIELD = [
         placeholder: "Runs",
         formName: PARTNERSHIP,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
@@ -796,6 +858,7 @@ export const PARTNERSHIP_FEATURE_FIELD = [
         placeholder: "Balls",
         formName: PARTNERSHIP,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
@@ -803,16 +866,26 @@ export const PARTNERSHIP_FEATURE_FIELD = [
         placeholder: "Extras",
         formName: PARTNERSHIP,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
 ]
 
 export const PLAYER_FEATURE_FIELD = [
     {
+        name: "playerName",
+        placeholder: "Name",
+        formName: PLAYER,
+        type: TEXT,
+        fieldColspan: { xs: 4, md: 3, lg: 2 },
+    },
+    {
         name: "batRun",
         placeholder: "Run",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -820,6 +893,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -827,6 +901,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "4s",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -834,6 +909,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "6s",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -841,6 +917,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Overs",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -848,6 +925,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Current Ball",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -855,6 +933,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Bowler Run",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -862,6 +941,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Maiden Over",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -869,6 +949,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Wickets",
         formName: PLAYER,
         type: COUNTER,
+        className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
