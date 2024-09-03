@@ -10,7 +10,12 @@ const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, tog
     const [changePlayerType, setChangePlayerType] = useState(false);
 
     const onChangePlayerClick = (playerType) => {
-        setPlayerList(players[playerType === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM])
+        setPlayerList(players[playerType === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM]
+            ?.filter((player) => {
+                if (playerType === CURRENT_BOWLER)
+                    return player.isPlay === null
+                else return player.isPlay === null && player.isBatterOut !== true
+            }))
         setChangePlayerType(playerType)
     }
 

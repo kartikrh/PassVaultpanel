@@ -11,7 +11,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList }) => {
         const oldPlayer = onPitchplayers[changePlayerType]
         let toSend = {
             ...onPitchplayers,
-            [RETIRED_HURT_BATTER]: oldPlayer,
+            [RETIRED_HURT_BATTER]: { ...oldPlayer, "isPlay": null, "onStrike": null },
             [PREV_ON_STRIKE]: onPitchplayers[ON_STRIKE],
             [PREV_NON_STRIKE]: onPitchplayers[NON_STRIKE]
         }
@@ -25,16 +25,11 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList }) => {
                 }
                 toSend[changePlayerType] = updatedPlayer
             }
-            if (player.commentaryPlayerId === oldPlayer.commentaryPlayerId) {
-                updatedPlayer = {
-                    ...oldPlayer,
-                    "isPlay": null,
-                    "onStrike": null
-                }
-            }
+            if (player.commentaryPlayerId === oldPlayer.commentaryPlayerId) { updatedPlayer = toSend[RETIRED_HURT_BATTER] }
             return updatedPlayer
         })
         setChangePlayerType(null)
+        console.log({ toSend });
         onsubmit(toSend)
     }
 

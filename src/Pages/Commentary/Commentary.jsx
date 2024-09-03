@@ -24,11 +24,11 @@ export const CommentaryScreen = ({
                 element.value > 0 ?
                     element.value : ""
                 : element.value
-            if (previousValue && previousValue.isWicket && previousValue.overCount === element.overCount) {
+            if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
                 return null;
             }
             let displayValue
-            if (isWicket && nextValue && nextValue.overCount === element.overCount) {
+            if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
                 const nextIsWicket = +nextValue?.isWicket !== 0
                 const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
                 const nextBallValue = nextBallTypeAdd ?
@@ -145,15 +145,15 @@ export const CommentaryScreen = ({
                     <Col className="current-score-header" xs={6} md={6} lg={6}>
                         <span className="current-team-name">{teamDetails?.[BATTING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="current-team-score">
-                            {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM].teamWicket || 0}
-                            &nbsp;({teamDetails?.[BATTING_TEAM].teamOver || 0})
+                            {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM]?.teamWicket || 0}
+                            &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
                     </Col>
                     <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
                         <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="bowling-team-score">
-                            {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM].teamWicket || 0}
-                            &nbsp;({teamDetails?.[BOWLING_TEAM].teamOver || 0})
+                            {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
+                            &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
                     </Col>
                 </Row>
@@ -266,7 +266,11 @@ export const CommentaryScreen = ({
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
                 <Row>
-                    <div className="team-name overs-header">Overs</div>
+                    <div className="team-name overs-header">
+                        {(teamDetails?.[BATTING_TEAM]?.teamMaxOver || teamDetails?.[BATTING_TEAM]?.teamTrialRuns) ?
+                            `DLS:-  ${teamDetails?.[BATTING_TEAM]?.teamMaxOver ? "Max Overs: " + teamDetails?.[BATTING_TEAM]?.teamMaxOver : ""} ${teamDetails?.[BATTING_TEAM]?.teamTrialRuns ? "Target: " + teamDetails?.[BATTING_TEAM]?.teamTrialRuns : ""} `
+                            : "Overs"}
+                    </div>
                 </Row>
                 <Row>
                     {generateRightSideOvers()}
