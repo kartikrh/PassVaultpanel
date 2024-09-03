@@ -317,13 +317,21 @@ const Index = () => {
     window.open(url.href, '_blank');
   };
   const handlePredictorDetailsClick = (commentaryId) => {
-    // navigate("/predictorApiLogs", {
-    //   state: {
-    //     commentaryId: commentaryId,
-    //   },
-    // });
-    localStorage.setItem('predictorApiLogsCommentaryId', "" + commentaryId);
-    const url = new URL(window.location.origin + "/predictorApiLogs");
+    // localStorage.setItem('predictorLogsId', "" + commentaryId);
+    const url = new URL(window.location.origin + "/predictorLogs");
+    url.searchParams.set('commentaryId', commentaryId);
+    window.open(url.href, '_blank');
+  };
+  const handleCommentaryLogsClick = (commentaryId) => {
+    // localStorage.setItem('commentaryLogsId', "" + commentaryId);
+    const url = new URL(window.location.origin + "/commentaryLogs");
+    url.searchParams.set('commentaryId', commentaryId);
+    window.open(url.href, '_blank');
+  };
+  const handleUndoLogsClick = (commentaryId) => {
+    // localStorage.setItem('undoLogsId', "" + commentaryId);
+    const url = new URL(window.location.origin + "/undoLogs");
+    url.searchParams.set('commentaryId', commentaryId);
     window.open(url.href, '_blank');
   };
   const handleCommentaryMarketTemplateClick = (id) => {
@@ -819,7 +827,7 @@ const Index = () => {
     {
       title: "Competition",
       dataIndex: "competition",
-      key: "competitionName",
+      key: "competition",
       sort: true,
       style: { width: "10%" },
     },
@@ -1155,6 +1163,54 @@ const Index = () => {
           <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      sort: true,
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Logs",
+      key: "commentaryId",
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-2">
+          <Tooltip
+            title={"Commentary Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleCommentaryLogsClick(record.commentaryId);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"Undo Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"warning"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleUndoLogsClick(record.commentaryId);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+        </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },

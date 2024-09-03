@@ -1466,7 +1466,7 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
-                        {(tableElement?.reloadButton && (tableElement?.title !== "Error Logs" && tableElement?.title !== "Thirdparty Logs")) ? (
+                        {(tableElement?.reloadButton) ? (
                           <div>
                             <button
                               className="btn btn-primary"

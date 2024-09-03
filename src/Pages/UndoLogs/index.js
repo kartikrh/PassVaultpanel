@@ -6,25 +6,31 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
-  TAB_ERROR_LOGS,
+  TAB_UNDO_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 
 const Index = () => {
-  const pageName = TAB_ERROR_LOGS;
+  const pageName = TAB_UNDO_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Error Logs";
+  document.title = "Undo Logs";
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+  const [commentary, setCommentary] = useState([]);
+  const [resModelVisible, setResModelVisible] = useState(false);
+  const [resBodyData, setResBodyData] = useState(null);
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
@@ -35,6 +41,10 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const commentaryId = queryParams.get('commentaryId') || 0;
+
   const navigate = useNavigate();
 
   const fetchData = async (latestValueFromTable) => {
@@ -45,6 +55,14 @@ const Index = () => {
       page: currentPage+1,
       limit: pageSize,
     }
+    if(commentaryId !== 0) {
+      payload = {
+        ...(latestValueFromTable || tableActions),
+        page: currentPage+1,
+        limit: pageSize,
+        commentaryId: commentaryId
+      };
+    }
     if (isSearch) {
       payload = {
         ...payload,
@@ -52,12 +70,12 @@ const Index = () => {
       };
     }
     await axiosInstance
-      .post(`/admin/log/errorLogs`, payload)
+      .post(`/admin/log/undoLogs`, payload)
       .then((response) => {
         const logsData = response?.result?.data;
         let logsDataIdList = [];
         logsData.forEach((ele) => {
-          logsDataIdList.push(ele?.errId);
+          logsDataIdList.push(ele?.id);
         });
         setData(logsData);
         setTotal(response?.result?.totalPages || 0); 
@@ -67,8 +85,50 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
+    if (latestValueFromTable?.eventTypeId) {
+      fetchCompetitionData(latestValueFromTable?.eventTypeId);
+    }
+    if(latestValueFromTable?.competitionId) {
+      fetchCommentaryData(latestValueFromTable?.competitionId);
+    }
   };
+  
+  useEffect(()=>{
+    if(commentaryId !== 0){
+      setIsSearch(false)
+    } else {
+      setIsSearch(true)
+    }
+  },[commentaryId])
 
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/log/eventTypeList`, { isActive: true })
+      .then((response) => {
+        setEventTypes(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/competitionListByEventTypeId`, {
+        eventTypeId: value,
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCommentaryData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/getComByCompetition`, {
+        competitionId: value,
+      })
+      .then((response) => {
+        setCommentary(response.result);
+      })
+      .catch((error) => { });
+  };
   //table columns
   const columns = [
     {
@@ -84,46 +144,18 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
+      title: "CommentaryId",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
       sort: true,
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "Err Message",
-      dataIndex: "errMessage",
-      key: "errMessage",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Err Stack",
-      dataIndex: "errStack",
-      key: "errStack",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Domain",
-      dataIndex: "domain",
-      key: "domain",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "UserId",
-      dataIndex: "userId",
-      key: "userId",
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
       sort: true,
       style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Api",
-      dataIndex: "api",
-      key: "api",
-      sort: true,
-      style: { width: "10%" },
     },
     {
       title: "Request Body",
@@ -140,28 +172,63 @@ const Index = () => {
           ));
         return <div 
         onClick={() => {
-          setReqModelVisible(true);
-          setReqBodyData(record?.requestBody);
-        }}
+                  setReqModelVisible(true);
+                  setReqBodyData(record?.requestBody);
+                }}
         style={{ 
           display: 'inline-block', 
           maxWidth: '400px',
           whiteSpace: 'nowrap', 
           overflow: 'hidden', 
           textOverflow: 'ellipsis',
-          cursor: "pointer"
+          cursor: "pointer" 
         }}>{logItems}</div>;
       },
       key: "requestBody",
       sort: true,
       style: { width: "20%" },
-    }
+    },
+    {
+      title: "Response",
+      dataIndex: "response",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+            </span>
+          ));
+        return <div 
+        onClick={() => {
+                  setResModelVisible(true);
+                  setResBodyData(record?.response);
+                }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          cursor: "pointer"
+        }}>{logItems}</div>;
+      },
+      key: "response",
+      sort: true,
+      style: { width: "20%" },
+    },
   ];
   //elements required
   const tableElement = {
-    title: "Error Logs",
-    isServerPagination: true,
+    title: "Undo Logs",
+    eventTypeSelect: true,
+    competitionsSelect: true,
+    commentarySelect: true,
+    resetButton: true,
     reloadButton: true,
+    isServerPagination: true,
     isDateRange: true,
   };
 
@@ -170,17 +237,24 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+    fetchEventTypeData();
   }, [isSearch, currentPage, pageSize]);
+
+  const handleReset = (value) => {
+    fetchData();
+    fetchEventTypeData();
+  };
 
   const handleReload = (value) => {
     fetchData();
+    fetchEventTypeData();
   };
 
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Error Logs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Undo Logs" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -188,8 +262,12 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            eventTypes={eventTypes}
+            competitions={competitions}
+            commentary={commentary}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReset={handleReset}
             handleReload={handleReload}
             setDateRange={setDateRange}
             dateRange={dateRange}
@@ -215,6 +293,14 @@ const Index = () => {
               isOpen={reqModelVisible}
               toggle={() => setReqModelVisible(!reqModelVisible)}
               data={reqBodyData}
+              fetchData={fetchData}
+            />
+          )}
+          {resModelVisible && (
+            <ResponseModal
+              isOpen={resModelVisible}
+              toggle={() => setResModelVisible(!resModelVisible)}
+              data={resBodyData}
               fetchData={fetchData}
             />
           )}
