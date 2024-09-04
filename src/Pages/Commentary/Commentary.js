@@ -1523,6 +1523,7 @@ const Commentary = (props) => {
         const apiCallObj = {}
         let currentOver = 0
         let currentOverToUpdate = 0
+        let targetToUpdate = 0
         propsData.commentaryData.commentaryTeams.forEach(teamDetails => {
             if (isEqual(teamDetails.currentInnings, commentaryDetails.currentInnings)) {
                 const isBattingTeam = teamDetails.teamStatus === BAT
@@ -1530,10 +1531,11 @@ const Commentary = (props) => {
                 if (isBattingTeam) {
                     currentOver = Math.floor(teamDetails?.teamOver)
                     const trail = (+teamDetails?.teamTrialRuns || 0)
-                    if (trail > -1) setTarget(trail + 1)
+                    if (trail > -1) targetToUpdate = trail + 1
                 }
             }
         });
+        if (currentInningsTeams?.[BOWLING_TEAM]?.isBattingComplete) setTarget(targetToUpdate)
         propsData.commentaryData.commentaryPlayers.forEach(playerDetails => {
             if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
                 const isBattingTeam = playerDetails.teamId === currentInningsTeams[BATTING_TEAM].teamId
