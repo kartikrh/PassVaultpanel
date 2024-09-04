@@ -80,24 +80,24 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        // console.log("Check:", {
-        //     // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
-        //     // NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
-        //     // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
-        //     // currentBall,
-        //     // currentOver
-        // });
-        console.log({
-            battingTeamPlayers: players?.[BATTING_TEAM],
-            partnership: {
-                batter1Id: currentPartnership?.["batter1Id"],
-                batter1Name: currentPartnership?.["batter1Name"],
-                batter2Id: currentPartnership?.["batter2Id"],
-                batter2Name: currentPartnership?.["batter2Name"]
-            },
-            bowlingTeamPlayers: players?.[BOWLING_TEAM],
+        console.log("Check:", {
+            // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
+            // NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
+            // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
+            currentBall,
+            currentOver
         });
-        console.log({
+        // console.log({
+        //     battingTeamPlayers: players?.[BATTING_TEAM],
+        //     partnership: {
+        //         batter1Id: currentPartnership?.["batter1Id"],
+        //         batter1Name: currentPartnership?.["batter1Name"],
+        //         batter2Id: currentPartnership?.["batter2Id"],
+        //         batter2Name: currentPartnership?.["batter2Name"]
+        //     },
+        //     bowlingTeamPlayers: players?.[BOWLING_TEAM],
+        // });
+        console.log("Wicket and Partnership: ", {
             onPitchPlayers,
             currentPartnership,
             partnershipHistory,
@@ -1253,7 +1253,7 @@ const Commentary = (props) => {
                         } else if (type === BALL_TYPE_NO_BALL_BYE) {
                             updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - noBallValue)
                             updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - UpdatedBallRun)
-                            updateOver["bowlerByeBallRun"] = getNonNegativeValue((currentOver.bowlerByeBallRun || 0) - UpdatedBallRun)
+                            updateOver["totalByesRun"] = getNonNegativeValue((currentOver.totalByesRun || 0) - UpdatedBallRun)
                             updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
                             updateBattingTeam["teamByRuns"] = getNonNegativeValue((updateBattingTeam.teamByRuns || 0) - UpdatedBallRun)
                         }
@@ -1323,7 +1323,8 @@ const Commentary = (props) => {
                 setSaveToDb(true)
             }
         } else {
-            setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
+            // setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
+            setUndoErrorModal(`There is some data mismatched, Please click Retry.`)
         }
     }
     const updatePlayerAfterUndoWicket = () => {
@@ -1882,6 +1883,7 @@ const Commentary = (props) => {
             handleRetiredHurt={() => setShowRretiredHurt(true)}
             overBalls={overBallByBallDisplay}
             showPaneltyRuns={setIsPaneltyPopup}
+            // currentOver={currentOver}
             anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || superOverModal || showRretiredHurt || isPaneltyPopup
                 || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer

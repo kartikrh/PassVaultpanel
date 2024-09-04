@@ -48,6 +48,32 @@ export const CommentaryScreen = ({
     const generateRightSideOvers = () => {
         return Object.keys(overBalls).map((over, index) =>
             <>
+                {/* <div>
+                    <h4>Current Over Information:</h4>
+                    <p>Over: {currentOver.over}</p>
+                    <p>Ball Count: {currentOver.ballCount}</p>
+                    <p>Team Score: {currentOver.teamScore}</p>
+                    <p>Total Runs: {currentOver.totalRun}</p>
+                    <p>Total Wickets: {currentOver.totalWicket}</p>
+                    <p>Fours: {currentOver.totalFour}</p>
+                    <p>Sixes: {currentOver.totalSix}</p>
+
+                    <h5>Extras:</h5>
+                    <ul>
+                        <li>No Balls: {currentOver.totalNoball} (Runs: {currentOver.totalNoBallRun})</li>
+                        <li>Wide Balls: {currentOver.totalWideBall} (Runs: {currentOver.totalWideRun})</li>
+                        <li>Byes: {currentOver.totalByesRun}</li>
+                        <li>Leg Byes: {currentOver.totalLegByesRun}</li>
+                        <li>Penalty: {currentOver.totalPanelty}</li>
+                    </ul>
+
+                    <p>Dot Balls: {currentOver.dotBall}</p>
+                    <p>Innings: {currentOver.currentInnings}</p>
+                    <p>Powerplay Type: {currentOver.powerplayType}</p>
+                    {currentOver.isOverInPowerplay && <p><strong>Over is in Powerplay</strong></p>}
+                    {currentOver.isComplete && <p><strong>Over Complete</strong></p>}
+                    {currentOver.isMaiden && <p><strong>Maiden Over</strong></p>}
+                </div> */}
                 <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
                     <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
                     {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
