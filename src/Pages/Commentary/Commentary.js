@@ -80,25 +80,21 @@ const Commentary = (props) => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log("Check:", {
-            // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
-            // NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
-            // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
-            currentBall,
-            currentOver
-        });
+        // console.log("Check:", {
+        //     // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
+        //     // NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
+        //     // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
+        //     currentBall,
+        //     currentOver
+        // });
         // console.log({
-        //     battingTeamPlayers: players?.[BATTING_TEAM],
-        //     partnership: {
-        //         batter1Id: currentPartnership?.["batter1Id"],
-        //         batter1Name: currentPartnership?.["batter1Name"],
-        //         batter2Id: currentPartnership?.["batter2Id"],
-        //         batter2Name: currentPartnership?.["batter2Name"]
-        //     },
-        //     bowlingTeamPlayers: players?.[BOWLING_TEAM],
+        // battingTeamPlayers: players?.[BATTING_TEAM],
+        // onPitchPlayers,
+        // bowlingTeamPlayers: players?.[BOWLING_TEAM],
+        // changePlayerList
         // });
         console.log("Wicket and Partnership: ", {
-            onPitchPlayers,
+            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
             currentPartnership,
             partnershipHistory,
             PartnershiId: currentPartnership?.commentaryPartnershipId,
@@ -822,11 +818,12 @@ const Commentary = (props) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         const updateOrderKey = playerToChange === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
         let updatedOnPitchPlayer = { ...onPitchPlayers }
-        const secondPitchPlayerId = teamType === BATTING_TEAM
-            ? isEqual(onPitchPlayers[ON_STRIKE]?.commentaryPlayerId, currentWicket?.batterId)
-                ? onPitchPlayers[NON_STRIKE]?.commentaryPlayerId
-                : onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
-            : null
+        let secondPitchPlayerId
+        if (onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) {
+            if (isEqual(onPitchPlayers[ON_STRIKE]?.commentaryPlayerId, currentWicket?.batterId)) {
+                secondPitchPlayerId = onPitchPlayers[NON_STRIKE]?.commentaryPlayerId
+            } else secondPitchPlayerId = onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
+        } else secondPitchPlayerId = onPitchPlayers[NON_STRIKE]?.commentaryPlayerId
         // const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
         const allPlayersToUpdate = []
         const playerToUpdate = {
