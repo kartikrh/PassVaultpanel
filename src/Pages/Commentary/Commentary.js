@@ -263,7 +263,7 @@ const Commentary = (props) => {
                     const opposingTeamId = Object.keys(firstInningsScores).find(id => +id !== +team.teamId)
                     if (opposingTeamId) {
                         const runDifference = firstInningsScores[team.teamId] - firstInningsScores[opposingTeamId]
-                        if (runDifference > 0) {
+                        if (runDifference > -1) {
                             updatedTeam.teamLeadRuns = runDifference
                             updatedTeam.teamTrialRuns = 0
                         } else {
@@ -1530,7 +1530,7 @@ const Commentary = (props) => {
                 if (isBattingTeam) {
                     currentOver = Math.floor(teamDetails?.teamOver)
                     const trail = (+teamDetails?.teamTrialRuns || 0)
-                    if (trail > 0) setTarget(trail + 1)
+                    if (trail > -1) setTarget(trail + 1)
                 }
             }
         });
