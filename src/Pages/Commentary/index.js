@@ -841,7 +841,6 @@ const Index = () => {
       key: "commentaryDetails",
       printType: "ignore",
       render: (text, record) => (
-      <div className="d-flex align-items-center gap-2">
       <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"warning"}
@@ -854,19 +853,6 @@ const Index = () => {
           <i class='bx bxs-right-arrow' ></i>
         </Button>
       </Tooltip>
-      <Tooltip title={"Scoring Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-      <Button
-        color={"warning"}
-        size="sm"
-        className="btn"
-        onClick={() => {
-          handleScoringLogsClick(record);
-        }}
-      >
-        <i class='bx bxs-up-arrow-square' ></i>
-      </Button>
-      </Tooltip>
-    </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -1211,6 +1197,18 @@ const Index = () => {
               }}
             >
               <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip title={"Scoring Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+           <Button
+             color={"info"}
+             size="sm"
+             className="btn"
+             onClick={() => {
+               handleScoringLogsClick(record);
+             }}
+            >
+              <i class='bx bxs-up-arrow-square' ></i>
             </Button>
           </Tooltip>
           <Tooltip
