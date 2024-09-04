@@ -265,7 +265,7 @@ const Commentary = (props) => {
                     updatedTeam.teamBattingOrder = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
 
                     // Calculate lead/trail runs
-                    const opposingTeamId = Object.keys(firstInningsScores).find(id => id != team.teamId)
+                    const opposingTeamId = Object.keys(firstInningsScores).find(id => +id !== +team.teamId)
                     if (opposingTeamId) {
                         const runDifference = firstInningsScores[team.teamId] - firstInningsScores[opposingTeamId]
                         if (runDifference > 0) {
@@ -667,7 +667,12 @@ const Commentary = (props) => {
             "bowlerOver": Math.ceil(+onPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
             "bowlerMaidenOver": currentOver.totalRun < 1 ? 1 : 0
         }
-        const updatedOver = { ...currentOver, "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`, "isComplete": true }
+        const updatedOver = {
+            ...currentOver,
+            "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+            "isMaiden": getBowlerOnlyRuns(currentOver) < 1,
+            "isComplete": true
+        }
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         setPlayers((prevValue) => { return { ...prevValue, [BOWLING_TEAM]: prevValue?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), } })
@@ -1194,7 +1199,9 @@ const Commentary = (props) => {
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
                     updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
                     updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
+                    updateBowler["bowlerMaidenOver"] = 0
                     updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
+                    updateOver["isMaiden"] = false
                     _setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
                     _setPlayers((prevValue) => {
                         const actualPlayerValue = prevValue || players
