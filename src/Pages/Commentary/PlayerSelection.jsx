@@ -110,13 +110,13 @@ const PlayerSelection = forwardRef((props, ref) => {
         return dispatch(updateToastData({ data: "Please Select Players", title: "Commentary", type: ERROR }));
       }
       const _bowlerPlayer = isPlayPlayers.find(
-        (player) => player.isPlay === true && player.bowlerStatus === 1
+        (player) => player.isPlay === true && (bowlingteam?.teamId === player.teamId)
       );
       const _strikerplayer = isPlayPlayers.find(
-        (player) => player.isPlay === true && player.onStrike === true
+        (player) => player.isPlay === true && player.onStrike === true && (battingteam?.teamId === player.teamId)
       );
       const _nonstriker = isPlayPlayers.find(
-        (player) => player.isPlay === true && player.onStrike === false
+        (player) => player.isPlay === true && player.onStrike === false && (battingteam?.teamId === player.teamId)
       );
       const commentaryOvers = {
         overId: "0",
@@ -240,7 +240,6 @@ const PlayerSelection = forwardRef((props, ref) => {
       isBatterOut: null,
       onStrike: null,
       bowlerOver: null,
-      bowlerStatus: null,
     }
     if (teamListStatus === 1 && isSelectingStriker) {
       if (selectedPlayer.commentaryPlayerId === selectedNonStriker?.commentaryPlayerId) {
@@ -287,12 +286,10 @@ const PlayerSelection = forwardRef((props, ref) => {
       updatedData = {
         isPlay: true,
         bowlerOver: 0,
-        bowlerStatus: 1,
       }
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
         i.bowlerOver === 0 &&
-        i.bowlerStatus === 1 &&
         i.currentInnings === currentInnings)).map(i => i.commentaryPlayerId);
     }
 

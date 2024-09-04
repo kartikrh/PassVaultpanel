@@ -47,15 +47,13 @@ export const CommentaryScreen = ({
 
     const generateRightSideOvers = () => {
         return Object.keys(overBalls).map((over, index) =>
-            <>
-                <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
-                    <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
-                    {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
-                        <> Yet to start Over </>
-                    }
-                    {generateBallfromArray(overBalls[over])}
-                </div >
-            </>)
+            <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
+                <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
+                {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
+                    <> Yet to start Over </>
+                }
+                {generateBallfromArray(overBalls[over])}
+            </div >)
     }
 
     const handleKeyPress = (event) => {

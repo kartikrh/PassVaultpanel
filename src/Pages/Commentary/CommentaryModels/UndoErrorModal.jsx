@@ -8,14 +8,14 @@ export const UndoErrorModal = ({ toggle, undoError }) => {
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
             <ModalHeader toggle={toggle}>
-                Undo Error
+                Warning
             </ModalHeader>
             <ModalBody>
                 {undoError}
             </ModalBody>
             <ModalFooter>
-                <Button color="danger" className="decision-Button" onClick={toggle}>Exit</Button>
-                <Button color="success" className="decision-Button" onClick={() => handleRefresh()}>Refresh</Button>
+                <Button color="danger" className="decision-Button float-left" onClick={toggle}>Exit</Button>
+                <Button color="success" className="decision-Button" onClick={() => handleRefresh()}>Retry</Button>
             </ModalFooter>
         </Modal>
     )
