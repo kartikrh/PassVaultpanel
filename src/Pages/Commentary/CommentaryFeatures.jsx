@@ -93,7 +93,7 @@ export const CommentaryFeatures = () => {
     };
 
     const handleSaveClick = () => {
-        const objToSave = {}
+        const objToSave = { commentaryId: commentaryId }
         const deleteObjToSave = { commentaryId: commentaryId }
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
         if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData)
