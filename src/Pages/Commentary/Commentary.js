@@ -99,7 +99,6 @@ const Commentary = (props) => {
             partnershipHistory,
             PartnershiId: currentPartnership?.commentaryPartnershipId,
         });
-
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
