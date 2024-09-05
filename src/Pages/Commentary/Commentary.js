@@ -93,12 +93,12 @@ const Commentary = (props) => {
         // bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // changePlayerList
         // });
-        // console.log("Wicket and Partnership: ", {
-        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-        //     currentPartnership,
-        //     partnershipHistory,
-        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
-        // });
+        console.log("Wicket and Partnership: ", {
+            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
+            currentPartnership,
+            partnershipHistory,
+            PartnershiId: currentPartnership?.commentaryPartnershipId,
+        });
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
@@ -1446,12 +1446,27 @@ const Commentary = (props) => {
             "batNonStrikeId": retiredHurtData[PREV_NON_STRIKE]?.commentaryPlayerId,
             "ballType": BALL_TYPE_RETIRED_HURT
         }
-        const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
-        const objToSave = {
-            "commentaryBallByBall": generatedBallByBall,
-            "commentaryId": commentaryDetails.commentaryId,
-            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+        const currentBallDetails = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
+        // const currentBallDetails = { ...currentBall }
+        currentBallDetails["nextBatStrikeId"] = retiredHurtData[ON_STRIKE]?.commentaryPlayerId
+        currentBallDetails["nextBatNonStrikeId"] = retiredHurtData[NON_STRIKE]?.commentaryPlayerId
+        const partnershipDetails = {
+            "batter1Id": retiredHurtData[ON_STRIKE]?.commentaryPlayerId,
+            "batter1Name": retiredHurtData[ON_STRIKE]?.playerName,
+            "batter2Id": retiredHurtData[NON_STRIKE]?.commentaryPlayerId,
+            "batter2Name": retiredHurtData[NON_STRIKE]?.playerName,
+            "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0")
         }
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPartnership": updatedPartnership,
+            "commentaryDetails": commentaryDetails,
+            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+            "commentaryBallByBall": currentBallDetails
+        }
+        checkForOverSwitch()
+        setCurrentPartnership({})
         dispatch(addCommentaryScreenData(objToSave))
         setCurrentBall(updateBall)
         setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: retiredHurtData[ON_STRIKE], [NON_STRIKE]: retiredHurtData[NON_STRIKE] })
