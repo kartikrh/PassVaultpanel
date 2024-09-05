@@ -144,7 +144,7 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "CommentaryId",
+      title: "Commentary Id",
       dataIndex: "commentaryId",
       key: "commentaryId",
       sort: true,
