@@ -237,51 +237,21 @@ const Commentary = (props) => {
         setShowInningsChangePopup(undefined)
     }
     const handleInningsUpdate = (battingTeamId) => {
-        console.log(`Updating innings. Batting team ID: ${battingTeamId}`)
-        let updatedInningsTeam = []
-        let firstInningsScores = {}
-        // First, gather first innings scores for both teams
+        let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
         propsData.commentaryData?.commentaryTeams?.forEach(team => {
-            if (team.currentInnings === 1) {
-                firstInningsScores[team.teamId] = team.teamScore || 0
-            }
-        })
-
-        propsData.commentaryData?.commentaryTeams?.forEach(team => {
-            let updatedTeam = { ...team }
-
-            if (team.currentInnings === commentaryDetails.currentInnings) {
-                updatedTeam.isBattingComplete = true
-            }
-
             if (team.currentInnings === (commentaryDetails.currentInnings + 1)) {
+                let updatedTeam = team
                 if (team.teamId === battingTeamId) {
-                    updatedTeam.teamStatus = BATTING_STATUS
-                    updatedTeam.teamBattingOrder = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
-
-                    // Calculate lead/trail runs
-                    const opposingTeamId = Object.keys(firstInningsScores).find(id => +id !== +team.teamId)
-                    if (opposingTeamId) {
-                        const runDifference = firstInningsScores[team.teamId] - firstInningsScores[opposingTeamId]
-                        if (runDifference > -1) {
-                            updatedTeam.teamLeadRuns = runDifference
-                            updatedTeam.teamTrialRuns = 0
-                        } else {
-                            updatedTeam.teamTrialRuns = -runDifference
-                            updatedTeam.teamLeadRuns = 0
-                        }
-                    }
+                    updatedTeam["teamStatus"] = BATTING_STATUS
+                    updatedTeam["teamBattingOrder"] = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
+                    if (teams[BATTING_TEAM].teamTrialRuns) { }
                 } else {
-                    updatedTeam.teamStatus = BOWLING_STATUS
-                    updatedTeam.teamBattingOrder = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
+                    updatedTeam["teamStatus"] = BOWLING_STATUS
+                    updatedTeam["teamBattingOrder"] = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
                 }
+                updatedInningsTeam.push(updatedTeam)
             }
-
-            updatedInningsTeam.push(updatedTeam)
-        })
-
-        console.log('Updated innings team:', updatedInningsTeam);
-
+        });
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
@@ -293,12 +263,10 @@ const Commentary = (props) => {
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
             "isEndInnings": true
-        };
-        console.log('Object to save:', objToSave);
-
-        dispatch(addCommentaryScreenData(objToSave));
-        setShowUpdateInnings(undefined);
-        setRedirectOnScreenChange(true);
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setShowUpdateInnings(undefined)
+        setRedirectOnScreenChange(true)
     }
 
     const setAllPlayerToNull = () => {
