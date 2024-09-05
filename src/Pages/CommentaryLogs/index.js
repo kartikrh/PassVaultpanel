@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
+import { mapCommentaryStatus } from "../Commentary/functions";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LOGS;
@@ -144,11 +145,35 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Commentary Id",
-      dataIndex: "commentaryId",
-      key: "commentaryId",
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
       sort: true,
-      style: { width: "5%", textAlign: "center" },
+      style: { width: "10%" },
+    },
+    {
+      title: "Event",
+      dataIndex: "eventName",
+      key: "eventName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Competition",
+      dataIndex: "competition",
+      key: "competition",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Status",
+      dataIndex: "commentaryStatus",
+      render: (text, record) => (
+        <span>{mapCommentaryStatus(text)}</span>
+      ),
+      key: "commentaryStatus",
+      sort: true,
+      style: { width: "10%" },
     },
     {
       title: "Created By",
