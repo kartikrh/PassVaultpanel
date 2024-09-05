@@ -93,12 +93,12 @@ const Commentary = (props) => {
         // bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // changePlayerList
         // });
-        console.log("Wicket and Partnership: ", {
-            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-            currentPartnership,
-            partnershipHistory,
-            PartnershiId: currentPartnership?.commentaryPartnershipId,
-        });
+        // console.log("Wicket and Partnership: ", {
+        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
+        //     currentPartnership,
+        //     partnershipHistory,
+        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
+        // });
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
