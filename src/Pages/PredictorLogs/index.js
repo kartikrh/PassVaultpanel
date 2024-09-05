@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
+import { mapCommentaryStatus } from "../Commentary/functions";
 
 const Index = () => {
   const pageName = TAB_PREDICTOR_LOGS;
@@ -140,6 +141,37 @@ const Index = () => {
         </span>
       ),
       key: "requestStartTime",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Event",
+      dataIndex: "eventName",
+      key: "eventName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Competition",
+      dataIndex: "competition",
+      key: "competition",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Status",
+      dataIndex: "commentaryStatus",
+      render: (text, record) => (
+        <span>{mapCommentaryStatus(text)}</span>
+      ),
+      key: "commentaryStatus",
       sort: true,
       style: { width: "10%" },
     },
