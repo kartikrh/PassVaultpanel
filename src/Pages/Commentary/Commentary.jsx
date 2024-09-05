@@ -9,7 +9,7 @@ import { STRING_SEPERATOR } from "../../components/Common/Const"
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, anyPopup, handleRetiredHurt = {} }) => {
+    overBalls, anyPopup, handleRetiredHurt = {}, target }) => {
     document.title = "Scoring";
     const [actionPopup, setActionPopup] = useState(undefined)
     const generateBallfromArray = (ballArray = []) => {
@@ -266,7 +266,7 @@ export const CommentaryScreen = ({
                 <Row>
                     <div className="team-name overs-header">
                         {(teamDetails?.[BATTING_TEAM]?.teamMaxOver || teamDetails?.[BATTING_TEAM]?.teamTrialRuns) ?
-                            `DLS:-  ${teamDetails?.[BATTING_TEAM]?.teamMaxOver ? "Max Overs: " + teamDetails?.[BATTING_TEAM]?.teamMaxOver : ""} ${teamDetails?.[BATTING_TEAM]?.teamTrialRuns ? "Target: " + teamDetails?.[BATTING_TEAM]?.teamTrialRuns : ""} `
+                            `DLS:-  ${teamDetails?.[BATTING_TEAM]?.teamMaxOver ? "Max Overs: " + teamDetails?.[BATTING_TEAM]?.teamMaxOver : ""} ${(target && +target !== 0) ? "Target: " + target : ""} `
                             : "Overs"}
                     </div>
                 </Row>
