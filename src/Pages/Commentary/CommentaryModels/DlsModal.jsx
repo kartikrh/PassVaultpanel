@@ -4,8 +4,8 @@ import { Button, Col, Input, Modal, ModalBody, ModalFooter, ModalHeader, Row } f
 import { COMMENTARY_STATUS_OPEN, ERROR, WARNING } from "../../../components/Common/Const";
 import axiosInstance from "../../../Features/axios";
 import { updateToastData } from "../../../Features/toasterSlice";
-import { isEqual } from "lodash";
-import { BAT, BATTING_TEAM, BOWL, BOWLING_TEAM } from "../CommentartConst";
+import { isEmpty, isEqual } from "lodash";
+import { BAT, BATTING_TEAM, BOWLING_TEAM } from "../CommentartConst";
 import SpinnerModel from "../../../components/Model/SpinnerModel";
 
 export const DlsModal = ({ commentaryDetails, toggle }) => {
@@ -60,6 +60,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
     }
 
     const handleSaveClick = () => {
+        const dataToSave = {}
         if (!maxOvers || maxOvers === 0) dispatch(updateToastData({ data: "Please Enter Max Overs", title: "Required Error", type: ERROR }));
         else if (showTarget && (!newTarget || newTarget === 0)) dispatch(updateToastData({ data: "Please Enter Target", title: "Required Error", type: ERROR }));
         else {
@@ -70,66 +71,42 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                     ...team,
                     teamMaxOver: maxOvers
                 }))
-                saveDataAPi({ commentaryTeams: updatedTeam })
+                dataToSave["commentaryTeams"] = updatedTeam
             }
             else {
-                if (!showTarget) {
-                    updatedTeamData[BATTING_TEAM] = {
-                        ...updatedTeamData[BATTING_TEAM],
-                        teamMaxOver: maxOvers
-                    }
-                    updatedTeamData[BOWLING_TEAM] = {
-                        ...updatedTeamData[BOWLING_TEAM],
-                        teamMaxOver: maxOvers
-                    }
-                    saveDataAPi({ commentaryTeams: Object.values(teams) })
-                }
-                else {
-                    if ((+(teams[BATTING_TEAM]?.teamOver || 0) < maxOvers)) {
+                if (+(teams[BATTING_TEAM]?.teamOver || 0) < maxOvers) {
+                    if (!showTarget) {
                         updatedTeamData[BATTING_TEAM] = {
                             ...updatedTeamData[BATTING_TEAM],
-                            teamTrialRuns: +newTarget - 1,
                             teamMaxOver: maxOvers
                         }
                         updatedTeamData[BOWLING_TEAM] = {
                             ...updatedTeamData[BOWLING_TEAM],
                             teamMaxOver: maxOvers
                         }
-                        saveDataAPi({ commentaryTeams: Object.values(teams) })
-                    }
-                    else {
-                        const updatedCommData = commentaryData.commentaryDetails
-                        const newPlayerList = []
-                        updatedCommData["commentaryStatus"] = 2
-                        updatedTeamData[BATTING_TEAM] = {
-                            ...updatedTeamData[BATTING_TEAM],
-                            teamMaxOver: maxOvers,
-                            teamStatus: BOWL,
-                            isBattingComplete: true
-                        }
-                        updatedTeamData[BOWLING_TEAM] = {
-                            ...updatedTeamData[BOWLING_TEAM],
-                            teamMaxOver: maxOvers,
-                            teamStatus: BAT,
-                            teamTrialRuns: newTarget - 1,
-                        }
-                        commentaryData.commentaryPlayers?.forEach(player => newPlayerList.push({
-                            ...player,
-                            isPlay: null,
-                            onStrike: null
-                        }))
-                        saveDataAPi({
-                            commentaryDetails: updatedCommData,
-                            commentaryTeams: Object.values(teams),
-                            commentaryPlayers: newPlayerList
-                        })
+                        dataToSave["commentaryTeams"] = Object.values(updatedTeamData)
+                    } else {
+                        if ((+(teams[BATTING_TEAM]?.teamScore || 0) < newTarget)) {
+                            updatedTeamData[BATTING_TEAM] = {
+                                ...updatedTeamData[BATTING_TEAM],
+                                teamTrialRuns: +newTarget - 1,
+                                teamMaxOver: maxOvers
+                            }
+                            updatedTeamData[BOWLING_TEAM] = {
+                                ...updatedTeamData[BOWLING_TEAM],
+                                teamMaxOver: maxOvers
+                            }
+                            dataToSave["commentaryTeams"] = Object.values(updatedTeamData)
+                        } else dispatch(updateToastData({ data: "New target should be more than current score.", title: "Wrong Data Error", type: ERROR }))
                     }
                 }
+                else dispatch(updateToastData({ data: "Max overs should be more than current over.", title: "Wrong Data Error", type: ERROR }))
             }
         }
+        if (!isEmpty(dataToSave)) saveDataApi(dataToSave)
     }
 
-    const saveDataAPi = async (dataToSave) => {
+    const saveDataApi = async (dataToSave) => {
         setIsDataLoading(true)
         await axiosInstance.post('/admin/commentary/saveDetails', { ...dataToSave, commentaryId: commentaryData.commentaryDetails?.commentaryId })
             .then(async (response) => {
