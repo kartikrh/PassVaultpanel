@@ -47,15 +47,13 @@ export const CommentaryScreen = ({
 
     const generateRightSideOvers = () => {
         return Object.keys(overBalls).map((over, index) =>
-            <>
-                <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
-                    <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
-                    {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
-                        <> Yet to start Over </>
-                    }
-                    {generateBallfromArray(overBalls[over])}
-                </div >
-            </>)
+            <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
+                <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
+                {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
+                    <> Yet to start Over </>
+                }
+                {generateBallfromArray(overBalls[over])}
+            </div >)
     }
 
     const handleKeyPress = (event) => {
@@ -145,15 +143,15 @@ export const CommentaryScreen = ({
                     <Col className="current-score-header" xs={6} md={6} lg={6}>
                         <span className="current-team-name">{teamDetails?.[BATTING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="current-team-score">
-                            {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM].teamWicket || 0}
-                            &nbsp;({teamDetails?.[BATTING_TEAM].teamOver || 0})
+                            {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM]?.teamWicket || 0}
+                            &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
                     </Col>
                     <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
                         <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         <span className="bowling-team-score">
-                            {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM].teamWicket || 0}
-                            &nbsp;({teamDetails?.[BOWLING_TEAM].teamOver || 0})
+                            {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
+                            &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
                     </Col>
                 </Row>
@@ -266,7 +264,11 @@ export const CommentaryScreen = ({
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
                 <Row>
-                    <div className="team-name overs-header">Overs</div>
+                    <div className="team-name overs-header">
+                        {(teamDetails?.[BATTING_TEAM]?.teamMaxOver || teamDetails?.[BATTING_TEAM]?.teamTrialRuns) ?
+                            `DLS:-  ${teamDetails?.[BATTING_TEAM]?.teamMaxOver ? "Max Overs: " + teamDetails?.[BATTING_TEAM]?.teamMaxOver : ""} ${teamDetails?.[BATTING_TEAM]?.teamTrialRuns ? "Target: " + teamDetails?.[BATTING_TEAM]?.teamTrialRuns : ""} `
+                            : "Overs"}
+                    </div>
                 </Row>
                 <Row>
                     {generateRightSideOvers()}

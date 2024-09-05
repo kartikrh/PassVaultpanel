@@ -52,7 +52,7 @@ export const isValueEmpty = (value, isDropdown = false) => {
   }
 
   // Use Lodash's isEmpty for other types
-  return (isDropdown && value==="0") || _.isEmpty(value);
+  return (isDropdown && value === "0") || _.isEmpty(value);
 };
 export const transformApiDataToSidebarData = (apiData) => {
   const SidebarData = [];
@@ -134,13 +134,13 @@ export function compareNumStringValues(value1, value2) {
   return !isNaN(numValue1) && !isNaN(numValue2) && numValue1 === numValue2;
 }
 
-export const checkPermission = async(permissionObj, tabName, permissionType) => {
+export const checkPermission = async (permissionObj, tabName, permissionType) => {
   const isPermission = await permissionObj[tabName]?.[permissionType] || false
   return isPermission;
 }
 
 export const fixDecimal = (value, decimalNumber) => {
   if (typeof value === "number" && value !== Infinity) return value.toFixed(decimalNumber)
-  if (value === Infinity) return "0"
+  if (value === Infinity || isNaN(value)) return 0
   else return value
 }

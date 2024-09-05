@@ -97,10 +97,6 @@ const PlayerSelection = forwardRef((props, ref) => {
     setIsOpen(true)
   }
 
-  // const onPrevious = async () => {
-  //   previous()
-  // }
-
   const onNext = async () => {
     if (data) {
       const isPlayPlayers = [];
@@ -114,13 +110,13 @@ const PlayerSelection = forwardRef((props, ref) => {
         return dispatch(updateToastData({ data: "Please Select Players", title: "Commentary", type: ERROR }));
       }
       const _bowlerPlayer = isPlayPlayers.find(
-        (player) => player.isPlay === true && player.bowlerStatus === 1
+        (player) => player.isPlay === true && (bowlingteam?.teamId === player.teamId)
       );
       const _strikerplayer = isPlayPlayers.find(
-        (player) => player.isPlay === true && player.onStrike === true
+        (player) => player.isPlay === true && player.onStrike === true && (battingteam?.teamId === player.teamId)
       );
       const _nonstriker = isPlayPlayers.find(
-        (player) => player.isPlay === true && player.onStrike === false
+        (player) => player.isPlay === true && player.onStrike === false && (battingteam?.teamId === player.teamId)
       );
       const commentaryOvers = {
         overId: "0",
@@ -244,7 +240,6 @@ const PlayerSelection = forwardRef((props, ref) => {
       isBatterOut: null,
       onStrike: null,
       bowlerOver: null,
-      bowlerStatus: null,
     }
     if (teamListStatus === 1 && isSelectingStriker) {
       if (selectedPlayer.commentaryPlayerId === selectedNonStriker?.commentaryPlayerId) {
@@ -291,12 +286,10 @@ const PlayerSelection = forwardRef((props, ref) => {
       updatedData = {
         isPlay: true,
         bowlerOver: 0,
-        bowlerStatus: 1,
       }
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
         i.bowlerOver === 0 &&
-        i.bowlerStatus === 1 &&
         i.currentInnings === currentInnings)).map(i => i.commentaryPlayerId);
     }
 
@@ -382,12 +375,6 @@ const PlayerSelection = forwardRef((props, ref) => {
             </CardBody>
           </Card>
           <Container className='d-flex justify-content-between flex-wrap' >
-            {/* <Button
-              className='m-2'
-              id="caret" color="primary" onClick={onPrevious}>
-              <i className='bx bxs-left-arrow me-1'></i>
-              <span>Previous</span>
-            </Button> */}
             {isNext && (<Button
               className='m-2 d-flex align-items-center'
               id="caret" color="primary" onClick={onNext}>

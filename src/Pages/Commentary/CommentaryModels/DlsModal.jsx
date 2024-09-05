@@ -24,15 +24,15 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
             .then(async (response) => {
                 formatDataInitialize(response?.result)
                 setIsDataLoading(false)
-                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
                     const endPoint = response?.result?.callPrediction?.endPoint;
                     dispatch(
-                      updateToastData({
-                        data: `${endPoint}\n${predictionMessage}`,
-                        title: "Call Prediction",
-                        type: WARNING,
-                      })
+                        updateToastData({
+                            data: `${endPoint}\n${predictionMessage}`,
+                            title: "Call Prediction",
+                            type: WARNING,
+                        })
                     );
                 }
             }).catch((error) => {
@@ -88,7 +88,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                     if ((+(teams[BATTING_TEAM]?.teamOver || 0) < maxOvers)) {
                         updatedTeamData[BATTING_TEAM] = {
                             ...updatedTeamData[BATTING_TEAM],
-                            teamTrialRuns: newTarget,
+                            teamTrialRuns: +newTarget - 1,
                             teamMaxOver: maxOvers
                         }
                         updatedTeamData[BOWLING_TEAM] = {
@@ -111,7 +111,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                             ...updatedTeamData[BOWLING_TEAM],
                             teamMaxOver: maxOvers,
                             teamStatus: BAT,
-                            teamTrialRuns: newTarget,
+                            teamTrialRuns: newTarget - 1,
                         }
                         commentaryData.commentaryPlayers?.forEach(player => newPlayerList.push({
                             ...player,
@@ -135,19 +135,19 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
             .then(async (response) => {
                 setIsDataLoading(false)
                 toggle()
-                if(response?.result?.callPredictions?.length > 0) {
+                if (response?.result?.callPredictions?.length > 0) {
                     response.result.callPredictions.forEach((prediction) => {
-                     if(prediction?.predictioncallSuccess === false) {
-                      const predictionMessage = prediction?.predictionMessage;
-                      const endPoint = prediction?.endPoint;
-                      dispatch(
-                        updateToastData({
-                          data: `${endPoint}\n${predictionMessage}`,
-                          title: prediction?.predictioonAPI,
-                          type: WARNING,
-                        })
-                      );
-                     }
+                        if (prediction?.predictioncallSuccess === false) {
+                            const predictionMessage = prediction?.predictionMessage;
+                            const endPoint = prediction?.endPoint;
+                            dispatch(
+                                updateToastData({
+                                    data: `${endPoint}\n${predictionMessage}`,
+                                    title: prediction?.predictioonAPI,
+                                    type: WARNING,
+                                })
+                            );
+                        }
                     });
                 }
             }).catch((error) => {

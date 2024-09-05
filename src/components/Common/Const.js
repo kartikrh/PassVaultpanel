@@ -63,6 +63,8 @@ export const TAB_COMMENTARY_LOGS = "CommentaryLogs";
 export const TAB_THIRDPARTY_LOGS = "ThirdpartyLogs";
 export const TAB_ERROR_LOGS = "ErrorLogs";
 export const TAB_PREDICTOR_LOGS = "PredictorLogs";
+export const TAB_UNDO_LOGS = "UndoLogs";
+export const TAB_SCORING_LOGS = "ScoringLogs";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";

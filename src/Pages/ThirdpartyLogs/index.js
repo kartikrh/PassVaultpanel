@@ -24,6 +24,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -36,13 +37,19 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    await axiosInstance
-      .post(`/admin/log/thirdpartyLogs`, {
-        ...(latestValueFromTable || tableActions),
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+      page: currentPage+1,
+      limit: pageSize,
+    }
+    if (isSearch) {
+      payload = {
+        ...payload,
         ...dateRange,
-        page: currentPage+1,
-        limit: pageSize,
-      })
+      };
+    }
+    await axiosInstance
+      .post(`/admin/log/thirdpartyLogs`, payload)
       .then((response) => {
         const logsData = response?.result?.data;
         let logsDataIdList = [];
@@ -117,9 +124,9 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Thirdparty Logs",
-    dateRange: true,
     isServerPagination: true,
     reloadButton: true,
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -127,7 +134,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, [currentPage, pageSize]);
+  }, [isSearch, currentPage, pageSize]);
 
   const handleReload = (value) => {
     fetchData();
@@ -155,6 +162,8 @@ const Index = () => {
             serverTotal={total}
             setServerCurrentPage={setCurrentPage}
             setServerPageSize={setPageSize}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

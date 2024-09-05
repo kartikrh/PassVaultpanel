@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BAT, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LATEST_BALLS_TO_FIND_BALL_HISTORY, LBW, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -123,22 +123,26 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
 }
 
 export const getStrikeRate = (runs, balls) => {
-  return fixDecimal(((+runs / +balls) * 100), 2)
+  const strikeRate = fixDecimal(((+runs / +balls) * 100), 2)
+  return isNaN(strikeRate) ? 0 : strikeRate
 }
 
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
-  return fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
+  let economyToReturn = 0
+  if (totalBalls > 0) economyToReturn = fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
+  console.log("Economy Rates: ", { runs, totalBalls, ballsPerOver, economyToReturn });
+  return isNaN(economyToReturn) ? 0 : economyToReturn
 }
 
 export const getRequiredRunRate = (runs, currentOver, ballsPerOver, total, OverInInnings) => {
   runs = total - runs
   const remainingBalls = (((+OverInInnings - +currentOver?.over) * +ballsPerOver) - currentOver?.ballCount)
-  return fixDecimal(((+runs / +remainingBalls) * +ballsPerOver), 2)
+  return remainingBalls > 0 ? fixDecimal(((+runs / +remainingBalls) * +ballsPerOver), 2) : 0
 }
 
 export const getRunRate = (runs, currentOver, ballsPerOver) => {
   const totalBalls = ((+currentOver?.over * +ballsPerOver) + currentOver?.ballCount)
-  return fixDecimal(((+runs / totalBalls) * ballsPerOver), 2)
+  return totalBalls > 0 ? fixDecimal(((+runs / totalBalls) * ballsPerOver), 2) : 0
 }
 
 export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
@@ -193,13 +197,15 @@ export const getBallsForAllOver = (ballHistory = []) => {
   ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"])
   let toReturn = {}
   ballHistory.forEach(ball => {
-    const overCount = +ball?.overCount % 1 === 0 ? (+ball?.overCount + 0.1) : +ball?.overCount
-    const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(overCount)
-    const ballsInCurrentOver = toReturn[overToLogBallFor]
-    if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
-      [
-        { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false, overCount: ball?.overCount }
-      ])
+    if (ball) {
+      const overCount = +ball?.overCount % 1 === 0 ? (+ball?.overCount + 0.1) : +ball?.overCount
+      const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(overCount)
+      const ballsInCurrentOver = toReturn[overToLogBallFor]
+      if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
+        [
+          { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false, overCount: ball?.overCount }
+        ])
+    }
   })
   return toReturn;
 }
@@ -260,8 +266,38 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTe
 
 export const generateRemainingRuns = (team, ballsPerOver) => {
   const totalOverRemaining = team.teamMaxOver - Math.floor(team.teamOver || 0)
-  const ballsInCurrentOver = (team.teamOver || 0) * 10 % 10
+  const ballsInCurrentOver = (team.teamOve || 0) * 10 % 10
   const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
   const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
   return `${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.`
+}
+
+export const getNonExtraRuns = (over) => {
+  const toReturn = (+over?.totalRun || 0) - (+over?.totalWideRun || 0) - (+over?.totalNoBallRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
+  console.log("Non-Extra Runs: ", { toReturn });
+  return toReturn
+}
+
+export const getBowlerOnlyRuns = (over) => {
+  const toReturn = (+over?.totalRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
+  console.log("Bowler only Runs: ", { toReturn });
+  return toReturn
+}
+
+export const getNonNegativeValue = (value) => {
+  return value > 0 ? value : 0
+}
+
+export const getBowlerRelatedWickets = (overId, ballHistory = []) => {
+  let wicketCount = 0
+  if (overId && ballHistory.length > 0) {
+    ballHistory?.map((ball) => {
+      if (ball.overId === overId) {
+        if (ball?.ballIsWicket && !LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(ball?.ballWicketType))
+          wicketCount += 1
+      }
+      return ball
+    })
+  }
+  return wicketCount
 }
