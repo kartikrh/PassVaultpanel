@@ -239,16 +239,23 @@ const Commentary = (props) => {
 
     const handleInningsUpdate = (battingTeamId) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
+        const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
         propsData.commentaryData?.commentaryTeams?.forEach(team => {
             if (team.currentInnings === (commentaryDetails.currentInnings + 1)) {
                 let updatedTeam = team
                 if (team.teamId === battingTeamId) {
                     updatedTeam["teamStatus"] = BATTING_STATUS
                     updatedTeam["teamBattingOrder"] = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
-                    if (teams[BATTING_TEAM].teamTrialRuns) { }
+                    if (runDifference > 0) {
+                        if (isEqual(+teams[BATTING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamLeadRuns"] = runDifference
+                        else if (isEqual(+teams[BOWLING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamTrialRuns"] = runDifference
+                    } else {
+                        if (isEqual(+teams[BATTING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamTrialRuns"] = runDifference * -1
+                        else if (isEqual(+teams[BOWLING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamLeadRuns"] = runDifference * -1
+                    }
                 } else {
                     updatedTeam["teamStatus"] = BOWLING_STATUS
-                    updatedTeam["teamBattingOrder"] = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
+                    updatedTeam["teamBattingOrder"] = BOWLING_STATUS + (+commentaryDetails.currentInnings * 2)
                 }
                 updatedInningsTeam.push(updatedTeam)
             }
@@ -434,7 +441,6 @@ const Commentary = (props) => {
             const actualPrevData = isEmpty(prevValue) ? teams : prevValue
             return { ...actualPrevData, [BATTING_TEAM]: { ...actualPrevData[BATTING_TEAM], ...updateBattingTeam } }
         })
-        // TODO CHeck 1
         setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall } })
         _setCurrentOver((prevValue) => {
             const actualPrevData = isEmpty(prevValue) ? currentOver : prevValue
@@ -1667,7 +1673,6 @@ const Commentary = (props) => {
     useEffect(() => {
         if (changeOverOnPopupClick) {
             // setOverBallByBallDisplay([])
-            // TODO add check
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
             changeOver()
