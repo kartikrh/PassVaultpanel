@@ -78,6 +78,7 @@ const Commentary = (props) => {
     const [superOverModal, setSuperOverModal] = useState(0)
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
     const [retryModel, setRetryModel] = useState(undefined)
+    const [isWonByInnings, setIsWonByInnings] = useState(undefined)
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -150,21 +151,21 @@ const Commentary = (props) => {
             default: break;
         }
         if (conditionsToCheck.some(condition => condition)) {
+            const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
+            else if (!teams[BOWLING_TEAM].isBattingComplete && isLastInnigs && runDifference < 0) {
+                setIsWonByInnings(runDifference * -1)
+                setCompleteMatchModal(true)
+            }
             else setShowInningsChangePopup(true);
         }
     }
     const completeMatch = () => {
-        console.log('Completing match');
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1;
-        console.log(`Is match tie: ${isMatchTie}`);
         if (isMatchTie) {
             console.log('Match is tied. Showing super over modal.');
             setSuperOverModal(true);
-        } else {
-            console.log('Checking winner');
-            checkWinner();
-        }
+        } else checkWinner();
         setCompleteMatchModal(false);
         setChangePlayerList(undefined);
     }
@@ -177,11 +178,20 @@ const Commentary = (props) => {
         dispatch(addSuperOverCall(objToSend));
     }
     const checkWinner = () => {
-        const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
-        const isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
-        const WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
-        const WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
-            : fetchWinnerMessage({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
+        let WINNING_MESSAGE = ""
+        let WINNING_TEAM = ""
+        let isBattingTeamWon = undefined
+        if (isWonByInnings) {
+            isBattingTeamWon = false
+            WINNING_TEAM = BOWLING_TEAM
+            WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
+        } else {
+            const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
+            isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
+            WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
+            WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
+                : fetchWinnerMessage({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
+        }
         const teamUpdates = [
             { ...teams?.[BATTING_TEAM], isBattingComplete: true, isWin: isBattingTeamWon },
             { ...teams?.[BOWLING_TEAM], isWin: !isBattingTeamWon }]
@@ -202,6 +212,7 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(onPitchPlayers).filter(x => x),
         }
         dispatch(addCommentaryScreenData(objToSave))
+        setIsWonByInnings(undefined)
         setShowInningsChangePopup(undefined)
         setCompleteMatchModal(undefined)
         setRedirectOnScreenChange(true)
@@ -211,15 +222,12 @@ const Commentary = (props) => {
         let teamUpdates = undefined
         let commentaryUpdates = undefined
         if (teams[BOWLING_TEAM].isBattingComplete && !isLastInnigs) {
-            console.log('Showing update innings modal')
             setShowUpdateInnings(true)
-        } else {
-            console.log('Updating teams for innings change')
+        }
+        else {
             const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             const trialRuns = Math.max(runDifference, 0)
-            const leadRuns = Math.max(-runDifference, 0)
-            console.log(`Run difference: ${runDifference}, Trial runs: ${trialRuns}, Lead runs: ${leadRuns}`)
-
+            const leadRuns = Math.max(runDifference * -1, 0)
             teamUpdates = [
                 { ...teams?.[BATTING_TEAM], isBattingComplete: true, teamStatus: 2 },
                 { ...teams?.[BOWLING_TEAM], teamStatus: 1, teamTrialRuns: trialRuns, teamLeadRuns: leadRuns }]
@@ -229,8 +237,6 @@ const Commentary = (props) => {
             }
             setRedirectOnScreenChange(true)
         }
-        console.log('Team updates:', teamUpdates)
-        console.log('Commentary updates:', commentaryUpdates)
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
@@ -240,7 +246,6 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": setAllPlayerToNull(),
         }
-        console.log('Object to save:', objToSave)
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
@@ -1571,10 +1576,10 @@ const Commentary = (props) => {
             }
         });
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
-            if (isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) && isEqual(+overDetails.over, +currentOver)) {
-                // if (isEqual(+overDetails.over, +currentOver)) {
-                currentOverToUpdate = overDetails
-            }
+            if (
+                isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) &&
+                isEqual(+overDetails.over, +currentOver) &&
+                isEqual(+overDetails?.currentInnings, commentaryDetails.currentInnings)) currentOverToUpdate = overDetails
         });
         const ballData = propsData.commentaryData.commentaryBallByBall || []
         let ballByBallHistoryData = ballData?.commentaryBallByBallId ? [ballData] : ballData
@@ -1800,7 +1805,6 @@ const Commentary = (props) => {
                 currentBall.commentaryBallByBallId && commentaryDataToUpdate.commentaryBallByBallDetails
                 && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
                 && !isEqual(currentBall, commentaryDataToUpdate.commentaryBallByBallDetails)) {
-                console.log("Adding Ball by Ball history and changing it:", { currentBall, newBall: commentaryDataToUpdate.commentaryBallByBallDetails });
                 setBallHistory([].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]))
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
