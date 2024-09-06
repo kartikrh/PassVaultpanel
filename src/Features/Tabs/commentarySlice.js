@@ -233,8 +233,6 @@ const commentarySlice = createSlice({
                 }
             })
             .addCase(addCommentaryScreenData.rejected, (state, action) => {
-                state.commentaryDataToUpdate = action.payload
-                state.isCommentaryDataUpdated = true
                 state.error = action.payload;
                 state.isCommentaryBallLoading = false
             })

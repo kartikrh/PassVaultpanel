@@ -1689,7 +1689,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (redirectOnScreenChange && isCommentaryDataUpdated) {
             props.onInningsChange()
-            // dispatch(clearAddCommentaryScreenData())
+            dispatch(clearAddCommentaryScreenData())
         }
     }, [redirectOnScreenChange, isCommentaryDataUpdated])
     useEffect(() => {

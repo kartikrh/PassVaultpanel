@@ -12,7 +12,7 @@ export const RetryModel = ({ errorMsg }) => {
             </ModalHeader>
             <ModalBody>
                 There is some error in the commentary, please click on retry to continue scoring.
-                Error : {errorMsg}
+                <p><b>Error : </b>{errorMsg}</p>
             </ModalBody>
             <ModalFooter>
                 {/* <Button color="danger" className="decision-Button float-left" onClick={toggle}>Exit</Button> */}
