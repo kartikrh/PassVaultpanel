@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SWITCH_BOWLER, TIMED_OUT, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -24,6 +24,7 @@ import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
 import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
+import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -76,7 +77,15 @@ const Commentary = (props) => {
     const [target, setTarget] = useState(0)
     const [superOverModal, setSuperOverModal] = useState(0)
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
-    const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
+    const [retryModel, setRetryModel] = useState(undefined)
+    const [isWonByInnings, setIsWonByInnings] = useState(undefined)
+    const {
+        commentaryDataToUpdate,
+        isCommentaryDataUpdated,
+        isUndoCompleted,
+        isCommentaryBallLoading,
+        superOverApiData, error
+    } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -93,12 +102,12 @@ const Commentary = (props) => {
         // bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // changePlayerList
         // });
-        // console.log("Wicket and Partnership: ", {
-        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-        //     currentPartnership,
-        //     partnershipHistory,
-        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
-        // });
+        console.log("Wicket and Partnership: ", {
+            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
+            currentPartnership,
+            partnershipHistory,
+            PartnershiId: currentPartnership?.commentaryPartnershipId,
+        });
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
@@ -142,21 +151,21 @@ const Commentary = (props) => {
             default: break;
         }
         if (conditionsToCheck.some(condition => condition)) {
+            const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
+            else if (!teams[BOWLING_TEAM].isBattingComplete && isLastInnigs && runDifference < 0) {
+                setIsWonByInnings(runDifference * -1)
+                setCompleteMatchModal(true)
+            }
             else setShowInningsChangePopup(true);
         }
     }
     const completeMatch = () => {
-        console.log('Completing match');
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1;
-        console.log(`Is match tie: ${isMatchTie}`);
         if (isMatchTie) {
             console.log('Match is tied. Showing super over modal.');
             setSuperOverModal(true);
-        } else {
-            console.log('Checking winner');
-            checkWinner();
-        }
+        } else checkWinner();
         setCompleteMatchModal(false);
         setChangePlayerList(undefined);
     }
@@ -169,11 +178,20 @@ const Commentary = (props) => {
         dispatch(addSuperOverCall(objToSend));
     }
     const checkWinner = () => {
-        const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
-        const isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
-        const WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
-        const WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
-            : fetchWinnerMessage({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
+        let WINNING_MESSAGE = ""
+        let WINNING_TEAM = ""
+        let isBattingTeamWon = undefined
+        if (isWonByInnings) {
+            isBattingTeamWon = false
+            WINNING_TEAM = BOWLING_TEAM
+            WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
+        } else {
+            const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
+            isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
+            WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
+            WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
+                : fetchWinnerMessage({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
+        }
         const teamUpdates = [
             { ...teams?.[BATTING_TEAM], isBattingComplete: true, isWin: isBattingTeamWon },
             { ...teams?.[BOWLING_TEAM], isWin: !isBattingTeamWon }]
@@ -194,6 +212,7 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(onPitchPlayers).filter(x => x),
         }
         dispatch(addCommentaryScreenData(objToSave))
+        setIsWonByInnings(undefined)
         setShowInningsChangePopup(undefined)
         setCompleteMatchModal(undefined)
         setRedirectOnScreenChange(true)
@@ -203,15 +222,12 @@ const Commentary = (props) => {
         let teamUpdates = undefined
         let commentaryUpdates = undefined
         if (teams[BOWLING_TEAM].isBattingComplete && !isLastInnigs) {
-            console.log('Showing update innings modal')
             setShowUpdateInnings(true)
-        } else {
-            console.log('Updating teams for innings change')
+        }
+        else {
             const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             const trialRuns = Math.max(runDifference, 0)
-            const leadRuns = Math.max(-runDifference, 0)
-            console.log(`Run difference: ${runDifference}, Trial runs: ${trialRuns}, Lead runs: ${leadRuns}`)
-
+            const leadRuns = Math.max(runDifference * -1, 0)
             teamUpdates = [
                 { ...teams?.[BATTING_TEAM], isBattingComplete: true, teamStatus: 2 },
                 { ...teams?.[BOWLING_TEAM], teamStatus: 1, teamTrialRuns: trialRuns, teamLeadRuns: leadRuns }]
@@ -221,8 +237,6 @@ const Commentary = (props) => {
             }
             setRedirectOnScreenChange(true)
         }
-        console.log('Team updates:', teamUpdates)
-        console.log('Commentary updates:', commentaryUpdates)
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
@@ -232,7 +246,6 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": setAllPlayerToNull(),
         }
-        console.log('Object to save:', objToSave)
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
@@ -719,7 +732,7 @@ const Commentary = (props) => {
     const handleWicket = (wicketData) => {
         // if (!wicketData.isExtraWicket) 
         setCurrentBall({})
-        const ballToUpdateOnWicket = (wicketData.isExtraWicket || (wicketData.wicketType === RETIRED_OUT)) ? 0 : 1
+        const ballToUpdateOnWicket = (wicketData.isExtraWicket || (wicketData.wicketType === RETIRED_OUT) || (wicketData.wicketType === TIMED_OUT)) ? 0 : 1
         setIsWicketChange(true)
         const updateBattingTeam = {}
         const updateBall = {}
@@ -872,7 +885,6 @@ const Commentary = (props) => {
             "playerId": oldPlayer["playerId"],
             "playerName": oldPlayer["playerName"],
             "batsmanAverage": oldPlayer["batsmanAverage"],
-            "batsmanStrikeRate": oldPlayer["batsmanStrikeRate"],
             "bowlerAverage": oldPlayer["bowlerAverage"],
             "batterOrder": null,
             "bowlerOrder": null,
@@ -882,7 +894,6 @@ const Commentary = (props) => {
             "playerId": newPlayer["playerId"],
             "playerName": newPlayer["playerName"],
             "batsmanAverage": newPlayer["batsmanAverage"],
-            "batsmanStrikeRate": newPlayer["batsmanStrikeRate"],
             "bowlerAverage": newPlayer["bowlerAverage"],
             "batterOrder": newPlayer["batterOrder"],
             "bowlerOrder": newPlayer["bowlerOrder"],
@@ -1446,12 +1457,27 @@ const Commentary = (props) => {
             "batNonStrikeId": retiredHurtData[PREV_NON_STRIKE]?.commentaryPlayerId,
             "ballType": BALL_TYPE_RETIRED_HURT
         }
-        const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
-        const objToSave = {
-            "commentaryBallByBall": generatedBallByBall,
-            "commentaryId": commentaryDetails.commentaryId,
-            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+        const currentBallDetails = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
+        // const currentBallDetails = { ...currentBall }
+        currentBallDetails["nextBatStrikeId"] = retiredHurtData[ON_STRIKE]?.commentaryPlayerId
+        currentBallDetails["nextBatNonStrikeId"] = retiredHurtData[NON_STRIKE]?.commentaryPlayerId
+        const partnershipDetails = {
+            "batter1Id": retiredHurtData[ON_STRIKE]?.commentaryPlayerId,
+            "batter1Name": retiredHurtData[ON_STRIKE]?.playerName,
+            "batter2Id": retiredHurtData[NON_STRIKE]?.commentaryPlayerId,
+            "batter2Name": retiredHurtData[NON_STRIKE]?.playerName,
+            "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0")
         }
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPartnership": updatedPartnership,
+            "commentaryDetails": commentaryDetails,
+            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+            "commentaryBallByBall": currentBallDetails
+        }
+        checkForOverSwitch()
+        setCurrentPartnership({})
         dispatch(addCommentaryScreenData(objToSave))
         setCurrentBall(updateBall)
         setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: retiredHurtData[ON_STRIKE], [NON_STRIKE]: retiredHurtData[NON_STRIKE] })
@@ -1488,6 +1514,7 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [BATTING_TEAM]: updatedPlayerList })
         setOnPitchPlayers({ ...onPitchPlayers, ...updatedOnPitchPlayer })
+        setIsUndoBall(RETIRED_HURT)
     }
     const initialDataLoad = () => {
         const currentInningsTeams = {}
@@ -1549,10 +1576,10 @@ const Commentary = (props) => {
             }
         });
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
-            if (isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) && isEqual(+overDetails.over, +currentOver)) {
-                // if (isEqual(+overDetails.over, +currentOver)) {
-                currentOverToUpdate = overDetails
-            }
+            if (
+                isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) &&
+                isEqual(+overDetails.over, +currentOver) &&
+                isEqual(+overDetails?.currentInnings, commentaryDetails.currentInnings)) currentOverToUpdate = overDetails
         });
         const ballData = propsData.commentaryData.commentaryBallByBall || []
         let ballByBallHistoryData = ballData?.commentaryBallByBallId ? [ballData] : ballData
@@ -1638,7 +1665,7 @@ const Commentary = (props) => {
     }, [updateRunsFromWicket])
     useEffect(() => {
         if (isUndoCompleted) {
-            if (isUndoBall === WICKET) {
+            if (isUndoBall === WICKET || isUndoBall === RETIRED_HURT) {
                 const updatedWicketHistory = wicketHistory.slice(0, -1)
                 const updaterPartnershipHistory = partnershipHistory.slice(0, -1)
                 setWicketHistory(updatedWicketHistory)
@@ -1667,7 +1694,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (redirectOnScreenChange && isCommentaryDataUpdated) {
             props.onInningsChange()
-            // dispatch(clearAddCommentaryScreenData())
+            dispatch(clearAddCommentaryScreenData())
         }
     }, [redirectOnScreenChange, isCommentaryDataUpdated])
     useEffect(() => {
@@ -1778,7 +1805,6 @@ const Commentary = (props) => {
                 currentBall.commentaryBallByBallId && commentaryDataToUpdate.commentaryBallByBallDetails
                 && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
                 && !isEqual(currentBall, commentaryDataToUpdate.commentaryBallByBallDetails)) {
-                console.log("Adding Ball by Ball history and changing it:", { currentBall, newBall: commentaryDataToUpdate.commentaryBallByBallDetails });
                 setBallHistory([].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]))
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
@@ -1825,6 +1851,7 @@ const Commentary = (props) => {
             setOverBallByBallDisplay(getCurrentOverToBallStatus)
         }
     }, [currentOver, ballHistory])
+    useEffect(() => { if (error) setRetryModel(error) }, [error])
     return <>
         <CommentaryScreen
             teamDetails={teams}
@@ -1897,7 +1924,10 @@ const Commentary = (props) => {
         {showWicketModal &&
             <WicketModal
                 isOpen={showWicketModal}
-                toggle={() => { setShowWicketModal(undefined) }}
+                toggle={() => {
+                    setShowWicketModal(undefined)
+                    setExtrasType(undefined)
+                }}
                 onSubmit={handleWicket}
                 bowlingTeam={players[BOWLING_TEAM]}
                 bowlingTeamDetails={teams[BOWLING_TEAM]}
@@ -1989,6 +2019,7 @@ const Commentary = (props) => {
                 }}
             />
         }
+        {retryModel && <RetryModel errorMsg={retryModel} />}
     </>
 }
 
