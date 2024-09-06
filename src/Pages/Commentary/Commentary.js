@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SWITCH_BOWLER, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -93,12 +93,12 @@ const Commentary = (props) => {
         // bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // changePlayerList
         // });
-        // console.log("Wicket and Partnership: ", {
-        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-        //     currentPartnership,
-        //     partnershipHistory,
-        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
-        // });
+        console.log("Wicket and Partnership: ", {
+            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
+            currentPartnership,
+            partnershipHistory,
+            PartnershiId: currentPartnership?.commentaryPartnershipId,
+        });
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
@@ -872,7 +872,6 @@ const Commentary = (props) => {
             "playerId": oldPlayer["playerId"],
             "playerName": oldPlayer["playerName"],
             "batsmanAverage": oldPlayer["batsmanAverage"],
-            "batsmanStrikeRate": oldPlayer["batsmanStrikeRate"],
             "bowlerAverage": oldPlayer["bowlerAverage"],
             "batterOrder": null,
             "bowlerOrder": null,
@@ -881,7 +880,6 @@ const Commentary = (props) => {
             ...oldPlayer,
             "playerId": newPlayer["playerId"],
             "playerName": newPlayer["playerName"],
-            "batsmanAverage": newPlayer["batsmanAverage"],
             "batsmanStrikeRate": newPlayer["batsmanStrikeRate"],
             "bowlerAverage": newPlayer["bowlerAverage"],
             "batterOrder": newPlayer["batterOrder"],
@@ -1446,12 +1444,27 @@ const Commentary = (props) => {
             "batNonStrikeId": retiredHurtData[PREV_NON_STRIKE]?.commentaryPlayerId,
             "ballType": BALL_TYPE_RETIRED_HURT
         }
-        const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
-        const objToSave = {
-            "commentaryBallByBall": generatedBallByBall,
-            "commentaryId": commentaryDetails.commentaryId,
-            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+        const currentBallDetails = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers: retiredHurtData, teams })
+        // const currentBallDetails = { ...currentBall }
+        currentBallDetails["nextBatStrikeId"] = retiredHurtData[ON_STRIKE]?.commentaryPlayerId
+        currentBallDetails["nextBatNonStrikeId"] = retiredHurtData[NON_STRIKE]?.commentaryPlayerId
+        const partnershipDetails = {
+            "batter1Id": retiredHurtData[ON_STRIKE]?.commentaryPlayerId,
+            "batter1Name": retiredHurtData[ON_STRIKE]?.playerName,
+            "batter2Id": retiredHurtData[NON_STRIKE]?.commentaryPlayerId,
+            "batter2Name": retiredHurtData[NON_STRIKE]?.playerName,
+            "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0")
         }
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "commentaryPartnership": updatedPartnership,
+            "commentaryDetails": commentaryDetails,
+            "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
+            "commentaryBallByBall": currentBallDetails
+        }
+        checkForOverSwitch()
+        setCurrentPartnership({})
         dispatch(addCommentaryScreenData(objToSave))
         setCurrentBall(updateBall)
         setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: retiredHurtData[ON_STRIKE], [NON_STRIKE]: retiredHurtData[NON_STRIKE] })
@@ -1488,6 +1501,7 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [BATTING_TEAM]: updatedPlayerList })
         setOnPitchPlayers({ ...onPitchPlayers, ...updatedOnPitchPlayer })
+        setIsUndoBall(RETIRED_HURT)
     }
     const initialDataLoad = () => {
         const currentInningsTeams = {}
@@ -1638,7 +1652,7 @@ const Commentary = (props) => {
     }, [updateRunsFromWicket])
     useEffect(() => {
         if (isUndoCompleted) {
-            if (isUndoBall === WICKET) {
+            if (isUndoBall === WICKET || isUndoBall === RETIRED_HURT) {
                 const updatedWicketHistory = wicketHistory.slice(0, -1)
                 const updaterPartnershipHistory = partnershipHistory.slice(0, -1)
                 setWicketHistory(updatedWicketHistory)
