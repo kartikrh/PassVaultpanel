@@ -37,7 +37,6 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
             </ModalHeader>
             <ModalBody>
                 <Table responsive>
-                    {/* Ball Type:&nbsp;{extraType} */}
                     <Row>
                         {<Col xs={6} md={6} lg={6} >
                             Runs
