@@ -93,12 +93,12 @@ const Commentary = (props) => {
         // bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // changePlayerList
         // });
-        console.log("Wicket and Partnership: ", {
-            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-            currentPartnership,
-            partnershipHistory,
-            PartnershiId: currentPartnership?.commentaryPartnershipId,
-        });
+        // console.log("Wicket and Partnership: ", {
+        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
+        //     currentPartnership,
+        //     partnershipHistory,
+        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
+        // });
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
@@ -236,52 +236,30 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
+
     const handleInningsUpdate = (battingTeamId) => {
-        console.log(`Updating innings. Batting team ID: ${battingTeamId}`)
-        let updatedInningsTeam = []
-        let firstInningsScores = {}
-        // First, gather first innings scores for both teams
+        let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
+        const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
         propsData.commentaryData?.commentaryTeams?.forEach(team => {
-            if (team.currentInnings === 1) {
-                firstInningsScores[team.teamId] = team.teamScore || 0
-            }
-        })
-
-        propsData.commentaryData?.commentaryTeams?.forEach(team => {
-            let updatedTeam = { ...team }
-
-            if (team.currentInnings === commentaryDetails.currentInnings) {
-                updatedTeam.isBattingComplete = true
-            }
-
             if (team.currentInnings === (commentaryDetails.currentInnings + 1)) {
+                let updatedTeam = team
                 if (team.teamId === battingTeamId) {
-                    updatedTeam.teamStatus = BATTING_STATUS
-                    updatedTeam.teamBattingOrder = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
-
-                    // Calculate lead/trail runs
-                    const opposingTeamId = Object.keys(firstInningsScores).find(id => +id !== +team.teamId)
-                    if (opposingTeamId) {
-                        const runDifference = firstInningsScores[team.teamId] - firstInningsScores[opposingTeamId]
-                        if (runDifference > -1) {
-                            updatedTeam.teamLeadRuns = runDifference
-                            updatedTeam.teamTrialRuns = 0
-                        } else {
-                            updatedTeam.teamTrialRuns = -runDifference
-                            updatedTeam.teamLeadRuns = 0
-                        }
+                    updatedTeam["teamStatus"] = BATTING_STATUS
+                    updatedTeam["teamBattingOrder"] = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
+                    if (runDifference > 0) {
+                        if (isEqual(+teams[BATTING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamLeadRuns"] = runDifference
+                        else if (isEqual(+teams[BOWLING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamTrialRuns"] = runDifference
+                    } else {
+                        if (isEqual(+teams[BATTING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamTrialRuns"] = runDifference * -1
+                        else if (isEqual(+teams[BOWLING_TEAM]?.teamId, +battingTeamId)) updatedTeam["teamLeadRuns"] = runDifference * -1
                     }
                 } else {
-                    updatedTeam.teamStatus = BOWLING_STATUS
-                    updatedTeam.teamBattingOrder = BATTING_STATUS + (+commentaryDetails.currentInnings * 2)
+                    updatedTeam["teamStatus"] = BOWLING_STATUS
+                    updatedTeam["teamBattingOrder"] = BOWLING_STATUS + (+commentaryDetails.currentInnings * 2)
                 }
+                updatedInningsTeam.push(updatedTeam)
             }
-
-            updatedInningsTeam.push(updatedTeam)
-        })
-
-        console.log('Updated innings team:', updatedInningsTeam);
-
+        });
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
@@ -293,12 +271,10 @@ const Commentary = (props) => {
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
             "isEndInnings": true
-        };
-        console.log('Object to save:', objToSave);
-
-        dispatch(addCommentaryScreenData(objToSave));
-        setShowUpdateInnings(undefined);
-        setRedirectOnScreenChange(true);
+        }
+        dispatch(addCommentaryScreenData(objToSave))
+        setShowUpdateInnings(undefined)
+        setRedirectOnScreenChange(true)
     }
 
     const setAllPlayerToNull = () => {
@@ -465,7 +441,6 @@ const Commentary = (props) => {
             const actualPrevData = isEmpty(prevValue) ? teams : prevValue
             return { ...actualPrevData, [BATTING_TEAM]: { ...actualPrevData[BATTING_TEAM], ...updateBattingTeam } }
         })
-        // TODO CHeck 1
         setCurrentBall((prevValue) => { return { ...prevValue, ...updateBall } })
         _setCurrentOver((prevValue) => {
             const actualPrevData = isEmpty(prevValue) ? currentOver : prevValue
@@ -1698,7 +1673,6 @@ const Commentary = (props) => {
     useEffect(() => {
         if (changeOverOnPopupClick) {
             // setOverBallByBallDisplay([])
-            // TODO add check
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
             changeOver()
@@ -1881,7 +1855,7 @@ const Commentary = (props) => {
             handleRetiredHurt={() => setShowRretiredHurt(true)}
             overBalls={overBallByBallDisplay}
             showPaneltyRuns={setIsPaneltyPopup}
-            // currentOver={currentOver}
+            target={target}
             anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || superOverModal || showRretiredHurt || isPaneltyPopup
                 || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer

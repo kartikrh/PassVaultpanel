@@ -108,7 +108,7 @@ import ThirdpartyLogs from "../Pages/ThirdpartyLogs";
 import ErrorLogs from "../Pages/ErrorLogs";
 import PredictorLogs from "../Pages/PredictorLogs";
 import UndoLogs from "../Pages/UndoLogs";
-import ScoringLogs from "../Pages/Commentary/ScoringLogs.jsx";
+import ScoringLogs from "../Pages/ScoringLogs";
 
 const authProtectedRoutes = [
   //dashboard
