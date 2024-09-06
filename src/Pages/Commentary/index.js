@@ -316,9 +316,10 @@ const Index = () => {
     const url = new URL(window.location.origin + "/updateCommentaryPlayer");
     window.open(url.href, '_blank');
   };
-  const handleScoringLogsClick = (details) => {
-    localStorage.setItem('scoringLogsCommentaryId', "" + details?.commentaryId);
+  const handleScoringLogsClick = (commentaryId) => {
+    // localStorage.setItem('scoringLogsCommentaryId', "" + details?.commentaryId);
     const url = new URL(window.location.origin + "/scoringLogs");
+    url.searchParams.set('commentaryId', commentaryId);
     window.open(url.href, '_blank');
   };
   const handlePredictorDetailsClick = (commentaryId) => {
@@ -1205,7 +1206,7 @@ const Index = () => {
              size="sm"
              className="btn"
              onClick={() => {
-               handleScoringLogsClick(record);
+               handleScoringLogsClick(record.commentaryId);
              }}
             >
               <i class='bx bxs-up-arrow-square' ></i>

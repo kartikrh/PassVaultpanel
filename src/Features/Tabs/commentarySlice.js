@@ -2,24 +2,25 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 import { updateToastData } from '../toasterSlice';
 import { ERROR, SUCCESS, WARNING } from '../../components/Common/Const';
+import { isEmpty } from 'lodash';
 
 export const addCommentaryToDb = createAsyncThunk(
     'commentary/addCommentary',
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/save', data);
-            if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+            if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                 const predictionMessage = response?.result?.callPrediction?.predictionMessage;
                 const endPoint = response?.result?.callPrediction?.endPoint;
                 dispatch(
-                  updateToastData({
-                    data: `${endPoint}\n${predictionMessage}`,
-                    title: "Call Prediction",
-                    type: WARNING,
-                  })
+                    updateToastData({
+                        data: `${endPoint}\n${predictionMessage}`,
+                        title: "Call Prediction",
+                        type: WARNING,
+                    })
                 );
             } else {
-            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             }
             return response?.result;
         } catch (error) {
@@ -33,19 +34,19 @@ export const addCommentaryScreenData = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/saveDetails', data);
-            if(response?.result?.callPredictions?.length > 0) {
+            if (response?.result?.callPredictions?.length > 0) {
                 response.result.callPredictions.forEach((prediction) => {
-                 if(prediction?.predictioncallSuccess === false) {
-                  const predictionMessage = prediction?.predictionMessage;
-                  const endPoint = prediction?.endPoint;
-                  dispatch(
-                    updateToastData({
-                      data: `${endPoint}\n${predictionMessage}`,
-                      title: prediction?.predictioonAPI,
-                      type: WARNING,
-                    })
-                  );
-                 }
+                    if (prediction?.predictioncallSuccess === false) {
+                        const predictionMessage = prediction?.predictionMessage;
+                        const endPoint = prediction?.endPoint;
+                        dispatch(
+                            updateToastData({
+                                data: `${endPoint}\n${predictionMessage}`,
+                                title: prediction?.predictioonAPI,
+                                type: WARNING,
+                            })
+                        );
+                    }
                 });
             }
             return response?.result;
@@ -60,20 +61,20 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/updateCommentaryStatus', data);
-            if(response?.result?.callPredictions?.length > 0) {
-              response.result.callPredictions.forEach((prediction) => {
-               if(prediction?.predictioncallSuccess === false) {
-                const predictionMessage = prediction?.predictionMessage;
-                const endPoint = prediction?.endPoint;
-                dispatch(
-                  updateToastData({
-                    data: `${endPoint}\n${predictionMessage}`,
-                    title: "Call Prediction",
-                    type: WARNING,
-                  })
-                );
-               }
-              });
+            if (response?.result?.callPredictions?.length > 0) {
+                response.result.callPredictions.forEach((prediction) => {
+                    if (prediction?.predictioncallSuccess === false) {
+                        const predictionMessage = prediction?.predictionMessage;
+                        const endPoint = prediction?.endPoint;
+                        dispatch(
+                            updateToastData({
+                                data: `${endPoint}\n${predictionMessage}`,
+                                title: "Call Prediction",
+                                type: WARNING,
+                            })
+                        );
+                    }
+                });
             }
             return response?.result;
         } catch (error) {
@@ -137,18 +138,18 @@ export const loadCommentaryFeature = createAsyncThunk(
     async (data, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.post('/admin/commentary/loadcommentaryapi', data);
-            if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+            if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                 const predictionMessage = response?.result?.callPrediction?.predictionMessage;
                 const endPoint = response?.result?.callPrediction?.endPoint;
                 dispatch(
-                  updateToastData({
-                    data: `${endPoint}\n${predictionMessage}`,
-                    title: "Call Prediction",
-                    type: WARNING,
-                  })
+                    updateToastData({
+                        data: `${endPoint}\n${predictionMessage}`,
+                        title: "Call Prediction",
+                        type: WARNING,
+                    })
                 );
             } else {
-            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             }
             return response?.result;
         } catch (error) {
@@ -224,14 +225,14 @@ const commentarySlice = createSlice({
                 state.isCommentaryBallLoading = true;
             })
             .addCase(addCommentaryScreenData.fulfilled, (state, action) => {
-                state.commentaryDataToUpdate = action.payload
-                state.isUndoCompleted = (action.payload?.deleteCommentaryBallByBallId || action.payload?.deleteOverId) ? true : false
-                state.isCommentaryDataUpdated = true
-                state.isCommentaryBallLoading = false
+                if (!isEmpty(action.payload)) {
+                    state.commentaryDataToUpdate = action.payload
+                    state.isUndoCompleted = (action.payload?.deleteCommentaryBallByBallId || action.payload?.deleteOverId) ? true : false
+                    state.isCommentaryDataUpdated = true
+                    state.isCommentaryBallLoading = false
+                }
             })
             .addCase(addCommentaryScreenData.rejected, (state, action) => {
-                state.commentaryDataToUpdate = action.payload
-                state.isCommentaryDataUpdated = true
                 state.error = action.payload;
                 state.isCommentaryBallLoading = false
             })
