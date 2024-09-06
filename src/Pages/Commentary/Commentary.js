@@ -24,6 +24,7 @@ import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
 import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
+import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -76,7 +77,14 @@ const Commentary = (props) => {
     const [target, setTarget] = useState(0)
     const [superOverModal, setSuperOverModal] = useState(0)
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
-    const { commentaryDataToUpdate, isCommentaryDataUpdated, isUndoCompleted, isCommentaryBallLoading, superOverApiData } = useSelector(state => state.tabsData.commentary);
+    const [retryModel, setRetryModel] = useState(undefined)
+    const {
+        commentaryDataToUpdate,
+        isCommentaryDataUpdated,
+        isUndoCompleted,
+        isCommentaryBallLoading,
+        superOverApiData, error
+    } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -1839,6 +1847,7 @@ const Commentary = (props) => {
             setOverBallByBallDisplay(getCurrentOverToBallStatus)
         }
     }, [currentOver, ballHistory])
+    useEffect(() => { if (error) setRetryModel(error) }, [error])
     return <>
         <CommentaryScreen
             teamDetails={teams}
@@ -2003,6 +2012,7 @@ const Commentary = (props) => {
                 }}
             />
         }
+        {retryModel && <RetryModel errorMsg={retryModel} />}
     </>
 }
 
