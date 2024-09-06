@@ -20,6 +20,7 @@ const tableElement = {
 };
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [teams, setTeams] = useState({});
     const [categories, setCategories] = useState([]);
     const [categorisedData, setCategorisedData] = useState([]);
@@ -87,6 +88,7 @@ export const OpenMarket = () => {
     }
 
     const handleValueChange = (record, key, value) => {
+        setHasUnsavedChanges(true);
         const indexOfData = data.findIndex(i => i.marketId === record.marketId)
         if (indexOfData !== -1) {
             if (key === 'line' || key === 'margin') {
@@ -160,6 +162,7 @@ export const OpenMarket = () => {
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setTeams(teamsObj)
                     setData(formattedData.data);
+                    setHasUnsavedChanges(false);
                 }
                 setIsLoading(false);
                 if (response?.result?.callPrediction?.predictioncallSuccess === false) {
@@ -236,6 +239,7 @@ export const OpenMarket = () => {
                 }
                 setTimeout(() => {
                     setData((storedData) => {
+                        setHasUnsavedChanges(false);
                         return storedData.map(element => ({ ...element, isNewSocketData: false }))
                     });
                 }, 3000);
@@ -741,9 +745,19 @@ export const OpenMarket = () => {
                                     <Row>
                                         {lineRatioField}
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}>{`${SEND_ALL} (S)`}</Button>
+                                            <Button
+                                                color="primary"
+                                                style={{ opacity: hasUnsavedChanges ? 0.75 : 1 }}
+                                                className="table-header-button"
+                                                onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
+                                            > {`${SEND_ALL} (S)`}</Button>
                                             <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}>{`Publish (D)`}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => updateRecords()}>{`Save All (A)`}</Button>
+                                            <Button
+                                                color="primary"
+                                                className="table-header-button"
+                                                style={{ opacity: hasUnsavedChanges ? 1 : 0.5 }}
+                                                onClick={() => updateRecords()}
+                                            >{`Save All (A)`}</Button>
                                         </Col>
                                     </Row>}
                                 {Object.keys(categorisedData).map((category, index) => {
