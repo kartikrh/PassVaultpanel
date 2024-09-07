@@ -1,107 +1,57 @@
-import React, { useEffect, useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import {
-  // ContentState,
-  EditorState,
-  // convertFromHTML,
-  convertToRaw,
-} from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
-import axiosInstance from "../../../Features/axios";
+import React, { useRef, useEffect, useState } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
+import PropTypes from 'prop-types';
 
 const MyEditor = ({ field, formData, handleChange, fieldErrors }) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const editorRef = useRef(null);
+  const [content, setContent] = useState(formData || '');
 
-  // console.log("formData",formData);
-  // useEffect(() => {
-  //   if (formData) {
-  //     const parsedData = formData;
-  //     const blocksFromHtml = convertFromHTML(parsedData);
-  //     const state = ContentState.createFromBlockArray(
-  //       blocksFromHtml.contentBlocks,
-  //       blocksFromHtml.entityMap
-  //     );
-  //     setEditorState(EditorState.createWithContent(state));
-  //   }
-  // }, [formData]);
-
-  const onEditorStateChange = (editorState) => {
-    setEditorState(editorState);
-    const rawContentState = draftToHtml(
-      convertToRaw(editorState.getCurrentContent())
-    );
-    handleChange(field, rawContentState);
-  };
-
-  function dataURLtoBlob(dataURL) {
-    const parts = dataURL.split(";base64,");
-    const contentType = parts[0].split(":")[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-    const uInt8Array = new Uint8Array(rawLength);
-    for (let i = 0; i < rawLength; ++i) {
-      uInt8Array[i] = raw.charCodeAt(i);
+  useEffect(() => {
+    if (formData !== undefined) {
+      setContent(formData);
     }
-    return new Blob([uInt8Array], { type: contentType });
-  }
+  }, [formData]);
 
-  const uploadImageCallBack = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTimeout(() => {
-          let imageData = reader.result;
-          const blob = dataURLtoBlob(imageData);
-          const formData = new FormData();
-          formData.append("image", blob, file.name);
-          formData.append("module", field.name);
-          axiosInstance
-            .post("/imgUpload", formData)
-            .then((response) => {
-              const imageUrl = response?.result?.path;
-              // console.log("imageUrl", imageUrl);
-              resolve({
-                data: {
-                  link: imageUrl,
-                },
-              });
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        }, 2000);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  const handleEditorChange = (newContent, editor) => {
+    setContent(newContent);
+    handleChange(field, newContent);
   };
 
   return (
-    <>
-      <div className="editor-container">
-        <Editor
-          editorState={editorState}
-          toolbarClassName="toolbarClassName"
-          wrapperClassName="wrapperClassName"
-          editorClassName="editorClassName"
-          onEditorStateChange={onEditorStateChange}
-          toolbar={{
-            image: {
-              uploadCallback: uploadImageCallBack,
-              alt: { present: true, mandatory: false },
-              defaultSize: {
-                height: "auto",
-                width: "200px",
-              },
-              previewImage: true,
-              inputAccept: "image/*",
-            },
-          }}
-        />
-      </div>
-    </>
+    <div className="editor-container">
+      <Editor
+        onInit={(evt, editor) => editorRef.current = editor}
+        value={content}
+        init={{
+          height: 500,
+          menubar: false,
+          plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+          ],
+          toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          readonly: false,
+          // Add these lines to use the self-hosted version
+          skin_url: '/tinymce/skins/ui/oxide',
+          content_css: '/tinymce/skins/content/default/content.css',
+        }}
+        onEditorChange={handleEditorChange}
+        tinymceScriptSrc="/tinymce/tinymce.min.js"
+      />
+      {fieldErrors && typeof fieldErrors === 'string' && <div className="error">{fieldErrors}</div>}
+    </div>
   );
+};
+
+MyEditor.propTypes = {
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+  }).isRequired,
+  formData: PropTypes.string,
+  handleChange: PropTypes.func.isRequired,
+  fieldErrors: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };
 
 export default MyEditor;
