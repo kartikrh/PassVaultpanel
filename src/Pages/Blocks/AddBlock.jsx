@@ -3,11 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { BlockFields } from "../../constants/FieldConst/BlockConst";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_BLOCKS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_BLOCKS, TEXT_EDITOR } from '../../components/Common/Const';
 import { addBlockToDB, updateSavedState } from "../../Features/Tabs/BlockSlice";
 import axiosInstance from "../../Features/axios";
-import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 import {
@@ -55,7 +53,7 @@ const AddBlock = () => {
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined))
-      if (currentSaveAction === SAVE_AND_CLOSE){
+      if (currentSaveAction === SAVE_AND_CLOSE) {
         navigate("/blocks")
       }
       else if (currentSaveAction === SAVE_AND_NEW) {
@@ -147,8 +145,6 @@ const AddBlock = () => {
                   ref={finalizeRef}
                   fields={BlockFields}
                   editFormData={initialEditData}
-                // masterData={masterData}
-                // disabledFields={disabledFields}
                 />
               </CardBody>
             </Card>
