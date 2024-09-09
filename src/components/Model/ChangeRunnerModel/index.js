@@ -49,15 +49,15 @@ export const ChangeRunnerModel = ({
           });
         }
         let runnerDataIdList = [];
-        const matchOdds = runnerData?.appdata?.find(
-          (item) => item.marketName === "Match Odds"
+        const matchOdds = runnerData?.data?.filter(
+          (item) => item.marketName === "Match Odds" || item.marketName === "BOOKMAKER"
         );
         if (matchOdds) {
           setIsMatchOdds(true);
-          matchOdds?.runner?.forEach((ele) => {
+          matchOdds?.forEach((ele) => {
             runnerDataIdList.push({
-              label: `${ele?.runnerName} - ${ele?.selectionID}`,
-              value: ele?.selectionID,
+              label: `${ele?.runner} - ${ele?.selectionId}`,
+              value: ele?.selectionId,
             });
           });
         }
@@ -120,7 +120,7 @@ export const ChangeRunnerModel = ({
                 <span>{selectedCommentaryVals?.eventRefId}</span>
               </div>
             </div>
-            {isTeamsData && isMatchOdds ? (
+            {(isTeamsData && isMatchOdds) ? (
               <>
                 <h6 className="text-left mt-2">{team1?.teamName}</h6>
                 <ReactSelect
