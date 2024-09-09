@@ -9,6 +9,7 @@ import axiosInstance from "../../Features/axios";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
+import { decryptData } from "../Utility/encryptionUtils";
 
 function ScoringLogs() {
   const pageName = TAB_SCORING_LOGS;
@@ -29,10 +30,17 @@ function ScoringLogs() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null,
+    commentary: null,
+  });
   let navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const commentaryId = queryParams.get('commentaryId') || 0;
+  const commentaryData = queryParams.get('commentaryDetails');
+  const commentaryDetails = commentaryData ? decryptData(commentaryData) : "";
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -81,12 +89,27 @@ function ScoringLogs() {
   };
 
   useEffect(()=>{
-    if(commentaryId !== 0){
+    if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
       setIsSearch(false)
+      fetchCompetitionData(commentaryDetails?.eventTypeId);
+      fetchCommentaryData(commentaryDetails?.competitionId);
     } else {
       setIsSearch(true)
     }
-  },[commentaryId])
+  },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
+
+  useEffect(() => {
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
+      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
+      const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
+      const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
+      setSelectedTableElements({
+        eventType: {value: event?.eventTypeId, label: event?.eventType},
+        competition: {value: competition?.competitionId, label: competition?.competition},
+        commentary: {value: commentaryData?.commentaryId, label: commentaryData?.eventName},
+      });
+    }
+  }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
 
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -202,17 +225,17 @@ function ScoringLogs() {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-    fetchData();
+    fetchData({ isActive: true });
     fetchEventTypeData();
   }, [isSearch, currentPage, pageSize]);
 
   const handleReset = (value) => {
-    fetchData();
+    fetchData({ isActive: true });
     fetchEventTypeData();
   };
 
   const handleReload = (value) => {
-    fetchData();
+    fetchData({ isActive: true });
     fetchEventTypeData();
   };
 
@@ -248,6 +271,7 @@ function ScoringLogs() {
             eventTypes={eventTypes}
             competitions={competitions}
             commentary={commentary}
+            selectedTableElementsLogs={selectedTableElements}
             handleReset={handleReset}
             handleReload={handleReload}
             setDateRange={setDateRange}

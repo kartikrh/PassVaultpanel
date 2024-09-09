@@ -36,6 +36,7 @@ import { DlsModal } from "./CommentaryModels/DlsModal";
 import "./CommentaryCss.css"
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
+import { encryptData } from "../Utility/encryptionUtils";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -316,28 +317,32 @@ const Index = () => {
     const url = new URL(window.location.origin + "/updateCommentaryPlayer");
     window.open(url.href, '_blank');
   };
-  const handleScoringLogsClick = (commentaryId) => {
+  const handleScoringLogsClick = (details) => {
     // localStorage.setItem('scoringLogsCommentaryId', "" + details?.commentaryId);
     const url = new URL(window.location.origin + "/scoringLogs");
-    url.searchParams.set('commentaryId', commentaryId);
+    url.searchParams.set('commentaryId', details?.commentaryId);
+    url.searchParams.append('commentaryDetails', encryptData(details));
     window.open(url.href, '_blank');
   };
-  const handlePredictorDetailsClick = (commentaryId) => {
+  const handlePredictorDetailsClick = (details) => {
     // localStorage.setItem('predictorLogsId', "" + commentaryId);
     const url = new URL(window.location.origin + "/predictorLogs");
-    url.searchParams.set('commentaryId', commentaryId);
+    url.searchParams.set('commentaryId', details?.commentaryId);
+    url.searchParams.append('commentaryDetails', encryptData(details));
     window.open(url.href, '_blank');
   };
-  const handleCommentaryLogsClick = (commentaryId) => {
+  const handleCommentaryLogsClick = (details) => {
     // localStorage.setItem('commentaryLogsId', "" + commentaryId);
     const url = new URL(window.location.origin + "/commentaryLogs");
-    url.searchParams.set('commentaryId', commentaryId);
+    url.searchParams.set('commentaryId', details?.commentaryId);
+    url.searchParams.append('commentaryDetails', encryptData(details));
     window.open(url.href, '_blank');
   };
-  const handleUndoLogsClick = (commentaryId) => {
+  const handleUndoLogsClick = (details) => {
     // localStorage.setItem('undoLogsId', "" + commentaryId);
     const url = new URL(window.location.origin + "/undoLogs");
-    url.searchParams.set('commentaryId', commentaryId);
+    url.searchParams.set('commentaryId', details?.commentaryId);
+    url.searchParams.append('commentaryDetails', encryptData(details));
     window.open(url.href, '_blank');
   };
   const handleCommentaryMarketTemplateClick = (id) => {
@@ -1002,7 +1007,7 @@ const Index = () => {
               size="sm"
               className="btn"
               onClick={() => {
-                handlePredictorDetailsClick(record.commentaryId);
+                handlePredictorDetailsClick(record);
               }}
             >
               <i class='bx bxs-up-arrow-square' ></i>
@@ -1194,7 +1199,7 @@ const Index = () => {
               size="sm"
               className="btn"
               onClick={() => {
-                handleCommentaryLogsClick(record.commentaryId);
+                handleCommentaryLogsClick(record);
               }}
             >
               <i class="bx bxs-up-arrow-square"></i>
@@ -1206,7 +1211,7 @@ const Index = () => {
              size="sm"
              className="btn"
              onClick={() => {
-               handleScoringLogsClick(record.commentaryId);
+               handleScoringLogsClick(record);
              }}
             >
               <i class='bx bxs-up-arrow-square' ></i>
@@ -1222,7 +1227,7 @@ const Index = () => {
               size="sm"
               className="btn"
               onClick={() => {
-                handleUndoLogsClick(record.commentaryId);
+                handleUndoLogsClick(record);
               }}
             >
               <i class="bx bxs-up-arrow-square"></i>
