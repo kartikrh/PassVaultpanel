@@ -33,7 +33,6 @@ export const ChangeRunnerModel = ({
     await axiosInstance
       .post(`/admin/ImportMarket/getlistManualMarket`, {
         refID: selectedCommentaryRunner?.eventRefId,
-        isAustralian: "false",
       })
       .then((response) => {
         const runnerData = response?.result;
@@ -49,15 +48,15 @@ export const ChangeRunnerModel = ({
           });
         }
         let runnerDataIdList = [];
-        const matchOdds = runnerData?.appdata?.find(
-          (item) => item.marketName === "Match Odds"
+        const matchOdds = runnerData?.data?.filter(
+          (item) => item.marketName === "Match Odds" || item.marketName === "BOOKMAKER"
         );
-        if (matchOdds) {
+        if (matchOdds?.length > 0) {
           setIsMatchOdds(true);
-          matchOdds?.runner?.forEach((ele) => {
+          matchOdds?.forEach((ele) => {
             runnerDataIdList.push({
-              label: `${ele?.runnerName} - ${ele?.selectionID}`,
-              value: ele?.selectionID,
+              label: `${ele?.runner} - ${ele?.selectionId}`,
+              value: ele?.selectionId,
             });
           });
         }
@@ -120,7 +119,7 @@ export const ChangeRunnerModel = ({
                 <span>{selectedCommentaryVals?.eventRefId}</span>
               </div>
             </div>
-            {isTeamsData && isMatchOdds ? (
+            {(isTeamsData && isMatchOdds) ? (
               <>
                 <h6 className="text-left mt-2">{team1?.teamName}</h6>
                 <ReactSelect
@@ -182,15 +181,15 @@ export const ChangeRunnerModel = ({
               </>
             ) : !isMatchOdds && isTeamsData ? (
               <h6 className="text-center mt-2">
-                Match Odds data not available
+                Data not available
               </h6>
             ) : !isTeamsData && isMatchOdds ? (
               <h6 className="text-center mt-2">Team data not available</h6>
-            ) : (
+            ) : !isTeamsData && !isMatchOdds ? (
               <h6 className="text-center mt-2">
                 Team & Match Odds data not available
               </h6>
-            )}
+            ) : null }
           </div>
           <div className="hstack gap-2 justify-content-end">
             <button

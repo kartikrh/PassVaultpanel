@@ -166,7 +166,7 @@ const Commentary = (props) => {
             console.log('Match is tied. Showing super over modal.');
             setSuperOverModal(true);
         } else checkWinner();
-        setCompleteMatchModal(false);
+        setCompleteMatchModal(undefined);
         setChangePlayerList(undefined);
     }
     const handleSuperOver = (overs) => {
@@ -1949,7 +1949,7 @@ const Commentary = (props) => {
             isOpen={completeMatchModal}
             toggle={() => { setCompleteMatchModal(undefined) }}
             onNoClick={() => { setCompleteMatchModal(undefined) }}
-            onYesClick={completeMatch}
+            onYesClick={() => completeMatch()}
         />}
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}

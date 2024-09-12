@@ -3,7 +3,6 @@ import axiosInstance from '../../../Features/axios';
 
 class MyUploadAdapter {
     constructor(loader) {
-        // CKEditor 5's FileLoader instance.
         this.loader = loader;
         this.axios = axiosInstance;
         this.source = axios.CancelToken.source();
