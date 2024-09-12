@@ -57,7 +57,7 @@ const Index = () => {
           logsDataIdList.push(ele?.id);
         });
         setData(logsData);
-        setTotal(response?.result?.totalPages || 0); 
+        setTotal(response?.result?.totalRecords || 0);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -134,7 +134,11 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, [isSearch, currentPage, pageSize]);
+  }, []);
+
+  useEffect(()=>{
+    fetchData();
+  },[isSearch, currentPage, pageSize]);
 
   const handleReload = (value) => {
     fetchData();

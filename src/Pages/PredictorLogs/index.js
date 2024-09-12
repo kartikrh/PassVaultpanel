@@ -6,7 +6,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
   TAB_PREDICTOR_LOGS,
@@ -16,7 +16,6 @@ import { checkPermission, convertDateUTCToLocal } from "../../components/Common/
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
-import { decryptData } from "../Utility/encryptionUtils";
 
 const Index = () => {
   const pageName = TAB_PREDICTOR_LOGS;
@@ -48,11 +47,8 @@ const Index = () => {
     competition: null,
     commentary: null,
   });
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const commentaryId = queryParams.get('commentaryId') || 0;
-  const commentaryData = queryParams.get('commentaryDetails');
-  const commentaryDetails = commentaryData ? decryptData(commentaryData) : "";
+  const commentaryId = +sessionStorage.getItem('predictorLogsId') || 0;
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('predictorLogsDetails') || "{}");
 
   const navigate = useNavigate();
 
@@ -87,7 +83,7 @@ const Index = () => {
           logsDataIdList.push(ele?.id);
         });
         setData(logsData);
-        setTotal(response?.result?.totalPages || 0); 
+        setTotal(response?.result?.totalRecords || 0); 
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -310,7 +306,11 @@ const Index = () => {
     }
     fetchData({ isActive: true });
     fetchEventTypeData();
-  }, [isSearch, currentPage, pageSize]);
+  }, []);
+
+  useEffect(()=>{
+    fetchData();
+  },[isSearch, currentPage, pageSize]);
 
   const handleReset = (value) => {
     fetchData({ isActive: true });
