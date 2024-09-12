@@ -134,10 +134,6 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
-
-  useEffect(()=>{
-    fetchData();
   },[isSearch, currentPage, pageSize]);
 
   const handleReload = (value) => {

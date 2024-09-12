@@ -221,13 +221,12 @@ function ScoringLogs() {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-    fetchData({ isActive: true });
-    fetchEventTypeData();
-  }, []);
-
-  useEffect(()=>{
     fetchData();
   },[isSearch, currentPage, pageSize]);
+
+  useEffect(() => {
+    fetchEventTypeData();
+  }, []);
 
   const handleReset = (value) => {
     fetchData({ isActive: true });
