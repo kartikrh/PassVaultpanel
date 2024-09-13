@@ -51,7 +51,6 @@ export const ChangeRunnerModel = ({
         const matchOdds = runnerData?.data?.filter(
           (item) => String(item.marketName).toLowerCase() == "match odds" || String(item.marketName).toLowerCase() == "bookmaker"
         );
-        
         if (matchOdds?.length > 0) {
           setIsMatchOdds(true);
           matchOdds?.forEach((ele) => {
