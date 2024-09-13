@@ -318,31 +318,27 @@ const Index = () => {
     window.open(url.href, '_blank');
   };
   const handleScoringLogsClick = (details) => {
-    // localStorage.setItem('scoringLogsCommentaryId', "" + details?.commentaryId);
     const url = new URL(window.location.origin + "/scoringLogs");
-    url.searchParams.set('commentaryId', details?.commentaryId);
-    url.searchParams.append('commentaryDetails', encryptData(details));
+    sessionStorage.setItem('scoringLogsId', "" + details?.commentaryId);
+    sessionStorage.setItem('scoringLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handlePredictorDetailsClick = (details) => {
-    // localStorage.setItem('predictorLogsId', "" + commentaryId);
     const url = new URL(window.location.origin + "/predictorLogs");
-    url.searchParams.set('commentaryId', details?.commentaryId);
-    url.searchParams.append('commentaryDetails', encryptData(details));
+    sessionStorage.setItem('predictorLogsId', "" + details?.commentaryId);
+    sessionStorage.setItem('predictorLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleCommentaryLogsClick = (details) => {
-    // localStorage.setItem('commentaryLogsId', "" + commentaryId);
     const url = new URL(window.location.origin + "/commentaryLogs");
-    url.searchParams.set('commentaryId', details?.commentaryId);
-    url.searchParams.append('commentaryDetails', encryptData(details));
+    sessionStorage.setItem('commentaryLogsId', "" + details?.commentaryId);
+    sessionStorage.setItem('commentaryLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleUndoLogsClick = (details) => {
-    // localStorage.setItem('undoLogsId', "" + commentaryId);
     const url = new URL(window.location.origin + "/undoLogs");
-    url.searchParams.set('commentaryId', details?.commentaryId);
-    url.searchParams.append('commentaryDetails', encryptData(details));
+    sessionStorage.setItem('undoLogsId', "" + details?.commentaryId);
+    sessionStorage.setItem('undoLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleCommentaryMarketTemplateClick = (id) => {
