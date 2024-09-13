@@ -28,7 +28,7 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "currentOverBalls": currentOver.ballCount || 0,
     "bowlerId": currentBall.bowlerId || onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId || 0,
     "batStrikeId": currentBall.batStrikeId || onPitchPlayers[ON_STRIKE].commentaryPlayerId || 0,
-    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE].commentaryPlayerId || 0,
+    "batNonStrikeId": currentBall.batNonStrikeId || onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || 0,
     "ballIsCount": currentBall.ballIsCount || false,
     "ballType": currentBall.ballType || BALL_TYPE_OVER_COMPLETE,
     "ballIsDot": currentBall.ballIsDot || false,
