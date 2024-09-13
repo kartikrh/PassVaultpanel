@@ -49,7 +49,7 @@ export const ChangeRunnerModel = ({
         }
         let runnerDataIdList = [];
         const matchOdds = runnerData?.data?.filter(
-          (item) => item.marketName === "Match Odds" || item.marketName === "BOOKMAKER"
+          (item) => String(item.marketName).toLowerCase() == "match odds" || String(item.marketName).toLowerCase() == "bookmaker"
         );
         if (matchOdds?.length > 0) {
           setIsMatchOdds(true);
