@@ -1123,7 +1123,7 @@ const Index = forwardRef(
                                 });
                               }}
                               options={commentary?.map((item) => ({
-                                label: item?.eventName,
+                                label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
                                 value: item?.commentaryId,
                               }))}
                               classNamePrefix="select2-selection"
