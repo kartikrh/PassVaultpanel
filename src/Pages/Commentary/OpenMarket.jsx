@@ -294,6 +294,12 @@ export const OpenMarket = () => {
         handleValueChange(record, "layPrice", Math.round(+newValue));
         handleValueChange(record, "backPrice", Math.round(+newValue) + 1);
     }
+    const handleDS = (id) => {
+        localStorage.setItem('EventMarketDataLogId', "" + id);
+        const url = new URL(window.location.origin + "/marketDataLogs");
+        url.searchParams.append("eventMarketId", id);
+        window.open(url.href, '_blank');
+    };
     const columns = [
         {
             title: "Team",
@@ -312,10 +318,12 @@ export const OpenMarket = () => {
             title: "Market",
             dataIndex: "marketId",
             render: (text, record) => (
-                <>
+                <span
+                    style={{ cursor: "pointer" }}
+                    onClick={() => { handleDS(text) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
-                </>
+                </span>
             ),
             key: "marketId",
             className: "p-0",
