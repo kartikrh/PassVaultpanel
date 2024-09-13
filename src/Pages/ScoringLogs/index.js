@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
 import { useSelector } from "react-redux";
 import { PERMISSION_VIEW, TAB_SCORING_LOGS } from "../../components/Common/Const";
@@ -9,7 +9,6 @@ import axiosInstance from "../../Features/axios";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
-import { decryptData } from "../Utility/encryptionUtils";
 
 function ScoringLogs() {
   const pageName = TAB_SCORING_LOGS;
@@ -36,11 +35,8 @@ function ScoringLogs() {
     commentary: null,
   });
   let navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const commentaryId = queryParams.get('commentaryId') || 0;
-  const commentaryData = queryParams.get('commentaryDetails');
-  const commentaryDetails = commentaryData ? decryptData(commentaryData) : "";
+  const commentaryId = +sessionStorage.getItem('scoringLogsId') || 0;
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('scoringLogsDetails') || "{}");
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -73,7 +69,7 @@ function ScoringLogs() {
           apiDataIdList.push(ele?.id);
         });
         setData(apiData);
-        setTotal(response?.result?.totalPages || 0);
+        setTotal(response?.result?.totalRecords || 0);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -225,9 +221,12 @@ function ScoringLogs() {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-    fetchData({ isActive: true });
+    fetchData();
+  },[isSearch, currentPage, pageSize]);
+
+  useEffect(() => {
     fetchEventTypeData();
-  }, [isSearch, currentPage, pageSize]);
+  }, []);
 
   const handleReset = (value) => {
     fetchData({ isActive: true });
