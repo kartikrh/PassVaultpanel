@@ -301,15 +301,15 @@ const commentarySlice = createSlice({
                 state.isLoading = false
             })
             .addCase(addSuperOverCall.pending, (state) => {
-                state.isLoading = true;
+                state.isCommentaryBallLoading = true;
             })
             .addCase(addSuperOverCall.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isCommentaryBallLoading = false
                 state.superOverApiData = action.payload
             })
             .addCase(addSuperOverCall.rejected, (state, action) => {
                 state.error = action.payload;
-                state.isLoading = false
+                state.isCommentaryBallLoading = false
                 state.superOverApiData = false
             })
     }
