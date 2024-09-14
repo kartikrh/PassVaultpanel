@@ -6,7 +6,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
   TAB_COMMENTARY_LOGS,
@@ -42,9 +42,13 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const commentaryId = queryParams.get('commentaryId') || 0;
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null,
+    commentary: null,
+  });
+  const commentaryId = +sessionStorage.getItem('commentaryLogsId') || 0;
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('commentaryLogsDetails') || "{}");
 
   const navigate = useNavigate();
 
@@ -79,7 +83,7 @@ const Index = () => {
           logsDataIdList.push(ele?.id);
         });
         setData(logsData);
-        setTotal(response?.result?.totalPages || 0); 
+        setTotal(response?.result?.totalRecords || 0); 
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -95,12 +99,27 @@ const Index = () => {
   };
   
   useEffect(()=>{
-    if(commentaryId !== 0){
+    if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
       setIsSearch(false)
+      fetchCompetitionData(commentaryDetails?.eventTypeId);
+      fetchCommentaryData(commentaryDetails?.competitionId);
     } else {
       setIsSearch(true)
     }
-  },[commentaryId])
+  },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
+
+  useEffect(() => {
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
+      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
+      const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
+      const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
+      setSelectedTableElements({
+        eventType: {value: event?.eventTypeId, label: event?.eventType},
+        competition: {value: competition?.competitionId, label: competition?.competition},
+        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate  ? `${commentaryData.eventName} (${convertDateUTCToLocal(commentaryData.eventDate, "index")})` : ""},
+      });
+    }
+  }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
 
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -262,16 +281,19 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+  },[isSearch, currentPage, pageSize]);
+
+  useEffect(() => {
     fetchEventTypeData();
-  }, [isSearch, currentPage, pageSize]);
+  }, []);
 
   const handleReset = (value) => {
-    fetchData();
+    fetchData({ isActive: true });
     fetchEventTypeData();
   };
 
   const handleReload = (value) => {
-    fetchData();
+    fetchData({ isActive: true });
     fetchEventTypeData();
   };
 
@@ -292,6 +314,7 @@ const Index = () => {
             commentary={commentary}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            selectedTableElementsLogs={selectedTableElements}
             handleReset={handleReset}
             handleReload={handleReload}
             setDateRange={setDateRange}

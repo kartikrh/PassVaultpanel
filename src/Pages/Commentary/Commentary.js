@@ -166,16 +166,17 @@ const Commentary = (props) => {
             console.log('Match is tied. Showing super over modal.');
             setSuperOverModal(true);
         } else checkWinner();
-        setCompleteMatchModal(false);
+        setCompleteMatchModal(undefined);
         setChangePlayerList(undefined);
     }
-    const handleSuperOver = (overs) => {
-        setSuperOverModal(false);
+    const handleSuperOver = (superOverData) => {
         const objToSend = {
             commentaryId: commentaryDetails.commentaryId,
-            teamMaxOver: overs
+            teamMaxOver: superOverData?.overs,
+            battingTeamId: superOverData?.battingTeamId
         }
         dispatch(addSuperOverCall(objToSend));
+        setSuperOverModal(false);
     }
     const checkWinner = () => {
         let WINNING_MESSAGE = ""
@@ -249,7 +250,6 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
-
     const handleInningsUpdate = (battingTeamId) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
         const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
@@ -289,7 +289,6 @@ const Commentary = (props) => {
         setShowUpdateInnings(undefined)
         setRedirectOnScreenChange(true)
     }
-
     const setAllPlayerToNull = () => {
         const playersToChange = []
         players[BATTING_TEAM].map((player) => {
@@ -893,7 +892,7 @@ const Commentary = (props) => {
             ...oldPlayer,
             "playerId": newPlayer["playerId"],
             "playerName": newPlayer["playerName"],
-            "batsmanStrikeRate": newPlayer["batsmanStrikeRate"],
+            "batsmanAverage": newPlayer["batsmanAverage"],
             "bowlerAverage": newPlayer["bowlerAverage"],
             "batterOrder": newPlayer["batterOrder"],
             "bowlerOrder": newPlayer["bowlerOrder"],
@@ -1626,10 +1625,6 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
             }))
         }
-        if (superOverApiData) {
-            dispatch(clearLoadingAndError())
-            handleInningsUpdate()
-        }
     }
     const updateTempToMain = () => {
         if (!isEmpty(_currentOver)) {
@@ -1655,7 +1650,8 @@ const Commentary = (props) => {
     }
     useEffect(() => {
         if (superOverApiData) {
-            setPropsData(superOverApiData)
+            props.onInningsChange()
+            dispatch(clearAddCommentaryScreenData())
         }
     }, [superOverApiData])
     useEffect(() => {
@@ -1924,7 +1920,10 @@ const Commentary = (props) => {
         {showWicketModal &&
             <WicketModal
                 isOpen={showWicketModal}
-                toggle={() => { setShowWicketModal(undefined) }}
+                toggle={() => {
+                    setShowWicketModal(undefined)
+                    setExtrasType(undefined)
+                }}
                 onSubmit={handleWicket}
                 bowlingTeam={players[BOWLING_TEAM]}
                 bowlingTeamDetails={teams[BOWLING_TEAM]}
@@ -1946,7 +1945,7 @@ const Commentary = (props) => {
             isOpen={completeMatchModal}
             toggle={() => { setCompleteMatchModal(undefined) }}
             onNoClick={() => { setCompleteMatchModal(undefined) }}
-            onYesClick={completeMatch}
+            onYesClick={() => completeMatch()}
         />}
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}
@@ -2014,6 +2013,7 @@ const Commentary = (props) => {
                     setSuperOverModal(false)
                     checkWinner()
                 }}
+                currentInningTeams={Object.values(teams || {})}
             />
         }
         {retryModel && <RetryModel errorMsg={retryModel} />}

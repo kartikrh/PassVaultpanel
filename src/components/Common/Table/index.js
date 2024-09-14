@@ -58,6 +58,7 @@ const Index = forwardRef(
       singleCheck,
       setImportExportModelVisable,
       eventTypes,
+      selectedTableElementsLogs,
       competitionList,
       eventList,
       statusList,
@@ -941,15 +942,17 @@ const Index = forwardRef(
                                   width: 180,
                                 }), // Adjust width as needed
                               }}
-                              value={selectedTableElements?.eventType}
+                              value={selectedTableElementsLogs?.eventType || selectedTableElements?.eventType}
+                              isDisabled={selectedTableElementsLogs?.eventType}
                               placeholder="Event Type"
                               onChange={(e) => {
                                 handleTableActions("eventTypeId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
                                   eventType: e,
-                                  competition: { value: 0, label: "Competition List" },
+                                  competition: { value: 0, label: "Competition" },
                                   eventName: { value: 0, label: "Event List" },
+                                  commentary: { value: 0, label: "Commentary" },
                                 });
                                 setEventTypeId(e?.value);
                                 setCompetitionId(null);
@@ -1075,7 +1078,8 @@ const Index = forwardRef(
                         {tableElement?.competitionsSelect ? (
                           <div className="">
                             <Select
-                              value={selectedTableElements?.competition}
+                              value={selectedTableElementsLogs?.competition || selectedTableElements?.competition}
+                              isDisabled={selectedTableElementsLogs?.competition}
                               placeholder="Competition"
                               styles={{
                                 control: (provided) => ({
@@ -1088,6 +1092,7 @@ const Index = forwardRef(
                                 setSelectedTableElements({
                                   ...selectedTableElements,
                                   competition: e,
+                                  commentary: { value: 0, label: "Commentary" },
                                 });
                               }}
                               options={competitions?.map((item) => ({
@@ -1101,7 +1106,8 @@ const Index = forwardRef(
                         {tableElement?.commentarySelect ? (
                           <div className="">
                             <Select
-                              value={selectedTableElements?.commentary}
+                              value={selectedTableElementsLogs?.commentary || selectedTableElements?.commentary}
+                              isDisabled={selectedTableElementsLogs?.commentary}
                               placeholder="Commentary"
                               styles={{
                                 control: (provided) => ({
@@ -1117,7 +1123,7 @@ const Index = forwardRef(
                                 });
                               }}
                               options={commentary?.map((item) => ({
-                                label: item?.eventName,
+                                label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
                                 value: item?.commentaryId,
                               }))}
                               classNamePrefix="select2-selection"
