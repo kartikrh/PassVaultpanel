@@ -197,6 +197,46 @@ const Index = () => {
     },
   ];
   const columnsB = [
+    selectedMarket?.isEvent && {
+      title: "Import",
+      dataIndex: `${selectedMarket?.isCompitition
+        ? "competition"
+        : selectedMarket?.isEvent
+          ? "event"
+          : "eventType"
+        }`,
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={() => {
+            setDataToDB({
+              ...dataToDB,
+              eventName: text,
+              eventId: record?.eventID,
+              timeZone: record?.timezone || "",
+              countryCode: record?.countryCode || "",
+              openDate: record?.eventDate,
+              venue: record?.venue || "",
+            });
+            addData({
+              ...dataToDB,
+              eventName: text,
+              eventId: record?.eventID,
+              timeZone: record?.timezone || "",
+              countryCode: record?.countryCode || "",
+              openDate: record?.eventDate,
+              venue: record?.venue || "",
+            });
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+      key: "eventTypeId",
+      style: { width: "20%" },
+    },
     {
       title: "Date",
       dataIndex: `eventDate`,
@@ -269,13 +309,17 @@ const Index = () => {
       sort: true,
       style: { width: "30%" },
     },
-    selectedMarket?.isEvent && {
+  ];
+  const columnsC = [
+    selectedMarket?.isMarket && {
       title: "Import",
-      dataIndex: `${selectedMarket?.isCompitition
-        ? "competition"
-        : selectedMarket?.isEvent
-          ? "event"
-          : "eventType"
+      dataIndex: `${selectedMarket?.isMarket
+        ? "marketName"
+        : selectedMarket?.isCompitition
+          ? "competition"
+          : selectedMarket?.isEvent
+            ? "event"
+            : "eventType"
         }`,
       render: (text, record) => (
         <button
@@ -285,32 +329,32 @@ const Index = () => {
           onClick={() => {
             setDataToDB({
               ...dataToDB,
-              eventName: text,
-              eventId: record?.eventID,
-              timeZone: record?.timezone || "",
-              countryCode: record?.countryCode || "",
-              openDate: record?.eventDate,
-              venue: record?.venue || "",
+              marketName: text,
+              marketID: record?.marketID,
+              marketStatus: record?.marketStatus,
+              marketTypeName: record?.marketTypeName,
+              marketType: record?.marketType,
+              runner: record?.runner,
+              rateSource: rateSource, 
             });
-            addData({
+            addMarketData({
               ...dataToDB,
-              eventName: text,
-              eventId: record?.eventID,
-              timeZone: record?.timezone || "",
-              countryCode: record?.countryCode || "",
-              openDate: record?.eventDate,
-              venue: record?.venue || "",
+              marketName: text,
+              marketID: record?.marketID,
+              marketStatus: record?.marketStatus,
+              marketTypeName: record?.marketTypeName,
+              marketType: record?.marketType,
+              runner: record?.runner,
+              rateSource: rateSource,
             });
           }}
         >
           <i className="bx bx-plus"></i>
         </button>
       ),
-      key: "eventTypeId",
-      style: { width: "80%" },
+      key: "marketType",
+      style: { width: "10%" },
     },
-  ];
-  const columnsC = [
     {
       title: "Date",
       dataIndex: `matchDate`,
@@ -361,50 +405,6 @@ const Index = () => {
         return <div>{logItems}</div>;
       },
       key: "runner",
-      style: { width: "10%" },
-    },
-    selectedMarket?.isMarket && {
-      title: "Import",
-      dataIndex: `${selectedMarket?.isMarket
-        ? "marketName"
-        : selectedMarket?.isCompitition
-          ? "competition"
-          : selectedMarket?.isEvent
-            ? "event"
-            : "eventType"
-        }`,
-      render: (text, record) => (
-        <button
-          color={"primary"}
-          size="sm"
-          className="btn-primary"
-          onClick={() => {
-            setDataToDB({
-              ...dataToDB,
-              marketName: text,
-              marketID: record?.marketID,
-              marketStatus: record?.marketStatus,
-              marketTypeName: record?.marketTypeName,
-              marketType: record?.marketType,
-              runner: record?.runner,
-              rateSource: rateSource, 
-            });
-            addMarketData({
-              ...dataToDB,
-              marketName: text,
-              marketID: record?.marketID,
-              marketStatus: record?.marketStatus,
-              marketTypeName: record?.marketTypeName,
-              marketType: record?.marketType,
-              runner: record?.runner,
-              rateSource: rateSource,
-            });
-          }}
-        >
-          <i className="bx bx-plus"></i>
-        </button>
-      ),
-      key: "marketType",
       style: { width: "10%" },
     },
   ];
