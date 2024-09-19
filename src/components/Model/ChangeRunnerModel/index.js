@@ -22,6 +22,7 @@ export const ChangeRunnerModel = ({
   const [isTeam2Selected, setIsTeam2Selected] = useState(true);
   const [isTeamsData, setIsTeamsData] = useState(false);
   const [isMatchOdds, setIsMatchOdds] = useState(false);
+  const [validationMessage, setValidationMessage] = useState('');
 
   const dispatch = useDispatch();
 
@@ -77,6 +78,42 @@ export const ChangeRunnerModel = ({
     fetchData();
   }, []);
 
+  const handleTeam1Change = (selectedOption) => {
+    const selectionId = selectedOption?.value?.toString();
+    setSelectedCommentaryRunner((prev) => ({
+      ...prev,
+      team1: {
+        selectionId,
+        teamId: team1?.teamId,
+      },
+    }));
+
+    if (selectionId == selectedCommentaryRunner?.team2?.selectionId) {
+      setValidationMessage("Please select different runners for both teams.");
+    } else {
+      setValidationMessage("");
+    }
+    setIsTeam1Selected(true);
+  };
+
+  const handleTeam2Change = (selectedOption) => {
+    const selectionId = selectedOption?.value?.toString();
+    setSelectedCommentaryRunner((prev) => ({
+      ...prev,
+      team2: {
+        selectionId,
+        teamId: team2?.teamId,
+      },
+    }));
+
+    if (selectionId == selectedCommentaryRunner?.team1?.selectionId) {
+      setValidationMessage("Please select different runners for both teams.");
+    } else {
+      setValidationMessage("");
+    }
+    setIsTeam2Selected(true);
+  };
+
   const handleSave = () => {
     const team1Selected = selectedCommentaryRunner?.team1?.selectionId;
     const team2Selected = selectedCommentaryRunner?.team2?.selectionId;
@@ -88,7 +125,7 @@ export const ChangeRunnerModel = ({
       setIsTeam2Selected(false);
     }
 
-    if (team1Selected && team2Selected) {
+    if (!validationMessage && team1Selected && team2Selected) {
       handleChange();
     }
   };
@@ -132,16 +169,7 @@ export const ChangeRunnerModel = ({
                     value: 0,
                   }}
                   options={runnerTypeList}
-                  onChange={(e) => {
-                    setSelectedCommentaryRunner((prev) => ({
-                      ...prev,
-                      team1: {
-                        selectionId: (e?.value).toString(),
-                        teamId: team1?.teamId,
-                      },
-                    }));
-                    setIsTeam1Selected(true);
-                  }}
+                  onChange={handleTeam1Change}
                   required={true}
                 />
                 {!isTeam1Selected && (
@@ -161,16 +189,7 @@ export const ChangeRunnerModel = ({
                     value: 0,
                   }}
                   options={runnerTypeList}
-                  onChange={(e) => {
-                    setSelectedCommentaryRunner((prev) => ({
-                      ...prev,
-                      team2: {
-                        selectionId: (e?.value).toString(),
-                        teamId: team2?.teamId,
-                      },
-                    }));
-                    setIsTeam2Selected(true);
-                  }}
+                  onChange={handleTeam2Change}
                   required={true}
                 />
                 {!isTeam2Selected && (
@@ -190,6 +209,9 @@ export const ChangeRunnerModel = ({
                 Team & Match Odds data not available
               </h6>
             ) : null }
+            {validationMessage && <h6 className="mt-2" style={{ color: "#ff3d60" }}>
+                {validationMessage}
+            </h6>}
           </div>
           <div className="hstack gap-2 justify-content-end">
             <button
