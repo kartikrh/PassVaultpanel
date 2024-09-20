@@ -42,7 +42,10 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
-
+  const [ratesource, setRatesource] = useState({
+    rateSourceRefId: 1,
+    rateSourceType: "Ratesource"
+  })
   const navigate = useNavigate();
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -51,6 +54,7 @@ const Index = () => {
     let payload = {
       ...(latestValueFromTable || tableActions),
       status: 4,
+      rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
     };
     if (isSearch) {
       payload = {
@@ -158,6 +162,17 @@ const Index = () => {
         return "Unknown";
     }
   };
+
+  const rateSourceList = [
+    {
+      rateSourceType: "Ratesource",
+      rateSourceRefId: 1
+    },
+    {
+      rateSourceType: "External",
+      rateSourceRefId: 2
+    }
+  ]
   //table columns
   const columns = [
     {
@@ -324,6 +339,7 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
+    rateSourceListSelect: true,
     resetButton: true,
     reloadButton: true,
     isDateRange: true,
@@ -334,7 +350,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, [isSearch]);
+  }, [isSearch, ratesource]);
 
   const handleReload = (value) => {
     fetchData();
@@ -382,6 +398,9 @@ const Index = () => {
             reFetchData={fetchData}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            rateSourceList={rateSourceList}
+            ratesource={ratesource}
+            setRatesource={setRatesource}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
           />
