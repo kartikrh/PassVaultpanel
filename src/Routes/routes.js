@@ -109,6 +109,10 @@ import ErrorLogs from "../Pages/ErrorLogs";
 import PredictorLogs from "../Pages/PredictorLogs";
 import UndoLogs from "../Pages/UndoLogs";
 import ScoringLogs from "../Pages/ScoringLogs";
+import AddSocialMedia from "../Pages/SocialMedia/AddSocialMedia.jsx";
+import SocialMedia from "../Pages/SocialMedia";
+import AddAward from "../Pages/Awards/AddAwards.jsx";
+import Awards from "../Pages/Awards";
 
 const authProtectedRoutes = [
   //dashboard
@@ -131,6 +135,10 @@ const authProtectedRoutes = [
   { path: "/penalty", component: <PenaltyRuns /> },
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
+  { path: "/socialMedia", component: <SocialMedia /> },
+  { path: "/addSocialMedia", component: <AddSocialMedia /> },
+  { path: "/awards", component: <Awards /> },
+  { path: "/addAward", component: <AddAward /> },
   { path: "/addCompetition", component: <AddCompetition /> },
   { path: "/commentary", component: <Commentary /> },
   { path: "/addCommentary", component: <AddCommentary /> },

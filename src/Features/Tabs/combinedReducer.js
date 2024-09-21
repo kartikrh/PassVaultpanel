@@ -31,6 +31,8 @@ import addNotificationSlice from "./addNotificationSlice";
 import addTemplateSlice from "./addTemplateSlice";
 import addClientSlice from "./addClientSlice";
 import addMailSettingsSlice from "./addMailSettingsSlice";
+import socialMediaSlice from "./socialMediaSlice";
+import awardSlice from "./awardSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -56,7 +58,7 @@ const rootReducer = combineReducers({
   eventMarket: eventMarketSlice,
   vendors: addVendorSlice,
   displayStatus: displayStatusSlice,
-  clientSocket : clientSocketSlice,
+  clientSocket: clientSocketSlice,
   banner: bannerSlice,
   manualEvent: manualEventSlice,
   apis: addApiSlice,
@@ -65,6 +67,8 @@ const rootReducer = combineReducers({
   template: addTemplateSlice,
   client: addClientSlice,
   mailSettings: addMailSettingsSlice,
+  award: awardSlice,
+  socialMedia: socialMediaSlice,
 });
 
 export default rootReducer;
