@@ -36,7 +36,7 @@ import { DlsModal } from "./CommentaryModels/DlsModal";
 import "./CommentaryCss.css"
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
-import { encryptData } from "../Utility/encryptionUtils";
+import AwardSelectionComponent from "./CommentaryModels/AwardModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -74,6 +74,7 @@ const Index = () => {
   const [competitions, setCompetitions] = useState([]);
   const [runnerModelVisible, setRunnerModelVisible] = useState(false);
   const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
+  const [showAwardModel, setShowAwardModel] = useState(undefined);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -177,29 +178,29 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setLoadModelVisable(false);
-        if(response?.result?.callPredictions?.length > 0) {
+        if (response?.result?.callPredictions?.length > 0) {
           response.result.callPredictions.forEach((prediction) => {
-           if(prediction?.predictioncallSuccess === false) {
-            const predictionMessage = prediction?.predictionMessage;
-            const endPoint = prediction?.endPoint;
-            dispatch(
-              updateToastData({
-                data: `${endPoint}\n${predictionMessage}`,
-                title: "Call Prediction",
-                type: WARNING,
-              })
-            );
-           }
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
           });
         } else {
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-       }
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
       })
       .catch((error) => {
         setIsLoading(false);
@@ -221,7 +222,7 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setSuspendModelVisable(false);
-        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
           const predictionMessage = response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
@@ -232,14 +233,14 @@ const Index = () => {
             })
           );
         } else {
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-       }
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
       })
       .catch((error) => {
         setIsLoading(false);
@@ -261,29 +262,29 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setCloseModelVisable(false);
-        if(response?.result?.callPredictions?.length > 0) {
+        if (response?.result?.callPredictions?.length > 0) {
           response.result.callPredictions.forEach((prediction) => {
-           if(prediction?.predictioncallSuccess === false) {
-            const predictionMessage = prediction?.predictionMessage;
-            const endPoint = prediction?.endPoint;
-            dispatch(
-              updateToastData({
-                data: `${endPoint}\n${predictionMessage}`,
-                title: "Call Prediction",
-                type: WARNING,
-              })
-            );
-           }
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
           });
         } else {
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-       }
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
       })
       .catch((error) => {
         setIsLoading(false);
@@ -418,7 +419,7 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
           const predictionMessage = response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
@@ -429,14 +430,14 @@ const Index = () => {
             })
           );
         } else {
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-       }
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
         setChangeModelVisible(false);
       })
       .catch((error) => {
@@ -514,7 +515,7 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
           const predictionMessage = response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
@@ -525,14 +526,14 @@ const Index = () => {
             })
           );
         } else {
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-       }
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
         setDelayModelVisible(false);
       })
       .catch((error) => {
@@ -554,7 +555,7 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
           const predictionMessage = response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
@@ -565,14 +566,14 @@ const Index = () => {
             })
           );
         } else {
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-       }
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
         setEventRefModelVisible(false);
       })
       .catch((error) => {
@@ -804,7 +805,7 @@ const Index = () => {
             onClick={() => {
               setEventRefModelVisible(true);
               setSelectedEventRef(record);
-            }}> <Tooltip title="Edit Event Id" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+            }}> <Tooltip title="Edit Event Id" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
           </span>
         </div>
       ),
@@ -843,18 +844,18 @@ const Index = () => {
       key: "commentaryDetails",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"warning"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleDetailsClick(record.commentaryId);
-          }}
-        >
-          <i class='bx bxs-right-arrow' ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleDetailsClick(record.commentaryId);
+            }}
+          >
+            <i class='bx bxs-right-arrow' ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -872,14 +873,14 @@ const Index = () => {
       title: "DLS",
       dataIndex: "dls",
       render: (text, record) => (
-      <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          size="sm"
-          className="dls-button btn"
-          onClick={() => { setDlsModalCommentary(record) }}>
-          <i class='bx bx-cloud-light-rain'></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            size="sm"
+            className="dls-button btn"
+            onClick={() => { setDlsModalCommentary(record) }}>
+            <i class='bx bx-cloud-light-rain'></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "10%" },
     },
@@ -887,20 +888,20 @@ const Index = () => {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
-      <Tooltip title={"Show/Hide Client"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isClientShow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isClientShow", record, record?.isClientShow);
-          }}
-        >
-          <i
-            className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Show/Hide Client"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isClientShow ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isClientShow", record, record?.isClientShow);
+            }}
+          >
+            <i
+              className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -908,20 +909,20 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Commentary"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleActiveInactive("isActive", record, record?.isActive);
-          }}
-        >
-          <i
-            className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Active/Inactive Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactive("isActive", record, record?.isActive);
+            }}
+          >
+            <i
+              className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -930,18 +931,18 @@ const Index = () => {
       key: "updatePlayers",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"Update Players"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"info"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleUpdatePlayersClick(record);
-          }}
-        >
-          <i class='bx bxs-up-arrow-square' ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Update Players"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleUpdatePlayersClick(record);
+            }}
+          >
+            <i class='bx bxs-up-arrow-square' ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -964,50 +965,62 @@ const Index = () => {
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-        <Tooltip title={"Active/Inactive Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-          <Button
-            color={`${record.isPredictMarket ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              updatePredictMarket(
-                "isPredictMarket",
-                record,
-                record?.isPredictMarket
-              );
-            }}
-          >
-            <i
-              className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
-                }`}
-            ></i>
-          </Button>
-        </Tooltip>
+          <Tooltip title={"Active/Inactive Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={`${record.isPredictMarket ? "primary" : "danger"}`}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                updatePredictMarket(
+                  "isPredictMarket",
+                  record,
+                  record?.isPredictMarket
+                );
+              }}
+            >
+              <i
+                className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
+                  }`}
+              ></i>
+            </Button>
+          </Tooltip>
           <>
             {record.isPredictMarket &&
-            <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCommentaryMarketTemplateClick(record.commentaryId);
+                  }}
+                >
+                  <i class='bx bxs-store' ></i>
+                </Button>
+              </Tooltip>}
+            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
                 size="sm"
                 className="btn"
                 onClick={() => {
-                  handleCommentaryMarketTemplateClick(record.commentaryId);
+                  handlePredictorDetailsClick(record.commentaryId);
                 }}
               >
-                <i class='bx bxs-store' ></i>
+                <i class='bx bxs-up-arrow-square' ></i>
               </Button>
-            </Tooltip>}
-            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handlePredictorDetailsClick(record);
-              }}
-            >
-              <i class='bx bxs-up-arrow-square' ></i>
-            </Button>
+            </Tooltip>
+            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handlePredictorDetailsClick(record);
+                }}
+              >
+                <i class='bx bxs-up-arrow-square' ></i>
+              </Button>
             </Tooltip>
           </>
         </div>
@@ -1040,17 +1053,17 @@ const Index = () => {
       key: "shortCommentary",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Short Score"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"secondary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleShortCommentaryClick(record.commentaryId);
-          }}
-        >
-          <i class='bx bxs-chevrons-right'></i>
-        </Button>
+        <Tooltip title={"Short Score"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"secondary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleShortCommentaryClick(record.commentaryId);
+            }}
+          >
+            <i class='bx bxs-chevrons-right'></i>
+          </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1060,17 +1073,17 @@ const Index = () => {
       key: "updateCommentary",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Update Commentary"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"success"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleUpdateCommentaryClick(record.commentaryId);
-          }}
-        >
-          <i class='bx bx-arrow-to-right' ></i>
-        </Button>
+        <Tooltip title={"Update Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"success"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleUpdateCommentaryClick(record.commentaryId);
+            }}
+          >
+            <i class='bx bx-arrow-to-right' ></i>
+          </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1087,7 +1100,7 @@ const Index = () => {
           style={{ cursor: "pointer" }}
         >
           {text} {" "}
-        <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+          <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
         </span>
       ),
       key: "delay",
@@ -1124,7 +1137,7 @@ const Index = () => {
           style={{ cursor: "pointer" }}
         >
           {text} {" "}
-          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
         </span>
       ),
       key: "matchType",
@@ -1135,20 +1148,20 @@ const Index = () => {
       title: "Set Runner",
       dataIndex: "setRunner",
       render: (text, record) => (
-      <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"warning"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            setRunnerModelVisible(true);
-            setSelectedCommentaryRunner(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          <i class='bx bxs-up-arrow-square' ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setRunnerModelVisible(true);
+              setSelectedCommentaryRunner(record);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            <i class='bx bxs-up-arrow-square' ></i>
+          </Button>
+        </Tooltip>
       ),
       key: "setRunner",
       sort: true,
@@ -1158,18 +1171,18 @@ const Index = () => {
       title: "Is Team Prediction",
       key: "isTeamPredictionOn",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
-          }}
-        >
-          <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
+            }}
+          >
+            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -1201,14 +1214,14 @@ const Index = () => {
               <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
-          <Tooltip title={"Scoring Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-           <Button
-             color={"info"}
-             size="sm"
-             className="btn"
-             onClick={() => {
-               handleScoringLogsClick(record);
-             }}
+          <Tooltip title={"Scoring Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleScoringLogsClick(record);
+              }}
             >
               <i class='bx bxs-up-arrow-square' ></i>
             </Button>
@@ -1254,13 +1267,32 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     };
-
+    const AwardColumn = {
+      title: "Award",
+      key: "commentaryDetails",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip title={"Awards"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setShowAwardModel(record.commentaryId)
+            }}
+          >
+            <i class='bx bxs-right-arrow' ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    }
     const updatedColumn = [...columns];
 
     if (data.some(record => record?.commentaryStatus === 4)) {
       updatedColumn.splice(7, 0, resultColumn);
+      updatedColumn.splice(8, 0, AwardColumn);
     }
-
     return updatedColumn;
   };
 
@@ -1448,6 +1480,9 @@ const Index = () => {
             commentaryDetails={dlsModalCommentary}
             toggle={() => { setDlsModalCommentary(false) }}
           />}
+          {showAwardModel && <AwardSelectionComponent
+            commentaryId={showAwardModel}
+            onClose={() => { setShowAwardModel(undefined) }} />}
         </Container>
       </div>
     </React.Fragment>
