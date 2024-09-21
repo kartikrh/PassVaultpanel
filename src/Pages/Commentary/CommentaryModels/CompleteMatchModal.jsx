@@ -18,7 +18,7 @@ const CompleteCurrentMatchModal = ({ isOpen, toggle, onYesClick, onNoClick }) =>
                 Complete Match
             </ModalHeader>
             <ModalBody>
-                Do You want to Complete this match?
+                Do you want to complete this match?
             </ModalBody>
             <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button" onClick={onYesClick}>Yes</Button>

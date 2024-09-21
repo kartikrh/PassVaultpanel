@@ -79,6 +79,7 @@ const Commentary = (props) => {
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
     const [retryModel, setRetryModel] = useState(undefined)
     const [isWonByInnings, setIsWonByInnings] = useState(undefined)
+    const [isMatchCompleted, setIsMatchCompleted] = useState(undefined)
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -162,12 +163,11 @@ const Commentary = (props) => {
     }
     const completeMatch = () => {
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1;
-        if (isMatchTie) {
-            console.log('Match is tied. Showing super over modal.');
-            setSuperOverModal(true);
-        } else checkWinner();
+        if (isMatchTie) setSuperOverModal(true);
+        else checkWinner();
         setCompleteMatchModal(undefined);
         setChangePlayerList(undefined);
+        setIsMatchCompleted(true)
     }
     const handleSuperOver = (superOverData) => {
         const objToSend = {
@@ -212,11 +212,11 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": Object.values(onPitchPlayers).filter(x => x),
         }
+        //  console.log("Called from : 1");
         dispatch(addCommentaryScreenData(objToSave))
         setIsWonByInnings(undefined)
         setShowInningsChangePopup(undefined)
         setCompleteMatchModal(undefined)
-        setRedirectOnScreenChange(true)
         setWinnerAnnouncement(WINNING_MESSAGE)
     }
     const onInningsChange = () => {
@@ -247,6 +247,7 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": setAllPlayerToNull(),
         }
+        // console.log("Called from : 2")
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
@@ -285,6 +286,7 @@ const Commentary = (props) => {
             "commentaryPlayers": setAllPlayerToNull(),
             "isEndInnings": true
         }
+        // console.log("Called from : 3")
         dispatch(addCommentaryScreenData(objToSave))
         setShowUpdateInnings(undefined)
         setRedirectOnScreenChange(true)
@@ -350,6 +352,7 @@ const Commentary = (props) => {
             "commentaryWicket": updatedWicket,
             "commentaryPlayers": Object.values(_onPitchPlayers),
         }
+        // console.log("Called from : 4")
         dispatch(addCommentaryScreenData(objToSave))
         _setOnPitchPlayers((prevValue) => {
             return {
@@ -635,6 +638,7 @@ const Commentary = (props) => {
             "commentaryDetails": { ...commentaryDetails, "displayStatus": `Penalty ${runs} runs` },
             "commentaryTeams": [updateBattingTeam],
         }
+        // console.log("Called from : 5")
         dispatch(addCommentaryScreenData(objToSave))
         checkInningsSwitch(RUN)
     }
@@ -669,6 +673,7 @@ const Commentary = (props) => {
             "commentaryPlayers": [updateBowler],
             "commentaryTeams": [updateBattingTeam],
         }
+        // console.log("Called from : 6")
         dispatch(addCommentaryScreenData(objToSave))
     }
     const changeStrike = () => {
@@ -690,6 +695,7 @@ const Commentary = (props) => {
                 },
                 "commentaryPlayers": Object.values(syncOnPitchPlayer),
             }
+            // console.log("Called from : 7");
             dispatch(addCommentaryScreenData(objToSave))
             _setPlayers((prevValue) => {
                 const syncPlayers = isEmpty(prevValue) ? players : prevValue
@@ -725,6 +731,7 @@ const Commentary = (props) => {
                 objToSave["commentaryOvers"] = generateOver({ commentaryDetails, onPitchPlayers: updatedOnPitchPlyer, teams })
         }
         setOnPitchPlayers(updatedOnPitchPlyer)
+        // console.log("Called from : 8")
         dispatch(addCommentaryScreenData(objToSave))
         setSelectMissingPlayer(false)
     }
@@ -856,6 +863,7 @@ const Commentary = (props) => {
                 "commentaryBallByBall": currentBallDetails
             }
             checkForOverSwitch()
+            // console.log("Called from : 9");
             dispatch(addCommentaryScreenData(objToSave))
             setIsWicketChange(undefined)
             setCurrentPartnership({})
@@ -923,6 +931,7 @@ const Commentary = (props) => {
             objToSave["commentaryPartnership"] = updatedPartnership
             _setCurrentPartnership(updatedPartnership)
         }
+        // console.log("Called from : 10")
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [teamType]: listToUpdate })
         setIsSwapPlayer(undefined)
@@ -990,6 +999,7 @@ const Commentary = (props) => {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryPlayers": [updatedPerviousBowler, updatedNewBowler],
         }
+        // console.log("Called from : 12")
         dispatch(addCommentaryScreenData(objToSave))
         dispatch(changeBowlerFromCommentary(objForChangeBowler))
         setCurrentOver(UpdatedOver)
@@ -1032,6 +1042,7 @@ const Commentary = (props) => {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryPlayers": playersToChangeList,
         }
+        // console.log("Called from : 13")
         dispatch(addCommentaryScreenData(objToSave))
         setCurrentBall(updateBall)
         setPlayers({ ...players, [BOWLING_TEAM]: updatedPlayerList })
@@ -1062,6 +1073,7 @@ const Commentary = (props) => {
             "commentaryPlayers": playersToChangeList,
             "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
         }
+        // console.log("Called from : 14")
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [BOWLING_TEAM]: updatedPlayerList })
         setOnPitchPlayers(updatedOnPitchPlayer)
@@ -1085,6 +1097,7 @@ const Commentary = (props) => {
                 }),
                 "commentaryPlayers": [updatedOnStrikePlayer, updatedNonStrikePlayer, onPitchPlayers[CURRENT_BOWLER]]
             }
+            // console.log("Called from : 15");
             dispatch(addCommentaryScreenData(objToSave))
         }
         setCurrentWicket(undefined)
@@ -1114,6 +1127,7 @@ const Commentary = (props) => {
                     "commentaryTeams": [updateBattingTeam],
                     "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
                 }
+                // console.log("Called from : 16");
                 dispatch(addCommentaryScreenData(objToSave))
             }
             else {
@@ -1421,6 +1435,7 @@ const Commentary = (props) => {
             ],
         }
         setRedirectOnScreenChange(true)
+        // console.log("Called from : 17")
         dispatch(addCommentaryScreenData(objToSave))
     }
     const onUndoLastInningsClick = () => {
@@ -1444,6 +1459,7 @@ const Commentary = (props) => {
             ],
         }
         setRedirectOnScreenChange(true)
+        // console.log("Called from : 18")
         dispatch(addCommentaryScreenData(objToSave))
     }
     const onRetiredHurtClick = (retiredHurtData) => {
@@ -1477,6 +1493,7 @@ const Commentary = (props) => {
         }
         checkForOverSwitch()
         setCurrentPartnership({})
+        // console.log("Called from : 19")
         dispatch(addCommentaryScreenData(objToSave))
         setCurrentBall(updateBall)
         setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: retiredHurtData[ON_STRIKE], [NON_STRIKE]: retiredHurtData[NON_STRIKE] })
@@ -1510,6 +1527,7 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(playersToChange),
             "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
         }
+        // console.log("Called from : 20")
         dispatch(addCommentaryScreenData(objToSave))
         setPlayers({ ...players, [BATTING_TEAM]: updatedPlayerList })
         setOnPitchPlayers({ ...onPitchPlayers, ...updatedOnPitchPlayer })
@@ -1620,6 +1638,7 @@ const Commentary = (props) => {
             })
         }
         if (!isEmpty(apiCallObj)) {
+            // console.log("Called from : 21 ");
             dispatch(addCommentaryScreenData({
                 ...apiCallObj,
                 "commentaryId": commentaryDetails.commentaryId,
@@ -1742,6 +1761,7 @@ const Commentary = (props) => {
                 }
                 if (objToSave.deleteCommentaryBallByBallId) delete objToSave.commentaryBallByBall
                 if (objToSave.deleteOverId) delete objToSave.commentaryOvers
+                // console.log("Called from : 22");
                 dispatch(addCommentaryScreenData(objToSave))
                 setSaveToDb(false)
             }
@@ -1756,6 +1776,7 @@ const Commentary = (props) => {
                 "commentaryPlayers": [].concat(Object.values(onPitchPlayers), playerUpdateList).filter(x => x),
                 "commentaryTeams": [teams[BATTING_TEAM]],
             }
+            // console.log("Called from : 23");
             dispatch(addCommentaryScreenData(objToSave))
             setIsOverChange(undefined)
             setPlayerUpdateList([])
@@ -1780,6 +1801,7 @@ const Commentary = (props) => {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
                 const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams })
+                // console.log("Called from : 24");
                 dispatch(addCommentaryScreenData({
                     "commentaryId": commentaryDetails.commentaryId,
                     "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }) },
@@ -1833,8 +1855,10 @@ const Commentary = (props) => {
         } else if (selectMissingPlayer) setSelectMissingPlayer(false)
     }, [onPitchPlayers])
     useEffect(() => {
-        if (matchTypeDetails?.isAutoChangeStriker && !changePlayerList
-            && ballCountForStrike > matchTypeDetails?.autoChangeStrikerAfterBall) {
+        if (matchTypeDetails?.isAutoChangeStriker
+            && !changePlayerList
+            && (ballCountForStrike > matchTypeDetails?.autoChangeStrikerAfterBall)
+            && !isMatchCompleted) {
             changeStrike()
             setBallCountForStrike(1)
         }
@@ -1950,7 +1974,6 @@ const Commentary = (props) => {
         {winnerAnnouncement && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}
             winnerAnnouncement={winnerAnnouncement}
-            toggle={() => { setWinnerAnnouncement(undefined) }}
             onExitClick={() => {
                 setWinnerAnnouncement(undefined)
                 navigate("/commentary")
