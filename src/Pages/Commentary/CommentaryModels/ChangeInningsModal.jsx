@@ -18,7 +18,7 @@ const ChangeInningsModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
                 Change Innings
             </ModalHeader>
             <ModalBody>
-                Do You want to End the current Innings?
+                Do you want to end the current innings?
             </ModalBody>
             <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button" onClick={onYesClick}>Yes</Button>

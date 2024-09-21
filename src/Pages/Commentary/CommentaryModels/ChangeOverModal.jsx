@@ -18,7 +18,7 @@ const ChangeOverModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
                 Change Over
             </ModalHeader>
             <ModalBody>
-                Do You want to change the current over?
+                Do you want to change the current over?
             </ModalBody>
             <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button" onClick={onYesClick}>Yes</Button>

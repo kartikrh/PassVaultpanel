@@ -1,10 +1,10 @@
 import React from 'react'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import "../CommentaryCss.css"
-const WinnerModal = ({ isOpen, toggle, winnerAnnouncement, onExitClick }) => {
+const WinnerModal = ({ isOpen, winnerAnnouncement, onExitClick }) => {
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={onExitClick} >
+            <ModalHeader toggle={onExitClick}>
                 Winner Announcement
             </ModalHeader>
             <ModalBody>
