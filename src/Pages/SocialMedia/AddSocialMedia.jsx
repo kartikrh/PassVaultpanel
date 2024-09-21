@@ -30,6 +30,7 @@ import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
 const AddSocialMedia = () => {
   const pageName = TAB_SOCIAL_MEDIA;
@@ -103,7 +104,7 @@ const AddSocialMedia = () => {
         id: socialMediaId,
       };
       dispatch(
-        addSocialMediaToDb({ ...dataToSave, ...extraData })
+        addSocialMediaToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
       );
       setCurrentSaveAction(saveAction);
     }
