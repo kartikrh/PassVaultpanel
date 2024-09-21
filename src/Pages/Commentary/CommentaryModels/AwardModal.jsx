@@ -1,34 +1,47 @@
 import React, { useState, useEffect } from 'react';
+import { Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
+import CardComponent from '../CardComponent';
 import SelectPlayerModal from './SelectPlayerModal';
+import "../CommentaryCss.css";
+import axiosInstance from '../../../Features/axios';
+import { updateToastData } from '../../../Features/toasterSlice';
+import { useDispatch } from 'react-redux';
+import { ERROR } from '../../../components/Common/Const';
+import SpinnerModel from "../../../components/Model/SpinnerModel";
 
-const AwardSelectionComponent = ({ commentaryId, onClose }) => {
+const AwardModal = ({ commentaryId, onClose }) => {
     const [awards, setAwards] = useState([]);
     const [selectedAward, setSelectedAward] = useState(null);
     const [selectedPlayers, setSelectedPlayers] = useState({});
     const [playerList, setPlayerList] = useState([]);
     const [showPlayerModal, setShowPlayerModal] = useState(false);
-
+    const [isApiLoading, setIsApiLoading] = useState(false);
+    const dispatch = useDispatch()
+    useEffect(() => {
+        console.log({ selectedPlayers });
+    })
     useEffect(() => {
         // Fetch awards data
-        fetch('/admin/award/all')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    setAwards(data.result);
-                }
+        axiosInstance.post('/admin/award/all', { isActive: true })
+            .then((response) => {
+                const data = response?.result
+                if (data) setAwards(data);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
             })
-            .catch(error => console.error('Error fetching awards:', error));
-
-        // Fetch players data
-        fetch(`/admin/commentary/byId?id=${commentaryId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const allPlayers = [...data.result.team1Players, ...data.result.team2Players];
+        axiosInstance.post('/admin/commentary/byId', { commentaryId: commentaryId })
+            .then((response) => {
+                const data = response?.result
+                if (data && data?.team1Players && data?.team1Players) {
+                    const allPlayers = [...data.team1Players, ...data.team2Players];
                     setPlayerList(allPlayers);
+                    // setAwards(data.result);
                 }
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
             })
-            .catch(error => console.error('Error fetching players:', error));
     }, [commentaryId]);
 
     const handleAwardClick = (award) => {
@@ -37,6 +50,7 @@ const AwardSelectionComponent = ({ commentaryId, onClose }) => {
     };
 
     const handlePlayerSelect = (player) => {
+        console.log(player);
         setSelectedPlayers(prev => ({
             ...prev,
             [selectedAward.id]: player
@@ -60,31 +74,40 @@ const AwardSelectionComponent = ({ commentaryId, onClose }) => {
 
         console.log('Submission data:', submissionData);
         // Here you would typically send this data to your backend
+        onClose(); // Close the modal after submission
     };
 
     return (
-        <div className="p-4">
-            <h2 className="text-2xl font-bold mb-4">Awards</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {awards.map((award) => (
-                    <div
-                        key={award.id}
-                        className="border rounded p-4 cursor-pointer transition-all duration-300 hover:shadow-lg"
-                        onClick={() => handleAwardClick(award)}
-                        style={{ backgroundColor: selectedPlayers[award.id] ? '#e0e0e0' : '#f0f0f0', opacity: 0.6 }}
-                    >
-                        {selectedPlayers[award.id] ? (
-                            <>
-                                <p className="text-sm text-gray-600 mb-2">{award.name}</p>
-                                <p className="text-lg font-semibold">{selectedPlayers[award.id].playerName}</p>
-                            </>
-                        ) : (
-                            <p className="text-center">{award.name}</p>
-                        )}
-                    </div>
-                ))}
-            </div>
-
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={onClose}>
+            <ModalHeader>
+                Award Selection
+            </ModalHeader>
+            <ModalBody>
+                {(isApiLoading) && <SpinnerModel />}
+                <Row>
+                    {awards.map((award) => (
+                        <Col xs={6} md={4} lg={3} key={award.id} onClick={() => handleAwardClick(award)}>
+                            <CardComponent
+                                title={award.name}
+                                name={selectedPlayers[award.id] ? selectedPlayers[award.id].playerName : "Select Player"}
+                                bgColor={selectedPlayers[award.id] ? "#e0e0e0" : "#f0f0f0"}
+                                onClickColor="#d0d0d0"
+                                isPlayerName={true}
+                            />
+                        </Col>
+                    ))}
+                </Row>
+                <Row className="mt-4">
+                    <Col>
+                        <button
+                            className="btn btn-primary w-100"
+                            onClick={handleSubmit}
+                        >
+                            Submit Awards
+                        </button>
+                    </Col>
+                </Row>
+            </ModalBody>
             {showPlayerModal && (
                 <SelectPlayerModal
                     isOpen={true}
@@ -96,15 +119,8 @@ const AwardSelectionComponent = ({ commentaryId, onClose }) => {
                     selectPlayer={handlePlayerSelect}
                 />
             )}
-
-            <button
-                className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                onClick={handleSubmit}
-            >
-                Submit Awards
-            </button>
-        </div>
+        </Modal>
     );
 };
 
-export default AwardSelectionComponent;
+export default AwardModal;
