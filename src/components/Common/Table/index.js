@@ -51,6 +51,8 @@ const Index = forwardRef(
       suspendModelFunction,
       closeModelFunction,
       deleteAllModelFunction,
+      closeAllModelFunction,
+      cancelAllModelFunction,
       loadPanelModelFunction,
       loadClientModelFunction,
       loadSignalRToggleFunction,
@@ -1487,6 +1489,26 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
+                        {tableElement?.isCloseAllMarket && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              closeAllModelFunction(true);
+                            }}
+                          >
+                            Close All Market
+                          </Button>
+                        )}
+                        {tableElement?.isCancelAllMarket && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              cancelAllModelFunction(true);
+                            }}
+                          >
+                            Cancel All Market
+                          </Button>
+                        )}
                       </div>
                       {/* </Col> */}
                     </Row>
