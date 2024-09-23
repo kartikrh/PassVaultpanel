@@ -101,6 +101,16 @@ const AwardModal = ({ commentaryId, onClose }) => {
     useEffect(() => {
         setIsApiLoading(true);
         // Fetch awards data
+        axiosInstance.post('/admin/commentaryAward/getAssignAward', { commentaryId })
+            .then((response) => {
+                const data = response?.result;
+                if (data) setSelectedPlayers(data);
+                setIsApiLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
+            });
+
         axiosInstance.post('/admin/award/all', { isActive: true })
             .then((response) => {
                 const data = response?.result;
@@ -162,10 +172,14 @@ const AwardModal = ({ commentaryId, onClose }) => {
                     commentaryId: commentaryId
                 };
             });
+        axiosInstance.post('/admin/commentaryAward/assignAward', { comAwards: submissionData })
+            .then((response) => onClose())
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
+            });
 
         console.log('Submission data:', submissionData);
-        // Here you would typically send this data to your backend
-        onClose(); // Close the modal after submission
     };
 
     return (

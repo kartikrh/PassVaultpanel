@@ -1274,14 +1274,13 @@ const Index = () => {
       render: (text, record) => (
         <Tooltip title={"Awards"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
-            color={"warning"}
             size="sm"
-            className="btn"
+            className="award-button btn"
             onClick={() => {
               setShowAwardModel(record.commentaryId)
             }}
           >
-            <i class='bx bxs-right-arrow' ></i>
+            <i class='bx bxs-award'></i>
           </Button>
         </Tooltip>
       ),
@@ -1290,8 +1289,8 @@ const Index = () => {
     const updatedColumn = [...columns];
 
     if (data.some(record => record?.commentaryStatus === 4)) {
+      updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
-      updatedColumn.splice(8, 0, AwardColumn);
     }
     return updatedColumn;
   };
