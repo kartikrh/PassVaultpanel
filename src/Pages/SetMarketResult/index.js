@@ -341,7 +341,7 @@ const Index = () => {
           <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
-      {(!record?.result && record?.status == 5) &&
+      {(!record?.isResult && record?.status == 5) &&
       <Tooltip title={"Cancel Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color="warning"
