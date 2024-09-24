@@ -18,6 +18,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
 import { Tooltip } from "antd";
 import SetResultModal from "./SetResultModal";
+import CancelModal from "./CancelModal";
 
 const Index = () => {
   const pageName = TAB_SET_MARKETS_RESULT;
@@ -38,6 +39,8 @@ const Index = () => {
   const [selectedResult, setSelectedResult] = useState({});
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [resultModalData, setResultModalData] = useState(null);
+  const [cancelModalData, setCancelModalData] = useState(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -175,6 +178,10 @@ const Index = () => {
           })
         );
       });
+  };
+  const handleCancel = async (record) => {
+    setCancelModalData(record);
+    setIsCancelModalOpen(true);
   };
   const handleReset = (value) => {
     fetchData(value);
@@ -320,6 +327,7 @@ const Index = () => {
       title: "Is Result",
       key: "isResult",
       render: (text, record) => (
+      <div className="d-flex align-items-center gap-2">
       <Tooltip title={"Active/Inactive Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isResult ? "primary" : "danger"}`}
@@ -333,6 +341,20 @@ const Index = () => {
           <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
+      {(!record?.result && record?.status == 5) &&
+      <Tooltip title={"Cancel Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color="warning"
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCancel(record);
+          }}
+        >
+          C
+        </Button>
+      </Tooltip>}
+      </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -429,6 +451,12 @@ const Index = () => {
              fetchData={fetchData}
             />
           )}
+        <CancelModal
+          isOpen={isCancelModalOpen}
+          toggle={() => setIsCancelModalOpen(!isCancelModalOpen)}
+          data={cancelModalData}
+          fetchData={fetchData}
+        />
         </Container>
       </div>
     </React.Fragment>

@@ -25,6 +25,7 @@ import {
 import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "./CloseModal";
 import { Tooltip } from "antd";
+import CloseAllModel from "./CloseAllModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -44,6 +45,7 @@ const Index = () => {
   const [competitionId, setCompetitionId] = useState(null);
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+  const [closeAllModelVisable, setCloseAllModelVisable] = useState(false);
   const [delay, setDelay] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
@@ -610,6 +612,7 @@ const Index = () => {
     importExport: false,
     teamsList: false,
     isDateRange: true,
+    isCloseAllMarket: true,
   };
 
   useEffect(() => {
@@ -655,6 +658,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            closeAllModelFunction={setCloseAllModelVisable}
             onAddNavigate={"/addEventMarket"}
             singleCheck={checekedList}
             eventTypes={eventTypes}
@@ -698,6 +702,12 @@ const Index = () => {
           isOpen={isCloseModalOpen}
           toggle={() => setIsCloseModalOpen(!isCloseModalOpen)}
           data={closeModalData}
+          fetchData={fetchData}
+        />
+        <CloseAllModel
+          closeAllModelVisable={closeAllModelVisable}
+          setCloseAllModelVisable={setCloseAllModelVisable}
+          singleCheck={checekedList}
           fetchData={fetchData}
         />
       </div>
