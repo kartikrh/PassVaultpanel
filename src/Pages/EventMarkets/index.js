@@ -272,10 +272,10 @@ const Index = () => {
     url.searchParams.append("eventMarketId", id);
     window.open(url.href, '_blank');
   };
-  const handleDS = (id) => {
-    localStorage.setItem('EventMarketDataLogId', "" + id);
+  const handleDS = (details) => {
     const url = new URL(window.location.origin + "/marketDataLogs");
-    url.searchParams.append("eventMarketId", id);
+    sessionStorage.setItem('eventMarketDataLogId', "" + details?.eventMarketId);
+    sessionStorage.setItem('eventMarketDataLogDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleClose = async (record) => {
@@ -586,7 +586,7 @@ const Index = () => {
             size="sm"
             className="btn"
             onClick={() => {
-              handleDS(record?.eventMarketId);
+              handleDS(record);
             }}
           >
             DS
