@@ -15,15 +15,23 @@ function MarketDataLogs() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [category, setCategory] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const eventMarketId = +sessionStorage.getItem('eventMarketDataLogId') || "0";
   const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketDataLogDetails') || "{}");
 
   const fetchData = async (eventMarketId) => {
     setIsLoading(true);
     await axiosInstance
-      .post("/admin/eventMarket/getDSReport", { eventMarketId })
+      .post("/admin/eventMarket/getDSReport", { 
+        eventMarketId,
+        page: currentPage+1,
+        limit: pageSize,
+      })
       .then((response) => {
-        const apiData = response?.result;
+        setTotal(response?.result?.totalRecords || 0); 
+        const apiData = response?.result?.data;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.marketDataLogId);
@@ -66,7 +74,7 @@ function MarketDataLogs() {
     if (eventMarketId !== "0") {
       fetchData(eventMarketId);
     }
-  }, [eventMarketId]);
+  }, [eventMarketId, currentPage, pageSize]);
 
   useEffect(() => {
     if(marketDetails?.marketTypeCategoryId) {
@@ -191,7 +199,7 @@ function MarketDataLogs() {
       title: "Created By",
       dataIndex: "userName",
       key: "userName",
-      style: { width: "10%" },
+      style: { width: "5%", textAlign: "center" },
     },
   ] : [
     {
@@ -236,11 +244,14 @@ function MarketDataLogs() {
       style: { width: "10%" },
     },
   ];
+
   const MarketDetailsDate = marketDetails?.eventDate
     ? convertDateUTCToLocal(marketDetails.eventDate, "index")
     : "";
+
   const tableElement = {
     title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
+    isServerPagination: true,
   };
 
   return (
@@ -284,6 +295,11 @@ function MarketDataLogs() {
             })}
             tableElement={tableElement}
             reFetchData={fetchData}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
         </Container>
       </div>
