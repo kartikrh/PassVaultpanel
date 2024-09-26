@@ -1788,6 +1788,7 @@ const Commentary = (props) => {
             setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
+        props.saveUserInfo()
     }, [])
     useEffect(() => {
         if (!isEmpty(propsData)) {
