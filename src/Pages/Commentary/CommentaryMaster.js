@@ -70,7 +70,7 @@ function CommentaryMaster() {
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchData(commentaryId);
-            saveUserInfo(commentaryId);
+            saveUserInfo();
         }
     }, [commentaryId]);
 
@@ -99,15 +99,15 @@ function CommentaryMaster() {
                 setCommentaryData(commentaryDataToUpdate)
                 setStatusList(commentaryDataToUpdate.commentaryDisplayStatus)
                 setIsDataLoading(false)
-                if(response?.result?.callPrediction?.predictioncallSuccess === false) {
+                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
                     const endPoint = response?.result?.callPrediction?.endPoint;
                     dispatch(
-                      updateToastData({
-                        data: `${endPoint}\n${predictionMessage}`,
-                        title: "Call Prediction",
-                        type: WARNING,
-                      })
+                        updateToastData({
+                            data: `${endPoint}\n${predictionMessage}`,
+                            title: "Call Prediction",
+                            type: WARNING,
+                        })
                     );
                 }
             }).catch((error) => {
@@ -190,6 +190,7 @@ function CommentaryMaster() {
                                             onInningsChange={handleInningsChange}
                                             isDataLoading={isDataLoading}
                                             statusPopup={statusPopup}
+                                            saveUserInfo={saveUserInfo}
                                         />}
                                     <Col xs={12} md={6} lg={6}>
                                         <img role="button" className="sticky-button"
