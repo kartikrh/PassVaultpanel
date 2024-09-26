@@ -14,6 +14,8 @@ import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
+import Select from "react-select";
+
 const tableElement = {
     title: "Open Market",
     displayTitle: true
@@ -31,6 +33,7 @@ export const OpenMarket = () => {
     const [autoInterval, setAutoInterval] = useState(500)
     const [isSocketConnected, setIsSocketConnected] = useState(false)
     const [openAccordions, setOpenAccordions] = useState(["Session"]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -38,6 +41,13 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
+
+    const filterDataBySelectedCategories = (dataToFilter) => {
+        if (selectedCategories.length === 0) return dataToFilter;
+        return dataToFilter.filter(item =>
+            selectedCategories.some(category => category.value === item.marketTypeCategoryId)
+        );
+    };
 
     const fetchConfigAll = async () => {
         setIsLoading(true);
@@ -86,7 +96,9 @@ export const OpenMarket = () => {
         })
         return dataToSend
     }
-
+    const handleCategoryChange = (selectedOptions) => {
+        setSelectedCategories(selectedOptions);
+    };
     const handleValueChange = (record, key, value) => {
         setHasUnsavedChanges(true);
         const indexOfData = data.findIndex(i => i.marketId === record.marketId)
@@ -115,16 +127,13 @@ export const OpenMarket = () => {
     }
 
     const handleAction = ({ changeIn, key, value, action }) => {
-        let dataToUpdate = []
-        changeIn.forEach(record => {
+        let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
             if (key === "status" && value === OPEN_VALUE) {
-                if (record.status === SUSPEND_VALUE) {
-                    dataToUpdate.push({ ...record, status: OPEN_VALUE })
-                }
+                return record.status === SUSPEND_VALUE;
             }
-            else if (!_.isEqual(+record[key], +value))
-                dataToUpdate.push({ ...record, [key]: value })
-        })
+            return !_.isEqual(+record[key], +value);
+        }).map(record => ({ ...record, [key]: value }));
+
         dataToUpdate = formatDataBeforeSend(dataToUpdate)
         if (!isEmpty(dataToUpdate))
             saveData({ dataToSave: dataToUpdate, action })
@@ -133,9 +142,10 @@ export const OpenMarket = () => {
     const updateRecords = (record) => {
         let dataToSend = []
         let isSaveAll = false
-        if (record) dataToSend = [record]
-        else {
-            dataToSend = data
+        if (record) {
+            dataToSend = [record]
+        } else {
+            dataToSend = filterDataBySelectedCategories(data)
             isSaveAll = true
         }
         dataToSend = formatDataBeforeSend(dataToSend)
@@ -751,6 +761,18 @@ export const OpenMarket = () => {
                                 </Row>
                                 {data.length > 0 &&
                                     <Row>
+                                        <Col className="mt-2" xs={12} md={12} lg={12}>
+                                            <div><b>Filter Categories:</b></div>
+                                            <Select
+                                                isMulti
+                                                name="categories"
+                                                options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
+                                                className="basic-multi-select"
+                                                classNamePrefix="select"
+                                                value={selectedCategories}
+                                                onChange={handleCategoryChange}
+                                            />
+                                        </Col>
                                         {lineRatioField}
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
                                             <Button

@@ -423,6 +423,11 @@
     border-color: rgb(172, 120, 251) !important;
 }
 
+.award-button {
+    background-color: rgb(255, 136, 223) !important;
+    border-color: rgb(255, 136, 223) !important;
+}
+
 .red-warning-button {
     background-color: #f5d3d3;
     border-color: #f5d3d3;
