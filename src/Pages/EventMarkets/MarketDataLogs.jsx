@@ -189,8 +189,8 @@ function MarketDataLogs() {
     },
     {
       title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
+      dataIndex: "userName",
+      key: "userName",
       style: { width: "10%" },
     },
   ] : [
@@ -278,7 +278,6 @@ function MarketDataLogs() {
                   line: logObject?.runner?.[0]?.line || "",
                   overRate: logObject?.runner?.[0]?.overRate || "",
                   underRate: logObject?.runner?.[0]?.underRate || "",
-                  createdBy: logObject?.createdBy || "",
                 };
               }
               return item;
