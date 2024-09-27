@@ -103,7 +103,7 @@ function MarketDataLogs() {
     }
   };
 
-  const columns = category?.toLowerCase() === "session" ? [
+  const columns = marketDetails?.marketName?.toLowerCase() !== "match odds" ? [
     {
       title: "Date",
       dataIndex: "createdDate",
