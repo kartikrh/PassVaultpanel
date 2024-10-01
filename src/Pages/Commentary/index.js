@@ -60,6 +60,7 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -88,11 +89,17 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    await axiosInstance
-      .post(`/admin/commentary/all`, {
-        ...(latestValueFromTable || tableActions),
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
         ...dateRange,
-      })
+      };
+    } 
+    await axiosInstance
+      .post(`/admin/commentary/all`, payload)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -1331,7 +1338,7 @@ const Index = () => {
         value: 4,
       },
     ],
-    dateRange: true,
+    isDateRange: true,
     compToRender: tabelNoteDisplay
   };
 
@@ -1340,8 +1347,11 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+  }, [isSearch]);
+
+  useEffect(()=>{
     fetchEventTypeData();
-  }, []);
+  },[])
 
   const handleReload = (value) => {
     fetchData();
@@ -1392,6 +1402,8 @@ const Index = () => {
             )}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
           <SuspendTabModel
             suspendModelVisible={suspendModelVisable}
