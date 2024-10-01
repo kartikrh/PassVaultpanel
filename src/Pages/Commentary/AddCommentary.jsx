@@ -47,6 +47,7 @@ function AddCommentary() {
     let navigate = useNavigate();
     const location = useLocation();
     const [id, setId] = useState(location.state?.userId || "0");
+    const [competitionId, setCompetitionId] = useState(0);
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -95,6 +96,7 @@ function AddCommentary() {
 
     const handleFormADataChange = (newFormData) => {
         setSavedFormState(newFormData);
+        setCompetitionId(newFormData["competitionId"]);
         if (newFormData["eventTypeId"] !== savedFormState["eventTypeId"]) {
             setMasterData((preData) => ({
                 ...preData,
@@ -197,7 +199,7 @@ function AddCommentary() {
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team1Id"] })
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -225,7 +227,7 @@ function AddCommentary() {
         } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamId', { teamId: newFormData["team2Id"] })
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"], competitionId })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
