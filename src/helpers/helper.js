@@ -11,6 +11,11 @@ export const filterOrderChange = (items, name) => {
           eventTypeId: item.eventTypeId,
           displayOrder: index + 1,
         };
+      } else if(name === "competition") {
+        return {
+          competitionId: item.competitionId,
+          displayOrder: index + 1,
+        };
       }
     }
   });
