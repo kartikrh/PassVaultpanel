@@ -23,6 +23,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [isDrag, setIsDrag] = useState(true);
   const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -30,9 +31,12 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
+    const isDragValue = latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : isDrag;
+    setIsDrag(isDragValue);
     await axiosInstance
       .post(`/admin/competition/all`, {
-        ...(latestValueFromTable || tableActions)
+        ...(latestValueFromTable || tableActions),
+        isTrending: latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : true
       })
       .then((response) => {
         const apiData = response?.result
@@ -75,6 +79,22 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/competition/save`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+  const handleIsTrending = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/competition/isTrending`, {
         competitionId: record.competitionId,
         [pType]: cState ? false : true,
       })
@@ -138,7 +158,7 @@ const Index = () => {
               handleSingleCheck(record);
             }}
           />
-          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
+          {isDrag ? <i className="bx bx-move ms-1 mt-1"></i> : null}
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
@@ -223,6 +243,23 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "IsTrending",
+      key: "isTrending",
+      render: (text, record) => (
+        <Button
+          color={`${record.isTrending ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleIsTrending("isTrending", record, record.isTrending);
+          }}
+        >
+          <i className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   const handleReset = (value) => {
@@ -231,11 +268,13 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Competition",
+    dragDrop: isDrag,
     headerSelect: false,
     eventTypeSelect: true,
     isActive: true,
     resetButton: true,
     reloadButton: true,
+    isTrending: true,
   };
 
 

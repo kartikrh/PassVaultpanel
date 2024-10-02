@@ -120,6 +120,7 @@ const Index = forwardRef(
       key: "",
     });
     const [statusSwitch, setStatusSwitch] = useState(true);
+    const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(true);
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const navigate = useNavigate();
@@ -203,6 +204,43 @@ const Index = forwardRef(
       );
     };
 
+    const OffsymbolTrendingStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 8,
+            color: "#fff",
+            // paddingRight: 2,
+          }}
+        >
+          {" "}
+          non trending
+        </div>
+      );
+    };
+    const OnSymbolTrendingStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 9,
+            color: "#fff",
+            // paddingRight: 4,
+          }}
+        >
+          {" "}
+          trending
+        </div>
+      );
+    };
+
     const styles = {
       menu: ({ width, ...css }) => ({ ...css }),
     };
@@ -230,6 +268,18 @@ const Index = forwardRef(
         reFetchData({
           ...tableActions,
           isApproved: id,
+        });
+      } else if (key === "isTrending") {
+        setTrendingStatusSwitch(id);
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id,
+          };
+        });
+        reFetchData({
+          ...tableActions,
+          isTrending: id,
         });
       } else {
         if (key === "isShowContent") {
@@ -779,6 +829,21 @@ const Index = forwardRef(
                                 handleTableActions("isApproved", !statusSwitch);
                               }}
                               checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.isTrending ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolTrendingStatus />}
+                              checkedIcon={<OnSymbolTrendingStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isTrending", !trendingStatusSwitch);
+                              }}
+                              checked={trendingStatusSwitch}
                             />
                           </div>
                         ) : null}
