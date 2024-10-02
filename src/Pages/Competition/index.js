@@ -17,8 +17,8 @@ import { updateToastData } from "../../Features/toasterSlice";
 const Index = () => {
   const pageName = TAB_COMPETITION
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title =
-    "Competitions";
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+  document.title = "Competitions";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,7 @@ const Index = () => {
         isTrending: latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : true
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = [...response?.result]?.sort((a, b) => a.displayOrder - b.displayOrder);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.competitionId)
@@ -302,6 +302,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            changeOrderApiName="competition"
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
