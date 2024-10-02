@@ -43,7 +43,7 @@ export const OpenMarket = () => {
     const lineRatioForMarketCategoryId = 23
 
     const filterDataBySelectedCategories = (dataToFilter) => {
-        if (selectedCategories.length === 0) return dataToFilter;
+        if (selectedCategories.length === 0) return [];
         return dataToFilter.filter(item =>
             selectedCategories.some(category => category.value === item.marketTypeCategoryId)
         );
@@ -134,23 +134,30 @@ export const OpenMarket = () => {
             return !_.isEqual(+record[key], +value);
         }).map(record => ({ ...record, [key]: value }));
 
-        dataToUpdate = formatDataBeforeSend(dataToUpdate)
-        if (!isEmpty(dataToUpdate))
-            saveData({ dataToSave: dataToUpdate, action })
-    }
+        dataToUpdate = formatDataBeforeSend(dataToUpdate);
+        if (!isEmpty(dataToUpdate)) {
+            saveData({ dataToSave: dataToUpdate, action });
+        } else {
+            dispatch(updateToastData({ data: "No data to update based on current filter", title: "Update Skipped", type: WARNING }));
+        }
+    };
 
     const updateRecords = (record) => {
-        let dataToSend = []
-        let isSaveAll = false
+        let dataToSend = [];
+        let isSaveAll = false;
         if (record) {
-            dataToSend = [record]
+            dataToSend = [record];
         } else {
-            dataToSend = filterDataBySelectedCategories(data)
-            isSaveAll = true
+            dataToSend = filterDataBySelectedCategories(data);
+            isSaveAll = true;
         }
-        dataToSend = formatDataBeforeSend(dataToSend)
-        saveData({ dataToSave: dataToSend, action: isSaveAll ? "SAVE_ALL" : false })
-    }
+        dataToSend = formatDataBeforeSend(dataToSend);
+        if (!isEmpty(dataToSend)) {
+            saveData({ dataToSave: dataToSend, action: isSaveAll ? "SAVE_ALL" : false });
+        } else {
+            dispatch(updateToastData({ data: "No data to save based on current filter", title: "Save Skipped", type: WARNING }));
+        }
+    };
 
     const handleSingleAction = (record, key, value) => {
         const updatedRecord = { ...record, [key]: value }
@@ -631,7 +638,10 @@ export const OpenMarket = () => {
         </Col>
     </>
     const handleKeyPress = (event) => {
-        const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') {
+            return; // Don't trigger shortcuts if focus is on input or select elements
+        }
+        const key = event.key.toLowerCase();
         switch (key) {
             case 'a':
                 updateRecords();
@@ -649,6 +659,7 @@ export const OpenMarket = () => {
                 break;
         }
     }
+
     const toggleAccordion = (id) => {
         setOpenAccordions((prevOpenAccordions) => {
             if (prevOpenAccordions.includes(id)) {
@@ -717,6 +728,14 @@ export const OpenMarket = () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [data])
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [data, selectedCategories]);
+
     return (
         <React.Fragment>
             <div className="page-content">
@@ -777,16 +796,23 @@ export const OpenMarket = () => {
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
                                             <Button
                                                 color="primary"
-                                                style={{ opacity: hasUnsavedChanges ? 0.75 : 1 }}
+                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 0.75 : 1 }}
                                                 className="table-header-button"
                                                 onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
+                                                disabled={selectedCategories.length === 0}
                                             > {`${SEND_ALL} (S)`}</Button>
-                                            <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}>{`Publish (D)`}</Button>
                                             <Button
                                                 color="primary"
                                                 className="table-header-button"
-                                                style={{ opacity: hasUnsavedChanges ? 1 : 0.5 }}
+                                                onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}
+                                                disabled={selectedCategories.length === 0}
+                                            >{`Publish (D)`}</Button>
+                                            <Button
+                                                color="primary"
+                                                className="table-header-button"
+                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.5 }}
                                                 onClick={() => updateRecords()}
+                                                disabled={selectedCategories.length === 0}
                                             >{`Save All (A)`}</Button>
                                         </Col>
                                     </Row>}
