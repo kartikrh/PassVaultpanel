@@ -86,16 +86,19 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
         setIsLoading(true);
         try {
             const playerDataArray = Object.keys(editedPlayers).map(playerId => {
-                let { batsmanAverage, batsmanStrikeRate, isInPlayingEleven } = editedPlayers[playerId];
+                let { batsmanAverage, batsmanStrikeRate, boundary, isInPlayingEleven } = editedPlayers[playerId];
                 if (!batsmanAverage) {
                     batsmanAverage = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.batsmanAverage || 0
                 }
                 if (!batsmanStrikeRate) {
                     batsmanStrikeRate = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.batsmanStrikeRate || 0
                 }
+                if (!boundary) {
+                    boundary = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.boundary || 0
+                }
                 isInPlayingEleven = Object.keys(updatedPlayingXiPlayer).includes(playerId) ? isInPlayingEleven :
                     commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.isInPlayingEleven || false
-                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, isInPlayingEleven };
+                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, isInPlayingEleven };
             });
             await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
             setIsLoading(false);
@@ -113,6 +116,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
             [playerId]: {
                 ...prevState[playerId],
                 batsmanAverage: +avg,
+                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
             }
         }));
     };
@@ -123,6 +127,18 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
             [playerId]: {
                 ...prevState[playerId],
                 batsmanStrikeRate: +strikeRate,
+                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
+            }
+        }));
+    };
+
+    const handleBoundaryChange = (playerId, bdry) => {
+        setEditedPlayers(prevState => ({
+            ...prevState,
+            [playerId]: {
+                ...prevState[playerId],
+                boundary: +bdry,
+                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
             }
         }));
     };
@@ -191,9 +207,10 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                         <div class="col-2"></div>
                         <div class="col-10 ps-4">
                             <div className="row">
-                                <div className="col-6">Player</div>
+                                <div className="col-4">Player</div>
                                 <div className="col-2">Avg</div>
                                 <div className="col-2">SR</div>
+                                <div className="col-2">BDRY</div>
                                 <div className="col-2">XI</div>
 
                             </div>
@@ -211,7 +228,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                             </div>
                             <div class="col-10 ps-4">
                                 <div className="row">
-                                    <div className="col-6">{player?.playerName}</div>
+                                    <div className="col-4">{player?.playerName}</div>
                                     <div className="col-2">
                                         <input
                                             type="number"
@@ -235,6 +252,22 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                             }
                                             onChange={(e) =>
                                                 handleStrikeRateChange(
+                                                    player.playerId,
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className="col-2">
+                                        <input
+                                            type="number"
+                                            style={{ width: "55px" }}
+                                            value={
+                                                +editedPlayers[player.playerId]?.boundary ||
+                                                +player.boundary
+                                            }
+                                            onChange={(e) =>
+                                                handleBoundaryChange(
                                                     player.playerId,
                                                     e.target.value
                                                 )
