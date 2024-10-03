@@ -31,9 +31,9 @@ export const CompetitionFields = [
         type: TEXT,
     },
     {
-        name: "isActive",
-        label: "Is Active",
-        defaultValue: true,
+        name: "isTrending",
+        label: "Is Trending",
+        defaultValue: false,
         parentclassName: "",
         type: SWITCH,
     },
@@ -42,5 +42,12 @@ export const CompetitionFields = [
         label: "Event Image",
         parentclassName: "",
         type: IMAGE,
+    },
+    {
+        name: "isActive",
+        label: "Is Active",
+        defaultValue: true,
+        parentclassName: "",
+        type: SWITCH,
     },
 ]
