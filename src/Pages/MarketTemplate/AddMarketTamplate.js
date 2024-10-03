@@ -159,7 +159,7 @@ function AddMarketTemaplate() {
         ...preData,
         "marketTypeCategoryId": [],
       }));
-      if (newFormData["marketTypeId"] !== "0") {
+      if (newFormData["marketTypeId"] && newFormData["marketTypeId"] !== "0") {
         axiosInstance.post('/admin/marketTemplate/getCategoryByMarketType', { marketTypeId: newFormData["marketTypeId"] })
           .then((response) => {
             const resultData = fetchResult(response)
