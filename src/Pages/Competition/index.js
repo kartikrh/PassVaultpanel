@@ -23,7 +23,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [isDrag, setIsDrag] = useState(true);
+  const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/competition/all`, {
         ...(latestValueFromTable || tableActions),
-        isTrending: latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : true
+        isTrending: latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : false
       })
       .then((response) => {
         const apiData = [...response?.result]?.sort((a, b) => a.displayOrder - b.displayOrder);
