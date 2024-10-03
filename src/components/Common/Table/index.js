@@ -120,7 +120,7 @@ const Index = forwardRef(
       key: "",
     });
     const [statusSwitch, setStatusSwitch] = useState(true);
-    const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(true);
+    const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(false);
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const navigate = useNavigate();
