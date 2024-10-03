@@ -222,6 +222,7 @@ function AddMarketTemaplate() {
       isPreMatchOnly: false,
       isDefaultBetAllowed: false,
       isDefaultMarketActive: false,
+      isPerEvent: false,
     };
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
