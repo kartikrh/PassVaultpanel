@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from "../../Features/axios";
-import { Button, Card, CardBody, CardHeader, Table, Input } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Table, Input, Container, Row, Col } from 'reactstrap';
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import Breadcrumbs from '../../components/Common/Breadcrumb';
+import { useNavigate } from 'react-router-dom';
 
-// Assuming you have this defined somewhere in your project
 const MARKET_STATUS = {
     1: "Active",
     2: "Suspended",
     3: "Settled",
-    // Add other statuses as needed
 };
 
 export const CreateEventMarket = () => {
@@ -20,9 +21,11 @@ export const CreateEventMarket = () => {
         categories: [],
         marketTypes: []
     });
+    let navigate = useNavigate();
     const commentaryId = +localStorage.getItem('marketTemplateCommentaryId') || "0";
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [checkedList, setCheckedList] = useState([]);
+
     useEffect(() => {
         fetchData(commentaryId);
     }, []);
@@ -152,18 +155,19 @@ export const CreateEventMarket = () => {
     };
 
     const renderTable = (markets) => {
-        const columns = [...columnInitials, ...columnButtons];
-        const hasOnlyOneRunner = markets[0]?.runners?.length === 1;
+        const hasRunnerColumns = !markets[0]?.isPredefineRunnerValue;
+        const columns = [
+            ...columnInitials,
+            ...(hasRunnerColumns ? runnerColumns : []),
+            ...columnButtons
+        ];
 
         return (
             <Table responsive>
                 <thead>
                     <tr>
                         {columns.map((column, index) => (
-                            <th key={index} style={column.style}>{column.title}</th>
-                        ))}
-                        {hasOnlyOneRunner && runnerColumns.map((column, index) => (
-                            <th key={`runner-${index}`}>{column.title}</th>
+                            <th className="p-0" key={index} style={column.style}>{column.title}</th>
                         ))}
                     </tr>
                 </thead>
@@ -171,35 +175,40 @@ export const CreateEventMarket = () => {
                     {markets.map((market, index) => (
                         <React.Fragment key={index}>
                             <tr>
-                                {columns.map((column, colIndex) => (
-                                    <td key={colIndex}>
+                                {columnInitials.map((column, colIndex) => (
+                                    <td className="p-2" key={colIndex}>
                                         {column.render ? column.render(market[column.dataIndex], market) : market[column.dataIndex]}
                                     </td>
                                 ))}
-                                {hasOnlyOneRunner && market.runners[0] && runnerColumns.map((column, runnerColIndex) => (
-                                    <td key={`runner-${runnerColIndex}`}>
-                                        {column.render(market.runners[0][column.key], market.runners[0], (key, value) => handleRunnerValueChange(market, 0, key, value))}
+                                {!market.isPredefineRunnerValue && runnerColumns.map((column, runnerColIndex) => (
+                                    <td className="p-2" key={`runner-${runnerColIndex}`}>
+                                        {column.render(market[column.key], market, (key, value) => handleValueChange(market, key, value))}
+                                    </td>
+                                ))}
+                                {columnButtons.map((column, colIndex) => (
+                                    <td className="p-2" key={`button-${colIndex}`}>
+                                        {column.render ? column.render(market[column.dataIndex], market) : market[column.dataIndex]}
                                     </td>
                                 ))}
                             </tr>
-                            {!hasOnlyOneRunner && market.runners && market.runners.length > 0 && (
+                            {market.isPredefineRunnerValue && market.runners && market.runners.length > 0 && (
                                 <tr>
-                                    <td colSpan={columns.length}>
+                                    <td className="p-2" colSpan={columns.length}>
                                         <Table>
                                             <thead>
                                                 <tr>
-                                                    <th>Runner</th>
+                                                    <th className="p-0">Runner</th>
                                                     {runnerColumns.map((column, runnerColIndex) => (
-                                                        <th key={runnerColIndex}>{column.title}</th>
+                                                        <th className="p-0" key={runnerColIndex}>{column.title}</th>
                                                     ))}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {market.runners.map((runner, runnerIndex) => (
                                                     <tr key={runnerIndex}>
-                                                        <td>{runner.runner}</td>
+                                                        <td className="p-2">{runner.runner}</td>
                                                         {runnerColumns.map((column, runnerColIndex) => (
-                                                            <td key={runnerColIndex}>
+                                                            <td className="p-2" key={runnerColIndex}>
                                                                 {column.render(runner[column.key], runner, (key, value) => handleRunnerValueChange(market, runnerIndex, key, value))}
                                                             </td>
                                                         ))}
@@ -222,7 +231,7 @@ export const CreateEventMarket = () => {
             <CardHeader>
                 {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
             </CardHeader>
-            <CardBody>
+            <CardBody className="p-1">
                 {renderTable(markets)}
             </CardBody>
         </Card>
@@ -233,9 +242,22 @@ export const CreateEventMarket = () => {
             <CardHeader>
                 {marketData.marketTypes.find(type => type.marketTypeId === parseInt(typeId))?.marketTypeName || `Type ${typeId}`}
             </CardHeader>
-            <CardBody>
+            <CardBody className="p-1">
                 {Object.entries(categories).map(([categoryId, markets]) =>
                     renderMarketCategory(categoryId, markets)
+                )}
+            </CardBody>
+        </Card>
+    );
+
+    const renderTeamMarkets = (teamId, typeCategories) => (
+        <Card key={teamId}>
+            <CardHeader>
+                {marketData.teamAndPlayers.find(team => team.teamId === parseInt(teamId))?.teamName || `Team ${teamId}`}
+            </CardHeader>
+            <CardBody className="p-1">
+                {Object.entries(typeCategories).map(([typeId, categories]) =>
+                    renderMarketType(typeId, categories)
                 )}
             </CardBody>
         </Card>
@@ -251,21 +273,39 @@ export const CreateEventMarket = () => {
             const [prefix, typeId, categoryId, name] = key.split('_##_');
             const section = prefix === 'oneTimeMarket' ? sections.oneTimeMarket : sections.teamMarkets;
 
-            if (!section.data[typeId]) section.data[typeId] = {};
-            if (!section.data[typeId][categoryId]) section.data[typeId][categoryId] = [];
-            section.data[typeId][categoryId].push(...markets);
+            if (prefix === 'oneTimeMarket') {
+                if (!section.data[typeId]) section.data[typeId] = {};
+                if (!section.data[typeId][categoryId]) section.data[typeId][categoryId] = [];
+                section.data[typeId][categoryId].push(...markets);
+            } else {
+                const teamId = prefix;
+                if (!section.data[teamId]) section.data[teamId] = {};
+                if (!section.data[teamId][typeId]) section.data[teamId][typeId] = {};
+                if (!section.data[teamId][typeId][categoryId]) section.data[teamId][typeId][categoryId] = [];
+                section.data[teamId][typeId][categoryId].push(...markets);
+            }
         });
 
-        return Object.entries(sections).map(([sectionKey, section]) => (
-            <Card key={sectionKey}>
-                <CardHeader>{section.title}</CardHeader>
-                <CardBody>
-                    {Object.entries(section.data).map(([typeId, categories]) =>
-                        renderMarketType(typeId, categories)
-                    )}
-                </CardBody>
-            </Card>
-        ));
+        return (
+            <>
+                <Card>
+                    <CardHeader>{sections.oneTimeMarket.title}</CardHeader>
+                    <CardBody className="p-1">
+                        {Object.entries(sections.oneTimeMarket.data).map(([typeId, categories]) =>
+                            renderMarketType(typeId, categories)
+                        )}
+                    </CardBody>
+                </Card>
+                <Card>
+                    <CardHeader>{sections.teamMarkets.title}</CardHeader>
+                    <CardBody className="p-1">
+                        {Object.entries(sections.teamMarkets.data).map(([teamId, typeCategories]) =>
+                            renderTeamMarkets(teamId, typeCategories)
+                        )}
+                    </CardBody>
+                </Card>
+            </>
+        );
     };
 
     const handleSave = () => {
@@ -279,7 +319,9 @@ export const CreateEventMarket = () => {
         console.log(savedData);
         // Here you would typically send this data to your backend
     };
-
+    const handleBackClick = () => {
+        navigate("/commentary");
+    };
     const handleValueChange = (market, key, value) => {
         setProcessedMarkets(prevMarkets => {
             const updatedMarkets = { ...prevMarkets };
@@ -508,11 +550,31 @@ export const CreateEventMarket = () => {
         },
     ];
     return (
-        <div>
-            <h1>Market Generator</h1>
-            {renderMainSections()}
-            <Button onClick={handleSave}>Save</Button>
-        </div>
+        <React.Fragment>
+            <div className="page-content" >
+                <Container fluid={true}>
+                    <Row>
+                        <Card>
+                            <CardBody className="p-1">
+                                {isLoading && <SpinnerModel />}
+                                <Row className='mb-3' >
+                                    <Col className="mt-3 mt-lg-4 mt-md-4" >
+                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
+                                    </Col>
+                                    <Col className="mt-3 mt-lg-3 mt-md-3" >
+                                        <Button color="primary" className="btn text-right" onClick={handleSave} > Save </Button>
+                                    </Col>
+                                    < Col className="mt-3 mt-lg-3 mt-md-3" >
+                                        <button className="btn btn-danger text-right" onClick={handleBackClick} > Back </button>
+                                    </Col>
+                                </Row>
+                                {renderMainSections()}
+                            </CardBody>
+                        </Card>
+                    </Row>
+                </Container>
+            </div>
+        </React.Fragment>
     );
 
 };
