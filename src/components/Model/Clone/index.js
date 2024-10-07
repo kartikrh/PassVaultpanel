@@ -76,6 +76,15 @@ export const MarketTemplateClone = ({cloneModelVisible, cloneValues, setCloneMod
             }
         })
     }
+   const handleTemplateName = (event) =>{
+        const { name, value } = event.target;
+        setCloneValues((preValue)=>{
+            return {
+                ...preValue,
+                [name]:value
+            }
+        })
+    }
     const fetchData = async () => {
         await axiosInstance
           .post("admin/matchType/all", {})
@@ -106,6 +115,8 @@ export const MarketTemplateClone = ({cloneModelVisible, cloneValues, setCloneMod
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
               <h4 className="form-label text-left text-lg">Clone New Market Template</h4>
+              <h6 className='text-left mt-4'>Template Name</h6>
+              <input type="text" onChange={handleTemplateName} value={cloneValues?.templateName} name="templateName" className="form-control" required />
               <h6 className='text-left mt-4'>Match Type</h6>
               <Select
               classNamePrefix="select2-selection"

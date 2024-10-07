@@ -28,7 +28,8 @@ const Index = () => {
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [cloneValues, setCloneValues] = useState({
     marketTemplateId: "",
-    matchTypeID: ""
+    matchTypeID: "",
+    templateName: "",
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -74,7 +75,7 @@ const Index = () => {
     setCheckedList(updateSingleCheck)
   };
   const handleClone = async () => {
-    if (cloneValues.matchTypeID !== "") {
+    if (cloneValues.matchTypeID !== "" && cloneValues?.templateName !== "") {
       setIsLoading(true);
       await axiosInstance
         .post(`/admin/marketTemplate/clone`, {
@@ -227,6 +228,7 @@ const Index = () => {
               setCloneValues({
                 marketTemplateId: record?.marketTemplateId,
                 matchTypeID: record?.matchTypeID,
+                templateName: record?.templateName,
               });
             }}
           />
