@@ -203,7 +203,14 @@ export const CreateEventMarket = () => {
                             <tr>
                                 {columns.map((column, colIndex) => (
                                     <td className="p-2" key={colIndex}>
-                                        {column.render ? column.render(market[column.dataIndex], market) : market[column.dataIndex]}
+                                        {column.render ?
+                                            column.render(
+                                                market[column.dataIndex],
+                                                market,
+                                                (key, value) => handleValueChange(market, key, value)
+                                            ) :
+                                            market[column.dataIndex]
+                                        }
                                     </td>
                                 ))}
                             </tr>
@@ -225,7 +232,11 @@ export const CreateEventMarket = () => {
                                                         <td className="p-2">{runner.runner}</td>
                                                         {runnerColumns.map((column, runnerColIndex) => (
                                                             <td className="p-2" key={runnerColIndex}>
-                                                                {column.render(runner[column.key], runner, (key, value) => handleRunnerValueChange(market, runnerIndex, key, value))}
+                                                                {column.render(
+                                                                    runner[column.key],
+                                                                    runner,
+                                                                    (key, value) => handleRunnerValueChange(market, runnerIndex, key, value)
+                                                                )}
                                                             </td>
                                                         ))}
                                                     </tr>
