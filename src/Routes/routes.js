@@ -84,7 +84,7 @@ import AddNews from "../Pages/News/AddNews.jsx";
 import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
 import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
-import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
+import { CreateEventMarket } from "../Pages/Commentary/CreateEventMarket.js";
 import { OpenMarket } from "../Pages/Commentary/OpenMarket.jsx";
 import { CommentaryFeatures } from "../Pages/Commentary/CommentaryFeatures.jsx";
 import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.js";
@@ -113,6 +113,7 @@ import AddSocialMedia from "../Pages/SocialMedia/AddSocialMedia.jsx";
 import SocialMedia from "../Pages/SocialMedia";
 import AddAward from "../Pages/Awards/AddAwards.jsx";
 import Awards from "../Pages/Awards";
+import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -150,6 +151,10 @@ const authProtectedRoutes = [
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
+  },
+  {
+    path: "/commentaryMarketTemplatev1",
+    component: <CreateEventMarket />,
   },
   { path: "/openMarket", component: <OpenMarket /> },
   { path: "/oddsView", component: <OddsView /> },

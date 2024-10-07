@@ -4,6 +4,9 @@ import { Button, Card, CardBody, CardHeader, Table, Input, Container, Row, Col }
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { updateToastData } from '../../Features/toasterSlice';
+import { ERROR, SUCCESS } from '../../components/Common/Const';
 
 const MARKET_STATUS = {
     1: "Active",
@@ -22,6 +25,7 @@ export const CreateEventMarket = () => {
         marketTypes: []
     });
     let navigate = useNavigate();
+    const dispatch = useDispatch();
     const commentaryId = +localStorage.getItem('marketTemplateCommentaryId') || "0";
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [checkedList, setCheckedList] = useState([]);
@@ -44,6 +48,27 @@ export const CreateEventMarket = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSelectAll = (markets, isSelected) => {
+        const newCheckedList = isSelected
+            ? [...new Set([...checkedList, ...markets.map(m => m.eventMarketId)])]
+            : checkedList.filter(id => !markets.some(m => m.eventMarketId === id));
+
+        setCheckedList(newCheckedList);
+
+        markets.forEach(market => {
+            handleValueChange(market, "isCreate", isSelected);
+        });
+    };
+
+    const handleSelectMarket = (record) => {
+        const newCheckedList = checkedList.includes(record.eventMarketId)
+            ? checkedList.filter(id => id !== record.eventMarketId)
+            : [...checkedList, record.eventMarketId];
+
+        setCheckedList(newCheckedList);
+        handleValueChange(record, "isCreate", !checkedList.includes(record.eventMarketId));
     };
 
     const processMarketData = (templates, existingMarkets, teams, commentary, matchType) => {
@@ -159,7 +184,6 @@ export const CreateEventMarket = () => {
         const columns = [
             ...columnInitials,
             ...(hasRunnerColumns ? runnerColumns : []),
-            ...columnButtons
         ];
 
         return (
@@ -167,7 +191,9 @@ export const CreateEventMarket = () => {
                 <thead>
                     <tr>
                         {columns.map((column, index) => (
-                            <th className="p-0" key={index} style={column.style}>{column.title}</th>
+                            <th className="p-0" key={index} style={column.style}>
+                                {typeof column.title === 'function' ? column.title() : column.title}
+                            </th>
                         ))}
                     </tr>
                 </thead>
@@ -175,18 +201,8 @@ export const CreateEventMarket = () => {
                     {markets.map((market, index) => (
                         <React.Fragment key={index}>
                             <tr>
-                                {columnInitials.map((column, colIndex) => (
+                                {columns.map((column, colIndex) => (
                                     <td className="p-2" key={colIndex}>
-                                        {column.render ? column.render(market[column.dataIndex], market) : market[column.dataIndex]}
-                                    </td>
-                                ))}
-                                {!market.isPredefineRunnerValue && runnerColumns.map((column, runnerColIndex) => (
-                                    <td className="p-2" key={`runner-${runnerColIndex}`}>
-                                        {column.render(market[column.key], market, (key, value) => handleValueChange(market, key, value))}
-                                    </td>
-                                ))}
-                                {columnButtons.map((column, colIndex) => (
-                                    <td className="p-2" key={`button-${colIndex}`}>
                                         {column.render ? column.render(market[column.dataIndex], market) : market[column.dataIndex]}
                                     </td>
                                 ))}
@@ -308,17 +324,34 @@ export const CreateEventMarket = () => {
         );
     };
 
-    const handleSave = () => {
-        const savedData = Object.values(processedMarkets).flat().map(market => ({
-            ...market,
-            runners: market.runners.map(runner => ({
-                ...runner,
-                marketTemplateId: market.marketTemplateId
-            }))
-        }));
+    const handleSave = async () => {
+        const savedData = Object.values(processedMarkets)
+            .flat()
+            .filter(market => checkedList.includes(market.eventMarketId))
+            .map(market => ({
+                ...market,
+                runners: market.runners.map(runner => ({
+                    ...runner,
+                    marketTemplateId: market.marketTemplateId
+                }))
+            }));
+        await axiosInstance
+            .post(`/admin/eventMarket/saveEventMarketV1`, {
+                eventMarket: savedData,
+            })
+            .then((response) => {
+                fetchData(commentaryId);
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            })
+            .catch((error) => {
+                setIsLoading(false);
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            });
         console.log(savedData);
         // Here you would typically send this data to your backend
     };
+
+
     const handleBackClick = () => {
         navigate("/commentary");
     };
@@ -342,13 +375,7 @@ export const CreateEventMarket = () => {
                         name="chk_child"
                         value="option1"
                         checked={checkedList.includes(record.eventMarketId)}
-                        onChange={() => {
-                            const newCheckedList = checkedList.includes(record.eventMarketId)
-                                ? checkedList.filter(id => id !== record.eventMarketId)
-                                : [...checkedList, record.eventMarketId];
-                            setCheckedList(newCheckedList);
-                            handleValueChange(record, "isCreate", newCheckedList.includes(record.eventMarketId));
-                        }}
+                        onChange={() => handleSelectMarket(record)}
                     />
                 </div>
             ),
@@ -373,6 +400,42 @@ export const CreateEventMarket = () => {
             ),
             key: "marketName",
             style: { width: "30%" },
+        },
+        {
+            title: "Is Active",
+            dataIndex: "isActive",
+            render: (text, record) => (
+                <Button
+                    color={`${record.isActive ? "primary" : "danger"}`}
+                    size="sm"
+                    className="btn"
+                    onClick={() => {
+                        handleValueChange(record, "isActive", !record.isActive);
+                    }}
+                >
+                    <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+                </Button>
+            ),
+            key: "isActive",
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Market Allow",
+            dataIndex: "isAllow",
+            render: (text, record) => (
+                <Button
+                    color={`${record.isAllow ? "primary" : "danger"}`}
+                    size="sm"
+                    className="btn"
+                    onClick={() => {
+                        handleValueChange(record, "isAllow", !record.isAllow);
+                    }}
+                >
+                    <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+                </Button>
+            ),
+            key: "isAllow",
+            style: { width: "2%", textAlign: "center" },
         },
         {
             title: "Status",
@@ -508,45 +571,6 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Point"
                 />
             ),
-        },
-    ];
-
-    const columnButtons = [
-        {
-            title: "Is Active",
-            dataIndex: "isActive",
-            render: (text, record) => (
-                <Button
-                    color={`${record.isActive ? "primary" : "danger"}`}
-                    size="sm"
-                    className="btn"
-                    onClick={() => {
-                        handleValueChange(record, "isActive", !record.isActive);
-                    }}
-                >
-                    <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-                </Button>
-            ),
-            key: "isActive",
-            style: { width: "2%", textAlign: "center" },
-        },
-        {
-            title: "Market Allow",
-            dataIndex: "isAllow",
-            render: (text, record) => (
-                <Button
-                    color={`${record.isAllow ? "primary" : "danger"}`}
-                    size="sm"
-                    className="btn"
-                    onClick={() => {
-                        handleValueChange(record, "isAllow", !record.isAllow);
-                    }}
-                >
-                    <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-                </Button>
-            ),
-            key: "isAllow",
-            style: { width: "2%", textAlign: "center" },
         },
     ];
     return (
