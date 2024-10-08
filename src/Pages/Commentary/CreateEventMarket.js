@@ -166,7 +166,6 @@ export const CreateEventMarket = () => {
         };
     };
 
-
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
         setProcessedMarkets(prevMarkets => {
             const updatedMarkets = { ...prevMarkets };
@@ -180,7 +179,8 @@ export const CreateEventMarket = () => {
     };
 
     const renderTable = (markets) => {
-        const hasRunnerColumns = !markets[0]?.isPredefineRunnerValue;
+        const isSingleRunnerCategory = (+markets[0]?.marketTypeCategoryId === 26) || (+markets[0]?.marketTypeCategoryId === 27)
+        const hasRunnerColumns = !markets[0]?.isPredefineRunnerValue || isSingleRunnerCategory
         const columns = [
             ...columnInitials,
             ...(hasRunnerColumns ? runnerColumns : []),
@@ -214,7 +214,7 @@ export const CreateEventMarket = () => {
                                     </td>
                                 ))}
                             </tr>
-                            {market.isPredefineRunnerValue && market.runners && market.runners.length > 0 && (
+                            {!isSingleRunnerCategory && market.isPredefineRunnerValue && market.runners && market.runners.length > 0 && (
                                 <tr>
                                     <td className="p-2" colSpan={columns.length}>
                                         <Table>
