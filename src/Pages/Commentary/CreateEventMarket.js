@@ -267,24 +267,22 @@ export const CreateEventMarket = () => {
                                     ))
                                 }
                             </tr>
-                            {market.runners && market.runners.length > 1 && (
-                                <tr>
-                                    <td colSpan={columnInitials.length}></td>
-                                    {market.runners.slice(1).map((runner, runnerIndex) => (
-                                        <React.Fragment key={`additional-runner-${runnerIndex}`}>
-                                            {runnerColumns.map((column, runnerColIndex) => (
-                                                <td className="p-2" key={`additional-runner-col-${runnerColIndex}`}>
-                                                    {column.render(
-                                                        runner[column.key],
-                                                        runner,
-                                                        (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value)
-                                                    )}
-                                                </td>
-                                            ))}
-                                        </React.Fragment>
-                                    ))}
-                                </tr>
-                            )}
+                            {market.runners && market.runners.length > 1 &&
+                                market.runners.slice(1).map((runner, runnerIndex) => (
+                                    <tr key={`additional-runner-${runnerIndex}`}>
+                                        <td colSpan={columnInitials.length}></td>
+                                        {runnerColumns.map((column, runnerColIndex) => (
+                                            <td className="p-2" key={`additional-runner-col-${runnerColIndex}`}>
+                                                {column.render(
+                                                    runner[column.key],
+                                                    runner,
+                                                    (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value)
+                                                )}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            }
                         </React.Fragment>
                     ))}
                 </tbody>
@@ -531,6 +529,20 @@ export const CreateEventMarket = () => {
     ];
 
     const runnerColumns = [
+        {
+            title: "Runner",
+            key: "runner",
+            render: (text, record, onChange) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="text"
+                    value={record.runner || ""}
+                    onChange={(e) => onChange("runner", e.target.value)}
+                    placeholder="Runner Name"
+                />
+            ),
+            style: { width: "15%" },
+        },
         {
             title: "Line",
             key: "line",
