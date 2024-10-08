@@ -43,7 +43,9 @@ export const CreateEventMarket = () => {
             if (response?.result) {
                 const { teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes, matchType } = response.result;
                 setMarketData({ teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes });
-                processMarketData(marketTemplate, eventMarket, teamAndPlayers, commentary, matchType);
+                const processedMarkets = processMarketData(marketTemplate, eventMarket, teamAndPlayers, commentary, matchType);
+                setProcessedMarkets(processedMarkets);
+                initializeSelectedMarkets(processedMarkets);
             }
         } catch (error) {
             console.error("Error fetching market data:", error);
@@ -89,7 +91,7 @@ export const CreateEventMarket = () => {
     };
 
     const processMarketData = (templates, existingMarkets, teams, commentary, matchType) => {
-        const processedMarketsObj = { ...processedMarkets };
+        const processedMarketsObj = {};
 
         // Helper function to get the key for a market
         const getMarketKey = (market) => {
@@ -122,17 +124,16 @@ export const CreateEventMarket = () => {
             }
 
             const existingMarketIndex = processedMarketsObj[key].findIndex(m =>
-                m.marketTemplateId === apiMarket.marketTemplateId &&
                 m.teamId === apiMarket.teamId &&
-                m.playerId === apiMarket.playerId
+                m.marketTypeId === apiMarket.marketTypeId &&
+                m.marketTypeCategoryId === apiMarket.marketTypeCategoryId &&
+                m.marketName === apiMarket.marketName
             );
 
             if (existingMarketIndex !== -1) {
-                // Update existing market
+                // Replace the template-generated market with the API market
                 processedMarketsObj[key][existingMarketIndex] = {
-                    ...processedMarketsObj[key][existingMarketIndex],
                     ...apiMarket,
-                    eventMarketId: apiMarket.eventMarketId,
                     isCreate: false,
                     runners: apiMarket.runners.length > 0 ? apiMarket.runners : processedMarketsObj[key][existingMarketIndex].runners
                 };
@@ -140,14 +141,24 @@ export const CreateEventMarket = () => {
                 // If the API market doesn't exist in our generated markets, add it
                 processedMarketsObj[key].push({
                     ...apiMarket,
-                    isCreate: false,
-                    runners: apiMarket.runners
+                    isCreate: false
                 });
             }
         });
 
-        setProcessedMarkets(processedMarketsObj);
-        initializeSelectedMarkets(processedMarketsObj);
+        // Sort the markets within each key to maintain order
+        Object.keys(processedMarketsObj).forEach(key => {
+            processedMarketsObj[key].sort((a, b) => {
+                // First, sort by over if it exists
+                if (a.over && b.over) {
+                    return a.over - b.over;
+                }
+                // If over doesn't exist, maintain the original order
+                return 0;
+            });
+        });
+
+        return processedMarketsObj;
     };
 
     // const mergeRunners = (generatedRunners, apiRunners) => {
@@ -303,7 +314,10 @@ export const CreateEventMarket = () => {
             inningsId: 1,
             isAllow: false,
             index: 0,
-            runners: [] // Initialize with empty array, will be populated if needed
+            runners: template.runners?.map(runner => ({
+                ...runner,
+                runnerId: runner.runnerId || "0"
+            })) || []
         };
     };
 
