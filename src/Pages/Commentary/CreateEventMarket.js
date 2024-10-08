@@ -72,28 +72,92 @@ export const CreateEventMarket = () => {
     //     setCheckedList(newCheckedList);
     //     handleValueChange(record, "isCreate", !checkedList.includes(record.eventMarketId));
     // };
+    const generateOverUnder = (dataObj) => {
+        const roundedLine = Math.floor(parseFloat(dataObj?.line));
+        const thresholdValue = Math.floor(roundedLine) + 0.5;
+        const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+        const dataToSend = {
+            ...dataObj,
+            backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
+            layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+            backSize: parseFloat(dataObj?.backSize) || 100,
+            laySize: parseFloat(dataObj?.laySize) || 100,
+            overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+            underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+        }
+        return dataToSend;
+    };
 
     const processMarketData = (templates, existingMarkets, teams, commentary, matchType) => {
-        const processedMarketsObj = {};
+        const processedMarketsObj = { ...processedMarkets };
 
-        templates.forEach(template => {
-            const market = existingMarkets.find(m => m.marketTemplateId === template.marketTemplateId) || generateMarketFromTemplate(template, teams, commentary);
+        // Helper function to get the key for a market
+        const getMarketKey = (market) => {
+            const prefix = market.teamId || 'oneTimeMarket';
+            return `${prefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
+        };
 
-            if (template.isPerEvent) {
-                processMarketAndRunners(market, null, 'oneTimeMarket', processedMarketsObj);
-            } else if (market.marketTypeCategoryId === 11 && market.isOver) {
-                processOnlyOverMarkets(market, teams, matchType.maxOversInFirstInings, processedMarketsObj);
-            } else if (market.marketTypeCategoryId === 13) {
-                processWicketMarkets(market, teams, matchType.noOfPlayer, processedMarketsObj);
-            } else if (market.marketTypeCategoryId === 12) {
-                processPlayerRunsMarkets(market, teams, processedMarketsObj);
+        // Process existing markets from API
+        existingMarkets.forEach(apiMarket => {
+            const key = getMarketKey(apiMarket);
+            if (!processedMarketsObj[key]) {
+                processedMarketsObj[key] = [];
+            }
+
+            const existingMarketIndex = processedMarketsObj[key].findIndex(m => m.eventMarketId === apiMarket.eventMarketId);
+
+            if (existingMarketIndex !== -1) {
+                // Update existing market
+                processedMarketsObj[key][existingMarketIndex] = {
+                    ...processedMarketsObj[key][existingMarketIndex],
+                    ...apiMarket,
+                    runners: apiMarket.runners.length > 0 ? apiMarket.runners : processedMarketsObj[key][existingMarketIndex].runners
+                };
             } else {
-                teams.forEach(team => {
-                    processMarketAndRunners(market, team.teamId, team.teamId.toString(), processedMarketsObj);
+                // Add new market
+                processedMarketsObj[key].push({
+                    ...apiMarket,
+                    isCreate: false,
+                    runners: apiMarket.runners.length > 0 ? apiMarket.runners : [{
+                        marketTemplateRunnerId: 0,
+                        marketTemplateId: apiMarket.marketTemplateId,
+                        runner: "",
+                        line: 0,
+                        overRate: 0,
+                        underRate: 0,
+                        lastUpdate: new Date().toISOString(),
+                        selectionId: `${apiMarket.marketTemplateId}01`,
+                        order: 1,
+                        backPrice: 1,
+                        layPrice: 1,
+                        backSize: 100,
+                        laySize: 100
+                    }]
                 });
             }
         });
-        console.log({ firstTImeProcessedData: { ...processedMarketsObj } })
+
+        // Process templates for markets not in API data
+        templates.forEach(template => {
+            const market = existingMarkets.find(m => m.marketTemplateId === template.marketTemplateId);
+            if (!market) {
+                const newMarket = generateMarketFromTemplate(template, teams, commentary);
+                if (template.isPerEvent) {
+                    processMarketAndRunners(newMarket, null, 'oneTimeMarket', processedMarketsObj);
+                } else if (newMarket.marketTypeCategoryId === 11 && newMarket.isOver) {
+                    processOnlyOverMarkets(newMarket, teams, matchType.maxOversInFirstInings, processedMarketsObj);
+                } else if (newMarket.marketTypeCategoryId === 13) {
+                    processWicketMarkets(newMarket, teams, matchType.noOfPlayer, processedMarketsObj);
+                } else if (newMarket.marketTypeCategoryId === 12) {
+                    processPlayerRunsMarkets(newMarket, teams, processedMarketsObj);
+                } else {
+                    teams.forEach(team => {
+                        processMarketAndRunners(newMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+                    });
+                }
+            }
+        });
+
         setProcessedMarkets(processedMarketsObj);
         initializeSelectedMarkets(processedMarketsObj);
     };
@@ -129,6 +193,7 @@ export const CreateEventMarket = () => {
         if (!market.runners || market.runners.length === 0) {
             market.runners = [{
                 marketTemplateRunnerId: 0,
+                runnerId: "0", // Add runnerId
                 marketTemplateId: market.marketTemplateId,
                 runner: "",
                 line: 0,
@@ -144,13 +209,18 @@ export const CreateEventMarket = () => {
             }];
         }
 
+        // Apply generateOverUnder to each runner
+        const updatedRunners = market.runners.map(runner =>
+            generateOverUnder({ ...runner, margin: parseFloat(market.margin) || 3 })
+        );
+
         processedMarketsObj[baseKey].push({
             ...market,
             teamId,
             eventMarketId: market.eventMarketId || 0,
             isCreate: market.isCreate !== undefined ? market.isCreate : true,
             status: market.status || "1",
-            margin: market.margin || "3.00",
+            margin: parseFloat(market.margin) || 3,
             data: market.data || "",
             playerId: market.playerId || null,
             isActive: market.isActive !== undefined ? market.isActive : true,
@@ -160,8 +230,10 @@ export const CreateEventMarket = () => {
             commentaryId: market.commentaryId,
             eventRefId: market.eventRefId,
             isPredefineRunnerValue: market.isPredefineRunnerValue !== undefined ? market.isPredefineRunnerValue : true,
+            runners: updatedRunners
         });
     };
+
     const processOnlyOverMarkets = (market, teams, maxOvers, processedMarketsObj) => {
         const startOver = parseInt(market.over);
         teams.forEach(team => {
@@ -233,7 +305,23 @@ export const CreateEventMarket = () => {
             const marketIndex = updatedMarkets[marketKey].findIndex(m => m === market);
             const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
             const updatedRunners = [...updatedMarket.runners];
-            updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: value };
+
+            // Parse the value as a float for numeric fields
+            const parsedValue = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'].includes(key)
+                ? parseFloat(value) || 0
+                : value;
+
+            updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
+
+            // If the line changes, recalculate the runner values
+            if (key === 'line') {
+                const newRunnerValues = generateOverUnder({
+                    ...updatedRunners[runnerIndex],
+                    margin: updatedMarket.margin
+                });
+                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
+            }
+
             updatedMarket.runners = updatedRunners;
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
             return updatedMarkets;
@@ -440,11 +528,20 @@ export const CreateEventMarket = () => {
             const updatedMarkets = { ...prevMarkets };
             const marketKey = Object.keys(updatedMarkets).find(k => updatedMarkets[k].includes(market));
             const marketIndex = updatedMarkets[marketKey].findIndex(m => m === market);
-            // console.log({ marketKey, marketIndex })
-            updatedMarkets[marketKey][marketIndex] = { ...market, [key]: value };
+            const updatedMarket = { ...market, [key]: value };
+
+            // If margin changes, update all runners
+            if (key === 'margin') {
+                updatedMarket.runners = updatedMarket.runners.map(runner =>
+                    generateOverUnder({ ...runner, margin: parseFloat(value) })
+                );
+            }
+
+            updatedMarkets[marketKey][marketIndex] = updatedMarket;
             return updatedMarkets;
         });
-    }
+    };
+
     const columnInitials = [
         {
             title: "Market",
