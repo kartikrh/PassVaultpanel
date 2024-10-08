@@ -132,16 +132,16 @@ export const CreateEventMarket = () => {
                 processedMarketsObj[key][existingMarketIndex] = {
                     ...processedMarketsObj[key][existingMarketIndex],
                     ...apiMarket,
-                    eventMarketId: apiMarket.eventMarketId, // Preserve the eventMarketId
+                    eventMarketId: apiMarket.eventMarketId,
                     isCreate: false,
-                    runners: mergeRunners(processedMarketsObj[key][existingMarketIndex].runners, apiMarket.runners)
+                    runners: apiMarket.runners.length > 0 ? apiMarket.runners : processedMarketsObj[key][existingMarketIndex].runners
                 };
             } else {
                 // If the API market doesn't exist in our generated markets, add it
                 processedMarketsObj[key].push({
                     ...apiMarket,
                     isCreate: false,
-                    runners: mergeRunners([], apiMarket.runners)
+                    runners: apiMarket.runners
                 });
             }
         });
@@ -150,25 +150,25 @@ export const CreateEventMarket = () => {
         initializeSelectedMarkets(processedMarketsObj);
     };
 
-    const mergeRunners = (generatedRunners, apiRunners) => {
-        const mergedRunners = [...generatedRunners];
-        apiRunners.forEach(apiRunner => {
-            const existingRunnerIndex = mergedRunners.findIndex(r => r.marketTemplateRunnerId === apiRunner.marketTemplateRunnerId);
-            if (existingRunnerIndex !== -1) {
-                mergedRunners[existingRunnerIndex] = {
-                    ...mergedRunners[existingRunnerIndex],
-                    ...apiRunner,
-                    runnerId: apiRunner.runnerId || mergedRunners[existingRunnerIndex].runnerId
-                };
-            } else {
-                mergedRunners.push({
-                    ...apiRunner,
-                    runnerId: apiRunner.runnerId || "0"
-                });
-            }
-        });
-        return mergedRunners;
-    };
+    // const mergeRunners = (generatedRunners, apiRunners) => {
+    //     const mergedRunners = [...generatedRunners];
+    //     apiRunners.forEach(apiRunner => {
+    //         const existingRunnerIndex = mergedRunners.findIndex(r => r.marketTemplateRunnerId === apiRunner.marketTemplateRunnerId);
+    //         if (existingRunnerIndex !== -1) {
+    //             mergedRunners[existingRunnerIndex] = {
+    //                 ...mergedRunners[existingRunnerIndex],
+    //                 ...apiRunner,
+    //                 runnerId: apiRunner.runnerId || mergedRunners[existingRunnerIndex].runnerId
+    //             };
+    //         } else {
+    //             mergedRunners.push({
+    //                 ...apiRunner,
+    //                 runnerId: apiRunner.runnerId || "0"
+    //             });
+    //         }
+    //     });
+    //     return mergedRunners;
+    // };
 
 
     const initializeSelectedMarkets = (markets) => {
@@ -198,11 +198,11 @@ export const CreateEventMarket = () => {
             processedMarketsObj[baseKey] = [];
         }
 
-        // Ensure market has a runners array with at least one runner
+        // Add default runner only if the market doesn't have any runners
         if (!market.runners || market.runners.length === 0) {
             market.runners = [{
                 marketTemplateRunnerId: 0,
-                runnerId: "0", // Add runnerId
+                runnerId: "0",
                 marketTemplateId: market.marketTemplateId,
                 runner: "",
                 line: 0,
@@ -303,10 +303,7 @@ export const CreateEventMarket = () => {
             inningsId: 1,
             isAllow: false,
             index: 0,
-            runners: template.runners?.map(runner => ({
-                ...runner,
-                runnerId: runner.runnerId || "0"
-            })) || []
+            runners: [] // Initialize with empty array, will be populated if needed
         };
     };
 
