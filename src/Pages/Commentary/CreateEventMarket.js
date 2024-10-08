@@ -28,8 +28,10 @@ export const CreateEventMarket = () => {
     const dispatch = useDispatch();
     const commentaryId = +localStorage.getItem('marketTemplateCommentaryId') || "0";
     const [processedMarkets, setProcessedMarkets] = useState({});
-    const [checkedList, setCheckedList] = useState([]);
-
+    const [selectedMarkets, setSelectedMarkets] = useState({});
+    useEffect(() => {
+        console.log({ selectedMarkets, processedMarkets })
+    })
     useEffect(() => {
         fetchData(commentaryId);
     }, []);
@@ -50,26 +52,26 @@ export const CreateEventMarket = () => {
         }
     };
 
-    const handleSelectAll = (markets, isSelected) => {
-        const newCheckedList = isSelected
-            ? [...new Set([...checkedList, ...markets.map(m => m.eventMarketId)])]
-            : checkedList.filter(id => !markets.some(m => m.eventMarketId === id));
-
-        setCheckedList(newCheckedList);
-
-        markets.forEach(market => {
-            handleValueChange(market, "isCreate", isSelected);
+    const handleSelectAllInSection = (sectionKey) => {
+        setSelectedMarkets(prev => {
+            const sectionSelections = prev[sectionKey] || [];
+            const allSelected = sectionSelections.length > 0 && sectionSelections.every(Boolean);
+            const newSelections = processedMarkets[sectionKey]?.map(() => !allSelected) || [];
+            return {
+                ...prev,
+                [sectionKey]: newSelections
+            };
         });
     };
 
-    const handleSelectMarket = (record) => {
-        const newCheckedList = checkedList.includes(record.eventMarketId)
-            ? checkedList.filter(id => id !== record.eventMarketId)
-            : [...checkedList, record.eventMarketId];
+    // const handleSelectMarket = (record) => {
+    //     const newCheckedList = checkedList.includes(record.eventMarketId)
+    //         ? checkedList.filter(id => id !== record.eventMarketId)
+    //         : [...checkedList, record.eventMarketId];
 
-        setCheckedList(newCheckedList);
-        handleValueChange(record, "isCreate", !checkedList.includes(record.eventMarketId));
-    };
+    //     setCheckedList(newCheckedList);
+    //     handleValueChange(record, "isCreate", !checkedList.includes(record.eventMarketId));
+    // };
 
     const processMarketData = (templates, existingMarkets, teams, commentary, matchType) => {
         const processedMarketsObj = {};
@@ -91,16 +93,75 @@ export const CreateEventMarket = () => {
                 });
             }
         });
-
+        console.log({ firstTImeProcessedData: { ...processedMarketsObj } })
         setProcessedMarkets(processedMarketsObj);
+        initializeSelectedMarkets(processedMarketsObj);
     };
 
+    const initializeSelectedMarkets = (markets) => {
+        const initialSelection = {};
+        Object.keys(markets).forEach(key => {
+            initialSelection[key] = Array(markets[key].length).fill(false);
+        });
+        setSelectedMarkets(initialSelection);
+    };
+
+    const handleSelectMarket = (sectionKey, index) => {
+        setSelectedMarkets(prev => {
+            const sectionSelections = prev[sectionKey] || [];
+            const updatedSelections = [...sectionSelections];
+            updatedSelections[index] = !updatedSelections[index];
+            return {
+                ...prev,
+                [sectionKey]: updatedSelections
+            };
+        });
+    };
     const processMarketAndRunners = (market, teamId, keyPrefix, processedMarketsObj) => {
-        const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}_##_${market.marketName || market.templateName}`;
-        processedMarketsObj[baseKey] = processedMarketsObj[baseKey] || [];
-        processedMarketsObj[baseKey].push({ ...market, teamId });
-    };
+        const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
+        const fullKey = `${baseKey}_##_${market.marketName || market.templateName}`;
 
+        if (!processedMarketsObj[baseKey]) {
+            processedMarketsObj[baseKey] = [];
+        }
+
+        // Ensure market has a runners array with at least one runner
+        if (!market.runners || market.runners.length === 0) {
+            market.runners = [{
+                marketTemplateRunnerId: 0,
+                marketTemplateId: market.marketTemplateId,
+                runner: "",
+                line: 0,
+                overRate: 0,
+                underRate: 0,
+                lastUpdate: new Date().toISOString(),
+                selectionId: `${market.marketTemplateId}01`,
+                order: 1,
+                backPrice: 1,
+                layPrice: 1,
+                backSize: 100,
+                laySize: 100
+            }];
+        }
+
+        processedMarketsObj[baseKey].push({
+            ...market,
+            teamId,
+            eventMarketId: market.eventMarketId || 0,
+            isCreate: market.isCreate !== undefined ? market.isCreate : true,
+            status: market.status || "1",
+            margin: market.margin || "3.00",
+            data: market.data || "",
+            playerId: market.playerId || null,
+            isActive: market.isActive !== undefined ? market.isActive : true,
+            isAllow: market.isAllow !== undefined ? market.isAllow : false,
+            inningsId: market.inningsId || 1,
+            index: market.index || 0,
+            commentaryId: market.commentaryId,
+            eventRefId: market.eventRefId,
+            isPredefineRunnerValue: market.isPredefineRunnerValue !== undefined ? market.isPredefineRunnerValue : true,
+        });
+    };
     const processOnlyOverMarkets = (market, teams, maxOvers, processedMarketsObj) => {
         const startOver = parseInt(market.over);
         teams.forEach(team => {
@@ -116,7 +177,6 @@ export const CreateEventMarket = () => {
             }
         });
     };
-
     const processWicketMarkets = (market, teams, noOfPlayers, processedMarketsObj) => {
         teams.forEach(team => {
             for (let wicket = 1; wicket < noOfPlayers; wicket++) {
@@ -171,19 +231,43 @@ export const CreateEventMarket = () => {
             const updatedMarkets = { ...prevMarkets };
             const marketKey = Object.keys(updatedMarkets).find(k => updatedMarkets[k].includes(market));
             const marketIndex = updatedMarkets[marketKey].findIndex(m => m === market);
-            const updatedRunners = [...market.runners];
+            const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
+            const updatedRunners = [...updatedMarket.runners];
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: value };
-            updatedMarkets[marketKey][marketIndex] = { ...market, runners: updatedRunners };
+            updatedMarket.runners = updatedRunners;
+            updatedMarkets[marketKey][marketIndex] = updatedMarket;
             return updatedMarkets;
         });
     };
 
-    const renderTable = (markets) => {
-        const isSingleRunnerCategory = (+markets[0]?.marketTypeCategoryId === 26) || (+markets[0]?.marketTypeCategoryId === 27)
-        const hasRunnerColumns = !markets[0]?.isPredefineRunnerValue || isSingleRunnerCategory
+    const renderTable = (markets, sectionKey) => {
         const columns = [
+            {
+                title: () => (
+                    <input
+                        type="checkbox"
+                        checked={selectedMarkets[sectionKey]?.every(Boolean)}
+                        onChange={() => handleSelectAllInSection(sectionKey)}
+                    />
+                ),
+                style: { width: "5%" },
+                render: (_, record, index) => (
+                    <input
+                        type="checkbox"
+                        checked={selectedMarkets[sectionKey]?.[index] || false}
+                        onChange={() => handleSelectMarket(sectionKey, index)}
+                    />
+                ),
+            },
             ...columnInitials,
-            ...(hasRunnerColumns ? runnerColumns : []),
+            ...runnerColumns.map(column => ({
+                ...column,
+                render: (text, record, index) => column.render(
+                    record.runners[0][column.key],
+                    record.runners[0],
+                    (key, value) => handleRunnerValueChange(record, 0, key, value)
+                )
+            }))
         ];
 
         return (
@@ -192,7 +276,7 @@ export const CreateEventMarket = () => {
                     <tr>
                         {columns.map((column, index) => (
                             <th className="p-0" key={index} style={column.style}>
-                                {typeof column.title === 'function' ? column.title() : column.title}
+                                {typeof column.title === 'function' ? column.title(sectionKey) : column.title}
                             </th>
                         ))}
                     </tr>
@@ -207,6 +291,7 @@ export const CreateEventMarket = () => {
                                             column.render(
                                                 market[column.dataIndex],
                                                 market,
+                                                index,
                                                 (key, value) => handleValueChange(market, key, value)
                                             ) :
                                             market[column.dataIndex]
@@ -214,38 +299,22 @@ export const CreateEventMarket = () => {
                                     </td>
                                 ))}
                             </tr>
-                            {!isSingleRunnerCategory && market.isPredefineRunnerValue && market.runners && market.runners.length > 0 && (
-                                <tr>
-                                    <td className="p-2" colSpan={columns.length}>
-                                        <Table>
-                                            <thead>
-                                                <tr>
-                                                    <th className="p-0">Runner</th>
-                                                    {runnerColumns.map((column, runnerColIndex) => (
-                                                        <th className="p-0" key={runnerColIndex}>{column.title}</th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {market.runners.map((runner, runnerIndex) => (
-                                                    <tr key={runnerIndex}>
-                                                        <td className="p-2">{runner.runner}</td>
-                                                        {runnerColumns.map((column, runnerColIndex) => (
-                                                            <td className="p-2" key={runnerColIndex}>
-                                                                {column.render(
-                                                                    runner[column.key],
-                                                                    runner,
-                                                                    (key, value) => handleRunnerValueChange(market, runnerIndex, key, value)
-                                                                )}
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </Table>
-                                    </td>
-                                </tr>
-                            )}
+                            {market.runners && market.runners.length > 1 &&
+                                market.runners.slice(1).map((runner, runnerIndex) => (
+                                    <tr key={`additional-runner-${runnerIndex}`}>
+                                        <td colSpan={columns.length - runnerColumns.length}></td>
+                                        {runnerColumns.map((column, runnerColIndex) => (
+                                            <td className="p-2" key={`additional-runner-col-${runnerColIndex}`}>
+                                                {column.render(
+                                                    runner[column.key],
+                                                    runner,
+                                                    (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value)
+                                                )}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            }
                         </React.Fragment>
                     ))}
                 </tbody>
@@ -253,42 +322,42 @@ export const CreateEventMarket = () => {
         );
     };
 
-    const renderMarketCategory = (categoryId, markets) => (
+    const renderMarketCategory = (categoryId, markets, sectionKey) => (
         <Card key={categoryId}>
             <CardHeader>
                 {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
             </CardHeader>
             <CardBody className="p-1">
-                {renderTable(markets)}
+                {renderTable(markets, sectionKey)}
             </CardBody>
         </Card>
     );
-
-    const renderMarketType = (typeId, categories) => (
+    const renderMarketType = (typeId, categories, teamId) => (
         <Card key={typeId}>
             <CardHeader>
                 {marketData.marketTypes.find(type => type.marketTypeId === parseInt(typeId))?.marketTypeName || `Type ${typeId}`}
             </CardHeader>
             <CardBody className="p-1">
-                {Object.entries(categories).map(([categoryId, markets]) =>
-                    renderMarketCategory(categoryId, markets)
-                )}
+                {Object.entries(categories).map(([categoryId, markets]) => {
+                    const sectionKey = `${teamId || 'oneTimeMarket'}_##_${typeId}_##_${categoryId}`;
+                    return renderMarketCategory(categoryId, markets, sectionKey);
+                })}
             </CardBody>
         </Card>
     );
 
-    const renderTeamMarkets = (teamId, typeCategories) => (
-        <Card key={teamId}>
-            <CardHeader>
-                {marketData.teamAndPlayers.find(team => team.teamId === parseInt(teamId))?.teamName || `Team ${teamId}`}
-            </CardHeader>
-            <CardBody className="p-1">
-                {Object.entries(typeCategories).map(([typeId, categories]) =>
-                    renderMarketType(typeId, categories)
-                )}
-            </CardBody>
-        </Card>
-    );
+    // const renderTeamMarkets = (teamId, typeCategories) => (
+    //     <Card key={teamId}>
+    //         <CardHeader>
+    //             {marketData.teamAndPlayers.find(team => team.teamId === parseInt(teamId))?.teamName || `Team ${teamId}`}
+    //         </CardHeader>
+    //         <CardBody className="p-1">
+    //             {Object.entries(typeCategories).map(([typeId, categories]) =>
+    //                 renderMarketType(typeId, categories)
+    //             )}
+    //         </CardBody>
+    //     </Card>
+    // );
 
     const renderMainSections = () => {
         const sections = {
@@ -329,7 +398,7 @@ export const CreateEventMarket = () => {
                         <CardHeader>{section.title}</CardHeader>
                         <CardBody className="p-1">
                             {Object.entries(section.data).map(([typeId, categories]) =>
-                                renderMarketType(typeId, categories)
+                                renderMarketType(typeId, categories, sectionKey === 'oneTimeMarket' ? null : sectionKey.split('_')[1])
                             )}
                         </CardBody>
                     </Card>
@@ -337,10 +406,12 @@ export const CreateEventMarket = () => {
             </>
         );
     };
+
     const handleSave = async () => {
-        const savedData = Object.values(processedMarkets)
-            .flat()
-            .filter(market => checkedList.includes(market.eventMarketId))
+        const savedData = Object.entries(processedMarkets)
+            .flatMap(([key, markets]) =>
+                markets.filter((_, index) => selectedMarkets[key]?.[index])
+            )
             .map(market => ({
                 ...market,
                 runners: market.runners.map(runner => ({
@@ -348,22 +419,18 @@ export const CreateEventMarket = () => {
                     marketTemplateId: market.marketTemplateId
                 }))
             }));
-        await axiosInstance
-            .post(`/admin/eventMarket/saveEventMarketV1`, {
-                eventMarket: savedData,
-            })
-            .then((response) => {
-                fetchData(commentaryId);
-                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            });
-        console.log(savedData);
-        // Here you would typically send this data to your backend
-    };
 
+        try {
+            const response = await axiosInstance.post(`/admin/eventMarket/saveEventMarketV1`, {
+                eventMarket: savedData,
+            });
+            fetchData(commentaryId);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        } catch (error) {
+            setIsLoading(false);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
+    };
 
     const handleBackClick = () => {
         navigate("/commentary");
@@ -379,23 +446,6 @@ export const CreateEventMarket = () => {
         });
     }
     const columnInitials = [
-        {
-            title: "",
-            render: (text, record) => (
-                <div className="form-check d-flex align-items-center justify-between">
-                    <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="chk_child"
-                        value="option1"
-                        checked={checkedList.includes(record.eventMarketId)}
-                        onChange={() => handleSelectMarket(record)}
-                    />
-                </div>
-            ),
-            key: "isCreate",
-            style: { width: "2%" },
-        },
         {
             title: "Market",
             dataIndex: "marketName",
@@ -413,7 +463,7 @@ export const CreateEventMarket = () => {
                 </>
             ),
             key: "marketName",
-            style: { width: "30%" },
+            style: { width: "20%" }, // Reduced width
         },
         {
             title: "Is Active",
@@ -496,6 +546,20 @@ export const CreateEventMarket = () => {
 
     const runnerColumns = [
         {
+            title: "Runner",
+            key: "runner",
+            render: (text, record, onChange) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="text"
+                    value={record.runner || ""}
+                    onChange={(e) => onChange("runner", e.target.value)}
+                    placeholder="Runner Name"
+                />
+            ),
+            style: { width: "15%" },
+        },
+        {
             title: "Line",
             key: "line",
             render: (text, record, onChange) => (
@@ -507,6 +571,7 @@ export const CreateEventMarket = () => {
                     placeholder="Line"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Under",
@@ -520,6 +585,7 @@ export const CreateEventMarket = () => {
                     placeholder="Under"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Over",
@@ -533,6 +599,7 @@ export const CreateEventMarket = () => {
                     placeholder="Over"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "No Rate",
@@ -546,6 +613,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Rate"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Yes Rate",
@@ -559,6 +627,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Rate"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "No Point",
@@ -572,6 +641,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Point"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Yes Point",
@@ -585,6 +655,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Point"
                 />
             ),
+            style: { width: "10%" },
         },
     ];
     return (
