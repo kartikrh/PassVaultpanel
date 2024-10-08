@@ -97,70 +97,79 @@ export const CreateEventMarket = () => {
             return `${prefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
         };
 
-        // Process existing markets from API
+        // Process templates first to ensure all markets are generated
+        templates.forEach(template => {
+            if (template.isPerEvent) {
+                processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), null, 'oneTimeMarket', processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 11 && template.isOver) {
+                processOnlyOverMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.maxOversInFirstInings, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 13) {
+                processWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.noOfPlayer, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 12) {
+                processPlayerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else {
+                teams.forEach(team => {
+                    processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
+                });
+            }
+        });
+
+        // Now update with existing markets from API
         existingMarkets.forEach(apiMarket => {
             const key = getMarketKey(apiMarket);
             if (!processedMarketsObj[key]) {
                 processedMarketsObj[key] = [];
             }
 
-            const existingMarketIndex = processedMarketsObj[key].findIndex(m => m.eventMarketId === apiMarket.eventMarketId);
+            const existingMarketIndex = processedMarketsObj[key].findIndex(m =>
+                m.marketTemplateId === apiMarket.marketTemplateId &&
+                m.teamId === apiMarket.teamId &&
+                m.playerId === apiMarket.playerId
+            );
 
             if (existingMarketIndex !== -1) {
                 // Update existing market
                 processedMarketsObj[key][existingMarketIndex] = {
                     ...processedMarketsObj[key][existingMarketIndex],
                     ...apiMarket,
-                    runners: apiMarket.runners.length > 0 ? apiMarket.runners : processedMarketsObj[key][existingMarketIndex].runners
+                    eventMarketId: apiMarket.eventMarketId, // Preserve the eventMarketId
+                    isCreate: false,
+                    runners: mergeRunners(processedMarketsObj[key][existingMarketIndex].runners, apiMarket.runners)
                 };
             } else {
-                // Add new market
+                // If the API market doesn't exist in our generated markets, add it
                 processedMarketsObj[key].push({
                     ...apiMarket,
                     isCreate: false,
-                    runners: apiMarket.runners.length > 0 ? apiMarket.runners : [{
-                        marketTemplateRunnerId: 0,
-                        marketTemplateId: apiMarket.marketTemplateId,
-                        runner: "",
-                        line: 0,
-                        overRate: 0,
-                        underRate: 0,
-                        lastUpdate: new Date().toISOString(),
-                        selectionId: `${apiMarket.marketTemplateId}01`,
-                        order: 1,
-                        backPrice: 1,
-                        layPrice: 1,
-                        backSize: 100,
-                        laySize: 100
-                    }]
+                    runners: mergeRunners([], apiMarket.runners)
                 });
-            }
-        });
-
-        // Process templates for markets not in API data
-        templates.forEach(template => {
-            const market = existingMarkets.find(m => m.marketTemplateId === template.marketTemplateId);
-            if (!market) {
-                const newMarket = generateMarketFromTemplate(template, teams, commentary);
-                if (template.isPerEvent) {
-                    processMarketAndRunners(newMarket, null, 'oneTimeMarket', processedMarketsObj);
-                } else if (newMarket.marketTypeCategoryId === 11 && newMarket.isOver) {
-                    processOnlyOverMarkets(newMarket, teams, matchType.maxOversInFirstInings, processedMarketsObj);
-                } else if (newMarket.marketTypeCategoryId === 13) {
-                    processWicketMarkets(newMarket, teams, matchType.noOfPlayer, processedMarketsObj);
-                } else if (newMarket.marketTypeCategoryId === 12) {
-                    processPlayerRunsMarkets(newMarket, teams, processedMarketsObj);
-                } else {
-                    teams.forEach(team => {
-                        processMarketAndRunners(newMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
-                    });
-                }
             }
         });
 
         setProcessedMarkets(processedMarketsObj);
         initializeSelectedMarkets(processedMarketsObj);
     };
+
+    const mergeRunners = (generatedRunners, apiRunners) => {
+        const mergedRunners = [...generatedRunners];
+        apiRunners.forEach(apiRunner => {
+            const existingRunnerIndex = mergedRunners.findIndex(r => r.marketTemplateRunnerId === apiRunner.marketTemplateRunnerId);
+            if (existingRunnerIndex !== -1) {
+                mergedRunners[existingRunnerIndex] = {
+                    ...mergedRunners[existingRunnerIndex],
+                    ...apiRunner,
+                    runnerId: apiRunner.runnerId || mergedRunners[existingRunnerIndex].runnerId
+                };
+            } else {
+                mergedRunners.push({
+                    ...apiRunner,
+                    runnerId: apiRunner.runnerId || "0"
+                });
+            }
+        });
+        return mergedRunners;
+    };
+
 
     const initializeSelectedMarkets = (markets) => {
         const initialSelection = {};
@@ -280,8 +289,8 @@ export const CreateEventMarket = () => {
 
     const generateMarketFromTemplate = (template, teams, commentary) => {
         return {
-            eventMarketId: 0,
-            isCreate: true,
+            eventMarketId: 0, // Default to 0 for new markets
+            isCreate: true,  // Default to true for new markets
             status: "1",
             margin: template.margin,
             data: "",
@@ -294,7 +303,10 @@ export const CreateEventMarket = () => {
             inningsId: 1,
             isAllow: false,
             index: 0,
-            runners: template.runners || []
+            runners: template.runners?.map(runner => ({
+                ...runner,
+                runnerId: runner.runnerId || "0"
+            })) || []
         };
     };
 
