@@ -29,7 +29,9 @@ export const CreateEventMarket = () => {
     const commentaryId = +localStorage.getItem('marketTemplateCommentaryId') || "0";
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [checkedList, setCheckedList] = useState([]);
-
+    useEffect(() => {
+        console.log({ processedMarkets })
+    })
     useEffect(() => {
         fetchData(commentaryId);
     }, []);
@@ -91,16 +93,51 @@ export const CreateEventMarket = () => {
                 });
             }
         });
-
+        console.log({ firstTImeProcessedData: { ...processedMarketsObj } })
         setProcessedMarkets(processedMarketsObj);
     };
 
     const processMarketAndRunners = (market, teamId, keyPrefix, processedMarketsObj) => {
         const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}_##_${market.marketName || market.templateName}`;
         processedMarketsObj[baseKey] = processedMarketsObj[baseKey] || [];
-        processedMarketsObj[baseKey].push({ ...market, teamId });
-    };
 
+        // Ensure market has a runners array with at least one runner
+        if (!market.runners || market.runners.length === 0) {
+            market.runners = [{
+                marketTemplateRunnerId: 0,
+                marketTemplateId: market.marketTemplateId,
+                runner: "",
+                line: 0,
+                overRate: 0,
+                underRate: 0,
+                lastUpdate: new Date().toISOString(),
+                selectionId: `${market.marketTemplateId}01`,
+                order: 1,
+                backPrice: 1,
+                layPrice: 1,
+                backSize: 100,
+                laySize: 100
+            }];
+        }
+
+        processedMarketsObj[baseKey].push({
+            ...market,
+            teamId,
+            eventMarketId: market.eventMarketId || 0,
+            isCreate: market.isCreate !== undefined ? market.isCreate : true,
+            status: market.status || "1",
+            margin: market.margin || "3.00",
+            data: market.data || "",
+            playerId: market.playerId || null,
+            isActive: market.isActive !== undefined ? market.isActive : true,
+            isAllow: market.isAllow !== undefined ? market.isAllow : false,
+            inningsId: market.inningsId || 1,
+            index: market.index || 0,
+            commentaryId: market.commentaryId,
+            eventRefId: market.eventRefId,
+            isPredefineRunnerValue: market.isPredefineRunnerValue !== undefined ? market.isPredefineRunnerValue : true,
+        });
+    };
     const processOnlyOverMarkets = (market, teams, maxOvers, processedMarketsObj) => {
         const startOver = parseInt(market.over);
         teams.forEach(team => {
@@ -116,7 +153,6 @@ export const CreateEventMarket = () => {
             }
         });
     };
-
     const processWicketMarkets = (market, teams, noOfPlayers, processedMarketsObj) => {
         teams.forEach(team => {
             for (let wicket = 1; wicket < noOfPlayers; wicket++) {
@@ -178,12 +214,18 @@ export const CreateEventMarket = () => {
         });
     };
 
+    // const renderTable = (markets) => {
+    //     const isSingleRunnerCategory = (+markets[0]?.marketTypeCategoryId === 26) || (+markets[0]?.marketTypeCategoryId === 27)
+    //     const hasRunnerColumns = !markets[0]?.isPredefineRunnerValue || isSingleRunnerCategory
+    //     const columns = [
+    //         ...columnInitials,
+    //         ...(hasRunnerColumns ? runnerColumns : []),
+    //     ];
+
     const renderTable = (markets) => {
-        const isSingleRunnerCategory = (+markets[0]?.marketTypeCategoryId === 26) || (+markets[0]?.marketTypeCategoryId === 27)
-        const hasRunnerColumns = !markets[0]?.isPredefineRunnerValue || isSingleRunnerCategory
         const columns = [
             ...columnInitials,
-            ...(hasRunnerColumns ? runnerColumns : []),
+            ...runnerColumns,
         ];
 
         return (
@@ -201,7 +243,7 @@ export const CreateEventMarket = () => {
                     {markets.map((market, index) => (
                         <React.Fragment key={index}>
                             <tr>
-                                {columns.map((column, colIndex) => (
+                                {columnInitials.map((column, colIndex) => (
                                     <td className="p-2" key={colIndex}>
                                         {column.render ?
                                             column.render(
@@ -213,37 +255,34 @@ export const CreateEventMarket = () => {
                                         }
                                     </td>
                                 ))}
+                                {market.runners && market.runners.length > 0 &&
+                                    runnerColumns.map((column, runnerColIndex) => (
+                                        <td className="p-2" key={`runner-${runnerColIndex}`}>
+                                            {column.render(
+                                                market.runners[0][column.key],
+                                                market.runners[0],
+                                                (key, value) => handleRunnerValueChange(market, 0, key, value)
+                                            )}
+                                        </td>
+                                    ))
+                                }
                             </tr>
-                            {!isSingleRunnerCategory && market.isPredefineRunnerValue && market.runners && market.runners.length > 0 && (
+                            {market.runners && market.runners.length > 1 && (
                                 <tr>
-                                    <td className="p-2" colSpan={columns.length}>
-                                        <Table>
-                                            <thead>
-                                                <tr>
-                                                    <th className="p-0">Runner</th>
-                                                    {runnerColumns.map((column, runnerColIndex) => (
-                                                        <th className="p-0" key={runnerColIndex}>{column.title}</th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {market.runners.map((runner, runnerIndex) => (
-                                                    <tr key={runnerIndex}>
-                                                        <td className="p-2">{runner.runner}</td>
-                                                        {runnerColumns.map((column, runnerColIndex) => (
-                                                            <td className="p-2" key={runnerColIndex}>
-                                                                {column.render(
-                                                                    runner[column.key],
-                                                                    runner,
-                                                                    (key, value) => handleRunnerValueChange(market, runnerIndex, key, value)
-                                                                )}
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </Table>
-                                    </td>
+                                    <td colSpan={columnInitials.length}></td>
+                                    {market.runners.slice(1).map((runner, runnerIndex) => (
+                                        <React.Fragment key={`additional-runner-${runnerIndex}`}>
+                                            {runnerColumns.map((column, runnerColIndex) => (
+                                                <td className="p-2" key={`additional-runner-col-${runnerColIndex}`}>
+                                                    {column.render(
+                                                        runner[column.key],
+                                                        runner,
+                                                        (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value)
+                                                    )}
+                                                </td>
+                                            ))}
+                                        </React.Fragment>
+                                    ))}
                                 </tr>
                             )}
                         </React.Fragment>
@@ -277,18 +316,18 @@ export const CreateEventMarket = () => {
         </Card>
     );
 
-    const renderTeamMarkets = (teamId, typeCategories) => (
-        <Card key={teamId}>
-            <CardHeader>
-                {marketData.teamAndPlayers.find(team => team.teamId === parseInt(teamId))?.teamName || `Team ${teamId}`}
-            </CardHeader>
-            <CardBody className="p-1">
-                {Object.entries(typeCategories).map(([typeId, categories]) =>
-                    renderMarketType(typeId, categories)
-                )}
-            </CardBody>
-        </Card>
-    );
+    // const renderTeamMarkets = (teamId, typeCategories) => (
+    //     <Card key={teamId}>
+    //         <CardHeader>
+    //             {marketData.teamAndPlayers.find(team => team.teamId === parseInt(teamId))?.teamName || `Team ${teamId}`}
+    //         </CardHeader>
+    //         <CardBody className="p-1">
+    //             {Object.entries(typeCategories).map(([typeId, categories]) =>
+    //                 renderMarketType(typeId, categories)
+    //             )}
+    //         </CardBody>
+    //     </Card>
+    // );
 
     const renderMainSections = () => {
         const sections = {
@@ -348,20 +387,17 @@ export const CreateEventMarket = () => {
                     marketTemplateId: market.marketTemplateId
                 }))
             }));
-        await axiosInstance
-            .post(`/admin/eventMarket/saveEventMarketV1`, {
+
+        try {
+            const response = await axiosInstance.post(`/admin/eventMarket/saveEventMarketV1`, {
                 eventMarket: savedData,
-            })
-            .then((response) => {
-                fetchData(commentaryId);
-                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
-        console.log(savedData);
-        // Here you would typically send this data to your backend
+            fetchData(commentaryId);
+            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        } catch (error) {
+            setIsLoading(false);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
     };
 
 
@@ -413,7 +449,7 @@ export const CreateEventMarket = () => {
                 </>
             ),
             key: "marketName",
-            style: { width: "30%" },
+            style: { width: "20%" }, // Reduced width
         },
         {
             title: "Is Active",
@@ -507,6 +543,7 @@ export const CreateEventMarket = () => {
                     placeholder="Line"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Under",
@@ -520,6 +557,7 @@ export const CreateEventMarket = () => {
                     placeholder="Under"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Over",
@@ -533,6 +571,7 @@ export const CreateEventMarket = () => {
                     placeholder="Over"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "No Rate",
@@ -546,6 +585,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Rate"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Yes Rate",
@@ -559,6 +599,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Rate"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "No Point",
@@ -572,6 +613,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Point"
                 />
             ),
+            style: { width: "10%" },
         },
         {
             title: "Yes Point",
@@ -585,6 +627,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Point"
                 />
             ),
+            style: { width: "10%" },
         },
     ];
     return (
