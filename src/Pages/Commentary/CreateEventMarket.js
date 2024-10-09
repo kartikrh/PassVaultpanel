@@ -584,6 +584,7 @@ export const CreateEventMarket = () => {
                     <Input
                         className="form-control small-text-fields"
                         type="text"
+                        disabled={+record?.eventMarketId}
                         value={text}
                         onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
                     />
@@ -682,6 +683,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields"
                     type="text"
+                    disabled={+record?.runnerId}
                     value={record.runner || ""}
                     onChange={(e) => onChange("runner", e.target.value)}
                     placeholder="Runner Name"
