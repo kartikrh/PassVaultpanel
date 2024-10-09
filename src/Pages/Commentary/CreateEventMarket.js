@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
+import { isEmpty } from 'lodash';
+import "../../components/Common/Reusables/CustomCss.css";
 
 const MARKET_STATUS = {
     1: "Active",
@@ -75,17 +77,28 @@ export const CreateEventMarket = () => {
     //     handleValueChange(record, "isCreate", !checkedList.includes(record.eventMarketId));
     // };
     const generateOverUnder = (dataObj) => {
+        let dataToSend = {
+            ...dataObj,
+            backPrice: 0,
+            layPrice: 0,
+            backSize: 100,
+            laySize: 100,
+            overRate: 0,
+            underRate: 0,
+        }
+        if(!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
         const roundedLine = Math.floor(parseFloat(dataObj?.line));
         const thresholdValue = Math.floor(roundedLine) + 0.5;
         const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
-        const dataToSend = {
-            ...dataObj,
+        dataToSend = {
+            ...dataToSend,
             backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
             layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
             backSize: parseFloat(dataObj?.backSize) || 100,
             laySize: parseFloat(dataObj?.laySize) || 100,
             overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
             underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+        }
         }
         return dataToSend;
     };
@@ -211,7 +224,7 @@ export const CreateEventMarket = () => {
                 marketTemplateRunnerId: 0,
                 runnerId: "0",
                 marketTemplateId: market.marketTemplateId,
-                runner: "",
+                runner: market?.marketName,
                 line: 0,
                 overRate: 0,
                 underRate: 0,
@@ -268,7 +281,8 @@ export const CreateEventMarket = () => {
     const processWicketMarkets = (market, teams, noOfPlayers, processedMarketsObj) => {
         teams.forEach(team => {
             for (let wicket = 1; wicket < noOfPlayers; wicket++) {
-                const specialMarketName = `${wicket} Wicket - ${team.shortName}`;
+                // const specialMarketName = `${wicket} Wicket - ${team.shortName}`;
+                const specialMarketName = `${market?.marketName.replace("{fow}", wicket)} - ${team.shortName}`;
                 const specialMarket = {
                     ...market,
                     marketName: specialMarketName,
@@ -308,7 +322,7 @@ export const CreateEventMarket = () => {
             marketName: template.templateName,
             teamId: null,
             inningsId: 1,
-            isAllow: false,
+            isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             runners: template.runners?.map(runner => ({
                 ...runner,
@@ -550,7 +564,7 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...market, [key]: value };
 
             // If margin changes, update all runners
-            if (key === 'margin') {
+            if (key === 'margin' && !market?.isPredefineMarket) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnder({ ...runner, margin: parseFloat(value) })
                 );
@@ -645,9 +659,9 @@ export const CreateEventMarket = () => {
             render: (text, record) => (
                 <>
                     <Input
-                        className="form-control small-text-fields"
-                        type="text"
-                        value={text}
+                        className="form-control small-text-fields no-spinners"
+                        type="number"
+                        value={(+text || 0).toFixed(2)}
                         onChange={(e) => handleValueChange(record, "margin", e.target.value)}
                     />
                     <span className="text-danger">
@@ -680,8 +694,8 @@ export const CreateEventMarket = () => {
             key: "line",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.line || ""}
                     onChange={(e) => onChange("line", +e.target.value || 0)}
                     placeholder="Line"
@@ -694,8 +708,8 @@ export const CreateEventMarket = () => {
             key: "under",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.underRate || ""}
                     onChange={(e) => onChange("underRate", +e.target.value || 0)}
                     placeholder="Under"
@@ -708,8 +722,8 @@ export const CreateEventMarket = () => {
             key: "over",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.overRate || ""}
                     onChange={(e) => onChange("overRate", +e.target.value || 0)}
                     placeholder="Over"
@@ -722,8 +736,8 @@ export const CreateEventMarket = () => {
             key: "noRate",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.layPrice || ""}
                     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
                     placeholder="No Rate"
@@ -736,8 +750,8 @@ export const CreateEventMarket = () => {
             key: "yesRate",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.backPrice || ""}
                     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
                     placeholder="Yes Rate"
@@ -750,8 +764,8 @@ export const CreateEventMarket = () => {
             key: "noPoint",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.laySize || ""}
                     onChange={(e) => onChange("laySize", +e.target.value || 0)}
                     placeholder="No Point"
@@ -764,8 +778,8 @@ export const CreateEventMarket = () => {
             key: "yesPoint",
             render: (text, record, onChange) => (
                 <Input
-                    className="form-control small-text-fields"
-                    type="text"
+                    className="form-control small-text-fields no-spinners"
+                    type="number"
                     value={record.backSize || ""}
                     onChange={(e) => onChange("backSize", +e.target.value || 0)}
                     placeholder="Yes Point"
