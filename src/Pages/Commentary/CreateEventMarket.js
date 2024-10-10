@@ -134,6 +134,8 @@ export const CreateEventMarket = () => {
                 processWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.noOfPlayer, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 12) {
                 processPlayerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
+                processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
@@ -198,8 +200,43 @@ export const CreateEventMarket = () => {
         });
         setSelectedMarkets(initialSelection);
     };
+    const validateMarketRow = (market) => {
+        const requiredFields = ['marketName', 'margin', 'status'];
+        const requiredRunnerFields = ['runner', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
+        
+        const errors = [];
+    
+        requiredFields.forEach(field => {
+            if (!market[field]) {
+                errors.push(`${field}`);
+            }
+        });
+        if (market.runners && market.runners.length > 0) {
+            market.runners.forEach((runner, index) => {
+                requiredRunnerFields.forEach(field => {
+                    if (!runner[field]) {
+                        errors.push(`${index + 1} ${field}`);
+                    }
+                });
+            });
+        } else {
+            errors.push('Runner');
+        }
+    
+        return errors;
+    };
 
     const handleSelectMarket = (sectionKey, index) => {
+        const market = processedMarkets[sectionKey][index];
+        const errors = validateMarketRow(market);
+        if (errors.length > 0) {
+            dispatch(updateToastData({
+                data: `Please fill in all required fields: ${errors.join(', ')}`,
+                title: "Validation Error",
+                type: ERROR
+            }));
+            return;
+        }
         setSelectedMarkets(prev => {
             const sectionSelections = prev[sectionKey] || [];
             const updatedSelections = [...sectionSelections];
@@ -308,6 +345,17 @@ export const CreateEventMarket = () => {
         });
     };
 
+    const processMarkets = (market, teams, processedMarketsObj) => {
+        teams.forEach(team => {
+            const specialMarketName = `${market.marketName} - ${team.shortName}`;
+            const specialMarket = {
+                ...market,
+                marketName: specialMarketName,
+                teamId: team.teamId
+            };
+            processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+        });
+    };
     const generateMarketFromTemplate = (template, teams, commentary) => {
         return {
             eventMarketId: 0, // Default to 0 for new markets
@@ -347,7 +395,7 @@ export const CreateEventMarket = () => {
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
 
             // If the line changes, recalculate the runner values
-            if (key === 'line') {
+            if (key === 'line' && !market?.isPredefineRunnerValue) {
                 const newRunnerValues = generateOverUnder({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin
@@ -541,6 +589,15 @@ export const CreateEventMarket = () => {
                 }))
             }));
 
+        if (savedData.length === 0) {
+            dispatch(updateToastData({
+                data: "Select at least one row",
+                title: "Error",
+                type: ERROR
+            }));
+            return;
+        }
+
         try {
             const response = await axiosInstance.post(`/admin/eventMarket/saveEventMarketV1`, {
                 eventMarket: savedData,
@@ -564,7 +621,7 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...market, [key]: value };
 
             // If margin changes, update all runners
-            if (key === 'margin' && !market?.isPredefineMarket) {
+            if (key === 'margin' && !market?.isPredefineRunnerValue) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnder({ ...runner, margin: parseFloat(value) })
                 );
