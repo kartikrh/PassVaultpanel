@@ -1,21 +1,22 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
+import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
+import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
-import _, { debounce, isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
 import MultiRunnerMarket from "./MultiRunnerMarket";
+import OpenMarketCategories from "./OpenMarketCategoryRendering";
 
 const tableElement = {
     title: "Open Market",
@@ -326,6 +327,8 @@ export const OpenMarket = () => {
             });
     }
 
+
+
     const handleBackClick = () => {
         navigate("/commentary");
     };
@@ -367,6 +370,7 @@ export const OpenMarket = () => {
         url.searchParams.append("eventMarketId", id);
         window.open(url.href, '_blank');
     };
+
     const columns = [
         {
             title: "Team",
@@ -749,6 +753,7 @@ export const OpenMarket = () => {
         });
     };
 
+
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
@@ -895,24 +900,17 @@ export const OpenMarket = () => {
                                             >{`Save All (A)`}</Button>
                                         </Col>
                                     </Row>}
-                                {Object.keys(categorisedData).map((category) => (
-                                    <Accordion open={openAccordions} toggle={toggleAccordion} key={category} className="market-category-accordian">
-                                        <AccordionItem>
-                                            <AccordionHeader className="market-category-header" targetId={category}><b>{category}</b></AccordionHeader>
-                                            <AccordionBody className="market-category-body" accordionId={category}>
-                                                {categorisedData?.[category].length > 0 ? (
-                                                    <Row>
-                                                        <Col>
-                                                            {categorisedData[category].map(market => renderMarket(market))}
-                                                        </Col>
-                                                    </Row>
-                                                ) : (
-                                                    <div className="m-4 text-center">No record found</div>
-                                                )}
-                                            </AccordionBody>
-                                        </AccordionItem>
-                                    </Accordion>
-                                ))}
+                                {Object.keys(categorisedData).length > 0 && (
+                                    <OpenMarketCategories
+                                        categorisedData={categorisedData}
+                                        columns={columns}
+                                        teams={teams}
+                                        handleMultiRunnerUpdate={handleMultiRunnerUpdate}
+                                        setIsLoading={setIsLoading}
+                                        openAccordions={openAccordions}
+                                        toggleAccordion={toggleAccordion}
+                                    />
+                                )}
                             </CardBody>
                         </Card>
                     </Row>

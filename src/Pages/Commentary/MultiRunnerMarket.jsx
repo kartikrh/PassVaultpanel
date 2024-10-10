@@ -98,7 +98,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
     return (
         <div className="multi-runner-market">
             <table className="table table-bordered table-sm open-market-table-class m-0 color-white">
-                <thead className='whitespace-nowrap '>
+                <thead className='whitespace-nowrap color-light-grey'>
                     <tr>
                         <th>Team</th>
                         <th>Market ID</th>
@@ -178,7 +178,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
             </table>
 
             <table className="table table-bordered table-sm open-market-table-class m-0 color-white">
-                <thead className='whitespace-nowrap '>
+                <thead className='whitespace-nowrap color-light-grey'>
                     <tr>
                         <th>Runner</th>
                         <th>Status</th>
