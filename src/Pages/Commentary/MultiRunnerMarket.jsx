@@ -97,8 +97,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
 
     return (
         <div className="multi-runner-market">
-            <table className="table table-bordered table-sm open-market-table-class m-0">
-                <thead>
+            <table className="table table-bordered table-sm open-market-table-class m-0 color-white">
+                <thead className='whitespace-nowrap '>
                     <tr>
                         <th>Team</th>
                         <th>Market ID</th>
@@ -111,7 +111,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                         <th>Margin</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='whitespace-nowrap '>
                     <tr>
                         <td>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
                         <td>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
@@ -177,8 +177,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 </tbody>
             </table>
 
-            <table className="table table-bordered table-sm open-market-table-class m-0">
-                <thead>
+            <table className="table table-bordered table-sm open-market-table-class m-0 color-white">
+                <thead className='whitespace-nowrap '>
                     <tr>
                         <th>Runner</th>
                         <th>Status</th>
@@ -192,7 +192,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                         <th>P-Yes</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='whitespace-nowrap '>
                     {sortedRunners.map((runner, index) => (
                         <tr key={runner.runnerId}>
                             <td>{teams[runner.teamId] || `Runner ${runner.runnerId}`}</td>
