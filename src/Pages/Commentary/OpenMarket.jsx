@@ -257,39 +257,59 @@ export const OpenMarket = () => {
 
     const formatSocketDataForState = (responseData) => {
         if (!isEmpty(responseData)) {
-            const newMarketData = {}
-            responseData.forEach(eventMarket => {
-                if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
-                const marketRunner = eventMarket.runner[0]
-                if (marketRunner) {
-                    const updatedMarketData = {
+            const newMarketData = {};
+            responseData.forEach(eventMarketString => {
+                if (typeof eventMarketString === "string") {
+                    const eventMarket = JSON.parse(eventMarketString);
+                    let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
-                        ...eventMarket.runner[0],
                         isNewSocketData: true
+                    };
+
+                    if (Array.isArray(eventMarket.runner)) {
+                        if (eventMarket.runner.length === 1) {
+                            // Single runner market
+                            updatedMarketData = {
+                                ...updatedMarketData,
+                                ...eventMarket.runner[0],
+                                runner: eventMarket.runner // Keep the original runner array
+                            };
+                        } else if (eventMarket.runner.length > 1) {
+                            // Multi-runner market
+                            updatedMarketData.runner = eventMarket.runner.map(runner =>
+                                Array.isArray(runner) ? runner[0] : runner
+                            );
+                        }
                     }
-                    newMarketData[eventMarket.marketId] = updatedMarketData
+
+                    newMarketData[eventMarket.marketId] = updatedMarketData;
                 }
-            })
+            });
+
             setData((prevData) => {
-                let prevMarketData = {}
-                let finalDataToSet = []
-                prevData.forEach(mrket => { prevMarketData[mrket.marketId] = mrket })
-                prevMarketData = {
+                const prevMarketData = {};
+                prevData.forEach(market => { prevMarketData[market.marketId] = market });
+
+                const updatedMarketData = {
                     ...prevMarketData,
                     ...newMarketData
-                }
+                };
+
+                const finalDataToSet = Object.values(updatedMarketData)
+                    .filter(e => statusListToInclude.includes(e.status));
+
                 setTimeout(() => {
-                    setData((storedData) => {
-                        setHasUnsavedChanges(false);
-                        return storedData.map(element => ({ ...element, isNewSocketData: false }))
-                    });
+                    setData((storedData) =>
+                        storedData.map(element => ({ ...element, isNewSocketData: false }))
+                    );
+                    setHasUnsavedChanges(false);
                 }, 3000);
-                finalDataToSet = Object.values(prevMarketData).filter(e => statusListToInclude.includes(e.status))
+
                 return _.orderBy(finalDataToSet, ['marketId'], ['asc']);
-            })
+            });
         }
-    }
+    };
 
     const fetchTableData = async (commentaryId) => {
         await axiosInstance
