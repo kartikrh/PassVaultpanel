@@ -186,6 +186,10 @@
     background-color: white;
 }
 
+.color-white {
+    background-color: white !important;
+}
+
 .ball-red {
     background-color: red;
 }
