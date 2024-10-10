@@ -3,11 +3,11 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, Col, Container, Input, Row, UncontrolledAccordion } from "reactstrap";
+import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, REFRESH, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
+import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
@@ -15,6 +15,8 @@ import { generateOverUnder } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
+import MultiRunnerMarket from "./MultiRunnerMarket";
+import OpenMarketCategories from "./OpenMarketCategoryRendering";
 
 const tableElement = {
     title: "Open Market",
@@ -69,62 +71,85 @@ export const OpenMarket = () => {
         }
     };
 
+    // const debouncedSave = useCallback(
+    //     debounce((dataToSave) => {
+    //         saveData({ dataToSave });
+    //     }, 500),
+    //     []
+    // );
+
     const formatDataBeforeSend = (dataToChange = []) => {
-        const dataToSend = []
-        // let isRunnerIdPresented
-        dataToChange.forEach(record => {
-            let workingRecord = _.clone(record)
-            // isRunnerIdPresented = record.runner?.[0]?.runnerId
-            const recordMarketRunner = {
-                ...record.runner?.[0],
-                "line": +record.line,
-                "margin": +record.margin,
-                "overRate": +record.overRate,
-                "underRate": +record.underRate,
-                "backPrice": +record.backPrice,
-                "backSize": +(record.backSize || 100),
-                "layPrice": +record.layPrice,
-                "laySize": +(record.laySize || 100),
-                "status": +record.status,
-                "runnerId": +record.runnerId,
-            }
-            workingRecord = _.omit(workingRecord,
-                ["runner", "line", "overRate", "underRate", "backPrice", "backSize", "layPrice", "laySize", "runner", "runnerId", "selectionStatus", "lastUpdate"])
-            workingRecord["runner"] = [recordMarketRunner]
-            // if (isRunnerIdPresented) 
-            dataToSend.push(workingRecord)
-        })
-        return dataToSend
-    }
+        return dataToChange.map(record => {
+            let workingRecord = _.clone(record);
+            workingRecord.runner = workingRecord.runner.map(runner => ({
+                ...runner,
+                line: +runner.line,
+                overRate: +runner.overRate,
+                underRate: +runner.underRate,
+                backPrice: +runner.backPrice,
+                backSize: +(runner.backSize || 100),
+                layPrice: +runner.layPrice,
+                laySize: +(runner.laySize || 100),
+                status: +runner.status,
+                runnerId: +runner.runnerId,
+            }));
+            return {
+                ...workingRecord,
+                status: +workingRecord.status,
+                lineRatio: +workingRecord.lineRatio,
+                margin: +workingRecord.margin,
+            };
+        });
+    };
+
     const handleCategoryChange = (selectedOptions) => {
         setSelectedCategories(selectedOptions);
     };
+
     const handleValueChange = (record, key, value) => {
         setHasUnsavedChanges(true);
-        const indexOfData = data.findIndex(i => i.marketId === record.marketId)
+        const indexOfData = data.findIndex(i => i.marketId === record.marketId);
         if (indexOfData !== -1) {
-            if (key === 'line' || key === 'margin') {
-                const datatoSave = [
-                    ...data.slice(0, indexOfData),
-                    generateOverUnder({
-                        ...data[indexOfData],
-                        [key]: value
-                    }),
-                    ...data.slice(indexOfData + 1),
-                ];
-                setData(datatoSave);
+            let updatedRecord = { ...record };
+
+            if (record.runner && record.runner.length === 1) {
+                // Single runner market
+                updatedRecord.runner = [{
+                    ...record.runner[0],
+                    [key]: value
+                }];
+                if (key === 'line' || key === 'margin') {
+                    updatedRecord.runner[0] = generateOverUnder(updatedRecord.runner[0]);
+                }
             } else {
-                setData(prev => [
-                    ...prev.slice(0, indexOfData),
-                    {
-                        ...prev[indexOfData],
-                        [key]: value
-                    },
-                    ...prev.slice(indexOfData + 1, prev.length),
-                ]);
+                // Multi-runner market or market-level change
+                updatedRecord[key] = value;
+                if (key === 'line' || key === 'margin') {
+                    updatedRecord = generateOverUnder(updatedRecord);
+                }
             }
+
+            setData(prev => [
+                ...prev.slice(0, indexOfData),
+                updatedRecord,
+                ...prev.slice(indexOfData + 1),
+            ]);
+
+            // Remove the debouncedSave call from here
         }
-    }
+    };
+
+    const handleMultiRunnerUpdate = (updatedMarket) => {
+        const indexOfData = data.findIndex(i => i.marketId === updatedMarket.marketId);
+        if (indexOfData !== -1) {
+            setData(prev => [
+                ...prev.slice(0, indexOfData),
+                updatedMarket,
+                ...prev.slice(indexOfData + 1),
+            ]);
+            setHasUnsavedChanges(true);
+        }
+    };
 
     const handleAction = ({ changeIn, key, value, action }) => {
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
@@ -232,39 +257,59 @@ export const OpenMarket = () => {
 
     const formatSocketDataForState = (responseData) => {
         if (!isEmpty(responseData)) {
-            const newMarketData = {}
-            responseData.forEach(eventMarket => {
-                if (typeof eventMarket === "string") eventMarket = JSON.parse(eventMarket)
-                const marketRunner = eventMarket.runner[0]
-                if (marketRunner) {
-                    const updatedMarketData = {
+            const newMarketData = {};
+            responseData.forEach(eventMarketString => {
+                if (typeof eventMarketString === "string") {
+                    const eventMarket = JSON.parse(eventMarketString);
+                    let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
-                        ...eventMarket.runner[0],
                         isNewSocketData: true
+                    };
+
+                    if (Array.isArray(eventMarket.runner)) {
+                        if (eventMarket.runner.length === 1) {
+                            // Single runner market
+                            updatedMarketData = {
+                                ...updatedMarketData,
+                                ...eventMarket.runner[0],
+                                runner: eventMarket.runner // Keep the original runner array
+                            };
+                        } else if (eventMarket.runner.length > 1) {
+                            // Multi-runner market
+                            updatedMarketData.runner = eventMarket.runner.map(runner =>
+                                Array.isArray(runner) ? runner[0] : runner
+                            );
+                        }
                     }
-                    newMarketData[eventMarket.marketId] = updatedMarketData
+
+                    newMarketData[eventMarket.marketId] = updatedMarketData;
                 }
-            })
+            });
+
             setData((prevData) => {
-                let prevMarketData = {}
-                let finalDataToSet = []
-                prevData.forEach(mrket => { prevMarketData[mrket.marketId] = mrket })
-                prevMarketData = {
+                const prevMarketData = {};
+                prevData.forEach(market => { prevMarketData[market.marketId] = market });
+
+                const updatedMarketData = {
                     ...prevMarketData,
                     ...newMarketData
-                }
+                };
+
+                const finalDataToSet = Object.values(updatedMarketData)
+                    .filter(e => statusListToInclude.includes(e.status));
+
                 setTimeout(() => {
-                    setData((storedData) => {
-                        setHasUnsavedChanges(false);
-                        return storedData.map(element => ({ ...element, isNewSocketData: false }))
-                    });
+                    setData((storedData) =>
+                        storedData.map(element => ({ ...element, isNewSocketData: false }))
+                    );
+                    setHasUnsavedChanges(false);
                 }, 3000);
-                finalDataToSet = Object.values(prevMarketData).filter(e => statusListToInclude.includes(e.status))
+
                 return _.orderBy(finalDataToSet, ['marketId'], ['asc']);
-            })
+            });
         }
-    }
+    };
 
     const fetchTableData = async (commentaryId) => {
         await axiosInstance
@@ -302,21 +347,50 @@ export const OpenMarket = () => {
             });
     }
 
+
+
     const handleBackClick = () => {
         navigate("/commentary");
     };
 
     const updateLineAndDependency = (record, newValue) => {
-        handleValueChange(record, "line", newValue);
-        handleValueChange(record, "layPrice", Math.round(+newValue));
-        handleValueChange(record, "backPrice", Math.round(+newValue) + 1);
-    }
+        const updatedRecord = { ...record };
+        if (record.runner && record.runner.length === 1) {
+            // Single runner market
+            updatedRecord.runner = [{
+                ...record.runner[0],
+                line: newValue,
+                layPrice: Math.round(+newValue),
+                backPrice: Math.round(+newValue) + 1
+            }];
+            updatedRecord.runner[0] = generateOverUnder(updatedRecord.runner[0]);
+        } else {
+            // Multi-runner market or market-level change
+            updatedRecord.line = newValue;
+            updatedRecord.layPrice = Math.round(+newValue);
+            updatedRecord.backPrice = Math.round(+newValue) + 1;
+            updatedRecord = generateOverUnder(updatedRecord);
+        }
+
+        const indexOfData = data.findIndex(i => i.marketId === record.marketId);
+        if (indexOfData !== -1) {
+            setData(prev => [
+                ...prev.slice(0, indexOfData),
+                updatedRecord,
+                ...prev.slice(indexOfData + 1),
+            ]);
+            setHasUnsavedChanges(true);
+            // debouncedSave([updatedRecord]);
+        }
+    };
+
     const handleDS = (id) => {
         localStorage.setItem('EventMarketDataLogId', "" + id);
         const url = new URL(window.location.origin + "/marketDataLogs");
         url.searchParams.append("eventMarketId", id);
         window.open(url.href, '_blank');
     };
+
     const columns = [
         {
             title: "Team",
@@ -659,6 +733,35 @@ export const OpenMarket = () => {
                 break;
         }
     }
+    const renderMarket = (market) => {
+        if (market.runner && market.runner.length > 1) {
+            return (
+                <MultiRunnerMarket
+                    key={market.marketId}
+                    market={market}
+                    onUpdate={handleMultiRunnerUpdate}
+                    teams={teams}
+                    loadingTrue={() => setIsLoading(true)}
+                    loadingFalse={() => setIsLoading(false)}
+                />
+            );
+        } else {
+            // Render single-runner market
+            const singleRunnerMarket = market.runner && market.runner.length === 1
+                ? { ...market, ...market.runner[0] }
+                : market;
+            return (
+                <ListingElement
+                    key={market.marketId}
+                    columns={columns}
+                    dataSource={[singleRunnerMarket]}
+                    tableElement={tableElement}
+                    tableClassName="open-market-table-class"
+                    hideHeader={true}
+                />
+            );
+        }
+    };
 
     const toggleAccordion = (id) => {
         setOpenAccordions((prevOpenAccordions) => {
@@ -669,6 +772,7 @@ export const OpenMarket = () => {
             }
         });
     };
+
 
     useEffect(() => {
         if (commentaryId !== "0") {
@@ -816,28 +920,17 @@ export const OpenMarket = () => {
                                             >{`Save All (A)`}</Button>
                                         </Col>
                                     </Row>}
-                                {Object.keys(categorisedData).map((category, index) => {
-                                    return <Accordion open={openAccordions} toggle={toggleAccordion} key={category} className="market-category-accordian">
-                                        <AccordionItem >
-                                            <AccordionHeader className="market-category-header" targetId={category}><b>{category}</b></AccordionHeader>
-                                            <AccordionBody className="market-category-body" accordionId={category}>
-                                                {categorisedData?.[category].length > 0 ? <>
-                                                    <Row>
-                                                        <Col>
-                                                            <ListingElement
-                                                                columns={columns}
-                                                                dataSource={categorisedData?.[category] || []}
-                                                                tableElement={tableElement}
-                                                                tableClassName="open-market-table-class"
-                                                                hideHeader={true}
-                                                            />
-                                                        </Col>
-                                                    </Row>
-                                                </> : <div className=" m-4 text-center">No record found</div>}
-                                            </AccordionBody>
-                                        </AccordionItem >
-                                    </Accordion>
-                                })}
+                                {Object.keys(categorisedData).length > 0 && (
+                                    <OpenMarketCategories
+                                        categorisedData={categorisedData}
+                                        columns={columns}
+                                        teams={teams}
+                                        handleMultiRunnerUpdate={handleMultiRunnerUpdate}
+                                        setIsLoading={setIsLoading}
+                                        openAccordions={openAccordions}
+                                        toggleAccordion={toggleAccordion}
+                                    />
+                                )}
                             </CardBody>
                         </Card>
                     </Row>
