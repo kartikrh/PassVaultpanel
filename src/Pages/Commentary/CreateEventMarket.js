@@ -46,8 +46,6 @@ export const CreateEventMarket = () => {
                 const { teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes, matchType } = response.result;
                 setMarketData({ teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes });
                 const processedMarkets = processMarketData(marketTemplate, eventMarket, teamAndPlayers, commentary, matchType);
-                console.log(processedMarkets);
-                
                 setProcessedMarkets(processedMarkets);
                 initializeSelectedMarkets(processedMarkets);
             }
