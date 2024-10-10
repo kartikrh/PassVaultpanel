@@ -92,6 +92,9 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
         }
     };
 
+    // Sort runners based on runnerId
+    const sortedRunners = [...localMarket.runner].sort((a, b) => a.runnerId - b.runnerId);
+
     return (
         <div className="multi-runner-market">
             <table className="table table-bordered table-sm open-market-table-class m-0">
@@ -190,7 +193,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                     </tr>
                 </thead>
                 <tbody>
-                    {localMarket.runner.map((runner, index) => (
+                    {sortedRunners.map((runner, index) => (
                         <tr key={runner.runnerId}>
                             <td>{teams[runner.teamId] || `Runner ${runner.runnerId}`}</td>
                             <td>
