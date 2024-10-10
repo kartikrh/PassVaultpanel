@@ -70,12 +70,12 @@ export const OpenMarket = () => {
         }
     };
 
-    const debouncedSave = useCallback(
-        debounce((dataToSave) => {
-            saveData({ dataToSave });
-        }, 500),
-        []
-    );
+    // const debouncedSave = useCallback(
+    //     debounce((dataToSave) => {
+    //         saveData({ dataToSave });
+    //     }, 500),
+    //     []
+    // );
 
     const formatDataBeforeSend = (dataToChange = []) => {
         return dataToChange.map(record => {
@@ -147,7 +147,6 @@ export const OpenMarket = () => {
                 ...prev.slice(indexOfData + 1),
             ]);
             setHasUnsavedChanges(true);
-            // Remove the debouncedSave call from here
         }
     };
 
@@ -358,7 +357,7 @@ export const OpenMarket = () => {
                 ...prev.slice(indexOfData + 1),
             ]);
             setHasUnsavedChanges(true);
-            debouncedSave([updatedRecord]);
+            // debouncedSave([updatedRecord]);
         }
     };
 
@@ -718,6 +717,8 @@ export const OpenMarket = () => {
                     market={market}
                     onUpdate={handleMultiRunnerUpdate}
                     teams={teams}
+                    loadingTrue={() => setIsLoading(true)}
+                    loadingFalse={() => setIsLoading(false)}
                 />
             );
         } else {

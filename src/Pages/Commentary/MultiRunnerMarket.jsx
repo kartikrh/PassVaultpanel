@@ -4,9 +4,14 @@ import CustomInput from "../../components/Common/Reusables/CustomInput";
 import { MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
 import { generateOverUnder } from "./functions";
+import axiosInstance from "../../Features/axios";
+import { useDispatch } from 'react-redux';
+import { updateToastData } from '../../Features/toasterSlice';
+import { ERROR, SUCCESS } from '../../components/Common/Const';
 
-const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
+const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadingTrue, loadingFalse }) => {
     const [localMarket, setLocalMarket] = useState(market);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setLocalMarket(market);
@@ -18,8 +23,10 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
             [key]: value
         };
 
-        if (key === 'line' || key === 'margin') {
-            updatedMarket = generateOverUnder(updatedMarket);
+        if (key === 'margin') {
+            updatedMarket.runner = updatedMarket.runner.map(runner =>
+                generateOverUnder({ ...runner, margin: value })
+            );
         }
 
         setLocalMarket(updatedMarket);
@@ -33,7 +40,10 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
                 if (runner.runnerId === runnerId) {
                     let updatedRunner = { ...runner, [key]: value };
                     if (key === 'line') {
-                        updatedRunner = generateOverUnder(updatedRunner);
+                        updatedRunner = generateOverUnder({
+                            ...updatedRunner,
+                            margin: localMarket.margin // Use market-level margin
+                        });
                     }
                     return updatedRunner;
                 }
@@ -45,16 +55,45 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
         onUpdate(updatedMarket);
     };
 
-    const handleSave = () => {
-        onUpdate(localMarket);
+    const handleSave = async () => {
+        loadingTrue();
+        try {
+            const response = await axiosInstance.post("/admin/eventMarket/updateMarketRate", {
+                eventMarket: [localMarket]
+            });
+            if (response.success) {
+                onUpdate(localMarket);
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            }
+        } catch (error) {
+            console.error("Error saving market:", error);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            loadingFalse();
+        }
     };
 
-    const handleSingleAction = (key, value) => {
-        handleMarketValueChange(key, value);
+    const handleAction = async (key, value) => {
+        loadingTrue();
+        try {
+            const response = await axiosInstance.post("/admin/eventMarket/updateMarketRate", {
+                eventMarket: [{ ...localMarket, [key]: value }],
+                action: key.toUpperCase()
+            });
+            if (response.success) {
+                handleMarketValueChange(key, value);
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            }
+        } catch (error) {
+            console.error(`Error updating ${key}:`, error);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            loadingFalse();
+        }
     };
 
     return (
-        <div className="multi-runner-market table color-white">
+        <div className="multi-runner-market">
             <table className="table table-bordered table-sm open-market-table-class m-0">
                 <thead>
                     <tr>
@@ -71,7 +110,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{teams[localMarket.teamId]}<div>Innings {localMarket.inningsId}</div></td>
+                        <td>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
                         <td>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
                         <td>
                             <select
@@ -89,7 +128,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
                                 color={localMarket.isActive ? "primary" : "danger"}
                                 size="sm"
                                 className="btn"
-                                onClick={() => handleSingleAction("isActive", !localMarket.isActive)}
+                                onClick={() => handleAction("isActive", !localMarket.isActive)}
                             >
                                 <i className={`bx ${localMarket.isActive ? "bx-check" : "bx-block"}`}></i>
                             </Button>
@@ -99,7 +138,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
                                 color={localMarket.isAllow ? "primary" : "danger"}
                                 size="sm"
                                 className="btn"
-                                onClick={() => handleSingleAction("isAllow", !localMarket.isAllow)}
+                                onClick={() => handleAction("isAllow", !localMarket.isAllow)}
                             >
                                 <i className={`bx ${localMarket.isAllow ? "bx-check" : "bx-block"}`}></i>
                             </Button>
@@ -109,7 +148,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams }) => {
                                 color={localMarket.isSendData ? "primary" : "danger"}
                                 size="sm"
                                 className="btn"
-                                onClick={() => handleSingleAction("isSendData", !localMarket.isSendData)}
+                                onClick={() => handleAction("isSendData", !localMarket.isSendData)}
                             >
                                 <i className={`bx ${localMarket.isSendData ? "bx-check" : "bx-block"}`}></i>
                             </Button>
