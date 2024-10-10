@@ -45,23 +45,23 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
         }
     }
 
-    const handleDeletePlayer = async (playerId) => {
-        const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId)
-        if (playerIndex !== -1) {
-            setIsLoading(true);
-            await axiosInstance
-                .post("/admin/commentary/deleteTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: playerId })
-                .then((response) => {
-                    setIsLoading(false);
-                    setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex].playerName }])
-                    setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
-                })
-                .catch((error) => {
-                    dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                    setIsLoading(false);
-                });
-        }
-    }
+    // const handleDeletePlayer = async (playerId) => {
+    //     const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId)
+    //     if (playerIndex !== -1) {
+    //         setIsLoading(true);
+    //         await axiosInstance
+    //             .post("/admin/commentary/deleteTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: playerId })
+    //             .then((response) => {
+    //                 setIsLoading(false);
+    //                 setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex].playerName }])
+    //                 setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
+    //             })
+    //             .catch((error) => {
+    //                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    //                 setIsLoading(false);
+    //             });
+    //     }
+    // }
 
     const handleReloadTeam = async () => {
         setIsLoading(true);
@@ -204,7 +204,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                 </Row>
                 <Row className="rounded py-3">
                     <div class="row d-flex align-items-center my-2 ">
-                        <div class="col-2"></div>
+                    {/* <div className="col-2"></div> */}
                         <div class="col-10 ps-4">
                             <div className="row">
                                 <div className="col-4">Player</div>
@@ -218,14 +218,14 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                     </div>
                     {commentaryTeamPlayers?.map((player, index) => (
                         <div key={index} class="row d-flex align-items-center my-2 ">
-                            <div class="col-2">
+                            {/* <div class="col-2">
                                 <Button
                                     color="soft-danger"
                                     onClick={(e) => handleDeletePlayer(player.playerId)}
                                 >
                                     <i className="ri-delete-bin-2-line"></i>
                                 </Button>
-                            </div>
+                            </div> */}
                             <div class="col-10 ps-4">
                                 <div className="row">
                                     <div className="col-4">{player?.playerName}</div>
