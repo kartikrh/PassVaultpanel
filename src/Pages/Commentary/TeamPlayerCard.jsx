@@ -204,7 +204,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                 </Row>
                 <Row className="rounded py-3">
                     <div class="row d-flex align-items-center my-2 ">
-                    {/* <div className="col-2"></div> */}
+                    {/* <div className="col-2"></div> Remove Pls Add After if you want to set Remove Delete Players*/}
                         <div class="col-10 ps-4">
                             <div className="row">
                                 <div className="col-4">Player</div>
