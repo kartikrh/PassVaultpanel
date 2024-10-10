@@ -46,6 +46,8 @@ export const CreateEventMarket = () => {
                 const { teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes, matchType } = response.result;
                 setMarketData({ teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes });
                 const processedMarkets = processMarketData(marketTemplate, eventMarket, teamAndPlayers, commentary, matchType);
+                console.log(processedMarkets);
+                
                 setProcessedMarkets(processedMarkets);
                 initializeSelectedMarkets(processedMarkets);
             }
@@ -755,7 +757,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.line}
+                    value={record.line || ""}
                     onChange={(e) => onChange("line", +e.target.value || 0)}
                     placeholder="Line"
                 />
@@ -769,7 +771,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.underRate}
+                    value={record.underRate || ""}
                     onChange={(e) => onChange("underRate", +e.target.value || 0)}
                     placeholder="Under"
                 />
@@ -783,7 +785,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.overRate}
+                    value={record.overRate || ""}
                     onChange={(e) => onChange("overRate", +e.target.value || 0)}
                     placeholder="Over"
                 />
@@ -797,7 +799,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.layPrice}
+                    value={record.layPrice || ""}
                     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
                     placeholder="No Rate"
                 />
@@ -811,7 +813,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.backPrice}
+                    value={record.backPrice || ""}
                     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
                     placeholder="Yes Rate"
                 />
@@ -825,7 +827,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.laySize}
+                    value={record.laySize || ""}
                     onChange={(e) => onChange("laySize", +e.target.value || 0)}
                     placeholder="No Point"
                 />
@@ -839,7 +841,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.backSize}
+                    value={record.backSize || ""}
                     onChange={(e) => onChange("backSize", +e.target.value || 0)}
                     placeholder="Yes Point"
                 />
