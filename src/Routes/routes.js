@@ -153,7 +153,7 @@ const authProtectedRoutes = [
     component: <CommentaryMarketTemplate />,
   },
   {
-    path: "/commentaryMarketTemplatev1",
+    path: "/commentaryMarkets",
     component: <CreateEventMarket />,
   },
   { path: "/openMarket", component: <OpenMarket /> },
