@@ -18,6 +18,7 @@ const MARKET_STATUS = {
 
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
+    document.title = "commentaryMarkets";
     const [marketData, setMarketData] = useState({
         teamAndPlayers: [],
         marketTemplate: [],
@@ -79,12 +80,12 @@ export const CreateEventMarket = () => {
     const generateOverUnder = (dataObj) => {
         let dataToSend = {
             ...dataObj,
-            backPrice: 0,
-            layPrice: 0,
+            backPrice: null,
+            layPrice: null,
             backSize: 100,
             laySize: 100,
-            overRate: 0,
-            underRate: 0,
+            overRate: null,
+            underRate: null,
         }
         if(!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
         const roundedLine = Math.floor(parseFloat(dataObj?.line));
@@ -232,7 +233,7 @@ export const CreateEventMarket = () => {
         if (errors.length > 0) {
             dispatch(updateToastData({
                 data: `Please fill in all required fields: ${errors.join(', ')}`,
-                title: "Validation Error",
+                title: "Market Error",
                 type: ERROR
             }));
             return;
@@ -262,9 +263,9 @@ export const CreateEventMarket = () => {
                 runnerId: "0",
                 marketTemplateId: market.marketTemplateId,
                 runner: market?.marketName,
-                line: 0,
-                overRate: 0,
-                underRate: 0,
+                line: null,
+                overRate: null,
+                underRate: null,
                 lastUpdate: new Date().toISOString(),
                 selectionId: `${market.marketTemplateId}01`,
                 order: 1,
@@ -276,9 +277,9 @@ export const CreateEventMarket = () => {
         }
 
         // Apply generateOverUnder to each runner
-        const updatedRunners = market.runners.map(runner =>
-            generateOverUnder({ ...runner, margin: parseFloat(market.margin) || 3 })
-        );
+        // const updatedRunners = market.runners.map(runner =>
+        //     generateOverUnder({ ...runner, margin: parseFloat(market.margin) || 3 })
+        // );
 
         processedMarketsObj[baseKey].push({
             ...market,
@@ -296,12 +297,13 @@ export const CreateEventMarket = () => {
             commentaryId: market.commentaryId,
             eventRefId: market.eventRefId,
             isPredefineRunnerValue: market.isPredefineRunnerValue !== undefined ? market.isPredefineRunnerValue : true,
-            runners: updatedRunners
+            runners: market.runners
         });
     };
 
     const processOnlyOverMarkets = (market, teams, maxOvers, processedMarketsObj) => {
-        const startOver = parseInt(market.over);
+        // const startOver = parseInt(market.over);
+        const startOver = 1;
         teams.forEach(team => {
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 const specialMarketName = `ONLY ${currentOver} OVER - ${team.shortName}`;
@@ -765,7 +767,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.line || ""}
+                    value={record.line}
                     onChange={(e) => onChange("line", +e.target.value || 0)}
                     placeholder="Line"
                 />
@@ -779,7 +781,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.underRate || ""}
+                    value={record.underRate}
                     onChange={(e) => onChange("underRate", +e.target.value || 0)}
                     placeholder="Under"
                 />
@@ -793,7 +795,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.overRate || ""}
+                    value={record.overRate}
                     onChange={(e) => onChange("overRate", +e.target.value || 0)}
                     placeholder="Over"
                 />
@@ -807,7 +809,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.layPrice || ""}
+                    value={record.layPrice}
                     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
                     placeholder="No Rate"
                 />
@@ -821,7 +823,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.backPrice || ""}
+                    value={record.backPrice}
                     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
                     placeholder="Yes Rate"
                 />
@@ -835,7 +837,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.laySize || ""}
+                    value={record.laySize}
                     onChange={(e) => onChange("laySize", +e.target.value || 0)}
                     placeholder="No Point"
                 />
@@ -849,7 +851,7 @@ export const CreateEventMarket = () => {
                 <Input
                     className="form-control small-text-fields no-spinners"
                     type="number"
-                    value={record.backSize || ""}
+                    value={record.backSize}
                     onChange={(e) => onChange("backSize", +e.target.value || 0)}
                     placeholder="Yes Point"
                 />
@@ -866,14 +868,12 @@ export const CreateEventMarket = () => {
                             <CardBody className="p-1">
                                 {isLoading && <SpinnerModel />}
                                 <Row className='mb-3' >
-                                    <Col className="mt-3 mt-lg-4 mt-md-4" >
+                                    <Col className="mt-3 mt-lg-3 mt-md-3" >
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
                                     </Col>
-                                    <Col className="mt-3 mt-lg-3 mt-md-3" >
+                                    <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
+                                        <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
                                         <Button color="primary" className="btn text-right" onClick={handleSave} > Save </Button>
-                                    </Col>
-                                    < Col className="mt-3 mt-lg-3 mt-md-3" >
-                                        <button className="btn btn-danger text-right" onClick={handleBackClick} > Back </button>
                                     </Col>
                                 </Row>
                                 {renderMainSections()}

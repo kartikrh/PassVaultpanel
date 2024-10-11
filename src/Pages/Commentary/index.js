@@ -358,7 +358,7 @@ const Index = () => {
   const handleCommentaryMarketTemplateClickV1 = (id) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
     localStorage.setItem('marketTemplateCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/commentaryMarketTemplatev1");
+    const url = new URL(window.location.origin + "/commentaryMarkets");
     window.open(url.href, '_blank');
   };
   const handleMarketEventActionClick = (id) => {
@@ -998,7 +998,7 @@ const Index = () => {
             </Button>
           </Tooltip>
           <>
-            {record.isPredictMarket &&
+            {/* {record.isPredictMarket &&
               <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
                   color={"primary"}
@@ -1010,9 +1010,9 @@ const Index = () => {
                 >
                   <i class='bx bxs-store' ></i>
                 </Button>
-              </Tooltip>}
+              </Tooltip>} */}
             {record.isPredictMarket &&
-              <Tooltip title={"Market Template"} color={"primary"} overlayInnerStyle={{ color: '#000' }}>
+              <Tooltip title={"Market Template"} color={"e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
                   color={"primary"}
                   size="sm"
@@ -1021,10 +1021,11 @@ const Index = () => {
                     handleCommentaryMarketTemplateClickV1(record.commentaryId);
                   }}
                 >
-                  <i class='bx bxs-bookmarks'></i>
+                  <i class='bx bxs-store' ></i>
+                  {/* <i class='bx bxs-bookmarks'></i> */}
                 </Button>
               </Tooltip>}
-            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {/* <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
                 size="sm"
@@ -1035,7 +1036,7 @@ const Index = () => {
               >
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
