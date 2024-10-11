@@ -336,7 +336,7 @@ export const CreateEventMarket = () => {
                 const specialMarketName = `${player.playerName} Runs`;
                 const specialMarket = {
                     ...market,
-                    playerId: player.playerId,
+                    playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
                     teamId: team.teamId
                 };
@@ -385,6 +385,13 @@ export const CreateEventMarket = () => {
             const marketKey = Object.keys(updatedMarkets).find(k => updatedMarkets[k].includes(market));
             const marketIndex = updatedMarkets[marketKey].findIndex(m => m === market);
             const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
+            // const updatedRunners = [...updatedMarket.runners];
+            if (!updatedMarket.runners) {
+              updatedMarket.runners = [];
+            }
+            if (!updatedMarket.runners[runnerIndex]) {
+              updatedMarket.runners[runnerIndex] = {};
+            }
             const updatedRunners = [...updatedMarket.runners];
 
             // Parse the value as a float for numeric fields
@@ -431,11 +438,14 @@ export const CreateEventMarket = () => {
             ...columnInitials,
             ...runnerColumns.map(column => ({
                 ...column,
-                render: (text, record, index) => column.render(
-                    record.runners[0][column.key],
-                    record.runners[0],
-                    (key, value) => handleRunnerValueChange(record, 0, key, value)
-                )
+                render: (text, record, index) => {
+                    const runner = record.runners && record.runners[0];
+                    return column.render(
+                      runner ? runner[column.key] : null,
+                      runner || {},
+                      (key, value) => handleRunnerValueChange(record, 0, key, value)
+                    );
+                }
             }))
         ];
 
