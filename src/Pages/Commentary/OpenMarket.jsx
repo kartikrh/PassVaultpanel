@@ -102,8 +102,17 @@ export const OpenMarket = () => {
         });
     };
 
+    useEffect(() => {
+        const storedCategories = sessionStorage.getItem('selectedCategories');
+        if (storedCategories) {
+            const parsedCategories = JSON.parse(storedCategories);
+            setSelectedCategories(parsedCategories);
+        }
+    }, []);
+
     const handleCategoryChange = (selectedOptions) => {
         setSelectedCategories(selectedOptions);
+        sessionStorage.setItem('selectedCategories', JSON.stringify(selectedOptions));
     };
 
     const handleValueChange = (record, key, value) => {
@@ -900,7 +909,7 @@ export const OpenMarket = () => {
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
                                             <Button
                                                 color="primary"
-                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 0.75 : 1 }}
+                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
                                                 className="table-header-button"
                                                 onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
                                                 disabled={selectedCategories.length === 0}
@@ -914,7 +923,7 @@ export const OpenMarket = () => {
                                             <Button
                                                 color="primary"
                                                 className="table-header-button"
-                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.5 }}
+                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
                                                 onClick={() => updateRecords()}
                                                 disabled={selectedCategories.length === 0}
                                             >{`Save All (A)`}</Button>

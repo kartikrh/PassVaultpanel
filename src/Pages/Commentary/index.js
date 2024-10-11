@@ -355,10 +355,11 @@ const Index = () => {
     const url = new URL(window.location.origin + "/commentaryMarketTemplate");
     window.open(url.href, '_blank');
   };
-  const handleCommentaryMarketTemplateClickV1 = (id) => {
+  const handleCommentaryMarketTemplateClickV1 = (details) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
-    localStorage.setItem('marketTemplateCommentaryId', "" + id);
     const url = new URL(window.location.origin + "/commentaryMarkets");
+    sessionStorage.setItem('marketTemplateCommentaryId', "" + details?.commentaryId);
+    sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleMarketEventActionClick = (id) => {
@@ -1012,13 +1013,13 @@ const Index = () => {
                 </Button>
               </Tooltip>} */}
             {record.isPredictMarket &&
-              <Tooltip title={"Market Template"} color={"e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
                   color={"primary"}
                   size="sm"
                   className="btn"
                   onClick={() => {
-                    handleCommentaryMarketTemplateClickV1(record.commentaryId);
+                    handleCommentaryMarketTemplateClickV1(record);
                   }}
                 >
                   <i class='bx bxs-store' ></i>

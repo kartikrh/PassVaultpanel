@@ -9,11 +9,13 @@ import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { isEmpty } from 'lodash';
 import "../../components/Common/Reusables/CustomCss.css";
+import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 
 const MARKET_STATUS = {
-    1: "Active",
-    2: "Suspended",
-    3: "Settled",
+    0: "NotOpen",
+    1: "Open",
+    2: "Inactive",
+    3: "Suspend",
 };
 
 export const CreateEventMarket = () => {
@@ -29,7 +31,8 @@ export const CreateEventMarket = () => {
     });
     let navigate = useNavigate();
     const dispatch = useDispatch();
-    const commentaryId = +localStorage.getItem('marketTemplateCommentaryId') || "0";
+    const commentaryId = +sessionStorage.getItem('marketTemplateCommentaryId') || "0";
+    const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
     useEffect(() => {
@@ -859,6 +862,9 @@ export const CreateEventMarket = () => {
             style: { width: "10%" },
         },
     ];
+    const MarketDetailsDate = commentaryDetails?.eventDate
+    ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
+    : "";
     return (
         <React.Fragment>
             <div className="page-content" >
@@ -867,7 +873,7 @@ export const CreateEventMarket = () => {
                         <Card>
                             <CardBody className="p-1">
                                 {isLoading && <SpinnerModel />}
-                                <Row className='mb-3' >
+                                <Row>
                                     <Col className="mt-3 mt-lg-3 mt-md-3" >
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
                                     </Col>
@@ -875,6 +881,16 @@ export const CreateEventMarket = () => {
                                         <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
                                         <Button color="primary" className="btn text-right" onClick={handleSave} > Save </Button>
                                     </Col>
+                                </Row>
+                                <Row className="g-2 mb-3">
+                                  {commentaryDetails && (
+                                    <Col className="col-sm-auto">
+                                       <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
+                                       <div>{`Ref: ${commentaryDetails?.eventRefId} [
+                                            ${MarketDetailsDate}
+                                        ]`}</div>
+                                    </Col>
+                                  )}
                                 </Row>
                                 {renderMainSections()}
                             </CardBody>
