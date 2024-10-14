@@ -15,7 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
+import { ChangeSessionResult } from "../../components/Model/ChangeSessionResult";
 import { Tooltip } from "antd";
 import SetResultModal from "./SetResultModal";
 import CancelModal from "./CancelModal";
@@ -434,7 +434,7 @@ const Index = () => {
             setIsSearch={setIsSearch}
           />
           {resultModelVisible && (
-            <ChangeMarketResultModel
+            <ChangeSessionResult
               resultModelVisible={resultModelVisible}
               setResultModelVisible={setResultModelVisible}
               handleChange={handleChangeResult}
