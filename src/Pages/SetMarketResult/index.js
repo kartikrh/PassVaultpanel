@@ -70,7 +70,7 @@ const Index = () => {
       payload.eventId = null;
     }
     await axiosInstance
-      .post(`/admin/eventMarket/pendingMarketList`, payload)
+      .post(`/admin/eventMarket/pendingMultiRunnerMarket`, payload)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -188,6 +188,8 @@ const Index = () => {
   };
   const getStatusText = (status) => {
     switch (status) {
+      case 0:
+        return "NotOpen";
       case 1:
         return "Open";
       case 2:
@@ -200,8 +202,6 @@ const Index = () => {
         return "Settled";
       case 6:
         return "Cancel";
-      case 7:
-        return "NotOpen";
       default:
         return "Unknown";
     }
@@ -296,8 +296,8 @@ const Index = () => {
     },
     {
       title: "Result",
-      dataIndex: "result",
-      key: "result",
+      dataIndex: "resultRunner",
+      key: "resultRunner",
       render: (text, record) => (
         <span
           onClick={() => {

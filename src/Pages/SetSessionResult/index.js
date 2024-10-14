@@ -188,6 +188,8 @@ const Index = () => {
   };
   const getStatusText = (status) => {
     switch (status) {
+      case 0:
+        return "NotOpen";
       case 1:
         return "Open";
       case 2:
@@ -200,8 +202,6 @@ const Index = () => {
         return "Settled";
       case 6:
         return "Cancel";
-      case 7:
-        return "NotOpen";
       default:
         return "Unknown";
     }
