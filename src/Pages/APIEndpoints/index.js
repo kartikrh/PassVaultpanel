@@ -122,6 +122,14 @@ const Index = () => {
         return "vendorUpdate";
       case 3:
         return "vendorIpUpdate";
+      case 4:
+        return "updateConfig";
+      case 5:
+        return "updateBanner";
+      case 6:
+        return "updateSeoModule";
+      case 7:
+        return "updateMenuList";
       default:
         return "Unknown";
     } 
