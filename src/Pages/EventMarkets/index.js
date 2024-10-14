@@ -567,7 +567,7 @@ const Index = () => {
       render: (text, record) => {
         return (record?.marketTypeName?.toLowerCase() === "fancy" || record?.marketTypeName?.toLowerCase() === "line market")
           ? text
-          : record.resultRunner;
+          : record?.resultRunner;
       }
     },
     {
