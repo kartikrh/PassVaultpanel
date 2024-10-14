@@ -60,11 +60,34 @@ export const CreateEventMarket = () => {
         }
     };
 
+    // const handleSelectAllInSection = (sectionKey) => {
+    //     setSelectedMarkets(prev => {
+    //         const sectionSelections = prev[sectionKey] || [];
+    //         const allSelected = sectionSelections.length > 0 && sectionSelections.every(Boolean);
+    //         const newSelections = processedMarkets[sectionKey]?.map(() => !allSelected) || [];
+    //         return {
+    //             ...prev,
+    //             [sectionKey]: newSelections
+    //         };
+    //     });
+    // };
+
     const handleSelectAllInSection = (sectionKey) => {
+        const markets = processedMarkets[sectionKey] || [];
+        const errors = markets.map(validateMarketRow).flat().filter(Boolean);
+        if (errors.length > 0) {
+            dispatch(updateToastData({
+                data: `Please fill in all required fields`,
+                title: "Market Error",
+                type: ERROR
+            }));
+            return;
+        }
+    
         setSelectedMarkets(prev => {
             const sectionSelections = prev[sectionKey] || [];
             const allSelected = sectionSelections.length > 0 && sectionSelections.every(Boolean);
-            const newSelections = processedMarkets[sectionKey]?.map(() => !allSelected) || [];
+            const newSelections = markets?.map(() => !allSelected);
             return {
                 ...prev,
                 [sectionKey]: newSelections
