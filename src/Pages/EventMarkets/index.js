@@ -564,6 +564,11 @@ const Index = () => {
       key: "result",
       style: { width: "5%", textAlign: "center" },
       sort: true,
+      render: (text, record) => {
+        return (record?.marketTypeName?.toLowerCase() === "fancy" || record?.marketTypeName?.toLowerCase() === "line market")
+          ? text
+          : record.resultRunner;
+      }
     },
     {
       render: (text, record) => (
