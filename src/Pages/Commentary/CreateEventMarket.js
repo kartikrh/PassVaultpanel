@@ -12,10 +12,10 @@ import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 
 const MARKET_STATUS = {
-    0: "NotOpen",
     1: "Open",
     2: "Inactive",
     3: "Suspend",
+    7: "NotOpen",
 };
 
 export const CreateEventMarket = () => {
