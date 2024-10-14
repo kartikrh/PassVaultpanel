@@ -152,7 +152,7 @@ const Index = () => {
   const handleChangeResult = async (val) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventMarket/UpdateResulOrApproveMarketResult`, {
+      .post(`/admin/eventMarket/updateResultMultiMarket`, {
         ...selectedResult,
         isResult: val
       })
