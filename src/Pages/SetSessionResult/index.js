@@ -7,7 +7,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
-  TAB_SET_MARKETS_RESULT,
+  TAB_SET_SESSION_RESULT,
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
@@ -21,10 +21,10 @@ import SetResultModal from "./SetResultModal";
 import CancelModal from "./CancelModal";
 
 const Index = () => {
-  const pageName = TAB_SET_MARKETS_RESULT;
+  const pageName = TAB_SET_SESSION_RESULT;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_SET_MARKETS_RESULT;
+  document.title = TAB_SET_SESSION_RESULT;
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
@@ -361,7 +361,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Market Result",
+    title: "Session Result",
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
@@ -408,7 +408,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Market Results" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Session Results" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}

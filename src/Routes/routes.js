@@ -59,6 +59,7 @@ import EventMarkets from "../Pages/EventMarkets";
 import AddEventMarket from "../Pages/EventMarkets/AddEventMarket.jsx";
 import UnsettledMarket from "../Pages/UnsettledMarket";
 import SetMarketResult from "../Pages/SetMarketResult";
+import SetSessionResult from "../Pages/SetSessionResult";
 import Vendor from "../Pages/Vendor";
 import DisplayStatus from "../Pages/DisplayStatus";
 import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
@@ -186,6 +187,7 @@ const authProtectedRoutes = [
   { path: "/marketDataLogs", component: <MarketDataLogs /> },
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
   { path: "/setMarketResult", component: <SetMarketResult /> },
+  { path: "/setSessionResult", component: <SetSessionResult /> },
   { path: "/vendors", component: <Vendor /> },
   { path: "/addVendor", component: <AddVendor /> },
   { path: "/vendorIpList", component: <VendorIpList /> },
