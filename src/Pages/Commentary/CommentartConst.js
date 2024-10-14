@@ -102,13 +102,13 @@ export const PLAYER = "PLAYER"
 export const PARTNERSHIP = "PARTNERSHIP"
 
 export const MARKET_STATUS = {
+    "0": "NotOpen",
     "1": "Open",
     "2": "inActive",
     "3": "Suspend",
     "4": "Close",
     "5": "Settled",
     "6": "Cancel",
-    "7": "NotOpen",
 }
 
 export const INACTIVE = "InAc"

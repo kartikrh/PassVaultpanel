@@ -39,14 +39,14 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
   };
 
   useEffect(() => {
-    if (data && !(data?.marketTypeName?.toLowerCase() === "fancy" || data?.marketTypeName?.toLowerCase() === "line")) {
+    if (data && !(data?.marketTypeName?.toLowerCase() === "fancy" || data?.marketTypeName?.toLowerCase() === "line market")) {
       fetchRunners();
     }
   }, [data]);
   
   const handleYesClick = async () => {
     let payload = {}
-    if (data.marketTypeName.toLowerCase() === "fancy" || data.marketTypeName.toLowerCase() === "line") {
+    if (data.marketTypeName.toLowerCase() === "fancy" || data.marketTypeName.toLowerCase() === "line market") {
       payload = {
         eventMarketId: data.eventMarketId,
         commentaryId: data.commentaryId,
@@ -121,7 +121,7 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
             </tbody>
           </table>
         )}
-        {data && (data.marketTypeName.toLowerCase() === "fancy" || data.marketTypeName.toLowerCase() === "line") ? (
+        {data && (data.marketTypeName.toLowerCase() === "fancy" || data.marketTypeName.toLowerCase() === "line market") ? (
           <div className="d-flex align-items-center">
             <Label for="result">Enter Result</Label>
             <Input

@@ -25,6 +25,6 @@
   cursor: pointer
 }
 .result-box {
-  width: 400px;
+  width: 400px !important;
   margin-left: 8px;
 }

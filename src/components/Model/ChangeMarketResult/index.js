@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Input, Modal, ModalBody } from "reactstrap";
+import { useDispatch } from "react-redux";
+import { Button, Modal, ModalBody } from "reactstrap";
+import axiosInstance from "../../../Features/axios";
+import { updateToastData } from "../../../Features/toasterSlice";
+import { ERROR } from "../../Common/Const";
+import { Tooltip } from "antd";
 
 export const ChangeMarketResultModel = ({
   resultModelVisible,
@@ -10,10 +15,47 @@ export const ChangeMarketResultModel = ({
   singleCheck,
 }) => {
   const [selectedResultVals, setSelectedResultVals] = useState({});
+  const [runners, setRunners] = useState([]);
+  const [selectedRunner, setSelectedRunner] = useState(null);
+  const dispatch = useDispatch();
+
+  const fetchRunners = async (eventMarketId) => {
+    try {
+      const response = await axiosInstance.post("/admin/eventMarket/getRunnerByMarket", {
+        eventMarketId: eventMarketId,
+      });      
+      setRunners(response?.result);
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    if(selectedResult?.eventMarketId) {
+      fetchRunners(selectedResult.eventMarketId);
+      setSelectedRunner(selectedResult?.result)
+    }
+  }, []);
 
   useEffect(() => {
     setSelectedResultVals(selectedResult);
   }, []);
+
+  const handleButtonClick = (runner) => {
+    const isSelected = selectedRunner === runner?.runnerId;
+    setSelectedRunner(isSelected ? null : runner?.runnerId);
+    setSelectedResult({
+      eventMarketId: selectedResult?.eventMarketId,
+      result: isSelected ? null : runner.runnerId,
+      runner: isSelected ? null : runner.runner,
+    });
+  };
 
   return (
     <Modal
@@ -49,23 +91,35 @@ export const ChangeMarketResultModel = ({
                 </div>
               </div>
             </div>
-            <div className="d-flex align-items-center">
-              <div style={{ fontWeight: 600, marginRight: "8px" }}>
-                Result :
-              </div>
-              <Input
-                type="number"
-                placeholder="Enter Result"
-                value={+selectedResult?.result}
-                style={{ width: "300px", marginLeft: "8px" }}
-                onChange={(e) => {
-                  setSelectedResult({
-                    eventMarketId: selectedResult?.eventMarketId,
-                    result: +e.target.value,
-                  });
-                }}
-              />
-            </div>
+            {runners.length > 0 && (
+            <table className="table">
+              <thead>
+                <tr className="runner-row">
+                  <th className="text-center">Runner</th>
+                  <th className="text-center">Is Active</th>
+                </tr>
+              </thead>
+              <tbody className="runner-tbody">
+                {runners?.map((runner) => (
+                  <tr key={runner?.runnerId} className="runner-row">
+                    <td className="text-center">{runner?.runner}</td>
+                    <td className="text-center">
+                      <Tooltip title={"Active/Inactive runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                        <Button
+                          color={selectedRunner === runner?.runnerId ? "primary" : "danger"}
+                          size="sm"
+                          className="btn"
+                          onClick={() => handleButtonClick(runner)}
+                        >
+                          <i className={`bx ${selectedRunner === runner?.runnerId ? "bx-check" : "bx-block"}`}></i>
+                        </Button>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           </div>
           <div className="hstack gap-2 justify-content-end">
             <button

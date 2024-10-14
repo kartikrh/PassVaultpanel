@@ -15,7 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
+import { ChangeSessionResult } from "../../components/Model/ChangeSessionResult";
 import { Tooltip } from "antd";
 import SetResultModal from "./SetResultModal";
 import CancelModal from "./CancelModal";
@@ -188,6 +188,8 @@ const Index = () => {
   };
   const getStatusText = (status) => {
     switch (status) {
+      case 0:
+        return "NotOpen";
       case 1:
         return "Open";
       case 2:
@@ -200,8 +202,6 @@ const Index = () => {
         return "Settled";
       case 6:
         return "Cancel";
-      case 7:
-        return "NotOpen";
       default:
         return "Unknown";
     }
@@ -434,7 +434,7 @@ const Index = () => {
             setIsSearch={setIsSearch}
           />
           {resultModelVisible && (
-            <ChangeMarketResultModel
+            <ChangeSessionResult
               resultModelVisible={resultModelVisible}
               setResultModelVisible={setResultModelVisible}
               handleChange={handleChangeResult}
