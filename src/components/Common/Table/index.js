@@ -299,6 +299,7 @@ const Index = forwardRef(
     };
 
     const handleSearchFilter = () => {
+
       if (tableElement.title === "Tabs") {
         const updatedData = data.filter((val) => {
           const found = Object.values(val).some((value) => {
@@ -309,6 +310,7 @@ const Index = forwardRef(
           });
           return found === true;
         });
+
         if (searchTerm) {
           setFilteredData(updatedData);
           setTotal(updatedData.length);
@@ -316,17 +318,31 @@ const Index = forwardRef(
           setTotal(data.length);
           setFilteredData(data);
         }
-      } else if (tableElement.title === "Import Events") {
+      } else if (tableElement.title === "Auto Events") {
         const updatedData = dataSource.filter((val) => {
-          const first = Object.values(val);
-          const firstObject = first[0];
-          const found = Object.values(firstObject).some((value) => {
-            if (typeof value === "string" || value instanceof String) {
-              return value.toLowerCase().includes(searchTerm.toLowerCase());
+          const marketIDFlag = val.marketID ? true : false; // Set the flag if `marketID` exists
+          if(marketIDFlag)
+            {
+              const found = Object.values(val).some((value) => {
+                if (typeof value === "string" || value instanceof String) {
+                  return value.toLowerCase().includes(searchTerm.toLowerCase());
+                }
+                return false;
+              });
+              return found === true;
+            
+          }
+          else{
+              const first = Object.values(val);
+              const firstObject = first[0];
+              const found = Object.values(firstObject).some((value) => {
+                if (typeof value === "string" || value instanceof String) {
+                  return value.toLowerCase().includes(searchTerm.toLowerCase());
+                }
+                return false;
+              });
+              return found === true;
             }
-            return false;
-          });
-          return found === true;
         });
         if (searchTerm === "") {
           setTotal(dataSource.length);
