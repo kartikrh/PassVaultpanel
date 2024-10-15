@@ -165,7 +165,7 @@ export const MarketTemplateFileds = [
     {
         name: "actionType",
         label: "Action Type",
-        options: [{ label: "Select Action Type", value: "0" }, { label: "winClose", value: "1" }, { label: "winCloseCancel", value: "2" }],
+        options: [{ label: "Select Action Type", value: "0" }, { label: "winClose", value: "1" }, { label: "winCloseCancel", value: "2" }, { label: "winMustClose", value: "3" }, { label: "winMustCloseCancel", value: "4" }],
         type: SELECT,
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
