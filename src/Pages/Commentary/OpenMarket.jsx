@@ -103,7 +103,7 @@ export const OpenMarket = () => {
     };
 
     useEffect(() => {
-        const storedCategories = sessionStorage.getItem('selectedCategories');
+        const storedCategories = localStorage.getItem(`selectedCategories_${commentaryId}`);
         if (storedCategories) {
             const parsedCategories = JSON.parse(storedCategories);
             setSelectedCategories(parsedCategories);
@@ -112,7 +112,7 @@ export const OpenMarket = () => {
 
     const handleCategoryChange = (selectedOptions) => {
         setSelectedCategories(selectedOptions);
-        sessionStorage.setItem('selectedCategories', JSON.stringify(selectedOptions));
+        localStorage.setItem(`selectedCategories_${commentaryId}`, JSON.stringify(selectedOptions));
     };
 
     const handleValueChange = (record, key, value) => {
@@ -322,7 +322,7 @@ export const OpenMarket = () => {
 
     const fetchTableData = async (commentaryId) => {
         await axiosInstance
-            .post("/admin/eventMarket/marketListByCId", { commentaryId })
+            .post("/admin/eventMarket/marketListByCIdV1", { commentaryId })
             .then((response) => {
                 if (response?.result) {
                     const teamsObj = {}
@@ -909,7 +909,7 @@ export const OpenMarket = () => {
                                         <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
                                             <Button
                                                 color="primary"
-                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
+                                                // style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
                                                 className="table-header-button"
                                                 onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
                                                 disabled={selectedCategories.length === 0}
