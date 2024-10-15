@@ -31,7 +31,7 @@ const Index = () => {
   const [competitions, setCompetitions] = useState([]);
   const [commentary, setCommentary] = useState([]);
   const [resModelVisible, setResModelVisible] = useState(false);
-  const [resBodyData, setResBodyData] = useState(null);
+  const [resBodyData, setResBodyData] = useState({});
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
@@ -152,6 +152,75 @@ const Index = () => {
   //table columns
   const columns = [
     {
+      title: "Request Body",
+      dataIndex: "requestBody",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+            </span>
+          ));
+        return <div 
+        onClick={() => {
+                  setReqModelVisible(true);
+                  setReqBodyData({requestBody :record?.requestBody,id:record?.id,
+                    eventName:record?.eventName,
+                    eventRefId:record?.eventRefId
+                    ,createdDate:record?.createdDate});
+                }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis',
+          cursor: "pointer" 
+        }}>{logItems}</div>;
+      },
+      key: "requestBody",
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
+      title: "Response",
+      dataIndex: "response",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+            </span>
+          ));
+        return <div 
+        onClick={() => {
+                  setResModelVisible(true);
+                  setResBodyData({response :record?.response,id:record?.id,
+                      eventName:record?.eventName,
+                      eventRefId:record?.eventRefId
+                      ,createdDate:record?.createdDate}
+                  );
+                }}
+        style={{ 
+          display: 'inline-block', 
+          maxWidth: '400px',
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          cursor: "pointer"
+        }}>{logItems}</div>;
+      },
+      key: "response",
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
       title: "Date",
       dataIndex: "createdDate",
       render: (text, record) => (
@@ -200,68 +269,6 @@ const Index = () => {
       key: "createdBy",
       sort: true,
       style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Request Body",
-      dataIndex: "requestBody",
-      render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-            </span>
-          ));
-        return <div 
-        onClick={() => {
-                  setReqModelVisible(true);
-                  setReqBodyData(record?.requestBody);
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis',
-          cursor: "pointer" 
-        }}>{logItems}</div>;
-      },
-      key: "requestBody",
-      sort: true,
-      style: { width: "20%" },
-    },
-    {
-      title: "Response",
-      dataIndex: "response",
-      render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-            </span>
-          ));
-        return <div 
-        onClick={() => {
-                  setResModelVisible(true);
-                  setResBodyData(record?.response);
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          cursor: "pointer"
-        }}>{logItems}</div>;
-      },
-      key: "response",
-      sort: true,
-      style: { width: "20%" },
     },
   ];
   //elements required
