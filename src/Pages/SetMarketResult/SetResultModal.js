@@ -65,7 +65,7 @@ const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
                   <td>{data.competitionName}</td>
                   <td>{data.eventName}</td>
                   <td>{data.marketName}</td>
-                  <td>{data.result}</td>
+                  <td className="text-center">{data.resultRunner}</td>
                 </tr>
               </tbody>
             </table>
