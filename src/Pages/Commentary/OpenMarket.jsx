@@ -167,12 +167,12 @@ export const OpenMarket = () => {
                     // Check if the key is a runner-specific property
                     const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize', 'status'];
 
-                    if (runnerProperties.includes(key) && updatedMarket.runner && updatedMarket.runner.length > 0) {
-                        // Update runner-level property
-                        updatedMarket.runner[0] = {
-                            ...updatedMarket.runner[0],
+                    if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
+                        // Update runner-level property for all runners
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
                             [key]: value
-                        };
+                        }));
                     } else {
                         // Update market-level property
                         updatedMarket[key] = value;
@@ -188,17 +188,23 @@ export const OpenMarket = () => {
             });
         });
     };
+
     const handleMultiRunnerUpdate = (updatedMarket) => {
         const indexOfData = data.findIndex(i => i.marketId === updatedMarket.marketId);
         if (indexOfData !== -1) {
             setData(prev => [
                 ...prev.slice(0, indexOfData),
-                updatedMarket,
+                {
+                    ...updatedMarket,
+                    // Ensure runner remains an array
+                    runner: Array.isArray(updatedMarket.runner) ? updatedMarket.runner : [updatedMarket.runner]
+                },
                 ...prev.slice(indexOfData + 1),
             ]);
             setHasUnsavedChanges(true);
         }
     };
+
 
     const handleAction = async ({ changeIn, key, value, action }) => {
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
@@ -322,47 +328,62 @@ export const OpenMarket = () => {
     const formatSocketDataForState = (responseData) => {
         if (!isEmpty(responseData)) {
             const newMarketData = {};
+
             responseData.forEach(eventMarketString => {
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
+                    // Ensure the runner is always treated as an array
+                    let runners = Array.isArray(eventMarket.runner) ? eventMarket.runner.map(runner => ({
+                        runnerId: runner.runnerId,
+                        runnerName: runner.runner,
+                        line: runner.line,
+                        overRate: runner.overRate,
+                        underRate: runner.underRate,
+                        status: +runner.status, // Ensure status is a number
+                        backPrice: runner.backPrice,
+                        layPrice: runner.layPrice,
+                        backSize: runner.backSize,
+                        laySize: runner.laySize
+                    })) : [{
+                        runnerId: eventMarket.runnerId,
+                        runnerName: eventMarket.runner,
+                        line: eventMarket.line,
+                        overRate: eventMarket.overRate,
+                        underRate: eventMarket.underRate,
+                        status: +eventMarket.status, // Ensure status is a number
+                        backPrice: eventMarket.backPrice,
+                        layPrice: eventMarket.layPrice,
+                        backSize: eventMarket.backSize,
+                        laySize: eventMarket.laySize
+                    }];
+
                     let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
                         isNewSocketData: true,
                         margin: parseFloat(eventMarket.margin).toFixed(2), // Preserve margin formatting
-                        runner: [{
-                            runnerId: eventMarket.runnerId,
-                            runnerName: eventMarket.runner,
-                            line: eventMarket.line,
-                            overRate: eventMarket.overRate,
-                            underRate: eventMarket.underRate,
-                            status: +eventMarket.status, // Ensure status is a number
-                            backPrice: eventMarket.backPrice,
-                            layPrice: eventMarket.layPrice,
-                            backSize: eventMarket.backSize,
-                            laySize: eventMarket.laySize
-                        }]
+                        runner: runners // Ensure runner is always an array
                     };
 
-                    // Ensure status is correctly set for both market and runner
-                    updatedMarketData.status = +eventMarket.status;
+                    // Remove redundant fields from the top level after mapping runner
+                    const redundantFields = ['runnerId', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    redundantFields.forEach(field => delete updatedMarketData[field]);
 
-                    // Remove redundant fields from the top level
-                    const runnerFields = ['runnerId', 'runner', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
-                    runnerFields.forEach(field => delete updatedMarketData[field]);
-
+                    // Ensure that the new data replaces old data in the market
                     newMarketData[eventMarket.marketId] = updatedMarketData;
                 }
             });
 
             setData(prevData => {
+                // Replace the existing market data with the new market data from the socket
                 const updatedData = prevData.map(market => {
                     const newMarket = newMarketData[market.marketId];
                     if (newMarket) {
                         return {
                             ...market,
                             ...newMarket,
-                            runner: newMarket.runner
+                            // Ensure runner remains an array
+                            runner: Array.isArray(newMarket.runner) ? newMarket.runner : [newMarket.runner]
                         };
                     }
                     return market;
@@ -377,7 +398,8 @@ export const OpenMarket = () => {
                     setHasUnsavedChanges(false);
                 }, 3000);
 
-                return _.orderBy(finalDataToSet, ['marketId'], ['asc']);
+                const sortedData = _.orderBy(finalDataToSet, ['marketId'], ['asc']);
+                return sortedData;
             });
         }
     };
