@@ -21,7 +21,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                 />
             )}
             {multiRunnerMarkets.length > 0 && (
-                <div>
+                <div className='overflow-scroll'>
                     {multiRunnerMarkets.map(market => (
                         <MultiRunnerMarket
                             key={market.marketId}

@@ -10,6 +10,7 @@ import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { isEmpty } from 'lodash';
 import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
+import EventMarketModal from './CommentaryModels/CustomEventModal';
 
 const MARKET_STATUS = {
     0: "NotOpen",
@@ -20,6 +21,7 @@ const MARKET_STATUS = {
 
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     document.title = "commentaryMarkets";
     const [marketData, setMarketData] = useState({
         teamAndPlayers: [],
@@ -35,9 +37,9 @@ export const CreateEventMarket = () => {
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
-    useEffect(() => {
-        console.log({ selectedMarkets, processedMarkets })
-    })
+    // useEffect(() => {
+    //     console.log({ selectedMarkets, processedMarkets })
+    // })
     useEffect(() => {
         fetchData(commentaryId);
     }, []);
@@ -83,7 +85,7 @@ export const CreateEventMarket = () => {
             }));
             return;
         }
-    
+
         setSelectedMarkets(prev => {
             const sectionSelections = prev[sectionKey] || [];
             const allSelected = sectionSelections.length > 0 && sectionSelections.every(Boolean);
@@ -113,19 +115,19 @@ export const CreateEventMarket = () => {
             overRate: null,
             underRate: null,
         }
-        if(!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
-        const roundedLine = Math.floor(parseFloat(dataObj?.line));
-        const thresholdValue = Math.floor(roundedLine) + 0.5;
-        const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
-        dataToSend = {
-            ...dataToSend,
-            backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
-            layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
-            backSize: parseFloat(dataObj?.backSize) || 100,
-            laySize: parseFloat(dataObj?.laySize) || 100,
-            overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
-            underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
-        }
+        if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
+            const roundedLine = Math.floor(parseFloat(dataObj?.line));
+            const thresholdValue = Math.floor(roundedLine) + 0.5;
+            const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+            dataToSend = {
+                ...dataToSend,
+                backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
+                layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+                backSize: parseFloat(dataObj?.backSize) || 100,
+                laySize: parseFloat(dataObj?.laySize) || 100,
+                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+            }
         }
         return dataToSend;
     };
@@ -165,7 +167,7 @@ export const CreateEventMarket = () => {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
-                    processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
+                    processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
                 });
             }
         });
@@ -230,9 +232,9 @@ export const CreateEventMarket = () => {
     const validateMarketRow = (market) => {
         const requiredFields = ['marketName', 'margin', 'status'];
         const requiredRunnerFields = ['runner', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
-        
+
         const errors = [];
-    
+
         requiredFields.forEach(field => {
             if (!market[field]) {
                 errors.push(`${field}`);
@@ -249,7 +251,7 @@ export const CreateEventMarket = () => {
         } else {
             errors.push('Runner');
         }
-    
+
         return errors;
     };
 
@@ -276,7 +278,6 @@ export const CreateEventMarket = () => {
     };
     const processMarketAndRunners = (market, teamId, keyPrefix, processedMarketsObj) => {
         const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
-        const fullKey = `${baseKey}_##_${market.marketName || market.templateName}`;
 
         if (!processedMarketsObj[baseKey]) {
             processedMarketsObj[baseKey] = [];
@@ -302,11 +303,6 @@ export const CreateEventMarket = () => {
             }];
         }
 
-        // Apply generateOverUnder to each runner
-        // const updatedRunners = market.runners.map(runner =>
-        //     generateOverUnder({ ...runner, margin: parseFloat(market.margin) || 3 })
-        // );
-
         processedMarketsObj[baseKey].push({
             ...market,
             teamId,
@@ -329,7 +325,7 @@ export const CreateEventMarket = () => {
 
     const processOnlyOverMarkets = (market, teams, maxOvers, processedMarketsObj) => {
         // const startOver = parseInt(market.over);
-        const startOver = 1;
+        const startOver = 2;
         teams.forEach(team => {
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 const specialMarketName = `ONLY ${currentOver} OVER - ${team.shortName}`;
@@ -406,6 +402,28 @@ export const CreateEventMarket = () => {
             })) || []
         };
     };
+    const generateExtraMarketFromTemplate = (template, team, commentary) => {
+        return {
+            eventMarketId: 0,
+            isCreate: true,
+            status: "1",
+            margin: template.margin,
+            data: "",
+            playerId: null,
+            ...template,
+            commentaryId: commentary.commentaryId,
+            eventRefId: commentary.eventRefId,
+            marketName: `${template.templateName} - ${team.shortName}`,
+            teamId: null,
+            inningsId: 1,
+            isAllow: template.isDefaultBetAllowed || false,
+            index: 0,
+            runners: template.runners?.map(runner => ({
+                ...runner,
+                runnerId: runner.runnerId || "0"
+            })) || []
+        };
+    };
 
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
         setProcessedMarkets(prevMarkets => {
@@ -415,10 +433,10 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
             // const updatedRunners = [...updatedMarket.runners];
             if (!updatedMarket.runners) {
-              updatedMarket.runners = [];
+                updatedMarket.runners = [];
             }
             if (!updatedMarket.runners[runnerIndex]) {
-              updatedMarket.runners[runnerIndex] = {};
+                updatedMarket.runners[runnerIndex] = {};
             }
             const updatedRunners = [...updatedMarket.runners];
 
@@ -469,9 +487,9 @@ export const CreateEventMarket = () => {
                 render: (text, record, index) => {
                     const runner = record.runners && record.runners[0];
                     return column.render(
-                      runner ? runner[column.key] : null,
-                      runner || {},
-                      (key, value) => handleRunnerValueChange(record, 0, key, value)
+                        runner ? runner[column.key] : null,
+                        runner || {},
+                        (key, value) => handleRunnerValueChange(record, 0, key, value)
                     );
                 }
             }))
@@ -886,8 +904,8 @@ export const CreateEventMarket = () => {
         },
     ];
     const MarketDetailsDate = commentaryDetails?.eventDate
-    ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
-    : "";
+        ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
+        : "";
     return (
         <React.Fragment>
             <div className="page-content" >
@@ -903,17 +921,24 @@ export const CreateEventMarket = () => {
                                     <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
                                         <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
                                         <Button color="primary" className="btn text-right" onClick={handleSave} > Save </Button>
+                                        <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button>
                                     </Col>
                                 </Row>
                                 <Row className="g-2 mb-3">
-                                  {commentaryDetails && (
-                                    <Col className="col-sm-auto">
-                                       <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
-                                       <div>{`Ref: ${commentaryDetails?.eventRefId} [
+                                    {commentaryDetails && (
+                                        <Col className="col-sm-auto">
+                                            <EventMarketModal
+                                                isOpen={isModalOpen}
+                                                onClose={() => setIsModalOpen(false)}
+                                                apiResponse={marketData}
+                                                onSubmit={() => { console.log() }}
+                                            />
+                                            <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
+                                            <div>{`Ref: ${commentaryDetails?.eventRefId} [
                                             ${MarketDetailsDate}
                                         ]`}</div>
-                                    </Col>
-                                  )}
+                                        </Col>
+                                    )}
                                 </Row>
                                 {renderMainSections()}
                             </CardBody>

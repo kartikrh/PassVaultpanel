@@ -8,20 +8,14 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
-import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
-import MultiRunnerMarket from "./MultiRunnerMarket";
 import OpenMarketCategories from "./OpenMarketCategoryRendering";
 
-const tableElement = {
-    title: "Open Market",
-    displayTitle: true
-};
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -36,6 +30,7 @@ export const OpenMarket = () => {
     const [isSocketConnected, setIsSocketConnected] = useState(false)
     const [openAccordions, setOpenAccordions] = useState(["Session"]);
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const [debouncedLineRatio, setDebouncedLineRatio] = useState(lineRatio);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -50,6 +45,33 @@ export const OpenMarket = () => {
             selectedCategories.some(category => category.value === item.marketTypeCategoryId)
         );
     };
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedLineRatio(lineRatio);
+        }, 1000);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [lineRatio]);
+
+    const saveLineRatio = async (payload) => {
+        try {
+            await axiosInstance.post("/admin/commentary/updatLineRatio", payload);
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
+    };
+
+    useEffect(() => {
+        if (debouncedLineRatio) {
+            const payload = {
+                commentaryId,
+                lineRatio: +debouncedLineRatio,
+            };
+            saveLineRatio(payload)
+        }
+    }, [debouncedLineRatio]);
 
     const fetchConfigAll = async () => {
         setIsLoading(true);
@@ -81,23 +103,43 @@ export const OpenMarket = () => {
     const formatDataBeforeSend = (dataToChange = []) => {
         return dataToChange.map(record => {
             let workingRecord = _.clone(record);
-            workingRecord.runner = workingRecord.runner.map(runner => ({
-                ...runner,
-                line: +runner.line,
-                overRate: +runner.overRate,
-                underRate: +runner.underRate,
-                backPrice: +runner.backPrice,
-                backSize: +(runner.backSize || 100),
-                layPrice: +runner.layPrice,
-                laySize: +(runner.laySize || 100),
-                status: +runner.status,
-                runnerId: +runner.runnerId,
-            }));
+            // Check if runner exists and is an array
+            if (Array.isArray(workingRecord.runner)) {
+                workingRecord.runner = workingRecord.runner.map(runner => ({
+                    ...runner,
+                    line: +(runner.line || 0),
+                    overRate: +(runner.overRate || 0),
+                    underRate: +(runner.underRate || 0),
+                    backPrice: +(runner.backPrice || 0),
+                    backSize: +(runner.backSize || 100),
+                    layPrice: +(runner.layPrice || 0),
+                    laySize: +(runner.laySize || 100),
+                    status: +(runner.status || 0),
+                    runnerId: +(runner.runnerId || 0),
+                }));
+            } else if (workingRecord.runner) {
+                // If runner exists but is not an array, convert it to an array
+                workingRecord.runner = [{
+                    ...workingRecord.runner,
+                    line: +(workingRecord.runner.line || 0),
+                    overRate: +(workingRecord.runner.overRate || 0),
+                    underRate: +(workingRecord.runner.underRate || 0),
+                    backPrice: +(workingRecord.runner.backPrice || 0),
+                    backSize: +(workingRecord.runner.backSize || 100),
+                    layPrice: +(workingRecord.runner.layPrice || 0),
+                    laySize: +(workingRecord.runner.laySize || 100),
+                    status: +(workingRecord.runner.status || 0),
+                    runnerId: +(workingRecord.runner.runnerId || 0),
+                }];
+            } else {
+                workingRecord.runner = [];
+            }
+
             return {
                 ...workingRecord,
-                status: +workingRecord.status,
-                lineRatio: +workingRecord.lineRatio,
-                margin: +workingRecord.margin,
+                status: +(workingRecord.status || 0),
+                lineRatio: +(workingRecord.lineRatio || 0),
+                margin: +(workingRecord.margin || 0),
             };
         });
     };
@@ -117,37 +159,35 @@ export const OpenMarket = () => {
 
     const handleValueChange = (record, key, value) => {
         setHasUnsavedChanges(true);
-        const indexOfData = data.findIndex(i => i.marketId === record.marketId);
-        if (indexOfData !== -1) {
-            let updatedRecord = { ...record };
+        setData(prevData => {
+            return prevData.map(market => {
+                if (market.marketId === record.marketId) {
+                    let updatedMarket = { ...market };
 
-            if (record.runner && record.runner.length === 1) {
-                // Single runner market
-                updatedRecord.runner = [{
-                    ...record.runner[0],
-                    [key]: value
-                }];
-                if (key === 'line' || key === 'margin') {
-                    updatedRecord.runner[0] = generateOverUnder(updatedRecord.runner[0]);
+                    // Check if the key is a runner-specific property
+                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize', 'status'];
+
+                    if (runnerProperties.includes(key) && updatedMarket.runner && updatedMarket.runner.length > 0) {
+                        // Update runner-level property
+                        updatedMarket.runner[0] = {
+                            ...updatedMarket.runner[0],
+                            [key]: value
+                        };
+                    } else {
+                        // Update market-level property
+                        updatedMarket[key] = value;
+                    }
+
+                    if (key === 'line' || key === 'margin') {
+                        updatedMarket = generateOverUnder(updatedMarket);
+                    }
+
+                    return updatedMarket;
                 }
-            } else {
-                // Multi-runner market or market-level change
-                updatedRecord[key] = value;
-                if (key === 'line' || key === 'margin') {
-                    updatedRecord = generateOverUnder(updatedRecord);
-                }
-            }
-
-            setData(prev => [
-                ...prev.slice(0, indexOfData),
-                updatedRecord,
-                ...prev.slice(indexOfData + 1),
-            ]);
-
-            // Remove the debouncedSave call from here
-        }
+                return market;
+            });
+        });
     };
-
     const handleMultiRunnerUpdate = (updatedMarket) => {
         const indexOfData = data.findIndex(i => i.marketId === updatedMarket.marketId);
         if (indexOfData !== -1) {
@@ -160,17 +200,35 @@ export const OpenMarket = () => {
         }
     };
 
-    const handleAction = ({ changeIn, key, value, action }) => {
+    const handleAction = async ({ changeIn, key, value, action }) => {
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
-            if (key === "status" && value === OPEN_VALUE) {
-                return record.status === SUSPEND_VALUE;
+            if (key === "status" && value === INACTIVE_VALUE) {
+                return record.status !== INACTIVE_VALUE;
             }
             return !_.isEqual(+record[key], +value);
         }).map(record => ({ ...record, [key]: value }));
 
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
-            saveData({ dataToSave: dataToUpdate, action });
+            await saveData({ dataToSave: dataToUpdate, action });
+
+            // Update local state after successful API call
+            setData(prevData =>
+                prevData.map(market => {
+                    const updatedMarket = dataToUpdate.find(u => u.marketId === market.marketId);
+                    if (updatedMarket) {
+                        return {
+                            ...market,
+                            [key]: value,
+                            runner: market.runner.map(runner => ({
+                                ...runner,
+                                [key]: key === 'status' ? value : runner[key]
+                            }))
+                        };
+                    }
+                    return market;
+                })
+            );
         } else {
             dispatch(updateToastData({ data: "No data to update based on current filter", title: "Update Skipped", type: WARNING }));
         }
@@ -201,39 +259,36 @@ export const OpenMarket = () => {
 
     const saveData = async ({ dataToSave, action }) => {
         setIsLoading(true);
-        await axiosInstance
-            .post(`/admin/eventMarket/updateMarketRate`, {
+        try {
+            const response = await axiosInstance.post(`/admin/eventMarket/updateMarketRateV1`, {
                 eventMarket: dataToSave,
                 action
-            })
-            .then((response) => {
-                if (response?.result) {
-                    const teamsObj = {}
-                    response?.result?.teams?.forEach(team => { teamsObj[team?.teamId] = team?.teamName })
-                    const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
-                    setTeams(teamsObj)
-                    setData(formattedData.data);
-                    setHasUnsavedChanges(false);
-                }
-                setIsLoading(false);
-                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-                    const endPoint = response?.result?.callPrediction?.endPoint;
-                    dispatch(
-                        updateToastData({
-                            data: `${endPoint}\n${predictionMessage}`,
-                            title: "Call Prediction",
-                            type: WARNING,
-                        })
-                    );
-                } else {
-                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-                }
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
+
+            if (response?.result) {
+                const updatedData = response.result.marketList || [];
+                setData(prevData =>
+                    prevData.map(market => {
+                        const updatedMarket = updatedData.find(u => u.marketId === market.marketId);
+                        if (updatedMarket) {
+                            return {
+                                ...market,
+                                ...updatedMarket,
+                                runner: updatedMarket.runner || market.runner
+                            };
+                        }
+                        return market;
+                    })
+                );
+                setHasUnsavedChanges(false);
+            }
+
+            setIsLoading(false);
+            // Handle success message and other logic...
+        } catch (error) {
+            setIsLoading(false);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
     };
 
     const handleLineRatio = (value) => {
@@ -273,40 +328,47 @@ export const OpenMarket = () => {
                     let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
-                        isNewSocketData: true
+                        isNewSocketData: true,
+                        margin: parseFloat(eventMarket.margin).toFixed(2), // Preserve margin formatting
+                        runner: [{
+                            runnerId: eventMarket.runnerId,
+                            runnerName: eventMarket.runner,
+                            line: eventMarket.line,
+                            overRate: eventMarket.overRate,
+                            underRate: eventMarket.underRate,
+                            status: +eventMarket.status, // Ensure status is a number
+                            backPrice: eventMarket.backPrice,
+                            layPrice: eventMarket.layPrice,
+                            backSize: eventMarket.backSize,
+                            laySize: eventMarket.laySize
+                        }]
                     };
 
-                    if (Array.isArray(eventMarket.runner)) {
-                        if (eventMarket.runner.length === 1) {
-                            // Single runner market
-                            updatedMarketData = {
-                                ...updatedMarketData,
-                                ...eventMarket.runner[0],
-                                runner: eventMarket.runner // Keep the original runner array
-                            };
-                        } else if (eventMarket.runner.length > 1) {
-                            // Multi-runner market
-                            updatedMarketData.runner = eventMarket.runner.map(runner =>
-                                Array.isArray(runner) ? runner[0] : runner
-                            );
-                        }
-                    }
+                    // Ensure status is correctly set for both market and runner
+                    updatedMarketData.status = +eventMarket.status;
+
+                    // Remove redundant fields from the top level
+                    const runnerFields = ['runnerId', 'runner', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    runnerFields.forEach(field => delete updatedMarketData[field]);
 
                     newMarketData[eventMarket.marketId] = updatedMarketData;
                 }
             });
 
-            setData((prevData) => {
-                const prevMarketData = {};
-                prevData.forEach(market => { prevMarketData[market.marketId] = market });
+            setData(prevData => {
+                const updatedData = prevData.map(market => {
+                    const newMarket = newMarketData[market.marketId];
+                    if (newMarket) {
+                        return {
+                            ...market,
+                            ...newMarket,
+                            runner: newMarket.runner
+                        };
+                    }
+                    return market;
+                });
 
-                const updatedMarketData = {
-                    ...prevMarketData,
-                    ...newMarketData
-                };
-
-                const finalDataToSet = Object.values(updatedMarketData)
-                    .filter(e => statusListToInclude.includes(e.status));
+                const finalDataToSet = updatedData.filter(e => statusListToInclude.includes(e.status));
 
                 setTimeout(() => {
                     setData((storedData) =>
@@ -333,7 +395,7 @@ export const OpenMarket = () => {
                     setTeams(teamsObj)
                     setData(formattedData.data);
                     setCategories(newCategoryObj)
-                    setLineRatio(formattedData.lineRatio)
+                    // setLineRatio(formattedData.lineRatio)
                 }
             })
             .catch((error) => {
@@ -347,7 +409,10 @@ export const OpenMarket = () => {
         await axiosInstance
             .post("/admin/commentary/getEventDetailsByCId", { commentaryId })
             .then((response) => {
-                if (response?.result?.es) setCommentaryInfo(response.result.es)
+                if (response?.result?.es) {
+                    setCommentaryInfo(response.result.es)
+                    setLineRatio(response.result.es?.lr)
+                }
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -363,7 +428,7 @@ export const OpenMarket = () => {
     };
 
     const updateLineAndDependency = (record, newValue) => {
-        const updatedRecord = { ...record };
+        let updatedRecord = { ...record };
         if (record.runner && record.runner.length === 1) {
             // Single runner market
             updatedRecord.runner = [{
@@ -742,35 +807,6 @@ export const OpenMarket = () => {
                 break;
         }
     }
-    const renderMarket = (market) => {
-        if (market.runner && market.runner.length > 1) {
-            return (
-                <MultiRunnerMarket
-                    key={market.marketId}
-                    market={market}
-                    onUpdate={handleMultiRunnerUpdate}
-                    teams={teams}
-                    loadingTrue={() => setIsLoading(true)}
-                    loadingFalse={() => setIsLoading(false)}
-                />
-            );
-        } else {
-            // Render single-runner market
-            const singleRunnerMarket = market.runner && market.runner.length === 1
-                ? { ...market, ...market.runner[0] }
-                : market;
-            return (
-                <ListingElement
-                    key={market.marketId}
-                    columns={columns}
-                    dataSource={[singleRunnerMarket]}
-                    tableElement={tableElement}
-                    tableClassName="open-market-table-class"
-                    hideHeader={true}
-                />
-            );
-        }
-    };
 
     const toggleAccordion = (id) => {
         setOpenAccordions((prevOpenAccordions) => {
