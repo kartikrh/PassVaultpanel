@@ -36,6 +36,7 @@ export const OpenMarket = () => {
     const [isSocketConnected, setIsSocketConnected] = useState(false)
     const [openAccordions, setOpenAccordions] = useState(["Session"]);
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const [debouncedLineRatio, setDebouncedLineRatio] = useState(lineRatio);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -50,6 +51,33 @@ export const OpenMarket = () => {
             selectedCategories.some(category => category.value === item.marketTypeCategoryId)
         );
     };
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedLineRatio(lineRatio);
+        }, 1000);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [lineRatio]);
+
+    const saveLineRatio = async (payload) => {
+        try {
+            await axiosInstance.post("/admin/commentary/updatLineRatio", payload);
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
+    };
+
+    useEffect(() => {
+        if (debouncedLineRatio) {
+            const payload = {
+                commentaryId,
+                lineRatio: +debouncedLineRatio,
+            };
+            saveLineRatio(payload)
+        }
+    }, [debouncedLineRatio]);
 
     const fetchConfigAll = async () => {
         setIsLoading(true);
@@ -333,7 +361,7 @@ export const OpenMarket = () => {
                     setTeams(teamsObj)
                     setData(formattedData.data);
                     setCategories(newCategoryObj)
-                    setLineRatio(formattedData.lineRatio)
+                    // setLineRatio(formattedData.lineRatio)
                 }
             })
             .catch((error) => {
@@ -347,7 +375,10 @@ export const OpenMarket = () => {
         await axiosInstance
             .post("/admin/commentary/getEventDetailsByCId", { commentaryId })
             .then((response) => {
-                if (response?.result?.es) setCommentaryInfo(response.result.es)
+                if (response?.result?.es) {
+                    setCommentaryInfo(response.result.es)
+                    setLineRatio(response.result.es?.lr)
+                }
                 setIsLoading(false);
             })
             .catch((error) => {
