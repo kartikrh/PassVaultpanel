@@ -37,9 +37,9 @@ export const CreateEventMarket = () => {
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
-    useEffect(() => {
-        console.log({ selectedMarkets, processedMarkets })
-    })
+    // useEffect(() => {
+    //     console.log({ selectedMarkets, processedMarkets })
+    // })
     useEffect(() => {
         fetchData(commentaryId);
     }, []);
@@ -85,7 +85,7 @@ export const CreateEventMarket = () => {
             }));
             return;
         }
-    
+
         setSelectedMarkets(prev => {
             const sectionSelections = prev[sectionKey] || [];
             const allSelected = sectionSelections.length > 0 && sectionSelections.every(Boolean);
@@ -167,7 +167,7 @@ export const CreateEventMarket = () => {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
-                    processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
+                    processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
                 });
             }
         });
@@ -278,7 +278,6 @@ export const CreateEventMarket = () => {
     };
     const processMarketAndRunners = (market, teamId, keyPrefix, processedMarketsObj) => {
         const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
-        const fullKey = `${baseKey}_##_${market.marketName || market.templateName}`;
 
         if (!processedMarketsObj[baseKey]) {
             processedMarketsObj[baseKey] = [];
@@ -304,11 +303,6 @@ export const CreateEventMarket = () => {
             }];
         }
 
-        // Apply generateOverUnder to each runner
-        // const updatedRunners = market.runners.map(runner =>
-        //     generateOverUnder({ ...runner, margin: parseFloat(market.margin) || 3 })
-        // );
-
         processedMarketsObj[baseKey].push({
             ...market,
             teamId,
@@ -331,7 +325,7 @@ export const CreateEventMarket = () => {
 
     const processOnlyOverMarkets = (market, teams, maxOvers, processedMarketsObj) => {
         // const startOver = parseInt(market.over);
-        const startOver = 1;
+        const startOver = 2;
         teams.forEach(team => {
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 const specialMarketName = `ONLY ${currentOver} OVER - ${team.shortName}`;
@@ -398,6 +392,28 @@ export const CreateEventMarket = () => {
             commentaryId: commentary.commentaryId,
             eventRefId: commentary.eventRefId,
             marketName: template.templateName,
+            teamId: null,
+            inningsId: 1,
+            isAllow: template.isDefaultBetAllowed || false,
+            index: 0,
+            runners: template.runners?.map(runner => ({
+                ...runner,
+                runnerId: runner.runnerId || "0"
+            })) || []
+        };
+    };
+    const generateExtraMarketFromTemplate = (template, team, commentary) => {
+        return {
+            eventMarketId: 0,
+            isCreate: true,
+            status: "1",
+            margin: template.margin,
+            data: "",
+            playerId: null,
+            ...template,
+            commentaryId: commentary.commentaryId,
+            eventRefId: commentary.eventRefId,
+            marketName: `${template.templateName} - ${team.shortName}`,
             teamId: null,
             inningsId: 1,
             isAllow: template.isDefaultBetAllowed || false,
@@ -905,12 +921,12 @@ export const CreateEventMarket = () => {
                                     <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
                                         <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
                                         <Button color="primary" className="btn text-right" onClick={handleSave} > Save </Button>
+                                        <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button>
                                     </Col>
                                 </Row>
                                 <Row className="g-2 mb-3">
                                     {commentaryDetails && (
                                         <Col className="col-sm-auto">
-                                            <Button onClick={() => setIsModalOpen(true)}>Add Event Market</Button>
                                             <EventMarketModal
                                                 isOpen={isModalOpen}
                                                 onClose={() => setIsModalOpen(false)}
