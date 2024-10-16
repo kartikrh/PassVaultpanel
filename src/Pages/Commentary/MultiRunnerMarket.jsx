@@ -195,7 +195,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 <tbody className='whitespace-nowrap '>
                     {sortedRunners.map((runner, index) => (
                         <tr key={runner.runnerId}>
-                            <td>{teams[runner.teamId] || `Runner ${runner.runnerId}`}</td>
+                            <td>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runner}`}</td>
                             <td>
                                 <select
                                     className="form-control small-text-fields"
