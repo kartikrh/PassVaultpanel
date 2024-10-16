@@ -10,6 +10,7 @@ import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { isEmpty } from 'lodash';
 import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
+import EventMarketModal from './CommentaryModels/CustomEventModal';
 
 const MARKET_STATUS = {
     0: "NotOpen",
@@ -20,6 +21,7 @@ const MARKET_STATUS = {
 
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     document.title = "commentaryMarkets";
     const [marketData, setMarketData] = useState({
         teamAndPlayers: [],
@@ -113,19 +115,19 @@ export const CreateEventMarket = () => {
             overRate: null,
             underRate: null,
         }
-        if(!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
-        const roundedLine = Math.floor(parseFloat(dataObj?.line));
-        const thresholdValue = Math.floor(roundedLine) + 0.5;
-        const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
-        dataToSend = {
-            ...dataToSend,
-            backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
-            layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
-            backSize: parseFloat(dataObj?.backSize) || 100,
-            laySize: parseFloat(dataObj?.laySize) || 100,
-            overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
-            underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
-        }
+        if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
+            const roundedLine = Math.floor(parseFloat(dataObj?.line));
+            const thresholdValue = Math.floor(roundedLine) + 0.5;
+            const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+            dataToSend = {
+                ...dataToSend,
+                backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
+                layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+                backSize: parseFloat(dataObj?.backSize) || 100,
+                laySize: parseFloat(dataObj?.laySize) || 100,
+                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+            }
         }
         return dataToSend;
     };
@@ -230,9 +232,9 @@ export const CreateEventMarket = () => {
     const validateMarketRow = (market) => {
         const requiredFields = ['marketName', 'margin', 'status'];
         const requiredRunnerFields = ['runner', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
-        
+
         const errors = [];
-    
+
         requiredFields.forEach(field => {
             if (!market[field]) {
                 errors.push(`${field}`);
@@ -249,7 +251,7 @@ export const CreateEventMarket = () => {
         } else {
             errors.push('Runner');
         }
-    
+
         return errors;
     };
 
@@ -415,10 +417,10 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
             // const updatedRunners = [...updatedMarket.runners];
             if (!updatedMarket.runners) {
-              updatedMarket.runners = [];
+                updatedMarket.runners = [];
             }
             if (!updatedMarket.runners[runnerIndex]) {
-              updatedMarket.runners[runnerIndex] = {};
+                updatedMarket.runners[runnerIndex] = {};
             }
             const updatedRunners = [...updatedMarket.runners];
 
@@ -469,9 +471,9 @@ export const CreateEventMarket = () => {
                 render: (text, record, index) => {
                     const runner = record.runners && record.runners[0];
                     return column.render(
-                      runner ? runner[column.key] : null,
-                      runner || {},
-                      (key, value) => handleRunnerValueChange(record, 0, key, value)
+                        runner ? runner[column.key] : null,
+                        runner || {},
+                        (key, value) => handleRunnerValueChange(record, 0, key, value)
                     );
                 }
             }))
@@ -886,8 +888,8 @@ export const CreateEventMarket = () => {
         },
     ];
     const MarketDetailsDate = commentaryDetails?.eventDate
-    ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
-    : "";
+        ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
+        : "";
     return (
         <React.Fragment>
             <div className="page-content" >
@@ -906,14 +908,21 @@ export const CreateEventMarket = () => {
                                     </Col>
                                 </Row>
                                 <Row className="g-2 mb-3">
-                                  {commentaryDetails && (
-                                    <Col className="col-sm-auto">
-                                       <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
-                                       <div>{`Ref: ${commentaryDetails?.eventRefId} [
+                                    {commentaryDetails && (
+                                        <Col className="col-sm-auto">
+                                            <Button onClick={() => setIsModalOpen(true)}>Add Event Market</Button>
+                                            <EventMarketModal
+                                                isOpen={isModalOpen}
+                                                onClose={() => setIsModalOpen(false)}
+                                                apiResponse={marketData}
+                                                onSubmit={() => { console.log() }}
+                                            />
+                                            <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
+                                            <div>{`Ref: ${commentaryDetails?.eventRefId} [
                                             ${MarketDetailsDate}
                                         ]`}</div>
-                                    </Col>
-                                  )}
+                                        </Col>
+                                    )}
                                 </Row>
                                 {renderMainSections()}
                             </CardBody>
