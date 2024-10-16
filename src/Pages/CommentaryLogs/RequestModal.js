@@ -10,8 +10,8 @@ const RequestModal = ({ isOpen, toggle, data }) => {
     const formatDate = (dateStr) => {
       const date = new Date(dateStr);
     
-      // Extract day, day name, and year
-      const day = date.getDate();
+      // Extract month name, day name, and year
+      const month = date.toLocaleString('en-US', { month: 'short' }); // e.g., 'Oct'
       const dayName = date.toLocaleString('en-US', { weekday: 'short' }); // e.g., 'Wed'
       const year = date.getFullYear();
     
@@ -19,8 +19,9 @@ const RequestModal = ({ isOpen, toggle, data }) => {
       const hours = date.getHours().toString().padStart(2, '0'); // Ensure two digits for hours
       const minutes = date.getMinutes().toString().padStart(2, '0'); // Ensure two digits for minutes
     
-      return `${day} ${dayName} ${year} ${hours}:${minutes}`;
+      return `${month} ${dayName} ${year} ${hours}:${minutes}`;
     };
+    
     
     // Function to copy the JSON data
     const handleCopyClick = () => {
