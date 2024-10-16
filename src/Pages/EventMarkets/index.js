@@ -306,11 +306,11 @@ const Index = () => {
   const statusList = [
     {
       statusType: "All",
-      statusId: 0
+      statusId: -1
     },
     {
       statusType: "NotOpen",
-      statusId: 7
+      statusId: 0
     },
     {
       statusType: "Open",
@@ -335,7 +335,7 @@ const Index = () => {
     {
       statusType: "Cancel",
       statusId: 6
-    }
+    },
   ]
 
   const rateSourceList = [
@@ -564,6 +564,11 @@ const Index = () => {
       key: "result",
       style: { width: "5%", textAlign: "center" },
       sort: true,
+      render: (text, record) => {
+        return (record?.marketTypeName?.toLowerCase() === "fancy" || record?.marketTypeName?.toLowerCase() === "line market")
+          ? text
+          : record?.resultRunner;
+      }
     },
     {
       render: (text, record) => (

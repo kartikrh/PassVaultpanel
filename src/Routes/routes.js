@@ -59,6 +59,7 @@ import EventMarkets from "../Pages/EventMarkets";
 import AddEventMarket from "../Pages/EventMarkets/AddEventMarket.jsx";
 import UnsettledMarket from "../Pages/UnsettledMarket";
 import SetMarketResult from "../Pages/SetMarketResult";
+import SetSessionResult from "../Pages/SetSessionResult";
 import Vendor from "../Pages/Vendor";
 import DisplayStatus from "../Pages/DisplayStatus";
 import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
@@ -84,7 +85,7 @@ import AddNews from "../Pages/News/AddNews.jsx";
 import { ShortCommentary } from "../Pages/Commentary/ShortCommentary.js";
 import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
-import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
+import { CreateEventMarket } from "../Pages/Commentary/CreateEventMarket.js";
 import { OpenMarket } from "../Pages/Commentary/OpenMarket.jsx";
 import { CommentaryFeatures } from "../Pages/Commentary/CommentaryFeatures.jsx";
 import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.js";
@@ -113,6 +114,7 @@ import AddSocialMedia from "../Pages/SocialMedia/AddSocialMedia.jsx";
 import SocialMedia from "../Pages/SocialMedia";
 import AddAward from "../Pages/Awards/AddAwards.jsx";
 import Awards from "../Pages/Awards";
+import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -151,6 +153,10 @@ const authProtectedRoutes = [
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
   },
+  {
+    path: "/commentaryMarkets",
+    component: <CreateEventMarket />,
+  },
   { path: "/openMarket", component: <OpenMarket /> },
   { path: "/oddsView", component: <OddsView /> },
   { path: "/autoEvent", component: <ImportMarket /> },
@@ -181,6 +187,7 @@ const authProtectedRoutes = [
   { path: "/marketDataLogs", component: <MarketDataLogs /> },
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
   { path: "/setMarketResult", component: <SetMarketResult /> },
+  { path: "/setSessionResult", component: <SetSessionResult /> },
   { path: "/vendors", component: <Vendor /> },
   { path: "/addVendor", component: <AddVendor /> },
   { path: "/vendorIpList", component: <VendorIpList /> },

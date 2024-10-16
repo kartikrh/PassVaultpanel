@@ -7,7 +7,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
-  TAB_SET_MARKETS_RESULT,
+  TAB_SET_SESSION_RESULT,
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
@@ -15,16 +15,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
+import { ChangeSessionResult } from "../../components/Model/ChangeSessionResult";
 import { Tooltip } from "antd";
 import SetResultModal from "./SetResultModal";
 import CancelModal from "./CancelModal";
 
 const Index = () => {
-  const pageName = TAB_SET_MARKETS_RESULT;
+  const pageName = TAB_SET_SESSION_RESULT;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_SET_MARKETS_RESULT;
+  document.title = TAB_SET_SESSION_RESULT;
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
@@ -70,7 +70,7 @@ const Index = () => {
       payload.eventId = null;
     }
     await axiosInstance
-      .post(`/admin/eventMarket/pendingMultiRunnerMarket`, payload)
+      .post(`/admin/eventMarket/pendingMarketList`, payload)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -152,7 +152,7 @@ const Index = () => {
   const handleChangeResult = async (val) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/eventMarket/updateResultMultiMarket`, {
+      .post(`/admin/eventMarket/UpdateResulOrApproveMarketResult`, {
         ...selectedResult,
         isResult: val
       })
@@ -296,8 +296,8 @@ const Index = () => {
     },
     {
       title: "Result",
-      dataIndex: "resultRunner",
-      key: "resultRunner",
+      dataIndex: "result",
+      key: "result",
       render: (text, record) => (
         <span
           onClick={() => {
@@ -361,7 +361,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Market Result",
+    title: "Session Result",
     eventTypeSelect: true,
     competitionsListSelect: true,
     eventListSelect: true,
@@ -408,7 +408,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Market Results" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Session Results" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -434,7 +434,7 @@ const Index = () => {
             setIsSearch={setIsSearch}
           />
           {resultModelVisible && (
-            <ChangeMarketResultModel
+            <ChangeSessionResult
               resultModelVisible={resultModelVisible}
               setResultModelVisible={setResultModelVisible}
               handleChange={handleChangeResult}

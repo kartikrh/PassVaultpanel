@@ -38,7 +38,7 @@ const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-        <ModalHeader toggle={toggle}>Set Market Result</ModalHeader>
+        <ModalHeader toggle={toggle}>Set Session Result</ModalHeader>
         <ModalBody>
           {data && (
             <table className="table">
@@ -65,7 +65,7 @@ const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
                   <td>{data.competitionName}</td>
                   <td>{data.eventName}</td>
                   <td>{data.marketName}</td>
-                  <td className="text-center">{data.resultRunner}</td>
+                  <td className="text-center">{data.result}</td>
                 </tr>
               </tbody>
             </table>

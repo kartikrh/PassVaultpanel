@@ -165,3 +165,7 @@
 .no-spinners {
     -moz-appearance: textfield;
 }
+
+.whitespace-nowrap {
+    white-space: nowrap !important;
+}

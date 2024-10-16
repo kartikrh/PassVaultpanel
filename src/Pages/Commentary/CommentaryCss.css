@@ -186,6 +186,10 @@
     background-color: white;
 }
 
+.color-white {
+    background-color: white !important;
+}
+
 .ball-red {
     background-color: red;
 }
@@ -476,4 +480,8 @@
 
 .open-market-table-class {
     padding: 0 1rem !important;
+}
+
+.color-light-grey{
+    background-color: rgba(233, 233, 233, 0.594);
 }

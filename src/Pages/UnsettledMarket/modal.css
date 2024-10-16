@@ -11,3 +11,20 @@
   max-width: 100%;
   overflow-x: auto;
 }
+.runner-tbody { 
+  display: block; 
+  max-height: 300px; 
+  overflow-y: auto;
+}
+.runner-row {
+  display: table; 
+  width: 100%; 
+  table-layout: fixed;
+}
+.cursor-pointer {
+  cursor: pointer
+}
+.result-box {
+  width: 400px !important;
+  margin-left: 8px;
+}

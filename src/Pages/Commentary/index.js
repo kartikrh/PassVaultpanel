@@ -97,7 +97,7 @@ const Index = () => {
         ...payload,
         ...dateRange,
       };
-    } 
+    }
     await axiosInstance
       .post(`/admin/commentary/all`, payload)
       .then((response) => {
@@ -353,6 +353,13 @@ const Index = () => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
     localStorage.setItem('marketTemplateCommentaryId', "" + id);
     const url = new URL(window.location.origin + "/commentaryMarketTemplate");
+    window.open(url.href, '_blank');
+  };
+  const handleCommentaryMarketTemplateClickV1 = (details) => {
+    // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
+    const url = new URL(window.location.origin + "/commentaryMarkets");
+    sessionStorage.setItem('marketTemplateCommentaryId', "" + details?.commentaryId);
+    sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleMarketEventActionClick = (id) => {
@@ -992,7 +999,7 @@ const Index = () => {
             </Button>
           </Tooltip>
           <>
-            {record.isPredictMarket &&
+            {/* {record.isPredictMarket &&
               <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
                   color={"primary"}
@@ -1004,8 +1011,22 @@ const Index = () => {
                 >
                   <i class='bx bxs-store' ></i>
                 </Button>
+              </Tooltip>} */}
+            {record.isPredictMarket &&
+              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCommentaryMarketTemplateClickV1(record);
+                  }}
+                >
+                  <i class='bx bxs-store' ></i>
+                  {/* <i class='bx bxs-bookmarks'></i> */}
+                </Button>
               </Tooltip>}
-            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {/* <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
                 size="sm"
@@ -1016,7 +1037,7 @@ const Index = () => {
               >
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
@@ -1349,9 +1370,9 @@ const Index = () => {
     fetchData();
   }, [isSearch]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchEventTypeData();
-  },[])
+  }, [])
 
   const handleReload = (value) => {
     fetchData();
