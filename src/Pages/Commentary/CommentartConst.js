@@ -120,6 +120,7 @@ export const DEACTIVE = "DAc"
 export const INACTIVE_VALUE = 2
 export const SUSPEND_VALUE = 3
 export const OPEN_VALUE = 1
+export const CLOSE_VALUE = 4
 export const REFRESH = "Refresh"
 export const SEND_ALL = "Send all"
 export const BALL_FEATURE = "Ball by Ball"
@@ -144,8 +145,8 @@ export const BALL_TYPE_LIST = [
 
 export const getStatusColor = (status) => {
     switch (status) {
-        case 1:
-            return "#d7eed7"; //light green (open)
+        // case 1:
+        //     return "#d7eed7"; //light green (open)
         case 2:
             return "#d7d5d5"; //light gray (inActive)
         case 3:

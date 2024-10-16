@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import CustomInput from "../../components/Common/Reusables/CustomInput";
-import { MARKET_STATUS } from "./CommentartConst";
+import { getStatusColor, MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
 import { generateOverUnder } from "./functions";
 import axiosInstance from "../../Features/axios";
@@ -27,6 +27,14 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
             updatedMarket.runner = updatedMarket.runner.map(runner =>
                 generateOverUnder({ ...runner, margin: value })
             );
+        }
+
+        // Synchronize status across all runners when market status changes
+        if (key === 'status') {
+            updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                ...runner,
+                status: value
+            }));
         }
 
         setLocalMarket(updatedMarket);
@@ -111,8 +119,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                         <th>Margin</th>
                     </tr>
                 </thead>
-                <tbody className='whitespace-nowrap '>
-                    <tr>
+                <tbody className='whitespace-nowrap'>
+                    <tr style={{ backgroundColor: getStatusColor(localMarket.status) }}>
                         <td>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
                         <td>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
                         <td>
@@ -192,9 +200,9 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                         <th>P-Yes</th>
                     </tr>
                 </thead>
-                <tbody className='whitespace-nowrap '>
+                <tbody className='whitespace-nowrap'>
                     {sortedRunners.map((runner, index) => (
-                        <tr key={runner.runnerId}>
+                        <tr key={runner.runnerId} style={{ backgroundColor: getStatusColor(runner.status) }}>
                             <td>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runnerName}`}</td>
                             <td>
                                 <select

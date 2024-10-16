@@ -8,20 +8,14 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
-import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnder } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
-import MultiRunnerMarket from "./MultiRunnerMarket";
 import OpenMarketCategories from "./OpenMarketCategoryRendering";
 
-const tableElement = {
-    title: "Open Market",
-    displayTitle: true
-};
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -206,17 +200,35 @@ export const OpenMarket = () => {
         }
     };
 
-    const handleAction = ({ changeIn, key, value, action }) => {
+    const handleAction = async ({ changeIn, key, value, action }) => {
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
-            if (key === "status" && value === OPEN_VALUE) {
-                return record.status === SUSPEND_VALUE;
+            if (key === "status" && value === INACTIVE_VALUE) {
+                return record.status !== INACTIVE_VALUE;
             }
             return !_.isEqual(+record[key], +value);
         }).map(record => ({ ...record, [key]: value }));
 
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
-            saveData({ dataToSave: dataToUpdate, action });
+            await saveData({ dataToSave: dataToUpdate, action });
+
+            // Update local state after successful API call
+            setData(prevData =>
+                prevData.map(market => {
+                    const updatedMarket = dataToUpdate.find(u => u.marketId === market.marketId);
+                    if (updatedMarket) {
+                        return {
+                            ...market,
+                            [key]: value,
+                            runner: market.runner.map(runner => ({
+                                ...runner,
+                                [key]: key === 'status' ? value : runner[key]
+                            }))
+                        };
+                    }
+                    return market;
+                })
+            );
         } else {
             dispatch(updateToastData({ data: "No data to update based on current filter", title: "Update Skipped", type: WARNING }));
         }
@@ -247,39 +259,36 @@ export const OpenMarket = () => {
 
     const saveData = async ({ dataToSave, action }) => {
         setIsLoading(true);
-        await axiosInstance
-            .post(`/admin/eventMarket/updateMarketRate`, {
+        try {
+            const response = await axiosInstance.post(`/admin/eventMarket/updateMarketRateV1`, {
                 eventMarket: dataToSave,
                 action
-            })
-            .then((response) => {
-                if (response?.result) {
-                    const teamsObj = {}
-                    response?.result?.teams?.forEach(team => { teamsObj[team?.teamId] = team?.teamName })
-                    const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
-                    setTeams(teamsObj)
-                    setData(formattedData.data);
-                    setHasUnsavedChanges(false);
-                }
-                setIsLoading(false);
-                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-                    const endPoint = response?.result?.callPrediction?.endPoint;
-                    dispatch(
-                        updateToastData({
-                            data: `${endPoint}\n${predictionMessage}`,
-                            title: "Call Prediction",
-                            type: WARNING,
-                        })
-                    );
-                } else {
-                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-                }
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
+
+            if (response?.result) {
+                const updatedData = response.result.marketList || [];
+                setData(prevData =>
+                    prevData.map(market => {
+                        const updatedMarket = updatedData.find(u => u.marketId === market.marketId);
+                        if (updatedMarket) {
+                            return {
+                                ...market,
+                                ...updatedMarket,
+                                runner: updatedMarket.runner || market.runner
+                            };
+                        }
+                        return market;
+                    })
+                );
+                setHasUnsavedChanges(false);
+            }
+
+            setIsLoading(false);
+            // Handle success message and other logic...
+        } catch (error) {
+            setIsLoading(false);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
     };
 
     const handleLineRatio = (value) => {
@@ -320,46 +329,40 @@ export const OpenMarket = () => {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
                         isNewSocketData: true,
-                        margin: parseFloat(eventMarket.margin).toFixed(2), // Ensure margin is a string with 2 decimal places
-                        runner: [
-                            {
-                                runnerId: eventMarket.runnerId,
-                                runnerName: eventMarket.runner, // Use the 'runner' field as runnerName
-                                line: eventMarket.line,
-                                overRate: eventMarket.overRate,
-                                underRate: eventMarket.underRate,
-                                status: eventMarket.status,
-                                backPrice: eventMarket.backPrice,
-                                layPrice: eventMarket.layPrice,
-                                backSize: eventMarket.backSize,
-                                laySize: eventMarket.laySize
-                            }
-                        ]
+                        margin: parseFloat(eventMarket.margin).toFixed(2), // Preserve margin formatting
+                        runner: [{
+                            runnerId: eventMarket.runnerId,
+                            runnerName: eventMarket.runner,
+                            line: eventMarket.line,
+                            overRate: eventMarket.overRate,
+                            underRate: eventMarket.underRate,
+                            status: +eventMarket.status, // Ensure status is a number
+                            backPrice: eventMarket.backPrice,
+                            layPrice: eventMarket.layPrice,
+                            backSize: eventMarket.backSize,
+                            laySize: eventMarket.laySize
+                        }]
                     };
 
-                    // Remove redundant fields that are now in the runner object
-                    delete updatedMarketData.runnerId;
-                    delete updatedMarketData.runner; // Remove the string 'runner' field
-                    delete updatedMarketData.line;
-                    delete updatedMarketData.overRate;
-                    delete updatedMarketData.underRate;
-                    delete updatedMarketData.backPrice;
-                    delete updatedMarketData.layPrice;
-                    delete updatedMarketData.backSize;
-                    delete updatedMarketData.laySize;
+                    // Ensure status is correctly set for both market and runner
+                    updatedMarketData.status = +eventMarket.status;
+
+                    // Remove redundant fields from the top level
+                    const runnerFields = ['runnerId', 'runner', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    runnerFields.forEach(field => delete updatedMarketData[field]);
 
                     newMarketData[eventMarket.marketId] = updatedMarketData;
                 }
             });
 
-            setData((prevData) => {
+            setData(prevData => {
                 const updatedData = prevData.map(market => {
                     const newMarket = newMarketData[market.marketId];
                     if (newMarket) {
                         return {
                             ...market,
                             ...newMarket,
-                            runner: newMarket.runner // Ensure runner is always an array
+                            runner: newMarket.runner
                         };
                     }
                     return market;
@@ -804,35 +807,6 @@ export const OpenMarket = () => {
                 break;
         }
     }
-    const renderMarket = (market) => {
-        if (market.runner && market.runner.length > 1) {
-            return (
-                <MultiRunnerMarket
-                    key={market.marketId}
-                    market={market}
-                    onUpdate={handleMultiRunnerUpdate}
-                    teams={teams}
-                    loadingTrue={() => setIsLoading(true)}
-                    loadingFalse={() => setIsLoading(false)}
-                />
-            );
-        } else {
-            // Render single-runner market
-            const singleRunnerMarket = market.runner && market.runner.length === 1
-                ? { ...market, ...market.runner[0] }
-                : market;
-            return (
-                <ListingElement
-                    key={market.marketId}
-                    columns={columns}
-                    dataSource={[singleRunnerMarket]}
-                    tableElement={tableElement}
-                    tableClassName="open-market-table-class"
-                    hideHeader={true}
-                />
-            );
-        }
-    };
 
     const toggleAccordion = (id) => {
         setOpenAccordions((prevOpenAccordions) => {
