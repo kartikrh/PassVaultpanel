@@ -38,7 +38,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions)
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result?.sort((a,b)=>a?.teamId - b?.teamId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.teamId)
@@ -70,7 +70,7 @@ const Index = () => {
         eventTypeId: eventTypeId,
       })
       .then((response) => {
-        setCompetitionList(response.result?.sort((a,b)=>a?.teamId - b?.teamId));
+        setCompetitionList(response.result);
         setIsLoading(false);
       })
       .catch((error) => {});
