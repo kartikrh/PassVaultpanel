@@ -34,7 +34,8 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/block/all`, {
-        ...(latestValueFromTable || { ...tableActions })
+        ...(latestValueFromTable || { ...tableActions }),
+        isShowContent: latestValueFromTable?.isShowContent !== undefined ? latestValueFromTable?.isShowContent : tableActions?.isShowContent !== undefined ? tableActions?.isShowContent : true,
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.blockId - b?.blockId);
