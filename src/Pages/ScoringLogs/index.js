@@ -63,7 +63,7 @@ function ScoringLogs() {
     await axiosInstance
       .post("/admin/commentaryScoringLogs/all", payload)
       .then(async (response) => {
-        const apiData = response?.result?.data;
+        const apiData = response?.result?.data?.sort((a,b)=>b?.id - a?.id);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.id);

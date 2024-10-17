@@ -44,7 +44,7 @@ const Index = () => {
         ...dateRange
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result?.sort((a,b)=>a?.eventId - b?.eventId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.eventId)
