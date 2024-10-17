@@ -38,7 +38,6 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
-
     const filterDataBySelectedCategories = (dataToFilter) => {
         if (selectedCategories.length === 0) return [];
         return dataToFilter.filter(item =>
@@ -443,8 +442,6 @@ export const OpenMarket = () => {
             });
     }
 
-
-
     const handleBackClick = () => {
         navigate("/commentary");
     };
@@ -459,7 +456,7 @@ export const OpenMarket = () => {
                 layPrice: Math.round(+newValue),
                 backPrice: Math.round(+newValue) + 1
             }];
-            updatedRecord.runner[0] = generateOverUnder(updatedRecord.runner[0]);
+            updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
         } else {
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
@@ -476,7 +473,6 @@ export const OpenMarket = () => {
                 ...prev.slice(indexOfData + 1),
             ]);
             setHasUnsavedChanges(true);
-            // debouncedSave([updatedRecord]);
         }
     };
 
