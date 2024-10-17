@@ -246,6 +246,7 @@ const Commentary = (props) => {
             },
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": setAllPlayerToNull(),
+            "isEndInnings": true
         }
         // console.log("Called from : 2")
         dispatch(addCommentaryScreenData(objToSave))
