@@ -245,7 +245,10 @@ export const OpenMarket = () => {
         if (record) {
             dataToSend = [record];
         } else {
-            dataToSend = filterDataBySelectedCategories(data);
+            dataToSend = filterDataBySelectedCategories(data).map(market => ({
+                ...market,
+                isSendData: true
+            }));
             isSaveAll = true;
         }
         dataToSend = formatDataBeforeSend(dataToSend);
