@@ -45,7 +45,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const notificationData = response?.result;
+        const notificationData = response?.result?.sort((a,b)=>a?.notificationId - b?.notificationId);
         let notificationDataIdList = [];
         notificationData.forEach((ele) => {
           notificationDataIdList.push(ele?.notificationId);

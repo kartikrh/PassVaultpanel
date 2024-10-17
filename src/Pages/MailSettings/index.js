@@ -44,7 +44,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const mailSettingsData = response?.result;
+        const mailSettingsData = response?.result?.sort((a,b)=>a?.id - b?.id);
         let mailSettingsDataIdList = [];
         mailSettingsData.forEach((ele) => {
           mailSettingsDataIdList.push(ele?.id);

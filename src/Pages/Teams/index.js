@@ -70,7 +70,7 @@ const Index = () => {
         eventTypeId: eventTypeId,
       })
       .then((response) => {
-        setCompetitionList(response.result);
+        setCompetitionList(response.result?.sort((a,b)=>a?.teamId - b?.teamId));
         setIsLoading(false);
       })
       .catch((error) => {});

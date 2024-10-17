@@ -39,7 +39,7 @@ const Index = () => {
         isApproved: latestValueFromTable?.isApproved !== undefined ? latestValueFromTable?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result?.sort((a,b)=>a?.subScribesDomainId - b?.subScribesDomainId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.subScribesDomainId)
