@@ -45,7 +45,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const templateData = response?.result;
+        const templateData = response?.result?.sort((a,b)=>a?.templateId - b?.templateId);
         let templateDataIdList = [];
         templateData.forEach((ele) => {
           templateDataIdList.push(ele?.templateId);

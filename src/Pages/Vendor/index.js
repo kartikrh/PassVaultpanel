@@ -33,7 +33,7 @@ const Index = () => {
         ...(value || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result?.sort((a,b)=>a?.vendorId - b?.vendorId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.vendorId)

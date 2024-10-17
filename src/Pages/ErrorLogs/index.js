@@ -54,7 +54,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/log/errorLogs`, payload)
       .then((response) => {
-        const logsData = response?.result?.data;
+        const logsData = response?.result?.data?.sort((a,b)=>b?.errId - a?.errId);
         let logsDataIdList = [];
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.errId);

@@ -72,7 +72,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/pendingMarketList`, payload)
       .then((response) => {
-        const apiData = response?.result;
+        const apiData = response?.result?.sort((a,b)=>b?.eventMarketId - a?.eventMarketId);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.eventMarketId);

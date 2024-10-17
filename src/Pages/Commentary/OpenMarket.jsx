@@ -31,6 +31,7 @@ export const OpenMarket = () => {
     const [openAccordions, setOpenAccordions] = useState(["Session"]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [debouncedLineRatio, setDebouncedLineRatio] = useState(lineRatio);
+    const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -63,7 +64,7 @@ export const OpenMarket = () => {
     };
 
     useEffect(() => {
-        if (debouncedLineRatio) {
+        if (debouncedLineRatio && isLineRatioInitialized !== debouncedLineRatio) {
             const payload = {
                 commentaryId,
                 lineRatio: +debouncedLineRatio,
@@ -434,8 +435,9 @@ export const OpenMarket = () => {
             .post("/admin/commentary/getEventDetailsByCId", { commentaryId })
             .then((response) => {
                 if (response?.result?.es) {
-                    setCommentaryInfo(response.result.es)
-                    setLineRatio(response.result.es?.lr)
+                    setCommentaryInfo(response.result.es);
+                    setLineRatio(+response.result.es?.lr);
+                    setIsLineRatioInitialized(+response.result.es?.lr);
                 }
                 setIsLoading(false);
             })
