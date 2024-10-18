@@ -14,7 +14,18 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                     columns={columns}
                     dataSource={singleRunnerMarkets.map(market => ({
                         ...market,
-                        ...(market.runner && market.runner[0]),
+                        isSendData: market?.isSendData,
+                        backPrice: market.runner ? market.runner[0].backPrice : undefined,
+                        backSize: market.runner ? market.runner[0].backSize : undefined,
+                        layPrice: market.runner ? market.runner[0].layPrice : undefined,
+                        laySize: market.runner ? market.runner[0].laySize : undefined,
+                        line: market.runner ? market.runner[0].line : undefined,
+                        overRate: market.runner ? market.runner[0].overRate : undefined,
+                        runnerId: market.runner ? market.runner[0].runnerId : undefined,
+                        runnerName: market.runner ? market.runner[0].runnerName : undefined,
+                        status: market.runner ? market.runner[0].status : undefined,
+                        underRate: market.runner ? market.runner[0].underRate : undefined,
+                        // ...(market.runner && market.runner[0]),
                     }))}
                     tableElement={{ title: `${category} - Single Runner Markets`, displayTitle: true }}
                     tableClassName="open-market-table-class"
