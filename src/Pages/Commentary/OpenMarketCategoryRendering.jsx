@@ -12,10 +12,23 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
             {singleRunnerMarkets.length > 0 && (
                 <ListingElement
                     columns={columns}
-                    dataSource={singleRunnerMarkets.map(market => ({
+                    dataSource={singleRunnerMarkets.map(market => {
+                        const firstRunner = market?.runner && market.runner?.length > 0 ? market.runner[0] : undefined;
+                        return {
                         ...market,
-                        ...(market.runner && market.runner[0]),
-                    }))}
+                        isSendData: market?.isSendData,
+                        backPrice: firstRunner?.backPrice,
+                        backSize: firstRunner?.backSize,
+                        layPrice: firstRunner?.layPrice,
+                        laySize: firstRunner?.laySize,
+                        line: firstRunner?.line,
+                        overRate: firstRunner?.overRate,
+                        runnerId: firstRunner?.runnerId,
+                        runnerName: firstRunner?.runnerName,
+                        status: firstRunner?.status,
+                        underRate: firstRunner?.underRate,
+                        // ...(market.runner && market.runner[0]),
+                    }})}
                     tableElement={{ title: `${category} - Single Runner Markets`, displayTitle: true }}
                     tableClassName="open-market-table-class"
                 />

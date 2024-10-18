@@ -185,6 +185,43 @@ const Index = forwardRef(
         </div>
       );
     };
+    const OnSymbolShowStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 9,
+            color: "#fff",
+            paddingLeft: 4,
+          }}
+        >
+          {" "}
+          show content
+        </div>
+      );
+    };
+
+    const OffsymbolShowStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 9,
+            color: "#fff",
+            // paddingRight: 2,
+          }}
+        >
+          {" "}
+          hide content
+        </div>
+      );
+    };
     const OnSymbolApprovedStatus = () => {
       return (
         <div
@@ -281,10 +318,19 @@ const Index = forwardRef(
           ...tableActions,
           isTrending: id,
         });
+      } else if (key === "isShowContent") {
+        setStatusSwitch(id);
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id,
+          };
+        });
+        reFetchData({
+          ...tableActions,
+          isShowContent: id,
+        });
       } else {
-        if (key === "isShowContent") {
-          setStatusSwitch(id);
-        }
         reFetchData({
           ...tableActions,
           [key]: id?.value,
@@ -1309,8 +1355,8 @@ const Index = forwardRef(
                           <div className="d-flex align-items-center">
                             <Switch
                               width={70}
-                              uncheckedIcon={<OffsymbolStatus />}
-                              checkedIcon={<OnSymbolStatus />}
+                              uncheckedIcon={<OffsymbolShowStatus />}
+                              checkedIcon={<OnSymbolShowStatus />}
                               className="pe-0"
                               onColor="#02a499"
                               onChange={() => {

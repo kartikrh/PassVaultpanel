@@ -37,7 +37,7 @@ const Index = () => {
         ...(latestValueFromTable || { ...tableActions })
       })
       .then((response) => {
-        const apiData = response?.result
+        const apiData = response?.result?.sort((a,b)=>a?.pageId - b?.pageId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.pageId)
