@@ -391,8 +391,24 @@ export const OpenMarket = () => {
                     }
                     return market;
                 });
-
-                const finalDataToSet = updatedData.filter(e => statusListToInclude.includes(e.status));
+                // Add new markets that are in newMarketData but not in prevData
+                const newMarkets = Object.keys(newMarketData)
+                    .filter(marketId => {
+                        // Check if marketId is already in prevData or updatedData
+                        const existsInPrevData = prevData.some(market => market.marketId === parseInt(marketId));
+                        return !existsInPrevData; // Only include new markets
+                    })
+                    .map(marketId => ({
+                        marketId: parseInt(marketId),
+                        ...newMarketData[marketId],
+                        runner: Array.isArray(newMarketData[marketId].runner) ? newMarketData[marketId].runner : [newMarketData[marketId].runner]
+                    }));
+            
+                // Combine updatedData with newMarkets
+                const combinedData = [...updatedData, ...newMarkets];
+                
+                // Filter based on statusListToInclude
+                const finalDataToSet = combinedData.filter(e => statusListToInclude.includes(e.status));
 
                 setTimeout(() => {
                     setData((storedData) =>
