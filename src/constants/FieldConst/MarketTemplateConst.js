@@ -270,7 +270,7 @@ export const MarketTemplateFileds = [
     {
         name: "lineType",
         label: "Line Type",
-        options: [{ label: "Select Line Type", value: "0" }, { label: "backline", value: "1" }, { label: "lay", value: "2" }],
+        options: [{ label: "Select Line Type", value: "0" }, { label: "backlayline", value: "1" }, { label: "layline", value: "2" }],
         type: SELECT,
         defaultValue: false,
         isRequired: true,
