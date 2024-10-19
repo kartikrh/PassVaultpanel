@@ -148,8 +148,8 @@ export const CreateEventMarket = () => {
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
-                backPrice: parseFloat(dataObj?.line) || 0,
-                layPrice: parseFloat(dataObj?.line) || 0,
+                backPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+                layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
                 // backSize: parseFloat(dataObj?.backSize) || 100,
                 // laySize: parseFloat(dataObj?.laySize) || 100,
                 overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
