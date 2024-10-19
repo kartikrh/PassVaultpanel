@@ -145,7 +145,7 @@ export const OpenMarket = () => {
     };
 
     useEffect(() => {
-        const storedCategories = localStorage.getItem(`selectedCategories_${commentaryId}`);
+        const storedCategories = localStorage.getItem("selectedCategories");
         if (storedCategories) {
             const parsedCategories = JSON.parse(storedCategories);
             setSelectedCategories(parsedCategories);
@@ -154,7 +154,7 @@ export const OpenMarket = () => {
 
     const handleCategoryChange = (selectedOptions) => {
         setSelectedCategories(selectedOptions);
-        localStorage.setItem(`selectedCategories_${commentaryId}`, JSON.stringify(selectedOptions));
+        localStorage.setItem("selectedCategories", JSON.stringify(selectedOptions));
     };
 
     const handleValueChange = (record, key, value) => {

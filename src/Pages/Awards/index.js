@@ -40,7 +40,7 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/award/all`, {
+      .post(`/admin/commentary/awards`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
