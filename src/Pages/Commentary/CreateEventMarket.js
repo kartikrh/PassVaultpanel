@@ -110,8 +110,8 @@ export const CreateEventMarket = () => {
             ...dataObj,
             backPrice: null,
             layPrice: null,
-            backSize: 100,
-            laySize: 100,
+            // backSize: 100,
+            // laySize: 100,
             overRate: null,
             underRate: null,
         }
@@ -123,8 +123,35 @@ export const CreateEventMarket = () => {
                 ...dataToSend,
                 backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
                 layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
-                backSize: parseFloat(dataObj?.backSize) || 100,
-                laySize: parseFloat(dataObj?.laySize) || 100,
+                // backSize: parseFloat(dataObj?.backSize) || 100,
+                // laySize: parseFloat(dataObj?.laySize) || 100,
+                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+            }
+        }
+        return dataToSend;
+    };
+
+    const generateSameLayBack = (dataObj) => {
+        let dataToSend = {
+            ...dataObj,
+            backPrice: null,
+            layPrice: null,
+            // backSize: 100,
+            // laySize: 100,
+            overRate: null,
+            underRate: null,
+        }
+        if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
+            const roundedLine = Math.floor(parseFloat(dataObj?.line));
+            const thresholdValue = Math.floor(roundedLine) + 0.5;
+            const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+            dataToSend = {
+                ...dataToSend,
+                backPrice: parseFloat(dataObj?.line) || 0,
+                layPrice: parseFloat(dataObj?.line) || 0,
+                // backSize: parseFloat(dataObj?.backSize) || 100,
+                // laySize: parseFloat(dataObj?.laySize) || 100,
                 overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
                 underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
             }
@@ -298,8 +325,8 @@ export const CreateEventMarket = () => {
                 order: 1,
                 backPrice: 1,
                 layPrice: 1,
-                backSize: 100,
-                laySize: 100
+                backSize: market?.defaultBackSize,
+                laySize: market?.defaultLaySize,
             }];
         }
 
@@ -392,13 +419,18 @@ export const CreateEventMarket = () => {
             commentaryId: commentary.commentaryId,
             eventRefId: commentary.eventRefId,
             marketName: template.templateName,
+            defaultBackSize: template?.defaultBackSize,
+            defaultLaySize: template?.defaultLaySize,
+            lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             runners: template.runners?.map(runner => ({
                 ...runner,
-                runnerId: runner.runnerId || "0"
+                runnerId: runner.runnerId || "0",
+                backSize: template?.isPredefineRunnerValue ? runner?.backSize : template?.defaultBackSize,
+                laySize: template?.isPredefineRunnerValue ? runner?.laySize : template?.defaultLaySize,
             })) || []
         };
     };
@@ -414,13 +446,18 @@ export const CreateEventMarket = () => {
             commentaryId: commentary.commentaryId,
             eventRefId: commentary.eventRefId,
             marketName: `${template.templateName} - ${team.shortName}`,
+            defaultBackSize: template?.defaultBackSize,
+            defaultLaySize: template?.defaultLaySize,
+            lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             runners: template.runners?.map(runner => ({
                 ...runner,
-                runnerId: runner.runnerId || "0"
+                runnerId: runner.runnerId || "0",
+                backSize: template?.isPredefineRunnerValue ? runner?.backSize : template?.defaultBackSize,
+                laySize: template?.isPredefineRunnerValue ? runner?.laySize : template?.defaultLaySize,
             })) || []
         };
     };
@@ -448,8 +485,14 @@ export const CreateEventMarket = () => {
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
 
             // If the line changes, recalculate the runner values
-            if (key === 'line' && !market?.isPredefineRunnerValue) {
+            if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
                 const newRunnerValues = generateOverUnder({
+                    ...updatedRunners[runnerIndex],
+                    margin: updatedMarket.margin
+                });
+                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
+            } else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
+                const newRunnerValues = generateSameLayBack({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin
                 });
