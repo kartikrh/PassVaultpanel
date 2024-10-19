@@ -469,7 +469,23 @@ export const OpenMarket = () => {
 
     const updateLineAndDependency = (record, newValue) => {
         let updatedRecord = { ...record };
-        if (record.runner && record.runner.length === 1) {
+        // if (record.runner && record.runner.length === 1) {
+        //     // Single runner market
+        //     updatedRecord.runner = [{
+        //         ...record.runner[0],
+        //         line: newValue,
+        //         layPrice: Math.round(+newValue),
+        //         backPrice: Math.round(+newValue) + 1
+        //     }];
+        //     updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
+        // } else {
+        //     // Multi-runner market or market-level change
+        //     updatedRecord.line = newValue;
+        //     updatedRecord.layPrice = Math.round(+newValue);
+        //     updatedRecord.backPrice = Math.round(+newValue) + 1;
+        //     updatedRecord = generateOverUnder(updatedRecord);
+        // }
+        if (record.runner && record.runner.length === 1 && parseInt(record.lineType) === 1) {
             // Single runner market
             updatedRecord.runner = [{
                 ...record.runner[0],
@@ -478,6 +494,21 @@ export const OpenMarket = () => {
                 backPrice: Math.round(+newValue) + 1
             }];
             updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
+        } else if (record.runner && record.runner.length === 1 && parseInt(record.lineType) === 2) {
+            // Single runner market
+            updatedRecord.runner = [{
+                ...record.runner[0],
+                line: newValue,
+                layPrice: Math.round(+newValue),
+                backPrice: Math.round(+newValue),
+            }];
+            updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
+        } else if(parseInt(record.lineType) === 2) {
+            // Multi-runner market or market-level change
+            updatedRecord.line = newValue;
+            updatedRecord.layPrice = Math.round(+newValue);
+            updatedRecord.backPrice = Math.round(+newValue);
+            updatedRecord = generateOverUnder(updatedRecord);
         } else {
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
