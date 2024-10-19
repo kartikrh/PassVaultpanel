@@ -67,14 +67,14 @@ function AddMarketTemaplate() {
   }, []);
 
   useEffect(() => {
-    // if (marketTemplateId !== "0") {
-    fetchData(marketTemplateId);
-    setDisabledFields({
-      parentId: true,
-      displayType: true,
-    });
-    // }
-  }, [setMarketTemplateId]);
+    if (marketTemplateId !== "0") {
+      fetchData(marketTemplateId);
+      setDisabledFields({
+        parentId: true,
+        displayType: true,
+      });
+    }
+  }, [marketTemplateId]);
 
   useEffect(() => {
     if (isSaved) {
@@ -224,6 +224,8 @@ function AddMarketTemaplate() {
       isDefaultMarketActive: false,
       isPerEvent: false,
       isShowInAdvanceMarket: false,
+      defaultBackSize: 100,
+      defaultLaySize: 100,
     };
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {

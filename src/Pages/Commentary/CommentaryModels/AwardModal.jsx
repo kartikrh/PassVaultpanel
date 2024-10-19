@@ -101,7 +101,7 @@ const AwardModal = ({ commentaryId, onClose }) => {
     useEffect(() => {
         setIsApiLoading(true);
         // Fetch awards data
-        axiosInstance.post('/admin/commentaryAward/getAssignAward', { commentaryId })
+        axiosInstance.post('/admin/commentary/getAssignAward', { commentaryId })
             .then((response) => {
                 const data = response?.result;
                 if (data) setSelectedPlayers(data);
@@ -111,7 +111,7 @@ const AwardModal = ({ commentaryId, onClose }) => {
                 setIsApiLoading(false);
             });
 
-        axiosInstance.post('/admin/award/all', { isActive: true })
+        axiosInstance.post('/admin/commentary/awards', { isActive: true })
             .then((response) => {
                 const data = response?.result;
                 if (data) setAwards(data);
@@ -172,7 +172,7 @@ const AwardModal = ({ commentaryId, onClose }) => {
                     commentaryId: commentaryId
                 };
             });
-        axiosInstance.post('/admin/commentaryAward/assignAward', { comAwards: submissionData })
+        axiosInstance.post('/admin/commentary/assignAward', { comAwards: submissionData })
             .then((response) => onClose())
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
