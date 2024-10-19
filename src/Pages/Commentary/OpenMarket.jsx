@@ -10,7 +10,7 @@ import axiosInstance from "../../Features/axios";
 import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
-import { generateOverUnder } from "./functions";
+import { generateOverUnderLineType } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
@@ -179,7 +179,7 @@ export const OpenMarket = () => {
                     }
 
                     if (key === 'line' || key === 'margin') {
-                        updatedMarket = generateOverUnder(updatedMarket);
+                        updatedMarket = generateOverUnderLineType(updatedMarket);
                     }
 
                     return updatedMarket;
@@ -469,52 +469,21 @@ export const OpenMarket = () => {
 
     const updateLineAndDependency = (record, newValue) => {
         let updatedRecord = { ...record };
-        // if (record.runner && record.runner.length === 1) {
-        //     // Single runner market
-        //     updatedRecord.runner = [{
-        //         ...record.runner[0],
-        //         line: newValue,
-        //         layPrice: Math.round(+newValue),
-        //         backPrice: Math.round(+newValue) + 1
-        //     }];
-        //     updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
-        // } else {
-        //     // Multi-runner market or market-level change
-        //     updatedRecord.line = newValue;
-        //     updatedRecord.layPrice = Math.round(+newValue);
-        //     updatedRecord.backPrice = Math.round(+newValue) + 1;
-        //     updatedRecord = generateOverUnder(updatedRecord);
-        // }
-        if (record.runner && record.runner.length === 1 && parseInt(record.lineType) === 1) {
+        if (record.runner && record.runner.length === 1) {
             // Single runner market
             updatedRecord.runner = [{
                 ...record.runner[0],
                 line: newValue,
                 layPrice: Math.round(+newValue),
-                backPrice: Math.round(+newValue) + 1
+                backPrice: parseInt(record?.lineType) === 1 ? Math.round(+newValue) + 1 : Math.round(+newValue)
             }];
-            updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
-        } else if (record.runner && record.runner.length === 1 && parseInt(record.lineType) === 2) {
-            // Single runner market
-            updatedRecord.runner = [{
-                ...record.runner[0],
-                line: newValue,
-                layPrice: Math.round(+newValue),
-                backPrice: Math.round(+newValue),
-            }];
-            updatedRecord.runner[0] = generateOverUnder({ ...updatedRecord.runner[0], margin: updatedRecord.margin });
-        } else if(parseInt(record.lineType) === 2) {
-            // Multi-runner market or market-level change
-            updatedRecord.line = newValue;
-            updatedRecord.layPrice = Math.round(+newValue);
-            updatedRecord.backPrice = Math.round(+newValue);
-            updatedRecord = generateOverUnder(updatedRecord);
+            updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType });
         } else {
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
             updatedRecord.layPrice = Math.round(+newValue);
-            updatedRecord.backPrice = Math.round(+newValue) + 1;
-            updatedRecord = generateOverUnder(updatedRecord);
+            updatedRecord.backPrice = parseInt(record?.lineType) === 1 ? Math.round(+newValue) + 1 : Math.round(+newValue);
+            updatedRecord = generateOverUnderLineType(updatedRecord);
         }
 
         const indexOfData = data.findIndex(i => i.marketId === record.marketId);

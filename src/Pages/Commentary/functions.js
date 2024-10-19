@@ -250,6 +250,22 @@ export const generateOverUnder = (dataObj) => {
   return dataToSend
 }
 
+export const generateOverUnderLineType = (dataObj) => {
+  const roundedLine = Math.floor(parseFloat(dataObj?.line));
+  const thresholdValue = Math.floor(roundedLine) + 0.5;
+  const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+  const dataToSend = {
+    ...dataObj,
+    backPrice: (parseInt(dataObj?.lineType) === 1 ? roundedLine + 1 : roundedLine) || 0,
+    layPrice: roundedLine || 0,
+    backSize: dataObj?.backSize || 100,
+    laySize: dataObj?.laySize || 100,
+    overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
+    underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
+  }
+  return dataToSend
+}
+
 
 export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTeamWon }) => {
   const battingTeam = team[BATTING_TEAM]
