@@ -504,7 +504,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "matchTypeName", e.target.value)
             }
@@ -523,7 +523,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "matchCount", e.target.value)
             }
@@ -542,7 +542,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "inningsCount", e.target.value)
             }
@@ -561,7 +561,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "notOut", e.target.value)
             }
@@ -580,7 +580,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "totalRuns", e.target.value)
             }
@@ -606,7 +606,7 @@ const PlayerHistory = () => {
             <Input
               className="form-control small-text-fields"
               type="text"
-              value={displayValue}
+              value={displayValue || ""}
               onChange={(e) =>
                 handleBattingValueChange(index, "highestScore", e.target.value)
               }
@@ -626,7 +626,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "average", e.target.value)
             }
@@ -645,7 +645,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "ballsFacedCount", e.target.value)
             }
@@ -664,7 +664,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "strikeRate", e.target.value)
             }
@@ -683,7 +683,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf100", e.target.value)
             }
@@ -702,7 +702,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf50", e.target.value)
             }
@@ -721,7 +721,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf4", e.target.value)
             }
@@ -740,7 +740,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf6", e.target.value)
             }
@@ -759,7 +759,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "catchCount", e.target.value)
             }
@@ -778,7 +778,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBattingValueChange(index, "stumpCount", e.target.value)
             }
@@ -822,7 +822,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "matchTypeName", e.target.value)
             }
@@ -841,7 +841,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -866,7 +866,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -891,7 +891,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "ballCount", e.target.value)
             }
@@ -910,7 +910,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "runsFromBowler", e.target.value)
             }
@@ -929,7 +929,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wicketsCount", e.target.value)
             }
@@ -948,7 +948,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -973,7 +973,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -998,7 +998,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "bowlerAverage", e.target.value)
             }
@@ -1017,7 +1017,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "economy", e.target.value)
             }
@@ -1036,7 +1036,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -1059,7 +1059,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wickets4", e.target.value)
             }
@@ -1078,7 +1078,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wickets5", e.target.value)
             }
@@ -1097,7 +1097,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text}
+            value={text || ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wickets10", e.target.value)
             }
