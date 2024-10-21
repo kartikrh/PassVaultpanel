@@ -13,7 +13,10 @@ import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMIS
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import {ImportExportModel} from '../../components/Model/ImportExportModel'
+import {ImportExportModel} from '../../components/Model/ImportExportModel';
+import {UploadPlayerHistoryModal} from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
+import { saveAs } from 'file-saver';
+
 const Index = () => {
   const pageName = TAB_PLAYERS
   const finalizeRef = useRef(null);
@@ -25,6 +28,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [importExportModelVisable, setImportExportModelVisable] = useState(false);
+  const [importExportPlayerHistoryModelVisable, setImportExportPlayerHistoryModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [teams, setTeams] = useState([]);
 
@@ -100,6 +104,7 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+
 
   const handleSystemPlayer = async (pType, record, cState) => {
     setIsLoading(true);
@@ -324,6 +329,64 @@ const Index = () => {
     fetchTeamsData()
   };
 
+  const handleDownloadPlayerHistory = async () => {
+    try {
+      setIsLoading(true);
+      // Call the export API
+      const response = await axiosInstance.post('/admin/playerHistory/export', {} ,{
+        responseType: 'arraybuffer', // Ensure the response is treated as a file blob
+      });
+      
+      if (response) {
+        // Create a blob from the response data (the file)
+        const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Players_history_${new Date().toISOString()}.xlsx`; // Dynamic filename
+        document.body.appendChild(a); // Append anchor to body
+        a.click(); // Trigger file download
+        a.remove(); // Cleanup after download
+        setIsLoading(false);
+        dispatch(updateToastData({ data: 'File Downloaded successfully', title: 'SUCCESS', type: SUCCESS }));
+      } else {
+        console.error('Error downloading file:', response.statusText);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error while downloading file:', error);
+      setIsLoading(false);
+      dispatch(updateToastData({ data: 'Failed to download file', title: 'Error', type: ERROR }));
+    }
+  };
+
+
+  const UploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file); // Append the file to the FormData object
+  
+    setIsLoading(true); // You can manage loading state
+  
+    await axiosInstance
+      .post(`/admin/playerHistory/import`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
+        },
+      })
+      .then((response) => {
+        setIsLoading(false);
+        console.log("File uploaded successfully:", response.data);
+        dispatch(updateToastData({ data: 'File uploaded successfully', title: 'SUCCESS', type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error("Error uploading file:", error);
+        dispatch(updateToastData({ data: 'Error uploading file :' + error, title: 'Error', type: ERROR }));
+      });
+  };
+  
   return (
     <React.Fragment>
       <div className="page-content">
@@ -345,6 +408,7 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}
+            setImportExportPlayerHistoryModelVisable={setImportExportPlayerHistoryModelVisable}
             teams = {teams}
           />
           <DeleteTabModel
@@ -360,6 +424,14 @@ const Index = () => {
             columns={modelColumns}
             dataToPick={dataToPick}
           />}
+
+          {importExportPlayerHistoryModelVisable && <UploadPlayerHistoryModal
+            importExportPlayerHistoryModelVisable={importExportPlayerHistoryModelVisable}
+            setImportExportPlayerHistoryModelVisable={setImportExportPlayerHistoryModelVisable}
+            handleDownloadPlayerHistory={handleDownloadPlayerHistory}
+            UploadFile={UploadFile}
+          />}
+
         </Container>
       </div>
     </React.Fragment>
