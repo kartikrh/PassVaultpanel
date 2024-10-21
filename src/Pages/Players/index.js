@@ -123,6 +123,13 @@ const Index = () => {
       });
   };
 
+  const handlePlayerHistory = (details) => {
+    const url = new URL(window.location.origin + "/playerHistory");
+    sessionStorage.setItem('playerId', "" + details?.playerId);
+    sessionStorage.setItem('playerDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
+
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -282,6 +289,27 @@ const Index = () => {
           <i className={`bx ${record.isSystemPlayer ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Player History",
+      key: "playerId",
+      render: (text, record) => (
+        <>
+          <Tooltip title={"Player History"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handlePlayerHistory(record);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          </Tooltip>
+        </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
