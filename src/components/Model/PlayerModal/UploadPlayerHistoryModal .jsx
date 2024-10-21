@@ -25,7 +25,7 @@ export const UploadPlayerHistoryModal = ({ importExportPlayerHistoryModelVisable
   const handleUpload = () => {
     if (selectedFile) {
       UploadFile(selectedFile); 
-      console.log("Uploading file:", selectedFile);
+      //console.log("Uploading file:", selectedFile);
     } else {
       setErrorMessage("Please select a valid file before uploading.");
     }
