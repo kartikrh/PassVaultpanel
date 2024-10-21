@@ -308,7 +308,7 @@ const Index = () => {
       title: "Is Per Event",
       key: "isPerEvent",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Active/Inactive Per Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPerEvent ? "primary" : "danger"}`}
           size="sm"

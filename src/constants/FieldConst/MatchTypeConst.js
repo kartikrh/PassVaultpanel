@@ -380,4 +380,12 @@ export const MatchTypeFields = [
         requiredErrorMessage: "Please enter value",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
+    {
+        name: "isHistory",
+        label: "Is History",
+        defaultValue: true,
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 1, lg: 1 }
+    },
 ];
