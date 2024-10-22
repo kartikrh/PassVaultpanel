@@ -98,52 +98,47 @@ const PlayerHistory = () => {
     });
   };
 
-  const validateBattingRow = (row) => {
-    const requiredFields = [
-      "matchTypeName",
-      "matchCount",
-      "inningsCount",
-      "notOut",
-      "totalRuns",
-      "highestScore",
-      "average",
-      "ballsFacedCount",
-      "strikeRate",
-      "countOf100",
-      "countOf50",
-      "countOf4",
-      "countOf6",
-      "catchCount",
-      "stumpCount",
-    ];
-
-    const errors = [];
-
-    requiredFields.forEach((field) => {
-      if (!row[field]) {
-        errors.push(`${field}`);
-      }
-    });
-
-    return errors;
-  };
+  // const validateBattingRow = (row) => {
+  //   const requiredFields = [
+  //     "matchTypeName",
+  //     "matchCount",
+  //     "inningsCount",
+  //     "notOut",
+  //     "totalRuns",
+  //     "highestScore",
+  //     "average",
+  //     "ballsFacedCount",
+  //     "strikeRate",
+  //     "countOf100",
+  //     "countOf50",
+  //     "countOf4",
+  //     "countOf6",
+  //     "catchCount",
+  //     "stumpCount",
+  //   ];
+  //   const errors = [];
+  //   requiredFields.forEach((field) => {
+  //     if (!row[field]) {
+  //       errors.push(`${field}`);
+  //     }
+  //   });
+  //   return errors;
+  // };
 
   const handleBattingSelectRow = (index) => {
     setBattingHistory((prevHistory) => {
-      const row = prevHistory[index];
-      const errors = validateBattingRow(row);
-
-      if (errors.length > 0) {
-        dispatch(
-          updateToastData({
-            data: `Please fill all required fields: ${errors.join(", ")}`,
-            title: "Batting History Error",
-            type: ERROR,
-          })
-        );
-        return prevHistory;
-      }
-
+      // const row = prevHistory[index];
+      // const errors = validateBattingRow(row);
+      // if (errors.length > 0) {
+      //   dispatch(
+      //     updateToastData({
+      //       data: `Please fill all required fields: ${errors.join(", ")}`,
+      //       title: "Batting History Error",
+      //       type: ERROR,
+      //     })
+      //   );
+      //   return prevHistory;
+      // }
       const updatedHistory = [...prevHistory];
       updatedHistory[index].selected = !updatedHistory[index].selected;
       return updatedHistory;
@@ -152,78 +147,70 @@ const PlayerHistory = () => {
 
   const handleSelectBattingAll = (event) => {
     const isChecked = event.target.checked;
-    const errors = [];
-
+    // const errors = [];
     const newBattingHistory = battingHistory.map((item) => {
-      const rowErrors = validateBattingRow(item);
-      if (rowErrors.length > 0) {
-        errors.push(`Row ${item.index || 0}: ${rowErrors.join(", ")}`);
-      }
+      // const rowErrors = validateBattingRow(item);
+      // if (rowErrors.length > 0) {
+      //   errors.push(`Row ${item.index || 0}: ${rowErrors.join(", ")}`);
+      // }
       return {
         ...item,
         selected: isChecked,
       };
     });
-
-    if (errors.length > 0) {
-      dispatch(
-        updateToastData({
-          data: `Please fill all required fields.`,
-          title: "Batting History Error",
-          type: ERROR,
-        })
-      );
-      return;
-    }
-
+    // if (errors.length > 0) {
+    //   dispatch(
+    //     updateToastData({
+    //       data: `Please fill all required fields.`,
+    //       title: "Batting History Error",
+    //       type: ERROR,
+    //     })
+    //   );
+    //   return;
+    // }
     setBattingHistory(newBattingHistory);
   };
 
-  const validateBowlingRow = (row) => {
-    const requiredFields = [
-      "matchTypeName",
-      "bowlerPlayedMatchCount",
-      "bowlerPlayedInningsCount",
-      "ballCount",
-      "runsFromBowler",
-      "wicketsCount",
-      "bestBowlingInInnings",
-      "bestBowlingInMatch",
-      "bowlerAverage",
-      "economy",
-      "bowlerStrikeRate",
-      "wickets4",
-      "wickets5",
-      "wickets10",
-    ];
-
-    const errors = [];
-
-    requiredFields.forEach((field) => {
-      if (!row[field]) {
-        errors.push(`${field}`);
-      }
-    });
-
-    return errors;
-  };
+  // const validateBowlingRow = (row) => {
+  //   const requiredFields = [
+  //     "matchTypeName",
+  //     "bowlerPlayedMatchCount",
+  //     "bowlerPlayedInningsCount",
+  //     "ballCount",
+  //     "runsFromBowler",
+  //     "wicketsCount",
+  //     "bestBowlingInInnings",
+  //     "bestBowlingInMatch",
+  //     "bowlerAverage",
+  //     "economy",
+  //     "bowlerStrikeRate",
+  //     "wickets4",
+  //     "wickets5",
+  //     "wickets10",
+  //   ];
+  //   const errors = [];
+  //   requiredFields.forEach((field) => {
+  //     if (!row[field]) {
+  //       errors.push(`${field}`);
+  //     }
+  //   });
+  //   return errors;
+  // };
 
   const handleBowlingSelectRow = (index) => {
     setBowlingHistory((prevHistory) => {
-      const row = prevHistory[index];
-      const errors = validateBowlingRow(row);
-
-      if (errors.length > 0) {
-        dispatch(
-          updateToastData({
-            data: `Please fill all required fields: ${errors.join(", ")}`,
-            title: "Bowling History Error",
-            type: ERROR,
-          })
-        );
-        return prevHistory;
-      }
-
+      // const row = prevHistory[index];
+      // const errors = validateBowlingRow(row);
+      // if (errors.length > 0) {
+      //   dispatch(
+      //     updateToastData({
+      //       data: `Please fill all required fields: ${errors.join(", ")}`,
+      //       title: "Bowling History Error",
+      //       type: ERROR,
+      //     })
+      //   );
+      //   return prevHistory;
+      // }
       const updatedHistory = [...prevHistory];
       updatedHistory[index].selected = !updatedHistory[index].selected;
       return updatedHistory;
@@ -232,30 +219,27 @@ const PlayerHistory = () => {
 
   const handleSelectBowlingAll = (event) => {
     const isChecked = event.target.checked;
-    const errors = [];
-
+    // const errors = [];
     const newBowlingHistory = bowlingHistory.map((item) => {
-      const rowErrors = validateBowlingRow(item);
-      if (rowErrors.length > 0) {
-        errors.push(`Row ${item.index || 0}: ${rowErrors.join(", ")}`);
-      }
+      // const rowErrors = validateBowlingRow(item);
+      // if (rowErrors.length > 0) {
+      //   errors.push(`Row ${item.index || 0}: ${rowErrors.join(", ")}`);
+      // }
       return {
         ...item,
         selected: isChecked,
       };
     });
-
-    if (errors.length > 0) {
-      dispatch(
-        updateToastData({
-          data: `Please fill all required fields.`,
-          title: "Bowling History Error",
-          type: ERROR,
-        })
-      );
-      return;
-    }
-
+    // if (errors.length > 0) {
+    //   dispatch(
+    //     updateToastData({
+    //       data: `Please fill all required fields.`,
+    //       title: "Bowling History Error",
+    //       type: ERROR,
+    //     })
+    //   );
+    //   return;
+    // }
     setBowlingHistory(newBowlingHistory);
   };
 
@@ -509,7 +493,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "matchTypeName", e.target.value)
             }
@@ -528,7 +512,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "matchCount", e.target.value)
             }
@@ -547,7 +531,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "inningsCount", e.target.value)
             }
@@ -566,7 +550,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "notOut", e.target.value)
             }
@@ -585,7 +569,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "totalRuns", e.target.value)
             }
@@ -604,7 +588,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "highestScore", e.target.value)
             }
@@ -623,7 +607,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "average", e.target.value)
             }
@@ -642,7 +626,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "ballsFacedCount", e.target.value)
             }
@@ -661,7 +645,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "strikeRate", e.target.value)
             }
@@ -680,7 +664,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf100", e.target.value)
             }
@@ -699,7 +683,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf50", e.target.value)
             }
@@ -718,7 +702,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf4", e.target.value)
             }
@@ -737,7 +721,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "countOf6", e.target.value)
             }
@@ -756,7 +740,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "catchCount", e.target.value)
             }
@@ -775,7 +759,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBattingValueChange(index, "stumpCount", e.target.value)
             }
@@ -819,7 +803,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "matchTypeName", e.target.value)
             }
@@ -838,7 +822,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -863,7 +847,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -888,7 +872,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "ballCount", e.target.value)
             }
@@ -907,7 +891,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "runsFromBowler", e.target.value)
             }
@@ -926,7 +910,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wicketsCount", e.target.value)
             }
@@ -945,7 +929,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -970,7 +954,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -995,7 +979,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "bowlerAverage", e.target.value)
             }
@@ -1014,7 +998,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "economy", e.target.value)
             }
@@ -1033,7 +1017,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(
                 index,
@@ -1056,7 +1040,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wickets4", e.target.value)
             }
@@ -1075,7 +1059,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wickets5", e.target.value)
             }
@@ -1094,7 +1078,7 @@ const PlayerHistory = () => {
           <Input
             className="form-control small-text-fields"
             type="text"
-            value={text || ""}
+            value={text != null ? text : ""}
             onChange={(e) =>
               handleBowlingValueChange(index, "wickets10", e.target.value)
             }
@@ -1112,11 +1096,11 @@ const PlayerHistory = () => {
       <>
         <Card>
           <CardHeader className="d-flex align-items-center justify-content-between">
-            Batting & Fielding
+            <h5 className="mb-0 font-size-16">Batting & Fielding</h5>
             <div>
               <Button
                 color="primary"
-                className="btn btn-sm mx-2"
+                className="btn mx-2"
                 onClick={handleBattingSave}
               >
                 {" "}
@@ -1124,7 +1108,7 @@ const PlayerHistory = () => {
               </Button>
               <Button
                 color="danger"
-                className="btn btn-sm"
+                className="btn"
                 onClick={handleBattingDelete}
               >
                 {" "}
@@ -1168,11 +1152,11 @@ const PlayerHistory = () => {
         </Card>
         <Card>
           <CardHeader className="d-flex align-items-center justify-content-between">
-            Bowling
+            <h5 className="mb-0 font-size-16">Bowling</h5>
             <div>
               <Button
                 color="primary"
-                className="btn btn-sm mx-2"
+                className="btn mx-2"
                 onClick={handleBowlingSave}
               >
                 {" "}
@@ -1180,7 +1164,7 @@ const PlayerHistory = () => {
               </Button>
               <Button
                 color="danger"
-                className="btn btn-sm"
+                className="btn"
                 onClick={handleBowlingDelete}
               >
                 {" "}
@@ -1234,28 +1218,10 @@ const PlayerHistory = () => {
             <Card>
               <CardBody className="p-1">
                 {isLoading && <SpinnerModel />}
-                <Row>
-                  <Col className="mt-3 mt-lg-3 mt-md-3">
-                    <Breadcrumbs
-                      title="ScoreCard"
-                      breadcrumbItem="Player History"
-                      page="updatecp"
-                    />
-                  </Col>
-                  <Col className="mt-3 mt-lg-3 mt-md-3 float-right">
-                    <Button
-                      className="btn btn-danger text-right mx-2"
-                      onClick={handleBackClick}
-                    >
-                      {" "}
-                      Back{" "}
-                    </Button>
-                  </Col>
-                </Row>
-                <Row className="g-2 mb-3">
-                  {playerDetails && (
-                    <Col className="col-sm-auto d-flex align-items-center">
-                      {playerDetails?.image ? (
+                <Row className="mt-3 mt-lg-3 mt-md-3 mb-3">
+                {playerDetails && 
+                  <Col className="col-sm-auto d-flex align-items-center">
+                    {playerDetails?.image ? (
                         <img
                           className="avatar-sm rounded-circle"
                           alt=""
@@ -1265,10 +1231,18 @@ const PlayerHistory = () => {
                         <Avatar src="#" alt="ET">
                           Image
                         </Avatar>
-                      )}
-                      <div className="px-2">{`${playerDetails?.playerName}`}</div>
-                    </Col>
-                  )}
+                    )}
+                    <h4 className="mb-0 font-size-18 mx-2">{`${playerDetails?.playerName} History`}</h4>
+                  </Col>}
+                  <Col className="float-right">
+                    <Button
+                      className="btn btn-danger text-right mx-2"
+                      onClick={handleBackClick}
+                    >
+                      {" "}
+                      Back{" "}
+                    </Button>
+                  </Col>
                 </Row>
                 {renderMainSections()}
               </CardBody>

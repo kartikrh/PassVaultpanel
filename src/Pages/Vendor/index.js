@@ -93,9 +93,10 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addVendor", { state: { vendorId: id } });
   };
-  const handleVendorIpList = (id) => {
+  const handleVendorIpList = (details) => {
     const url = new URL(window.location.origin + "/vendorIpList");
-    sessionStorage.setItem('vendorIpListId', "" + id);
+    sessionStorage.setItem('vendorIpListId', "" + details?.vendorId);
+    sessionStorage.setItem('vendorIpListDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
     // navigate("/vendorIpList", { state: { vendorId: id } });
   };
@@ -272,7 +273,7 @@ const Index = () => {
           }
           className="btn"
           onClick={() => {
-            handleVendorIpList(record?.vendorId);
+            handleVendorIpList(record);
           }}
         >
           <i class='bx bxs-store' ></i>
