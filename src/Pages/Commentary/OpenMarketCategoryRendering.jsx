@@ -25,7 +25,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                         overRate: firstRunner?.overRate,
                         runnerId: firstRunner?.runnerId,
                         runnerName: firstRunner?.runnerName,
-                        status: firstRunner?.status,
+                        status: market?.status,
                         underRate: firstRunner?.underRate,
                         // ...(market.runner && market.runner[0]),
                     }})}

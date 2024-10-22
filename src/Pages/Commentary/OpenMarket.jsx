@@ -7,7 +7,7 @@ import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap"
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
+import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, OPEN_MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnderLineType } from "./functions";
@@ -165,7 +165,7 @@ export const OpenMarket = () => {
                     let updatedMarket = { ...market };
 
                     // Check if the key is a runner-specific property
-                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize', 'status'];
+                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
 
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
                         // Update runner-level property for all runners
@@ -176,6 +176,14 @@ export const OpenMarket = () => {
                     } else {
                         // Update market-level property
                         updatedMarket[key] = value;
+                    }
+
+                    if ((updatedMarket?.marketTypeId == 2 || updatedMarket?.marketTypeId == 4) && Array.isArray(updatedMarket?.runner)) {
+                        const marketStatus = updatedMarket?.status;
+                        updatedMarket.runner = updatedMarket?.runner?.length > 0 && updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            status: marketStatus
+                        }));
                     }
 
                     if (key === 'line' || key === 'margin') {
@@ -546,7 +554,7 @@ export const OpenMarket = () => {
                         handleValueChange(record, "status", +e.target.value);
                     }}
                 >
-                    {Object.entries(MARKET_STATUS).map(([key, value]) =>
+                    {Object.entries(OPEN_MARKET_STATUS).map(([key, value]) =>
                         <option key={key} value={key}>{value}</option>
                     )}
                 </select>
@@ -578,31 +586,31 @@ export const OpenMarket = () => {
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line - 2)}
                     >
-                        {Math.floor(record?.line) - 2}
+                        {Math.round(record?.line) - 2}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line - 1)}
                     >
-                        {Math.floor(record?.line) - 1}
+                        {Math.round(record?.line) - 1}
                     </Button>
                     <Button
                         className="form-control line-center-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line)}
                     >
-                        {Math.floor(record?.line)}
+                        {Math.round(record?.line)}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line + 1)}
                     >
-                        {Math.floor(record?.line) + 1}
+                        {Math.round(record?.line) + 1}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line + 2)}
                     >
-                        {Math.floor(record?.line) + 2}
+                        {Math.round(record?.line) + 2}
                     </Button>
                 </div>
             ),
