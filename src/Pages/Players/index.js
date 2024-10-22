@@ -31,12 +31,24 @@ const Index = () => {
   const [importExportPlayerHistoryModelVisable, setImportExportPlayerHistoryModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [PlayerHistoryObject,setPlayerHistoryObject] = useState({});
+
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
+
+    const { eventTypeId, teamId } = latestValueFromTable || {};
+
+    // Update PlayerHistoryObject state with eventTypeId and teamId
+    setPlayerHistoryObject((prevState) => ({
+      ...prevState,
+      eventTypeId: eventTypeId !== undefined ? eventTypeId : prevState.eventTypeId,
+      teamId: teamId !== undefined ? teamId : prevState.teamId,
+    }));
+
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/player/all`, {
@@ -359,9 +371,13 @@ const Index = () => {
 
   const handleDownloadPlayerHistory = async () => {
     try {
+      const { teamId, eventTypeId } = PlayerHistoryObject;
       setIsLoading(true);
       // Call the export API
-      const response = await axiosInstance.post('/admin/playerHistory/export', {} ,{
+      const response = await axiosInstance.post('/admin/playerHistory/export', {
+        teamId,
+        eventTypeId,
+      } ,{
         responseType: 'arraybuffer', // Ensure the response is treated as a file blob
       });
       
@@ -405,8 +421,8 @@ const Index = () => {
       })
       .then((response) => {
         setIsLoading(false);
-        console.log("File uploaded successfully:", response.data);
         dispatch(updateToastData({ data: 'File uploaded successfully', title: 'SUCCESS', type: SUCCESS }));
+        setImportExportPlayerHistoryModelVisable(false)
       })
       .catch((error) => {
         setIsLoading(false);
@@ -415,6 +431,23 @@ const Index = () => {
       });
   };
   
+  const handlePlayerHistoryModalPopUp = (event) => {
+    const { teamId, eventTypeId } = PlayerHistoryObject;
+    // Check if teamId and eventTypeId are present
+    if (!teamId || !eventTypeId) {
+      dispatch(
+        updateToastData({
+          data: 'Please select both a team and event type before downloading',
+          title: 'Warning',
+          type: 'WARNING',
+        })
+      );
+      return; // Exit the function if either value is missing
+    }
+    else {
+      setImportExportPlayerHistoryModelVisable(true)
+    }
+  }
   return (
     <React.Fragment>
       <div className="page-content">
@@ -436,7 +469,7 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}
-            setImportExportPlayerHistoryModelVisable={setImportExportPlayerHistoryModelVisable}
+            handlePlayerHistoryModalPopUp={handlePlayerHistoryModalPopUp}
             teams = {teams}
           />
           <DeleteTabModel
