@@ -578,31 +578,31 @@ export const OpenMarket = () => {
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line - 2)}
                     >
-                        {Math.floor(record?.line) - 2}
+                        {Math.round(record?.line) - 2}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line - 1)}
                     >
-                        {Math.floor(record?.line) - 1}
+                        {Math.round(record?.line) - 1}
                     </Button>
                     <Button
                         className="form-control line-center-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line)}
                     >
-                        {Math.floor(record?.line)}
+                        {Math.round(record?.line)}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line + 1)}
                     >
-                        {Math.floor(record?.line) + 1}
+                        {Math.round(record?.line) + 1}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line + 2)}
                     >
-                        {Math.floor(record?.line) + 2}
+                        {Math.round(record?.line) + 2}
                     </Button>
                 </div>
             ),
