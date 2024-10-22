@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import CustomInput from "../../components/Common/Reusables/CustomInput";
-import { getStatusColor, MARKET_STATUS } from "./CommentartConst";
+import { getStatusColor, OPEN_MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
 import { generateOverUnder } from "./functions";
 import axiosInstance from "../../Features/axios";
@@ -129,7 +129,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 value={localMarket.status}
                                 onChange={(e) => handleMarketValueChange("status", +e.target.value)}
                             >
-                                {Object.entries(MARKET_STATUS).map(([key, value]) =>
+                                {Object.entries(OPEN_MARKET_STATUS).map(([key, value]) =>
                                     <option key={key} value={key}>{value}</option>
                                 )}
                             </select>
@@ -210,7 +210,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     value={runner.status}
                                     onChange={(e) => handleRunnerValueChange(runner.runnerId, "status", +e.target.value)}
                                 >
-                                    {Object.entries(MARKET_STATUS).map(([key, value]) =>
+                                    {Object.entries(OPEN_MARKET_STATUS).map(([key, value]) =>
                                         <option key={key} value={key}>{value}</option>
                                     )}
                                 </select>
