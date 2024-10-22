@@ -110,7 +110,9 @@ const MatchTypePredictor = () => {
       }
     };
 
-    generateOversAndBallsData();
+    if(initialEditData){
+      generateOversAndBallsData();
+    }
   }, [initialEditData?.oversPerInings]);
 
   useEffect(() => {

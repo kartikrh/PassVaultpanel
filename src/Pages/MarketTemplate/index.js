@@ -278,6 +278,7 @@ const Index = () => {
       ),
       key: "matchType",
       style: { width: "20%" },
+      sort: true,
     },
     {
       title: "Template Name",
@@ -287,6 +288,7 @@ const Index = () => {
       ),
       key: "templateName",
       style: { width: "70%" },
+      sort: true,
     },
     {
       title: "Is Active",

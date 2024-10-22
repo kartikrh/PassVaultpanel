@@ -104,7 +104,14 @@ const AwardModal = ({ commentaryId, onClose }) => {
         axiosInstance.post('/admin/commentary/getAssignAward', { commentaryId })
             .then((response) => {
                 const data = response?.result;
-                if (data) setSelectedPlayers(data);
+                // if (data) setSelectedPlayers(data);
+                if (data) {
+                    const playersByAwardId = data.reduce((acc, player) => {
+                        acc[player.awardId] = player;
+                        return acc;
+                    }, {});
+                    setSelectedPlayers(playersByAwardId);
+                }
                 setIsApiLoading(false);
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
