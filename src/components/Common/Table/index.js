@@ -59,7 +59,7 @@ const Index = forwardRef(
       isSignalRStarted,
       singleCheck,
       setImportExportModelVisable,
-      setImportExportPlayerHistoryModelVisable,
+      handlePlayerHistoryModalPopUp,
       eventTypes,
       selectedTableElementsLogs,
       competitionList,
@@ -1417,7 +1417,7 @@ const Index = forwardRef(
                             <span
                               className="btn btn-warning"
                               onClick={() => {
-                                setImportExportPlayerHistoryModelVisable(true);
+                                handlePlayerHistoryModalPopUp();
                               }}
                             >
                               Player History Update
