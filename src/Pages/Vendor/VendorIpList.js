@@ -30,8 +30,8 @@ const VendorIpList = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [vendorDetails, setVendorDetails] = useState(null);
-  const [vendorId, setVendorId] = useState(+sessionStorage.getItem('vendorIpListId') || "0");
+  const vendorId = +sessionStorage.getItem('vendorIpListId') || "0";
+  const vendorDetails = JSON.parse(sessionStorage.getItem('vendorIpListDetails') || "{}");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -61,23 +61,6 @@ const VendorIpList = () => {
           })
         );
         setIsLoading(false);
-      });
-  };
-
-  const fetchVendorData = async (id) => {
-    await axiosInstance
-      .post("/admin/vendor/byId", { vendorId: id })
-      .then((response) => {
-        setVendorDetails(response?.result);
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
       });
   };
 
@@ -272,9 +255,8 @@ const VendorIpList = () => {
   useEffect(() => {
     if (vendorId !== "0") {
       fetchData(vendorId);
-      fetchVendorData(vendorId);
     }
-  }, [setVendorId]);
+  }, [vendorId]);
 
   return (
     <React.Fragment>
