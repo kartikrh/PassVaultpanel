@@ -111,6 +111,14 @@ export const MARKET_STATUS = {
     "6": "Cancel",
 }
 
+export const OPEN_MARKET_STATUS = {
+    "0": "NotOpen",
+    "1": "Open",
+    "2": "inActive",
+    "3": "Suspend",
+    "4": "Close",
+}
+
 export const INACTIVE = "InAc"
 export const SUSPEND = "Sp"
 export const ALLOW = "Al"
