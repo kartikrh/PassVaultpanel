@@ -15,12 +15,17 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { updateToastData } from "../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
-import { ERROR, SUCCESS } from "../../components/Common/Const";
+import {
+  ERROR,
+  SUCCESS,
+  TAB_PLAYER_HISTORY,
+} from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "antd";
 
 const PlayerHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
+  document.title = TAB_PLAYER_HISTORY;
   const [battingHistory, setBattingHistory] = useState([]);
   const [bowlingHistory, setBowlingHistory] = useState([]);
   const playerId = +sessionStorage.getItem("playerId") || "0";
@@ -283,7 +288,7 @@ const PlayerHistory = () => {
           inningsCount: +item?.inningsCount,
           notOut: +item?.notOut,
           totalRuns: +item?.totalRuns,
-          highestScore: +item?.highestScore,
+          highestScore: item?.highestScore,
           average: +item?.average,
           ballsFacedCount: +item?.ballsFacedCount,
           strikeRate: +item?.strikeRate,
@@ -594,27 +599,19 @@ const PlayerHistory = () => {
     {
       title: "HS",
       dataIndex: "highestScore",
-      render: (text, record, index) => {
-        const displayValue = text
-          ? record?.isOutInHS
-            ? text
-            : `${text} *`
-          : "";
-
-        return (
-          <>
-            <Input
-              className="form-control small-text-fields"
-              type="text"
-              value={displayValue || ""}
-              onChange={(e) =>
-                handleBattingValueChange(index, "highestScore", e.target.value)
-              }
-            />
-            <span className="text-danger">{record?.error?.highestScore}</span>
-          </>
-        );
-      },
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text || ""}
+            onChange={(e) =>
+              handleBattingValueChange(index, "highestScore", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.highestScore}</span>
+        </>
+      ),
       key: "highestScore",
       style: { width: "5%" },
     },

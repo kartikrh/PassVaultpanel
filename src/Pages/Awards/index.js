@@ -195,7 +195,7 @@ const Index = () => {
       render: (text, record) => (
         <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "90%" },
       sort: true,
     },
     {

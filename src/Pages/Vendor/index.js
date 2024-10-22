@@ -94,7 +94,10 @@ const Index = () => {
     navigate("/addVendor", { state: { vendorId: id } });
   };
   const handleVendorIpList = (id) => {
-    navigate("/vendorIpList", { state: { vendorId: id } });
+    const url = new URL(window.location.origin + "/vendorIpList");
+    sessionStorage.setItem('vendorIpListId', "" + id);
+    window.open(url.href, '_blank');
+    // navigate("/vendorIpList", { state: { vendorId: id } });
   };
   const updateIpCheckValue = async (pType, record, cState) => {
     await axiosInstance
@@ -269,7 +272,7 @@ const Index = () => {
           }
           className="btn"
           onClick={() => {
-            handleVendorIpList(record.vendorId);
+            handleVendorIpList(record?.vendorId);
           }}
         >
           <i class='bx bxs-store' ></i>

@@ -13,13 +13,12 @@ function MarketLogs() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  const eventMarketId = +localStorage.getItem("EventMarketLogId") || "0";
-  const [marketDetails, setMarketDetails] = useState(null);
+  const eventMarketId = +sessionStorage.getItem('eventMarketLogId') || "0";
+  const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketLogDetails') || "{}");
 
   useEffect(() => {
     if (eventMarketId !== "0") {
       fetchData(eventMarketId);
-      fetchMarketData(eventMarketId);
     }
   }, [eventMarketId]);
 
@@ -45,23 +44,6 @@ function MarketLogs() {
           })
         );
         setIsLoading(false);
-      });
-  };
-
-  const fetchMarketData = async (id) => {
-    await axiosInstance
-      .post("/admin/eventMarket/byId", { eventMarketId: id })
-      .then((response) => {
-        setMarketDetails(response?.result);
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
       });
   };
 

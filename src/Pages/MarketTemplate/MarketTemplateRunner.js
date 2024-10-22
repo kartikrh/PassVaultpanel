@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -32,9 +32,8 @@ const MarketTemplateRunner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [newFormData, setNewFormData] = useState({});
-  const location = useLocation();
   const [marketTemplateId, setMarketTemplateId] = useState(
-    location.state?.marketTemplateId || "0"
+    +sessionStorage.getItem('marketTemplateRunnerId') || "0"
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();

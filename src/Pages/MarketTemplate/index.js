@@ -181,7 +181,10 @@ const Index = () => {
     navigate("/addMarketTemplate", { state: { marketTemplateId: id } });
   };
   const handleMarketTemplateRunnerClick = (id) => {
-    navigate("/marketTemplateRunner", { state: { marketTemplateId: id } });
+    const url = new URL(window.location.origin + "/marketTemplateRunner");
+    sessionStorage.setItem('marketTemplateRunnerId', "" + id);
+    window.open(url.href, '_blank');
+    // navigate("/marketTemplateRunner", { state: { marketTemplateId: id } });
   };
   const updatePredefineRunnerValue = async (pType, record, cState) => {
     await axiosInstance
@@ -382,7 +385,7 @@ const Index = () => {
           }
           className="btn"
           onClick={() => {
-            handleMarketTemplateRunnerClick(record.marketTemplateId);
+            handleMarketTemplateRunnerClick(record?.marketTemplateId);
           }}
         >
           <i class='bx bxs-store' ></i>
