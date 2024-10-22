@@ -963,7 +963,7 @@ export const CreateEventMarket = () => {
                                     </Col>
                                     <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
                                         <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
-                                        <Button color="primary" className="btn text-right" onClick={handleSave} > Save </Button>
+                                        <Button color="primary mx-2" className="btn text-right" onClick={handleSave} > Save </Button>
                                         <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button>
                                     </Col>
                                 </Row>

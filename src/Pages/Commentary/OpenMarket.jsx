@@ -471,18 +471,20 @@ export const OpenMarket = () => {
         let updatedRecord = { ...record };
         if (record.runner && record.runner.length === 1) {
             // Single runner market
+            const roundedLine = Math.floor(parseFloat(newValue));
             updatedRecord.runner = [{
                 ...record.runner[0],
                 line: newValue,
-                layPrice: Math.round(+newValue),
-                backPrice: parseInt(record?.lineType) === 1 ? Math.round(+newValue) + 1 : Math.round(+newValue)
+                layPrice: roundedLine,
+                backPrice: parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine
             }];
             updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType });
         } else {
+            const roundedLine = Math.floor(parseFloat(newValue));
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
-            updatedRecord.layPrice = Math.round(+newValue);
-            updatedRecord.backPrice = parseInt(record?.lineType) === 1 ? Math.round(+newValue) + 1 : Math.round(+newValue);
+            updatedRecord.layPrice = roundedLine;
+            updatedRecord.backPrice = parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine;
             updatedRecord = generateOverUnderLineType(updatedRecord);
         }
 
@@ -576,31 +578,31 @@ export const OpenMarket = () => {
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line - 2)}
                     >
-                        {Math.round(record?.line) - 2}
+                        {Math.floor(record?.line) - 2}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line - 1)}
                     >
-                        {Math.round(record?.line) - 1}
+                        {Math.floor(record?.line) - 1}
                     </Button>
                     <Button
                         className="form-control line-center-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line)}
                     >
-                        {Math.round(record?.line)}
+                        {Math.floor(record?.line)}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line + 1)}
                     >
-                        {Math.round(record?.line) + 1}
+                        {Math.floor(record?.line) + 1}
                     </Button>
                     <Button
                         className="form-control line-text-fields"
                         onClick={() => updateLineAndDependency(record, record?.line + 2)}
                     >
-                        {Math.round(record?.line) + 2}
+                        {Math.floor(record?.line) + 2}
                     </Button>
                 </div>
             ),

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { MatchTypePredictorFields } from "../../constants/FieldConst/MatchTypePredictorConst";
 import {
@@ -51,8 +51,7 @@ const MatchTypePredictor = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
-  const location = useLocation();
-  const [id, setId] = useState(location.state?.userId || "0");
+  const [id, setId] = useState(+sessionStorage.getItem('matchTypePredictorId') || "0");
   useEffect(() => {
     if (id !== "0") {
       fetchData(id);
@@ -111,7 +110,9 @@ const MatchTypePredictor = () => {
       }
     };
 
-    generateOversAndBallsData();
+    if(initialEditData){
+      generateOversAndBallsData();
+    }
   }, [initialEditData?.oversPerInings]);
 
   useEffect(() => {

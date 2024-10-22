@@ -44,7 +44,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.id - b?.id);
+        const apiData = response?.result?.sort((a, b) => a.displayOrder - b.displayOrder);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.id);
@@ -169,7 +169,7 @@ const Index = () => {
               handleSingleCheck(record);
             }}
           />
-          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
+          <i className="bx bx-move ms-1 mt-1"></i>
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
@@ -195,7 +195,7 @@ const Index = () => {
       render: (text, record) => (
         <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "90%" },
       sort: true,
     },
     {
@@ -240,6 +240,7 @@ const Index = () => {
   const tableElement = {
     title: "Awards",
     isActive: true,
+    dragDrop: true,
     reloadButton: true,
   };
 
@@ -265,6 +266,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            changeOrderApiName="award"
             singleCheck={checekedList}
             onAddNavigate={"/addAward"}
             handleReset={handleReset}

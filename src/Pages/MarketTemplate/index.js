@@ -181,7 +181,10 @@ const Index = () => {
     navigate("/addMarketTemplate", { state: { marketTemplateId: id } });
   };
   const handleMarketTemplateRunnerClick = (id) => {
-    navigate("/marketTemplateRunner", { state: { marketTemplateId: id } });
+    const url = new URL(window.location.origin + "/marketTemplateRunner");
+    sessionStorage.setItem('marketTemplateRunnerId', "" + id);
+    window.open(url.href, '_blank');
+    // navigate("/marketTemplateRunner", { state: { marketTemplateId: id } });
   };
   const updatePredefineRunnerValue = async (pType, record, cState) => {
     await axiosInstance
@@ -275,6 +278,7 @@ const Index = () => {
       ),
       key: "matchType",
       style: { width: "20%" },
+      sort: true,
     },
     {
       title: "Template Name",
@@ -284,6 +288,7 @@ const Index = () => {
       ),
       key: "templateName",
       style: { width: "70%" },
+      sort: true,
     },
     {
       title: "Is Active",
@@ -308,7 +313,7 @@ const Index = () => {
       title: "Is Per Event",
       key: "isPerEvent",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Active/Inactive Per Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPerEvent ? "primary" : "danger"}`}
           size="sm"
@@ -382,7 +387,7 @@ const Index = () => {
           }
           className="btn"
           onClick={() => {
-            handleMarketTemplateRunnerClick(record.marketTemplateId);
+            handleMarketTemplateRunnerClick(record?.marketTemplateId);
           }}
         >
           <i class='bx bxs-store' ></i>

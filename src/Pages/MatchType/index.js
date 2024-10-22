@@ -128,11 +128,30 @@ const Index = () => {
         );
       });
   };
+  const handleIsHistory = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/matchType/isHistory`, {
+        matchTypeId: record.matchTypeId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
   const handleEdit = (id) => {
     navigate("/addMatchType", { state: { userId: id } });
   };
   const handlePredictorClick = (id) => {
-    navigate("/matchTypePredictor", { state: { userId: id } });
+    const url = new URL(window.location.origin + "/matchTypePredictor");
+    sessionStorage.setItem('matchTypePredictorId', "" + id);
+    window.open(url.href, '_blank');
+    // navigate("/matchTypePredictor", { state: { userId: id } });
   };
   const columns = [
     {
@@ -191,8 +210,27 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       key: "matchType",
-      style: { width: "90%" },
+      style: { width: "86%" },
       sort: true,
+    },
+    {
+      title: "Is History",
+      key: "isHistory",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive History"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isHistory ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleIsHistory("isHistory", record, record.isHistory);
+          }}
+        >
+          <i className={`bx ${record.isHistory ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Predictor",
@@ -205,7 +243,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handlePredictorClick(record.matchTypeId);
+            handlePredictorClick(record?.matchTypeId);
           }}
         >
           <i className="bx bx-plus"></i>

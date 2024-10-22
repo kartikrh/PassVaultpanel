@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -30,9 +30,8 @@ const VendorIpList = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [vendorDetails, setVendorDetails] = useState(null);
-  const location = useLocation();
-  const [vendorId, setVendorId] = useState(location.state?.vendorId || "0");
+  const vendorId = +sessionStorage.getItem('vendorIpListId') || "0";
+  const vendorDetails = JSON.parse(sessionStorage.getItem('vendorIpListDetails') || "{}");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -62,23 +61,6 @@ const VendorIpList = () => {
           })
         );
         setIsLoading(false);
-      });
-  };
-
-  const fetchVendorData = async (id) => {
-    await axiosInstance
-      .post("/admin/vendor/byId", { vendorId: id })
-      .then((response) => {
-        setVendorDetails(response?.result);
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
       });
   };
 
@@ -273,9 +255,8 @@ const VendorIpList = () => {
   useEffect(() => {
     if (vendorId !== "0") {
       fetchData(vendorId);
-      fetchVendorData(vendorId);
     }
-  }, [setVendorId]);
+  }, [vendorId]);
 
   return (
     <React.Fragment>

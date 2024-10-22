@@ -59,6 +59,7 @@ const Index = forwardRef(
       isSignalRStarted,
       singleCheck,
       setImportExportModelVisable,
+      handlePlayerHistoryModalPopUp,
       eventTypes,
       selectedTableElementsLogs,
       competitionList,
@@ -1408,6 +1409,18 @@ const Index = forwardRef(
                               }}
                             >
                               Bulk Update
+                            </span>
+                          </div>
+                        ) : null}
+                       {tableElement?.importExport ? (
+                          <div className="d-flex align-items-center" style={{}}>
+                            <span
+                              className="btn btn-warning"
+                              onClick={() => {
+                                handlePlayerHistoryModalPopUp();
+                              }}
+                            >
+                              Player History Update
                             </span>
                           </div>
                         ) : null}

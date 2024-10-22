@@ -115,6 +115,7 @@ import SocialMedia from "../Pages/SocialMedia";
 import AddAward from "../Pages/Awards/AddAwards.jsx";
 import Awards from "../Pages/Awards";
 import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
+import PlayerHistory from "../Pages/Players/PlayerHistory.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -129,6 +130,7 @@ const authProtectedRoutes = [
   { path: "/addEvents", component: <AddEvents /> },
   { path: "/Players", component: <Players /> },
   { path: "/addPlayer", component: <AddPlayers /> },
+  { path: "/playerHistory", component: <PlayerHistory /> },
   { path: "/Teams", component: <Teams /> },
   { path: "/addTeams", component: <AddTeams /> },
   { path: "/matchType", component: <MatchType /> },
