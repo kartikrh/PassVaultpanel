@@ -148,7 +148,10 @@ const Index = () => {
     navigate("/addMatchType", { state: { userId: id } });
   };
   const handlePredictorClick = (id) => {
-    navigate("/matchTypePredictor", { state: { userId: id } });
+    const url = new URL(window.location.origin + "/matchTypePredictor");
+    sessionStorage.setItem('matchTypePredictorId', "" + id);
+    window.open(url.href, '_blank');
+    // navigate("/matchTypePredictor", { state: { userId: id } });
   };
   const columns = [
     {
@@ -240,7 +243,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handlePredictorClick(record.matchTypeId);
+            handlePredictorClick(record?.matchTypeId);
           }}
         >
           <i className="bx bx-plus"></i>

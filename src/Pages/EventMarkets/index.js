@@ -266,10 +266,10 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addEventMarket", { state: { userId: id } });
   };
-  const handleSL = (id) => {
-    localStorage.setItem('EventMarketLogId', "" + id);
+  const handleSL = (details) => {
     const url = new URL(window.location.origin + "/marketLogs");
-    url.searchParams.append("eventMarketId", id);
+    sessionStorage.setItem('eventMarketLogId', "" + details?.eventMarketId);
+    sessionStorage.setItem('eventMarketLogDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleDS = (details) => {
@@ -579,7 +579,7 @@ const Index = () => {
             size="sm"
             className="btn"
             onClick={() => {
-              handleSL(record?.eventMarketId);
+              handleSL(record);
             }}
           >
             SL
