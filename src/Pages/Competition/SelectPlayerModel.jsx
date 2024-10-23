@@ -120,7 +120,7 @@ export const SelectPlayersModel = ({
               Select Multi Players
             </h4>
             <div className="my-4">
-              <span style={{ marginRight: "10px", fontWeight: "700" }}>
+              <span className="tournament-team-name">
                 Team Name:
               </span>
               <span>{selectedTournamentVals?.teamName}</span>
@@ -133,16 +133,6 @@ export const SelectPlayersModel = ({
               options={playerList}
               value={selectedPlayers}
               onChange={handlePlayerChange}
-              //   onChange={(selectedOptions) => {
-              //     setSelectedPlayers(selectedOptions);
-              //     const selectedPlayersArray = selectedOptions.map((option) => ({
-              //       playerId: option.value,
-              //       playerName: option.label,
-              //       teamId: selectedTournamentVals.teamId,
-              //       competitionId: selectedTournamentVals.competitionId,
-              //     }));
-              //     setSelectedTournament([...selectedPlayersArray]);
-              //   }}
               required={true}
             />
           </div>

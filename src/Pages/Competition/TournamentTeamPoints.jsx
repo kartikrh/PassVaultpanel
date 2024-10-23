@@ -18,6 +18,7 @@ import Select from "react-select";
 import { Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import { SelectPlayersModel } from "./SelectPlayerModel";
+import "./tournament.css";
 
 const TournamentTeamPoints = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -460,7 +461,7 @@ const TournamentTeamPoints = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Row>
+          <Row className="padding-row">
             <Card>
               <CardBody>
                 {isLoading && <SpinnerModel />}
