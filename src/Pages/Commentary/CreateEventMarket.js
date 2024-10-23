@@ -116,8 +116,8 @@ export const CreateEventMarket = () => {
             underRate: null,
         }
         if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
-            const roundedLine = Math.floor(parseFloat(dataObj?.line));
-            const thresholdValue = Math.floor(roundedLine) + 0.5;
+            const roundedLine = Math.round(parseFloat(dataObj?.line));
+            const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
@@ -143,8 +143,8 @@ export const CreateEventMarket = () => {
             underRate: null,
         }
         if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
-            const roundedLine = Math.floor(parseFloat(dataObj?.line));
-            const thresholdValue = Math.floor(roundedLine) + 0.5;
+            const roundedLine = Math.round(parseFloat(dataObj?.line));
+            const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
