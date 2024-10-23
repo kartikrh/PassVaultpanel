@@ -116,6 +116,7 @@ import AddAward from "../Pages/Awards/AddAwards.jsx";
 import Awards from "../Pages/Awards";
 import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
 import PlayerHistory from "../Pages/Players/PlayerHistory.jsx";
+import TournamentTeamPoints from "../Pages/Competition/TournamentTeamPoints.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -139,6 +140,7 @@ const authProtectedRoutes = [
   { path: "/penalty", component: <PenaltyRuns /> },
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
+  { path: "/tournamentTeamPoints", component: <TournamentTeamPoints /> },
   { path: "/socialMedia", component: <SocialMedia /> },
   { path: "/addSocialMedia", component: <AddSocialMedia /> },
   { path: "/awards", component: <Awards /> },

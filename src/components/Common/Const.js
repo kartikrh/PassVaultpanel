@@ -38,6 +38,7 @@ export const TAB_MATCH_TYPE = "Match Types";
 export const TAB_PANELTY_RUNS = "Penalty Runs";
 export const TAB_COMMENTARY = "Commentary";
 export const TAB_COMPETITION = "Competition";
+export const TAB_TOURNAMENT = "Tournament Team Points";
 export const TAB_EVENT = "Events";
 export const TAB_CONFIG = "Config";
 export const TAB_BLOCKS = "Blocks";
