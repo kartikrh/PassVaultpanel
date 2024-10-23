@@ -644,22 +644,29 @@ const Commentary = (props) => {
         checkInningsSwitch(RUN)
     }
     const changeOver = () => {
+        console.log("Starting changeOver - Initial states:", { currentTeamOver: teams[BATTING_TEAM].teamOver });
         let updateBattingTeam = {
             ...teams[BATTING_TEAM],
             "teamOver": Math.ceil(+teams[BATTING_TEAM].teamOver || 0)
         }
+        console.log("Updated batting team:", updateBattingTeam);
+
         const updateBowler = {
             ...onPitchPlayers[CURRENT_BOWLER],
             "isPlay": null,
             "bowlerOver": Math.ceil(+onPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
             "bowlerMaidenOver": currentOver.totalRun < 1 ? 1 : 0
         }
+        console.log("Updated bowler details:", updateBowler);
+
         const updatedOver = {
             ...currentOver,
             "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
             "isMaiden": getBowlerOnlyRuns(currentOver) < 1,
             "isComplete": true
         }
+        console.log("Updated over details:", updatedOver);
+
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
         setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
         setPlayers((prevValue) => { return { ...prevValue, [BOWLING_TEAM]: prevValue?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), } })
@@ -674,7 +681,7 @@ const Commentary = (props) => {
             "commentaryPlayers": [updateBowler],
             "commentaryTeams": [updateBattingTeam],
         }
-        // console.log("Called from : 6")
+        console.log("Final dispatch object:", objToSave);
         dispatch(addCommentaryScreenData(objToSave))
     }
     const changeStrike = () => {
