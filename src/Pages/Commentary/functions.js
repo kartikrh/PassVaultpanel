@@ -235,8 +235,8 @@ export const fetchNextPlayerOrder = (playerType, playerList) => {
 }
 
 export const generateOverUnder = (dataObj) => {
-  const roundedLine = Math.floor(parseFloat(dataObj?.line));
-  const thresholdValue = Math.floor(roundedLine) + 0.5;
+  const roundedLine = Math.round(parseFloat(dataObj?.line));
+  const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
   const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
   const dataToSend = {
     ...dataObj,
