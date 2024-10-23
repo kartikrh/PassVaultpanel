@@ -124,6 +124,14 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+
+  const handleTournament = (details) => {
+    const url = new URL(window.location.origin + "/tournamentTeamPoints");
+    sessionStorage.setItem('competitionId', "" + details?.competitionId);
+    sessionStorage.setItem('competitionDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
+
   //edit
   const handleEdit = (id) => {
     navigate("/addCompetition", { state: { userId: id } });
@@ -257,6 +265,27 @@ const Index = () => {
         >
           <i className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}></i>
         </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Tournament",
+      key: "competitionId",
+      render: (text, record) => (
+        <>
+          <Tooltip title={"Tournament"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleTournament(record);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          </Tooltip>
+        </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
