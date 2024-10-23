@@ -479,7 +479,7 @@ export const OpenMarket = () => {
         let updatedRecord = { ...record };
         if (record.runner && record.runner.length === 1) {
             // Single runner market
-            const roundedLine = Math.floor(parseFloat(newValue));
+            const roundedLine = Math.round(parseFloat(newValue));
             updatedRecord.runner = [{
                 ...record.runner[0],
                 line: newValue,
@@ -488,7 +488,7 @@ export const OpenMarket = () => {
             }];
             updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType });
         } else {
-            const roundedLine = Math.floor(parseFloat(newValue));
+            const roundedLine = Math.round(parseFloat(newValue));
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
             updatedRecord.layPrice = roundedLine;
