@@ -22,7 +22,6 @@ import "./tournament.css";
 
 const TournamentTeamPoints = () => {
   const [isLoading, setIsLoading] = useState(false);
-  document.title = TAB_TOURNAMENT;
   const [tournamentData, setTournamentData] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
@@ -33,6 +32,7 @@ const TournamentTeamPoints = () => {
   const competitionDetails = JSON.parse(
     sessionStorage.getItem("competitionDetails") || "{}"
   );
+  document.title = `${competitionDetails?.competition} Team Points`;
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -110,6 +110,7 @@ const TournamentTeamPoints = () => {
           id: 0,
           teamId: selectedTeamId,
           competitionId: competitionId,
+          isActive: true,
         }
       );
       fetchTournament(competitionId);
@@ -195,12 +196,14 @@ const TournamentTeamPoints = () => {
     }
   };
 
-  const handleRowDelete = async (id) => {
+  const handleRowDelete = async (record) => {
     try {
       const response = await axiosInstance.post(
         "/admin/tournamentTeamPoints/delete",
         {
-          id: [id],
+          id: [record?.id],
+          teamId: [record?.teamId],
+          competitionId: competitionId,
         }
       );
       fetchTournament(competitionId);
@@ -441,7 +444,7 @@ const TournamentTeamPoints = () => {
             color="danger"
             size="sm"
             className="mx-1"
-            onClick={() => handleRowDelete(record.id)}
+            onClick={() => handleRowDelete(record)}
           >
             Delete
           </Button>

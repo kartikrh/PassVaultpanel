@@ -3,6 +3,7 @@ import { Modal, ModalBody } from "reactstrap";
 import { useDispatch } from "react-redux";
 import ReactSelect from "react-select";
 import axiosInstance from "../../Features/axios";
+import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR } from "../../components/Common/Const";
 
@@ -13,6 +14,7 @@ export const SelectPlayersModel = ({
   setSelectedTournament,
   handleSelect,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [playerList, setPlayerList] = useState([]);
   const [allPlayers, setAllPlayers] = useState([]);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
@@ -24,10 +26,12 @@ export const SelectPlayersModel = ({
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const response = await axiosInstance.post(
         `/admin/tournamentTeamPlayers/playersList`,
         {
           teamId: selectedTournament?.teamId,
+          competitionId: selectedTournament?.competitionId,
         }
       );
 
@@ -47,6 +51,7 @@ export const SelectPlayersModel = ({
           value: player.playerId,
         }))
       );
+      setIsLoading(false);
     } catch (error) {
       dispatch(
         updateToastData({
@@ -55,6 +60,7 @@ export const SelectPlayersModel = ({
           type: ERROR,
         })
       );
+      setIsLoading(false);
     }
   };
 
@@ -114,6 +120,7 @@ export const SelectPlayersModel = ({
       centered
     >
       <div className="tablelist-form">
+      {isLoading && <SpinnerModel />}
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
             <h4 className="form-label text-left text-lg">
