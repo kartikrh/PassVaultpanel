@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -36,6 +36,7 @@ export const OpenMarket = () => {
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);  
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
@@ -178,7 +179,7 @@ export const OpenMarket = () => {
                         updatedMarket[key] = value;
                     }
 
-                    if ((updatedMarket?.marketTypeId == 2 || updatedMarket?.marketTypeId == 4) && Array.isArray(updatedMarket?.runner)) {
+                    if ((updatedMarket?.marketTypeId == marketTypeObj?.Fancy || updatedMarket?.marketTypeId == marketTypeObj?.LineMarket) && Array.isArray(updatedMarket?.runner)) {
                         const marketStatus = updatedMarket?.status;
                         updatedMarket.runner = updatedMarket?.runner?.length > 0 && updatedMarket.runner.map(runner => ({
                             ...runner,

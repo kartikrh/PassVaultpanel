@@ -11,7 +11,7 @@ import {
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { Tooltip } from "antd";
 
@@ -20,7 +20,7 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
   const [runners, setRunners] = useState([]);
   const [selectedRunner, setSelectedRunner] = useState(null);
   const dispatch = useDispatch();
-
+  const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);  
   const fetchRunners = async () => {
     try {
       const response = await axiosInstance.post("/admin/eventMarket/getRunnerByMarket", {
@@ -39,14 +39,14 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
   };
 
   useEffect(() => {
-    if (data && !(data?.marketTypeName?.toLowerCase() === "fancy" || data?.marketTypeName?.toLowerCase() === "line market")) {
+    if (data && !(data?.marketTypeId == marketTypeObj?.Fancy || data?.marketTypeId == marketTypeObj?.LineMarket)) {
       fetchRunners();
     }
   }, [data]);
   
   const handleYesClick = async () => {
     let payload = {}
-    if (data.marketTypeName.toLowerCase() === "fancy" || data.marketTypeName.toLowerCase() === "line market") {
+    if (data?.marketTypeId == marketTypeObj?.Fancy || data?.marketTypeId == marketTypeObj?.LineMarket) {
       payload = {
         eventMarketId: data.eventMarketId,
         commentaryId: data.commentaryId,
@@ -121,7 +121,7 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
             </tbody>
           </table>
         )}
-        {data && (data.marketTypeName.toLowerCase() === "fancy" || data.marketTypeName.toLowerCase() === "line market") ? (
+        {data && (data?.marketTypeId == marketTypeObj?.Fancy || data?.marketTypeId == marketTypeObj?.LineMarket) ? (
           <div className="d-flex align-items-center">
             <Label for="result">Enter Result</Label>
             <Input
