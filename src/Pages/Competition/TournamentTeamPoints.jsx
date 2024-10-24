@@ -110,6 +110,7 @@ const TournamentTeamPoints = () => {
           id: 0,
           teamId: selectedTeamId,
           competitionId: competitionId,
+          isActive: true,
         }
       );
       fetchTournament(competitionId);
