@@ -202,6 +202,7 @@ const TournamentTeamPoints = () => {
         "/admin/tournamentTeamPoints/delete",
         {
           id: [id],
+          competitionId: competitionId,
         }
       );
       fetchTournament(competitionId);
