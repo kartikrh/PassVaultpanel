@@ -28,6 +28,7 @@ export const SelectPlayersModel = ({
         `/admin/tournamentTeamPlayers/playersList`,
         {
           teamId: selectedTournament?.teamId,
+          competitionId: selectedTournament?.competitionId,
         }
       );
 
