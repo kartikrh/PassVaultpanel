@@ -103,12 +103,12 @@ const Commentary = (props) => {
         // bowlingTeamPlayers: players?.[BOWLING_TEAM],
         // changePlayerList
         // });
-        console.log("Wicket and Partnership: ", {
-            partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-            currentPartnership,
-            partnershipHistory,
-            PartnershiId: currentPartnership?.commentaryPartnershipId,
-        });
+        // console.log("Wicket and Partnership: ", {
+        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
+        //     currentPartnership,
+        //     partnershipHistory,
+        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
+        // });
         // console.log(
         //     {
         //         isOriginalOver: _currentOver ? false : true,
@@ -1357,11 +1357,15 @@ const Commentary = (props) => {
             if (compareNumStringValues(player.commentaryPlayerId, currentBall.batStrikeId)) {
                 wicketDetails = isbatterWicket(player)
                 updatedPlayer = { ...updatedPlayer, ...wicketDetails, isPlay: true, onStrike: true }
+                if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[ON_STRIKE].commentaryPlayerId)) updatedPlayer["batterOrder"] = onPitchPlayers[ON_STRIKE].batterOrder
+                if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) updatedPlayer["batterOrder"] = onPitchPlayers[NON_STRIKE].batterOrder
                 updatedOnPitchPlayer[ON_STRIKE] = updatedPlayer
             }
             else if (compareNumStringValues(player.commentaryPlayerId, currentBall.batNonStrikeId)) {
                 wicketDetails = isbatterWicket(player)
                 updatedPlayer = { ...updatedPlayer, ...wicketDetails, isPlay: true, onStrike: false }
+                if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[ON_STRIKE].commentaryPlayerId)) updatedPlayer["batterOrder"] = onPitchPlayers[ON_STRIKE].batterOrder
+                if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) updatedPlayer["batterOrder"] = onPitchPlayers[NON_STRIKE].batterOrder
                 updatedOnPitchPlayer[NON_STRIKE] = updatedPlayer
             }
             return updatedPlayer
@@ -1371,6 +1375,7 @@ const Commentary = (props) => {
         setPlayerUpdateList([].concat(playerListToSendToDb, playerUpdateList || []))
         return updatedOnPitchPlayer
     }
+
     const updateAfterOverUndo = () => {
         // removing 2 becaus length and index difference
         const previousBall = ballHistory[ballHistory.length - 2]
