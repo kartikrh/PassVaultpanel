@@ -30,8 +30,8 @@ export const SelectPlayersModel = ({
       const response = await axiosInstance.post(
         `/admin/tournamentTeamPlayers/playersList`,
         {
-          teamId: selectedTournament?.teamId,
-          competitionId: selectedTournament?.competitionId,
+          teamId: selectedTournamentVals?.teamId,
+          competitionId: selectedTournamentVals?.competitionId,
         }
       );
 
@@ -65,39 +65,44 @@ export const SelectPlayersModel = ({
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const removePlayers = async (playersToRemove) => {
-    const deletedPlayersIds = playersToRemove.map((player) => player.value);
-    const playersToDelete = allPlayers.filter((player) =>
-      deletedPlayersIds.includes(player.playerId)
-    );
-    const idsToDelete = playersToDelete.map((player) => player.id);
-    try {
-      await axiosInstance.post(`/admin/tournamentTeamPlayers/delete`, {
-        id: idsToDelete,
-      });
-    } catch (error) {
-      dispatch(
-        updateToastData({
-          data: error?.message,
-          title: error?.title,
-          type: ERROR,
-        })
-      );
+    if (
+      selectedTournamentVals?.teamId &&
+      selectedTournamentVals?.competitionId
+    ) {
+      fetchData();
     }
-  };
+  }, [selectedTournamentVals]);
+
+  // const removePlayers = async (playersToRemove) => {
+  //   const deletedPlayersIds = playersToRemove.map((player) => player.value);
+  //   const playersToDelete = allPlayers.filter((player) =>
+  //     deletedPlayersIds.includes(player.playerId)
+  //   );
+  //   const idsToDelete = playersToDelete.map((player) => player.id);
+  //   try {
+  //     await axiosInstance.post(`/admin/tournamentTeamPlayers/delete`, {
+  //       id: idsToDelete,
+  //     });
+  //   } catch (error) {
+  //     dispatch(
+  //       updateToastData({
+  //         data: error?.message,
+  //         title: error?.title,
+  //         type: ERROR,
+  //       })
+  //     );
+  //   }
+  // };
 
   const handlePlayerChange = (selectedOptions) => {
-    const removedPlayers = selectedPlayers.filter(
-      (player) =>
-        !selectedOptions.some((selected) => selected.value === player.value)
-    );
+    // const removedPlayers = selectedPlayers.filter(
+    //   (player) =>
+    //     !selectedOptions.some((selected) => selected.value === player.value)
+    // );
 
-    if (removedPlayers.length > 0) {
-      removePlayers(removedPlayers);
-    }
+    // if (removedPlayers.length > 0) {
+    //   removePlayers(removedPlayers);
+    // }
 
     setSelectedPlayers(selectedOptions);
 

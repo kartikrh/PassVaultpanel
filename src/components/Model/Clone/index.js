@@ -230,7 +230,7 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
                 }}
               >Close</button>
               {singleCheck?.length > 0?
-              <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Save</button>
+              <button type="submit" className="btn btn-success" id="add-btn" onClick={()=>{handleClone()}}>Save</button>
               :null}
           </div>
       </ModalBody>
