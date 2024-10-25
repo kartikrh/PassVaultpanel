@@ -10,6 +10,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import _, { isEqual } from "lodash";
+import Select from "react-select";
 import {
   ERROR,
   PERMISSION_ADD,
@@ -46,6 +47,23 @@ const Index = () => {
   const { selectedMarket, selectedMarketHistory } = useSelector(
     (state) => state.tabsData?.importMarket
   );
+  const [tournamentList, setTournamentList] = useState([]);
+  const [showtournamentList, setisShowTournamentList] = useState(false);
+  const [eventTypeRefId, setEventTypeRefId] = useState("");
+
+
+  const [tournamentObject, setTournamentObject] = useState({
+    competitionId: 0,
+    competitionName: "",
+  });
+
+  // Define handleClick function to update state
+  const handleTournamentObjectClick = (val) => {
+    setTournamentObject({
+      competitionId: val.value.toString(),
+      competitionName: val.label,
+    });
+  };
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -189,6 +207,14 @@ const Index = () => {
                   : "eventTypeName"
                 }`]: text?.name,
             });
+            if(!selectedMarket?.isCompitition){
+            setisShowTournamentList(false)
+            setEventTypeRefId(text?.id);
+            }
+            else if(selectedMarket?.isCompitition){
+              fetchtournamentList(eventTypeRefId)
+              setisShowTournamentList(true)
+            }
           }}
         >
           <span>{text?.name}</span>
@@ -217,6 +243,31 @@ const Index = () => {
           size="sm"
           className="btn-primary"
           onClick={() => {
+            if(showtournamentList && tournamentObject?.competitionId != 0){
+              setDataToDB({
+                ...dataToDB,
+                eventName: text?.name,
+                eventId: text?.id,
+                timeZone: text?.timezone,
+                countryCode: text?.countryCode || "",
+                openDate: text?.openDate,
+                venue: text?.venue || "",
+                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
+                competitionId: tournamentObject?.competitionId,
+              });
+              addData({
+                ...dataToDB,
+                eventName: text?.name,
+                eventId: text?.id,
+                timeZone: text?.timezone,
+                countryCode: text?.countryCode || "",
+                openDate: text?.openDate,
+                venue: text?.venue || "",
+                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
+                competitionId: tournamentObject?.competitionId,
+              });
+            }
+            else{
             setDataToDB({
               ...dataToDB,
               eventName: text?.name,
@@ -235,6 +286,7 @@ const Index = () => {
               openDate: text?.openDate,
               venue: text?.venue || "",
             });
+          }
           }}
         >
           <i className="bx bx-plus"></i>
@@ -430,8 +482,35 @@ const Index = () => {
         ...value
       })
     );
-  };
 
+    
+    if(!selectedMarket?.isCompitition && !selectedMarket?.isEvent)
+      {
+       setisShowTournamentList(true)
+      }
+       else if(selectedMarket?.isCompitition && selectedMarket?.isEvent){
+         setisShowTournamentList(false);
+         setTournamentObject({
+          competitionId: "0",
+          competitionName: "",
+        });
+       }
+       else if(!selectedMarket?.isCompitition && selectedMarket?.isEvent){
+        setisShowTournamentList(false);
+        setTournamentObject({
+          competitionId: "0",
+          competitionName: "",
+        });
+      }
+  };
+  const fetchtournamentList = async (refId) => {
+    await axiosInstance
+      .post(`/admin/ImportMarket/competitionList`, { eventTypeRefId: refId })
+      .then((response) => {
+        setTournamentList(response.result);
+      })
+      .catch((error) => { });
+  };
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
@@ -469,6 +548,7 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Auto Events" />
           {isLoading && <SpinnerModel />}
+
           <Table
             ref={finalizeRef}
             columns={selectedMarket?.isEvent ? columnsB : selectedMarket?.isMarket ? columnsC : columnsA}
@@ -491,6 +571,9 @@ const Index = () => {
             )}
             onBreadCrumbsClick={handleBreadCrumbsClick}
             breadCrumbs={selectedMarketHistory}
+            showtournamentList={showtournamentList}
+            tournamentList = {tournamentList}
+            onTournamentisChanges = {handleTournamentObjectClick}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

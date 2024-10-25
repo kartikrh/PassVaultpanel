@@ -16,7 +16,6 @@ export const SelectPlayersModel = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [playerList, setPlayerList] = useState([]);
-  const [allPlayers, setAllPlayers] = useState([]);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [selectedTournamentVals, setSelectedTournamentVals] = useState({});
   const dispatch = useDispatch();
@@ -30,15 +29,14 @@ export const SelectPlayersModel = ({
       const response = await axiosInstance.post(
         `/admin/tournamentTeamPlayers/playersList`,
         {
-          teamId: selectedTournament?.teamId,
-          competitionId: selectedTournament?.competitionId,
+          teamId: selectedTournamentVals?.teamId,
+          competitionId: selectedTournamentVals?.competitionId,
         }
       );
 
       const remainingPlayers = response?.result?.remainingPlayers || [];
       const tournamentTeamPlayers =
         response?.result?.tournamentTeamPlayers || [];
-      setAllPlayers([...remainingPlayers, ...tournamentTeamPlayers]);
       const options = remainingPlayers.map((player) => ({
         label: player.playerName,
         value: player.playerId,
@@ -65,40 +63,15 @@ export const SelectPlayersModel = ({
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const removePlayers = async (playersToRemove) => {
-    const deletedPlayersIds = playersToRemove.map((player) => player.value);
-    const playersToDelete = allPlayers.filter((player) =>
-      deletedPlayersIds.includes(player.playerId)
-    );
-    const idsToDelete = playersToDelete.map((player) => player.id);
-    try {
-      await axiosInstance.post(`/admin/tournamentTeamPlayers/delete`, {
-        id: idsToDelete,
-      });
-    } catch (error) {
-      dispatch(
-        updateToastData({
-          data: error?.message,
-          title: error?.title,
-          type: ERROR,
-        })
-      );
+    if (
+      selectedTournamentVals?.teamId &&
+      selectedTournamentVals?.competitionId
+    ) {
+      fetchData();
     }
-  };
+  }, [selectedTournamentVals]);
 
   const handlePlayerChange = (selectedOptions) => {
-    const removedPlayers = selectedPlayers.filter(
-      (player) =>
-        !selectedOptions.some((selected) => selected.value === player.value)
-    );
-
-    if (removedPlayers.length > 0) {
-      removePlayers(removedPlayers);
-    }
-
     setSelectedPlayers(selectedOptions);
 
     const selectedPlayersArray = selectedOptions.map((option) => ({
@@ -108,7 +81,7 @@ export const SelectPlayersModel = ({
       competitionId: selectedTournamentVals.competitionId,
     }));
 
-    setSelectedTournament([...selectedPlayersArray]);
+    setSelectedTournament({teamId : selectedTournamentVals?.teamId, competitionId: selectedTournamentVals?.competitionId, teamPlayers: selectedPlayersArray});
   };
 
   return (

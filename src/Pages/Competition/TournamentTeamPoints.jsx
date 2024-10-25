@@ -13,11 +13,12 @@ import {
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
-import { ERROR, SUCCESS, TAB_TOURNAMENT } from "../../components/Common/Const";
+import { ERROR, SUCCESS } from "../../components/Common/Const";
 import Select from "react-select";
 import { Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import { SelectPlayersModel } from "./SelectPlayerModel";
+import DeleteTeamModel from "../../components/Model/DeleteTeamModel";
 import "./tournament.css";
 
 const TournamentTeamPoints = () => {
@@ -26,6 +27,8 @@ const TournamentTeamPoints = () => {
   const [teamList, setTeamList] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [playersModelVisible, setPlayersModelVisible] = useState(false);
+  const [deleteTeamModelVisable, setDeleteTeamModelVisable] = useState(false);
+  const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
   const [selectedTournament, setSelectedTournament] = useState({});
 
   const competitionId = +sessionStorage.getItem("competitionId") || "0";
@@ -134,7 +137,7 @@ const TournamentTeamPoints = () => {
 
   const handleSelectPlayers = async () => {
     setIsLoading(true);
-    if (Array.isArray(selectedTournament) && selectedTournament?.length > 0) {
+    if (selectedTournament?.teamPlayers && Array.isArray(selectedTournament?.teamPlayers)) {
     await axiosInstance
       .post(`/admin/tournamentTeamPlayers/save`, selectedTournament)
       .then((response) => {
@@ -206,6 +209,7 @@ const TournamentTeamPoints = () => {
           competitionId: competitionId,
         }
       );
+      setDeleteTeamModelVisable(false);
       fetchTournament(competitionId);
       dispatch(
         updateToastData({
@@ -215,6 +219,7 @@ const TournamentTeamPoints = () => {
         })
       );
     } catch (error) {
+      setDeleteTeamModelVisable(false);
       dispatch(
         updateToastData({
           data: error?.message,
@@ -430,7 +435,11 @@ const TournamentTeamPoints = () => {
     {
       title: "",
       dataIndex: "actions",
-      render: (text, record) => (
+      render: (text, record) => {
+        const team = teamOptions.find(
+          (option) => option.value === record?.teamId
+        );
+        return (
         <div className="d-flex aligb-items-center">
           <Button
             color="primary"
@@ -444,12 +453,15 @@ const TournamentTeamPoints = () => {
             color="danger"
             size="sm"
             className="mx-1"
-            onClick={() => handleRowDelete(record)}
+            onClick={() => {
+              setDeleteTeamModelVisable(true);
+              setDeleteTeamRecord({...record, teamName: team ? team.label : ""});
+            }}
           >
             Delete
           </Button>
         </div>
-      ),
+      )},
       key: "actions",
       style: { width: "6%" },
     },
@@ -561,6 +573,12 @@ const TournamentTeamPoints = () => {
                 handleSelect={handleSelectPlayers}
               />
             )}
+            <DeleteTeamModel
+              deleteModelVisable={deleteTeamModelVisable}
+              setDeleteModelVisable={setDeleteTeamModelVisable}
+              handleDelete={handleRowDelete}
+              deleteTeamRecord={deleteTeamRecord}
+            />
           </Row>
         </Container>
       </div>
