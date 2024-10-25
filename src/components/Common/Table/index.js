@@ -46,6 +46,7 @@ const Index = forwardRef(
       dataSource,
       tableElement,
       cloneModelFunction,
+      multiCloneModelFunction,
       deleteModelFunction,
       loadModelFunction,
       suspendModelFunction,
@@ -929,6 +930,27 @@ const Index = forwardRef(
                           >
                             <i className="ri-add-line align-bottom me-1"></i>{" "}
                             Clone
+                          </Button>
+                        ) : null}
+                        {tableElement?.multiClone ? (
+                          <Button
+                            color="info"
+                            className="btn"
+                            onClick={() => {
+                              singleCheck.length > 0
+                                ? multiCloneModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                            id="create-btn"
+                          >
+                            <i className="ri-add-line align-bottom me-1"></i>{" "}
+                            Multi Clone
                           </Button>
                         ) : null}
                         {tableElement?.loadCommentary ? (
