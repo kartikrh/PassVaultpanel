@@ -5,12 +5,13 @@ const Index = ({
   deleteModelVisable,
   setDeleteModelVisable,
   handleDelete,
-  data,
+  deleteTeamRecord,
 }) => {
   const [modal_delete, setModal_delete] = useState(true);
   function tog_close() {
     setModal_delete(!modal_delete);
   }
+
   return (
     <Modal
       isOpen={deleteModelVisable}
@@ -35,7 +36,7 @@ const Index = ({
             id="modal-id"
           >
             <span className="mt-4 mb-4">
-              Are you sure you want to delete selected player {data} history?
+              Are you sure you want to delete team {deleteTeamRecord?.teamName} points?
             </span>
             <div className="hstack gap-2 justify-content-center">
               <button
@@ -51,7 +52,7 @@ const Index = ({
                 className="btn btn-danger"
                 id="add-btn"
                 onClick={() => {
-                  handleDelete();
+                  handleDelete(deleteTeamRecord);
                 }}
               >
                 Delete
