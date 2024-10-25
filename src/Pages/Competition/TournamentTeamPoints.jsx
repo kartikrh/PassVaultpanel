@@ -137,7 +137,7 @@ const TournamentTeamPoints = () => {
 
   const handleSelectPlayers = async () => {
     setIsLoading(true);
-    if (Array.isArray(selectedTournament) && selectedTournament?.length > 0) {
+    if (selectedTournament?.teamPlayers && Array.isArray(selectedTournament?.teamPlayers)) {
     await axiosInstance
       .post(`/admin/tournamentTeamPlayers/save`, selectedTournament)
       .then((response) => {
