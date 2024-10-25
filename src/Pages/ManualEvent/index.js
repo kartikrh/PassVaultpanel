@@ -41,6 +41,24 @@ const Index = () => {
     (state) => state.tabsData?.manualEvent
   );
 
+  const [tournamentList, setTournamentList] = useState([]);
+  const [showtournamentList, setisShowTournamentList] = useState(false);
+  const [eventTypeRefId, setEventTypeRefId] = useState("");
+
+
+  const [tournamentObject, setTournamentObject] = useState({
+    competitionId: 0,
+    competitionName: "",
+  });
+
+  // Define handleClick function to update state
+  const handleTournamentObjectClick = (val) => {
+    setTournamentObject({
+      competitionId: val.value.toString(),
+      competitionName: val.label,
+    });
+  };
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -183,6 +201,16 @@ const Index = () => {
                   : "eventTypeName"
                 }`]: text,
             });
+
+            if(!selectedMarket?.isCompitition){
+              setisShowTournamentList(false)
+              setEventTypeRefId(record?.eventTypeID);
+              }
+              else if(selectedMarket?.isCompitition){
+                fetchtournamentList(eventTypeRefId)
+                setisShowTournamentList(true)
+              }
+
           }}
         >
           <span>{text}</span>
@@ -211,24 +239,50 @@ const Index = () => {
           size="sm"
           className="btn-primary"
           onClick={() => {
-            setDataToDB({
-              ...dataToDB,
-              eventName: text,
-              eventId: record?.eventID,
-              timeZone: record?.timezone || "",
-              countryCode: record?.countryCode || "",
-              openDate: record?.eventDate,
-              venue: record?.venue || "",
-            });
-            addData({
-              ...dataToDB,
-              eventName: text,
-              eventId: record?.eventID,
-              timeZone: record?.timezone || "",
-              countryCode: record?.countryCode || "",
-              openDate: record?.eventDate,
-              venue: record?.venue || "",
-            });
+            if(showtournamentList && tournamentObject?.competitionId !== 0){
+              setDataToDB({
+                ...dataToDB,
+                eventName: text,
+                eventId: record?.eventID,
+                timeZone: record?.timezone || "",
+                countryCode: record?.countryCode || "",
+                openDate: record?.eventDate,
+                venue: record?.venue || "",
+                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
+                competitionId: tournamentObject?.competitionId,
+              });
+              addData({
+                ...dataToDB,
+                eventName: text,
+                eventId: record?.eventID,
+                timeZone: record?.timezone || "",
+                countryCode: record?.countryCode || "",
+                openDate: record?.eventDate,
+                venue: record?.venue || "",
+                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
+                competitionId: tournamentObject?.competitionId,
+              });
+            }
+            else{
+              setDataToDB({
+                ...dataToDB,
+                eventName: text,
+                eventId: record?.eventID,
+                timeZone: record?.timezone || "",
+                countryCode: record?.countryCode || "",
+                openDate: record?.eventDate,
+                venue: record?.venue || "",
+              });
+              addData({
+                ...dataToDB,
+                eventName: text,
+                eventId: record?.eventID,
+                timeZone: record?.timezone || "",
+                countryCode: record?.countryCode || "",
+                openDate: record?.eventDate,
+                venue: record?.venue || "",
+              });
+            }
           }}
         >
           <i className="bx bx-plus"></i>
@@ -428,6 +482,23 @@ const Index = () => {
         ...value
       })
     );
+
+    if(!selectedMarket?.isCompitition)
+    {
+     setisShowTournamentList(false)
+    }
+     else if(selectedMarket?.isCompitition){
+       setisShowTournamentList(true)
+     }
+  };
+
+  const fetchtournamentList = async (refId) => {
+    await axiosInstance
+      .post(`/admin/ImportMarket/competitionList`, { eventTypeRefId: refId })
+      .then((response) => {
+        setTournamentList(response.result);
+      })
+      .catch((error) => { });
   };
 
   useEffect(() => {
@@ -482,6 +553,9 @@ const Index = () => {
             )}
             onBreadCrumbsClick={handleBreadCrumbsClick}
             breadCrumbs={selectedMarketHistory}
+            showtournamentList={showtournamentList}
+            tournamentList = {tournamentList}
+            onTournamentisChanges = {handleTournamentObjectClick}
           />
            <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
