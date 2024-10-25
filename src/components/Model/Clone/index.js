@@ -143,3 +143,98 @@ export const MarketTemplateClone = ({cloneModelVisible, cloneValues, setCloneMod
 </Modal>
   )
 }
+
+export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setCloneModelVisible, handleClone, setCloneValues, singleCheck}) => {
+  const [matchType, setMatchType] = useState([]);
+  const handleCloneValues = (index, event) => {
+    const { name, value } = event;
+    const updatedCloneValues = cloneValues.map((item, i) => {
+      if (i === index) {
+        return { ...item, [name]: value };
+      }
+      return item;
+    });
+    setCloneValues(updatedCloneValues);
+  };
+  const fetchData = async () => {
+      await axiosInstance
+        .post("admin/matchType/all", {})
+        .then((response) => {
+          setMatchType(
+            response.result?.map((item) => {
+              return { label: item.matchType, value: item.matchTypeId };
+            })
+          )
+        })
+        .catch((error) => {
+          dispatchEvent(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+  };
+  useEffect(()=>{
+  fetchData();
+  },[])
+  return (
+  <Modal 
+    isOpen={cloneModelVisible} 
+    toggle={() => {
+      setCloneModelVisible(false)
+    }}
+  centered >
+  <div className="tablelist-form">
+      <ModalBody>
+        <div className="d-flex flex-column justify-content-center p-4">
+            <h4 className="form-label text-left text-lg">Multi Clone Market Template</h4>
+            {cloneValues &&
+              cloneValues.length > 0 &&
+              cloneValues.map((cloneValue, index) => (
+                <div key={index} className="clone-item my-3">
+                  <div className="d-flex align-items-center">
+                    <span className="tournament-team-name">Template Name:</span>
+                    <span>{cloneValue.templateName}</span>
+                  </div>
+                  <div className="d-flex align-items-center my-2">
+                    <span className="tournament-team-name">Match Type:</span>
+                    <Select
+                      classNamePrefix="select2-selection"
+                      placeholder="Match Type"
+                      defaultValue={matchType.find(
+                        (item) => item.value === cloneValue.matchTypeID
+                      )}
+                      id={`matchTypeId-${index}`}
+                      name="matchTypeID"
+                      options={matchType}
+                      onChange={(selectedOption) =>
+                        handleCloneValues(index, {
+                          name: "matchTypeID",
+                          value: selectedOption,
+                        })
+                      }
+                      required={true}
+                    />
+                  </div>
+                </div>
+              ))}
+          </div>
+          <div className="hstack gap-2 justify-content-end">
+              <button 
+                type="button" 
+                className="btn btn-light" 
+                onClick={() => {
+                  setCloneModelVisible(false)
+                }}
+              >Close</button>
+              {singleCheck?.length > 0?
+              <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Save</button>
+              :null}
+          </div>
+      </ModalBody>
+  </div>
+</Modal>
+)
+}

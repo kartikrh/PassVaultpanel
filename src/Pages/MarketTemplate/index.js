@@ -10,8 +10,8 @@ import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_MARKET_TEMPLATE } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
-import { MarketTemplateClone } from "../../components/Model/Clone";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { MarketTemplateClone, MarketTemplateMultiClone } from "../../components/Model/Clone";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 
@@ -31,6 +31,8 @@ const Index = () => {
     matchTypeID: "",
     templateName: "",
   });
+  const [multiCloneModelVisible, setMultiCloneModelVisible] = useState(false);
+  const [multiCloneValues, setMultiCloneValues] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (value) => {
@@ -48,7 +50,8 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
-        setCheckedList([])
+        setCheckedList([]);
+        setMultiCloneValues([]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -94,6 +97,45 @@ const Index = () => {
           setCloneModelVisible(false);
         })
         .catch((error) => {
+          setCloneModelVisible(false);
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    } else {
+      dispatch(
+        updateToastData({
+          data: "MatchType is required",
+          title: "Required",
+          type: ERROR,
+        })
+      );
+    }
+  };
+  const handleMultiClone = async () => {
+    if (multiCloneValues && multiCloneValues?.length > 0) {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/marketTemplate/multiClone`, {
+          marketTemplates : multiCloneValues,
+        })
+        .then((response) => {
+          fetchData();
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+          setMultiCloneModelVisible(false);
+        })
+        .catch((error) => {
+          setMultiCloneModelVisible(false);
           dispatch(
             updateToastData({
               data: error?.message,
@@ -228,8 +270,7 @@ const Index = () => {
             value="option1"
             checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-              )
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList)
             }}
           />
         </div>
@@ -243,12 +284,22 @@ const Index = () => {
             value="option1"
             checked={checekedList.includes(record.marketTemplateId)}
             onChange={() => {
+              const isChecked = checekedList.includes(record.marketTemplateId);
               handleSingleCheck(record);
               setCloneValues({
                 marketTemplateId: record?.marketTemplateId,
                 matchTypeID: record?.matchTypeID,
                 templateName: record?.templateName,
               });
+              if (isChecked) {
+                setMultiCloneValues(multiCloneValues.filter(item => item.marketTemplateId !== record.marketTemplateId));
+              } else {
+                setMultiCloneValues([...multiCloneValues, {
+                  marketTemplateId: record?.marketTemplateId,
+                  matchTypeID: record?.matchTypeID,
+                  templateName: record?.templateName,
+                }]);
+              }
             }}
           />
         </div>
@@ -405,6 +456,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     clone: true,
+    multiClone: true,
   };
 
   useEffect(() => {
@@ -432,6 +484,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             cloneModelFunction={setCloneModelVisible}
+            multiCloneModelFunction={setMultiCloneModelVisible}
             matchType = {matchType}
             reFetchData={fetchData}
             handleReload={handleReload}
@@ -453,6 +506,14 @@ const Index = () => {
             handleClone={handleClone}
             setCloneValues={setCloneValues}
             cloneValues={cloneValues}
+            singleCheck={checekedList}
+          />
+          <MarketTemplateMultiClone
+            cloneModelVisible={multiCloneModelVisible}
+            setCloneModelVisible={setMultiCloneModelVisible}
+            handleClone={handleMultiClone}
+            setCloneValues={setMultiCloneValues}
+            cloneValues={multiCloneValues}
             singleCheck={checekedList}
           />
         </Container>

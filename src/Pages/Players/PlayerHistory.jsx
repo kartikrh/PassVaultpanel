@@ -20,6 +20,7 @@ import {
   TAB_PLAYER_HISTORY,
 } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
+import DeletePlayerHistoryModel from "../../components/Model/DeletePlayerHistoryModel";
 import { Avatar } from "antd";
 
 const PlayerHistory = () => {
@@ -27,6 +28,8 @@ const PlayerHistory = () => {
   document.title = TAB_PLAYER_HISTORY;
   const [battingHistory, setBattingHistory] = useState([]);
   const [bowlingHistory, setBowlingHistory] = useState([]);
+  const [deleteBattingModelVisable, setDeleteBattingModelVisable] = useState(false);
+  const [deleteBowlingModelVisable, setDeleteBowlingModelVisable] = useState(false);
   const playerId = +sessionStorage.getItem("playerId") || "0";
   const playerDetails = JSON.parse(
     sessionStorage.getItem("playerDetails") || "{}"
@@ -307,7 +310,7 @@ const PlayerHistory = () => {
     }
   };
 
-  const handleBattingDelete = async () => {
+  const battingDelete = async () => {
     const modifiedRows = battingHistory.filter((item) => item.selected);
 
     if (modifiedRows.length === 0) {
@@ -328,12 +331,36 @@ const PlayerHistory = () => {
             .map((item) => item.battingHistoryId)
         : [];
 
+    if (deleteIds.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "No batting history IDs selected for deletion.",
+          title: "Batting History Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+    setDeleteBattingModelVisable(true);
+  }
+
+  const handleBattingDelete = async () => {
+    const modifiedRows = battingHistory.filter((item) => item.selected);
+
+    const deleteIds =
+      modifiedRows.length > 0
+        ? modifiedRows
+            .filter((i) => i?.battingHistoryId !== null)
+            .map((item) => item.battingHistoryId)
+        : [];
+
     try {
       const response = await axiosInstance.post(
         "/admin/playerHistory/deleteBattingHistory",
         { battingHistoryId: deleteIds }
       );
       fetchPlayerHistory(playerId);
+      setDeleteBattingModelVisable(false);
       dispatch(
         updateToastData({
           data: response?.message,
@@ -342,6 +369,7 @@ const PlayerHistory = () => {
         })
       );
     } catch (error) {
+      setDeleteBattingModelVisable(false);
       dispatch(
         updateToastData({
           data: error?.message,
@@ -416,7 +444,7 @@ const PlayerHistory = () => {
     }
   };
 
-  const handleBowlingDelete = async () => {
+  const bowlingDelete = async () => {
     const modifiedRows = bowlingHistory.filter((item) => item.selected);
 
     if (modifiedRows.length === 0) {
@@ -437,12 +465,36 @@ const PlayerHistory = () => {
             .map((item) => item.bowlingHistoryId)
         : [];
 
+    if (deleteIds.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "No bowling history IDs selected for deletion.",
+          title: "Bowling History Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+    setDeleteBowlingModelVisable(true);
+  }
+
+  const handleBowlingDelete = async () => {
+    const modifiedRows = bowlingHistory.filter((item) => item.selected);
+
+    const deleteIds =
+      modifiedRows.length > 0
+        ? modifiedRows
+            .filter((i) => i?.bowlingHistoryId !== null)
+            .map((item) => item.bowlingHistoryId)
+        : [];
+
     try {
       const response = await axiosInstance.post(
         "/admin/playerHistory/deleteBowlingHistory",
         { bowlingHistoryId: deleteIds }
       );
       fetchPlayerHistory(playerId);
+      setDeleteBowlingModelVisable(false);
       dispatch(
         updateToastData({
           data: response?.message,
@@ -451,6 +503,7 @@ const PlayerHistory = () => {
         })
       );
     } catch (error) {
+      setDeleteBowlingModelVisable(false);
       dispatch(
         updateToastData({
           data: error?.message,
@@ -1108,7 +1161,7 @@ const PlayerHistory = () => {
               <Button
                 color="danger"
                 className="btn"
-                onClick={handleBattingDelete}
+                onClick={battingDelete}
               >
                 {" "}
                 Delete{" "}
@@ -1164,7 +1217,7 @@ const PlayerHistory = () => {
               <Button
                 color="danger"
                 className="btn"
-                onClick={handleBowlingDelete}
+                onClick={bowlingDelete}
               >
                 {" "}
                 Delete{" "}
@@ -1244,6 +1297,18 @@ const PlayerHistory = () => {
                   </Col>
                 </Row>
                 {renderMainSections()}
+                <DeletePlayerHistoryModel
+                  deleteModelVisable={deleteBattingModelVisable}
+                  setDeleteModelVisable={setDeleteBattingModelVisable}
+                  handleDelete={handleBattingDelete}
+                  data={"batting"}
+                />
+                <DeletePlayerHistoryModel
+                  deleteModelVisable={deleteBowlingModelVisable}
+                  setDeleteModelVisable={setDeleteBowlingModelVisable}
+                  handleDelete={handleBowlingDelete}
+                  data={"bowling"}
+                />
               </CardBody>
             </Card>
           </Row>
