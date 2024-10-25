@@ -103,7 +103,10 @@ const Index = forwardRef(
       isSearch,
       setIsSearch,
       matchType,
-      isPagination = true
+      isPagination = true,
+      tournamentList,
+      showtournamentList,
+      onTournamentisChanges
     },
     ref
   ) => {
@@ -332,6 +335,8 @@ const Index = forwardRef(
           ...tableActions,
           isShowContent: id,
         });
+      }else if (key === "onTournamentisChanges") {
+        onTournamentisChanges(id);
       } else {
         reFetchData({
           ...tableActions,
@@ -1734,6 +1739,32 @@ const Index = forwardRef(
                     listToRender={breadCrumbs}
                     updateClickedId={onBreadCrumbsClick}
                   />
+                )}
+                {(showtournamentList && tournamentList.length > 0) && (
+                    <div className="">
+                      <Select
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            width: 280,
+                          }),
+                        }}
+                        value={selectedTableElements?.tournamentType}
+                        placeholder="Tournament List"
+                        onChange={(e) => {
+                          handleTableActions("onTournamentisChanges", e);
+                          setSelectedTableElements({
+                            ...selectedTableElements,
+                            tournamentType: e,
+                          });
+                        }}
+                        options={tournamentList?.map((item) => ({
+                          label: item?.competition,
+                          value: item?.competitionId,
+                        }))}
+                        classNamePrefix="select2-selection"
+                      />
+                    </div>
                 )}
                 {
                 tableElement?.isServerPagination ?(<Row className="g-2 d-flex align-items-center">
