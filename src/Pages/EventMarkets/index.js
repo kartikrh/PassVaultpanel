@@ -31,6 +31,7 @@ const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
   document.title = TAB_EVENT_MARKETS;
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
@@ -565,7 +566,7 @@ const Index = () => {
       style: { width: "5%", textAlign: "center" },
       sort: true,
       render: (text, record) => {
-        return (record?.marketTypeName?.toLowerCase() === "fancy" || record?.marketTypeName?.toLowerCase() === "line market")
+        return (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)
           ? text
           : record?.resultRunner;
       }

@@ -198,7 +198,7 @@ const Commentary = (props) => {
             { ...teams?.[BOWLING_TEAM], isWin: !isBattingTeamWon }]
         const commentaryUpdates = {
             "commentaryStatus": 4,
-            "winnerId": teams?.[WINNING_TEAM].commentaryTeamId,
+            "winnerId": teams?.[WINNING_TEAM].teamId,
             "winnerName": teams?.[WINNING_TEAM].teamName,
             "displayStatus": "",
             "result": WINNING_MESSAGE

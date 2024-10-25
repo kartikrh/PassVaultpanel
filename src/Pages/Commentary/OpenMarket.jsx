@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -36,6 +36,7 @@ export const OpenMarket = () => {
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);  
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
@@ -178,7 +179,7 @@ export const OpenMarket = () => {
                         updatedMarket[key] = value;
                     }
 
-                    if ((updatedMarket?.marketTypeId == 2 || updatedMarket?.marketTypeId == 4) && Array.isArray(updatedMarket?.runner)) {
+                    if ((updatedMarket?.marketTypeId == marketTypeObj?.Fancy || updatedMarket?.marketTypeId == marketTypeObj?.LineMarket) && Array.isArray(updatedMarket?.runner)) {
                         const marketStatus = updatedMarket?.status;
                         updatedMarket.runner = updatedMarket?.runner?.length > 0 && updatedMarket.runner.map(runner => ({
                             ...runner,
@@ -479,7 +480,7 @@ export const OpenMarket = () => {
         let updatedRecord = { ...record };
         if (record.runner && record.runner.length === 1) {
             // Single runner market
-            const roundedLine = Math.floor(parseFloat(newValue));
+            const roundedLine = Math.round(parseFloat(newValue));
             updatedRecord.runner = [{
                 ...record.runner[0],
                 line: newValue,
@@ -488,7 +489,7 @@ export const OpenMarket = () => {
             }];
             updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType });
         } else {
-            const roundedLine = Math.floor(parseFloat(newValue));
+            const roundedLine = Math.round(parseFloat(newValue));
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
             updatedRecord.layPrice = roundedLine;
