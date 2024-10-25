@@ -243,7 +243,7 @@ const Index = () => {
           size="sm"
           className="btn-primary"
           onClick={() => {
-            if(showtournamentList && tournamentObject?.competitionId !== 0){
+            if(showtournamentList && tournamentObject?.competitionId != 0){
               setDataToDB({
                 ...dataToDB,
                 eventName: text?.name,
@@ -484,13 +484,24 @@ const Index = () => {
     );
 
     
-    if(!selectedMarket?.isCompitition)
+    if(!selectedMarket?.isCompitition && !selectedMarket?.isEvent)
       {
-       setisShowTournamentList(false)
+       setisShowTournamentList(true)
       }
-      else if(selectedMarket?.isCompitition){
-         setisShowTournamentList(true)
+       else if(selectedMarket?.isCompitition && selectedMarket?.isEvent){
+         setisShowTournamentList(false);
+         setTournamentObject({
+          competitionId: "0",
+          competitionName: "",
+        });
        }
+       else if(!selectedMarket?.isCompitition && selectedMarket?.isEvent){
+        setisShowTournamentList(false);
+        setTournamentObject({
+          competitionId: "0",
+          competitionName: "",
+        });
+      }
   };
   const fetchtournamentList = async (refId) => {
     await axiosInstance
