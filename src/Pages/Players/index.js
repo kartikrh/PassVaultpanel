@@ -15,7 +15,6 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel';
 import {UploadPlayerHistoryModal} from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
-import { saveAs } from 'file-saver';
 
 const Index = () => {
   const pageName = TAB_PLAYERS

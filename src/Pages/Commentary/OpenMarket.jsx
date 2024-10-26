@@ -36,7 +36,7 @@ export const OpenMarket = () => {
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);  
+    const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
@@ -165,17 +165,27 @@ export const OpenMarket = () => {
                 if (market.marketId === record.marketId) {
                     let updatedMarket = { ...market };
 
-                    // Check if the key is a runner-specific property
-                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    // Check if this is a status change at market level
+                    if (key === 'status') {
+                        updatedMarket.status = +value;
+                        // Update all runners' status to match market status
+                        if (Array.isArray(updatedMarket.runner)) {
+                            updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                                ...runner,
+                                status: +value
+                            }));
+                        }
+                        return updatedMarket;
+                    }
 
+                    // Original logic for other changes remains the same
+                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
-                        // Update runner-level property for all runners
                         updatedMarket.runner = updatedMarket.runner.map(runner => ({
                             ...runner,
                             [key]: value
                         }));
                     } else {
-                        // Update market-level property
                         updatedMarket[key] = value;
                     }
 
@@ -325,14 +335,20 @@ export const OpenMarket = () => {
             if ((eventMarket.marketTypeCategoryId === lineRatioForMarketCategoryId)
                 && (highestLineRatio < (+eventMarket.lineRatio || 0)))
                 highestLineRatio = +eventMarket.lineRatio
-            if (eventMarket.runner)
+            // Don't spread runner properties at market level
+            if (eventMarket.runner) {
                 return {
                     ...eventMarket,
                     teamName: teamData[eventMarket.teamId],
-                    ...eventMarket.runner[0]
+                    // Keep the original market status
+                    status: eventMarket.status,
+                    // Keep runners as an array
+                    runner: Array.isArray(eventMarket.runner) ? eventMarket.runner : [eventMarket.runner]
                 }
-            else return null
+            }
+            return null
         }).filter(x => x)
+
         updatedDatalist = _.orderBy(updatedDatalist, ['marketId'], ['asc']);
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
@@ -412,10 +428,10 @@ export const OpenMarket = () => {
                         ...newMarketData[marketId],
                         runner: Array.isArray(newMarketData[marketId].runner) ? newMarketData[marketId].runner : [newMarketData[marketId].runner]
                     }));
-            
+
                 // Combine updatedData with newMarkets
                 const combinedData = [...updatedData, ...newMarkets];
-                
+
                 // Filter based on statusListToInclude
                 const finalDataToSet = combinedData.filter(e => statusListToInclude.includes(e.status));
 
@@ -914,6 +930,8 @@ export const OpenMarket = () => {
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
             data.forEach(market => {
+                console.log({ [market.marketId]: market });
+
                 tempCategorisedData[categories[market.marketTypeCategoryId]] =
                     [].concat(
                         tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
