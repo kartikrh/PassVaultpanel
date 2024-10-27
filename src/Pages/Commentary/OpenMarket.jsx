@@ -231,7 +231,20 @@ export const OpenMarket = () => {
                 return record.status !== INACTIVE_VALUE;
             }
             return !_.isEqual(+record[key], +value);
-        }).map(record => ({ ...record, [key]: value }));
+        }).map(record => {
+            // Create updated record with new status
+            const updatedRecord = { ...record, [key]: value };
+
+            // If this is a status change, update runner status too
+            if (key === "status" && Array.isArray(updatedRecord.runner)) {
+                updatedRecord.runner = updatedRecord.runner.map(runner => ({
+                    ...runner,
+                    status: +value
+                }));
+            }
+
+            return updatedRecord;
+        });
 
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
@@ -245,10 +258,11 @@ export const OpenMarket = () => {
                         return {
                             ...market,
                             [key]: value,
-                            runner: market.runner.map(runner => ({
+                            // Also update runner status in local state
+                            runner: key === "status" ? market.runner.map(runner => ({
                                 ...runner,
-                                [key]: key === 'status' ? value : runner[key]
-                            }))
+                                status: +value
+                            })) : market.runner
                         };
                     }
                     return market;
@@ -930,7 +944,6 @@ export const OpenMarket = () => {
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
             data.forEach(market => {
-                console.log({ [market.marketId]: market });
 
                 tempCategorisedData[categories[market.marketTypeCategoryId]] =
                     [].concat(
