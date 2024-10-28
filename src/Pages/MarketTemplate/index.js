@@ -345,7 +345,7 @@ const Index = () => {
       title: "Is Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Market Template"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Toggle Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -364,7 +364,7 @@ const Index = () => {
       title: "Is Per Event",
       key: "isPerEvent",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Per Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Toggle Per-Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPerEvent ? "primary" : "danger"}`}
           size="sm"
@@ -383,7 +383,7 @@ const Index = () => {
       title: "Is Show Advance Market",
       key: "isShowInAdvanceMarket",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Show Advance Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Toggle Show Adv. Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isShowInAdvanceMarket ? "primary" : "danger"}`}
           size="sm"
@@ -402,7 +402,7 @@ const Index = () => {
       title: "Is P-Runner Value",
       key: "isPredefineRunnerValue",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Toggle Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPredefineRunnerValue ? "primary" : "danger"}`}
           size="sm"
@@ -429,7 +429,7 @@ const Index = () => {
       key: "marketTemplate",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"View Market Template Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"View Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"primary"}
           size="sm"
