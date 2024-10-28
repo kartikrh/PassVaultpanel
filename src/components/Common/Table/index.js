@@ -106,7 +106,8 @@ const Index = forwardRef(
       isPagination = true,
       tournamentList,
       showtournamentList,
-      onTournamentisChanges
+      onTournamentisChanges,
+      setStickHeader
     },
     ref
   ) => {
@@ -1882,7 +1883,7 @@ const Index = forwardRef(
                 </Row>) : null}
 
                 <div
-                  className="table-responsive table-card mt-3 mb-1"
+                  className="table-responsive table-responsive2 table-card mt-3 mb-1"
                   id="myTable"
                 >
                   {tableElement?.dragDrop ? (
@@ -2000,7 +2001,7 @@ const Index = forwardRef(
                       className="table align-middle table-nowrap"
                       id="customerTable"
                     >
-                      <thead className="table-light">
+                      <thead className={`table-light ${setStickHeader !== false  ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
                             <th key={column.key} style={column.style} className={column.className}>
