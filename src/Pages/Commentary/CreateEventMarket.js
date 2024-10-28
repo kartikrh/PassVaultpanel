@@ -408,6 +408,16 @@ export const CreateEventMarket = () => {
         });
     };
     const generateMarketFromTemplate = (template, teams, commentary) => {
+        // Default market name without any changes
+        let marketName = template.templateName;
+
+        // Apply specific logic only when isPerEvent is true
+        if (template.isPerEvent && teams.length >= 2) {
+            const team1Name = teams[0]?.shortName || 'Team1';
+            const team2Name = teams[1]?.shortName || 'Team2';
+            marketName = `${template.templateName} (${team1Name} vs ${team2Name}) ADV`;
+        }
+
         return {
             eventMarketId: 0, // Default to 0 for new markets
             isCreate: true,  // Default to true for new markets
@@ -418,7 +428,7 @@ export const CreateEventMarket = () => {
             ...template,
             commentaryId: commentary.commentaryId,
             eventRefId: commentary.eventRefId,
-            marketName: template.templateName,
+            marketName, // Use the newly formatted market name only when isPerEvent is true
             defaultBackSize: template?.defaultBackSize,
             defaultLaySize: template?.defaultLaySize,
             lineType: template?.lineType,
