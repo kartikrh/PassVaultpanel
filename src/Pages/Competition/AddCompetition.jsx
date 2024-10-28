@@ -102,6 +102,8 @@ function AddCompetitions() {
       const extraData = {
         competitionId,
         isTrending: dataToSave?.isTrending || false,
+        isEventSnap: dataToSave?.isEventSnap || false,
+        isPointTable: dataToSave?.isPointTable || false,
       }
       setCurrentSaveAction(saveAction);
       dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
