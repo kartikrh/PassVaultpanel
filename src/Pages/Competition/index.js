@@ -107,6 +107,38 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+  const handleIsEventSnap = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/competition/isEventSnap`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+  const handleIsPointTable = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/competition/isPointTable`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
   //delete function
   const handleDelete = async (e) => {
     setIsLoading(true);
@@ -264,6 +296,40 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "IsEventSnap",
+      key: "isEventSnap",
+      render: (text, record) => (
+        <Button
+          color={`${record.isEventSnap ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleIsEventSnap("isEventSnap", record, record?.isEventSnap);
+          }}
+        >
+          <i className={`bx ${record.isEventSnap ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "IsPointTable",
+      key: "isPointTable",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPointTable ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleIsPointTable("isPointTable", record, record?.isPointTable);
+          }}
+        >
+          <i className={`bx ${record.isPointTable ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
