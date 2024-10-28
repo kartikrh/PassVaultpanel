@@ -50,7 +50,7 @@ const Index = () => {
   const [tournamentList, setTournamentList] = useState([]);
   const [showtournamentList, setisShowTournamentList] = useState(false);
   const [eventTypeRefId, setEventTypeRefId] = useState("");
-
+  const [StickHeader,setStickHeader] = useState(true);
 
   const [tournamentObject, setTournamentObject] = useState({
     competitionId: 0,
@@ -84,6 +84,7 @@ const Index = () => {
   };
 
   const addData = async (val) => {
+    console.log("val",val)
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
@@ -482,20 +483,18 @@ const Index = () => {
         ...value
       })
     );
-
-    
     if(!selectedMarket?.isCompitition && !selectedMarket?.isEvent)
       {
        setisShowTournamentList(true)
       }
-       else if(selectedMarket?.isCompitition && selectedMarket?.isEvent){
+    if(selectedMarket?.isCompitition && selectedMarket?.isEvent){
          setisShowTournamentList(false);
          setTournamentObject({
           competitionId: "0",
           competitionName: "",
         });
        }
-       else if(!selectedMarket?.isCompitition && selectedMarket?.isEvent){
+    if(!selectedMarket?.isCompitition && selectedMarket?.isEvent){
         setisShowTournamentList(false);
         setTournamentObject({
           competitionId: "0",
@@ -541,6 +540,7 @@ const Index = () => {
         isCompitition: false,
       })
     );
+    setStickHeader(false)
   }, []);
   return (
     <React.Fragment>
@@ -574,6 +574,7 @@ const Index = () => {
             showtournamentList={showtournamentList}
             tournamentList = {tournamentList}
             onTournamentisChanges = {handleTournamentObjectClick}
+            setStickHeader = {StickHeader}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

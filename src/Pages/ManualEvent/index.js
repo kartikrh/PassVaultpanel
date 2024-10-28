@@ -40,11 +40,11 @@ const Index = () => {
   const { selectedMarket, selectedMarketHistory } = useSelector(
     (state) => state.tabsData?.manualEvent
   );
-
+  
   const [tournamentList, setTournamentList] = useState([]);
   const [showtournamentList, setisShowTournamentList] = useState(false);
   const [eventTypeRefId, setEventTypeRefId] = useState("");
-
+  const [StickHeader,setStickHeader] = useState(true);
 
   const [tournamentObject, setTournamentObject] = useState({
     competitionId: 0,
@@ -484,15 +484,23 @@ const Index = () => {
     );
     console.log(selectedMarket)
     if(!selectedMarket?.isCompitition && !selectedMarket?.isEvent)
-    {
-     setisShowTournamentList(true)
-    }
-     else if(selectedMarket?.isCompitition && selectedMarket?.isEvent){
-       setisShowTournamentList(false);
-     }
-     else if(!selectedMarket?.isCompitition && selectedMarket?.isEvent){
-      setisShowTournamentList(false);
-    }
+      {
+       setisShowTournamentList(true)
+      }
+    if(selectedMarket?.isCompitition && selectedMarket?.isEvent){
+         setisShowTournamentList(false);
+         setTournamentObject({
+          competitionId: "0",
+          competitionName: "",
+        });
+       }
+    if(!selectedMarket?.isCompitition && selectedMarket?.isEvent){
+        setisShowTournamentList(false);
+        setTournamentObject({
+          competitionId: "0",
+          competitionName: "",
+        });
+      }
   };
 
   const fetchtournamentList = async (refId) => {
@@ -534,6 +542,7 @@ const Index = () => {
         isCompitition: false,
       })
     );
+    setStickHeader(false)
   }, []);
   return (
     <React.Fragment>
@@ -559,6 +568,7 @@ const Index = () => {
             showtournamentList={showtournamentList}
             tournamentList = {tournamentList}
             onTournamentisChanges = {handleTournamentObjectClick}
+            setStickHeader = {StickHeader}
           />
            <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
