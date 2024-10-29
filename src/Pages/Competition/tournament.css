@@ -6,3 +6,7 @@
     margin-right: 10px;
     font-weight: 700;
 }
+
+.multi-dropdown-width {
+    width: 200px !important
+}
