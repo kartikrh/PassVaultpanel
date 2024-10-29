@@ -52,28 +52,6 @@ const Index = ({
               </div>
             </div>
             <div className="d-flex align-items-center gap-2 my-2">
-              <span className="margin-right-10 label-width">After Close Time</span>
-              <input
-                className="form-control date-width"
-                type="datetime-local"
-                defaultValue={
-                  closeSuspendTimeRecord?.afterCloseTime
-                    ? convertDateUTCToLocal(closeSuspendTimeRecord?.afterCloseTime)
-                    : null
-                }
-                onChange={(startDate) => {
-                  setCloseSuspendTimeRecord({
-                    eventMarketId: closeSuspendTimeRecord?.eventMarketId,
-                    afterSuspendTime: closeSuspendTimeRecord?.afterSuspendTime,
-                    afterCloseTime: convertDateLocalToUTC(
-                      startDate?.target?.value
-                    ),
-                  });
-                }}
-                id="example-datetime-local-input"
-              />
-            </div>
-            <div className="d-flex align-items-center gap-2 my-2">
               <span className="margin-right-10 label-width">After Suspend Time</span>
               <input
                 className="form-control date-width"
@@ -90,6 +68,28 @@ const Index = ({
                     eventMarketId: closeSuspendTimeRecord?.eventMarketId,
                     afterCloseTime: closeSuspendTimeRecord?.afterCloseTime,
                     afterSuspendTime: convertDateLocalToUTC(
+                      startDate?.target?.value
+                    ),
+                  });
+                }}
+                id="example-datetime-local-input"
+              />
+            </div>
+            <div className="d-flex align-items-center gap-2 my-2">
+              <span className="margin-right-10 label-width">After Close Time</span>
+              <input
+                className="form-control date-width"
+                type="datetime-local"
+                defaultValue={
+                  closeSuspendTimeRecord?.afterCloseTime
+                    ? convertDateUTCToLocal(closeSuspendTimeRecord?.afterCloseTime)
+                    : null
+                }
+                onChange={(startDate) => {
+                  setCloseSuspendTimeRecord({
+                    eventMarketId: closeSuspendTimeRecord?.eventMarketId,
+                    afterSuspendTime: closeSuspendTimeRecord?.afterSuspendTime,
+                    afterCloseTime: convertDateLocalToUTC(
                       startDate?.target?.value
                     ),
                   });
