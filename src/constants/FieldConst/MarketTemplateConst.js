@@ -296,6 +296,20 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        type: TEXT,
+        name: "beforeSuspendMin",
+        label: "Before Suspend Min",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: TEXT,
+        name: "beforeCloseMin",
+        label: "Before Close Min",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         name: "isDefaultBetAllowed",
         label: "Is Bet Allowed",
         type: SWITCH,

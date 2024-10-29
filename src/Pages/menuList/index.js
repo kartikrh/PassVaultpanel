@@ -156,7 +156,7 @@ const Index = () => {
       setIsLoading(true);
       await axiosInstance
         .post(
-          `/admin/${selectedMenuType.level == 0 ? "menuType" : "menuItem"
+          `/admin/${selectedMenuType.level == 0 ? "menuTypes" : "menuItem"
           }/delete`,
           {
             [selectedMenuType.level == 0 ? "menuTypeId" : "menuItemId"]:
