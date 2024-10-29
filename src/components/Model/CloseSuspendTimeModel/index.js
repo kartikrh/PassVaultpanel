@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
-import { convertDateLocalToUTC } from "../../Common/Reusables/reusableMethods";
+import { convertDateLocalToUTC, convertDateUTCToLocal } from "../../Common/Reusables/reusableMethods";
 
 const Index = ({
   closeSuspendTimeModelVisible,
@@ -10,16 +10,6 @@ const Index = ({
   setCloseSuspendTimeRecord,
 }) => {
   const [selectedCloseSuspendTime, setSelectedCloseSuspendTime] = useState({});
-
-  const formatDateForInput = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
-    const hours = String(date.getUTCHours()).padStart(2, "0");
-    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
 
   useEffect(() => {
     setSelectedCloseSuspendTime(closeSuspendTimeRecord);
@@ -48,27 +38,27 @@ const Index = ({
             id="modal-id"
           >
             <div className="d-flex my-2">
-              <div style={{ marginRight: "20px" }}>
-                <span style={{ marginRight: "10px", fontWeight: "700" }}>
-                  Event:
+              <div className="margin-right-20">
+                <span className="margin-right-10">
+                  Event :
                 </span>
-                <span>{selectedCloseSuspendTime?.eventName}</span>
+                <span className="font-bold">{selectedCloseSuspendTime?.eventName}</span>
               </div>
               <div>
-                <span style={{ marginRight: "10px", fontWeight: "700" }}>
-                  Market:
+                <span className="margin-right-10">
+                  Market :
                 </span>
-                <span>{selectedCloseSuspendTime?.marketName}</span>
+                <span className="font-bold">{selectedCloseSuspendTime?.marketName}</span>
               </div>
             </div>
             <div className="d-flex align-items-center gap-2 my-2">
-              <span className="tournament-team-name">After Close Time:</span>
+              <span className="margin-right-10 label-width">After Close Time</span>
               <input
-                className="form-control multi-dropdown-width"
+                className="form-control date-width"
                 type="datetime-local"
                 defaultValue={
                   closeSuspendTimeRecord?.afterCloseTime
-                    ? formatDateForInput(closeSuspendTimeRecord?.afterCloseTime)
+                    ? convertDateUTCToLocal(closeSuspendTimeRecord?.afterCloseTime)
                     : null
                 }
                 onChange={(startDate) => {
@@ -84,13 +74,13 @@ const Index = ({
               />
             </div>
             <div className="d-flex align-items-center gap-2 my-2">
-              <span className="tournament-team-name">After Suspend Time:</span>
+              <span className="margin-right-10 label-width">After Suspend Time</span>
               <input
-                className="form-control multi-dropdown-width"
+                className="form-control date-width"
                 type="datetime-local"
                 defaultValue={
                   closeSuspendTimeRecord?.afterSuspendTime
-                    ? formatDateForInput(
+                    ? convertDateUTCToLocal(
                         closeSuspendTimeRecord?.afterSuspendTime
                       )
                     : null

@@ -10,3 +10,19 @@
 .multi-dropdown-width {
     width: 200px !important
 }
+
+.date-width {
+    width: 200px !important;
+}
+.label-width {
+    width: 150px !important;
+}
+.font-bold {
+    font-weight: 700;
+}
+.margin-right-10 {
+    margin-right: 10px;
+}
+.margin-right-20 {
+    margin-right: 20px;
+}
