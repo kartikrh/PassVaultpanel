@@ -130,7 +130,7 @@ export const getStrikeRate = (runs, balls) => {
 export const getEconomyRate = (runs, totalBalls, ballsPerOver) => {
   let economyToReturn = 0
   if (totalBalls > 0) economyToReturn = fixDecimal(((+runs / +totalBalls) * ballsPerOver), 2)
-  console.log("Economy Rates: ", { runs, totalBalls, ballsPerOver, economyToReturn });
+  // console.log("Economy Rates: ", { runs, totalBalls, ballsPerOver, economyToReturn });
   return isNaN(economyToReturn) ? 0 : economyToReturn
 }
 
@@ -290,13 +290,13 @@ export const generateRemainingRuns = (team, ballsPerOver) => {
 
 export const getNonExtraRuns = (over) => {
   const toReturn = (+over?.totalRun || 0) - (+over?.totalWideRun || 0) - (+over?.totalNoBallRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
-  console.log("Non-Extra Runs: ", { toReturn });
+  // console.log("Non-Extra Runs: ", { toReturn });
   return toReturn
 }
 
 export const getBowlerOnlyRuns = (over) => {
   const toReturn = (+over?.totalRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)
-  console.log("Bowler only Runs: ", { toReturn });
+  // console.log("Bowler only Runs: ", { toReturn });
   return toReturn
 }
 

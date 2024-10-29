@@ -310,24 +310,78 @@ export const CreateEventMarket = () => {
             processedMarketsObj[baseKey] = [];
         }
 
-        // Add default runner only if the market doesn't have any runners
-        if (!market.runners || market.runners.length === 0) {
-            market.runners = [{
-                marketTemplateRunnerId: 0,
-                runnerId: "0",
-                marketTemplateId: market.marketTemplateId,
-                runner: market?.marketName,
-                line: null,
-                overRate: null,
-                underRate: null,
-                lastUpdate: new Date().toISOString(),
-                selectionId: `${market.marketTemplateId}01`,
-                order: 1,
-                backPrice: 1,
-                layPrice: 1,
-                backSize: market?.defaultBackSize,
-                laySize: market?.defaultLaySize,
-            }];
+        // Special handling for marketTypeId=5 and marketTypeCategoryId=6
+        let marketRunners = [];
+        if (market.marketTypeId === 5 && market.marketTypeCategoryId === 6) {
+            // Get team names from marketData
+            const teams = marketData.teamAndPlayers;
+
+            // For each template runner, create two runners (one for each team)
+            if (market.runners && market.runners.length > 0) {
+                market.runners.forEach(templateRunner => {
+                    // Create runner for team 1
+                    const team1Runner = {
+                        ...templateRunner,
+                        marketTemplateRunnerId: templateRunner.marketTemplateRunnerId,
+                        runnerId: templateRunner.runnerId || "0",
+                        marketTemplateId: market.marketTemplateId,
+                        runner: templateRunner.runner.replace("{team}", teams[0]?.shortName || 'Team1'),
+                        line: templateRunner.line,
+                        overRate: templateRunner.overRate,
+                        underRate: templateRunner.underRate,
+                        lastUpdate: new Date().toISOString(),
+                        selectionId: `${templateRunner.selectionId}_1`,
+                        order: templateRunner.order * 2 - 1,
+                        backPrice: templateRunner.backPrice,
+                        layPrice: templateRunner.layPrice,
+                        backSize: templateRunner.backSize || market.defaultBackSize,
+                        laySize: templateRunner.laySize || market.defaultLaySize,
+                    };
+
+                    // Create runner for team 2
+                    const team2Runner = {
+                        ...templateRunner,
+                        marketTemplateRunnerId: templateRunner.marketTemplateRunnerId,
+                        runnerId: templateRunner.runnerId || "0",
+                        marketTemplateId: market.marketTemplateId,
+                        runner: templateRunner.runner.replace("{team}", teams[1]?.shortName || 'Team2'),
+                        line: templateRunner.line,
+                        overRate: templateRunner.overRate,
+                        underRate: templateRunner.underRate,
+                        lastUpdate: new Date().toISOString(),
+                        selectionId: `${templateRunner.selectionId}_2`,
+                        order: templateRunner.order * 2,
+                        backPrice: templateRunner.backPrice,
+                        layPrice: templateRunner.layPrice,
+                        backSize: templateRunner.backSize || market.defaultBackSize,
+                        laySize: templateRunner.laySize || market.defaultLaySize,
+                    };
+
+                    marketRunners.push(team1Runner, team2Runner);
+                });
+            }
+        } else {
+            // Default runner handling for other market types
+            if (!market.runners || market.runners.length === 0) {
+                marketRunners = [{
+                    marketTemplateRunnerId: 0,
+                    runnerId: "0",
+                    marketTemplateId: market.marketTemplateId,
+                    runner: market?.marketName,
+                    line: null,
+                    overRate: null,
+                    underRate: null,
+                    lastUpdate: new Date().toISOString(),
+                    selectionId: `${market.marketTemplateId}01`,
+                    order: 1,
+                    backPrice: 1,
+                    layPrice: 1,
+                    backSize: market?.defaultBackSize,
+                    laySize: market?.defaultLaySize,
+                }];
+            } else {
+                marketRunners = market.runners;
+            }
         }
 
         processedMarketsObj[baseKey].push({
@@ -346,7 +400,7 @@ export const CreateEventMarket = () => {
             commentaryId: market.commentaryId,
             eventRefId: market.eventRefId,
             isPredefineRunnerValue: market.isPredefineRunnerValue !== undefined ? market.isPredefineRunnerValue : true,
-            runners: market.runners
+            runners: marketRunners
         });
     };
 
@@ -436,6 +490,8 @@ export const CreateEventMarket = () => {
             inningsId: 1,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
+            beforeSuspendMin: template.beforeSuspendMin,
+            beforeCloseMin: template.beforeSuspendMin,
             runners: template.runners?.map(runner => ({
                 ...runner,
                 runnerId: runner.runnerId || "0",
@@ -974,7 +1030,7 @@ export const CreateEventMarket = () => {
                                     <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
                                         <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
                                         <Button color="primary mx-2" className="btn text-right" onClick={handleSave} > Save </Button>
-                                        <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button>
+                                        {/* <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button> */}
                                     </Col>
                                 </Row>
                                 <Row className="g-2 mb-3">

@@ -109,15 +109,15 @@ const Commentary = (props) => {
         //     partnershipHistory,
         //     PartnershiId: currentPartnership?.commentaryPartnershipId,
         // });
-        // console.log(
-        //     {
-        //         isOriginalOver: _currentOver ? false : true,
-        //         overId: (_currentOver || currentOver)?.overId,
-        //         ballOverId: currentBall?.overId,
-        //         OverBallCount: (_currentOver || currentOver)?.ballCount,
-        //         overCount: currentBall?.overCount
-        //     }
-        // );
+        console.log(
+            {
+                isOriginalOver: _currentOver ? false : true,
+                overId: (_currentOver || currentOver)?.overId,
+                ballOverId: currentBall?.overId,
+                OverBallCount: (_currentOver || currentOver)?.ballCount,
+                overCount: currentBall?.overCount
+            }
+        );
     })
 
     const checkForOverSwitch = (ballcount) => {
@@ -1377,6 +1377,8 @@ const Commentary = (props) => {
     }
 
     const updateAfterOverUndo = () => {
+        console.log("inside here");
+
         // removing 2 becaus length and index difference
         const previousBall = ballHistory[ballHistory.length - 2]
         const previousOver = overHistory[overHistory.length - 2]
