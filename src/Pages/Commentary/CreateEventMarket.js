@@ -313,8 +313,9 @@ export const CreateEventMarket = () => {
         // Special handling for marketTypeId=5 and marketTypeCategoryId=6
         let marketRunners = [];
         if (market.marketTypeId === 5 && market.marketTypeCategoryId === 6) {
-            // Get team names from marketData
-            const teams = marketData.teamAndPlayers;
+            // Get team names from commentary object instead of marketData
+            const team1Name = commentaryDetails?.team1Name || 'Team1';
+            const team2Name = commentaryDetails?.team2Name || 'Team2';
 
             // For each template runner, create two runners (one for each team)
             if (market.runners && market.runners.length > 0) {
@@ -325,7 +326,7 @@ export const CreateEventMarket = () => {
                         marketTemplateRunnerId: templateRunner.marketTemplateRunnerId,
                         runnerId: templateRunner.runnerId || "0",
                         marketTemplateId: market.marketTemplateId,
-                        runner: templateRunner.runner.replace("{team}", teams[0]?.shortName || 'Team1'),
+                        runner: templateRunner.runner.replace("{team}", team1Name),
                         line: templateRunner.line,
                         overRate: templateRunner.overRate,
                         underRate: templateRunner.underRate,
@@ -344,7 +345,7 @@ export const CreateEventMarket = () => {
                         marketTemplateRunnerId: templateRunner.marketTemplateRunnerId,
                         runnerId: templateRunner.runnerId || "0",
                         marketTemplateId: market.marketTemplateId,
-                        runner: templateRunner.runner.replace("{team}", teams[1]?.shortName || 'Team2'),
+                        runner: templateRunner.runner.replace("{team}", team2Name),
                         line: templateRunner.line,
                         overRate: templateRunner.overRate,
                         underRate: templateRunner.underRate,
@@ -491,7 +492,7 @@ export const CreateEventMarket = () => {
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             beforeSuspendMin: template.beforeSuspendMin,
-            beforeCloseMin: template.beforeSuspendMin,
+            beforeCloseMin: template.beforeCloseMin,
             runners: template.runners?.map(runner => ({
                 ...runner,
                 runnerId: runner.runnerId || "0",
