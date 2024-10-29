@@ -226,6 +226,8 @@ function AddMarketTemaplate() {
       isShowInAdvanceMarket: false,
       defaultBackSize: 100,
       defaultLaySize: 100,
+      beforeSuspendMin: null,
+      beforeCloseMin: null,
     };
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {

@@ -190,7 +190,43 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
       <ModalBody>
         <div className="d-flex flex-column justify-content-center p-4">
             <h4 className="form-label text-left text-lg">Multi Clone Market Template</h4>
-            {cloneValues &&
+            {cloneValues && cloneValues?.length > 0 ?
+             <table className='my-3'>
+              <thead>
+                <tr>
+                  <th className='tournament-team-name'>Template Name</th>
+                  <th className='tournament-team-name'>Match Type</th>
+                </tr>
+              </thead>
+              <tbody>
+              {cloneValues.map((cloneValue, index) => (
+                <tr key={index}>
+                  <td>{cloneValue.templateName}</td>
+                  <td>
+                    <Select
+                      classNamePrefix="select2-selection"
+                      placeholder="Match Type"
+                      defaultValue={matchType.find(
+                        (item) => item.value === cloneValue.matchTypeID
+                      )}
+                      id={`matchTypeId-${index}`}
+                      name="matchTypeID"
+                      options={matchType}
+                      onChange={(selectedOption) =>
+                        handleCloneValues(index, {
+                          name: "matchTypeID",
+                          value: selectedOption,
+                        })
+                      }
+                      className='my-1 multi-dropdown-width'
+                      required={true}
+                    />
+                  </td>
+                </tr>
+                ))}
+              </tbody>
+            </table> : null}
+            {/* {cloneValues &&
               cloneValues.length > 0 &&
               cloneValues.map((cloneValue, index) => (
                 <div key={index} className="clone-item my-3">
@@ -219,7 +255,7 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
                     />
                   </div>
                 </div>
-              ))}
+              ))} */}
           </div>
           <div className="hstack gap-2 justify-content-end">
               <button 
