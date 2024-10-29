@@ -26,6 +26,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "./CloseModal";
 import { Tooltip } from "antd";
 import CloseAllModel from "./CloseAllModel";
+import CloseSuspendTimeModel from "../../components/Model/CloseSuspendTimeModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -47,6 +48,8 @@ const Index = () => {
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [closeAllModelVisable, setCloseAllModelVisable] = useState(false);
+  const [closeSuspendTimeModelVisible, setCloseSuspendTimeModelVisible] = useState(false);
+  const [closeSuspendTimeRecord, setCloseSuspendTimeRecord] = useState({});
   const [delay, setDelay] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
@@ -228,6 +231,37 @@ const Index = () => {
         );
         setCheckedList([]);
       });
+  };
+
+  const handleCloseSuspendTime = async () => {
+    try {
+      const response = await axiosInstance.post(
+        "/admin/eventMarket/closeSuspendTime",
+        {
+          eventMarketId: closeSuspendTimeRecord?.eventMarketId,
+          afterSuspendTime: closeSuspendTimeRecord?.afterSuspendTime || null,
+          afterCloseTime: closeSuspendTimeRecord?.afterCloseTime || null,
+        }
+      );
+      setCloseSuspendTimeModelVisible(false);
+      fetchData();
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      setCloseSuspendTimeModelVisible(false);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
   };
 
   const handleDelay = async (e) => {
@@ -598,6 +632,19 @@ const Index = () => {
             DS
           </Button>
         </Tooltip>
+        <Tooltip title={"Close Suspend Time"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn mx-1"
+            onClick={() => {
+              setCloseSuspendTimeModelVisible(true);
+              setCloseSuspendTimeRecord(record);
+            }}
+          >
+            AT
+          </Button>
+        </Tooltip>
         </>
       ),
       style: { width: "10%", textAlign: "center" },
@@ -716,6 +763,14 @@ const Index = () => {
           singleCheck={checekedList}
           fetchData={fetchData}
         />
+        {closeSuspendTimeModelVisible && 
+        <CloseSuspendTimeModel
+          closeSuspendTimeModelVisible={closeSuspendTimeModelVisible}
+          setCloseSuspendTimeModelVisible={setCloseSuspendTimeModelVisible}
+          handleCloseSuspendTime={handleCloseSuspendTime}
+          closeSuspendTimeRecord={closeSuspendTimeRecord}
+          setCloseSuspendTimeRecord={setCloseSuspendTimeRecord}
+        />}
       </div>
     </React.Fragment>
   );
