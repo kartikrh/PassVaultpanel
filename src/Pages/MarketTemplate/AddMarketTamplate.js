@@ -227,6 +227,7 @@ function AddMarketTemaplate() {
       defaultIsSendData: false,
       defaultBackSize: 100,
       defaultLaySize: 100,
+      rateDiff: 1,
       // beforeSuspendMin: null,
       // beforeCloseMin: null,
     };
