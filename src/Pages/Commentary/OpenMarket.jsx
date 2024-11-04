@@ -434,7 +434,7 @@ export const OpenMarket = () => {
                 const newMarkets = Object.keys(newMarketData)
                     .filter(marketId => {
                         // Check if marketId is already in prevData or updatedData
-                        const existsInPrevData = prevData.some(market => market.marketId === parseInt(marketId));
+                        const existsInPrevData = updatedData.some(market => parseInt(market.marketId) === parseInt(marketId));
                         return !existsInPrevData; // Only include new markets
                     })
                     .map(marketId => ({
