@@ -342,6 +342,14 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        name: "defaultIsSendData",
+        label: "Default Is Send Data",
+        type: SWITCH,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
         name: "isActive",
         label: "Is Active",
         type: SWITCH,
