@@ -7,9 +7,9 @@
     color: black;
     /* cursor: pointer; */
 }
-
+/* 
 .table-responsive2 {
-    max-height: 550px; /* Set your desired max-height */
+    max-height: 550px; 
     overflow-y: auto;
   }
   
@@ -17,7 +17,7 @@
     position: sticky;
     top: 0;
     z-index: 1;
-    background-color: #ffffff; /* Adjust background color as needed */
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Add a subtle shadow if desired */
+    background-color: #ffffff; 
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); 
   }
-  
+   */
