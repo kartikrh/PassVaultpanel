@@ -224,10 +224,11 @@ function AddMarketTemaplate() {
       isDefaultMarketActive: false,
       isPerEvent: false,
       isShowInAdvanceMarket: false,
+      defaultIsSendData: false,
       defaultBackSize: 100,
       defaultLaySize: 100,
-      beforeSuspendMin: null,
-      beforeCloseMin: null,
+      // beforeSuspendMin: null,
+      // beforeCloseMin: null,
     };
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
