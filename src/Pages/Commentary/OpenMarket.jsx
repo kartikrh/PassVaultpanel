@@ -515,7 +515,7 @@ export const OpenMarket = () => {
                 ...record.runner[0],
                 line: newValue,
                 layPrice: roundedLine,
-                backPrice: ((parseInt(record?.lineType) === 1) && (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + record?.rateDiff : parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine
+                backPrice: ((parseInt(record?.lineType) === 1) && (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseInt(record?.rateDiff || 0) : parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine
             }];
             updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType, marketTypeId: updatedRecord.marketTypeId, rateDiff: updatedRecord?.rateDiff }, marketTypeObj);
         } else {
@@ -523,7 +523,7 @@ export const OpenMarket = () => {
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
             updatedRecord.layPrice = roundedLine;
-            updatedRecord.backPrice = ((parseInt(record?.lineType) === 1) && (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + record?.rateDiff : parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine;
+            updatedRecord.backPrice = ((parseInt(record?.lineType) === 1) && (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseInt(record?.rateDiff || 0) : parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine;
             updatedRecord = generateOverUnderLineType(updatedRecord, marketTypeObj);
         }
 
