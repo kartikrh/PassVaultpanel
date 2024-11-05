@@ -109,15 +109,15 @@ const Commentary = (props) => {
         //     partnershipHistory,
         //     PartnershiId: currentPartnership?.commentaryPartnershipId,
         // });
-        console.log(
-            {
-                isOriginalOver: _currentOver ? false : true,
-                overId: (_currentOver || currentOver)?.overId,
-                ballOverId: currentBall?.overId,
-                OverBallCount: (_currentOver || currentOver)?.ballCount,
-                overCount: currentBall?.overCount
-            }
-        );
+        // console.log(
+        //     {
+        //         isOriginalOver: _currentOver ? false : true,
+        //         overId: (_currentOver || currentOver)?.overId,
+        //         ballOverId: currentBall?.overId,
+        //         OverBallCount: (_currentOver || currentOver)?.ballCount,
+        //         overCount: currentBall?.overCount
+        //     }
+        // );
     })
 
     const checkForOverSwitch = (ballcount) => {
@@ -735,8 +735,10 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(updatedOnPitchPlyer),
         }
         if (playerType === CURRENT_BOWLER) {
-            if (!currentOver || currentOver.isComplete)
+            if (!currentOver || currentOver.isComplete) {
+                setCurrentOver(overHistory[overHistory.length - 1])
                 objToSave["commentaryOvers"] = generateOver({ commentaryDetails, onPitchPlayers: updatedOnPitchPlyer, teams })
+            }
         }
         setOnPitchPlayers(updatedOnPitchPlyer)
         // console.log("Called from : 8")
