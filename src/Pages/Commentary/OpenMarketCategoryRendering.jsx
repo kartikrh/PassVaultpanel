@@ -17,6 +17,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                         return {
                         ...market,
                         isSendData: market?.isSendData,
+                        rateDiff: market?.rateDiff,
                         backPrice: firstRunner?.backPrice,
                         backSize: firstRunner?.backSize,
                         layPrice: firstRunner?.layPrice,

@@ -3,15 +3,16 @@ import { Button } from 'reactstrap';
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import { getStatusColor, OPEN_MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
-import { generateOverUnder } from "./functions";
+import { generateOverUnderLineType } from "./functions";
 import axiosInstance from "../../Features/axios";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 
 const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadingTrue, loadingFalse }) => {
     const [localMarket, setLocalMarket] = useState(market);
     const dispatch = useDispatch();
+    const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
 
     useEffect(() => {
         setLocalMarket(market);
@@ -25,7 +26,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
 
         if (key === 'margin') {
             updatedMarket.runner = updatedMarket.runner.map(runner =>
-                generateOverUnder({ ...runner, margin: value })
+                generateOverUnderLineType({ ...runner, margin: value, lineType: updatedMarket?.lineType, marketTypeId: updatedMarket?.marketTypeId, rateDiff: updatedMarket?.rateDiff }, marketTypeObj)
             );
         }
 
@@ -48,10 +49,13 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 if (runner.runnerId === runnerId) {
                     let updatedRunner = { ...runner, [key]: value };
                     if (key === 'line') {
-                        updatedRunner = generateOverUnder({
+                        updatedRunner = generateOverUnderLineType({
                             ...updatedRunner,
-                            margin: localMarket.margin // Use market-level margin
-                        });
+                            margin: localMarket.margin, // Use market-level margin
+                            lineType: localMarket?.lineType,
+                            marketTypeId: localMarket?.marketTypeId,
+                            rateDiff: localMarket?.rateDiff,
+                        }, marketTypeObj);
                     }
                     return updatedRunner;
                 }
@@ -117,6 +121,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                         <th>L-Ratio</th>
                         <th>Save</th>
                         <th>Margin</th>
+                        <th>Rate Diff</th>
                     </tr>
                 </thead>
                 <tbody className='whitespace-nowrap'>
@@ -179,6 +184,13 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 className="form-control small-text-fields"
                                 value={localMarket.margin || ""}
                                 onChange={(newValue) => handleMarketValueChange("margin", newValue)}
+                            />
+                        </td>
+                        <td>
+                            <CustomInput
+                                className="form-control small-text-fields"
+                                value={localMarket?.rateDiff || ""}
+                                onChange={(newValue) => handleMarketValueChange("rateDiff", newValue)}
                             />
                         </td>
                     </tr>
