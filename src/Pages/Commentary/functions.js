@@ -256,7 +256,7 @@ export const generateOverUnderLineType = (dataObj, marketTypeObj) => {
   const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
   const dataToSend = {
     ...dataObj,
-    backPrice: ((parseInt(dataObj?.lineType) === 1) && (dataObj?.marketTypeId == marketTypeObj?.Fancy || dataObj?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + dataObj?.rateDiff : (parseInt(dataObj?.lineType) === 1 ? roundedLine + 1 : roundedLine) || 0,
+    backPrice: ((parseInt(dataObj?.lineType) === 1) && (dataObj?.marketTypeId == marketTypeObj?.Fancy || dataObj?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseInt(dataObj?.rateDiff || 0) : (parseInt(dataObj?.lineType) === 1 ? roundedLine + 1 : roundedLine) || 0,
     layPrice: roundedLine || 0,
     backSize: dataObj?.backSize || 100,
     laySize: dataObj?.laySize || 100,

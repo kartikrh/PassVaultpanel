@@ -122,7 +122,7 @@ export const CreateEventMarket = () => {
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
-                backPrice: parseFloat((roundedLine + dataObj?.rateDiff).toFixed(2)) || 0,
+                backPrice: parseFloat((roundedLine + parseInt(dataObj?.rateDiff || 0)).toFixed(2)) || 0,
                 layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
                 // backSize: parseFloat(dataObj?.backSize) || 100,
                 // laySize: parseFloat(dataObj?.laySize) || 100,
