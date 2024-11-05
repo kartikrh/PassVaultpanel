@@ -629,7 +629,6 @@ export const CreateEventMarket = () => {
                 ),
             },
             ...columnInitials,
-            ...rateDiffColumn,
             ...runnerColumns.map(column => ({
                 ...column,
                 render: (text, record, index) => {
@@ -827,13 +826,13 @@ export const CreateEventMarket = () => {
             // If margin changes, update all runners
             if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
-                    generateOverUnderLineMarketFancy({ ...runner, margin: parseFloat(value), rateDiff: market?.rateDiff })
+                    generateOverUnderLineMarketFancy({ ...runner, margin: key === 'margin' ? parseFloat(value) : market?.margin, rateDiff: key === 'rateDiff' ? parseInt(value || 0) : market?.rateDiff })
                 );
-            } else if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
+            } else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnder({ ...runner, margin: parseFloat(value) })
                 );
-            } else if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
+            } else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateSameLayBack({ ...runner, margin: parseFloat(value) })
                 );
@@ -941,10 +940,7 @@ export const CreateEventMarket = () => {
             ),
             key: "margin",
             style: { width: "5%" },
-        }
-    ];
-
-    const rateDiffColumn = [
+        },
         {
             title: "Rate Diff",
             dataIndex: "rateDiff",
@@ -1079,21 +1075,7 @@ export const CreateEventMarket = () => {
                 />
             ),
             style: { width: "5%" },
-        },
-        // {
-        //     title: "Rate Diff",
-        //     key: "rateDiff",
-        //     render: (text, record, onChange) => (
-        //         <Input
-        //             className="form-control small-text-fields no-spinners"
-        //             type="number"
-        //             value={record.rateDiff}
-        //             onChange={(e) => onChange("rateDiff", +e.target.value || 0)}
-        //             placeholder="Rate Diff"
-        //         />
-        //     ),
-        //     style: { width: "10%" },
-        // },
+        }
     ];
     const MarketDetailsDate = commentaryDetails?.eventDate
         ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
