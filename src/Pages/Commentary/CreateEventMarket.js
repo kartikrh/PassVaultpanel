@@ -825,15 +825,15 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...market, [key]: value };
 
             // If margin changes, update all runners
-            if (key === 'margin' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+            if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnderLineMarketFancy({ ...runner, margin: parseFloat(value), rateDiff: market?.rateDiff })
                 );
-            } else if (key === 'margin' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
+            } else if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnder({ ...runner, margin: parseFloat(value) })
                 );
-            } else if (key === 'margin' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
+            } else if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateSameLayBack({ ...runner, margin: parseFloat(value) })
                 );
@@ -921,7 +921,7 @@ export const CreateEventMarket = () => {
                 </select>
             ),
             key: "status",
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Margin",
@@ -940,7 +940,7 @@ export const CreateEventMarket = () => {
                 </>
             ),
             key: "margin",
-            style: { width: "10%" },
+            style: { width: "5%" },
         }
     ];
 
@@ -962,7 +962,7 @@ export const CreateEventMarket = () => {
                 </>
             ),
             key: "rateDiff",
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
     ]
 
@@ -994,7 +994,7 @@ export const CreateEventMarket = () => {
                     placeholder="Line"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Under",
@@ -1008,7 +1008,7 @@ export const CreateEventMarket = () => {
                     placeholder="Under"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Over",
@@ -1022,7 +1022,7 @@ export const CreateEventMarket = () => {
                     placeholder="Over"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "No Rate",
@@ -1036,7 +1036,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Rate"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Yes Rate",
@@ -1050,7 +1050,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Rate"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "No Point",
@@ -1064,7 +1064,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Point"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Yes Point",
@@ -1078,7 +1078,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Point"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         // {
         //     title: "Rate Diff",

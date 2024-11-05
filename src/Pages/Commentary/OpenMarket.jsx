@@ -197,7 +197,7 @@ export const OpenMarket = () => {
                         }));
                     }
 
-                    if (key === 'line' || key === 'margin') {
+                    if (key === 'line' || key === 'margin' || key === "rateDiff") {
                         updatedMarket = generateOverUnderLineType(updatedMarket, marketTypeObj);
                     }
 
