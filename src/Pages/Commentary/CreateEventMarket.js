@@ -4,7 +4,7 @@ import { Button, Card, CardBody, CardHeader, Table, Input, Container, Row, Col }
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { isEmpty } from 'lodash';
@@ -33,6 +33,7 @@ export const CreateEventMarket = () => {
     });
     let navigate = useNavigate();
     const dispatch = useDispatch();
+    const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
     const commentaryId = +sessionStorage.getItem('marketTemplateCommentaryId') || "0";
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
@@ -105,6 +106,33 @@ export const CreateEventMarket = () => {
     //     setCheckedList(newCheckedList);
     //     handleValueChange(record, "isCreate", !checkedList.includes(record.eventMarketId));
     // };
+    const generateOverUnderLineMarketFancy = (dataObj) => {
+        let dataToSend = {
+            ...dataObj,
+            backPrice: null,
+            layPrice: null,
+            // backSize: 100,
+            // laySize: 100,
+            overRate: null,
+            underRate: null,
+        }
+        if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
+            const roundedLine = Math.round(parseFloat(dataObj?.line));
+            const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
+            const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+            dataToSend = {
+                ...dataToSend,
+                backPrice: parseFloat((roundedLine + parseInt(dataObj?.rateDiff || 0)).toFixed(2)) || 0,
+                layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+                // backSize: parseFloat(dataObj?.backSize) || 100,
+                // laySize: parseFloat(dataObj?.laySize) || 100,
+                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+            }
+        }
+        return dataToSend;
+    };
+
     const generateOverUnder = (dataObj) => {
         let dataToSend = {
             ...dataObj,
@@ -493,6 +521,7 @@ export const CreateEventMarket = () => {
             index: 0,
             beforeSuspendMin: template.beforeSuspendMin,
             beforeCloseMin: template.beforeCloseMin,
+            rateDiff: template?.rateDiff,
             runners: template.runners?.map(runner => ({
                 ...runner,
                 runnerId: runner.runnerId || "0",
@@ -520,6 +549,7 @@ export const CreateEventMarket = () => {
             inningsId: 1,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
+            rateDiff: template?.rateDiff,
             runners: template.runners?.map(runner => ({
                 ...runner,
                 runnerId: runner.runnerId || "0",
@@ -552,7 +582,14 @@ export const CreateEventMarket = () => {
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
 
             // If the line changes, recalculate the runner values
-            if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
+            if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+                const newRunnerValues = generateOverUnderLineMarketFancy({
+                    ...updatedRunners[runnerIndex],
+                    margin: updatedMarket.margin,
+                    rateDiff: updatedMarket?.rateDiff,
+                });
+                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
+            } else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
                 const newRunnerValues = generateOverUnder({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin
@@ -787,9 +824,17 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...market, [key]: value };
 
             // If margin changes, update all runners
-            if (key === 'margin' && !market?.isPredefineRunnerValue) {
+            if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+                updatedMarket.runners = updatedMarket.runners.map(runner =>
+                    generateOverUnderLineMarketFancy({ ...runner, margin: key === 'margin' ? parseFloat(value) : market?.margin, rateDiff: key === 'rateDiff' ? parseInt(value || 0) : market?.rateDiff })
+                );
+            } else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnder({ ...runner, margin: parseFloat(value) })
+                );
+            } else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
+                updatedMarket.runners = updatedMarket.runners.map(runner =>
+                    generateSameLayBack({ ...runner, margin: parseFloat(value) })
                 );
             }
 
@@ -875,7 +920,7 @@ export const CreateEventMarket = () => {
                 </select>
             ),
             key: "status",
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Margin",
@@ -894,9 +939,28 @@ export const CreateEventMarket = () => {
                 </>
             ),
             key: "margin",
-            style: { width: "10%" },
-        }
-    ];
+            style: { width: "5%" },
+        },
+        {
+            title: "Rate Diff",
+            dataIndex: "rateDiff",
+            render: (text, record) => (
+                <>
+                    <Input
+                        className="form-control small-text-fields no-spinners"
+                        type="number"
+                        value={(+text || 0)}
+                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.rateDiff}
+                    </span>
+                </>
+            ),
+            key: "rateDiff",
+            style: { width: "5%" },
+        },
+    ]
 
     const runnerColumns = [
         {
@@ -926,7 +990,7 @@ export const CreateEventMarket = () => {
                     placeholder="Line"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Under",
@@ -940,7 +1004,7 @@ export const CreateEventMarket = () => {
                     placeholder="Under"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Over",
@@ -954,7 +1018,7 @@ export const CreateEventMarket = () => {
                     placeholder="Over"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "No Rate",
@@ -968,7 +1032,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Rate"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Yes Rate",
@@ -982,7 +1046,7 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Rate"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "No Point",
@@ -996,7 +1060,7 @@ export const CreateEventMarket = () => {
                     placeholder="No Point"
                 />
             ),
-            style: { width: "10%" },
+            style: { width: "5%" },
         },
         {
             title: "Yes Point",
@@ -1010,8 +1074,8 @@ export const CreateEventMarket = () => {
                     placeholder="Yes Point"
                 />
             ),
-            style: { width: "10%" },
-        },
+            style: { width: "5%" },
+        }
     ];
     const MarketDetailsDate = commentaryDetails?.eventDate
         ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
