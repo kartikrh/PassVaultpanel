@@ -239,7 +239,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 />
                             </td>
                             <td>
-                                <span>{`${(+runner.line / +localMarket.over)?.toFixed(2) || 0}`}</span>
+                                <span>{`${(+runner.line / +localMarket.over)?.toFixed(2)}`}</span>
                             </td>
                             <td>
                                 <CustomInput

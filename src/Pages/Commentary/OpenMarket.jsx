@@ -608,7 +608,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-line-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => updateLineAndDependency(record, newValue)}
                 />
             ),
@@ -659,7 +659,7 @@ export const OpenMarket = () => {
         },
         {
             title: "R-Rate",
-            render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2) || 0}`}</span>),
+            render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2)}`}</span>),
             key: "inningsId",
             className: "p-0",
             columnClassName: "p-1"
@@ -670,7 +670,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                 />
             ),
@@ -685,7 +685,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                 />
             ),
@@ -762,7 +762,7 @@ export const OpenMarket = () => {
                     type="number"
                     step={0.1}
                     min={0}
-                    value={text || 0}
+                    value={text}
                     onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
                 />
             ),
@@ -785,7 +785,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "margin", newValue)}
                 />
             ),
@@ -799,7 +799,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-under-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "underRate", newValue)}
                 />
             ),
@@ -814,7 +814,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-over-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "overRate", newValue)}
                 />
             ),
@@ -829,7 +829,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                 />
             ),
@@ -844,7 +844,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                 />
             ),
@@ -859,7 +859,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={text || ""}
+                    value={text}
                     onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
                 />
             ),
@@ -880,7 +880,7 @@ export const OpenMarket = () => {
                 step={0.05}
                 min={0}
                 max={10}
-                value={Number(lineRatio).toFixed(2) || 0}
+                value={Number(lineRatio).toFixed(2)}
                 onChange={(e) => {
                     handleLineRatio(e.target.value)
                 }}
