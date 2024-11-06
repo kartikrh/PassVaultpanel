@@ -404,8 +404,8 @@ export const CreateEventMarket = () => {
                     lastUpdate: new Date().toISOString(),
                     selectionId: `${market.marketTemplateId}01`,
                     order: 1,
-                    backPrice: 1,
-                    layPrice: 1,
+                    backPrice: null,
+                    layPrice: null,
                     backSize: market?.defaultBackSize,
                     laySize: market?.defaultLaySize,
                 }];
