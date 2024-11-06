@@ -261,8 +261,8 @@ export const generateOverUnderLineType = (dataObj, marketTypeObj) => {
     layPrice: roundedLine,
     backSize: dataObj?.backSize || 100,
     laySize: dataObj?.laySize || 100,
-    overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
-    underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
+    overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || null),
+    underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || null),
   }
   return dataToSend
 }
