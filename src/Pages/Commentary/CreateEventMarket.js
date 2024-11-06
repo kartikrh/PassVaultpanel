@@ -117,18 +117,18 @@ export const CreateEventMarket = () => {
             overRate: null,
             underRate: null,
         }
-        if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
+        if (!isEmpty(dataObj)) {
             const roundedLine = Math.round(parseFloat(dataObj?.line));
             const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
-                backPrice: parseFloat((roundedLine + parseFloat(dataObj?.rateDiff || 0)).toFixed(2)) || 0,
-                layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+                backPrice: parseFloat((roundedLine + parseFloat(dataObj?.rateDiff || 0)).toFixed(2)),
+                layPrice: parseFloat(roundedLine.toFixed(2)),
                 // backSize: parseFloat(dataObj?.backSize) || 100,
                 // laySize: parseFloat(dataObj?.laySize) || 100,
-                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
-                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) : null,
+                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) : null,
             }
         }
         return dataToSend;
@@ -144,18 +144,18 @@ export const CreateEventMarket = () => {
             overRate: null,
             underRate: null,
         }
-        if (!isEmpty(dataObj) && dataObj.line && dataObj.margin) {
+        if (!isEmpty(dataObj)) {
             const roundedLine = Math.round(parseFloat(dataObj?.line));
             const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
-                backPrice: parseFloat((roundedLine + 1).toFixed(2)) || 0,
-                layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
+                backPrice: parseFloat((roundedLine + 1).toFixed(2)),
+                layPrice: parseFloat(roundedLine.toFixed(2)),
                 // backSize: parseFloat(dataObj?.backSize) || 100,
                 // laySize: parseFloat(dataObj?.laySize) || 100,
-                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
-                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) || 0 : 0,
+                overRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2))) : null,
+                underRate: dataObj?.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2))) : null,
             }
         }
         return dataToSend;
