@@ -198,9 +198,17 @@ export const OpenMarket = () => {
                     }
 
                     if (key === 'line' || key === 'margin' || key === "rateDiff") {
-                        updatedMarket = generateOverUnderLineType(updatedMarket, marketTypeObj);
+                        updatedMarket = generateOverUnderLineType({...updatedMarket, line:updatedMarket.runner[0]?.line, backSize:updatedMarket.runner[0]?.backSize, laySize:updatedMarket.runner[0]?.laySize}, marketTypeObj);
+                        updatedMarket.runner[0] = {
+                            ...updatedMarket.runner[0],
+                            backPrice: updatedMarket.backPrice,
+                            layPrice: updatedMarket.layPrice,
+                            backSize: updatedMarket.backSize,
+                            laySize: updatedMarket.laySize,
+                            overRate: updatedMarket.overRate,
+                            underRate: updatedMarket.underRate,
+                        };
                     }
-
                     return updatedMarket;
                 }
                 return market;
@@ -515,7 +523,7 @@ export const OpenMarket = () => {
                 ...record.runner[0],
                 line: newValue,
                 layPrice: roundedLine,
-                backPrice: ((parseInt(record?.lineType) === 1) && (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseInt(record?.rateDiff || 0) : parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine
+                backPrice: (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket) ? roundedLine + parseFloat(record?.rateDiff || 0) : roundedLine + 1
             }];
             updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType, marketTypeId: updatedRecord.marketTypeId, rateDiff: updatedRecord?.rateDiff }, marketTypeObj);
         } else {
@@ -523,7 +531,7 @@ export const OpenMarket = () => {
             // Multi-runner market or market-level change
             updatedRecord.line = newValue;
             updatedRecord.layPrice = roundedLine;
-            updatedRecord.backPrice = ((parseInt(record?.lineType) === 1) && (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseInt(record?.rateDiff || 0) : parseInt(record?.lineType) === 1 ? roundedLine + 1 : roundedLine;
+            updatedRecord.backPrice = (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket) ? roundedLine + parseFloat(record?.rateDiff || 0) : roundedLine + 1;
             updatedRecord = generateOverUnderLineType(updatedRecord, marketTypeObj);
         }
 
