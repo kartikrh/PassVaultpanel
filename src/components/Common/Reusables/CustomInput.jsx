@@ -45,8 +45,8 @@ const CustomInput = ({ value, onChange, ...rest }) => {
         onKeyDown={handleKeyDown}
         {...rest}
       />
-      <button onClick={handleIncrement} className="spin-button up" style={{top: 3}}></button>
-      <button onClick={handleDecrement} className="spin-button down" style={{bottom: 3}}></button>
+      {/* <button onClick={handleIncrement} className="spin-button up" style={{top: 3}}></button>
+      <button onClick={handleDecrement} className="spin-button down" style={{bottom: 3}}></button> */}
     </div>
   );
 };

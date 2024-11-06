@@ -122,7 +122,7 @@ export const CreateEventMarket = () => {
             const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
             dataToSend = {
                 ...dataToSend,
-                backPrice: parseFloat((roundedLine + parseInt(dataObj?.rateDiff || 0)).toFixed(2)) || 0,
+                backPrice: parseFloat((roundedLine + parseFloat(dataObj?.rateDiff || 0)).toFixed(2)) || 0,
                 layPrice: parseFloat(roundedLine.toFixed(2)) || 0,
                 // backSize: parseFloat(dataObj?.backSize) || 100,
                 // laySize: parseFloat(dataObj?.laySize) || 100,
@@ -582,26 +582,26 @@ export const CreateEventMarket = () => {
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
 
             // If the line changes, recalculate the runner values
-            if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+            if (key === 'line' && !market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
                 const newRunnerValues = generateOverUnderLineMarketFancy({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin,
                     rateDiff: updatedMarket?.rateDiff,
                 });
                 updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
+            } else if (key === 'line' && !market?.isPredefineRunnerValue) {
                 const newRunnerValues = generateOverUnder({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin
                 });
                 updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
+            } /* else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
                 const newRunnerValues = generateSameLayBack({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin
                 });
                 updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            }
+            } */
 
             updatedMarket.runners = updatedRunners;
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
@@ -824,19 +824,19 @@ export const CreateEventMarket = () => {
             const updatedMarket = { ...market, [key]: value };
 
             // If margin changes, update all runners
-            if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1 && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+            if ((key === 'margin' || key === 'rateDiff') && !market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
-                    generateOverUnderLineMarketFancy({ ...runner, margin: key === 'margin' ? parseFloat(value) : market?.margin, rateDiff: key === 'rateDiff' ? parseInt(value || 0) : market?.rateDiff })
+                    generateOverUnderLineMarketFancy({ ...runner, margin: key === 'margin' ? parseFloat(value) : market?.margin, rateDiff: key === 'rateDiff' ? parseFloat(value || 0) : market?.rateDiff })
                 );
-            } else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 1) {
+            } else if ((key === 'margin') && !market?.isPredefineRunnerValue) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateOverUnder({ ...runner, margin: parseFloat(value) })
                 );
-            } else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
+            } /* else if ((key === 'margin') && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
                 updatedMarket.runners = updatedMarket.runners.map(runner =>
                     generateSameLayBack({ ...runner, margin: parseFloat(value) })
                 );
-            }
+            } */
 
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
             return updatedMarkets;
@@ -949,7 +949,7 @@ export const CreateEventMarket = () => {
                     <Input
                         className="form-control small-text-fields no-spinners"
                         type="number"
-                        value={(+text || 0)}
+                        value={(+text || 0).toFixed(2)}
                         onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
                     />
                     <span className="text-danger">
