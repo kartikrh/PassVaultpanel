@@ -10,17 +10,23 @@ const CustomInput = ({ value, onChange, ...rest }) => {
     } else {
       const parsedValue = parseFloat(inputValue);
       if (!isNaN(parsedValue)) {
-        onChange(parsedValue);
+        if (parsedValue >= 0) {
+          onChange(parsedValue);
+        }
       }
     }
   };
 
   const handleIncrement = () => {
-    onChange(+value + 1);
+    if (value !== null) {
+      onChange(+value + 1);
+    }
   };
 
   const handleDecrement = () => {
-    onChange(+value - 1);
+    if (value !== null && value > 0) {
+      onChange(+value - 1);
+    }
   };
 
   const handleKeyDown = (e) => {
