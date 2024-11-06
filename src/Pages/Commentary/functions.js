@@ -254,14 +254,15 @@ export const generateOverUnderLineType = (dataObj, marketTypeObj) => {
   const roundedLine = Math.round(parseFloat(dataObj?.line));
   const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
   const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
+  const backPrice = ((dataObj?.marketTypeId == marketTypeObj?.Fancy || dataObj?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseFloat(dataObj?.rateDiff || 0) : roundedLine + 1;
   const dataToSend = {
     ...dataObj,
-    backPrice: ((parseInt(dataObj?.lineType) === 1) && (dataObj?.marketTypeId == marketTypeObj?.Fancy || dataObj?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseInt(dataObj?.rateDiff || 0) : (parseInt(dataObj?.lineType) === 1 ? roundedLine + 1 : roundedLine) || 0,
-    layPrice: roundedLine || 0,
+    backPrice: backPrice,
+    layPrice: roundedLine,
     backSize: dataObj?.backSize || 100,
     laySize: dataObj?.laySize || 100,
-    overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
-    underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || 0),
+    overRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(-(dataObj?.line - thresholdValue))))).toFixed(2)) || null),
+    underRate: dataObj?.margin && (((1 / (marginAdjustment / (1 + Math.exp(+(dataObj?.line - thresholdValue))))).toFixed(2)) || null),
   }
   return dataToSend
 }

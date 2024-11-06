@@ -24,9 +24,13 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
             [key]: value
         };
 
-        if (key === 'margin' || key === 'rateDiff') {
+        if (key === 'margin') {
             updatedMarket.runner = updatedMarket.runner.map(runner =>
-                generateOverUnderLineType({ ...runner, margin: value, lineType: updatedMarket?.lineType, marketTypeId: updatedMarket?.marketTypeId, rateDiff: updatedMarket?.rateDiff }, marketTypeObj)
+                generateOverUnderLineType({ ...runner, margin: parseFloat(value), lineType: updatedMarket?.lineType, marketTypeId: updatedMarket?.marketTypeId, rateDiff: updatedMarket?.rateDiff }, marketTypeObj)
+            );
+        } else if (key === 'rateDiff') {
+            updatedMarket.runner = updatedMarket.runner.map(runner =>
+                generateOverUnderLineType({ ...runner, margin: updatedMarket?.margin, lineType: updatedMarket?.lineType, marketTypeId: updatedMarket?.marketTypeId, rateDiff: parseFloat(value) }, marketTypeObj)
             );
         }
 
@@ -235,7 +239,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 />
                             </td>
                             <td>
-                                <span>{`${(+runner.line / +localMarket.over)?.toFixed(2) || 0}`}</span>
+                                <span>{`${(+runner.line / +localMarket.over)?.toFixed(2)}`}</span>
                             </td>
                             <td>
                                 <CustomInput

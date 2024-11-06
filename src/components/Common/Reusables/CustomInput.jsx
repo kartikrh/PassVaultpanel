@@ -10,17 +10,23 @@ const CustomInput = ({ value, onChange, ...rest }) => {
     } else {
       const parsedValue = parseFloat(inputValue);
       if (!isNaN(parsedValue)) {
-        onChange(parsedValue);
+        if (parsedValue >= 0) {
+          onChange(parsedValue);
+        }
       }
     }
   };
 
   const handleIncrement = () => {
-    onChange(+value + 1);
+    const newValue = +value + 1;
+    onChange(Math.max(newValue.toFixed(2)));
   };
 
   const handleDecrement = () => {
-    onChange(+value - 1);
+    if (value !== null && value > 0) {
+      const newValue = +value - 1;
+      onChange(Math.max(newValue.toFixed(2), 0));
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -45,8 +51,8 @@ const CustomInput = ({ value, onChange, ...rest }) => {
         onKeyDown={handleKeyDown}
         {...rest}
       />
-      <button onClick={handleIncrement} className="spin-button up" style={{top: 3}}></button>
-      <button onClick={handleDecrement} className="spin-button down" style={{bottom: 3}}></button>
+      {/* <button onClick={handleIncrement} className="spin-button up" style={{top: 3}}></button>
+      <button onClick={handleDecrement} className="spin-button down" style={{bottom: 3}}></button> */}
     </div>
   );
 };
