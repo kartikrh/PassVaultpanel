@@ -23,7 +23,8 @@ const CustomInput = ({ value, onChange, ...rest }) => {
 
   const handleDecrement = () => {
     if (value !== null && value > 0) {
-      onChange(+value - 1);
+      const newValue = +value - 1;
+      onChange(Math.max(newValue, 0));
     }
   };
 
