@@ -41,7 +41,7 @@ const CustomInput = ({ value, onChange, ...rest }) => {
     <div className='spin-buttons-container'>
       <Input
         className="form-control small-text-fields"
-        type="text"
+        type="number"
         step={1}
         min={0}
         value={value}
