@@ -19,7 +19,7 @@ const CustomInput = ({ value, onChange, ...rest }) => {
 
   const handleIncrement = () => {
     const newValue = +value + 1;
-    onChange(newValue.toFixed(2));
+    onChange(Math.max(newValue.toFixed(2)));
   };
 
   const handleDecrement = () => {
