@@ -11,6 +11,7 @@ import { isEmpty } from 'lodash';
 import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import EventMarketModal from './CommentaryModels/CustomEventModal';
+import CustomInput from '../../components/Common/Reusables/CustomInput';
 
 const MARKET_STATUS = {
     0: "NotOpen",
@@ -576,7 +577,7 @@ export const CreateEventMarket = () => {
 
             // Parse the value as a float for numeric fields
             const parsedValue = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'].includes(key)
-                ? parseFloat(value) || 0
+                ? (value === null ? "" : parseFloat(value))
                 : value;
 
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
@@ -927,11 +928,16 @@ export const CreateEventMarket = () => {
             dataIndex: "margin",
             render: (text, record) => (
                 <>
-                    <Input
+                    {/* <Input
                         className="form-control small-text-fields no-spinners"
                         type="number"
                         value={(+text || 0).toFixed(2)}
                         onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                    /> */}
+                    <CustomInput
+                       className="form-control small-text-fields"
+                       value={text}
+                       onChange={(newValue) => handleValueChange(record, "margin", newValue)}
                     />
                     <span className="text-danger">
                         {record?.error?.margin}
@@ -946,11 +952,16 @@ export const CreateEventMarket = () => {
             dataIndex: "rateDiff",
             render: (text, record) => (
                 <>
-                    <Input
+                    {/* <Input
                         className="form-control small-text-fields no-spinners"
                         type="number"
                         value={(+text || 0).toFixed(2)}
                         onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
+                    /> */}
+                    <CustomInput
+                       className="form-control small-text-fields"
+                       value={text}
+                       onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
                     />
                     <span className="text-danger">
                         {record?.error?.rateDiff}
@@ -982,11 +993,17 @@ export const CreateEventMarket = () => {
             title: "Line",
             key: "line",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.line}
-                    onChange={(e) => onChange("line", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.line}
+                //     onChange={(e) => onChange("line", +e.target.value || 0)}
+                //     placeholder="Line"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.line}
+                    onChange={(newValue) => onChange("line", newValue)}
                     placeholder="Line"
                 />
             ),
@@ -996,11 +1013,17 @@ export const CreateEventMarket = () => {
             title: "Under",
             key: "under",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.underRate}
-                    onChange={(e) => onChange("underRate", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.underRate}
+                //     onChange={(e) => onChange("underRate", +e.target.value || 0)}
+                //     placeholder="Under"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.underRate}
+                    onChange={(newValue) => onChange("underRate", newValue)}
                     placeholder="Under"
                 />
             ),
@@ -1010,11 +1033,17 @@ export const CreateEventMarket = () => {
             title: "Over",
             key: "over",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.overRate}
-                    onChange={(e) => onChange("overRate", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.overRate}
+                //     onChange={(e) => onChange("overRate", +e.target.value || 0)}
+                //     placeholder="Over"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.overRate}
+                    onChange={(newValue) => onChange("overRate", newValue)}
                     placeholder="Over"
                 />
             ),
@@ -1024,11 +1053,17 @@ export const CreateEventMarket = () => {
             title: "No Rate",
             key: "noRate",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.layPrice}
-                    onChange={(e) => onChange("layPrice", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.layPrice}
+                //     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
+                //     placeholder="No Rate"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.layPrice}
+                    onChange={(newValue) => onChange("layPrice", newValue)}
                     placeholder="No Rate"
                 />
             ),
@@ -1038,11 +1073,17 @@ export const CreateEventMarket = () => {
             title: "Yes Rate",
             key: "yesRate",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.backPrice}
-                    onChange={(e) => onChange("backPrice", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.backPrice}
+                //     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
+                //     placeholder="Yes Rate"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.backPrice}
+                    onChange={(newValue) => onChange("backPrice", newValue)}
                     placeholder="Yes Rate"
                 />
             ),
@@ -1052,11 +1093,17 @@ export const CreateEventMarket = () => {
             title: "No Point",
             key: "noPoint",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.laySize}
-                    onChange={(e) => onChange("laySize", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.laySize}
+                //     onChange={(e) => onChange("laySize", +e.target.value || 0)}
+                //     placeholder="No Point"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.laySize}
+                    onChange={(newValue) => onChange("laySize", newValue)}
                     placeholder="No Point"
                 />
             ),
@@ -1066,11 +1113,17 @@ export const CreateEventMarket = () => {
             title: "Yes Point",
             key: "yesPoint",
             render: (text, record, onChange) => (
-                <Input
-                    className="form-control small-text-fields no-spinners"
-                    type="number"
-                    value={record.backSize}
-                    onChange={(e) => onChange("backSize", +e.target.value || 0)}
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.backSize}
+                //     onChange={(e) => onChange("backSize", +e.target.value || 0)}
+                //     placeholder="Yes Point"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.backSize}
+                    onChange={(newValue) => onChange("backSize", newValue)}
                     placeholder="Yes Point"
                 />
             ),
