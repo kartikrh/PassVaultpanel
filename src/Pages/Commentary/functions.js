@@ -254,7 +254,7 @@ export const generateOverUnderLineType = (dataObj, marketTypeObj) => {
   const roundedLine = Math.round(parseFloat(dataObj?.line));
   const thresholdValue = Math.floor(parseFloat(dataObj?.line)) + 0.5;
   const marginAdjustment = dataObj?.margin ? ((dataObj.margin / 100) + 1) : 1;
-  const backPrice = ((dataObj?.marketTypeId == marketTypeObj?.Fancy || dataObj?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseFloat(dataObj?.rateDiff) : roundedLine + 1;
+  const backPrice = ((dataObj?.marketTypeId == marketTypeObj?.Fancy || dataObj?.marketTypeId == marketTypeObj?.LineMarket)) ? roundedLine + parseFloat(dataObj?.rateDiff || 0) : roundedLine + 1;
   const dataToSend = {
     ...dataObj,
     backPrice: backPrice,
