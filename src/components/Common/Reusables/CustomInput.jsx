@@ -18,9 +18,7 @@ const CustomInput = ({ value, onChange, ...rest }) => {
   };
 
   const handleIncrement = () => {
-    if (value !== null) {
-      onChange(+value + 1);
-    }
+    onChange(+value + 1);
   };
 
   const handleDecrement = () => {
