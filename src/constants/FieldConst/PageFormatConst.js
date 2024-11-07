@@ -18,7 +18,7 @@ export const PageFormatFields=[
     },
     {
         name: "pageName",
-        label: "Page Name",
+        label: "Container Id",
         parentclassName: "",
         regex: /^.{0,100}$/,
         regexErrorMessage: "Max allowed Characters 100",
