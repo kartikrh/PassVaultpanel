@@ -362,6 +362,12 @@ const Index = () => {
     sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
+  const handleCommentaryEventSnapClick = (details) => {
+    const url = new URL(window.location.origin + "/commentaryEventSnap");
+    sessionStorage.setItem('eventSnapId', "" + details?.commentaryId);
+    sessionStorage.setItem('eventSnapDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
   const handleMarketEventActionClick = (id) => {
     localStorage.setItem('openMarketCommentaryId', "" + id);
     const url = new URL(window.location.origin + "/openMarket");
@@ -1314,11 +1320,33 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     }
+    const eventSnapColumn = {
+      title: "Event Snap",
+      dataIndex: "eventSnap",
+      render: (text, record) => (
+      <Tooltip title={"Event Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCommentaryEventSnapClick(record);
+          }}
+        >
+          <i class='bx bxs-up-arrow-square' ></i>
+        </Button>
+      </Tooltip>
+      ),
+      key: "eventSnap",
+      sort: true,
+      style: { width: "2%", textAlign: "center" },
+    };
     const updatedColumn = [...columns];
 
     if (data.some(record => record?.commentaryStatus === 4)) {
       updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
+      updatedColumn.splice(8, 0, eventSnapColumn);
     }
     return updatedColumn;
   };

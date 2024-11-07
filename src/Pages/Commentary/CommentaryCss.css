@@ -496,3 +496,22 @@
     height: 90vh;
     overflow-y: auto;
 }
+
+.margin-right-20 {
+   margin-right: 20px;
+}
+
+.margin-right-10 {
+   margin-right: 10px;
+}
+
+.custom-event-snap {
+   text-align: right;
+   width: 20%;
+}
+
+.event-snap-table-hover tbody tr:hover td,
+.event-snap-table-hover tbody tr:hover th {
+    background-color: gray !important;
+    /* color: #fff !important; */
+}
