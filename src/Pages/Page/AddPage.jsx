@@ -80,7 +80,10 @@ const AddPage = () => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        pageId: pageId
+        pageId: pageId,
+        isStatic: dataToSave?.isStatic || false,
+        isDefault: dataToSave?.isDefault || false,
+        pageFormatId: dataToSave?.isLink ? null : dataToSave?.pageFormatId,
       }
       dispatch(addPageToDB({ ...dataToSave, ...extraData }))
       setCurrentSaveAction(saveAction);
