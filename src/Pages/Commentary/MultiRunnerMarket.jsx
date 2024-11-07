@@ -186,14 +186,14 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                         <td>
                             <CustomInput
                                 className="form-control small-text-fields"
-                                value={localMarket.margin}
+                                value={localMarket?.margin === null ? "" : localMarket.margin}
                                 onChange={(newValue) => handleMarketValueChange("margin", newValue)}
                             />
                         </td>
                         <td>
                             <CustomInput
                                 className="form-control small-text-fields"
-                                value={localMarket?.rateDiff}
+                                value={localMarket?.rateDiff === null ? "" : localMarket.rateDiff}
                                 onChange={(newValue) => handleMarketValueChange("rateDiff", newValue)}
                             />
                         </td>
@@ -234,7 +234,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-line-field"
-                                    value={runner.line}
+                                    value={runner?.line === null ? "" : runner.line}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "line", newValue)}
                                 />
                             </td>
@@ -244,42 +244,42 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-no-field"
-                                    value={runner.layPrice}
+                                    value={runner?.layPrice === null ? "" : runner.layPrice}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "layPrice", newValue)}
                                 />
                             </td>
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-yes-field"
-                                    value={runner.backPrice}
+                                    value={runner?.backPrice === null ? "" : runner.backPrice}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "backPrice", newValue)}
                                 />
                             </td>
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-under-field"
-                                    value={runner.underRate}
+                                    value={runner?.underRate === null ? "" : runner.underRate}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "underRate", newValue)}
                                 />
                             </td>
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-over-field"
-                                    value={runner.overRate}
+                                    value={runner?.overRate === null ? "" : runner.overRate}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "overRate", newValue)}
                                 />
                             </td>
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-no-field"
-                                    value={runner.laySize}
+                                    value={runner?.laySize === null ? "" : runner.laySize}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "laySize", newValue)}
                                 />
                             </td>
                             <td>
                                 <CustomInput
                                     className="form-control small-text-fields input-yes-field"
-                                    value={runner.backSize}
+                                    value={runner?.backSize === null ? "" : runner.backSize}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "backSize", newValue)}
                                 />
                             </td>
