@@ -608,7 +608,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-line-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => updateLineAndDependency(record, newValue)}
                 />
             ),
@@ -670,7 +670,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                 />
             ),
@@ -685,7 +685,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                 />
             ),
@@ -762,7 +762,7 @@ export const OpenMarket = () => {
                     type="number"
                     step={0.1}
                     min={0}
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
                 />
             ),
@@ -785,7 +785,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "margin", newValue)}
                 />
             ),
@@ -799,7 +799,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-under-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "underRate", newValue)}
                 />
             ),
@@ -814,7 +814,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-over-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "overRate", newValue)}
                 />
             ),
@@ -829,7 +829,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-no-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                 />
             ),
@@ -844,7 +844,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-yes-field"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                 />
             ),
@@ -859,7 +859,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={text}
+                    value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
                 />
             ),
