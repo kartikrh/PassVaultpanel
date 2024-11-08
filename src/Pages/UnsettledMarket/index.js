@@ -18,6 +18,7 @@ import ResultModal from "./ResultModal";
 import "./modal.css";
 import { Tooltip } from "antd";
 import CancelAllModel from "./CancelAllModel";
+import CancelSelectedModel from "./CancelSelectedModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -39,6 +40,7 @@ const Index = () => {
   const [resultModalData, setResultModalData] = useState(null);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [cancelAllModelVisable, setCancelAllModelVisable] = useState(false);
+  const [cancelModelVisable, setCancelModelVisable] = useState(false);
   const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -346,6 +348,7 @@ const Index = () => {
     reloadButton: true,
     isDateRange: true,
     isCancelAllMarket: true,
+    isCancelMarket: true,
   };
 
   useEffect(() => {
@@ -391,6 +394,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             cancelAllModelFunction={setCancelAllModelVisable}
+            cancelModelFunction={setCancelModelVisable}
             singleCheck={checekedList}
             eventTypes={eventTypes}
             competitionList={competitionList}
@@ -424,6 +428,12 @@ const Index = () => {
         <CancelAllModel
           cancelAllModelVisable={cancelAllModelVisable}
           setCancelAllModelVisable={setCancelAllModelVisable}
+          singleCheck={checekedList}
+          fetchData={fetchData}
+        />
+        <CancelSelectedModel
+          cancelModelVisable={cancelModelVisable}
+          setCancelModelVisable={setCancelModelVisable}
           singleCheck={checekedList}
           fetchData={fetchData}
         />
