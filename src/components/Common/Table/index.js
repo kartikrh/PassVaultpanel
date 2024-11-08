@@ -53,7 +53,9 @@ const Index = forwardRef(
       closeModelFunction,
       deleteAllModelFunction,
       closeAllModelFunction,
+      closeMarketModelFunction,
       cancelAllModelFunction,
+      cancelModelFunction,
       loadPanelModelFunction,
       loadClientModelFunction,
       loadSignalRToggleFunction,
@@ -1667,6 +1669,24 @@ const Index = forwardRef(
                             Close All Market
                           </Button>
                         )}
+                        {tableElement?.isCloseMarket && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              singleCheck.length > 0
+                              ? closeMarketModelFunction(true)
+                              : dispatch(
+                                updateToastData({
+                                  data: "Select at least one row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
+                            }}
+                          >
+                            Close Market
+                          </Button>
+                        )}
                         {tableElement?.isCancelAllMarket && (
                           <Button
                             color="warning"
@@ -1675,6 +1695,24 @@ const Index = forwardRef(
                             }}
                           >
                             Cancel All Market
+                          </Button>
+                        )}
+                        {tableElement?.isCancelMarket && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              singleCheck.length > 0
+                              ? cancelModelFunction(true)
+                              : dispatch(
+                                updateToastData({
+                                  data: "Select at least one row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
+                            }}
+                          >
+                            Cancel Market
                           </Button>
                         )}
                       </div>
