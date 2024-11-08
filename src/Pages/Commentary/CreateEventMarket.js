@@ -219,7 +219,10 @@ export const CreateEventMarket = () => {
                 processWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.noOfPlayer, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 12) {
                 processPlayerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-            } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
+            } else if (template.marketTypeCategoryId === 29) {
+                processPlayerBoundaryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            }
+            else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
@@ -469,6 +472,21 @@ export const CreateEventMarket = () => {
         teams.forEach(team => {
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Runs`;
+                const specialMarket = {
+                    ...market,
+                    playerId: player.commentaryPlayerId,
+                    marketName: specialMarketName,
+                    teamId: team.teamId
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            });
+        });
+    };
+
+    const processPlayerBoundaryMarkets = (market, teams, processedMarketsObj) => {
+        teams.forEach(team => {
+            team.players.forEach(player => {
+                const specialMarketName = `${player.playerName} Boundaries`;
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
@@ -935,9 +953,9 @@ export const CreateEventMarket = () => {
                         onChange={(e) => handleValueChange(record, "margin", e.target.value)}
                     /> */}
                     <CustomInput
-                       className="form-control small-text-fields"
-                       value={text}
-                       onChange={(newValue) => handleValueChange(record, "margin", newValue)}
+                        className="form-control small-text-fields"
+                        value={text}
+                        onChange={(newValue) => handleValueChange(record, "margin", newValue)}
                     />
                     <span className="text-danger">
                         {record?.error?.margin}
@@ -959,9 +977,9 @@ export const CreateEventMarket = () => {
                         onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
                     /> */}
                     <CustomInput
-                       className="form-control small-text-fields"
-                       value={text}
-                       onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
+                        className="form-control small-text-fields"
+                        value={text}
+                        onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
                     />
                     <span className="text-danger">
                         {record?.error?.rateDiff}
