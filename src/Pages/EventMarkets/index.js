@@ -27,6 +27,7 @@ import CloseModal from "./CloseModal";
 import { Tooltip } from "antd";
 import CloseAllModel from "./CloseAllModel";
 import CloseSuspendTimeModel from "../../components/Model/CloseSuspendTimeModel";
+import CloseModel from "./CloseModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -48,6 +49,7 @@ const Index = () => {
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [closeAllModelVisable, setCloseAllModelVisable] = useState(false);
+  const [closeModelVisable, setCloseModelVisable] = useState(false);
   const [closeSuspendTimeModelVisible, setCloseSuspendTimeModelVisible] = useState(false);
   const [closeSuspendTimeRecord, setCloseSuspendTimeRecord] = useState({});
   const [delay, setDelay] = useState(null);
@@ -666,6 +668,7 @@ const Index = () => {
     teamsList: false,
     isDateRange: true,
     isCloseAllMarket: true,
+    isCloseMarket: true,
   };
 
   useEffect(() => {
@@ -712,6 +715,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             closeAllModelFunction={setCloseAllModelVisable}
+            closeMarketModelFunction={setCloseModelVisable}
             onAddNavigate={"/addEventMarket"}
             singleCheck={checekedList}
             eventTypes={eventTypes}
@@ -760,6 +764,12 @@ const Index = () => {
         <CloseAllModel
           closeAllModelVisable={closeAllModelVisable}
           setCloseAllModelVisable={setCloseAllModelVisable}
+          singleCheck={checekedList}
+          fetchData={fetchData}
+        />
+        <CloseModel
+          closeModelVisable={closeModelVisable}
+          setCloseModelVisable={setCloseModelVisable}
           singleCheck={checekedList}
           fetchData={fetchData}
         />
