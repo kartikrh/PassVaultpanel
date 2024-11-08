@@ -7,12 +7,16 @@ import { useNavigate } from "react-router-dom";
 import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import "./CommentaryCss.css";
+import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { useDispatch } from "react-redux";
+import { updateToastData } from "../../Features/toasterSlice";
 
 export const CommentaryEventSnap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [eventSnapData, setEventSnapData] = useState(null);
   document.title = "CommentaryEventSnap";
   let navigate = useNavigate();
+  const dispatch = useDispatch();
   const commentaryId = +sessionStorage.getItem("eventSnapId") || "0";
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("eventSnapDetails") || "{}"
@@ -35,9 +39,38 @@ export const CommentaryEventSnap = () => {
     }
   };
 
+  const handleUpdate = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/updateEventSnap`, {
+        commentaryId,
+      })
+      .then((response) => {
+        fetchData(commentaryId);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   useEffect(() => {
-    fetchData(commentaryId);
-  }, []);
+    if(commentaryId) {
+      fetchData(commentaryId);
+    }
+  }, [commentaryId]);
 
   const handleBackClick = () => {
     navigate("/commentary");
@@ -82,16 +115,31 @@ export const CommentaryEventSnap = () => {
                   )}
                   <Col className="mt-3 mt-lg-3 mt-md-3 float-right">
                     <Button
-                      className="btn btn-danger text-right"
+                      className="btn btn-danger text-right mx-2"
                       onClick={handleBackClick}
                     >
                       {" "}
                       Back{" "}
                     </Button>
+                    <Button
+                      color="primary"
+                      className="btn text-right"
+                      onClick={handleUpdate}
+                    >
+                      {" "}
+                      Update{" "}
+                    </Button>
                   </Col>
                 </Row>
                 {eventSnapData && (
-                  <Table className="table event-snap-table-hover" responsive striped hover bordered style={{ border: "1px black"}}>
+                  <Table
+                    className="table event-snap-table-hover"
+                    responsive
+                    striped
+                    hover
+                    bordered
+                    style={{ border: "1px black" }}
+                  >
                     <tbody>
                       {Object.entries(eventSnapData).map(([key, value]) => {
                         // Capitalize key (you can uncomment and adjust the regex for formatting)
@@ -99,7 +147,7 @@ export const CommentaryEventSnap = () => {
 
                         return (
                           <tr key={key}>
-                            <td className="p-2 px-3 custom-event-snap" >
+                            <td className="p-2 px-3 custom-event-snap">
                               {formattedKey}
                             </td>
                             <td className="p-2 px-3">{value}</td>
