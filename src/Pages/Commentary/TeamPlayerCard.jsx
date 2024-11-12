@@ -86,7 +86,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
         setIsLoading(true);
         try {
             const playerDataArray = Object.keys(editedPlayers).map(playerId => {
-                let { batsmanAverage, batsmanStrikeRate, boundary, isInPlayingEleven } = editedPlayers[playerId];
+                let { batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven } = editedPlayers[playerId];
                 if (!batsmanAverage) {
                     batsmanAverage = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.batsmanAverage || 0
                 }
@@ -96,9 +96,12 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                 if (!boundary) {
                     boundary = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.boundary || 0
                 }
+                if(!playerBallFaced) {
+                    playerBallFaced = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.playerBallFaced || 0
+                }
                 isInPlayingEleven = Object.keys(updatedPlayingXiPlayer).includes(playerId) ? isInPlayingEleven :
                     commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.isInPlayingEleven || false
-                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, isInPlayingEleven };
+                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven };
             });
             await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
             setIsLoading(false);
@@ -138,6 +141,17 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
             [playerId]: {
                 ...prevState[playerId],
                 boundary: +bdry,
+                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
+            }
+        }));
+    };
+
+    const handleBallFacedChange = (playerId, playerBallFaced) => {
+        setEditedPlayers(prevState => ({
+            ...prevState,
+            [playerId]: {
+                ...prevState[playerId],
+                playerBallFaced: +playerBallFaced,
                 isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
             }
         }));
@@ -205,13 +219,14 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                 <Row className="rounded py-3">
                     <div class="row d-flex align-items-center my-2 ">
                     {/* <div className="col-2"></div> Remove Pls Add After if you want to set Remove Delete Players*/}
-                        <div class="col-10 ps-4">
+                        <div class="col-12 ps-4">
                             <div className="row">
-                                <div className="col-4">Player</div>
+                                <div className="col-3">Player</div>
                                 <div className="col-2">Avg</div>
                                 <div className="col-2">SR</div>
                                 <div className="col-2">BDRY</div>
-                                <div className="col-2">XI</div>
+                                <div className="col-2">PBF</div>
+                                <div className="col-1">XI</div>
 
                             </div>
                         </div>
@@ -226,9 +241,9 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                     <i className="ri-delete-bin-2-line"></i>
                                 </Button>
                             </div> */}
-                            <div class="col-10 ps-4">
+                            <div class="col-12 ps-4">
                                 <div className="row">
-                                    <div className="col-4">{player?.playerName}</div>
+                                    <div className="col-3">{player?.playerName}</div>
                                     <div className="col-2">
                                         <input
                                             type="number"
@@ -275,6 +290,22 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                         />
                                     </div>
                                     <div className="col-2">
+                                        <input
+                                            type="number"
+                                            style={{ width: "55px" }}
+                                            value={
+                                                +editedPlayers[player.playerId]?.playerBallFaced ||
+                                                +player.playerBallFaced
+                                            }
+                                            onChange={(e) =>
+                                                handleBallFacedChange(
+                                                    player.playerId,
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className="col-1">
                                         <div className="form-check form-switch form-switch-lg">
                                             <input
                                                 className="form-check-input"
