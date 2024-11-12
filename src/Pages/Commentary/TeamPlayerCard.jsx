@@ -20,9 +20,10 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
 
     useEffect(() => {
         if (teamDetails?.commentaryTeamPlayers && teamDetails?.teamPlayers) {
-            setCommentaryTeamPlayers(teamDetails.commentaryTeamPlayers);
-            const selectedIds = teamDetails.commentaryTeamPlayers.map(player => player.playerId)
-            setNonCommentaryTeamPlayers(teamDetails.teamPlayers.filter(player => !selectedIds.includes(player.playerId)))
+            const teamPlayers = teamDetails?.commentaryTeamPlayers.filter((item)=>item?.playerId !== null && item?.playerName !== null);
+            setCommentaryTeamPlayers(teamPlayers);
+            const selectedIds = teamPlayers.map(player => player.playerId)
+            setNonCommentaryTeamPlayers(teamPlayers.filter(player => !selectedIds.includes(player.playerId)))
         }
     }, [teamDetails]);
 
