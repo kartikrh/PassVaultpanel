@@ -225,8 +225,16 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   const getTeamList = (teamListStatus) => {
     let team = [];
-    if (teamListStatus === 1 && battingteamplayer.length) { team = battingteamplayer }
-    else if (teamListStatus === 2 && bowlingteamplayer.length) { team = bowlingteamplayer }
+    if (teamListStatus === 1 && battingteamplayer.length) 
+    { 
+       team = battingteamplayer.sort((a, b) => a.playerName.localeCompare(b.playerName));
+       //team = battingteamplayer 
+    }
+    else if (teamListStatus === 2 && bowlingteamplayer.length) 
+    { 
+      //team = bowlingteamplayer; 
+      team = bowlingteamplayer.sort((a, b) => a.playerName.localeCompare(b.playerName));
+    }
     return team
   }
 
