@@ -89,9 +89,9 @@ export const PageFields = [
     {
         name: "isOpenInNewTab",
         label: "Open In New Tab",
-        defaultValue: true,
-        dependsOnField: "isLink",
-        dependsOnValue: true,
+        defaultValue: false,
+        // dependsOnField: "isLink",
+        // dependsOnValue: true,
         parentclassName: "",
         type: SWITCH,
         // labelColspan: { xs: 12, md: 2 },
