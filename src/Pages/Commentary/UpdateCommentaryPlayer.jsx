@@ -44,15 +44,17 @@ const PlayerCommentary = () => {
     await axiosInstance
       .post("/admin/commentary/getTeamAndPlayerById", { commentaryId })
       .then((response) => {
+       
         const teams = response?.result?.commentaryTeams?.map((team) => {
           // Sort team players by playerName in alphabetical order
+         
           const sortedPlayers = team.commentaryTeamPlayers.sort((a, b) =>
-            a.playerName.localeCompare(b.playerName)
+            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
           );
-
           // Return team with sorted players
           return { ...team, commentaryTeamPlayers: sortedPlayers };
         });
+       
         setTeams(teams);
         //setTeams(response?.result?.commentaryTeams);
         setIsDataLoading(false);

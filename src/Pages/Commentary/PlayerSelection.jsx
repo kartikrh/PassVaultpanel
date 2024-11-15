@@ -225,18 +225,20 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   const getTeamList = (teamListStatus) => {
     let team = [];
-    if (teamListStatus === 1 && battingteamplayer.length) 
-    { 
-       team = battingteamplayer.sort((a, b) => a.playerName.localeCompare(b.playerName));
-       //team = battingteamplayer 
+    
+    if (teamListStatus === 1 && battingteamplayer.length) { 
+        team = battingteamplayer.sort((a, b) => 
+            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
+        );
+    } 
+    else if (teamListStatus === 2 && bowlingteamplayer.length) { 
+        team = bowlingteamplayer.sort((a, b) => 
+            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
+        );
     }
-    else if (teamListStatus === 2 && bowlingteamplayer.length) 
-    { 
-      //team = bowlingteamplayer; 
-      team = bowlingteamplayer.sort((a, b) => a.playerName.localeCompare(b.playerName));
-    }
-    return team
-  }
+    
+    return team;
+  };
 
   const selectPlayer = (commentaryPlayerId) => {
     const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(i => i.commentaryPlayerId === commentaryPlayerId && i.currentInnings === currentInnings);
