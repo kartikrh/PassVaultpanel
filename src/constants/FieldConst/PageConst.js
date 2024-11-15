@@ -59,9 +59,9 @@ export const PageFields = [
         name: "seoWord",
         label: "SEO Word",
         parentclassName: "",
-        regex: /^.{0,500}$/,
+        //regex: /^.{0,100000000}$/,
         defaultRows: 3,
-        regexErrorMessage: "Max allowed Characters 500",
+        //regexErrorMessage: "Max allowed Characters 100000000",
         type: TEXT_AREA,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 10, lg: 10 }
