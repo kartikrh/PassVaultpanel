@@ -118,6 +118,7 @@ import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTempla
 import PlayerHistory from "../Pages/Players/PlayerHistory.jsx";
 import TournamentTeamPoints from "../Pages/Competition/TournamentTeamPoints.jsx";
 import { CommentaryEventSnap } from "../Pages/Commentary/CommentaryEventSnap.jsx";
+import MarketType from "../Pages/MarketType"
 
 const authProtectedRoutes = [
   //dashboard
@@ -133,6 +134,7 @@ const authProtectedRoutes = [
   { path: "/Players", component: <Players /> },
   { path: "/addPlayer", component: <AddPlayers /> },
   { path: "/playerHistory", component: <PlayerHistory /> },
+  { path: "/marketType", component: <MarketType /> },
   { path: "/Teams", component: <Teams /> },
   { path: "/addTeams", component: <AddTeams /> },
   { path: "/matchType", component: <MatchType /> },
