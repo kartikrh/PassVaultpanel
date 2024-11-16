@@ -47,6 +47,7 @@ const Index = () => {
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Market Type List" />
           {isLoading && <SpinnerModel />}
+          {(data && data.length > 0) &&
           <Card>
             <CardBody className="p-1 event-snap">
               <Table
@@ -119,7 +120,7 @@ const Index = () => {
                 </tbody>
               </Table>
             </CardBody>
-          </Card>
+          </Card>}
         </Container>
       </div>
     </React.Fragment>
