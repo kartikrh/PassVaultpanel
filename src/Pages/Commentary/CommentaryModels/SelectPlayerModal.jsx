@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Input, Modal, ModalBody, ModalHeader, Table } from 'reactstrap';
 
 const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
+    if(playerList && playerList.length > 0) {
+        playerList = playerList.sort((a, b) =>
+            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
+        );
+    }
     const [players, setPlayers] = useState(playerList);
     const [search, setSearch] = useState("");
 
