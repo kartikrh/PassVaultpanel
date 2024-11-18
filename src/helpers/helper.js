@@ -21,6 +21,11 @@ export const filterOrderChange = (items, name) => {
           id: item.id,
           displayOrder: index + 1,
         };
+      } else if(name === "menuItem") {
+        return {
+          menuItemId: item.menuItemId,
+          displayOrder: index + 1,
+        };
       }
     }
   });

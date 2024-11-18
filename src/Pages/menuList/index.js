@@ -80,7 +80,7 @@ const Index = () => {
         const apiData = response?.result
         let apiDataIdList = [];
         apiData.forEach(ele => {
-          const uniqueId = +selectedMenuType?.level === 0 ? ele?.menuTypeId : ele?.menuItemId
+          const uniqueId = +selectedMenuType?.level === 0 ? ele?.menuTypeId : ele?.displayOrder
           apiDataIdList.push(uniqueId)
         })
         setDataIndexList(apiDataIdList)
@@ -519,7 +519,7 @@ const Index = () => {
             onAddNavigate={
               selectedMenuType.level == 0 ? "/addMenuType" : "/addMenuItem"
             }
-            changeOrderApiName="menuList"
+            changeOrderApiName="menuItem"
             displayTypes={displayTypes}
             singleCheck={checekedList}
             handleReset={handleReset}
