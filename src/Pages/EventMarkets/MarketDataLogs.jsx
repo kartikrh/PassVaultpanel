@@ -103,7 +103,7 @@ function MarketDataLogs() {
     }
   };
 
-  const columns = marketDetails?.marketName?.toLowerCase() !== "match odds" ? [
+  const columns = [
     {
       title: "Date",
       dataIndex: "createdDate",
@@ -201,49 +201,51 @@ function MarketDataLogs() {
       key: "userName",
       style: { width: "5%", textAlign: "center" },
     },
-  ] : [
-    {
-      title: "Date",
-      dataIndex: "createdDate",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
-        </span>
-      ),
-      key: "createdDate",
-      style: { width: "5%" },
-      sort: true,
-    },
-    {
-      title: "Id",
-      dataIndex: "marketDataLogId",
-      key: "marketDataLogId",
-      style: { width: "5%" },
-      sort: true,
-    },
-    {
-      title: "Market Name",
-      dataIndex: "marketName",
-      key: "marketName",
-      style: { width: "5%" },
-    },
-    {
-      title: "Log",
-      dataIndex: "data",
-      render: (text, record) => {
-        const logObject = JSON.parse(text);
-        const logItems = logObject && Object.entries(logObject).map(([key, value]) => (
-          <span key={key}>
-            <strong>{key}:</strong>{" "}
-            {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-          </span>
-        ));
-        return <div>{logItems}</div>;
-      },
-      key: "data",
-      style: { width: "10%" },
-    },
-  ];
+  ] 
+  // marketDetails?.marketName?.toLowerCase() !== "match odds" ? 
+  //: [
+  //   {
+  //     title: "Date",
+  //     dataIndex: "createdDate",
+  //     render: (text, record) => (
+  //       <span style={{ cursor: "pointer" }}>
+  //         {convertDateUTCToLocal(text, "index")}
+  //       </span>
+  //     ),
+  //     key: "createdDate",
+  //     style: { width: "5%" },
+  //     sort: true,
+  //   },
+  //   {
+  //     title: "Id",
+  //     dataIndex: "marketDataLogId",
+  //     key: "marketDataLogId",
+  //     style: { width: "5%" },
+  //     sort: true,
+  //   },
+  //   {
+  //     title: "Market Name",
+  //     dataIndex: "marketName",
+  //     key: "marketName",
+  //     style: { width: "5%" },
+  //   },
+  //   {
+  //     title: "Log",
+  //     dataIndex: "data",
+  //     render: (text, record) => {
+  //       const logObject = JSON.parse(text);
+  //       const logItems = logObject && Object.entries(logObject).map(([key, value]) => (
+  //         <span key={key}>
+  //           <strong>{key}:</strong>{" "}
+  //           {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+  //         </span>
+  //       ));
+  //       return <div>{logItems}</div>;
+  //     },
+  //     key: "data",
+  //     style: { width: "10%" },
+  //   },
+  // ];
 
   const MarketDetailsDate = marketDetails?.eventDate
     ? convertDateUTCToLocal(marketDetails.eventDate, "index")
@@ -275,7 +277,7 @@ function MarketDataLogs() {
           <Table
             columns={columns}
             dataSource={data.map((item) => {
-              if (category === "Session") {
+              // if (category === "Session") {
                 const logObject = item?.data && JSON.parse(item.data);
                 return {
                   ...item,
@@ -290,8 +292,8 @@ function MarketDataLogs() {
                   overRate: logObject?.runner?.[0]?.overRate || "",
                   underRate: logObject?.runner?.[0]?.underRate || "",
                 };
-              }
-              return item;
+              // }
+              // return item;
             })}
             tableElement={tableElement}
             reFetchData={fetchData}
