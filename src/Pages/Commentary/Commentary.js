@@ -120,9 +120,23 @@ const Commentary = (props) => {
         // );
     })
 
+    // const checkForOverSwitch = (ballcount) => {
+    //     if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
+    // }
     const checkForOverSwitch = (ballcount) => {
-        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
-    }
+        const effectiveBallCount = ballcount || currentOver.ballCount || 0;
+        const ballsPerOver = matchTypeDetails?.ballsPerOver || 6;
+    
+        console.log("Effective Ball Count:", effectiveBallCount);
+        console.log("Balls Per Over:", ballsPerOver);
+    
+        if (effectiveBallCount >= ballsPerOver) {
+            // console.log("Over complete, showing Change Over Modal");
+            setShowChangeOverModal(true);
+        } else {
+            console.log("Over not yet complete");
+        }
+    };
     const checkInningsSwitch = (checkFor) => {
         const teamToCheck = _teams || teams
         const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
