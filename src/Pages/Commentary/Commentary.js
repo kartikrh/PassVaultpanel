@@ -386,6 +386,7 @@ const Commentary = (props) => {
         updateBall["ballIsCount"] = ball > 0
         if (matchTypeDetails.isAutoChangeStriker && ball > 0) {
             updateBall["autoStrikeBallCount"] = ballCountForStrike
+            updateOver["ballCount"] = ballCountForStrike
             setBallCountForStrike(ballCountForStrike + 1)
         }
         updateBall["ballType"] = BALL_TYPE_REGULAR
@@ -553,7 +554,7 @@ const Commentary = (props) => {
             updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) + 1
             updateBowler["bowlerRun"] = (bowler.bowlerRun || 0)
             updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-            updateOver["ballCount"] = (currentOver.ballCount || 0) + 1
+            updateOver["ballCount"] = ballCountForStrike
             batter["batBall"] = (batter.batBall || 0) + 1
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runs
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runs
