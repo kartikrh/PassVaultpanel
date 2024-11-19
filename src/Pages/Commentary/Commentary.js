@@ -25,6 +25,7 @@ import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
 import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
 import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
+import axiosInstance from "../../Features/axios.js"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -89,6 +90,32 @@ const Commentary = (props) => {
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
+    const handleCommentaryConsole = async (temp, main) => {
+        const currentState = {
+            over: main?.over,
+            ballCount: main?.ballCount,
+            teamScore: main?.teamScore,
+        }
+        const temporaryState = {
+            over: temp?.over,
+            ballCount: temp?.ballCount,
+            teamScore: temp?.teamScore,
+        }
+        const payload = {
+            currentState: currentState,
+            temporaryState: temporaryState,
+            ballCount: main?.ballCount, 
+            over: main?.over, 
+            teamScore: main?.teamScore, 
+            commentaryId: main?.commentaryId, 
+        }
+        try {
+          await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
+        } catch (error) {
+          console.error("Error updating commentary console:", error);
+        }
+    };
+
     useEffect(() => {
         // console.log("Check:", {
         //     // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
@@ -120,23 +147,23 @@ const Commentary = (props) => {
         // );
     })
 
-    // const checkForOverSwitch = (ballcount) => {
-    //     if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
-    // }
     const checkForOverSwitch = (ballcount) => {
-        const effectiveBallCount = ballcount || currentOver.ballCount || 0;
-        const ballsPerOver = matchTypeDetails?.ballsPerOver || 6;
+        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
+    }
+    // const checkForOverSwitch = (ballcount) => {
+    //     const effectiveBallCount = ballcount || currentOver.ballCount || 0;
+    //     const ballsPerOver = matchTypeDetails?.ballsPerOver || 6;
     
-        console.log("Effective Ball Count:", effectiveBallCount);
-        console.log("Balls Per Over:", ballsPerOver);
+    //     console.log("Effective Ball Count:", effectiveBallCount);
+    //     console.log("Balls Per Over:", ballsPerOver);
     
-        if (effectiveBallCount >= ballsPerOver) {
-            // console.log("Over complete, showing Change Over Modal");
-            setShowChangeOverModal(true);
-        } else {
-            console.log("Over not yet complete");
-        }
-    };
+    //     if (effectiveBallCount >= ballsPerOver) {
+    //         // console.log("Over complete, showing Change Over Modal");
+    //         setShowChangeOverModal(true);
+    //     } else {
+    //         console.log("Over not yet complete");
+    //     }
+    // };
     const checkInningsSwitch = (checkFor) => {
         const teamToCheck = _teams || teams
         const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
@@ -1851,6 +1878,8 @@ const Commentary = (props) => {
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
+                handleCommentaryConsole(_currentOver, currentOver);
+                // console.log(`Temporary _over : ${_currentOver?.over}, _ballCount: ${_currentOver?.ballCount}, _teamScore: ${_currentOver?.teamScore} & permanent over : ${currentOver?.over}, ballCount: ${currentOver?.ballCount}, teamScore: ${currentOver?.teamScore}`);
             } else if (
                 currentBall.commentaryBallByBallId && commentaryDataToUpdate.commentaryBallByBallDetails
                 && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
