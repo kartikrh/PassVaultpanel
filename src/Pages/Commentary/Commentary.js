@@ -102,8 +102,8 @@ const Commentary = (props) => {
             teamScore: temp?.teamScore,
         }
         const payload = {
-            currentState: currentState,
-            temporaryState: temporaryState,
+            currentState: JSON.stringify(currentState),
+            temporaryState: JSON.stringify(temporaryState),
             ballCount: main?.ballCount, 
             over: main?.over, 
             teamScore: main?.teamScore, 
