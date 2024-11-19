@@ -386,7 +386,6 @@ const Commentary = (props) => {
         updateBall["ballIsCount"] = ball > 0
         if (matchTypeDetails.isAutoChangeStriker && ball > 0) {
             updateBall["autoStrikeBallCount"] = ballCountForStrike
-            updateOver["ballCount"] = ballCountForStrike
             setBallCountForStrike(ballCountForStrike + 1)
         }
         updateBall["ballType"] = BALL_TYPE_REGULAR
