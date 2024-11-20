@@ -116,6 +116,17 @@ const Commentary = (props) => {
         }
     };
 
+
+    useEffect(() => {
+        checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
+    }, [currentOver.ballCount]);
+
+    const checkForOverSwitch = (ballcount) => {
+        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) {
+            setShowChangeOverModal(true);
+        }
+    };
+
     useEffect(() => {
         // console.log("Check:", {
         //     // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
@@ -147,9 +158,10 @@ const Commentary = (props) => {
         // );
     })
 
-    const checkForOverSwitch = (ballcount) => {
-        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
-    }
+    // const checkForOverSwitch = (ballcount) => {
+    //     if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
+    // }
+
     // const checkForOverSwitch = (ballcount) => {
     //     const effectiveBallCount = ballcount || currentOver.ballCount || 0;
     //     const ballsPerOver = matchTypeDetails?.ballsPerOver || 6;
@@ -1877,7 +1889,7 @@ const Commentary = (props) => {
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
-                checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
+                //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
                 handleCommentaryConsole(_currentOver, currentOver);
                 // console.log(`Temporary _over : ${_currentOver?.over}, _ballCount: ${_currentOver?.ballCount}, _teamScore: ${_currentOver?.teamScore} & permanent over : ${currentOver?.over}, ballCount: ${currentOver?.ballCount}, teamScore: ${currentOver?.teamScore}`);
             } else if (
