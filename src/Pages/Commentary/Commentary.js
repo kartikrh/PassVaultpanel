@@ -99,7 +99,9 @@ const Commentary = (props) => {
         const temporaryState = {
             over: temp?.over,
             ballCount: temp?.ballCount,
-            teamScore: `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`,
+            teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM] 
+            ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}` 
+            : '0/0',
         }
         const payload = {
             currentState: JSON.stringify(currentState),
@@ -121,61 +123,12 @@ const Commentary = (props) => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
     }, [currentOver.ballCount]);
 
-    const checkForOverSwitch = (ballcount) => {
-        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) {
+    const checkForOverSwitch = () => {
+        console.log('currentOver.ballCount',currentOver.ballCount);
+        if (currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6)) {
             setShowChangeOverModal(true);
         }
     };
-
-    useEffect(() => {
-        // console.log("Check:", {
-        //     // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
-        //     // NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
-        //     // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
-        //     currentBall,
-        //     currentOver
-        // });
-        // console.log({
-        // battingTeamPlayers: players?.[BATTING_TEAM],
-        // onPitchPlayers,
-        // bowlingTeamPlayers: players?.[BOWLING_TEAM],
-        // changePlayerList
-        // });
-        // console.log("Wicket and Partnership: ", {
-        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-        //     currentPartnership,
-        //     partnershipHistory,
-        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
-        // });
-        // console.log(
-        //     {
-        //         isOriginalOver: _currentOver ? false : true,
-        //         overId: (_currentOver || currentOver)?.overId,
-        //         ballOverId: currentBall?.overId,
-        //         OverBallCount: (_currentOver || currentOver)?.ballCount,
-        //         overCount: currentBall?.overCount
-        //     }
-        // );
-    })
-
-    // const checkForOverSwitch = (ballcount) => {
-    //     if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
-    // }
-
-    // const checkForOverSwitch = (ballcount) => {
-    //     const effectiveBallCount = ballcount || currentOver.ballCount || 0;
-    //     const ballsPerOver = matchTypeDetails?.ballsPerOver || 6;
-    
-    //     console.log("Effective Ball Count:", effectiveBallCount);
-    //     console.log("Balls Per Over:", ballsPerOver);
-    
-    //     if (effectiveBallCount >= ballsPerOver) {
-    //         // console.log("Over complete, showing Change Over Modal");
-    //         setShowChangeOverModal(true);
-    //     } else {
-    //         console.log("Over not yet complete");
-    //     }
-    // };
     const checkInningsSwitch = (checkFor) => {
         const teamToCheck = _teams || teams
         const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
