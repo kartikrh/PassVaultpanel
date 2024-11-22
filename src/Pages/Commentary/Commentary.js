@@ -407,7 +407,11 @@ const Commentary = (props) => {
         updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
         updatePartnership["totalRuns"] = getNonNegativeValue((syncPartnership.totalRuns || 0) + run)
         updatePartnership["totalBalls"] = getNonNegativeValue((syncPartnership.totalBalls || 0) + ball)
-        updateOver["ballCount"] = (syncOver.ballCount || 0) + ball
+        if(syncOver.ballCount >= 6) {
+            updateOver["ballCount"] = 0
+        } else {
+            updateOver["ballCount"] = (syncOver.ballCount || 0) + ball
+        }
         updateOver["totalRun"] = (syncOver.totalRun || 0) + run
         updateBattingTeam["teamWicket"] = (+syncTeam[BATTING_TEAM].teamWicket || 0)
         updateBattingTeam["teamScore"] = (+syncTeam[BATTING_TEAM].teamScore || 0) + run
