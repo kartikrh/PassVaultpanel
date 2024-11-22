@@ -387,7 +387,7 @@ const Commentary = (props) => {
         const updatePartnership = {}
         const updateBall = {}
         let isChangeStrike = undefined
-
+        if (syncOver.ballCount < (+matchTypeDetails?.ballsPerOver || 6)) {
         const updatedBowlerOver = ball > 0 ? ((+bowler.bowlerOver || 0) + 0.1).toFixed(1) : bowler.bowlerOver
         updateBall["ballIsCount"] = ball > 0
         if (matchTypeDetails.isAutoChangeStriker && ball > 0) {
@@ -407,9 +407,7 @@ const Commentary = (props) => {
         updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
         updatePartnership["totalRuns"] = getNonNegativeValue((syncPartnership.totalRuns || 0) + run)
         updatePartnership["totalBalls"] = getNonNegativeValue((syncPartnership.totalBalls || 0) + ball)
-        if(syncOver.ballCount < 6) {
-            updateOver["ballCount"] = (syncOver.ballCount || 0) + ball
-        }
+        updateOver["ballCount"] = (syncOver.ballCount || 0) + ball
         updateOver["totalRun"] = (syncOver.totalRun || 0) + run
         updateBattingTeam["teamWicket"] = (+syncTeam[BATTING_TEAM].teamWicket || 0)
         updateBattingTeam["teamScore"] = (+syncTeam[BATTING_TEAM].teamScore || 0) + run
@@ -475,6 +473,7 @@ const Commentary = (props) => {
             return { ...actualPrevData, ...updatePartnership, }
         })
         setSaveToDb(true)
+       }
     }
     const updateExtras = (type, runs, isBoundary = false) => {
         setCurrentBall({})
