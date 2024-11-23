@@ -15,7 +15,7 @@ export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleC
             {singleCheck.length===1?<div className="d-flex flex-column justify-content-center p-4">
                 <h4 className="form-label text-left text-lg">Clone New Match Type</h4>
                 <h6 className='text-left mt-4'>Match Type Name</h6>
-                <input type="text" onChange={(e)=>{setCloneName(e.target.value)}} className="form-control text-center" required />
+                <input type="text" onChange={(e)=>{setCloneName(e.target.value)}} className="form-control" required />
             </div>:singleCheck.length>1?<h4 className="text-danger text-center p-4">Select Only One Match Type</h4>:<h4 className="text-danger text-center p-4">Select One MatchTyp To Clone</h4>}
             <div className="hstack gap-2 justify-content-end">
                 <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
