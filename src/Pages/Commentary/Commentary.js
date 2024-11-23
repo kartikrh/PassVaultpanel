@@ -25,6 +25,7 @@ import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
 import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
 import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
+import axiosInstance from "../../Features/axios.js"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -89,40 +90,45 @@ const Commentary = (props) => {
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
 
-    useEffect(() => {
-        // console.log("Check:", {
-        //     // StrikerSR: onPitchPlayers?.[ON_STRIKE]?.batsmanStrikeRate,
-        //     // NonStrikerSR: onPitchPlayers?.[NON_STRIKE]?.batsmanStrikeRate,
-        //     // bowlerEconomy: onPitchPlayers?.[CURRENT_BOWLER]?.bowlerEconomy
-        //     currentBall,
-        //     currentOver
-        // });
-        // console.log({
-        // battingTeamPlayers: players?.[BATTING_TEAM],
-        // onPitchPlayers,
-        // bowlingTeamPlayers: players?.[BOWLING_TEAM],
-        // changePlayerList
-        // });
-        // console.log("Wicket and Partnership: ", {
-        //     partnership: `${currentPartnership?.["batter1Name"]} and ${currentPartnership?.["batter2Name"]} `,
-        //     currentPartnership,
-        //     partnershipHistory,
-        //     PartnershiId: currentPartnership?.commentaryPartnershipId,
-        // });
-        // console.log(
-        //     {
-        //         isOriginalOver: _currentOver ? false : true,
-        //         overId: (_currentOver || currentOver)?.overId,
-        //         ballOverId: currentBall?.overId,
-        //         OverBallCount: (_currentOver || currentOver)?.ballCount,
-        //         overCount: currentBall?.overCount
-        //     }
-        // );
-    })
+    const handleCommentaryConsole = async (temp, main) => {
+        const currentState = {
+            over: main?.over,
+            ballCount: main?.ballCount,
+            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+        }
+        const temporaryState = {
+            over: temp?.over,
+            ballCount: temp?.ballCount,
+            teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM] 
+            ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}` 
+            : '0/0',
+        }
+        const payload = {
+            currentState: JSON.stringify(currentState),
+            temporaryState: JSON.stringify(temporaryState),
+            ballCount: main?.ballCount, 
+            over: main?.over, 
+            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`, 
+            commentaryId: main?.commentaryId, 
+        }
+        try {
+          await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
+        } catch (error) {
+          console.error("Error updating commentary console:", error);
+        }
+    };
 
-    const checkForOverSwitch = (ballcount) => {
-        if ((ballcount || currentOver.ballCount) >= (matchTypeDetails?.ballsPerOver || 6)) setShowChangeOverModal(true)
-    }
+
+    useEffect(() => {
+        checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
+    }, [currentOver.ballCount]);
+
+    const checkForOverSwitch = () => {
+        console.log('currentOver.ballCount',currentOver.ballCount);
+        if (currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6)) {
+            setShowChangeOverModal(true);
+        }
+    };
     const checkInningsSwitch = (checkFor) => {
         const teamToCheck = _teams || teams
         const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
@@ -381,7 +387,7 @@ const Commentary = (props) => {
         const updatePartnership = {}
         const updateBall = {}
         let isChangeStrike = undefined
-
+        if (syncOver.ballCount < (+matchTypeDetails?.ballsPerOver || 6)) {
         const updatedBowlerOver = ball > 0 ? ((+bowler.bowlerOver || 0) + 0.1).toFixed(1) : bowler.bowlerOver
         updateBall["ballIsCount"] = ball > 0
         if (matchTypeDetails.isAutoChangeStriker && ball > 0) {
@@ -467,6 +473,7 @@ const Commentary = (props) => {
             return { ...actualPrevData, ...updatePartnership, }
         })
         setSaveToDb(true)
+       }
     }
     const updateExtras = (type, runs, isBoundary = false) => {
         setCurrentBall({})
@@ -1836,7 +1843,9 @@ const Commentary = (props) => {
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
-                checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
+                //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
+                handleCommentaryConsole(_currentOver, currentOver);
+                // console.log(`Temporary _over : ${_currentOver?.over}, _ballCount: ${_currentOver?.ballCount}, _teamScore: ${_currentOver?.teamScore} & permanent over : ${currentOver?.over}, ballCount: ${currentOver?.ballCount}, teamScore: ${currentOver?.teamScore}`);
             } else if (
                 currentBall.commentaryBallByBallId && commentaryDataToUpdate.commentaryBallByBallDetails
                 && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
