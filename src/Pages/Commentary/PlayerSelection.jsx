@@ -10,8 +10,8 @@ import { clone } from 'lodash'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection";
-
   const { data, next, previous, save } = props;
+  console.log(data);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -225,18 +225,18 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   const getTeamList = (teamListStatus) => {
     let team = [];
-    
-    if (teamListStatus === 1 && battingteamplayer.length) { 
-        team = battingteamplayer.sort((a, b) => 
-            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
-        );
-    } 
-    else if (teamListStatus === 2 && bowlingteamplayer.length) { 
-        team = bowlingteamplayer.sort((a, b) => 
-            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
-        );
+
+    if (teamListStatus === 1 && battingteamplayer.length) {
+      team = battingteamplayer.sort((a, b) =>
+        a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
+      );
     }
-    
+    else if (teamListStatus === 2 && bowlingteamplayer.length) {
+      team = bowlingteamplayer.sort((a, b) =>
+        a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
+      );
+    }
+
     return team;
   };
 
