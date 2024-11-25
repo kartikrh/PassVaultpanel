@@ -49,7 +49,7 @@ const PlayerCommentary = () => {
           // Sort team players by playerName in alphabetical order
          
           const sortedPlayers = team.commentaryTeamPlayers.sort((a, b) =>
-            a.playerName.trim().localeCompare(b.playerName.trim(), undefined, { sensitivity: 'base' })
+            a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
           );
           // Return team with sorted players
           return { ...team, commentaryTeamPlayers: sortedPlayers };
