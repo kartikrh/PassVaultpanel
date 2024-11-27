@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CardHeader, Col, Container, Row, Button } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ERROR } from "../../components/Common/Const";
 import Table from "../../components/Common/Table";
 import axiosInstance from "../../Features/axios";
@@ -8,6 +8,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
+import NestedTable from "./NestedTable";
 import { Tooltip } from "antd";
 
 function MarketDataLogs() {
@@ -15,6 +16,7 @@ function MarketDataLogs() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [category, setCategory] = useState(null);
+  const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -120,38 +122,10 @@ function MarketDataLogs() {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "Is Active",
-      key: "isActive",
-      render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Is Bet Allow",
-      key: "isAllow",
-      render: (text, record) => (
-      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isAllow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-        >
-          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
+      title: "Runner",
+      dataIndex: "runner",
+      key: "runner",
+      style: { width: "5%", textAlign: "center" },
     },
     {
       title: "Lay Price",
@@ -194,6 +168,103 @@ function MarketDataLogs() {
       dataIndex: "underRate",
       key: "underRate",
       style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Is Active",
+      key: "isActive",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Is Bet Allow",
+      key: "isAllow",
+      render: (text, record) => (
+      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isAllow ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Created By",
+      dataIndex: "userName",
+      key: "userName",
+      style: { width: "5%", textAlign: "center" },
+    },
+  ]
+  const customColumns = [
+    {
+      title: "Date",
+      dataIndex: "createdDate",
+      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, "index")}</span>,
+      key: "createdDate",
+      style: { width: "5%" },
+      sort: true,
+    },
+    {
+      title: "Market",
+      dataIndex: "marketName",
+      key: "marketName",
+      style: { width: "10%"},
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      style: { width: "5%" },
+      render: (text, record) => <span>{getStatusText(record.status)}</span>,
+    },
+    {
+      title: "Is Active",
+      key: "isActive",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Is Bet Allow",
+      key: "isAllow",
+      render: (text, record) => (
+      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isAllow ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Created By",
@@ -252,7 +323,7 @@ function MarketDataLogs() {
     : "";
 
   const tableElement = {
-    title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
+    title: "Market Data Logs",
     isServerPagination: true,
   };
 
@@ -266,7 +337,7 @@ function MarketDataLogs() {
             <Row className="g-2">
               {marketDetails && (
                 <Col className="col-sm-auto">
-                  <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}`}</div>
+                  <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ ${marketDetails?.marketName}`}</div>
                   <div>{`Ref: ${marketDetails.eventRefId} [
                       ${MarketDetailsDate}
                     ]`}</div>
@@ -274,16 +345,17 @@ function MarketDataLogs() {
               )}
             </Row>
           </CardHeader>
+          {(marketDetails?.marketTypeId == marketTypeObj?.Fancy || marketDetails?.marketTypeId == marketTypeObj?.LineMarket) ?
           <Table
             columns={columns}
             dataSource={data.map((item) => {
-              // if (category === "Session") {
                 const logObject = item?.data && JSON.parse(item.data);
                 return {
                   ...item,
                   status: logObject?.status,
                   isActive: logObject?.isActive,
                   isAllow: logObject?.isAllow,
+                  runner: logObject?.runner?.[0]?.runner || "",
                   layPrice: logObject?.runner?.[0]?.layPrice || "",
                   laySize: logObject?.runner?.[0]?.laySize || "",
                   backPrice: logObject?.runner?.[0]?.backPrice || "",
@@ -292,8 +364,6 @@ function MarketDataLogs() {
                   overRate: logObject?.runner?.[0]?.overRate || "",
                   underRate: logObject?.runner?.[0]?.underRate || "",
                 };
-              // }
-              // return item;
             })}
             tableElement={tableElement}
             reFetchData={fetchData}
@@ -302,7 +372,31 @@ function MarketDataLogs() {
             serverTotal={total}
             setServerCurrentPage={setCurrentPage}
             setServerPageSize={setPageSize}
-          />
+          /> : 
+          <Table
+            columns={customColumns}
+            tableElement={tableElement}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
+            setServerTotal={setTotal}
+            dataSource={data.sort((a,b)=>a.marketDataLogId - b.marketDataLogId).map((item) => {
+              const logObject = item?.data ? JSON.parse(item.data) : {};
+              const runners = logObject?.runner || [];
+              return {
+                ...item,
+                createdDate: item?.createdDate,
+                userName: item?.userName,
+                marketName: logObject?.marketName,
+                status: logObject?.status,
+                isActive: logObject?.isActive,
+                isAllow: logObject?.isAllow,
+                nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
+              };
+            })}
+          />}
         </Container>
       </div>
     </React.Fragment>

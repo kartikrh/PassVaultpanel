@@ -131,12 +131,20 @@ const Index = forwardRef(
     const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(false);
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
+    const [expandedRows, setExpandedRows] = useState({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
     useEffect(() => {
       setData(filteredData);
     }, [filteredData]);
+
+    const toggleRow = (index) => {
+      setExpandedRows((prev) => ({
+        ...prev,
+        [index]: !prev[index],
+      }));
+    };
 
     const OffsymbolStatus = () => {
       return (
@@ -2104,7 +2112,8 @@ const Index = forwardRef(
                       </thead>
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
-                          <tr key={index} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status) }}>
+                          <React.Fragment key={index}>
+                          <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
                             {columns.map((column) => (
                               <td key={column.key} style={column.style}>
                                 {column.render
@@ -2116,6 +2125,17 @@ const Index = forwardRef(
                               </td>
                             ))}
                           </tr>
+                          {expandedRows[index] && record.nestedTable && (
+                            <tr>
+                              <td
+                                colSpan={columns.length}
+                                className="p-0"
+                              >
+                                {record.nestedTable}
+                              </td>
+                            </tr>
+                          )}
+                          </React.Fragment>
                         ))}
                       </tbody>
                     </table>
