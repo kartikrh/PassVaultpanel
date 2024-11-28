@@ -404,7 +404,7 @@ function MarketDataLogs() {
             <Row className="g-2">
               {marketDetails && (
                 <Col className="col-sm-auto">
-                  <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ ${marketDetails?.marketName}`}</div>
+                  <div className="match-details-breadcrumbs">{`${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ ${marketDetails?.marketName}/ ${marketDetails?.eventMarketId}`}</div>
                   <div>{`Ref: ${marketDetails.eventRefId} [
                       ${MarketDetailsDate}
                     ]`}</div>
@@ -453,7 +453,7 @@ function MarketDataLogs() {
             setServerPageSize={setPageSize}
             setServerTotal={setTotal}
             datePriceModelFunction={setDateModelVisable}
-            dataSource={data.sort((a,b)=>a.marketDataLogId - b.marketDataLogId).map((item) => {
+            dataSource={data.map((item) => {
               const logObject = item?.data ? JSON.parse(item.data) : {};
               const runners = logObject?.runner || [];
               return {
