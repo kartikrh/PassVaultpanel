@@ -59,6 +59,7 @@ const Index = forwardRef(
       loadPanelModelFunction,
       loadClientModelFunction,
       loadSignalRToggleFunction,
+      datePriceModelFunction,
       isSignalRStarted,
       singleCheck,
       setImportExportModelVisable,
@@ -969,6 +970,24 @@ const Index = forwardRef(
                             Multi Clone
                           </Button>
                         ) : null}
+                        {tableElement?.isDatePrice && (
+                          <Button
+                            color="btn btn-primary"
+                            onClick={() => {
+                              singleCheck.length > 1
+                              ? datePriceModelFunction(true)
+                              : dispatch(
+                                updateToastData({
+                                  data: "Select at least two row",
+                                  title: "Error",
+                                  type: ERROR,
+                                })
+                              );
+                            }}
+                          >
+                            Request Info
+                          </Button>
+                        )}
                         {tableElement?.loadCommentary ? (
                           <Button
                             color="success"
