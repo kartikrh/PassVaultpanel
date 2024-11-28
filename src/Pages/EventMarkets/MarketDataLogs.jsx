@@ -10,16 +10,22 @@ import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusabl
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
 import { Tooltip } from "antd";
+import { isEqual } from "lodash";
+import CheckBackLayPrice from "./CheckBackLayPrice";
 
 function MarketDataLogs() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [category, setCategory] = useState(null);
+  const [checekedList, setCheckedList] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
   const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const [dateModelVisable, setDateModelVisable] = useState(false);
+  const [datePriceValues, setDatePriceValues] = useState([]);
   const eventMarketId = +sessionStorage.getItem('eventMarketDataLogId') || "0";
   const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketDataLogDetails') || "{}");
 
@@ -39,6 +45,9 @@ function MarketDataLogs() {
           apiDataIdList.push(ele?.marketDataLogId);
         });
         setData(apiData);
+        setDataIndexList(apiDataIdList);
+        setCheckedList([]);
+        setDatePriceValues([]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -105,7 +114,64 @@ function MarketDataLogs() {
     }
   };
 
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.marketDataLogId)) {
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.marketDataLogId
+      );
+    } else {
+      updateSingleCheck = [...checekedList, e.marketDataLogId];
+    }
+    setCheckedList(updateSingleCheck);
+  };
+
   const columns = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.marketDataLogId)}
+            onChange={() => {
+              const isChecked = checekedList.includes(record.marketDataLogId);
+              handleSingleCheck(record);
+              if (isChecked) {
+                setDatePriceValues(datePriceValues.filter(item => item.marketDataLogId !== record.marketDataLogId));
+              } else {
+                setDatePriceValues([...datePriceValues, record]);
+              }
+            }}
+          />
+        </div>
+      ),
+      key: "select",
+      style: { width: "2%" },
+    },
     {
       title: "Date",
       dataIndex: "createdDate",
@@ -325,6 +391,7 @@ function MarketDataLogs() {
   const tableElement = {
     title: "Market Data Logs",
     isServerPagination: true,
+    isDatePrice: true,
   };
 
   return (
@@ -366,22 +433,26 @@ function MarketDataLogs() {
                 };
             })}
             tableElement={tableElement}
+            singleCheck={checekedList}
             reFetchData={fetchData}
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
             setServerCurrentPage={setCurrentPage}
             setServerPageSize={setPageSize}
+            datePriceModelFunction={setDateModelVisable}
           /> : 
           <Table
             columns={customColumns}
             tableElement={tableElement}
+            singleCheck={checekedList}
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
             setServerCurrentPage={setCurrentPage}
             setServerPageSize={setPageSize}
             setServerTotal={setTotal}
+            datePriceModelFunction={setDateModelVisable}
             dataSource={data.sort((a,b)=>a.marketDataLogId - b.marketDataLogId).map((item) => {
               const logObject = item?.data ? JSON.parse(item.data) : {};
               const runners = logObject?.runner || [];
@@ -396,6 +467,15 @@ function MarketDataLogs() {
                 nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
               };
             })}
+          />}
+          {dateModelVisable &&
+          <CheckBackLayPrice
+            dateModelVisable={dateModelVisable}
+            setDateModelVisable={setDateModelVisable}
+            datePriceValues={datePriceValues}
+            setDatePriceValues={setDatePriceValues}
+            setCheckedList={setCheckedList}
+            marketDetails={marketDetails}
           />}
         </Container>
       </div>
