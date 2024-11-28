@@ -415,7 +415,7 @@ function MarketDataLogs() {
           {(marketDetails?.marketTypeId == marketTypeObj?.Fancy || marketDetails?.marketTypeId == marketTypeObj?.LineMarket) ?
           <Table
             columns={columns}
-            dataSource={data.map((item) => {
+            dataSource={data && data.length > 0 && data.map((item) => {
                 const logObject = item?.data && JSON.parse(item.data);
                 return {
                   ...item,
@@ -453,7 +453,7 @@ function MarketDataLogs() {
             setServerPageSize={setPageSize}
             setServerTotal={setTotal}
             datePriceModelFunction={setDateModelVisable}
-            dataSource={data.sort((a,b)=>a.marketDataLogId - b.marketDataLogId).map((item) => {
+            dataSource={data && data.length > 0 && data.map((item) => {
               const logObject = item?.data ? JSON.parse(item.data) : {};
               const runners = logObject?.runner || [];
               return {
