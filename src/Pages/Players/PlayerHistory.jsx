@@ -21,7 +21,7 @@ import {
 } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import DeletePlayerHistoryModel from "../../components/Model/DeletePlayerHistoryModel";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 
 const PlayerHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -98,6 +98,13 @@ const PlayerHistory = () => {
       }
       return updatedHistory;
     });
+  };
+
+  const handleMatchHistory = (details) => {
+    const url = new URL(window.location.origin + "/playerEventHistory");
+    sessionStorage.setItem('matchHistoryId', "" + details?.matchTypeId);
+    sessionStorage.setItem('matchHistoryDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
   };
 
   // const validateBattingRow = (row) => {
@@ -538,6 +545,27 @@ const PlayerHistory = () => {
       style: { width: "5%" },
     },
     {
+      title: "",
+      key: "matchTypeId",
+      render: (text, record) => (
+        <div className="d-flex justify-content-center">
+          <Tooltip title={"Event History"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleMatchHistory(record);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          </Tooltip>
+        </div>
+      ),
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
       title: "Format",
       dataIndex: "matchTypeName",
       render: (text, record, index) => (
@@ -554,7 +582,7 @@ const PlayerHistory = () => {
         </>
       ),
       key: "matchTypeName",
-      style: { width: "30%" },
+      style: { width: "25%" },
     },
     {
       title: "Mat",
@@ -848,6 +876,27 @@ const PlayerHistory = () => {
       style: { width: "5%" },
     },
     {
+      title: "",
+      key: "matchTypeId",
+      render: (text, record) => (
+        <div className="d-flex justify-content-center">
+          <Tooltip title={"Match History"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleMatchHistory(record);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          </Tooltip>
+        </div>
+      ),
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
       title: "Format",
       dataIndex: "matchTypeName",
       render: (text, record, index) => (
@@ -864,7 +913,7 @@ const PlayerHistory = () => {
         </>
       ),
       key: "matchTypeName",
-      style: { width: "35%" },
+      style: { width: "30%" },
     },
     {
       title: "Mat",

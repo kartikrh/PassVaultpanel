@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
-import { Container } from "reactstrap";
+import { Avatar, Tooltip } from "antd";
+import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -25,7 +25,6 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
-  const [competitionId, setCompetitionId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -83,6 +82,13 @@ const Index = () => {
       updateSingleCheck = [...checekedList, e.teamId];
     }
     setCheckedList(updateSingleCheck)
+  };
+
+  const handleTournament = (details) => {
+    const url = new URL(window.location.origin + "/tournamentCompetitionPoints");
+    sessionStorage.setItem('teamId', "" + details?.teamId);
+    sessionStorage.setItem('teamDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
   };
 
   const handleDelete = async (e) => {
@@ -230,6 +236,27 @@ const Index = () => {
       key: "country",
       style: { width: "20%" },
     },
+    {
+      title: "Tournament",
+      key: "teamId",
+      render: (text, record) => (
+        <>
+          <Tooltip title={"Tournament"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleTournament(record);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          </Tooltip>
+        </>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   //elements required
@@ -280,7 +307,6 @@ const Index = () => {
             eventTypes={eventTypes}
             competitionList={competitionList}
             setEventTypeId={setEventTypeId}
-            setCompetitionId={setCompetitionId}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}

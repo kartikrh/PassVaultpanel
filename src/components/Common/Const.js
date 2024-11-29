@@ -32,6 +32,7 @@ export const TAB_EVENT_TYPES = "Event Types";
 export const TAB_PLAYERS = "Players";
 export const TAB_PLAYER_HISTORY = "Player History";
 export const TAB_EVENT_HISTORY = "Event History";
+export const TAB_PLAYER_EVENT_HISTORY = "Player Event History";
 export const TAB_MARKET_TYPE = "Market Type List";
 export const TAB_TEAMS = "Teams";
 export const TAB_SOCIAL_MEDIA = "Social Media";
