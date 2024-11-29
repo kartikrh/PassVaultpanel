@@ -347,7 +347,7 @@ const Index = forwardRef(
           ...tableActions,
           isShowContent: id,
         });
-      }else if (key === "onTournamentisChanges") {
+      } else if (key === "onTournamentisChanges") {
         onTournamentisChanges(id);
       } else {
         reFetchData({
@@ -386,28 +386,27 @@ const Index = forwardRef(
       } else if (tableElement.title === "Auto Events") {
         const updatedData = dataSource.filter((val) => {
           const marketIDFlag = val.marketID ? true : false; // Set the flag if `marketID` exists
-          if(marketIDFlag)
-            {
-              const found = Object.values(val).some((value) => {
-                if (typeof value === "string" || value instanceof String) {
-                  return value.toLowerCase().includes(searchTerm.toLowerCase());
-                }
-                return false;
-              });
-              return found === true;
-            
+          if (marketIDFlag) {
+            const found = Object.values(val).some((value) => {
+              if (typeof value === "string" || value instanceof String) {
+                return value.toLowerCase().includes(searchTerm.toLowerCase());
+              }
+              return false;
+            });
+            return found === true;
+
           }
-          else{
-              const first = Object.values(val);
-              const firstObject = first[0];
-              const found = Object.values(firstObject).some((value) => {
-                if (typeof value === "string" || value instanceof String) {
-                  return value.toLowerCase().includes(searchTerm.toLowerCase());
-                }
-                return false;
-              });
-              return found === true;
-            }
+          else {
+            const first = Object.values(val);
+            const firstObject = first[0];
+            const found = Object.values(firstObject).some((value) => {
+              if (typeof value === "string" || value instanceof String) {
+                return value.toLowerCase().includes(searchTerm.toLowerCase());
+              }
+              return false;
+            });
+            return found === true;
+          }
         });
         if (searchTerm === "") {
           setTotal(dataSource.length);
@@ -662,7 +661,7 @@ const Index = forwardRef(
       },
     ];
     const fetchData = () => {
-      if(tableElement?.isServerPagination) {
+      if (tableElement?.isServerPagination) {
         const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
         let sliced;
         if (serverCurrentPage < possibleNoOfPages) {
@@ -721,7 +720,7 @@ const Index = forwardRef(
         isActive: true,
       });
       setSelectedTableElements({
-        rateSourceType: { 
+        rateSourceType: {
           value: 1,
           label: "Ratesource",
         },
@@ -774,10 +773,10 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
-      } else{
-      handleReset({
-        isActive: true,
-      });
+      } else {
+        handleReset({
+          isActive: true,
+        });
       }
     };
 
@@ -787,7 +786,7 @@ const Index = forwardRef(
         isActive: true,
       });
       setSelectedTableElements({
-        rateSourceType: { 
+        rateSourceType: {
           value: 1,
           label: "Ratesource",
         },
@@ -840,10 +839,10 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
-      } else{
+      } else {
         handleReload({
-        isActive: true,
-      });
+          isActive: true,
+        });
       }
     };
 
@@ -852,7 +851,9 @@ const Index = forwardRef(
     };
 
     useEffect(() => {
-      handleSearchFilter();
+      if (searchTerm.length > 2 || searchTerm.length === 0) {
+        handleSearchFilter();
+      }
     }, [searchTerm]);
     useEffect(() => {
       fetchData();
@@ -975,14 +976,14 @@ const Index = forwardRef(
                             color="btn btn-primary"
                             onClick={() => {
                               singleCheck.length > 1
-                              ? datePriceModelFunction(true)
-                              : dispatch(
-                                updateToastData({
-                                  data: "Select at least two row",
-                                  title: "Error",
-                                  type: ERROR,
-                                })
-                              );
+                                ? datePriceModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least two row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
                             }}
                           >
                             Request Info
@@ -1091,7 +1092,7 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
-                         {tableElement?.rateSourceListSelect ? (
+                        {tableElement?.rateSourceListSelect ? (
                           <div className="">
                             <Select
                               styles={{
@@ -1469,7 +1470,7 @@ const Index = forwardRef(
                             </span>
                           </div>
                         ) : null}
-                       {tableElement?.importExport ? (
+                        {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
                               className="btn btn-warning"
@@ -1701,14 +1702,14 @@ const Index = forwardRef(
                             color="danger"
                             onClick={() => {
                               singleCheck.length > 0
-                              ? closeMarketModelFunction(true)
-                              : dispatch(
-                                updateToastData({
-                                  data: "Select at least one row",
-                                  title: "Error",
-                                  type: ERROR,
-                                })
-                              );
+                                ? closeMarketModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
                             }}
                           >
                             Close Market
@@ -1729,14 +1730,14 @@ const Index = forwardRef(
                             color="danger"
                             onClick={() => {
                               singleCheck.length > 0
-                              ? cancelModelFunction(true)
-                              : dispatch(
-                                updateToastData({
-                                  data: "Select at least one row",
-                                  title: "Error",
-                                  type: ERROR,
-                                })
-                              );
+                                ? cancelModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
                             }}
                           >
                             Cancel Market
@@ -1807,145 +1808,146 @@ const Index = forwardRef(
                   />
                 )}
                 {(showtournamentList && tournamentList.length > 0) && (
-                    <div className="">
-                      <Select
-                        styles={{
-                          control: (provided) => ({
-                            ...provided,
-                            width: 280,
-                          }),
-                        }}
-                        value={selectedTableElements?.tournamentType}
-                        placeholder="Tournament List"
-                        onChange={(e) => {
-                          handleTableActions("onTournamentisChanges", e);
-                          setSelectedTableElements({
-                            ...selectedTableElements,
-                            tournamentType: e,
-                          });
-                        }}
-                        options={tournamentList?.map((item) => ({
-                          label: item?.competition,
-                          value: item?.competitionId,
-                        }))}
-                        classNamePrefix="select2-selection"
-                      />
-                    </div>
+                  <div className="">
+                    <Select
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: 280,
+                        }),
+                      }}
+                      value={selectedTableElements?.tournamentType}
+                      placeholder="Tournament List"
+                      onChange={(e) => {
+                        handleTableActions("onTournamentisChanges", e);
+                        setSelectedTableElements({
+                          ...selectedTableElements,
+                          tournamentType: e,
+                        });
+                      }}
+                      options={tournamentList?.map((item) => ({
+                        label: item?.competition,
+                        value: item?.competitionId,
+                      }))}
+                      classNamePrefix="select2-selection"
+                    />
+                  </div>
                 )}
                 {
-                tableElement?.isServerPagination ?(<Row className="g-2 d-flex align-items-center">
-                  <Col className="col-sm-auto">
-                    <span>
-                      Showing {serverCurrentPage * serverPageSize + 1} -{" "}
-                      {serverCurrentPage * serverPageSize + data.length} of{" "}
-                      {tableElement.title === "Tabs"
-                        ? data?.length
-                        : dataSource?.length}{" "}
-                      entries
-                    </span>
-                    <div className="d-flex align-items-center justify-content-end"></div>
-                  </Col>
-                  <Col className="col-sm">
-                    <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                      {tableElement.title !== "Import Events" && (
-                        <div className="me-1 d-flex">
-                          <CSVLink
-                            data={generateSimplifiedData().csvData}
-                            filename={tableElement.title + ".csv"}
-                          >
-                            <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-                            <Button size="small" className="btn border">
-                              <i className="fas fa-file-csv"></i>
-                            </Button>
+                  tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
+                    <Col className="col-sm-auto">
+                      <span>
+                        Showing {serverCurrentPage * serverPageSize + 1} -{" "}
+                        {serverCurrentPage * serverPageSize + data.length} of{" "}
+                        {/* {tableElement.title === "Tabs"
+                          ? data?.length
+                          : serverTotal}{" "} */}
+                          {serverTotal}{" "}
+                        entries
+                      </span>
+                      <div className="d-flex align-items-center justify-content-end"></div>
+                    </Col>
+                    <Col className="col-sm">
+                      <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
+                        {tableElement.title !== "Import Events" && (
+                          <div className="me-1 d-flex">
+                            <CSVLink
+                              data={generateSimplifiedData().csvData}
+                              filename={tableElement.title + ".csv"}
+                            >
+                              <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                                <Button size="small" className="btn border">
+                                  <i className="fas fa-file-csv"></i>
+                                </Button>
+                              </Tooltip>
+                            </CSVLink>
+                            <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                              <Button
+                                size="large"
+                                className="btn border mx-1"
+                                onClick={downloadExcel}
+                              >
+                                <i className="fas fa-file-excel"></i>
+                              </Button>
                             </Tooltip>
-                          </CSVLink>
-                          <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-                          <Button
-                            size="large"
-                            className="btn border mx-1"
-                            onClick={downloadExcel}
-                          >
-                            <i className="fas fa-file-excel"></i>
-                          </Button>
-                          </Tooltip>
-                          <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-                          <Button onClick={generatePDF} className="btn border">
-                            <i className="bx bxs-file-pdf"></i>
-                          </Button>
-                          </Tooltip>
-                        </div>
-                      )}
-                      <div className="">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Search Min. 2 characters"
-                          value={searchTerm}
-                          onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                          }}
-                        />
-                        {/* <i className="ri-search-line search-icon"></i> */}
-                      </div>
-                    </div>
-                  </Col>
-                </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
-                  <Col className="col-sm-auto">
-                    <span>
-                      Showing {currentPage * pageSize + 1} -{" "}
-                      {currentPage * pageSize + data.length} of{" "}
-                      {tableElement.title === "Tabs"
-                        ? data?.length
-                        : dataSource?.length}{" "}
-                      entries
-                    </span>
-                    <div className="d-flex align-items-center justify-content-end"></div>
-                  </Col>
-                  <Col className="col-sm">
-                    <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                      {tableElement.title !== "Import Events" && (
-                        <div className="me-1 d-flex">
-                          <CSVLink
-                            data={generateSimplifiedData().csvData}
-                            filename={tableElement.title + ".csv"}
-                          >
-                            <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-                            <Button size="small" className="btn border">
-                              <i className="fas fa-file-csv"></i>
-                            </Button>
+                            <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                              <Button onClick={generatePDF} className="btn border">
+                                <i className="bx bxs-file-pdf"></i>
+                              </Button>
                             </Tooltip>
-                          </CSVLink>
-                          <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-                          <Button
-                            size="large"
-                            className="btn border mx-1"
-                            onClick={downloadExcel}
-                          >
-                            <i className="fas fa-file-excel"></i>
-                          </Button>
-                          </Tooltip>
-                          <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-                          <Button onClick={generatePDF} className="btn border">
-                            <i className="bx bxs-file-pdf"></i>
-                          </Button>
-                          </Tooltip>
+                          </div>
+                        )}
+                        <div className="">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search Min. 2 characters"
+                            value={searchTerm}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value);
+                            }}
+                          />
+                          {/* <i className="ri-search-line search-icon"></i> */}
                         </div>
-                      )}
-                      <div className="">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Search Min. 2 characters"
-                          value={searchTerm}
-                          onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                          }}
-                        />
-                        {/* <i className="ri-search-line search-icon"></i> */}
                       </div>
-                    </div>
-                  </Col>
-                </Row>) : null}
+                    </Col>
+                  </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
+                    <Col className="col-sm-auto">
+                      <span>
+                        Showing {currentPage * pageSize + 1} -{" "}
+                        {currentPage * pageSize + data.length} of{" "}
+                        {tableElement.title === "Tabs"
+                          ? serverTotal
+                          : dataSource?.length}{" "}
+                        entries
+                      </span>
+                      <div className="d-flex align-items-center justify-content-end"></div>
+                    </Col>
+                    <Col className="col-sm">
+                      <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
+                        {tableElement.title !== "Import Events" && (
+                          <div className="me-1 d-flex">
+                            <CSVLink
+                              data={generateSimplifiedData().csvData}
+                              filename={tableElement.title + ".csv"}
+                            >
+                              <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                                <Button size="small" className="btn border">
+                                  <i className="fas fa-file-csv"></i>
+                                </Button>
+                              </Tooltip>
+                            </CSVLink>
+                            <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                              <Button
+                                size="large"
+                                className="btn border mx-1"
+                                onClick={downloadExcel}
+                              >
+                                <i className="fas fa-file-excel"></i>
+                              </Button>
+                            </Tooltip>
+                            <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                              <Button onClick={generatePDF} className="btn border">
+                                <i className="bx bxs-file-pdf"></i>
+                              </Button>
+                            </Tooltip>
+                          </div>
+                        )}
+                        <div className="">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search Min. 2 characters"
+                            value={searchTerm}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value);
+                            }}
+                          />
+                          {/* <i className="ri-search-line search-icon"></i> */}
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>) : null}
 
                 <div
                   className="table-responsive table-responsive2 table-card mt-3 mb-1"
@@ -2066,7 +2068,7 @@ const Index = forwardRef(
                       className="table align-middle table-nowrap"
                       id="customerTable"
                     >
-                      <thead className={`table-light ${setStickHeader !== false  ? "sticky-header" : ""}`}>
+                      <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
                             <th key={column.key} style={column.style} className={column.className}>
@@ -2132,28 +2134,28 @@ const Index = forwardRef(
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
                           <React.Fragment key={index}>
-                          <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
-                            {columns.map((column) => (
-                              <td key={column.key} style={column.style}>
-                                {column.render
-                                  ? column.render(
-                                    record[column.dataIndex],
-                                    record
-                                  )
-                                  : record[column.dataIndex]}
-                              </td>
-                            ))}
-                          </tr>
-                          {expandedRows[index] && record.nestedTable && (
-                            <tr>
-                              <td
-                                colSpan={columns.length}
-                                className="p-0"
-                              >
-                                {record.nestedTable}
-                              </td>
+                            <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
+                              {columns.map((column) => (
+                                <td key={column.key} style={column.style}>
+                                  {column.render
+                                    ? column.render(
+                                      record[column.dataIndex],
+                                      record
+                                    )
+                                    : record[column.dataIndex]}
+                                </td>
+                              ))}
                             </tr>
-                          )}
+                            {expandedRows[index] && record.nestedTable && (
+                              <tr>
+                                <td
+                                  colSpan={columns.length}
+                                  className="p-0"
+                                >
+                                  {record.nestedTable}
+                                </td>
+                              </tr>
+                            )}
                           </React.Fragment>
                         ))}
                       </tbody>
@@ -2180,21 +2182,21 @@ const Index = forwardRef(
                     <Col >{tableElement?.compToRender}</Col>
                     <Col className="d-flex justify-content-end">
                       {
-                      tableElement?.isServerPagination ? (<Pagination
-                        total={serverTotal}
-                        pageSize={serverPageSize}
-                        currentPage={serverCurrentPage}
-                        fetchData={fetchData}
-                        setCurrentPage={setServerCurrentPage}
-                        setPageSize={setServerPageSize}
-                      />) : isPagination ? (<Pagination
-                        total={total}
-                        pageSize={pageSize}
-                        currentPage={currentPage}
-                        fetchData={fetchData}
-                        setCurrentPage={setCurrentPage}
-                        setPageSize={setPageSize}
-                      />) : null}
+                        tableElement?.isServerPagination ? (<Pagination
+                          total={serverTotal}
+                          pageSize={serverPageSize}
+                          currentPage={serverCurrentPage}
+                          fetchData={fetchData}
+                          setCurrentPage={setServerCurrentPage}
+                          setPageSize={setServerPageSize}
+                        />) : isPagination ? (<Pagination
+                          total={total}
+                          pageSize={pageSize}
+                          currentPage={currentPage}
+                          fetchData={fetchData}
+                          setCurrentPage={setCurrentPage}
+                          setPageSize={setPageSize}
+                        />) : null}
                     </Col>
                   </Row>
                 ) : (
