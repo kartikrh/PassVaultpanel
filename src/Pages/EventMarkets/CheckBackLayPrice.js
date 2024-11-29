@@ -103,13 +103,13 @@ const CheckBackLayPrice = ({
               <span className="margin-right-10">Market :</span>
               <span className="font-bold">{marketDetails?.marketName}</span>
             </div>
-            <div className="my-1">
-              <span className="margin-right-10">Start Time :</span>
-              <span className="font-bold">{startDate} IST</span>
+            <div className="my-1 d-flex align-items-center justify-content-start">
+              <span className="margin-right-10 label-price-width">Start Time :</span>
+              <input className="form-control" type="text" value={`${startDate} IST`} disabled />
             </div>
-            <div className="my-1">
-              <span className="margin-right-10">End Time :</span>
-              <span className="font-bold">{endDate} IST</span>
+            <div className="my-1 d-flex align-items-center justify-content-start">
+              <span className="margin-right-10 label-price-width">End Time :</span>
+              <input className="form-control" type="text" value={`${endDate} IST`} disabled />
             </div>
             <div className="my-1 d-flex align-items-center justify-content-start">
               <span className="margin-right-10 label-price-width">Price :</span>
