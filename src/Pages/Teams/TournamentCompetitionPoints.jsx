@@ -54,48 +54,56 @@ const TournamentCompetitionPoints = () => {
     {
       title: "Competition",
       dataIndex: "competitionName",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "competitionName",
       style: { width: "20%" },
     },
     {
       title: "Matches",
       dataIndex: "totalMatches",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalMatches",
       style: { width: "10%" },
     },
     {
       title: "Win",
       dataIndex: "totalWin",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalWin",
       style: { width: "10%" },
     },
     {
       title: "Lose",
       dataIndex: "totalLose",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalLose",
       style: { width: "10%" },
     },
     {
       title: "Tie",
       dataIndex: "totalTie",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalTie",
       style: { width: "10%" },
     },
     {
       title: "No Result",
       dataIndex: "noResult",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "noResult",
       style: { width: "10%" },
     },
     {
       title: "Points",
       dataIndex: "totalPoint",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalPoint",
       style: { width: "10%" },
     },
     {
       title: "Run Rate",
       dataIndex: "netRunRate",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "netRunRate",
       style: { width: "10%" },
     },
@@ -144,23 +152,23 @@ const TournamentCompetitionPoints = () => {
                     </Button>
                   </Col>
                 </Row>
-                {tournamentData && tournamentData.length > 0 && (
-                  <Table responsive>
-                    <thead className="table-light">
-                      <tr>
-                        {columns.map((column, index) => (
-                          <th
-                            className="px-2 py-2"
-                            key={index}
-                            style={column.style}
-                          >
-                            {column.title}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tournamentData.map((item, index) => (
+                <Table responsive>
+                  <thead className="table-light">
+                    <tr>
+                      {columns.map((column, index) => (
+                        <th
+                          className="px-2 py-2"
+                          key={index}
+                          style={column.style}
+                        >
+                          {column.title}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tournamentData.length > 0 &&
+                      tournamentData.map((item, index) => (
                         <React.Fragment key={index}>
                           <tr>
                             {columns.map((column, colIndex) => (
@@ -181,8 +189,14 @@ const TournamentCompetitionPoints = () => {
                           </tr>
                         </React.Fragment>
                       ))}
-                    </tbody>
-                  </Table>
+                  </tbody>
+                </Table>
+                {!tournamentData.length > 0 && (
+                  <div className="d-flex justify-content-center">
+                    <span style={{ color: "lightgray" }}>
+                      No Data Available
+                    </span>
+                  </div>
                 )}
               </CardBody>
             </Card>
