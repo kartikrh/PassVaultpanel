@@ -117,7 +117,9 @@ import Awards from "../Pages/Awards";
 import CommentaryMarketTemplate from "../Pages/Commentary/CommentaryMarketTemplate.jsx";
 import PlayerHistory from "../Pages/Players/PlayerHistory.jsx";
 import TournamentTeamPoints from "../Pages/Competition/TournamentTeamPoints.jsx";
+import TournamentCompetitionPoints from "../Pages/Teams/TournamentCompetitionPoints.jsx";
 import { CommentaryEventSnap } from "../Pages/Commentary/CommentaryEventSnap.jsx";
+import MatchHistory from "../Pages/Players/MatchHistory.jsx";
 import MarketType from "../Pages/MarketType"
 
 const authProtectedRoutes = [
@@ -134,6 +136,7 @@ const authProtectedRoutes = [
   { path: "/Players", component: <Players /> },
   { path: "/addPlayer", component: <AddPlayers /> },
   { path: "/playerHistory", component: <PlayerHistory /> },
+  { path: "/playerEventHistory", component: <MatchHistory /> },
   { path: "/marketType", component: <MarketType /> },
   { path: "/Teams", component: <Teams /> },
   { path: "/addTeams", component: <AddTeams /> },
@@ -144,6 +147,7 @@ const authProtectedRoutes = [
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
   { path: "/tournamentTeamPoints", component: <TournamentTeamPoints /> },
+  { path: "/tournamentCompetitionPoints", component: <TournamentCompetitionPoints /> },
   { path: "/socialMedia", component: <SocialMedia /> },
   { path: "/addSocialMedia", component: <AddSocialMedia /> },
   { path: "/awards", component: <Awards /> },
