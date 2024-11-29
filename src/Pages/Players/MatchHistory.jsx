@@ -103,6 +103,7 @@ const MatchHistory = () => {
     {
       title: "Event",
       dataIndex: "eventName",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "eventName",
       style: { width: "10%" },
     },
@@ -111,7 +112,7 @@ const MatchHistory = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {text ? convertDateUTCToLocal(text, "index") : "-"}
         </span>
       ),
       key: "eventDate",
@@ -121,84 +122,98 @@ const MatchHistory = () => {
     {
       title: "Mat",
       dataIndex: "matchCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "matchCount",
       style: { width: "5%" },
     },
     {
       title: "Inns",
       dataIndex: "inningsCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "inningsCount",
       style: { width: "5%" },
     },
     {
       title: "NO",
       dataIndex: "notOut",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "notOut",
       style: { width: "5%" },
     },
     {
       title: "Runs",
       dataIndex: "totalRuns",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalRuns",
       style: { width: "5%" },
     },
     {
       title: "HS",
       dataIndex: "highestScore",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "highestScore",
       style: { width: "5%" },
     },
     {
       title: "Ave",
       dataIndex: "average",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "average",
       style: { width: "5%" },
     },
     {
       title: "BF",
       dataIndex: "ballsFacedCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "ballsFacedCount",
       style: { width: "5%" },
     },
     {
       title: "SR",
       dataIndex: "strikeRate",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "strikeRate",
       style: { width: "5%" },
     },
     {
       title: "100s",
       dataIndex: "countOf100",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "countOf100",
       style: { width: "5%" },
     },
     {
       title: "50s",
       dataIndex: "countOf50",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "countOf50",
       style: { width: "5%" },
     },
     {
       title: "4s",
       dataIndex: "countOf4",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "countOf4",
       style: { width: "5%" },
     },
     {
       title: "6s",
       dataIndex: "countOf6",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "countOf6",
       style: { width: "5%" },
     },
     {
       title: "Ct",
       dataIndex: "catchCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "catchCount",
       style: { width: "5%" },
     },
     {
       title: "St",
       dataIndex: "stumpCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "stumpCount",
       style: { width: "5%" },
     },
@@ -208,6 +223,7 @@ const MatchHistory = () => {
     {
       title: "Event",
       dataIndex: "eventName",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "eventName",
       style: { width: "10%" },
     },
@@ -216,7 +232,7 @@ const MatchHistory = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {text ? convertDateUTCToLocal(text, "index") : "-"}
         </span>
       ),
       key: "eventDate",
@@ -226,78 +242,91 @@ const MatchHistory = () => {
     {
       title: "Mat",
       dataIndex: "bowlerPlayedMatchCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "bowlerPlayedMatchCount",
       style: { width: "5%" },
     },
     {
       title: "Inns",
       dataIndex: "bowlerPlayedInningsCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "bowlerPlayedInningsCount",
       style: { width: "5%" },
     },
     {
       title: "Balls",
       dataIndex: "ballCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "ballCount",
       style: { width: "5%" },
     },
     {
       title: "Runs",
       dataIndex: "runsFromBowler",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "runsFromBowler",
       style: { width: "5%" },
     },
     {
       title: "Wkts",
       dataIndex: "wicketsCount",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "wicketsCount",
       style: { width: "5%" },
     },
     {
       title: "BBI",
       dataIndex: "bestBowlingInInnings",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "bestBowlingInInnings",
       style: { width: "5%" },
     },
     {
       title: "BBM",
       dataIndex: "bestBowlingInMatch",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "bestBowlingInMatch",
       style: { width: "5%" },
     },
     {
       title: "Ave",
       dataIndex: "bowlerAverage",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "bowlerAverage",
       style: { width: "5%" },
     },
     {
       title: "Econ",
       dataIndex: "economy",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "economy",
       style: { width: "5%" },
     },
     {
       title: "SR",
       dataIndex: "bowlerStrikeRate",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "bowlerStrikeRate",
       style: { width: "5%" },
     },
     {
       title: "4w",
       dataIndex: "wickets4",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "wickets4",
       style: { width: "5%" },
     },
     {
       title: "5w",
       dataIndex: "wickets5",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "wickets5",
       style: { width: "5%" },
     },
     {
       title: "10w",
       dataIndex: "wickets10",
+      render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "wickets10",
       style: { width: "5%" },
     },
@@ -306,28 +335,26 @@ const MatchHistory = () => {
   const renderMainSections = () => {
     return (
       <>
-        {battingHistory && battingHistory.length > 0 && (
-          <Card>
-            <CardHeader className="d-flex align-items-center justify-content-between">
-              <h5 className="mb-0 font-size-16">Batting & Fielding</h5>
-            </CardHeader>
-            <CardBody className="p-1">
-              <Table responsive>
-                <thead>
-                  <tr>
-                    {battingColumns.map((column, index) => (
-                      <th
-                        className="px-2 py-0"
-                        key={index}
-                        style={column.style}
-                      >
-                        {column.title}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {battingHistory.map((item, index) => (
+        <Card>
+          <CardHeader className="d-flex align-items-center justify-content-between">
+            <h5 className="mb-0 font-size-16 font-bold">
+              Batting Career Summary
+            </h5>
+          </CardHeader>
+          <CardBody className="p-1">
+            <Table responsive>
+              <thead>
+                <tr>
+                  {battingColumns.map((column, index) => (
+                    <th className="px-2 py-0" key={index} style={column.style}>
+                      {column.title}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {battingHistory.length > 0 &&
+                  battingHistory.map((item, index) => (
                     <React.Fragment key={index}>
                       <tr>
                         {battingColumns.map((column, colIndex) => (
@@ -344,33 +371,33 @@ const MatchHistory = () => {
                       </tr>
                     </React.Fragment>
                   ))}
-                </tbody>
-              </Table>
-            </CardBody>
-          </Card>
-        )}
-        {bowlingHistory && bowlingHistory.length > 0 && (
-          <Card>
-            <CardHeader className="d-flex align-items-center justify-content-between">
-              <h5 className="mb-0 font-size-16">Bowling</h5>
-            </CardHeader>
-            <CardBody className="p-1">
-              <Table responsive>
-                <thead>
-                  <tr>
-                    {bowlingColumns.map((column, index) => (
-                      <th
-                        className="px-2 py-0"
-                        key={index}
-                        style={column.style}
-                      >
-                        {column.title}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {bowlingHistory.map((item, index) => (
+              </tbody>
+            </Table>
+            {!battingHistory.length > 0 && (
+              <div className="d-flex justify-content-center">
+                <span style={{ color: "lightgray" }}>No Data Available</span>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader className="d-flex align-items-center justify-content-between">
+            <h5 className="mb-0 font-size-16">Bowling Career Summary</h5>
+          </CardHeader>
+          <CardBody className="p-1">
+            <Table responsive>
+              <thead>
+                <tr>
+                  {bowlingColumns.map((column, index) => (
+                    <th className="px-2 py-0" key={index} style={column.style}>
+                      {column.title}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {bowlingHistory.length > 0 &&
+                  bowlingHistory.map((item, index) => (
                     <React.Fragment key={index}>
                       <tr>
                         {bowlingColumns.map((column, colIndex) => (
@@ -387,11 +414,15 @@ const MatchHistory = () => {
                       </tr>
                     </React.Fragment>
                   ))}
-                </tbody>
-              </Table>
-            </CardBody>
-          </Card>
-        )}
+              </tbody>
+            </Table>
+            {!bowlingHistory.length > 0 && (
+              <div className="d-flex justify-content-center">
+                <span style={{ color: "lightgray" }}>No Data Available</span>
+              </div>
+            )}
+          </CardBody>
+        </Card>
       </>
     );
   };
@@ -409,7 +440,7 @@ const MatchHistory = () => {
                     <Col className="col-sm-auto d-flex align-items-center">
                       {playerDetails?.image ? (
                         <img
-                          className="avatar-sm rounded-circle"
+                          className="avatar-md rounded-circle"
                           alt=""
                           src={playerDetails?.image}
                         />
@@ -419,7 +450,7 @@ const MatchHistory = () => {
                         </Avatar>
                       )}
                       <div className="d-flex flex-column">
-                        <span className="mx-2">{`${playerDetails?.playerName} History`}</span>
+                        <h5 className="mx-2 mb-0">{`${playerDetails?.playerName} History`}</h5>
                         <span className="mx-2">
                           {playerDetails?.playerType}
                         </span>
