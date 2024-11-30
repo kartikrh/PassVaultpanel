@@ -370,7 +370,7 @@ const Index = () => {
   };
   const handleMarketEventActionClick = (id) => {
     localStorage.setItem('openMarketCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/photo");
+    const url = new URL(window.location.origin + "/openMarket");
     // url.searchParams.append("commentaryId", id);
     window.open(url.href, '_blank');
   };
@@ -845,7 +845,6 @@ const Index = () => {
             }
           }}
         >
-         
           {text}
         </span>
       ),
