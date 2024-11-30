@@ -150,7 +150,6 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    console.log("id", id)
     navigate("/addNews", { state: { newsId: id } });
   };
   const handleReset = (value) => {
