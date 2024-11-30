@@ -45,6 +45,9 @@ import MenuList from "../Pages/menuList";
 import AddMenuType from "../Pages/menuList/AddMenuType.js";
 import AddMenuItem from "../Pages/menuList/AddMenuItem.js";
 import News from "../Pages/News";
+import PhotoLibrary from "../Pages/PhotoLibrary";
+import Photos from "../Pages/PhotoLibrary/Photos.js";
+import AddPhotoLibrary from "../Pages/PhotoLibrary/AddPhotoLibrary.jsx";
 import Banner from "../Pages/Banner";
 import API from "../Pages/API";
 import APIEndpoints from "../Pages/APIEndpoints";
@@ -87,6 +90,7 @@ import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
 import { CreateEventMarket } from "../Pages/Commentary/CreateEventMarket.js";
 import { OpenMarket } from "../Pages/Commentary/OpenMarket.jsx";
+
 import { CommentaryFeatures } from "../Pages/Commentary/CommentaryFeatures.jsx";
 import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.js";
 import { OddsView } from "../Pages/Commentary/OddsView.jsx";
@@ -121,9 +125,11 @@ import TournamentCompetitionPoints from "../Pages/Teams/TournamentCompetitionPoi
 import { CommentaryEventSnap } from "../Pages/Commentary/CommentaryEventSnap.jsx";
 import MatchHistory from "../Pages/Players/MatchHistory.jsx";
 import MarketType from "../Pages/MarketType"
+import AddPhotos from "../Pages/PhotoLibrary/AddPhotos.jsx";
 
 const authProtectedRoutes = [
   //dashboard
+
   { path: "/dashboard", component: <Dashboard /> },
   { path: "/tabs", component: <Tabs /> },
   { path: "/addTabs", component: <AddTabs /> },
@@ -173,6 +179,7 @@ const authProtectedRoutes = [
     component: <CommentaryEventSnap />,
   },
   { path: "/openMarket", component: <OpenMarket /> },
+  { path: "/photos", component: <Photos /> },
   { path: "/oddsView", component: <OddsView /> },
   { path: "/autoEvent", component: <ImportMarket /> },
   { path: "/manualEvent", component: <ManualEvent /> },
@@ -232,7 +239,9 @@ const authProtectedRoutes = [
   { path: "/predictorLogs", component: <PredictorLogs /> },
   { path: "/undoLogs", component: <UndoLogs /> },
   { path: "/scoringLogs", component: <ScoringLogs /> },
-
+  { path: "/photoLibrary", component: <PhotoLibrary /> },
+  { path: "/addPhotoLibrary", component: <AddPhotoLibrary /> },
+  { path: "/addPhotos", component: <AddPhotos /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,

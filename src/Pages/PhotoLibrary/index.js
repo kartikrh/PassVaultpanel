@@ -3,14 +3,14 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
+import _, { isEqual } from "lodash";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
 import {
-  TAB_NEWS,
+  TAB_PHOTOLIBRARY,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -21,11 +21,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+
 const Index = () => {
-  const pageName = TAB_NEWS;
+  const pageName = TAB_PHOTOLIBRARY;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_NEWS;
+  document.title = TAB_PHOTOLIBRARY;
+
   const [data, setData] = useState([]);
 
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -42,14 +44,14 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/news/all`, {
+      .post(`/admin/photoLibrary/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a, b) => a?.newsId - b?.newsId);
+        const apiData = response?.result?.sort((a, b) => a?.photoLibraryId - b?.photoLibraryId);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
-          apiDataIdList.push(ele?.newsId);
+          apiDataIdList.push(ele?.photoLibraryId);
         });
         setData(apiData);
         setDataIndexList(apiDataIdList);
@@ -82,48 +84,55 @@ const Index = () => {
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.newsId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.newsId);
+    if (checekedList.includes(e.photoLibraryId)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.photoLibraryId);
     } else {
-      updateSingleCheck = [...checekedList, e.newsId];
+      updateSingleCheck = [...checekedList, e.photoLibraryId];
     }
     setCheckedList(updateSingleCheck);
   };
 
-  const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/news/activeInactiveNews`, {
-        newsId: record.newsId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
+  const handleActionClick = (id) => {
+    localStorage.setItem('photoLibraryId', "" + id);
+    const url = new URL(window.location.origin + "/photos");
+    // url.searchParams.append("commentaryId", id);
+    window.open(url.href, '_blank');
   };
+
+  // const handlePermissions = async (pType, record, cState) => {
+  //   setIsLoading(true);
+  //   await axiosInstance
+  //     .post(`/admin/photoLibrary/activeInactiveNews`, {
+  //       photoLibraryId: record.photoLibraryId,
+  //       [pType]: cState ? false : true,
+  //     })
+  //     .then((response) => {
+  //       fetchData();
+  //       dispatch(
+  //         updateToastData({
+  //           data: response?.message,
+  //           title: response?.title,
+  //           type: SUCCESS,
+  //         })
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       setIsLoading(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: error?.message,
+  //           title: error?.title,
+  //           type: ERROR,
+  //         })
+  //       );
+  //     });
+  // };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/news/delete`, {
-        newsId: checekedList,
+      .post(`/admin/photoLibrary/delete`, {
+        photoLibraryId: checekedList,
       })
       .then((response) => {
         fetchData();
@@ -150,8 +159,7 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    console.log("id", id)
-    navigate("/addNews", { state: { newsId: id } });
+    navigate("/addPhotoLibrary", { state: { photoLibraryId: id } });
   };
   const handleReset = (value) => {
     fetchData(value);
@@ -187,7 +195,7 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.newsId)}
+            checked={checekedList.includes(record.photoLibraryId)}
             onChange={() => {
               handleSingleCheck(record);
             }}
@@ -205,7 +213,7 @@ const Index = () => {
         <i
           className="bx bx-edit"
           onClick={() => {
-            handleEdit(record.newsId);
+            handleEdit(record.photoLibraryId);
           }}
         ></i>
       ),
@@ -241,25 +249,36 @@ const Index = () => {
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
-        <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+        <span style={{ cursor: "pointer" }} onClick={() => {
+          handleActionClick(record?.photoLibraryId)
+        }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
       style: { width: "20%" },
       sort: true,
     },
-    // {
-    //   title: "News",
-    //   dataIndex: "news",
-    //   render: (text, record) => (
-    //     <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
-    //   ),
-    //   key: "news",
-    //   style: { width: "80%" },
-    // },
     {
-      title: "Views",
-      dataIndex: "viewerCount",
-      key: "viewerCount",
-      style: { width: "5%", textAlign: "center" },
+      title: "SEO",
+      dataIndex: "SEO",
+      key: "SEO",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }} onClick={() => {
+          handleActionClick(record?.photoLibraryId)
+        }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+      ),
+      style: { width: "20%" },
+      sort: true,
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }} onClick={() => {
+          handleActionClick(record?.photoLibraryId)
+        }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+      ),
+      style: { width: "20%" },
+      sort: true,
     },
     {
       title: "Start Date",
@@ -283,70 +302,11 @@ const Index = () => {
       key: "endDate",
       style: { width: "20%" },
     },
-    // {
-    //   title: "Created By",
-    //   dataIndex: "createdBy",
-    //   key: "eventType",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "Created Date",
-    //   dataIndex: "createdDate",
-    //   key: "createdDate",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "Modify By",
-    //   dataIndex: "modifyBy",
-    //   key: "modifyBy",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "Modify Date",
-    //   dataIndex: "modifyDate",
-    //   key: "modifyDate",
-    //   style: { width: "30%" },
-    // },
-    // {
-    //   title: "IsPermanent",
-    //   key: "IsPermanent",
-    //   render: (text, record) => (
-    //     <Button
-    //       color={`${record.isPermanent ? "primary" : "danger"}`}
-    //       size="sm"
-    //       className="btn"
-    //     >
-    //       <i
-    //         className={`bx ${record.isPermanent ? "bx-check" : "bx-block"}`}
-    //       ></i>
-    //     </Button>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-    {
-      title: "IsActive",
-      key: "IsActive",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive News"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isActive ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handlePermissions("isActive", record, record.isActive);
-            }}
-          >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
   ];
   //elements required
   const tableElement = {
-    title: "News",
-    isActive: true,
+    title: "Photo Library",
+    // isActive: true,
     reloadButton: true,
   };
 
@@ -362,9 +322,10 @@ const Index = () => {
   };
   return (
     <React.Fragment>
+      Photo library
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="News" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Photo library" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -373,7 +334,8 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addNews"}
+            changeOrderApiName="award"
+            onAddNavigate={"/addPhotoLibrary"}
             handleReset={handleReset}
             handleReload={handleReload}
             reFetchData={fetchData}

@@ -39,12 +39,15 @@ const AddNews = () => {
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const { isSaved, isLoading } = useSelector((state) => state.tabsData.news);
+  console.log("isSaved",isSaved)
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  console.log("permissionObj",permissionObj)
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
   const [newsId, setNewsId] = useState(location.state?.newsId || "0");
   const [fields, setFields] = useState(newsFields || [])
+  console.log("fields",fields)
   useEffect(() => {
     if (newsId !== 0) {
       fetchData(newsId);
