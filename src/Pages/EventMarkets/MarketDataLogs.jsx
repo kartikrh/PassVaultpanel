@@ -278,6 +278,51 @@ function MarketDataLogs() {
   ]
   const customColumns = [
     {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.marketDataLogId)}
+            onChange={() => {
+              const isChecked = checekedList.includes(record.marketDataLogId);
+              handleSingleCheck(record);
+              if (isChecked) {
+                setDatePriceValues(datePriceValues.filter(item => item.marketDataLogId !== record.marketDataLogId));
+              } else {
+                setDatePriceValues([...datePriceValues, record]);
+              }
+            }}
+          />
+        </div>
+      ),
+      key: "select",
+      style: { width: "2%" },
+    },
+    {
       title: "Date",
       dataIndex: "createdDate",
       render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, "index")}</span>,
