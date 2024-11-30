@@ -26,6 +26,11 @@ export const filterOrderChange = (items, name) => {
           menuItemId: item.menuItemId,
           displayOrder: index + 1,
         };
+      } else if(name === "libraryImages") {
+        return {
+          id: item.id,
+          displayOrder: index + 1,
+        };
       }
     }
   });
