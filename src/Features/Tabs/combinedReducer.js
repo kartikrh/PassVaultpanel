@@ -18,6 +18,8 @@ import pageFormatSlice from "./pageFormatSlice";
 import pageSlice from "./pageSlice";
 import MenuTypeSlice from "./menuTypeSlice";
 import NewsSlice from "./newsSlice";
+import photoLibrarySlice from "./photoLibrarySlice";
+import photosSlice from "./photosSlice";
 import marketTemplateSlice from "./marketTemplateSlice";
 import eventMarketSlice from "./eventMarketSlice";
 import addVendorSlice from "./addVendorSlice";
@@ -54,6 +56,8 @@ const rootReducer = combineReducers({
   page: pageSlice,
   menuType: MenuTypeSlice,
   news: NewsSlice,
+  photoLibrary : photoLibrarySlice,
+  photos : photosSlice,
   marketTemplate: marketTemplateSlice,
   eventMarket: eventMarketSlice,
   vendors: addVendorSlice,
