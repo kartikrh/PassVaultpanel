@@ -1,0 +1,118 @@
+import {
+    DATE_TIME_PICKER,
+    IMAGE,
+    SWITCH,
+    VIDEO,
+    TEXT,
+    SELECT,
+    TEXT_EDITOR,
+    FILE_TYPE,
+} from "../../components/Common/Const";
+
+export const videoLibraryFields = [
+    {
+        name: "tag",
+        label: "Tag",
+        isRequired: true,
+        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        name: "title",
+        label: "Title",
+        isRequired: true,
+        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        name: "SEO",
+        label: "SEO",
+        isRequired: true,
+        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        name: "description",
+        label: "Description",
+        isRequired: true,
+        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        name: "type",
+        label: "Type",
+        options: [
+            { label: "Select Type", value: "0" },
+            { label: "Our", value: 1 },
+            { label: "Youtube", value: 2 },
+          ],
+        defaultValue: "0",
+        isRequired: true,
+        type: SELECT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "commentaryId",
+        label: "Commentary Id",
+        parentclassName: "",
+        type: TEXT,
+        regex: /^\d+$/,
+        customStyle: {
+            maxWidth: "200px",
+        },
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "video",
+        label: "Video",
+        // isRequired: true,
+        type: VIDEO,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        name: "videoURL",
+        label: "Video URL",
+        // isRequired: true,
+        type: TEXT,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        type: SWITCH,
+        name: "isPermanent",
+        label: "IsPermanent",
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+        name: "from",
+        label: "From",
+        isRequired: true,
+        // customStyle: {
+        //   maxWidth: "600px",
+        // },
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: DATE_TIME_PICKER,
+    },
+    {
+        name: "to",
+        label: "To",
+        isRequired: true,
+        // customStyle: {
+        //   maxWidth: "600px",
+        // },
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: DATE_TIME_PICKER,
+    },
+
+];

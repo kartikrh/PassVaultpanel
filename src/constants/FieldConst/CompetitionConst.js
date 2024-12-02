@@ -81,7 +81,7 @@ export const CompetitionFields = [
     },
     {
         name: "image",
-        label: "Event Image",
+        label: "Competition",
         parentclassName: "",
         type: IMAGE,
     },

@@ -220,31 +220,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Image",
-      dataIndex: "image",
-      printType: "ignore",
-      render: (text, record) => (
-        // <img src={process.env.REACT_APP_BASE_URL+text}/>
-        <div className="flex-shrink-0">
-          {text ? (
-            <div>
-              <img
-                className="avatar-sm rounded-circle"
-                alt=""
-                src={text}
-              />
-            </div>
-          ) : (
-            <Avatar src="#" alt="ET">
-              Image
-            </Avatar>
-          )}
-        </div>
-      ),
-      key: "image",
-      style: { width: "10%", textAlign: "left" },
-    },
-    {
       title: "Title",
       dataIndex: "title",
       key: "title",
@@ -334,7 +309,6 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            changeOrderApiName="award"
             onAddNavigate={"/addPhotoLibrary"}
             handleReset={handleReset}
             handleReload={handleReload}

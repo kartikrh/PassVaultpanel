@@ -48,6 +48,8 @@ import News from "../Pages/News";
 import PhotoLibrary from "../Pages/PhotoLibrary";
 import Photos from "../Pages/PhotoLibrary/Photos.js";
 import AddPhotoLibrary from "../Pages/PhotoLibrary/AddPhotoLibrary.jsx";
+import VideoLibrary from "../Pages/VideoLibrary";
+import AddVideoLibrary from "../Pages/VideoLibrary/AddVideoLibrary.jsx";
 import Banner from "../Pages/Banner";
 import API from "../Pages/API";
 import APIEndpoints from "../Pages/APIEndpoints";
@@ -242,6 +244,8 @@ const authProtectedRoutes = [
   { path: "/photoLibrary", component: <PhotoLibrary /> },
   { path: "/addPhotoLibrary", component: <AddPhotoLibrary /> },
   { path: "/addPhotos", component: <AddPhotos /> },
+  { path: "/videoLibrary", component: <VideoLibrary /> },
+  { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,

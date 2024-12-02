@@ -759,6 +759,10 @@ const Index = forwardRef(
         statusType: {
           value: 0,
           label: "Select Status"
+        },
+        videoType: {
+          value: 0,
+          label: "Select Video Type"
         }
       });
       if (tableElement?.dateRange) {
@@ -825,6 +829,10 @@ const Index = forwardRef(
         statusType: {
           value: 0,
           label: "Select Status"
+        },
+        videoType: {
+          value: 0,
+          label: "Select Video Type"
         }
       });
       if (tableElement?.dateRange) {
@@ -1232,6 +1240,32 @@ const Index = forwardRef(
                               options={statusList?.map((item) => ({
                                 label: item?.statusType,
                                 value: item?.statusId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.videoType ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.matchType}
+                              placeholder="Video Type"
+                              onChange={(e) => {
+                                handleTableActions("matchTypeId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  matchType: e,
+                                });
+                              }}
+                              options={matchType?.map((item) => ({
+                                label: item?.matchType,
+                                value: item?.matchTypeId,
                               }))}
                               classNamePrefix="select2-selection"
                             />
@@ -1842,7 +1876,7 @@ const Index = forwardRef(
                         {/* {tableElement.title === "Tabs"
                           ? data?.length
                           : serverTotal}{" "} */}
-                          {serverTotal}{" "}
+                        {serverTotal}{" "}
                         entries
                       </span>
                       <div className="d-flex align-items-center justify-content-end"></div>
