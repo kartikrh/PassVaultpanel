@@ -195,7 +195,7 @@ const FormBuilder = forwardRef(
         .filter((field) => field.type === VIDEO )
         .map((value) => value.name);
       for (const key in data) {
-        if (imageFields.includes(key)) {
+        if (imageFields.includes(key) || videoFields.includes(key)) {
           typeof data[key] === "string" && delete data[key];
           data[key] === null && delete data[key];
         }

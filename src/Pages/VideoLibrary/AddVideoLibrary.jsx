@@ -104,30 +104,13 @@ const AddVideoLibrary = () => {
 
     const handleSaveClick = async (saveAction) => {
         let dataToSave = finalizeRef.current.finalizeData();
-        console.log("dataToSave.video", dataToSave.video)
         if (dataToSave) {
-            // if (dataToSave.type === 1 && videoLibraryId === 0) {
-            //     dataToSave.video = dataToSave.video;
-            //     dataToSave.videoURL = null;
-            // } else if(dataToSave.type === 2 && videoLibraryId === 0){
-            //     dataToSave.videoURL = dataToSave.videoURL;
-            //     dataToSave.video = null;
-            // }
             let extraData = {};
-            // Check if 'dataToSave.video' is not a string
-            if (typeof(dataToSave.video) !== 'string') {
-                console.log("sting")
+            if (typeof dataToSave?.video !== 'string') {
                 extraData.id = videoLibraryId;
-
-                // Set videoURL based on the type
                 extraData.videoURL = dataToSave.type === 2 ? dataToSave.videoURL : "";
-
-                // If type is 1, set the video property
-                if (dataToSave.type === 1) {
-                    extraData.video = dataToSave.video;
-                }
+                extraData.video = dataToSave.type === 1 ? dataToSave.video : "";
             } else {
-                // If 'dataToSave.video' is a string, set only videoURL based on type
                 extraData.id = videoLibraryId;
                 extraData.videoURL = dataToSave.type === 2 ? dataToSave.videoURL : "";
             }
