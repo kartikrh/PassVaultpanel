@@ -318,3 +318,19 @@ export const getBowlerRelatedWickets = (overId, ballHistory = []) => {
   }
   return wicketCount
 }
+
+export const getPlayerNameById = (players = [], playerIdToCheck, isBattingTeam) => {
+
+  // Ensure valid team index (BATTING_TEAM or BOWLING_TEAM)
+  const team = isBattingTeam ? BATTING_TEAM : BOWLING_TEAM;
+
+  // Check if the team exists within players array
+  const teamPlayers = players?.[team];
+  if (!teamPlayers) return null; // Return null if team not found
+
+  // Find the player by playerId
+  const player = teamPlayers.find(player => player.commentaryPlayerId === playerIdToCheck);
+  console.log("##################", player);
+  return player?.playerName || null; // Return the player or null if not found
+
+};
