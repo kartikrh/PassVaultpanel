@@ -4,6 +4,7 @@ import {
   SWITCH,
   TEXT,
   TEXT_EDITOR,
+  SELECT
 } from "../../components/Common/Const";
 
 export const newsFields = [
@@ -15,6 +16,36 @@ export const newsFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 10, lg: 10 },
   },
+  {
+    name: "SEO",
+    label: "SEO",
+    isRequired: true,
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+  },
+  {
+    name: "SEODescription",
+    label: "SEO Description",
+    isRequired: true,
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+  },
+  {
+    name: "type",
+    label: "Type",
+    options: [
+        { label: "Select Type", value: "0" },
+        { label: "News", value: 1 },
+        { label: "Article ", value: 2 },
+    ],
+    defaultValue: "0",
+    isRequired: true,
+    type: SELECT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+},
   {
     name: "title",
     label: "Title",

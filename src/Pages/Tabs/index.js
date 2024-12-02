@@ -341,6 +341,7 @@ const Index = () => {
             ref={finalizeRef}
             columns={columns}
             dataSource={data}
+            serverTotal={data.length}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             onAddNavigate={"/addTabs"}

@@ -26,6 +26,7 @@ import {
   TEXT,
   TEXT_AREA,
   IMAGE,
+  VIDEO,
   RADIO_BUTTON,
   TEXT_EDITOR,
   ERROR,
@@ -41,6 +42,7 @@ import { updateToastData } from "../../../Features/toasterSlice.js";
 import { useDispatch } from "react-redux";
 import MyEditor from "./MyEditor.js";
 import { ColorPicker } from "antd";
+import VideoField from "./VideoField.jsx";
 
 const FormBuilder = forwardRef(
   (
@@ -58,6 +60,7 @@ const FormBuilder = forwardRef(
     const [formData, setFormData] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
+    const [viewVideo, setViewVideo] = useState(null);
 
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
@@ -74,6 +77,29 @@ const FormBuilder = forwardRef(
           }));
         };
         reader.readAsDataURL(file);
+      }
+    };
+
+    const handleVideoChange = (field, event) => {
+      const file = event.target.files[0];
+      console.log("file",file) // Get the selected video file
+
+      // Update the form data state
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [field.name]: file,
+      }));
+
+      // If a file is selected, read it and update the preview state
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          setViewVideo((prev) => ({
+            ...prev,
+            [field.name]: e.target.result, // Set the video URL for preview
+          }));
+        };
+        reader.readAsDataURL(file); // Read the file as a data URL
       }
     };
 
@@ -95,17 +121,24 @@ const FormBuilder = forwardRef(
         (isEmpty(formData) || isEqual(formData, defaultValueObj))
       ) {
         fields.forEach(async (element) => {
-          if (element.type === IMAGE && editFormData[element.name]) {
+          if ((element.type === IMAGE || element.type === VIDEO) && editFormData[element.name]) {
             fetch(editFormData[element.name])
               .then((response) => response.blob())
               .then((blob) => {
-                // Convert th e image data to base64
+                // Convert the video or image data to base64
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                  setViewImage((prev) => ({
-                    ...prev,
-                    [element.name]: reader.result,
-                  }));
+                  if (element.type === IMAGE) {
+                    setViewImage((prev) => ({
+                      ...prev,
+                      [element.name]: reader.result,
+                    }));
+                  } else if (element.type === VIDEO) {
+                    setViewVideo((prev) => ({
+                      ...prev,
+                      [element.name]: reader.result,
+                    }));
+                  }
                 };
                 reader.readAsDataURL(blob);
               });
@@ -134,7 +167,6 @@ const FormBuilder = forwardRef(
           !doNotValidateFields.includes(field.name) &&
           (!field.dependsOnField ||
             formData[field.dependsOnField] === field.dependsOnValue);
-
         if (
           shouldValidate &&
           field.isRequired &&
@@ -146,7 +178,7 @@ const FormBuilder = forwardRef(
           errors[field.name] =
             field.requiredErrorMessage || `Please Enter ${field.label}`;
         }
-        if (field.regex && !field.regex.test(value || "")) {
+        if (field.regex && field.isRequired && !field.regex.test(value || "")) {
           errors[field.name] = field.regexErrorMessage || "Invalid input.";
         }
       });
@@ -157,7 +189,10 @@ const FormBuilder = forwardRef(
 
     const filterData = (data) => {
       const imageFields = fields
-        .filter((field) => field.type === IMAGE)
+        .filter((field) => field.type === IMAGE )
+        .map((value) => value.name);
+      const videoFields = fields
+        .filter((field) => field.type === VIDEO )
         .map((value) => value.name);
       for (const key in data) {
         if (imageFields.includes(key)) {
@@ -279,7 +314,7 @@ const FormBuilder = forwardRef(
                   </>
                 )}
                 <Col
-                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent") ? "d-none" :"invisible"
+                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent") ? "d-none" : "invisible"
                     }`}
                   xs={field.labelColspan?.xs || 3}
                   md={field.labelColspan?.md || 2}
@@ -626,6 +661,13 @@ const FormBuilder = forwardRef(
                         field={field}
                         handleImageChange={handleImageChange}
                         src={viewImage?.[field.name]}
+                      />
+                    )}
+                    {field.type === VIDEO && (
+                      <VideoField
+                        field={field}
+                        handleVideoChange={handleVideoChange}
+                        src={viewVideo?.[field.name]}
                       />
                     )}
                     {field.type === COLOR_PICKER && (

@@ -89,15 +89,6 @@ const AddPhotos = () => {
             });
     };
 
-    const handleFormBDataChange = (val) => {
-        if (val?.isPermanent) {
-            const filteredFields = photoFields.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")
-            setFields(filteredFields)
-        } else if (!val?.isPermanent) {
-            setFields(photoFields)
-        }
-    };
-
     const handleSaveClick = async (saveAction) => {
         const dataToSave = finalizeRef.current.finalizeData();
         if (dataToSave) {
@@ -203,9 +194,9 @@ const AddPhotos = () => {
                                 </Row>
                                 <FormBuilder
                                     ref={finalizeRef}
-                                    fields={fields}
+                                    fields={photoFields}
                                     editFormData={initialEditData}
-                                    onFormDataChange={handleFormBDataChange}
+                                    // onFormDataChange={handleFormBDataChange}
                                 />
                             </CardBody>
                         </Card>
