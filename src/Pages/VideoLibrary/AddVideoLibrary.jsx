@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { photoLibraryFields } from "../../constants/FieldConst/PhotoLibraryConst";
+import { videoLibraryFields } from "../../constants/FieldConst/VideoLibraryConst";
 import {
     Button,
     ButtonDropdown,
@@ -23,34 +23,34 @@ import {
     SAVE,
     SAVE_AND_CLOSE,
     SAVE_AND_NEW,
-    TAB_PHOTOLIBRARY,
+    TAB_VIDEOLIBRARY,
 } from "../../components/Common/Const";
-// import { addPhotoLibraryToDb, updateSavedState } from "../../Features/Tabs/newsSlice";
-import { addPhotoLibraryToDb, updateSavedState } from "../../Features/Tabs/photoLibrarySlice";
+import { addVideoLibraryToDb, updateSavedState } from "../../Features/Tabs/videoLibrarySlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { string } from "prop-types";
 
-const AddPhotoLibrary = () => {
-    const pageName = TAB_PHOTOLIBRARY;
+const AddVideoLibrary = () => {
+    const pageName = TAB_VIDEOLIBRARY;
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-    const { isSaved, isLoading } = useSelector((state) => state.tabsData.photoLibrary);
+    const { isSaved, isLoading } = useSelector((state) => state.tabsData.videoLibrary);
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
-    const [photoLibraryId, setPhotoLibraryId] = useState(location.state?.photoLibraryId || 0);
-    const [fields, setFields] = useState(photoLibraryFields || [])
+    const [videoLibraryId, setVideoLibraryId] = useState(location.state?.id || 0);
+    const [fields, setFields] = useState(videoLibraryFields || [])
     useEffect(() => {
-        if (photoLibraryId !== 0) {
-            fetchData(photoLibraryId);
+        if (videoLibraryId !== 0) {
+            fetchData(videoLibraryId);
         }
-    }, [photoLibraryId]);
+    }, [videoLibraryId]);
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -62,19 +62,19 @@ const AddPhotoLibrary = () => {
         if (isSaved) {
             dispatch(updateSavedState(undefined));
             if (currentSaveAction === SAVE_AND_CLOSE) {
-                navigate("/photoLibrary");
+                navigate("/videoLibrary");
             } else if (currentSaveAction === SAVE_AND_NEW) {
                 setInitialEditData({});
-                setPhotoLibraryId("0");
+                setVideoLibraryId("0");
                 finalizeRef.current.resetForm();
             }
             setCurrentSaveAction(undefined);
         }
     }, [isSaved]);
 
-    const fetchData = async (photoLibraryId) => {
+    const fetchData = async (videoLibraryId) => {
         await axiosInstance
-            .post("/admin/photoLibrary/byId", { photoLibraryId })
+            .post("/admin/videoLibrary/byId", { id: videoLibraryId })
             .then((response) => {
                 setInitialEditData(response?.result);
             })
@@ -90,37 +90,49 @@ const AddPhotoLibrary = () => {
     };
 
     const handleFormBDataChange = (val) => {
-        if (val?.isPermanent) {
-            const filteredFields = photoLibraryFields.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")
-            setFields(filteredFields)
-        } else if (!val?.isPermanent) {
-            setFields(photoLibraryFields)
+        let filteredFields = [...videoLibraryFields];
+        if (val?.type === 1) {
+            filteredFields = filteredFields.filter(obj => obj.label !== "Video URL");
+        } else if (val?.type === 2) {
+            filteredFields = filteredFields.filter(obj => obj.label !== "Video");
         }
+        if (val?.isPermanent) {
+            filteredFields = filteredFields.filter(obj => obj.name !== "from" && obj.name !== "to");
+        }
+        setFields(filteredFields);
     };
 
     const handleSaveClick = async (saveAction) => {
-        const dataToSave = finalizeRef.current.finalizeData();
-        if(dataToSave.isPermanent){
-            dataToSave = {
-                title : dataToSave.title,
-                description : dataToSave.description,
-                isPermanent : dataToSave.isPermanent,
-                startDate : null,
-                endDate : null
-            }
-        }
+        let dataToSave = finalizeRef.current.finalizeData();
         if (dataToSave) {
+            // let extraData = {};
+            // if (typeof dataToSave?.video !== 'string') {
+            //     extraData.id = videoLibraryId;
+            //     extraData.videoURL = dataToSave.type === 2 ? dataToSave.videoURL : "";
+            //     extraData.video = dataToSave.type === 1 ? dataToSave.video : "";
+            // } else {
+            //     extraData.id = videoLibraryId;
+            //     extraData.videoURL = dataToSave.type === 2 ? dataToSave.videoURL : "";
+            // }
             const extraData = {
-                photoLibraryId: photoLibraryId,
+                id : videoLibraryId,
+                video : dataToSave.type === 1 && typeof(dataToSave.video) !== 'string' ? dataToSave.video : null,
+                videoURL : dataToSave.type === 2 ? dataToSave.videoURL : null
             };
-            dispatch(
-                addPhotoLibraryToDb({ ...dataToSave, ...extraData })
-            );
+            if (dataToSave.type === 1) {
+                dispatch(
+                    addVideoLibraryToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
+                );
+            } else {
+                dispatch(
+                    addVideoLibraryToDb({ ...dataToSave, ...extraData })
+                );
+            }
             setCurrentSaveAction(saveAction);
         }
     };
     const handleBackClick = () => {
-        navigate("/photoLibrary");
+        navigate("/videoLibrary");
     };
 
     return (
@@ -129,7 +141,7 @@ const AddPhotoLibrary = () => {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Photo Library</h3>
+                            <h3>Video Library</h3>
                         </Col>
                         <Card>
                             <CardBody>
@@ -224,4 +236,4 @@ const AddPhotoLibrary = () => {
     );
 };
 
-export default AddPhotoLibrary;
+export default AddVideoLibrary;

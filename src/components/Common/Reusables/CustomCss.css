@@ -48,13 +48,37 @@
     margin-left: 10px;
 }
 
+.video-uploader {
+    width: 150px;
+    /* Adjust the size as needed */
+    height: 120px;
+    /* This makes it a square box */
+    border: 2px dashed #007bff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
 .preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.preview-video {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
 .file-input-EventImage-uploader {
+    display: none;
+    visibility: hidden;
+}
+
+.file-input-video-uploader {
     display: none;
     visibility: hidden;
 }
@@ -71,8 +95,19 @@
     /* margin-bottom: 5px; */
 }
 
+.upload-icon-video-uploader {
+    font-size: 48px;
+    display: flex;
+    justify-content: center;
+    /* margin-bottom: 5px; */
+}
+
 /* Style the box when hovering over it */
 .image-uploader-Event:hover {
+    border-color: #007bff;
+}
+
+.video-uploader:hover {
     border-color: #007bff;
 }
 
@@ -81,7 +116,16 @@
     border-color: #ff5722;
 }
 
+.video-uploader.dragover {
+    border-color: #ff5722;
+}
+
 .UploadImageText {
+    text-align: center;
+    color: #a0a0a0;
+}
+
+.UploadVideoText {
     text-align: center;
     color: #a0a0a0;
 }
@@ -96,6 +140,13 @@
 
 .UploadImageText,
 .upload-iconEventUploader {
+    color: #908d8d;
+    font-weight: bolder;
+    /* padding: 5px; */
+}
+
+.UploadVideoText,
+.upload-upload-icon-video-uploader {
     color: #908d8d;
     font-weight: bolder;
     /* padding: 5px; */

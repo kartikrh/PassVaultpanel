@@ -99,6 +99,7 @@ import {
       type: IMAGE,
       name: "image",
       label: "Image",
+      // isRequired: true,
       // customStyle: {
       //     maxWidth: "200px",
       //     paddingLeft:"0px"

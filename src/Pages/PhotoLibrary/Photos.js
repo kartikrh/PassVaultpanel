@@ -50,7 +50,7 @@ const Photos = () => {
         "photoLibraryId": id
       })
       .then((response) => {
-        const apiData = response?.result;
+        const apiData = response?.result.sort((a,b) => a.displayOrder - b.displayOrder);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.id);
@@ -73,6 +73,35 @@ const Photos = () => {
       updateSingleCheck = [...checekedList, e.id];
     }
     setCheckedList(updateSingleCheck);
+  };
+
+  const handleDefaultActive = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/libraryImages/isDefault`, {
+        id: record.id,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleDelete = async (e) => {
@@ -164,7 +193,7 @@ const Photos = () => {
           }}
         ></i>
       ),
-      style: { width: "2%", textAlign: "center" },
+      style: { width: "2%",textAlign: "center" },
     },
     {
       title: "Image",
@@ -200,8 +229,27 @@ const Photos = () => {
           // handleActionClick(record?.photoLibraryId)
         }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "70%" },
       sort: true,
+    },
+    {
+      title: "Is Default",
+      key: "isDefault",
+      dataIndex: "isDefault",
+      render: (text, record) => (
+        <Button
+          color={`${text ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleDefaultActive("isDefault", record, record.isDefault);
+          }}
+        >
+          {" "}
+          <i className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
   //elements required
