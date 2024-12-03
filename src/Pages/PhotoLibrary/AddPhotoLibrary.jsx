@@ -99,9 +99,10 @@ const AddPhotoLibrary = () => {
     };
 
     const handleSaveClick = async (saveAction) => {
-        const dataToSave = finalizeRef.current.finalizeData();
+        let dataToSave = finalizeRef.current.finalizeData();
         if(dataToSave.isPermanent){
             dataToSave = {
+                SEO : dataToSave.SEO,
                 title : dataToSave.title,
                 description : dataToSave.description,
                 isPermanent : dataToSave.isPermanent,
