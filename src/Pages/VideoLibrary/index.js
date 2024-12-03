@@ -277,25 +277,25 @@ const Index = () => {
             sort: true,
         },
         {
-            title: "Start Date",
-            dataIndex: "startDate",
+            title: "From",
+            dataIndex: "from",
             render: (text, record) => (
                 <span style={{ cursor: "pointer" }}>
                     {convertDateUTCToLocal(text, "index")}
                 </span>
             ),
-            key: "startDate",
+            key: "from",
             style: { width: "20%" },
         },
         {
-            title: "End Date",
-            dataIndex: "endDate",
+            title: "To",
+            dataIndex: "to",
             render: (text, record) => (
                 <span style={{ cursor: "pointer" }}>
                     {convertDateUTCToLocal(text, "index")}
                 </span>
             ),
-            key: "endDate",
+            key: "to",
             style: { width: "20%" },
         },
     ];
