@@ -1966,6 +1966,7 @@ const Commentary = (props) => {
             currentOver={currentOver}
             battingTeam={teams?.[BATTING_TEAM] || {}}
             bowlerName={getPlayerNameById(players, currentOver?.bowlerId, false)}
+            onPitchPlayers={onPitchPlayers}
         />}
         {inningsChangePopup && <ChangeInningsModal
             isOpen={inningsChangePopup}
