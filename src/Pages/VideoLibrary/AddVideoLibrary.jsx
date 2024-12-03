@@ -105,19 +105,12 @@ const AddVideoLibrary = () => {
     const handleSaveClick = async (saveAction) => {
         let dataToSave = finalizeRef.current.finalizeData();
         if (dataToSave) {
-            // let extraData = {};
-            // if (typeof dataToSave?.video !== 'string') {
-            //     extraData.id = videoLibraryId;
-            //     extraData.videoURL = dataToSave.type === 2 ? dataToSave.videoURL : "";
-            //     extraData.video = dataToSave.type === 1 ? dataToSave.video : "";
-            // } else {
-            //     extraData.id = videoLibraryId;
-            //     extraData.videoURL = dataToSave.type === 2 ? dataToSave.videoURL : "";
-            // }
             const extraData = {
                 id : videoLibraryId,
                 video : dataToSave.type === 1 && typeof(dataToSave.video) !== 'string' ? dataToSave.video : null,
-                videoURL : dataToSave.type === 2 ? dataToSave.videoURL : null
+                videoURL : dataToSave.type === 2 ? dataToSave.videoURL : null,
+                from : !dataToSave.isPermanent ? dataToSave.from : null,
+                to : !dataToSave.isPermanent ? dataToSave.to : null,
             };
             if (dataToSave.type === 1) {
                 dispatch(
