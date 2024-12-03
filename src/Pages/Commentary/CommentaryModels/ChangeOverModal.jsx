@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { NON_STRIKE, ON_STRIKE } from '../CommentartConst';
 
 const ChangeOverModal = ({
     isOpen,
@@ -10,6 +11,7 @@ const ChangeOverModal = ({
     currentOver,
     battingTeam,
     bowlerName,
+    onPitchPlayers
 }) => {
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && e.shiftKey) onNoClick();
@@ -77,15 +79,10 @@ const ChangeOverModal = ({
         });
     };
 
-    // Calculate next over number for fetching balls
     const nextOverNumber = Math.ceil(currentOver?.over || 0) + 1;
-
-    // Get the correct over key using next over number
     const overKey = `${currentOver?.currentInnings}_##_${battingTeam?.teamId}_##_${nextOverNumber}`;
-
     const currentOverBalls = overBalls[overKey] || [];
 
-    // Get stats from battingTeam object
     const stats = {
         runs: battingTeam?.teamScore || 0,
         overs: Math.ceil(battingTeam?.teamOver || 0),
@@ -103,7 +100,6 @@ const ChangeOverModal = ({
                 <span className="over-modal-title">Over Complete</span>
             </ModalHeader>
             <ModalBody className="over-modal-body">
-                {/* Stats Grid */}
                 <div className="over-modal-stats-grid">
                     <div className="over-modal-stat">
                         <div className="over-modal-stat-value">{stats.runs}</div>
@@ -123,7 +119,34 @@ const ChangeOverModal = ({
                     </div>
                 </div>
 
-                {/* Over Info */}
+                <div className="over-modal-player-stats">
+                    <div className="over-modal-player-row over-modal-header-row">
+                        <div className="over-modal-player-name">Batter</div>
+                        <div className="over-modal-player-stat">R</div>
+                        <div className="over-modal-player-stat">B</div>
+                        <div className="over-modal-player-stat">4s</div>
+                        <div className="over-modal-player-stat">6s</div>
+                    </div>
+                    <div className="over-modal-player-row">
+                        <div className="over-modal-player-name">
+                            <strong>
+                                {onPitchPlayers[ON_STRIKE]?.playerName + "*" || '-'}
+                            </strong>
+                        </div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batRun || 0}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batBall || 0}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batFour || 0}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batSix || 0}</div>
+                    </div>
+                    <div className="over-modal-player-row">
+                        <div className="over-modal-player-name">{onPitchPlayers[NON_STRIKE]?.playerName || '-'}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batRun || 0}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batBall || 0}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batFour || 0}</div>
+                        <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batSix || 0}</div>
+                    </div>
+                </div>
+
                 <div className="over-modal-info">
                     <div className="over-modal-over-text">
                         End of over {Math.ceil(battingTeam?.teamOver || 0)} by {bowlerName}
@@ -134,7 +157,6 @@ const ChangeOverModal = ({
                     </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="over-modal-actions">
                     <Button
                         className="over-modal-start-btn"
@@ -150,7 +172,7 @@ const ChangeOverModal = ({
                     </Button>
                 </div>
             </ModalBody>
-        </Modal>
+        </Modal >
     );
 };
 
