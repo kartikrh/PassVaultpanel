@@ -503,7 +503,7 @@ export const CreateEventMarket = () => {
     const processPlayerBallMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
             team.players.forEach(player => {
-                const specialMarketName = `${player.playerName} Balls Faced`;
+                const specialMarketName = market.marketName.replace("{player}", player.playerName)
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
