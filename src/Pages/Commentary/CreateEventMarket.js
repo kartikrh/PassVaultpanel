@@ -478,7 +478,8 @@ export const CreateEventMarket = () => {
                     ...market,
                     playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
-                    teamId: team.teamId
+                    teamId: team.teamId,
+                    over: 0
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
@@ -493,7 +494,8 @@ export const CreateEventMarket = () => {
                     ...market,
                     playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
-                    teamId: team.teamId
+                    teamId: team.teamId,
+                    over: 0
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
@@ -508,8 +510,10 @@ export const CreateEventMarket = () => {
                     ...market,
                     playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
-                    teamId: team.teamId
+                    teamId: team.teamId,
+                    over: 0
                 };
+                console.log({ specialMarket });
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
         });
