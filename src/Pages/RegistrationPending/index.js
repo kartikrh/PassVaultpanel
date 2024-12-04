@@ -334,7 +334,7 @@ const Index = () => {
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (

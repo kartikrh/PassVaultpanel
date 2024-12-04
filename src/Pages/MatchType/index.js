@@ -214,7 +214,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Is History",
+      title: "History",
       key: "isHistory",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive History"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

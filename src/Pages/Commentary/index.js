@@ -1202,7 +1202,7 @@ const Index = () => {
       style: { width: "10%", textAlign: "center" },
     },
     {
-      title: "Is Team Prediction",
+      title: "Team Prediction",
       key: "isTeamPredictionOn",
       render: (text, record) => (
         <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>

@@ -192,7 +192,7 @@ const Index = () => {
     },
 
     {
-      title: "Is Show Content",
+      title: "Show Content",
       key: "isShowContent",
       dataIndex: "isShowContent",
       render: (text, record) => (

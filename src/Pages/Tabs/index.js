@@ -220,7 +220,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       dataIndex: "IsActive",
       render: (text, record) => (
@@ -240,7 +240,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Add",
+      title: "Add",
       key: "IsAdd",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Add"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -259,7 +259,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Edit",
+      title: "Edit",
       key: "IsEdit",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Edit"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -279,7 +279,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Delete",
+      title: "Delete",
       key: "IsDelete",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Delete"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

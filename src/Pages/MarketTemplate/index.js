@@ -358,7 +358,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Toggle Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -377,7 +377,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Per Event",
+      title: "Per Event",
       key: "isPerEvent",
       render: (text, record) => (
       <Tooltip title={"Toggle Per-Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -396,7 +396,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Default Is Send Data",
+      title: "Default Send Data",
       key: "defaultIsSendData",
       render: (text, record) => (
       <Tooltip title={"Toggle Is Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -415,7 +415,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Show Advance Market",
+      title: "Show Adv. Market",
       key: "isShowInAdvanceMarket",
       render: (text, record) => (
       <Tooltip title={"Toggle Show Adv. Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -434,7 +434,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is P-Runner Value",
+      title: "P-Runner Value",
       key: "isPredefineRunnerValue",
       render: (text, record) => (
       <Tooltip title={"Toggle Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

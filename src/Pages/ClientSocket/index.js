@@ -256,7 +256,7 @@ const Index = () => {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Client Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

@@ -265,7 +265,7 @@ const Index = () => {
       style: { width: "60%" },
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Competition"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -284,7 +284,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "IsTrending",
+      title: "Trending",
       key: "isTrending",
       render: (text, record) => (
         <Button
@@ -301,7 +301,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "IsEventSnap",
+      title: "Event Snap",
       key: "isEventSnap",
       render: (text, record) => (
         <Button
@@ -318,7 +318,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "IsPointTable",
+      title: "Point Table",
       key: "isPointTable",
       render: (text, record) => (
         <Button
