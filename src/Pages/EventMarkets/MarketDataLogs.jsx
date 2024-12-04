@@ -236,7 +236,7 @@ function MarketDataLogs() {
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -344,7 +344,7 @@ function MarketDataLogs() {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

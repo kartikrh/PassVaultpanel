@@ -324,7 +324,7 @@ const Index = () => {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "Is Result",
+      title: "Result",
       key: "isResult",
       render: (text, record) => (
       <div className="d-flex align-items-center gap-2">

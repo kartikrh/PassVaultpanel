@@ -268,7 +268,7 @@ const Index = () => {
       printType: "ignore"
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (

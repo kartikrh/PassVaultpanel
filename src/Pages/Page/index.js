@@ -172,7 +172,7 @@ const Index = () => {
       style: { width: "100%" },
     },
     {
-      title: "Is Default",
+      title: "Default",
       key: "isDefault",
       dataIndex: "isDefault",
       render: (text, record) => (
