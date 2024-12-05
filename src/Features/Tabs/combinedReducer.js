@@ -36,6 +36,7 @@ import addClientSlice from "./addClientSlice";
 import addMailSettingsSlice from "./addMailSettingsSlice";
 import socialMediaSlice from "./socialMediaSlice";
 import awardSlice from "./awardSlice";
+import shotTypeSlice from "./shotTypeSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -75,6 +76,7 @@ const rootReducer = combineReducers({
   mailSettings: addMailSettingsSlice,
   award: awardSlice,
   socialMedia: socialMediaSlice,
+  shotType: shotTypeSlice,
 });
 
 export default rootReducer;

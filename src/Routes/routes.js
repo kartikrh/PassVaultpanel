@@ -128,6 +128,8 @@ import { CommentaryEventSnap } from "../Pages/Commentary/CommentaryEventSnap.jsx
 import MatchHistory from "../Pages/Players/MatchHistory.jsx";
 import MarketType from "../Pages/MarketType"
 import AddPhotos from "../Pages/PhotoLibrary/AddPhotos.jsx";
+import ShotType from "../Pages/ShotType";
+import AddShotType from "../Pages/ShotType/AddShotType.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -201,6 +203,8 @@ const authProtectedRoutes = [
   { path: "/addMenuItem", component: <AddMenuItem /> },
   { path: "/news", component: <News /> },
   { path: "/addNews", component: <AddNews /> },
+  { path: "/shotType", component: <ShotType /> },
+  { path: "/addShotType", component: <AddShotType /> },
   { path: "/subscribers", component: <Subscribers /> },
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
