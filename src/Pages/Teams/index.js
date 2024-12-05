@@ -217,7 +217,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "eventType",
+      title: "Event Type",
       dataIndex: "eventType",
       key: "eventType",
       style: { width: "20%" },

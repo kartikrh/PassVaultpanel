@@ -546,7 +546,7 @@ const CommentaryMarketTemplate = () => {
             className: "input-yes-field",
         },
         {
-            title: "Is Active",
+            title: "Active",
             dataIndex: "isActive",
             render: (text, record) => (
                 <Button

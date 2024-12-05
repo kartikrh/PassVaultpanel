@@ -160,7 +160,7 @@ const Index = () => {
       style: { width: "2%" },
     },
     {
-      title: "DisplayStatus",
+      title: "Display Status",
       dataIndex: "displayStatus",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>{text}</span>
@@ -170,7 +170,7 @@ const Index = () => {
       style: { width: "90%" },
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Display Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

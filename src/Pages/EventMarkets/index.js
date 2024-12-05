@@ -533,7 +533,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Is Allow",
+      title: "Allow",
       key: "isAllow",
       render: (text, record) => (
       <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -552,7 +552,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>

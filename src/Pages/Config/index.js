@@ -330,7 +330,7 @@ const Index = () => {
     },
 
     {
-      title: "Is Active",
+      title: "Active",
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
@@ -352,7 +352,7 @@ const Index = () => {
     },
 
     {
-      title: "Is For Admin",
+      title: "For Admin",
       key: "isForAdmin",
       dataIndex: "isForAdmin",
       render: (text, record) => (
