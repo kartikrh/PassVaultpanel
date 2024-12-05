@@ -299,6 +299,7 @@ const Index = forwardRef(
       menu: ({ width, ...css }) => ({ ...css }),
     };
     const handleTableActions = (key, id) => {
+      setSearchTerm("")
       if (key === "isActive") {
         setStatusSwitch(id);
         setTableActions((preValue) => {
@@ -942,6 +943,7 @@ const Index = forwardRef(
                             color="warning"
                             className="btn"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length === 1
                                 ? cloneModelFunction(true)
                                 : dispatch(
@@ -963,6 +965,7 @@ const Index = forwardRef(
                             color="info"
                             className="btn"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length > 0
                                 ? multiCloneModelFunction(true)
                                 : dispatch(
@@ -983,6 +986,7 @@ const Index = forwardRef(
                           <Button
                             color="btn btn-primary"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length > 1
                                 ? datePriceModelFunction(true)
                                 : dispatch(
@@ -1002,6 +1006,7 @@ const Index = forwardRef(
                             color="success"
                             className="btn"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length > 0
                                 ? loadModelFunction(true)
                                 : dispatch(
@@ -1022,6 +1027,7 @@ const Index = forwardRef(
                           <Button
                             color="danger"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length > 0
                                 ? suspendModelFunction(true)
                                 : dispatch(
@@ -1040,6 +1046,7 @@ const Index = forwardRef(
                           <Button
                             color="danger"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length > 0
                                 ? closeModelFunction(true)
                                 : dispatch(
@@ -1058,6 +1065,7 @@ const Index = forwardRef(
                           <Button
                             color="soft-danger"
                             onClick={() => {
+                              setSearchTerm("")
                               singleCheck.length > 0
                                 ? deleteModelFunction(true)
                                 : dispatch(
@@ -1112,6 +1120,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.rateSourceType}
                               placeholder={ratesource?.rateSourceType}
                               onChange={(e) => {
+                                setSearchTerm("")
                                 setSelectedTableElements({
                                   ...selectedTableElements,
                                   rateSourceType: e,
@@ -1414,6 +1423,7 @@ const Index = forwardRef(
                                   }),
                                 }}
                                 onChange={(e) => {
+                                  setSearchTerm("")
                                   setSelectedClientSocket({
                                     actionType: e?.value,
                                     clientSocketId: singleCheck,
@@ -1497,6 +1507,7 @@ const Index = forwardRef(
                             <span
                               className="btn btn-primary"
                               onClick={() => {
+                                setSearchTerm("")
                                 setImportExportModelVisable(true);
                               }}
                             >
@@ -1509,6 +1520,7 @@ const Index = forwardRef(
                             <span
                               className="btn btn-warning"
                               onClick={() => {
+                                setSearchTerm("")
                                 handlePlayerHistoryModalPopUp();
                               }}
                             >
