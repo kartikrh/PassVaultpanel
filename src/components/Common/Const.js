@@ -52,6 +52,7 @@ export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_MANUAL_EVENT = "Manual Event";
 export const Tab_Menu_List = "Menu List";
 export const TAB_NEWS = "News";
+export const TAB_SHOT_TYPE = "Shot Type";
 export const TAB_PHOTOLIBRARY = "Photo Library";
 export const TAB_VIDEOLIBRARY = "Video Library";
 export const TAB_PHOTOS = "Photos";
