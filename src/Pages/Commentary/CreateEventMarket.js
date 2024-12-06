@@ -32,6 +32,7 @@ export const CreateEventMarket = () => {
         categories: [],
         marketTypes: []
     });
+
     let navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
@@ -42,6 +43,11 @@ export const CreateEventMarket = () => {
     // useEffect(() => {
     //     console.log({ selectedMarkets, processedMarkets })
     // })
+    useEffect(() => {
+        if (!isEmpty(commentaryDetails))
+            document.title = `mt-${commentaryDetails?.eventRefId}-${commentaryDetails?.eventName}`;
+    }, [commentaryDetails])
+
     useEffect(() => {
         fetchData(commentaryId);
     }, []);

@@ -40,6 +40,11 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
+    useEffect(() => {
+        if (!isEmpty(commentaryInfo))
+            document.title = `om-${commentaryInfo.eid}-${commentaryInfo.en}`;
+    }, [commentaryInfo])
+
     const filterDataBySelectedCategories = (dataToFilter) => {
         if (selectedCategories.length === 0) return [];
         return dataToFilter.filter(item =>
@@ -198,7 +203,7 @@ export const OpenMarket = () => {
                     }
 
                     if (key === 'line' || key === 'margin' || key === "rateDiff") {
-                        updatedMarket = generateOverUnderLineType({...updatedMarket, line:updatedMarket.runner[0]?.line, backSize:updatedMarket.runner[0]?.backSize, laySize:updatedMarket.runner[0]?.laySize}, marketTypeObj);
+                        updatedMarket = generateOverUnderLineType({ ...updatedMarket, line: updatedMarket.runner[0]?.line, backSize: updatedMarket.runner[0]?.backSize, laySize: updatedMarket.runner[0]?.laySize }, marketTypeObj);
                         updatedMarket.runner[0] = {
                             ...updatedMarket.runner[0],
                             backPrice: updatedMarket.backPrice,

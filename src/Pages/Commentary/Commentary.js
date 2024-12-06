@@ -1929,6 +1929,7 @@ const Commentary = (props) => {
             overBalls={overBallByBallDisplay}
             showPaneltyRuns={setIsPaneltyPopup}
             target={target}
+            partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}
             anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
                 || superOverModal || showRretiredHurt || isPaneltyPopup
                 || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
