@@ -14,6 +14,7 @@ import Commentary from './Commentary';
 import "./CommentaryCss.css"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import NetworkStatus from '../../components/Common/Reusables/NetworkStatus';
+import { isEmpty } from 'lodash';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -54,6 +55,10 @@ function CommentaryMaster() {
             "displayStatus": displayStatus
         }))
     }
+    useEffect(() => {
+        if (!isEmpty(commentaryData))
+            document.title = `cm-${commentaryData.commentaryDetails.eid}-${commentaryData.commentaryDetails.en}`;
+    }, [commentaryData])
 
     const saveUserInfo = async () => {
         setIsDataLoading(true)

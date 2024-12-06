@@ -5,57 +5,13 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_
 import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import { STRING_SEPERATOR } from "../../components/Common/Const"
+import CommentaryRightPanel from "./CommentaryRightPanel"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, anyPopup, handleRetiredHurt = {}, target }) => {
-    document.title = "Scoring";
+    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships }) => {
     const [actionPopup, setActionPopup] = useState(undefined)
-    const generateBallfromArray = (ballArray = []) => {
-        return ballArray?.map((element, index) => {
-            const previousValue = ballArray[index - 1]
-            const nextValue = ballArray[index + 1]
-            const isWicket = +element?.isWicket !== 0
-            const isBoundary = +element?.isBoundary !== 0
-            const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
-            const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
-            const ballValue = ballTypeAdd ?
-                element.value > 0 ?
-                    element.value : ""
-                : element.value
-            if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
-                return null;
-            }
-            let displayValue
-            if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
-                const nextIsWicket = +nextValue?.isWicket !== 0
-                const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
-                const nextBallValue = nextBallTypeAdd ?
-                    nextValue.value > 0 ?
-                        nextValue.value : ""
-                    : nextValue.value
-                displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`
-            } else {
-                displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
-            }
-            return <div key={`ball ${index}`} className={` px-3 py - md - 2 py - 1 shadow - sm rounded mx - 1 over-ball-display ${ballColor}`}>
-                {displayValue}
-            </div>
-        })
-    }
-
-    const generateRightSideOvers = () => {
-        return Object.keys(overBalls).map((over, index) =>
-            <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `} xs={12} md={12} lg={12}>
-                <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
-                {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
-                    <> Yet to start Over </>
-                }
-                {generateBallfromArray(overBalls[over])}
-            </div >)
-    }
-
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -108,7 +64,6 @@ export const CommentaryScreen = ({
                 break;
         }
     }
-
     const handleRuns = (run, ball, isBoundary = false) => {
         updateRuns(
             {
@@ -270,9 +225,11 @@ export const CommentaryScreen = ({
                             : "Overs"}
                     </div>
                 </Row>
-                <Row>
-                    {generateRightSideOvers()}
-                </Row>
+                <CommentaryRightPanel
+                    overBalls={overBalls}
+                    onPitchPlayers={onPitchPlayers}
+                    partnerships={partnerships}
+                />
             </Col>
         </Row >
         {actionPopup && <CommentaryAction
