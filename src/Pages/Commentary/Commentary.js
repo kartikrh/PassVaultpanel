@@ -504,14 +504,14 @@ const Commentary = (props) => {
             updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) + runToUpdate
             updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
             updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-            updateBattingTeam["teamWideRuns"] = (updateBattingTeam.teamWideRuns || 0) + runToUpdate
+            updateBattingTeam["teamWideRuns"] = (teams[BATTING_TEAM].teamWideRuns || 0) + runToUpdate
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
             updateOver["totalWideBall"] = (currentOver.totalWideBall || 0) + 1
             updateOver["totalWideRun"] = (currentOver.totalWideRun || 0) + runToUpdate
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runToUpdate
             updateBall["ballIsCount"] = false
-            updateBall["ballRun"] = runs
-            updateBall["ballExtraRun"] = (+matchTypeDetails["valueOfWideBall"] || 0)
+            updateBall["ballRun"] = 0
+            updateBall["ballExtraRun"] = runToUpdate
             updateBall["ballType"] = BALL_TYPE_WIDE
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
             updatePartnership["extras"] = currentPartnership.extras + runToUpdate
@@ -521,7 +521,7 @@ const Commentary = (props) => {
             updateBowler["bowlerNoBall"] = (bowler.bowlerNoBall || 0) + 1
             updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + valueOfNoBall
             updateBattingTeam["teamScore"] = (teams[BATTING_TEAM].teamScore || 0) + runToUpdate
-            updateBattingTeam["teamNoBallRuns"] = (updateBattingTeam.teamNoBallRuns || 0) + valueOfNoBall
+            updateBattingTeam["teamNoBallRuns"] = (teams[BATTING_TEAM].teamNoBallRuns || 0) + valueOfNoBall
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runToUpdate
             updateOver["totalNoball"] = (currentOver.totalNoball || 0) + 1
             updateOver["totalNoBallRun"] = (currentOver.totalNoBallRun || 0) + valueOfNoBall
@@ -539,7 +539,7 @@ const Commentary = (props) => {
                 updateBowler["bowlerByeBallRun"] = (bowler.bowlerByeBallRun || 0) + runs
                 updateOver["totalByesRun"] = (currentOver.totalByesRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + runToUpdate
-                updateBattingTeam["teamByRuns"] = (updateBattingTeam.teamByRuns || 0) + runs
+                updateBattingTeam["teamByRuns"] = (teams[BATTING_TEAM].teamByRuns || 0) + runs
             }
             else if (type === NO_BALL_LEG_BYE) {
                 updateBall["ballType"] = BALL_TYPE_NO_BALL_LEG_BYE
@@ -547,7 +547,7 @@ const Commentary = (props) => {
                 updateBowler["bowlerNoBallRun"] = (bowler.bowlerNoBallRun || 0) + runs
                 updateOver["totalLegByesRun"] = (currentOver.totalLegByesRun || 0) + runs
                 updatePartnership["extras"] = currentPartnership.extras + runToUpdate
-                updateBattingTeam["teamLegByRuns"] = (updateBattingTeam.teamLegByRuns || 0) + runs
+                updateBattingTeam["teamLegByRuns"] = (teams[BATTING_TEAM].teamLegByRuns || 0) + runs
             }
             batter["batBall"] = (batter.batBall || 0) + 1
             batter["batsmanStrikeRate"] = getStrikeRate(batter.batRun, batter.batBall)
@@ -579,7 +579,7 @@ const Commentary = (props) => {
                 updateOver["totalByesBall"] = (currentOver.totalByesBall || 0) + 1
                 updateOver["totalByesRun"] = (currentOver.totalByesRun || 0) + runs
                 updateBall["ballType"] = BALL_TYPE_BYE
-                updateBattingTeam["teamByRuns"] = (updateBattingTeam.teamByRuns || 0) + runs
+                updateBattingTeam["teamByRuns"] = (teams[BATTING_TEAM].teamByRuns || 0) + runs
             }
             else if (type === BALL_LEG_BYE) {
                 updateBowler["bowlerLegByeBall"] = (bowler.bowlerLegByeBall || 0) + 1
@@ -587,7 +587,7 @@ const Commentary = (props) => {
                 updateOver["totalLegByesBall"] = (currentOver.totalLegByesBall || 0) + 1
                 updateOver["totalLegByesRun"] = (currentOver.totalLegByesRun || 0) + runs
                 updateBall["ballType"] = BALL_TYPE_LEG_BYE
-                updateBattingTeam["teamLegByRuns"] = (updateBattingTeam.teamLegByRuns || 0) + runs
+                updateBattingTeam["teamLegByRuns"] = (teams[BATTING_TEAM].teamLegByRuns || 0) + runs
             }
             setBallCountForStrike(ballCountForStrike + 1)
         }

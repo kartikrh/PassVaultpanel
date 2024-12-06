@@ -194,21 +194,40 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
 
 
 export const getBallsForAllOver = (ballHistory = []) => {
-  ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"])
-  let toReturn = {}
+  ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"]);
+  let toReturn = {};
+
   ballHistory.forEach(ball => {
     if (ball) {
-      const overCount = +ball?.overCount % 1 === 0 ? (+ball?.overCount + 0.1) : +ball?.overCount
-      const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(overCount)
-      const ballsInCurrentOver = toReturn[overToLogBallFor]
-      if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [],
-        [
-          { type: ball.ballType, value: ball.ballRun, isWicket: ball.ballWicketType || false, isBoundary: ball.ballIsBoundry || false, overCount: ball?.overCount }
-        ])
+      const overCount = +ball?.overCount % 1 === 0 ? (+ball?.overCount + 0.1) : +ball?.overCount;
+      const overToLogBallFor = ball.currentInnings + STRING_SEPERATOR + ball.teamId + STRING_SEPERATOR + Math.ceil(overCount);
+      const ballsInCurrentOver = toReturn[overToLogBallFor];
+
+      let ballValue = ball.ballRun;
+
+      // Only adjust the value if the ball type is BALL_TYPE_WIDE
+      if (ball.ballType === BALL_TYPE_WIDE) {
+        ballValue = ball.ballExtraRun - 1; // Adjust value for wide ball
+      }
+
+      // No changes to other functionality, only modified the value for wide balls
+      if (ball.ballType !== BALL_TYPE_OVER_COMPLETE) {
+        toReturn[overToLogBallFor] = [].concat(ballsInCurrentOver || [], [
+          {
+            type: ball.ballType,
+            value: ballValue,
+            isWicket: ball.ballWicketType || false,
+            isBoundary: ball.ballIsBoundry || false,
+            overCount: ball?.overCount
+          }
+        ]);
+      }
     }
-  })
+  });
+
   return toReturn;
-}
+};
+
 
 export const generateBallLabelFromBall = (ballType, isWicket) => {
   let toReturn = undefined

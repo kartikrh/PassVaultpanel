@@ -57,7 +57,7 @@ function CommentaryMaster() {
     }
     useEffect(() => {
         if (!isEmpty(commentaryData))
-            document.title = `cm-${commentaryData.commentaryDetails.eid}-${commentaryData.commentaryDetails.en}`;
+            document.title = `CM ${commentaryData.commentaryDetails.eid} ${commentaryData.commentaryDetails.en}`;
     }, [commentaryData])
 
     const saveUserInfo = async () => {

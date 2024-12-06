@@ -42,7 +42,7 @@ export const OpenMarket = () => {
     const lineRatioForMarketCategoryId = 23
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
-            document.title = `om-${commentaryInfo.eid}-${commentaryInfo.en}`;
+            document.title = `OM ${commentaryInfo.eid} ${commentaryInfo.en}`;
     }, [commentaryInfo])
 
     const filterDataBySelectedCategories = (dataToFilter) => {
