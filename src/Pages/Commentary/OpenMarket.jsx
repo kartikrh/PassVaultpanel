@@ -735,7 +735,7 @@ export const OpenMarket = () => {
             style: { width: "2%", textAlign: "center" },
         },
         {
-            title: "Is Send",
+            title: "Send",
             dataIndex: "isSendData",
             render: (text, record) => (
                 <Button
