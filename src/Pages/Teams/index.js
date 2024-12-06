@@ -25,8 +25,21 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const filteredCompetitiondata = () => {
+    if (eventTypeId && competitionId) {
+      let res =  competitionList.filter(
+        (comp) => comp.eventTypeId === parseInt(eventTypeId)
+      );
+      setData(res)
+    }
+  }
+  useEffect(() => {
+    filteredCompetitiondata()
+  }, [competitionId]);
 
   // fetch data
   const fetchData = async (latestValueFromTable) => {
@@ -309,6 +322,7 @@ const Index = () => {
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
+            setCompetitionId={setCompetitionId}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
