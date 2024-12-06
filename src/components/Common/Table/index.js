@@ -860,7 +860,7 @@ const Index = forwardRef(
     };
 
     useEffect(() => {
-      if (searchTerm.length > 2 || searchTerm.length === 0) {
+      if (searchTerm.length >= 2 || searchTerm.length === 0) {
         handleSearchFilter();
       }
     }, [searchTerm]);
