@@ -45,7 +45,7 @@ export const CreateEventMarket = () => {
     // })
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
-            document.title = `mt-${commentaryDetails?.eventRefId}-${commentaryDetails?.eventName}`;
+            document.title = `MT ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
     }, [commentaryDetails])
 
     useEffect(() => {
