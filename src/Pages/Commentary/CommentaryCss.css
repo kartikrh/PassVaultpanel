@@ -510,11 +510,6 @@
     width: 20%;
 }
 
-.event-snap-table-hover tbody tr:hover td,
-.event-snap-table-hover tbody tr:hover th {
-    background-color: gray !important;
-    /* color: #fff !important; */
-}
 
 /* over model css */
 .over-modal-container {
