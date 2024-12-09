@@ -2,15 +2,13 @@ import React, { useEffect, useState } from "react"
 import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, ON_STRIKE } from "./CommentartConst"
-import { generateBallLabelFromBall } from "./functions"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
-import { STRING_SEPERATOR } from "../../components/Common/Const"
 import CommentaryRightPanel from "./CommentaryRightPanel"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships }) => {
+    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId }) => {
     const [actionPopup, setActionPopup] = useState(undefined)
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
@@ -258,6 +256,7 @@ export const CommentaryScreen = ({
                 setActionPopup(false)
                 handleRetiredHurt()
             }}
+            commentaryId={commentaryId}
         />}
     </React.Fragment >
 }
