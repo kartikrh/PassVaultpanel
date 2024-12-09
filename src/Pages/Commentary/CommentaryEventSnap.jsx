@@ -11,6 +11,7 @@ import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
 import { toJpeg } from 'html-to-image';
+import Crickfeed_logo from '../../assets/images/Crickfeed_logo.png'
 
 export const CommentaryEventSnap = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,58 +28,72 @@ export const CommentaryEventSnap = () => {
 
   const downloadImage = async () => {
     if (!componentRef.current) return;
-
+  
+    // Adjust font size for td element
     const tdElement = document.querySelector('td');
-    tdElement.style.fontSize = "10px"
-
+    tdElement.style.fontSize = "10px"; // Adjust font size
+  
+    // Add temporary classes to center the component and adjust layout
     componentRef.current.classList.add('d-flex', 'justify-content-center');
     const element = document.querySelector('.event-snap-table-hover');
     const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
-    targetDiv.style.width = '668px'
-
+    targetDiv.style.width = '668px';
+  
     element.style.width = '100%';
     element.style.height = '100vh';
     element.style.overflow = 'scroll';
-
-    const watermark = document.createElement('div');
-    watermark.innerText = 'CRICFEED';
+  
+    // Create watermark image
+    const watermark = document.createElement('img');
+    watermark.src = Crickfeed_logo; // Assuming Crickfeed_logo is the path to the logo
+    watermark.alt = 'CRICFEED';
     watermark.style.position = 'absolute';
     watermark.style.top = '50%';
     watermark.style.left = '50%';
-    watermark.style.fontSize = '5em';
-    watermark.style.color = 'rgba(0, 0, 0, 0.3)';
-    watermark.style.pointerEvents = 'none';
-    watermark.style.userSelect = 'none';
+    watermark.style.width = '200px'; // Adjust watermark size
+    watermark.style.opacity = '0.3'; // Set watermark opacity
+    watermark.style.pointerEvents = 'none'; // Disable pointer events on watermark
     watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
-    watermark.style.zIndex = 1000;
-
-    // Append watermark to the component
-    componentRef.current.appendChild(watermark);
-
+    watermark.style.zIndex = '1000';
+    watermark.style.filter = "brightness(0.7)"; // Adjust brightness for blending
+    watermark.style.mixBlendMode = "multiply";
+  
+    // Ensure the parent element has a relative position to position the watermark correctly
+    componentRef.current.style.position = 'relative';
+    componentRef.current.appendChild(watermark); // Append watermark to the component
+  
     try {
       setDownloadBtnDisabled(true);
-
-      // Generate the image
-      const dataUrl = await toJpeg(componentRef.current);
-
-      // Create a link and download the image
+  
+      // Wait for the DOM update (ensure watermark is rendered)
+      await new Promise(resolve => setTimeout(resolve, 500)); // Increased wait time to ensure rendering
+  
+      // Generate the image with watermark included
+      const dataUrl = await toJpeg(componentRef.current, {
+        cacheBust: true, // To avoid cache issues when generating the image
+        pixelRatio: 2, // For higher resolution // Set a background color for the image
+        width: componentRef.current.offsetWidth, // Ensure the width is set correctly
+        height: componentRef.current.offsetHeight, // Ensure the height is set correctly
+      });
+  
+      // Create a link and trigger the download
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
       link.click();
-
+  
       // Clean up
       componentRef.current.classList.remove('d-flex', 'justify-content-center');
       targetDiv.style.removeProperty('width');
       element.style.removeProperty('overflow');
       targetDiv.style.removeProperty('fontSize');
-      componentRef.current.removeChild(watermark);
+      componentRef.current.removeChild(watermark); // Remove watermark after image generation
       setDownloadBtnDisabled(false);
     } catch (error) {
       dispatch(updateToastData({ data: error.message, type: ERROR }));
     }
   };
-
+  
   const formatDate = (date) => {
     const options = {
       day: 'numeric',
@@ -218,6 +233,10 @@ export const CommentaryEventSnap = () => {
                         responsive
                         bordered
                         style={{
+                          // backgroundImage: `url(${Crickfeed_logo})`,
+                          // backgroundRepeat: "no-repeat", // Prevent the image from repeating
+                          // backgroundSize: "250px", // Make the image cover the table area
+                          // backgroundPosition: "center",
                           border: "1px solid black",
                           padding: "12px",
                           background: "#ddebf7",
