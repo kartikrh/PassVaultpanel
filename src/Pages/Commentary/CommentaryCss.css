@@ -446,6 +446,20 @@
     border-color: #f5d3d3;
 }
 
+.yellow-information-button {
+    background-color: #f5f3d3;
+    border-color: #f5f3d3;
+}
+
+.yellow-information-modal>.modal-content {
+    background-color: #f5f3d3;
+    border-color: #f5f3d3;
+}
+
+.yellow-information-modal>.modal-content>div {
+    border-color: #f5f3d3;
+}
+
 .green-success-button {
     background-color: #e1fad8;
     border-color: #e1fad8;

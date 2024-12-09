@@ -1900,6 +1900,7 @@ const Commentary = (props) => {
     useEffect(() => { if (error) setRetryModel(error) }, [error])
     return <>
         <CommentaryScreen
+            commentaryId={commentaryDetails?.commentaryId}
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
             updateRuns={updateRuns}
