@@ -16,7 +16,7 @@ const RevertModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
     }, []);
 
     return (
-        <Modal backdrop="static" className="commentary-modal red-warning-modal" zIndex={1000} isOpen={isOpen} toggle={toggle}>
+        <Modal backdrop="static" className="commentary-modal yellow-information-modal" zIndex={1000} isOpen={isOpen} toggle={toggle}>
             <ModalHeader toggle={toggle}>
                 Revert to Toss
             </ModalHeader>

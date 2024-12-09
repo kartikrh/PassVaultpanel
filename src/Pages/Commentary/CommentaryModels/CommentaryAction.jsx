@@ -6,7 +6,8 @@ import RunsModal from './RunsModal';
 import { useDispatch } from 'react-redux';
 import { updateToastData } from '../../../Features/toasterSlice';
 import axiosInstance from '../../../Features/axios';
-import SpinnerModel from "../../../components/Model/SpinnerModel"
+import SpinnerModel from "../../../components/Model/SpinnerModel";
+import RevertModal from "../CommentaryModels/RevertCommentary"
 
 const CommentaryAction = ({
     toggle,
@@ -19,26 +20,23 @@ const CommentaryAction = ({
     commentaryId }) => {
     const [showRunsPopup, setShowRunsPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showRevertModal, setShowRevertModal] = useState(false);
     const dispatch = useDispatch();
 
     const handleRevertToToss = async () => {
         try {
-            setIsLoading(true)
+            setIsLoading(true);
             const response = await axiosInstance.post('/admin/commentary/revertCommentary', { commentaryId });
 
-            // Show success toast
             dispatch(updateToastData({
                 data: response?.message || 'Successfully reverted to toss',
                 title: response?.title || 'Success',
                 type: 'SUCCESS'
             }));
-            setIsLoading(false)
-            // Refresh the page after successful API call
+            setIsLoading(false);
             window.location.reload();
-
         } catch (error) {
-            // Show error toast
-            setIsLoading(false)
+            setIsLoading(false);
             dispatch(updateToastData({
                 data: error?.message || 'Failed to revert to toss',
                 title: error?.title || 'Error',
@@ -89,8 +87,8 @@ const CommentaryAction = ({
                             <img className="button-icon" src="icons/r.png" alt="Icon" />
                             etired Hurt
                         </Col>
-                        <Col role="button" className="score-button" xs={3} md={3} lg={3}
-                            onClick={handleRevertToToss}>
+                        <Col role="button" className="score-button yellow-information-button" xs={3} md={3} lg={3}
+                            onClick={() => setShowRevertModal(true)}>
                             <img className="button-icon" src="icons/revert.png" alt="Icon" />
                             Revert to Toss
                         </Col>
@@ -103,6 +101,15 @@ const CommentaryAction = ({
                     onSubmitClick={(runs) => handleRuns(runs, 1)}
                 />
             )}
+            <RevertModal
+                isOpen={showRevertModal}
+                toggle={() => setShowRevertModal(false)}
+                onYesClick={() => {
+                    handleRevertToToss();
+                    setShowRevertModal(false);
+                }}
+                onNoClick={() => setShowRevertModal(false)}
+            />
         </>
     );
 };
