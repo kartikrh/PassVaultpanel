@@ -72,12 +72,11 @@ const Index = ({
 
   const handleDelete = (template) => {
     if (template.id === 0) {
-      dispatch(
-        updateToastData({
-          data: "Template with id 0 cannot be deleted.",
-          title: "Delete Error",
-          type: ERROR,
-        })
+      setUnassignedMarket((prevUnassigned) => [...prevUnassigned, template]);
+      setAssignedMarket((prevAssigned) =>
+        prevAssigned.filter(
+          (item) => item.marketTemplateId !== template.marketTemplateId
+        )
       );
       return;
     }
@@ -128,18 +127,16 @@ const Index = ({
       );
       return;
     }
-    // const templateWithZeroId = assignedMarket.some((template) => template.id === 0);
 
-    // if (templateWithZeroId) {
-    //   dispatch(
-    //     updateToastData({
-    //       data: "Templates with id 0 cannot be deleted.",
-    //       title: "Delete Error",
-    //       type: ERROR,
-    //     })
-    //   );
-    //   return;
-    // }
+    const templatesToRevert = assignedMarket.filter(
+      (template) => template.id === 0
+    );
+
+    // Revert templates with id 0 back to unassigned
+    setUnassignedMarket((prevUnassigned) => [
+      ...prevUnassigned,
+      ...templatesToRevert,
+    ]);
 
     setDltTemplate((prevDltTemplate) => [
       ...prevDltTemplate,
@@ -147,8 +144,7 @@ const Index = ({
         .filter((template) => template.id !== 0)
         .map((template) => template.id),
     ]);
-    setAssignedMarket(assignedMarket.filter((template) => template.id === 0));
-    // setAssignedMarket([]);
+    setAssignedMarket([]);
   };
 
   return (
@@ -180,7 +176,7 @@ const Index = ({
             {isLoading && <SpinnerModel />}
             <div className="row">
               <div className="col-6">
-                <div className="d-flex align-items-center justify-content-between mx-2 my-2">
+                <div className="d-flex align-items-center justify-content-between mx-3 my-2">
                   <h5>Unassign Templates</h5>
                   <Button
                     color={"primary"}
@@ -193,30 +189,33 @@ const Index = ({
                     <i className="bx bx-plus"></i>
                   </Button>
                 </div>
-                <ul className="list-group">
-                  {unassignedMarket.map((template) => (
-                    <li
-                      key={template.marketTemplateId}
-                      className="list-group-item d-flex justify-content-between align-items-center"
-                    >
-                      {template.templateName}
-                      <Button
-                        color={"primary"}
-                        size="sm"
-                        className="btn"
-                        onClick={() => {
-                          handleAssign(template);
-                        }}
-                      >
-                        <i className="bx bx-plus"></i>
-                      </Button>
-                    </li>
-                  ))}
+                <ul className="list-group market-template-list">
+                  {unassignedMarket.length > 0 &&
+                    unassignedMarket
+                      .sort((a, b) => a?.marketTemplateId - b?.marketTemplateId)
+                      .map((template) => (
+                        <li
+                          key={template.marketTemplateId}
+                          className="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                          {template.templateName}
+                          <Button
+                            color={"primary"}
+                            size="sm"
+                            className="btn"
+                            onClick={() => {
+                              handleAssign(template);
+                            }}
+                          >
+                            <i className="bx bx-plus"></i>
+                          </Button>
+                        </li>
+                      ))}
                 </ul>
               </div>
 
               <div className="col-6">
-                <div className="d-flex align-items-center justify-content-between mx-2 my-2">
+                <div className="d-flex align-items-center justify-content-between mx-3 my-2">
                   <h5>Assign Templates</h5>
                   <Button
                     color={"danger"}
@@ -229,25 +228,28 @@ const Index = ({
                     <i className="bx bx-minus"></i>
                   </Button>
                 </div>
-                <ul className="list-group">
-                  {assignedMarket.map((template) => (
-                    <li
-                      key={template.id}
-                      className="list-group-item d-flex justify-content-between align-items-center"
-                    >
-                      {template.templateName}
-                      <Button
-                        color={"danger"}
-                        size="sm"
-                        className="btn"
-                        onClick={() => {
-                          handleDelete(template);
-                        }}
-                      >
-                        <i className="bx bx-minus"></i>
-                      </Button>
-                    </li>
-                  ))}
+                <ul className="list-group market-template-list">
+                  {assignedMarket.length > 0 &&
+                    assignedMarket
+                      .sort((a, b) => a?.id - b?.id)
+                      .map((template) => (
+                        <li
+                          key={template.id}
+                          className="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                          {template.templateName}
+                          <Button
+                            color={"danger"}
+                            size="sm"
+                            className="btn"
+                            onClick={() => {
+                              handleDelete(template);
+                            }}
+                          >
+                            <i className="bx bx-minus"></i>
+                          </Button>
+                        </li>
+                      ))}
                 </ul>
               </div>
             </div>
