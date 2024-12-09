@@ -732,16 +732,27 @@
     margin-bottom: 0.5rem;
 }
 
-.wicket-modal-player-card {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 0.75rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-    min-height: 200px;
-    max-height: 300px;
-    width: 100%;
-    margin: 0;
+
+.wicket-modal-player-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.wicket-modal-header-row {
+    font-weight: 600;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #ddd;
+}
+
+.wicket-modal-player-name {
+    font-weight: 500 !important;
+}
+
+.wicket-modal-player-stat {
+    text-align: center;
 }
 
 .wicket-modal-player-card:hover {
@@ -755,13 +766,6 @@
     margin-bottom: 0.5rem;
     border-bottom: 1px solid #e9ecef;
     padding-bottom: 0.25rem;
-}
-
-.wicket-modal-player-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1a73e8;
-    margin-bottom: 0.5rem;
 }
 
 .wicket-modal-stats-grid {
