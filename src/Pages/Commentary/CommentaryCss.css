@@ -972,3 +972,24 @@
     max-height: 450px;
     overflow-y: auto;
 }
+
+.cricket-field {
+    position: relative;
+    width: 400px; 
+    height: 400px;
+}
+
+.cricket-field-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 400px;
+}
+
+.cricket-field-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: crosshair;
+}

@@ -118,27 +118,16 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
   };
 
   return (
-    <div style={{ position: "relative", width: "400px", height: "400px"}}>
+    <div className="cricket-field">
       <img
         src="/images/cricket_field.png"
         alt="Cricket Field"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "400px",
-          height: "400px",
-        }}
+        className="cricket-field-img"
       />
       <svg
         width="400"
         height="400"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          cursor: "crosshair",
-        }}
+        className="cricket-field-svg"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
