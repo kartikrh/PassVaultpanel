@@ -5,6 +5,7 @@ import { generateBallLabelFromBall } from "./functions";
 import { CURRENT_BOWLER } from "./CommentartConst";
 
 const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
+    console.log({ partnerships });
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
 
     const generateBallfromArray = (ballArray = []) => {
