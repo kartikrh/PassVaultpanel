@@ -27,6 +27,19 @@ export const CommentaryEventSnap = () => {
 
   const downloadImage = async () => {
     if (!componentRef.current) return;
+
+    const tdElement = document.querySelector('td');
+    tdElement.style.fontSize = "10px"
+
+    componentRef.current.classList.add('d-flex', 'justify-content-center');
+    const element = document.querySelector('.event-snap-table-hover');
+    const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
+    targetDiv.style.width = '668px'
+
+    element.style.width = '100%';
+    element.style.height = '100vh';
+    element.style.overflow = 'scroll';
+
     const watermark = document.createElement('div');
     watermark.innerText = 'CRICFEED';
     watermark.style.position = 'absolute';
@@ -39,18 +52,30 @@ export const CommentaryEventSnap = () => {
     watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
     watermark.style.zIndex = 1000;
 
+    // Append watermark to the component
     componentRef.current.appendChild(watermark);
+
     try {
-      setDownloadBtnDisabled(true)
+      setDownloadBtnDisabled(true);
+
+      // Generate the image
       const dataUrl = await toJpeg(componentRef.current);
+
+      // Create a link and download the image
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `${(commentaryDetails?.eventName).split(" ").join("-")}.jpeg`;
+      link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
       link.click();
+
+      // Clean up
+      componentRef.current.classList.remove('d-flex', 'justify-content-center');
+      targetDiv.style.removeProperty('width');
+      element.style.removeProperty('overflow');
+      targetDiv.style.removeProperty('fontSize');
       componentRef.current.removeChild(watermark);
-      setDownloadBtnDisabled(false)
+      setDownloadBtnDisabled(false);
     } catch (error) {
-      updateToastData({data:error,type: ERROR});
+      dispatch(updateToastData({ data: error.message, type: ERROR }));
     }
   };
 
@@ -165,81 +190,87 @@ export const CommentaryEventSnap = () => {
                     </Button>
                   </Col>
                 </Row>
-                <div ref={componentRef} className="border border-dark border-4" style={{background: "white"}}>
-                  <div>
-                    {commentaryDetails && (
-                      <div className="my-2">
-                        <div className="d-flex justify-content-center">
-                          <h1 className="fs-1 fw-bold m-0">
-                            {commentaryDetails?.eventName}
-                          </h1>
+                <div ref={componentRef}>
+                  <div
+                    className="border border-dark border-4 "
+                    style={{ background: "white", position: 'relative' }}  // Make sure the container is positioned relative
+                  >
+                    <div>
+                      {commentaryDetails && (
+                        <div className="my-2">
+                          <div className="d-flex justify-content-center">
+                            <h1 className="fs-1 fw-bold m-0">
+                              {commentaryDetails?.eventName}
+                            </h1>
+                          </div>
+                          <div className="d-flex justify-content-center">
+                            <p className="m-0">
+                              {formatDate(MarketDetailsDate)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="d-flex justify-content-center">
-                          <p className="m-0">
-                            {formatDate(MarketDetailsDate)}
-                          </p>
-                        </div>
-                      </div>
+                      )}
+                    </div>
+                    <div className="border border-bottom border-dark border-2"></div>
+                    {eventSnapData && (
+                      <Table
+                        className="table event-snap-table-hover"
+                        responsive
+                        bordered
+                        style={{
+                          border: "1px solid black",
+                          padding: "12px",
+                          background: "#ddebf7",
+                          margin: "0px",
+                          width: "100%"
+                        }}
+                      >
+                        <tbody>
+                          {Object.entries(eventSnapData).reduce((rows, [key, value], index) => {
+                            const formattedKey = key;
+                            if (index % 2 === 0) {
+                              rows.push([]);
+                            }
+                            rows[rows.length - 1].push(
+                              <td
+                                className="custom-event-snap"
+                                style={{
+                                  color: "#3783d1",
+                                  fontWeight: "bold",
+                                  width: "30%", // Set a fixed width for the key cells
+                                  wordBreak: "break-word", // Ensure content does not overflow
+                                  textAlign: "left"
+                                }} // Key color and reduced width
+                                key={`${key}-key`}
+                              >
+                                {formattedKey}
+                              </td>,
+                              <td
+                                style={{
+                                  color: "#1f4e78",
+                                  fontWeight: "bold",
+                                  width: "20%", // Set a fixed width for the value cells
+                                  wordBreak: "break-word", // Ensure content does not overflow
+                                  textAlign: "left"
+                                }} // Value color and reduced width
+                                key={`${key}-value`}
+                              >
+                                {value}
+                              </td>
+                            );
+                            return rows;
+                          }, []).map((row, rowIndex) => (
+                            <tr key={`row-${rowIndex}`}>{row}</tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                      // <div>dsg</div>
                     )}
                   </div>
-                  <div className="border border-bottom border-dark border-2"></div>
-                  {eventSnapData && (
-                   <Table
-                   className="table event-snap-table-hover"
-                   responsive
-                   bordered
-                   style={{ border: "1px solid black", padding: "12px", background: "#ddebf7", margin: "0px" }}
-                 >
-                   <tbody>
-                     {Object.entries(eventSnapData).reduce((rows, [key, value], index) => {
-                       const formattedKey = key;
-                       if (index % 2 === 0) {
-                         rows.push([]);
-                       }
-                       rows[rows.length - 1].push(
-                         <td
-                           className="custom-event-snap"
-                           style={{ color: "#3783d1", padding: "8px", fontWeight: "bold" }} // Key color
-                           key={`${key}-key`}
-                         >
-                           {formattedKey}
-                         </td>,
-                         <td
-                           style={{ color: "#1f4e78", padding: "8px", fontWeight: "bold" }} // Value color
-                           key={`${key}-value`}
-                         >
-                           {value}
-                         </td>
-                       );
-                       return rows;
-                     }, []).map((row, rowIndex) => (
-                       <tr key={`row-${rowIndex}`}>{row}</tr>
-                     ))}
-                   </tbody>
-                 </Table>
-                 
-
-                  )}
                 </div>
               </CardBody>
             </Card>
           </Row>
-          {/* <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              opacity: 0.2, // Make the watermark semi-transparent
-              fontSize: '5em',
-              color: 'rgba(0, 0, 0, 0.5)', // Adjust the color to your liking
-              pointerEvents: 'none', // Allow clicking through the watermark
-              userSelect: 'none', // Prevent selecting the watermark text
-              zIndex: 1000, // Ensure watermark is on top
-            }}
-          >
-            WATERMARK
-          </div> */}
         </Container>
       </div>
     </React.Fragment>
