@@ -192,6 +192,7 @@ function CommentaryMaster() {
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                         <Commentary
                                             data={{ commentaryData }}
+                                            shotTypes={commentaryData?.shotTypes}
                                             onInningsChange={handleInningsChange}
                                             isDataLoading={isDataLoading}
                                             statusPopup={statusPopup}

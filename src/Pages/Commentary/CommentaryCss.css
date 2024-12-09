@@ -959,3 +959,11 @@
 .partnership-card+.partnership-card {
     margin-top: 1rem;
 }
+
+.shot-types-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
