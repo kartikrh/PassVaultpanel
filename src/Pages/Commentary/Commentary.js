@@ -26,10 +26,12 @@ import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
 import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
 import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
 import axiosInstance from "../../Features/axios.js"
+import CricketFieldModal from "./CommentaryModels/CricketFieldModal.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
     const [propsData, setPropsData] = useState(undefined)
+    const [shotTypes, setShotTypes] = useState(undefined)
     const [commentaryDetails, setCommentaryDetails] = useState(undefined)
     const [matchTypeDetails, setMatchTypeDetails] = useState(undefined)
     const [isLastInnigs, setIsLastInnings] = useState(undefined)
@@ -81,6 +83,8 @@ const Commentary = (props) => {
     const [retryModel, setRetryModel] = useState(undefined)
     const [isWonByInnings, setIsWonByInnings] = useState(undefined)
     const [isMatchCompleted, setIsMatchCompleted] = useState(undefined)
+    const [showCricketFieldModal, setShowCricketFieldModal] = useState(undefined);
+    const [cricketFieldData, setCricketFieldData] = useState(null);
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -123,7 +127,6 @@ const Commentary = (props) => {
     }, [currentOver.ballCount]);
 
     const checkForOverSwitch = () => {
-        console.log('currentOver.ballCount', currentOver.ballCount);
         if (currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6)) {
             setShowChangeOverModal(true);
         }
@@ -1808,6 +1811,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (isEmpty(propsData) && !isEmpty(props.data)) {
             setPropsData(props.data)
+            setShotTypes(props?.shotTypes)
             setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
@@ -1838,6 +1842,10 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
+                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                    setShowCricketFieldModal(true);
+                    setCricketFieldData({commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName});
+                }
                 if (!currentPartnership.commentaryBallByBallId || (+currentPartnership.commentaryBallByBallId === 0))
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
@@ -2074,6 +2082,16 @@ const Commentary = (props) => {
             />
         }
         {retryModel && <RetryModel errorMsg={retryModel} />}
+        {showCricketFieldModal && (
+        <CricketFieldModal
+          cricketFieldData={cricketFieldData}
+          shotTypes={shotTypes}
+          isOpen={showCricketFieldModal}
+          toggle={() => {
+            setShowCricketFieldModal(undefined);
+          }}
+        />
+      )}
     </>
 }
 
