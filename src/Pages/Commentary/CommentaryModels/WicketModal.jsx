@@ -182,44 +182,32 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                 ((totalRuns / totalOvers)).toFixed(2) :
                 "0.00";
             return (
-                <div className="wicket-modal-player-card wicket-modal-bowler-card">
-                    <h3 className="wicket-modal-card-title">Bowler Details</h3>
-                    <div className="wicket-modal-player-name">{player.playerName}</div>
-                    <div className="wicket-modal-stats-grid">
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Overs</span>
-                            <span className="wicket-modal-stat-value">{currentOver}</span>
+                <>
+                    <div className="wicket-modal-player-stats">
+                        <div className="wicket-modal-player-row wicket-modal-header-row">
+                            <div className="wicket-modal-player-name">Bowler</div>
+                            <div className="wicket-modal-player-stat">Overs</div>
+                            <div className="wicket-modal-player-stat">Wickets</div>
+                            <div className="wicket-modal-player-stat">Runs</div>
+                            <div className="wicket-modal-player-stat">Economy</div>
+                            <div className="wicket-modal-player-stat">Maidens</div>
+                            <div className="wicket-modal-player-stat">Wides</div>
+                            <div className="wicket-modal-player-stat">No Balls</div>
+                            <div className="wicket-modal-player-stat">Dot Balls</div>
                         </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Wickets</span>
-                            <span className="wicket-modal-stat-value">{updatedWickets}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Runs</span>
-                            <span className="wicket-modal-stat-value">{totalRuns}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Economy</span>
-                            <span className="wicket-modal-stat-value">{economy}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Maidens</span>
-                            <span className="wicket-modal-stat-value">{player.bowlerMaidenOver || 0}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Wides</span>
-                            <span className="wicket-modal-stat-value">{player.bowlerWideBall || 0}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">No Balls</span>
-                            <span className="wicket-modal-stat-value">{player.bowlerNoBall || 0}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Dot Balls</span>
-                            <span className="wicket-modal-stat-value">{player.bowlerDotBall || 0}</span>
+                        <div className="wicket-modal-player-row">
+                            <div className="wicket-modal-player-name">{player.playerName}</div>
+                            <div className="wicket-modal-player-stat">{currentOver}</div>
+                            <div className="wicket-modal-player-stat">{updatedWickets}</div>
+                            <div className="wicket-modal-player-stat">{totalRuns}</div>
+                            <div className="wicket-modal-player-stat">{economy}</div>
+                            <div className="wicket-modal-player-stat">{player.bowlerMaidenOver || 0}</div>
+                            <div className="wicket-modal-player-stat">{player.bowlerWideBall || 0}</div>
+                            <div className="wicket-modal-player-stat">{player.bowlerNoBall || 0}</div>
+                            <div className="wicket-modal-player-stat">{player.bowlerDotBall || 0}</div>
                         </div>
                     </div>
-                </div>
+                </>
             );
         }
         if (type === 'batsman') {
@@ -251,65 +239,33 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                 return wicketTypeObj?.label || '';
             };
 
-            return (
-                <div className="wicket-modal-player-card">
-                    <h3 className="wicket-modal-card-title">Batsman Details</h3>
-                    <div className="wicket-modal-player-name">{player.playerName}</div>
-                    <div className="wicket-modal-stats-grid">
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Runs</span>
-                            <span className="wicket-modal-stat-value">{updatedRuns}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Balls</span>
-                            <span className="wicket-modal-stat-value">{updatedBalls}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Strike Rate</span>
-                            <span className="wicket-modal-stat-value">{updatedStrikeRate}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">4s</span>
-                            <span className="wicket-modal-stat-value">{player.batFour || 0}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">6s</span>
-                            <span className="wicket-modal-stat-value">{player.batSix || 0}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Dot Balls</span>
-                            <span className="wicket-modal-stat-value">{player.batDotBall || 0}</span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Extra Runs</span>
-                            <span className="wicket-modal-stat-value">
-                                {(player.wideRuns || 0) + (player.noBallRuns || 0) + (player.byeRuns || 0) + (player.legByeRuns || 0)}
-                            </span>
-                        </div>
-                        <div className="wicket-modal-stat-item">
-                            <span className="wicket-modal-stat-label">Wicket Type</span>
-                            <span className="wicket-modal-stat-value">{getWicketTypeLabel()}</span>
-                        </div>
-
-                        {showFields.fielder1 && (
-                            <div className="wicket-modal-stat-item">
-                                <span className="wicket-modal-stat-label">Fielder</span>
-                                <span className="wicket-modal-stat-value">
-                                    {getFielderName(wicketData.fielder1)}
-                                </span>
-                            </div>
-                        )}
-
-                        {showFields.fielder2 && (
-                            <div className="wicket-modal-stat-item">
-                                <span className="wicket-modal-stat-label">Fielder 2</span>
-                                <span className="wicket-modal-stat-value">
-                                    {getFielderName(wicketData.fielder2)}
-                                </span>
-                            </div>
-                        )}
+            return (<>
+                {/* <h3>Batsman Details</h3> */}
+                <div className="wicket-modal-player-stats">
+                    <div className="wicket-modal-player-row wicket-modal-header-row">
+                        <div className="wicket-modal-player-name">Batter</div>
+                        <div className="wicket-modal-player-stat">Runs</div>
+                        <div className="wicket-modal-player-stat">Balls</div>
+                        <div className="wicket-modal-player-stat">Strike Rate</div>
+                        <div className="wicket-modal-player-stat">4s</div>
+                        <div className="wicket-modal-player-stat">6s</div>
+                        <div className="wicket-modal-player-stat">Dot Balls</div>
+                        <div className="wicket-modal-player-stat">Extra Runs</div>
+                        <div className="wicket-modal-player-stat">Wicket Type</div>
+                    </div>
+                    <div className="wicket-modal-player-row">
+                        <div className="wicket-modal-player-name">{player.playerName}</div>
+                        <div className="wicket-modal-player-stat">{updatedRuns}</div>
+                        <div className="wicket-modal-player-stat">{updatedBalls}</div>
+                        <div className="wicket-modal-player-stat">{updatedStrikeRate}</div>
+                        <div className="wicket-modal-player-stat">{player.batFour || 0}</div>
+                        <div className="wicket-modal-player-stat">{player.batSix || 0}</div>
+                        <div className="wicket-modal-player-stat">{player.batDotBall || 0}</div>
+                        <div className="wicket-modal-player-stat">{(player.wideRuns || 0) + (player.noBallRuns || 0) + (player.byeRuns || 0) + (player.legByeRuns || 0)}</div>
+                        <div className="wicket-modal-player-stat">{getWicketTypeLabel()}</div>
                     </div>
                 </div>
+            </>
             );
         }
 

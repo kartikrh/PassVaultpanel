@@ -37,6 +37,7 @@ import "./CommentaryCss.css"
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
 import AwardSelectionComponent from "./CommentaryModels/AwardModal";
+import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -76,6 +77,8 @@ const Index = () => {
   const [runnerModelVisible, setRunnerModelVisible] = useState(false);
   const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
   const [showAwardModel, setShowAwardModel] = useState(undefined);
+  const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
+  const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -303,6 +306,50 @@ const Index = () => {
           })
         );
       });
+  };
+  const handleMarketTemplate = async (commentaryId, saveTemplates, dltTemplate) => {
+    if (
+      (commentaryId && saveTemplates && saveTemplates?.length > 0) || 
+      (dltTemplate && dltTemplate?.length > 0)
+    ) {
+      try {
+        const response = await axiosInstance.post(
+          "/admin/commentary/saveComTemplate",
+          {
+            commentaryId: commentaryId,
+            saveTemplates: saveTemplates,
+            dltTemplate: dltTemplate,
+          }
+        );
+        setMarketTemplateModelVisible(false);
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      } catch (error) {
+        setMarketTemplateModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      }
+    } else {
+      dispatch(
+        updateToastData({
+          data: "No records assign for save or delete template.",
+          title: "Commentary Template",
+          type: ERROR,
+        })
+      );
+      return;
+    }
   };
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
@@ -1005,6 +1052,20 @@ const Index = () => {
             </Button>
           </Tooltip>
           <>
+            {record.isPredictMarket &&
+              <Tooltip title={"Add Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    setMarketTemplateModelVisible(true);
+                    setMarketTemplateTimeRecord(record);
+                  }}
+                >
+                  <i className="bx bx-plus"></i>
+                </Button>
+              </Tooltip>}
             {/* {record.isPredictMarket &&
               <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
@@ -1543,6 +1604,14 @@ const Index = () => {
           {showAwardModel && <AwardSelectionComponent
             commentaryId={showAwardModel}
             onClose={() => { setShowAwardModel(undefined) }} />}
+          {marketTemplateModelVisible && 
+            <CommentaryMarketTemplateModel
+              marketTemplateModelVisible={marketTemplateModelVisible}
+              setMarketTemplateModelVisible={setMarketTemplateModelVisible}
+              handleMarketTemplate={handleMarketTemplate}
+              marketTemplateRecord={marketTemplateRecord}
+              setMarketTemplateTimeRecord={setMarketTemplateTimeRecord}
+            />}
         </Container>
       </div>
     </React.Fragment>
