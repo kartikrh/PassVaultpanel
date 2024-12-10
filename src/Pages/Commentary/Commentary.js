@@ -86,6 +86,7 @@ const Commentary = (props) => {
     const [showCricketFieldModal, setShowCricketFieldModal] = useState(undefined);
     const [cricketFieldData, setCricketFieldData] = useState(null);
     const [isWheelShow, setIsWheelShow] = useState(undefined);
+    const [isShotType, setIsShotType] = useState(undefined);
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -1821,7 +1822,8 @@ const Commentary = (props) => {
     useEffect(() => {
         if (isEmpty(propsData) && !isEmpty(props.data)) {
             setPropsData(props.data)
-            setIsWheelShow(props?.data?.commentaryData?.commentaryDetails?.isWheelShow)
+            setIsWheelShow(props?.data?.commentaryData?.commentaryDetails?.isWheelShow);
+            setIsShotType(props?.data?.commentaryData?.commentaryDetails?.shotType);
             setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
@@ -1925,6 +1927,33 @@ const Commentary = (props) => {
           })
           .then((response) => {
             setIsWheelShow(value);
+            dispatch(
+              updateToastData({
+                data: response?.message,
+                title: response?.title,
+                type: SUCCESS,
+              })
+            );
+          })
+          .catch((error) => {
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+    };
+
+    const handleShotTypeToggle = async (value) => {
+        await axiosInstance
+          .post(`/admin/commentary/upShotType`, {
+            commentaryId: cricketFieldData?.commentaryId,
+            shotType: value,
+          })
+          .then((response) => {
+            setIsShotType(value);
             dispatch(
               updateToastData({
                 data: response?.message,
@@ -2126,7 +2155,8 @@ const Commentary = (props) => {
         <CricketFieldModal
           cricketFieldData={cricketFieldData}
           shotTypes={propsData?.commentaryData?.shotTypes}
-          isShotTypeCheck={commentaryDetails?.shotType}
+          isShotType={isShotType}
+          handleShotTypeToggle={handleShotTypeToggle}
           isOpen={showCricketFieldModal}
           toggle={() => {
             setShowCricketFieldModal(undefined);
