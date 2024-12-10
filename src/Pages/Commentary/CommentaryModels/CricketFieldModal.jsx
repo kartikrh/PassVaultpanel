@@ -8,9 +8,8 @@ import { useDispatch } from "react-redux";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../../components/Common/Const";
 
-const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotTypeCheck, isOpen, toggle }) => {
+const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShotTypeToggle, isOpen, toggle }) => {
   const [line, setLine] = useState(null);
-  const [isShotType, setIsShotType] = useState(isShotTypeCheck);
   const [selectedShotType, setSelectedShotType] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const dispatch = useDispatch();
@@ -87,33 +86,6 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotTypeCheck, isOpe
       const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter} hit towards ${shot.name} ${line?.position} with ${line?.runs} runs`;
       handleWagonWheelCoords(line?.endX, line?.endY, remark, shot?.name);
     }
-  };
-
-  const handleShotTypeToggle = async (value) => {
-    await axiosInstance
-      .post(`/admin/commentary/upShotType`, {
-        commentaryId: cricketFieldData?.commentaryId,
-        shotType: value,
-      })
-      .then((response) => {
-        setIsShotType(value);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
   };
 
   return (
