@@ -31,7 +31,6 @@ import CricketFieldModal from "./CommentaryModels/CricketFieldModal.jsx"
 const Commentary = (props) => {
     const dispatch = useDispatch();
     const [propsData, setPropsData] = useState(undefined)
-    const [shotTypes, setShotTypes] = useState(undefined)
     const [commentaryDetails, setCommentaryDetails] = useState(undefined)
     const [matchTypeDetails, setMatchTypeDetails] = useState(undefined)
     const [isLastInnigs, setIsLastInnings] = useState(undefined)
@@ -1811,7 +1810,6 @@ const Commentary = (props) => {
     useEffect(() => {
         if (isEmpty(propsData) && !isEmpty(props.data)) {
             setPropsData(props.data)
-            setShotTypes(props?.shotTypes)
             setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
@@ -1842,7 +1840,7 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                if(commentaryDetails?.isWheelShow && commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
                     setShowCricketFieldModal(true);
                     setCricketFieldData({commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName});
                 }
@@ -2085,7 +2083,8 @@ const Commentary = (props) => {
         {showCricketFieldModal && (
         <CricketFieldModal
           cricketFieldData={cricketFieldData}
-          shotTypes={shotTypes}
+          shotTypes={propsData?.commentaryData?.shotTypes}
+          isShotType={commentaryDetails?.shotType}
           isOpen={showCricketFieldModal}
           toggle={() => {
             setShowCricketFieldModal(undefined);
