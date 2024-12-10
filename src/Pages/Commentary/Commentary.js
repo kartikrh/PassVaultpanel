@@ -122,6 +122,7 @@ const Commentary = (props) => {
         }
     };
 
+
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
     }, [currentOver.ballCount, showCricketFieldModal]);
@@ -1631,20 +1632,18 @@ const Commentary = (props) => {
         let overHistoryData = overData.overId ? [overData] : overData
         overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
         const partnershipData = propsData.commentaryData.commentaryPartnership || []
-        console.log("...partnershipFromApi", [partnershipFromApi])
         let currentBallToUpdate = currentBall.commentaryBallByBallId ? currentBall : _.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined
         let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] :!isEmpty(partnershipData)
-            ? [
-                ...partnershipData.filter(
-                    obj => obj.batter1Id !== partnershipFromApi.batter1Id ||
-                        obj.batter2Id !== partnershipFromApi.batter2Id
-                ),
-                { ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }
-            ]
-            : partnershipData;
+        ? [
+            ...partnershipData.filter(
+                obj => obj.batter1Id !== partnershipFromApi.batter1Id ||
+                    obj.batter2Id !== partnershipFromApi.batter2Id
+            ),
+            { ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }
+        ]
+        : partnershipData;
         // let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : !isEmpty(partnershipData) ?
         //     [{ ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }] : partnershipData
-        // console.log("partnershipHistoryData initial data", partnershipHistoryData)
         partnershipHistoryData = _.orderBy(partnershipHistoryData, ["commentaryPartnershipId"], ["asc"])
         const partnershipDetails = {
             "batter1Id": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
@@ -1828,7 +1827,6 @@ const Commentary = (props) => {
         }
         props.saveUserInfo()
     }, [])
-
     useEffect(() => {
         if (!isEmpty(propsData)) {
             initialDataLoad()
@@ -1854,9 +1852,9 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                if(isWheelShow && commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
                     setShowCricketFieldModal(true);
-                    setCricketFieldData({commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName});
+                    setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
                 }
                 if (!currentPartnership.commentaryBallByBallId || (+currentPartnership.commentaryBallByBallId === 0))
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
@@ -1987,7 +1985,7 @@ const Commentary = (props) => {
             isWheelShow={isWheelShow}
         />
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
-            winnerAnnouncement || showUpdateInnings || completeMatchModal) &&
+            winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={isWicketChange ? false : () => {
                     setChangePlayerList(undefined)
@@ -2127,7 +2125,8 @@ const Commentary = (props) => {
         {showCricketFieldModal && (
         <CricketFieldModal
           cricketFieldData={cricketFieldData}
-          shotTypes={shotTypes}
+          shotTypes={propsData?.commentaryData?.shotTypes}
+          isShotTypeCheck={commentaryDetails?.shotType}
           isOpen={showCricketFieldModal}
           toggle={() => {
             setShowCricketFieldModal(undefined);
