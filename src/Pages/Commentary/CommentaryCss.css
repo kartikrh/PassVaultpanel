@@ -996,4 +996,5 @@
     top: 0;
     left: 0;
     cursor: crosshair;
+    border-radius: 100%;
 }

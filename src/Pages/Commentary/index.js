@@ -683,64 +683,6 @@ const Index = () => {
       });
   };
 
-  const handleShotType = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/upShotType`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
-  const handleWheelShow = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/upIsWheelShow`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -1045,48 +987,6 @@ const Index = () => {
           >
             <i
               className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Shot Type",
-      key: "shotType",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Shot Type"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.shotType ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleShotType("shotType", record, record?.shotType);
-            }}
-          >
-            <i
-              className={`bx ${record?.shotType ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Wheel",
-      key: "isWheelShow",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Wheel"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isWheelShow ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleWheelShow("isWheelShow", record, record?.isWheelShow);
-            }}
-          >
-            <i
-              className={`bx ${record?.isWheelShow ? "bx-check" : "bx-block"}`}
             ></i>
           </Button>
         </Tooltip>
