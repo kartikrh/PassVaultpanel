@@ -19,7 +19,7 @@ import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx
 import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
 import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
 import OnPitchPlayerModal from "./CommentaryModels/OnPitchPlayerModal.jsx"
-import { BATTING_STATUS, BOWLING_STATUS, STRING_SEPERATOR } from "../../components/Common/Const.js"
+import { BATTING_STATUS, BOWLING_STATUS, ERROR, STRING_SEPERATOR, SUCCESS } from "../../components/Common/Const.js"
 import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
@@ -27,11 +27,11 @@ import SuperOverModal from "./CommentaryModels/SuperOverModal.jsx"
 import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
 import axiosInstance from "../../Features/axios.js"
 import CricketFieldModal from "./CommentaryModels/CricketFieldModal.jsx"
+import { updateToastData } from "../../Features/toasterSlice.js"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
     const [propsData, setPropsData] = useState(undefined)
-    const [shotTypes, setShotTypes] = useState(undefined)
     const [commentaryDetails, setCommentaryDetails] = useState(undefined)
     const [matchTypeDetails, setMatchTypeDetails] = useState(undefined)
     const [isLastInnigs, setIsLastInnings] = useState(undefined)
@@ -85,7 +85,7 @@ const Commentary = (props) => {
     const [isMatchCompleted, setIsMatchCompleted] = useState(undefined)
     const [showCricketFieldModal, setShowCricketFieldModal] = useState(undefined);
     const [cricketFieldData, setCricketFieldData] = useState(null);
-
+    const [isWheelShow, setIsWheelShow] = useState(undefined);
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -124,10 +124,10 @@ const Commentary = (props) => {
 
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
-    }, [currentOver.ballCount]);
+    }, [currentOver.ballCount, showCricketFieldModal]);
 
     const checkForOverSwitch = () => {
-        if (currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6)) {
+        if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && !showCricketFieldModal)) {
             setShowChangeOverModal(true);
         }
     };
@@ -1822,7 +1822,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (isEmpty(propsData) && !isEmpty(props.data)) {
             setPropsData(props.data)
-            setShotTypes(props?.shotTypes)
+            setIsWheelShow(props?.data?.commentaryData?.commentaryDetails?.isWheelShow)
             setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
@@ -1854,9 +1854,9 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-                if (commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun) {
+                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
                     setShowCricketFieldModal(true);
-                    setCricketFieldData({ commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName });
+                    setCricketFieldData({commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName});
                 }
                 if (!currentPartnership.commentaryBallByBallId || (+currentPartnership.commentaryBallByBallId === 0))
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
@@ -1918,6 +1918,34 @@ const Commentary = (props) => {
         }
     }, [currentOver, ballHistory])
     useEffect(() => { if (error) setRetryModel(error) }, [error])
+
+    const handleWheelShowToggle = async (value) => {
+        await axiosInstance
+          .post(`/admin/commentary/upIsWheelShow`, {
+            commentaryId: commentaryDetails.commentaryId,
+            isWheelShow: value,
+          })
+          .then((response) => {
+            setIsWheelShow(value);
+            dispatch(
+              updateToastData({
+                data: response?.message,
+                title: response?.title,
+                type: SUCCESS,
+              })
+            );
+          })
+          .catch((error) => {
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+    };
+    
     return <>
         <CommentaryScreen
             commentaryId={commentaryDetails?.commentaryId}
@@ -1955,6 +1983,8 @@ const Commentary = (props) => {
                 || superOverModal || showRretiredHurt || isPaneltyPopup
                 || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
                 || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
+            handleWheelShowToggle={handleWheelShowToggle}
+            isWheelShow={isWheelShow}
         />
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal) &&
@@ -2095,15 +2125,15 @@ const Commentary = (props) => {
         }
         {retryModel && <RetryModel errorMsg={retryModel} />}
         {showCricketFieldModal && (
-            <CricketFieldModal
-                cricketFieldData={cricketFieldData}
-                shotTypes={shotTypes}
-                isOpen={showCricketFieldModal}
-                toggle={() => {
-                    setShowCricketFieldModal(undefined);
-                }}
-            />
-        )}
+        <CricketFieldModal
+          cricketFieldData={cricketFieldData}
+          shotTypes={shotTypes}
+          isOpen={showCricketFieldModal}
+          toggle={() => {
+            setShowCricketFieldModal(undefined);
+          }}
+        />
+      )}
     </>
 }
 

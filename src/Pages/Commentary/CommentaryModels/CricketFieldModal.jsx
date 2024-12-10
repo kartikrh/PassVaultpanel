@@ -4,13 +4,17 @@ import "../CommentaryCss.css";
 import CricketField from "../../../components/CricketField/CricketField";
 import axiosInstance from "../../../Features/axios";
 import Switch from "react-switch";
+import { useDispatch } from "react-redux";
+import { updateToastData } from "../../../Features/toasterSlice";
+import { ERROR, SUCCESS } from "../../../components/Common/Const";
 
-const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
+const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotTypeCheck, isOpen, toggle }) => {
   const [line, setLine] = useState(null);
-  const [isShotType, setIsShotType] = useState(true);
+  const [isShotType, setIsShotType] = useState(isShotTypeCheck);
   const [selectedShotType, setSelectedShotType] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
-
+  const dispatch = useDispatch();
+  
   const OffsymbolStatus = () => {
     return (
       <div
@@ -84,6 +88,34 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
       handleWagonWheelCoords(line?.endX, line?.endY, remark, shot?.name);
     }
   };
+
+  const handleShotTypeToggle = async (value) => {
+    await axiosInstance
+      .post(`/admin/commentary/upShotType`, {
+        commentaryId: cricketFieldData?.commentaryId,
+        shotType: value,
+      })
+      .then((response) => {
+        setIsShotType(value);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   return (
     <Modal
       backdrop="static"
@@ -94,6 +126,9 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
       size="lg"
     >
       <ModalHeader toggle={toggle} className="d-flex align-items-center">
+        <span className="mx-2 text-center">Ball : {cricketFieldData?.overCount}  {cricketFieldData?.bowler}  to {cricketFieldData?.batter}</span>
+      </ModalHeader>
+      <ModalBody>
         <Switch
           width={70}
           uncheckedIcon={<OffsymbolStatus />}
@@ -101,13 +136,11 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
           className="pe-0"
           onColor="#02a499"
           onChange={() => {
-            setIsShotType(!isShotType);
+            handleShotTypeToggle(!isShotType)
           }}
           checked={isShotType}
         />
-        <span className="mx-2 text-center">Cricket Field</span>
-      </ModalHeader>
-      <ModalBody className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center">
         {currentStep === 2 && isShotType ? (
           <div className="shot-types-container d-flex flex-wrap w-100">
             {shotTypes.map((shot) => (
@@ -140,6 +173,7 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
             setLine={setLine}
           />
         )}
+        </div>
       </ModalBody>
       <ModalFooter>
         {currentStep === 2 && (

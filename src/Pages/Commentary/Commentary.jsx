@@ -4,12 +4,51 @@ import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, ON_STRIKE } from "./CommentartConst"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./CommentaryRightPanel"
+import Switch from "react-switch";
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId }) => {
+    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow }) => {
     const [actionPopup, setActionPopup] = useState(undefined)
+
+    const OffsymbolStatus = () => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              fontSize: 10,
+              color: "#fff",
+              // paddingRight: 2,
+            }}
+          >
+            {" "}
+            wheel
+          </div>
+        );
+    };
+    const OnSymbolStatus = () => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              fontSize: 10,
+              color: "#fff",
+              // paddingRight: 4,
+            }}
+          >
+            {" "}
+            wheel
+          </div>
+        );
+    }; 
+
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
@@ -221,6 +260,19 @@ export const CommentaryScreen = ({
                         onClick={onWicketClick}>
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>
+                </Row>
+                <Row className="py-2">
+                <Switch
+                   width={70}
+                   uncheckedIcon={<OffsymbolStatus />}
+                   checkedIcon={<OnSymbolStatus />}
+                   className="pe-0"
+                   onColor="#02a499"
+                   onChange={() => {
+                    handleWheelShowToggle(!isWheelShow);
+                   }}
+                   checked={isWheelShow}
+                />
                 </Row>
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
