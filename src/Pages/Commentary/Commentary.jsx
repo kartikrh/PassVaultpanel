@@ -73,6 +73,14 @@ export const CommentaryScreen = ({
             }
         )
     }
+
+    let filteredPartnerships = partnerships
+        .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null)  // Remove null values
+        .filter((value, index, self) =>  // Remove duplicates
+            index === self.findIndex((t) => (
+                t.batter1Id === value.batter1Id && t.batter2Id === value.batter2Id
+            ))
+        );
     useEffect(() => {
         if (anyPopup || actionPopup) window.removeEventListener('keydown', handleKeyPress);
         else { window.addEventListener('keydown', handleKeyPress); }
@@ -226,7 +234,7 @@ export const CommentaryScreen = ({
                 <CommentaryRightPanel
                     overBalls={overBalls}
                     onPitchPlayers={onPitchPlayers}
-                    partnerships={partnerships}
+                    partnerships={filteredPartnerships}
                 />
             </Col>
         </Row >
