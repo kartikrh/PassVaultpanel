@@ -883,7 +883,7 @@
     border-bottom: 2px solid #0056b3;
 }
 
-.partnership-card {
+.first-card {
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -891,7 +891,7 @@
     background: white;
 }
 
-.partnership-card-header {
+.first-card-header {
     background: #f8f9fa;
     padding: 1rem;
     font-weight: bold;
@@ -899,57 +899,117 @@
     text-align: center;
 }
 
-.partnership-card-body {
+.first-card-body {
     padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.player-section {
+.remaining-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.remaining-card-header {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    /* font-weight: bold; */
+    font-size: 0.7rem;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.remaining-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.first-card-player-section {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+}
+.remaining-card-player-section {
     flex: 1;
     text-align: center;
     padding: 0.5rem;
 }
 
-.player-image {
+.first-player-image {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     margin-bottom: 0.5rem;
     object-fit: cover;
 }
-
-.player-name {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
+.remaining-player-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+    object-fit: cover;
 }
 
-.player-stats {
+.fisrt-player-name {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    
+}
+.remaining-player-name {
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+}
+
+.first-player-stats {
     color: #666;
     font-size: 0.9rem;
 }
+.remaining-player-stats {
+    color: #666;
+    font-size: 0.7rem;
+}
 
-.partnership-stats {
+.first-partnership-stats {
     flex: 1;
     text-align: center;
     padding: 0 1rem;
 }
+.remaining-partnership-stats {
+    flex: 1;
+    text-align: center;
+}
 
-.total-runs {
+.first-total-runs {
     font-size: 1.5rem;
     font-weight: bold;
     color: #0056b3;
 }
+.remaining-total-runs {
+    font-weight: bold;
+    color: #0056b3;
+}
 
-.total-balls {
+.first-total-balls {
     color: #666;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
+.remaining-total-balls {
+    color: #666;
+    font-size: 0.7rem;
+}
 
-.partnership-extras {
+.first-partnership-extras {
     font-size: 0.8rem;
+    color: #888;
+}
+.remaining-partnership-extras {
+    font-size: 0.6rem;
     color: #888;
 }
 
@@ -996,4 +1056,5 @@
     top: 0;
     left: 0;
     cursor: crosshair;
+    border-radius: 100%;
 }

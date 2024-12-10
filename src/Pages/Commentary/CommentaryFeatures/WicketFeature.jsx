@@ -14,7 +14,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
     return <Card>
         <CardHeader className="feature-card-header">
             Wickets
-            <div className="section-info">[Wicket Type]</div>
+            <div className="section-info">[Wicket Type - Bowler ]</div>
         </CardHeader>
         <CardBody>
             <Row>
