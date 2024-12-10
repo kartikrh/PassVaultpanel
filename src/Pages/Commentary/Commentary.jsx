@@ -14,40 +14,40 @@ export const CommentaryScreen = ({
 
     const OffsymbolStatus = () => {
         return (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              fontSize: 10,
-              color: "#fff",
-              // paddingRight: 2,
-            }}
-          >
-            {" "}
-            wheel
-          </div>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 2,
+                }}
+            >
+                {" "}
+                wheel
+            </div>
         );
     };
     const OnSymbolStatus = () => {
         return (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              fontSize: 10,
-              color: "#fff",
-              // paddingRight: 4,
-            }}
-          >
-            {" "}
-            wheel
-          </div>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 4,
+                }}
+            >
+                {" "}
+                wheel
+            </div>
         );
-    }; 
+    };
 
     const handleKeyPress = (event) => {
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
@@ -114,12 +114,14 @@ export const CommentaryScreen = ({
     }
 
     let filteredPartnerships = partnerships
-        .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null)  // Remove null values
-        .filter((value, index, self) =>  // Remove duplicates
+        .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null)
+        .filter((value, index, self) =>
             index === self.findIndex((t) => (
                 t.batter1Id === value.batter1Id && t.batter2Id === value.batter2Id
             ))
-        );
+        )
+        .reverse();
+
     useEffect(() => {
         if (anyPopup || actionPopup) window.removeEventListener('keydown', handleKeyPress);
         else { window.addEventListener('keydown', handleKeyPress); }
@@ -262,17 +264,17 @@ export const CommentaryScreen = ({
                     </Col>
                 </Row>
                 <Row className="py-2">
-                <Switch
-                   width={70}
-                   uncheckedIcon={<OffsymbolStatus />}
-                   checkedIcon={<OnSymbolStatus />}
-                   className="pe-0"
-                   onColor="#02a499"
-                   onChange={() => {
-                    handleWheelShowToggle(!isWheelShow);
-                   }}
-                   checked={isWheelShow}
-                />
+                    <Switch
+                        width={70}
+                        uncheckedIcon={<OffsymbolStatus />}
+                        checkedIcon={<OnSymbolStatus />}
+                        className="pe-0"
+                        onColor="#02a499"
+                        onChange={() => {
+                            handleWheelShowToggle(!isWheelShow);
+                        }}
+                        checked={isWheelShow}
+                    />
                 </Row>
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
