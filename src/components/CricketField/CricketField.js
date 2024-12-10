@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const CricketField = ({ runs, boundary, line, setLine }) => {
   const [drawingLine, setDrawingLine] = useState(null);
+  const [hoverPosition, setHoverPosition] = useState(null);
   const fieldCenter = { x: 0, y: 0 };
   
   const fieldingPositions = {
@@ -79,11 +80,17 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
   };
 
   const handleMouseMove = (e) => {
-    if (!drawingLine) return;
     const { offsetX, offsetY } = e.nativeEvent;
     const relativeX = offsetX - 200 || 0;
     const relativeY = offsetY - 180 || 0;
-    setDrawingLine({ ...drawingLine, endX: relativeX, endY: relativeY });
+    setHoverPosition({ x: relativeX, y: relativeY });
+
+    if (drawingLine) {
+      const { offsetX, offsetY } = e.nativeEvent;
+      const relativeX = offsetX - 200 || 0;
+      const relativeY = offsetY - 180 || 0;
+      setDrawingLine({ ...drawingLine, endX: relativeX, endY: relativeY });
+    }
   };
 
   const handleMouseUp = () => {
@@ -165,9 +172,23 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
             y1={drawingLine.startY + 180}
             x2={drawingLine.endX + 200}
             y2={drawingLine.endY + 180}
-            stroke="gray"
+            // stroke="gray"
+            // strokeWidth="1"
+            // strokeDasharray="5,5"
+            // strokeLinecap="round"
+          />
+        )}
+
+        {hoverPosition && (
+          <line
+            x1={fieldCenter.x + 200}
+            y1={fieldCenter.y + 180}
+            x2={hoverPosition.x + 200}
+            y2={hoverPosition.y + 180}
+            stroke="darkred"
             strokeWidth="1"
             strokeDasharray="5,5"
+            strokeLinecap="round"
           />
         )}
       </svg>
