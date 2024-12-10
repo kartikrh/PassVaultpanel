@@ -600,7 +600,7 @@ export const BALL_FEATURE_FIELDS = [
         formName: BALL,
         type: COUNTER,
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "ballExtraRun",
@@ -625,6 +625,18 @@ export const BALL_FEATURE_FIELDS = [
         type: COUNTER,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 1, lg: 1 },
+    },
+    {
+        name: "ballIsDot",
+        formName: BALL,
+        type: SWITCH,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "isDelete",
+        formName: BALL,
+        type: SWITCH,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
 ]
 
@@ -841,7 +853,14 @@ export const WICKET_FEATURE_FIELD = [
         defaultValue: 1,
         options: WICKET_TYPE_LIST,
         fieldColspan: { xs: 3, md: 4, lg: 3 },
-    }
+    },
+    {
+        name: "bowlerName",
+        placeholder: "Bowler",
+        formName: WICKET,
+        type: TEXT,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
 ]
 
 export const PARTNERSHIP_FEATURE_FIELD = [
@@ -856,6 +875,38 @@ export const PARTNERSHIP_FEATURE_FIELD = [
     {
         name: "totalBalls",
         placeholder: "Balls",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "totalFour",
+        placeholder: "4s",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "totalSix",
+        placeholder: "6s",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "totalWide",
+        placeholder: "Wide",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "totalNoBall",
+        placeholder: "No-Ball",
         formName: PARTNERSHIP,
         type: COUNTER,
         className: "no-spinners",
@@ -877,6 +928,7 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Name",
         formName: PLAYER,
         type: TEXT,
+        isDisable: true,
         fieldColspan: { xs: 4, md: 3, lg: 2 },
     },
     {
@@ -884,7 +936,6 @@ export const PLAYER_FEATURE_FIELD = [
         placeholder: "Run",
         formName: PLAYER,
         type: COUNTER,
-        className: "no-spinners",
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -947,6 +998,22 @@ export const PLAYER_FEATURE_FIELD = [
     {
         name: "bowlerTotalWicket",
         placeholder: "Wickets",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "batterOrder",
+        placeholder: "B-Order",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "bowlerOrder",
+        placeholder: "Bo-Order",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",

@@ -15,7 +15,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
     return <Card>
         <CardHeader className="feature-card-header">
             Balls
-            <div className="section-info">[O-count - O-Ball - Run - Extra - 4 - 6]</div>
+            <div className="section-info">[O-count - O-Ball - Run - Extra - 4 - 6 - IsDot - isDelete]</div>
         </CardHeader>
         <CardBody>
             <Row>

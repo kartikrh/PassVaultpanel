@@ -14,7 +14,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
     return <Card>
         <CardHeader className="feature-card-header">
             Partnerships
-            <div className="section-info">[Runs - Ball - Extras]</div>
+            <div className="section-info">[Runs - Ball - 4s - 6s - Wide - No-Ball - Extras]</div>
         </CardHeader>
         <CardBody>
             <Row>
@@ -23,10 +23,10 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
 
                     const renderPartnership = <Row>
                         <hr />
-                        <Col xs={12} md={6} lg={6}>
+                        <Col xs={12} md={4} lg={4}>
                             <div className="header-section">{`${partnershipInfo.batter1Name} and ${partnershipInfo.batter2Name} : `}</div>
                         </Col>
-                        <Col xs={12} md={6} lg={6}>
+                        <Col xs={12} md={8} lg={8}>
                             <Row>
                                 <FieldRenderer
                                     key={index}
