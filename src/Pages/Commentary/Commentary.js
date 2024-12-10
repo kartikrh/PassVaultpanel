@@ -1634,8 +1634,17 @@ const Commentary = (props) => {
         overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
         const partnershipData = propsData.commentaryData.commentaryPartnership || []
         let currentBallToUpdate = currentBall.commentaryBallByBallId ? currentBall : _.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined
-        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : !isEmpty(partnershipData) ?
-            [{ ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }] : partnershipData
+        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] :!isEmpty(partnershipData)
+        ? [
+            ...partnershipData.filter(
+                obj => obj.batter1Id !== partnershipFromApi.batter1Id ||
+                    obj.batter2Id !== partnershipFromApi.batter2Id
+            ),
+            { ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }
+        ]
+        : partnershipData;
+        // let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : !isEmpty(partnershipData) ?
+        //     [{ ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }] : partnershipData
         partnershipHistoryData = _.orderBy(partnershipHistoryData, ["commentaryPartnershipId"], ["asc"])
         const partnershipDetails = {
             "batter1Id": onPitchPlayers[ON_STRIKE]?.commentaryPlayerId,
@@ -2007,7 +2016,7 @@ const Commentary = (props) => {
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
-                toggle={() => {
+                toggle={isWicketChange ? false : () => {
                     setChangePlayerList(undefined)
                     setIsSwapPlayer(undefined)
                     setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })

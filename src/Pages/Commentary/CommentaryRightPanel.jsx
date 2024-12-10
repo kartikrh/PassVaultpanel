@@ -53,46 +53,57 @@ const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
     }
 
     const renderPartnerships = () => {
-        return partnerships.map((partnership, index) => (
-            <div key={`partnership-${index}`} className="partnership-card mb-3">
-                <div className="partnership-card-header">
-                    {partnership.batter1Name} & {partnership.batter2Name} Partnership
+        console.log(`renderPartnerships`, renderPartnerships)
+        return partnerships.map((partnership, index) => {
+            console.log(`Player 1: ${partnership.batter1Name}, Image: ${partnership.player1image}`);
+            console.log(`Player 2: ${partnership.batter2Name}, Image: ${partnership.player2image}`);
+
+            return (
+                <div
+                    key={`partnership-${index}`}
+                    className={`mb-3 ${index === 0 ? 'first-card' : 'remaining-card'}`}
+                >
+                    <div className={`${index === 0 ? 'first-card-header' : 'remaining-card-header'}`}>
+                        {partnership.batter1Name} & {partnership.batter2Name} Partnership
+                    </div>
+                    <div className={`${index === 0 ? 'first-card-body' : 'remaining-card-body'}`}>
+                        {/* className="player-section left-player" */}
+                        <div className={`${index === 0 ? 'first-card-player-section  left-player' : 'remaining-card-player-section left-player'}`}>
+                            <img
+                                src={partnership.player1image}
+                                alt={partnership.batter1Name}
+                                // className="player-image"
+                                className={`${index === 0 ? 'first-player-image' : 'remaining-player-image'}`}
+                                onError={(e) => e.target.src = 'icons/default-player.png'}
+                            />
+                            <div className={`${index === 0 ? 'first-player-name' : 'remaining-player-name'}`}>{partnership.batter1Name}</div>
+                            <div className={`${index === 0 ? 'first-player-stats' : 'remaining-player-stats'}`}>
+                                {partnership.p1Run || 0}({partnership.p1Ball || 0})
+                            </div>
+                        </div>
+                        <div className={`${index === 0 ? 'first-partnership-stats' : 'remaining-partnership-stats'}`}>
+                            <div className={`${index === 0 ? 'first-total-runs' : 'remaining-total-runs'}`}>{partnership.totalRuns}</div>
+                            <div className={`${index === 0 ? 'first-total-balls' : 'remaining-total-balls'}`}>({partnership.totalBalls} balls)</div>
+                            <div className={`${index === 0 ? 'first-partnership-extras' : 'remaining-partnership-extras'}`}>
+                                Extras: {partnership.extras || 0}
+                            </div>
+                        </div>
+                        <div className={`right-player ${index === 0 ? 'first-card-player-section  left-player' : 'remaining-card-player-section left-player'}`}>
+                            <img
+                                src={partnership.player2image}
+                                alt={partnership.batter2Name}
+                                className={`${index === 0 ? 'first-player-image' : 'remaining-player-image'}`}
+                                onError={(e) => e.target.src = 'icons/default-player.png'}
+                            />
+                            <div className={`${index === 0 ? 'first-player-name' : 'remaining-player-name'}`}>{partnership.batter2Name}</div>
+                            <div className={`${index === 0 ? 'first-player-stats' : 'remaining-player-stats'}`}>
+                                {partnership.p2Run || 0}({partnership.p2Ball || 0})
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="partnership-card-body">
-                    <div className="player-section left-player">
-                        <img
-                            src={partnership.player1image}
-                            alt={partnership.batter1Name}
-                            className="player-image"
-                            onError={(e) => e.target.src = 'icons/default-player.png'}
-                        />
-                        <div className="player-name">{partnership.batter1Name}</div>
-                        <div className="player-stats">
-                            {partnership.p1Run || 0}({partnership.p1Ball || 0})
-                        </div>
-                    </div>
-                    <div className="partnership-stats">
-                        <div className="total-runs">{partnership.totalRuns}</div>
-                        <div className="total-balls">({partnership.totalBalls} balls)</div>
-                        <div className="partnership-extras">
-                            Extras: {partnership.extras || 0}
-                        </div>
-                    </div>
-                    <div className="player-section right-player">
-                        <img
-                            src={partnership.player2image}
-                            alt={partnership.batter2Name}
-                            className="player-image"
-                            onError={(e) => e.target.src = 'icons/default-player.png'}
-                        />
-                        <div className="player-name">{partnership.batter2Name}</div>
-                        <div className="player-stats">
-                            {partnership.p2Run || 0}({partnership.p2Ball || 0})
-                        </div>
-                    </div>
-                </div>
-            </div>
-        ));
+            )
+        });
     };
 
     return (
