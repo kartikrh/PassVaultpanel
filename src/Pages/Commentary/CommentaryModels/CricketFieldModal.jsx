@@ -5,48 +5,48 @@ import CricketField from "../../../components/CricketField/CricketField";
 import axiosInstance from "../../../Features/axios";
 import Switch from "react-switch";
 
-const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
+const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, isOpen, toggle }) => {
   const [line, setLine] = useState(null);
-  const [isShotType, setIsShotType] = useState(true);
+  // const [isShotType, setIsShotType] = useState(true);
   const [selectedShotType, setSelectedShotType] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
 
-  const OffsymbolStatus = () => {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-          fontSize: 10,
-          color: "#fff",
-          // paddingRight: 2,
-        }}
-      >
-        {" "}
-        shotType
-      </div>
-    );
-  };
-  const OnSymbolStatus = () => {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-          fontSize: 10,
-          color: "#fff",
-          // paddingRight: 4,
-        }}
-      >
-        {" "}
-        shotType
-      </div>
-    );
-  };
+  // const OffsymbolStatus = () => {
+  //   return (
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         height: "100%",
+  //         fontSize: 10,
+  //         color: "#fff",
+  //         // paddingRight: 2,
+  //       }}
+  //     >
+  //       {" "}
+  //       shotType
+  //     </div>
+  //   );
+  // };
+  // const OnSymbolStatus = () => {
+  //   return (
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         height: "100%",
+  //         fontSize: 10,
+  //         color: "#fff",
+  //         // paddingRight: 4,
+  //       }}
+  //     >
+  //       {" "}
+  //       shotType
+  //     </div>
+  //   );
+  // };
   const handleWagonWheelCoords = async (
     endX,
     endY,
@@ -94,7 +94,7 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
       size="lg"
     >
       <ModalHeader toggle={toggle} className="d-flex align-items-center">
-        <Switch
+        {/* <Switch
           width={70}
           uncheckedIcon={<OffsymbolStatus />}
           checkedIcon={<OnSymbolStatus />}
@@ -104,7 +104,7 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isOpen, toggle }) => {
             setIsShotType(!isShotType);
           }}
           checked={isShotType}
-        />
+        /> */}
         <span className="mx-2 text-center">Cricket Field</span>
       </ModalHeader>
       <ModalBody className="d-flex justify-content-center">
