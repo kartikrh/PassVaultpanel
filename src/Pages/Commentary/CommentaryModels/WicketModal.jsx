@@ -186,14 +186,14 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                     <div className="wicket-modal-player-stats">
                         <div className="wicket-modal-player-row wicket-modal-header-row">
                             <div className="wicket-modal-player-name">Bowler</div>
-                            <div className="wicket-modal-player-stat">Overs</div>
-                            <div className="wicket-modal-player-stat">Wickets</div>
-                            <div className="wicket-modal-player-stat">Runs</div>
-                            <div className="wicket-modal-player-stat">Economy</div>
-                            <div className="wicket-modal-player-stat">Maidens</div>
+                            <div className="wicket-modal-player-stat">O</div>
+                            <div className="wicket-modal-player-stat">W</div>
+                            <div className="wicket-modal-player-stat">R</div>
+                            <div className="wicket-modal-player-stat">Eco</div>
+                            <div className="wicket-modal-player-stat">M</div>
                             <div className="wicket-modal-player-stat">Wides</div>
-                            <div className="wicket-modal-player-stat">No Balls</div>
-                            <div className="wicket-modal-player-stat">Dot Balls</div>
+                            <div className="wicket-modal-player-stat">No-B</div>
+                            <div className="wicket-modal-player-stat">Dot-B</div>
                         </div>
                         <div className="wicket-modal-player-row">
                             <div className="wicket-modal-player-name">{player.playerName}</div>
@@ -244,14 +244,14 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                 <div className="wicket-modal-player-stats">
                     <div className="wicket-modal-player-row wicket-modal-header-row">
                         <div className="wicket-modal-player-name">Batter</div>
-                        <div className="wicket-modal-player-stat">Runs</div>
-                        <div className="wicket-modal-player-stat">Balls</div>
-                        <div className="wicket-modal-player-stat">Strike Rate</div>
+                        <div className="wicket-modal-player-stat">R</div>
+                        <div className="wicket-modal-player-stat">B</div>
+                        <div className="wicket-modal-player-stat">S R</div>
                         <div className="wicket-modal-player-stat">4s</div>
                         <div className="wicket-modal-player-stat">6s</div>
-                        <div className="wicket-modal-player-stat">Dot Balls</div>
-                        <div className="wicket-modal-player-stat">Extra Runs</div>
-                        <div className="wicket-modal-player-stat">Wicket Type</div>
+                        <div className="wicket-modal-player-stat">Dot-B</div>
+                        <div className="wicket-modal-player-stat">Extras</div>
+                        <div className="wicket-modal-player-stat">Wicket</div>
                     </div>
                     <div className="wicket-modal-player-row">
                         <div className="wicket-modal-player-name">{player.playerName}</div>
@@ -272,7 +272,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     };
 
     return (
-        <Modal backdrop="static" size="xl" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal backdrop="static" size="lg" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader toggle={toggle}>
                 <div className="wicket-modal-header">Wicket</div>
             </ModalHeader>
