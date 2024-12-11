@@ -307,50 +307,6 @@ const Index = () => {
         );
       });
   };
-  const handleMarketTemplate = async (commentaryId, saveTemplates, dltTemplate) => {
-    if (
-      (commentaryId && saveTemplates && saveTemplates?.length > 0) || 
-      (dltTemplate && dltTemplate?.length > 0)
-    ) {
-      try {
-        const response = await axiosInstance.post(
-          "/admin/commentary/saveComTemplate",
-          {
-            commentaryId: commentaryId,
-            saveTemplates: saveTemplates,
-            dltTemplate: dltTemplate,
-          }
-        );
-        setMarketTemplateModelVisible(false);
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      } catch (error) {
-        setMarketTemplateModelVisible(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      }
-    } else {
-      dispatch(
-        updateToastData({
-          data: "No records assign for save or delete template.",
-          title: "Commentary Template",
-          type: ERROR,
-        })
-      );
-      return;
-    }
-  };
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
@@ -1608,9 +1564,8 @@ const Index = () => {
             <CommentaryMarketTemplateModel
               marketTemplateModelVisible={marketTemplateModelVisible}
               setMarketTemplateModelVisible={setMarketTemplateModelVisible}
-              handleMarketTemplate={handleMarketTemplate}
               marketTemplateRecord={marketTemplateRecord}
-              setMarketTemplateTimeRecord={setMarketTemplateTimeRecord}
+              fetchData={fetchData}
             />}
         </Container>
       </div>
