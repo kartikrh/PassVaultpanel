@@ -127,17 +127,11 @@ const Commentary = (props) => {
 
 
     useEffect(() => {
-        // console.log("showCricketFieldModal", showCricketFieldModal);
-        // console.log("isWheelShow", isWheelShow);
-        console.log("isWheelShowComplete", isWheelShowComplete);
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
-    }, [currentOver.ballCount, isWheelShowComplete]);
+    }, [currentOver.ballCount, isWheelShowComplete, isWheelShow]);
 
     const checkForOverSwitch = () => {
-        console.log("1");
-        // console.log("currentOver.ballCount", currentOver.ballCount);
-        console.log("currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 )", currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ));
-        if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && !isWheelShowComplete)) {
+        if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && (isWheelShowComplete || !isWheelShow))) {
             setShowChangeOverModal(true);
         }
     };
@@ -1831,7 +1825,6 @@ const Commentary = (props) => {
         if (isEmpty(propsData) && !isEmpty(props.data)) {
             setPropsData(props.data)
             setIsWheelShow(props?.data?.commentaryData?.commentaryDetails?.isWheelShow);
-            setIsWheelShowComplete(props?.data?.commentaryData?.commentaryDetails?.isWheelShow);
             setIsShotType(props?.data?.commentaryData?.commentaryDetails?.shotType);
             setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
@@ -1846,12 +1839,14 @@ const Commentary = (props) => {
     useEffect(() => {
         if (!isEmpty(commentaryDataToUpdate)) {
             // Update Over history on over change
-            // console.log("commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun", commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun);
-            if(isWheelShow && commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
-                console.log("2");
-                setShowCricketFieldModal(true);
-                setIsWheelShowComplete(true);
-                setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
+            setIsWheelShowComplete(false);
+            if(isWheelShow){
+                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                  setShowCricketFieldModal(true);
+                  setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
+                } else if (commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun === 0) {
+                  setIsWheelShowComplete(true);
+                }
             }
             if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
                 const updatedOverHistory = overHistory.slice(0, -1)
@@ -1939,7 +1934,6 @@ const Commentary = (props) => {
           })
           .then((response) => {
             setIsWheelShow(value);
-            setIsWheelShowComplete(value);
             dispatch(
               updateToastData({
                 data: response?.message,
@@ -2173,7 +2167,7 @@ const Commentary = (props) => {
           isOpen={showCricketFieldModal}
           toggle={() => {
             setShowCricketFieldModal(undefined);
-            setIsWheelShowComplete(undefined);
+            setIsWheelShowComplete(true);
           }}
         />
       )}
