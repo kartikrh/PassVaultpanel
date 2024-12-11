@@ -14,7 +14,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData }) =>
     return <Card>
         <CardHeader className="feature-card-header">
             Players
-            <div className="section-info">[Bat-R - Bat-B - 4s - 6s - Ball-O - Ball-B - Ball-R - Ball-M - Ball-W - isPlay - onStrike]</div>
+            <div className="section-info">[Bat-R - Bat-B - 4s - 6s - Ball-O - Ball-B - Ball-R - Ball-M - Ball-W - isPlay - B-Order - Ball-Order - onStrike]</div>
         </CardHeader>
         <CardBody>
             <Row>

@@ -32,6 +32,7 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     style={field?.customStyle}
                     placeholder={field?.placeholder}
                     type="text"
+                    disabled={field.isDisable}
                     id={field.name}
                     name={field.name}
                     value={value[field.name] || field.defaultValue}
