@@ -73,7 +73,6 @@ export const PlayerFields = [
         name: "playerTypeId",
         label: "Player Type",
         options: [{ label: "Select a Player Type", value: "0" }],
-        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -82,7 +81,6 @@ export const PlayerFields = [
         name: "bowlingTypeId",
         label: "Bowling Style",
         options: [{ label: "Select a Bowling Style", value: "0" }],
-        isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
