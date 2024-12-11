@@ -5,15 +5,14 @@ import axiosInstance from "../../../Features/axios";
 import { Button } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { updateToastData } from "../../../Features/toasterSlice";
-import { ERROR } from "../../Common/Const";
+import { ERROR, SUCCESS } from "../../Common/Const";
 import SpinnerModel from "../../../components/Model/SpinnerModel";
 
 const Index = ({
   marketTemplateModelVisible,
   setMarketTemplateModelVisible,
-  handleMarketTemplate,
   marketTemplateRecord,
-  setMarketTemplateTimeRecord,
+  fetchData,
 }) => {
   const [assignedMarket, setAssignedMarket] = useState([]);
   const [unassignedMarket, setUnassignedMarket] = useState([]);
@@ -53,6 +52,60 @@ const Index = ({
     }
   }, []);
 
+  const resetState = () => {
+    setAssignedMarket([]);
+    setUnassignedMarket([]);
+    setDltTemplate([]);
+    setSaveTemplates([]);
+  };
+
+  const handleMarketTemplate = async (commentaryId, saveTemplates, dltTemplate) => {
+    if (
+      (commentaryId && saveTemplates && saveTemplates?.length > 0) || 
+      (dltTemplate && dltTemplate?.length > 0)
+    ) {
+      try {
+        const response = await axiosInstance.post(
+          "/admin/commentary/saveComTemplate",
+          {
+            commentaryId: commentaryId,
+            saveTemplates: saveTemplates,
+            dltTemplate: dltTemplate,
+          }
+        );
+        setMarketTemplateModelVisible(false);
+        resetState()
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      } catch (error) {
+        setMarketTemplateModelVisible(false);
+        resetState()
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      }
+    } else {
+      dispatch(
+        updateToastData({
+          data: "No records assign for save or delete template.",
+          title: "Commentary Template",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+  };
+
   const handleAssign = (template) => {
     setUnassignedMarket((prevUnassigned) =>
       prevUnassigned.filter(
@@ -66,6 +119,7 @@ const Index = ({
       {
         commentaryId: marketTemplateRecord?.commentaryId,
         marketTemplateId: template.marketTemplateId,
+        id: 0,
       },
     ]);
   };
@@ -74,6 +128,11 @@ const Index = ({
     if (template.id === 0) {
       setUnassignedMarket((prevUnassigned) => [...prevUnassigned, template]);
       setAssignedMarket((prevAssigned) =>
+        prevAssigned.filter(
+          (item) => item.marketTemplateId !== template.marketTemplateId
+        )
+      );
+      setSaveTemplates((prevAssigned) =>
         prevAssigned.filter(
           (item) => item.marketTemplateId !== template.marketTemplateId
         )
@@ -108,6 +167,7 @@ const Index = ({
     const newSaveTemplates = unassignedMarket.map((template) => ({
       commentaryId: marketTemplateRecord?.commentaryId,
       marketTemplateId: template.marketTemplateId,
+      id: 0,
     }));
     setSaveTemplates((prevSaveTemplates) => [
       ...prevSaveTemplates,
@@ -145,6 +205,7 @@ const Index = ({
         .map((template) => template.id),
     ]);
     setAssignedMarket([]);
+    setSaveTemplates([]);
   };
 
   return (
@@ -152,6 +213,7 @@ const Index = ({
       isOpen={marketTemplateModelVisible}
       toggle={() => {
         setMarketTemplateModelVisible(false);
+        resetState();
       }}
       size="lg"
       centered
@@ -161,6 +223,7 @@ const Index = ({
         id="exampleModalLabel"
         toggle={() => {
           setMarketTemplateModelVisible(false);
+          resetState();
         }}
       >
         {marketTemplateRecord?.eventName} (
@@ -259,6 +322,7 @@ const Index = ({
                 className="btn btn-light"
                 onClick={() => {
                   setMarketTemplateModelVisible(false);
+                  resetState();
                 }}
               >
                 Close
