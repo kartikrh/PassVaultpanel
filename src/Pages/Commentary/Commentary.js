@@ -127,10 +127,16 @@ const Commentary = (props) => {
 
 
     useEffect(() => {
+        // console.log("showCricketFieldModal", showCricketFieldModal);
+        // console.log("isWheelShow", isWheelShow);
+        console.log("isWheelShowComplete", isWheelShowComplete);
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
     }, [currentOver.ballCount, isWheelShowComplete]);
 
     const checkForOverSwitch = () => {
+        console.log("1");
+        // console.log("currentOver.ballCount", currentOver.ballCount);
+        console.log("currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 )", currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ));
         if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && !isWheelShowComplete)) {
             setShowChangeOverModal(true);
         }
@@ -1840,7 +1846,9 @@ const Commentary = (props) => {
     useEffect(() => {
         if (!isEmpty(commentaryDataToUpdate)) {
             // Update Over history on over change
+            // console.log("commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun", commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun);
             if(isWheelShow && commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                console.log("2");
                 setShowCricketFieldModal(true);
                 setIsWheelShowComplete(true);
                 setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
