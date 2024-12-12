@@ -34,6 +34,7 @@ const CancelSelectedModel = ({
       .then((response) => {
         fetchData();
         setCancelModelVisable(false);
+        setPassword("");
         dispatch(
           updateToastData({
             data: response?.message,
@@ -58,6 +59,7 @@ const CancelSelectedModel = ({
       isOpen={cancelModelVisable}
       toggle={() => {
         setCancelModelVisable(false);
+        setPassword("");
       }}
       centered
     >
@@ -66,6 +68,7 @@ const CancelSelectedModel = ({
         id="exampleModalLabel"
         toggle={() => {
           setCancelModelVisable(false);
+          setPassword("");
         }}
       >
         Cancel Selected Market
@@ -93,6 +96,7 @@ const CancelSelectedModel = ({
                 className="btn btn-light"
                 onClick={() => {
                   setCancelModelVisable(false);
+                  setPassword("");
                 }}
               >
                 Close
