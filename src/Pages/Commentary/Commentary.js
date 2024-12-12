@@ -759,7 +759,11 @@ const Commentary = (props) => {
         setSelectMissingPlayer(false)
     }
     const handleWicket = (wicketData) => {
-        // if (!wicketData.isExtraWicket) 
+        // if (!wicketData.isExtraWicket)
+        if(isWheelShow){
+          setShowCricketFieldModal(true);
+          setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: currentBall?.commentaryBallByBallId, run: currentBall?.ballRun, isBoundary: currentBall?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: currentBall?.overCount});
+        }
         setCurrentBall({})
         const ballToUpdateOnWicket = (wicketData.isExtraWicket || (wicketData.wicketType === RETIRED_OUT) || (wicketData.wicketType === TIMED_OUT)) ? 0 : 1
         setIsWicketChange(true)
@@ -1841,7 +1845,7 @@ const Commentary = (props) => {
             // Update Over history on over change
             setIsWheelShowComplete(false);
             if(isWheelShow){
-                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun && !showWicketModal){
                   setShowCricketFieldModal(true);
                   setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
                 } else if (commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun === 0) {
@@ -1979,7 +1983,7 @@ const Commentary = (props) => {
             );
           });
     };
-    
+
     return <>
         <CommentaryScreen
             commentaryId={commentaryDetails?.commentaryId}
@@ -2021,7 +2025,7 @@ const Commentary = (props) => {
             isWheelShow={isWheelShow}
         />
         {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
-            winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal) &&
+            winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={isWicketChange ? false : () => {
                     setChangePlayerList(undefined)
