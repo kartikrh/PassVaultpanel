@@ -70,20 +70,22 @@ const Index = () => {
   };
 
   const fetchEventTypeData = async () => {
+    // setIsLoading(true);
     await axiosInstance
       .post(`/admin/player/eventTypeList`, {})
       .then((response) => {
         setEventTypes(response.result);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => { });
   };
   const fetchTeamsData = async () => {
+    // setIsLoading(true);
     await axiosInstance
       .post(`/admin/player/teamList`, {})
       .then((response) => {
         setTeams(response.result);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => { });
   };

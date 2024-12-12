@@ -86,6 +86,8 @@ const Commentary = (props) => {
     const [showCricketFieldModal, setShowCricketFieldModal] = useState(undefined);
     const [cricketFieldData, setCricketFieldData] = useState(null);
     const [isWheelShow, setIsWheelShow] = useState(undefined);
+    const [isWheelShowComplete, setIsWheelShowComplete] = useState(undefined);
+
     const [isShotType, setIsShotType] = useState(undefined);
     const {
         commentaryDataToUpdate,
@@ -126,10 +128,10 @@ const Commentary = (props) => {
 
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
-    }, [currentOver.ballCount, showCricketFieldModal]);
+    }, [currentOver.ballCount, isWheelShowComplete, isWheelShow]);
 
     const checkForOverSwitch = () => {
-        if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && !showCricketFieldModal)) {
+        if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && (isWheelShowComplete || !isWheelShow))) {
             setShowChangeOverModal(true);
         }
     };
@@ -1837,6 +1839,15 @@ const Commentary = (props) => {
     useEffect(() => {
         if (!isEmpty(commentaryDataToUpdate)) {
             // Update Over history on over change
+            setIsWheelShowComplete(false);
+            if(isWheelShow){
+                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
+                  setShowCricketFieldModal(true);
+                  setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
+                } else if (commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun === 0) {
+                  setIsWheelShowComplete(true);
+                }
+            }
             if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
@@ -1854,10 +1865,6 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-                if(isWheelShow && commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun){
-                    setShowCricketFieldModal(true);
-                    setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentartBallByBallIdToUpdate, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
-                }
                 if (!currentPartnership.commentaryBallByBallId || (+currentPartnership.commentaryBallByBallId === 0))
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
@@ -2160,6 +2167,7 @@ const Commentary = (props) => {
           isOpen={showCricketFieldModal}
           toggle={() => {
             setShowCricketFieldModal(undefined);
+            setIsWheelShowComplete(true);
           }}
         />
       )}
