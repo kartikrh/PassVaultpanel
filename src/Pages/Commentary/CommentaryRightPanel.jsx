@@ -53,11 +53,7 @@ const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
     }
 
     const renderPartnerships = () => {
-        console.log(`renderPartnerships`, renderPartnerships)
         return partnerships.map((partnership, index) => {
-            console.log(`Player 1: ${partnership.batter1Name}, Image: ${partnership.player1image}`);
-            console.log(`Player 2: ${partnership.batter2Name}, Image: ${partnership.player2image}`);
-
             return (
                 <div
                     key={`partnership-${index}`}

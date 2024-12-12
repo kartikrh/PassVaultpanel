@@ -247,6 +247,12 @@
     line-height: 26px !important;
     font-size: 12px !important;
 }
+.medium-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 8.5rem !important;
+    line-height: 26px !important;
+    font-size: 12px !important;
+}
 
 .line-text-fields {
     padding: 0 0.3rem !important;
