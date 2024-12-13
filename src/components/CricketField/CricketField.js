@@ -111,7 +111,23 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
       },
       { name: null, distance: Infinity }
     );
-  
+
+    const linePositions = Object.entries(fieldingPositions)
+    .filter(([name, coords]) => {
+      const startToEndDistance = Math.sqrt(
+        Math.pow(endX - drawingLine.startX, 2) + Math.pow(endY - drawingLine.startY, 2)
+      );
+      const startToPosDistance = Math.sqrt(
+        Math.pow(coords.x - drawingLine.startX, 2) + Math.pow(coords.y - drawingLine.startY, 2)
+      );
+      const posToEndDistance = Math.sqrt(
+        Math.pow(endX - coords.x, 2) + Math.pow(endY - coords.y, 2)
+      );
+      // Check if the position is close enough to be considered "on" the line
+      return startToPosDistance + posToEndDistance <= startToEndDistance + 10; // 10 is a threshold to consider a point on the line
+    })
+    .map(([name]) => name);
+
     setLine({
       startX: fieldCenter.x,
       startY: fieldCenter.y,
@@ -120,6 +136,78 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
       position: closestPosition.name,
       runs,
       boundary,
+      passedPositions: linePositions,
+    });
+    setDrawingLine(null);
+  };
+
+  const handleTouchStart = (e) => {
+    const { clientX, clientY } = e.touches[0];
+    const offsetX = clientX - 200; // Adjust to center
+    const offsetY = clientY - 180; // Adjust to center
+    setDrawingLine({
+      startX: fieldCenter.x,
+      startY: fieldCenter.y,
+      endX: offsetX,
+      endY: offsetY,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    const { clientX, clientY } = e.touches[0];
+    const offsetX = clientX - 200; // Adjust to center
+    const offsetY = clientY - 180; // Adjust to center
+    setHoverPosition({ x: offsetX, y: offsetY });
+
+    if (drawingLine) {
+      setDrawingLine({ ...drawingLine, endX: offsetX, endY: offsetY });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!drawingLine) return;
+
+    const { endX, endY } = drawingLine;
+
+    // Find the closest fielding position
+    const closestPosition = Object.entries(fieldingPositions).reduce(
+      (closest, [name, coords]) => {
+        const distance = Math.sqrt(
+          Math.pow(endX - coords.x, 2) + Math.pow(endY - coords.y, 2)
+        );
+        if (distance < closest.distance) {
+          return { name, distance };
+        }
+        return closest;
+      },
+      { name: null, distance: Infinity }
+    );
+
+    const linePositions = Object.entries(fieldingPositions)
+    .filter(([name, coords]) => {
+      const startToEndDistance = Math.sqrt(
+        Math.pow(endX - drawingLine.startX, 2) + Math.pow(endY - drawingLine.startY, 2)
+      );
+      const startToPosDistance = Math.sqrt(
+        Math.pow(coords.x - drawingLine.startX, 2) + Math.pow(coords.y - drawingLine.startY, 2)
+      );
+      const posToEndDistance = Math.sqrt(
+        Math.pow(endX - coords.x, 2) + Math.pow(endY - coords.y, 2)
+      );
+      // Check if the position is close enough to be considered "on" the line
+      return startToPosDistance + posToEndDistance <= startToEndDistance + 10; // 10 is a threshold to consider a point on the line
+    })
+    .map(([name]) => name);
+
+    setLine({
+      startX: fieldCenter.x,
+      startY: fieldCenter.y,
+      endX,
+      endY,
+      position: closestPosition.name,
+      runs,
+      boundary,
+      passedPositions: linePositions
     });
     setDrawingLine(null);
   };
@@ -138,6 +226,9 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Draw positions */}
         {Object.keys(fieldingPositions).map((position) => (

@@ -75,7 +75,10 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
     if (line && isShotType) {
       setCurrentStep(2);
     } else if (line && !isShotType) {
-      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter} hit towards ${line?.position} with ${line?.runs} runs`;
+      const passedPositionsText = line?.passedPositions?.length
+      ? `${line.passedPositions.join(", ")}`
+      : "";
+      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter}, ${line?.runs} runs, ${cricketFieldData?.batter} to ${passedPositionsText}`;
       handleWagonWheelCoords(line?.endX, line?.endY, remark, null);
     }
   }, [line]);
@@ -83,7 +86,10 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
   const handleShotType = (shot) => {
     if (shot && line) {
       setSelectedShotType(shot.name);
-      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter} hit towards ${shot.name} ${line?.position} with ${line?.runs} runs`;
+      const passedPositionsText = line?.passedPositions?.length
+      ? `${line.passedPositions.join(", ")}`
+      : "";
+      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter}, ${line?.runs} runs, ${cricketFieldData?.batter} ${shot.name} to ${passedPositionsText}`;      
       handleWagonWheelCoords(line?.endX, line?.endY, remark, shot?.name);
     }
   };
@@ -101,17 +107,20 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
         <span className="mx-2 text-center">Ball : {cricketFieldData?.overCount}  {cricketFieldData?.bowler}  to {cricketFieldData?.batter}</span>
       </ModalHeader>
       <ModalBody>
+      <div className="d-flex align-items-center">
+        <span>Tracking a selection shot type</span>
         <Switch
           width={70}
           uncheckedIcon={<OffsymbolStatus />}
           checkedIcon={<OnSymbolStatus />}
-          className="pe-0"
+          className="pe-0 mx-2"
           onColor="#02a499"
           onChange={() => {
             handleShotTypeToggle(!isShotType)
           }}
           checked={isShotType}
         />
+      </div>
         <div className="d-flex justify-content-center">
         {currentStep === 2 && isShotType ? (
           <div className="shot-types-container d-flex flex-wrap w-100">

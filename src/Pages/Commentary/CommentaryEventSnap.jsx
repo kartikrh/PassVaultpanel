@@ -28,72 +28,89 @@ export const CommentaryEventSnap = () => {
 
   const downloadImage = async () => {
     if (!componentRef.current) return;
-  
-    // Adjust font size for td element
-    const tdElement = document.querySelector('td');
-    tdElement.style.fontSize = "10px"; // Adjust font size
-  
+
     // Add temporary classes to center the component and adjust layout
     componentRef.current.classList.add('d-flex', 'justify-content-center');
     const element = document.querySelector('.event-snap-table-hover');
     const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
-    targetDiv.style.width = '668px';
-  
-    element.style.width = '100%';
-    element.style.height = '100vh';
-    element.style.overflow = 'scroll';
-  
+
+    // Save original styles to restore them later
+    const originalStyles = {
+        containerOverflow: element.style.overflow,
+        containerHeight: element.style.height,
+        bodyOverflow: document.body.style.overflow,
+    };
+
+    // Temporarily expand the container and disable scrollbars
+    document.body.style.overflow = 'hidden'; // Prevent scrollbars on the entire page
+    element.style.overflow = 'visible'; // Ensure no scrollbars for the container
+    element.style.height = `${targetDiv.scrollHeight}px`; // Match height to table content
+
     // Create watermark image
     const watermark = document.createElement('img');
     watermark.src = Crickfeed_logo; // Assuming Crickfeed_logo is the path to the logo
     watermark.alt = 'CRICFEED';
     watermark.style.position = 'absolute';
-    watermark.style.top = '50%';
-    watermark.style.left = '50%';
     watermark.style.width = '200px'; // Adjust watermark size
     watermark.style.opacity = '0.3'; // Set watermark opacity
     watermark.style.pointerEvents = 'none'; // Disable pointer events on watermark
-    watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
+    watermark.style.transform = 'rotate(340deg)'; // Rotate watermark for styling
     watermark.style.zIndex = '1000';
     watermark.style.filter = "brightness(0.7)"; // Adjust brightness for blending
     watermark.style.mixBlendMode = "multiply";
-  
+
+    // Dynamically calculate the center of the component
+    const targetRect = targetDiv.getBoundingClientRect();
+    watermark.style.top = `${targetRect.height / 2}px`;
+    watermark.style.left = `${targetRect.width / 2}px`;
+    watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
+
     // Ensure the parent element has a relative position to position the watermark correctly
-    componentRef.current.style.position = 'relative';
-    componentRef.current.appendChild(watermark); // Append watermark to the component
-  
+    targetDiv.style.position = 'relative';
+    targetDiv.appendChild(watermark); // Append watermark to the component
+
     try {
-      setDownloadBtnDisabled(true);
-  
-      // Wait for the DOM update (ensure watermark is rendered)
-      await new Promise(resolve => setTimeout(resolve, 500)); // Increased wait time to ensure rendering
-  
-      // Generate the image with watermark included
-      const dataUrl = await toJpeg(componentRef.current, {
-        cacheBust: true, // To avoid cache issues when generating the image
-        pixelRatio: 2, // For higher resolution // Set a background color for the image
-        width: componentRef.current.offsetWidth, // Ensure the width is set correctly
-        height: componentRef.current.offsetHeight, // Ensure the height is set correctly
-      });
-  
-      // Create a link and trigger the download
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
-      link.click();
-  
-      // Clean up
-      componentRef.current.classList.remove('d-flex', 'justify-content-center');
-      targetDiv.style.removeProperty('width');
-      element.style.removeProperty('overflow');
-      targetDiv.style.removeProperty('fontSize');
-      componentRef.current.removeChild(watermark); // Remove watermark after image generation
-      setDownloadBtnDisabled(false);
+        setDownloadBtnDisabled(true);
+
+        // Force a reflow to ensure watermark is rendered before capturing the image
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for rendering
+
+        // Generate the image with dynamically calculated dimensions
+        const dataUrl = await toJpeg(componentRef.current, {
+            cacheBust: true, // To avoid cache issues when generating the image
+            pixelRatio: 2, // For higher resolution
+            width: targetDiv.offsetWidth, // Use the actual width of the table
+            height: targetDiv.scrollHeight, // Use the total height of the table
+            backgroundColor: '#ffffff', // Optional: Set a background color
+        });
+
+        // Create a link and trigger the download
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
+        link.click();
+
+        // Clean up
+        componentRef.current.classList.remove('d-flex', 'justify-content-center');
+        targetDiv.removeChild(watermark); // Remove watermark after image generation
+
+        // Restore original styles
+        document.body.style.overflow = originalStyles.bodyOverflow;
+        element.style.overflow = originalStyles.containerOverflow;
+        element.style.height = originalStyles.containerHeight;
+
+        setDownloadBtnDisabled(false);
     } catch (error) {
-      dispatch(updateToastData({ data: error.message, type: ERROR }));
+        // Restore original styles even in case of error
+        document.body.style.overflow = originalStyles.bodyOverflow;
+        element.style.overflow = originalStyles.containerOverflow;
+        element.style.height = originalStyles.containerHeight;
+
+        dispatch(updateToastData({ data: error.message, type: ERROR }));
     }
-  };
-  
+};
+
   const formatDate = (date) => {
     const options = {
       day: 'numeric',
@@ -238,10 +255,11 @@ export const CommentaryEventSnap = () => {
                           // backgroundSize: "250px", // Make the image cover the table area
                           // backgroundPosition: "center",
                           border: "1px solid black",
-                          padding: "12px",
                           background: "#ddebf7",
                           margin: "0px",
-                          width: "100%"
+                          width: "100%",
+                          height: "100%",
+                          overflow: "fit-content"
                         }}
                       >
                         <tbody>
@@ -256,7 +274,8 @@ export const CommentaryEventSnap = () => {
                                 style={{
                                   color: "#3783d1",
                                   fontWeight: "bold",
-                                  width: "30%", // Set a fixed width for the key cells
+                                  width: "30%",
+                                  height: "auto", // Set a fixed width for the key cells
                                   wordBreak: "break-word", // Ensure content does not overflow
                                   textAlign: "left"
                                 }} // Key color and reduced width
@@ -268,6 +287,7 @@ export const CommentaryEventSnap = () => {
                                 style={{
                                   color: "#1f4e78",
                                   fontWeight: "bold",
+                                  height: "auto",
                                   width: "20%", // Set a fixed width for the value cells
                                   wordBreak: "break-word", // Ensure content does not overflow
                                   textAlign: "left"
