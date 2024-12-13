@@ -36,9 +36,9 @@ export const CommentaryEventSnap = () => {
 
     // Save original styles to restore them later
     const originalStyles = {
-      containerOverflow: element.style.overflow,
-      containerHeight: element.style.height,
-      bodyOverflow: document.body.style.overflow,
+        containerOverflow: element.style.overflow,
+        containerHeight: element.style.height,
+        bodyOverflow: document.body.style.overflow,
     };
 
     // Temporarily expand the container and disable scrollbars
@@ -70,45 +70,46 @@ export const CommentaryEventSnap = () => {
     targetDiv.appendChild(watermark); // Append watermark to the component
 
     try {
-      setDownloadBtnDisabled(true);
+        setDownloadBtnDisabled(true);
 
-      // Wait for the DOM update (ensure watermark is rendered)
-      await new Promise(resolve => setTimeout(resolve, 500)); // Increased wait time to ensure rendering
+        // Force a reflow to ensure watermark is rendered before capturing the image
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for rendering
 
-      // Generate the image with dynamically calculated dimensions
-      const dataUrl = await toJpeg(componentRef.current, {
-        cacheBust: true, // To avoid cache issues when generating the image
-        pixelRatio: 2, // For higher resolution
-        width: targetDiv.offsetWidth, // Use the actual width of the table
-        height: targetDiv.scrollHeight, // Use the total height of the table
-        backgroundColor: '#ffffff', // Optional: Set a background color
-      });
+        // Generate the image with dynamically calculated dimensions
+        const dataUrl = await toJpeg(componentRef.current, {
+            cacheBust: true, // To avoid cache issues when generating the image
+            pixelRatio: 2, // For higher resolution
+            width: targetDiv.offsetWidth, // Use the actual width of the table
+            height: targetDiv.scrollHeight, // Use the total height of the table
+            backgroundColor: '#ffffff', // Optional: Set a background color
+        });
 
-      // Create a link and trigger the download
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
-      link.click();
+        // Create a link and trigger the download
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
+        link.click();
 
-      // Clean up
-      componentRef.current.classList.remove('d-flex', 'justify-content-center');
-      targetDiv.removeChild(watermark); // Remove watermark after image generation
+        // Clean up
+        componentRef.current.classList.remove('d-flex', 'justify-content-center');
+        targetDiv.removeChild(watermark); // Remove watermark after image generation
 
-      // Restore original styles
-      document.body.style.overflow = originalStyles.bodyOverflow;
-      element.style.overflow = originalStyles.containerOverflow;
-      element.style.height = originalStyles.containerHeight;
+        // Restore original styles
+        document.body.style.overflow = originalStyles.bodyOverflow;
+        element.style.overflow = originalStyles.containerOverflow;
+        element.style.height = originalStyles.containerHeight;
 
-      setDownloadBtnDisabled(false);
+        setDownloadBtnDisabled(false);
     } catch (error) {
-      // Restore original styles even in case of error
-      document.body.style.overflow = originalStyles.bodyOverflow;
-      element.style.overflow = originalStyles.containerOverflow;
-      element.style.height = originalStyles.containerHeight;
+        // Restore original styles even in case of error
+        document.body.style.overflow = originalStyles.bodyOverflow;
+        element.style.overflow = originalStyles.containerOverflow;
+        element.style.height = originalStyles.containerHeight;
 
-      dispatch(updateToastData({ data: error.message, type: ERROR }));
+        dispatch(updateToastData({ data: error.message, type: ERROR }));
     }
-  };
+};
 
   const formatDate = (date) => {
     const options = {
