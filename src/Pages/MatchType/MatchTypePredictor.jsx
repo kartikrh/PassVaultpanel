@@ -64,7 +64,7 @@ const MatchTypePredictor = () => {
         const oversAndBallsData = [];
 
         const ballsPerOver = initialEditData?.ballsPerOver;
-        const oversPerMatch = initialEditData?.oversPerInings;
+        const oversPerMatch = initialEditData?.isLimitedOvers ? initialEditData?.oversPerInings : initialEditData?.maxOversInFirstInings;
 
         for (let i = 1; i <= oversPerMatch; i++) {
           for (let j = 1; j <= ballsPerOver; j++) {
@@ -134,17 +134,12 @@ const MatchTypePredictor = () => {
       setCurrentSaveAction(undefined);
     }
   }, [isSaved]);
-
+  
   const fetchData = async (id) => {
     await axiosInstance
       .post("/admin/matchType/byId", { matchTypeId: id })
       .then((response) => {
-        let newData = {};
-        if (!response?.result?.isLimitedOvers) {
-          newData = { ...response?.result, oversPerInings: null, balls: 6 };
-        } else {
-          newData = { ...response?.result, balls: 6 };
-        }
+        const newData = {...response?.result, oversPerInings: response?.result?.isLimitedOvers ? response?.result?.oversPerInings : response?.result?.maxOversInFirstInings, balls: 6 }
         setInitialEditData(newData);
         if (response?.result?.isLimitedOvers) {
           setDisabledFields({ generate: true });
@@ -247,7 +242,7 @@ const MatchTypePredictor = () => {
           <Input
             type="text"
             style={{
-              width: "50px",
+              width: "70px",
               border: "solid lightgray 1px",
               borderRadius: "5px",
             }}
