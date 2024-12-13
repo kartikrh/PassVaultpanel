@@ -75,7 +75,10 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
     if (line && isShotType) {
       setCurrentStep(2);
     } else if (line && !isShotType) {
-      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter} hit towards ${line?.position} with ${line?.runs} runs`;
+      const passedPositionsText = line?.passedPositions?.length
+      ? `${line.passedPositions.join(", ")}`
+      : "";
+      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter}, ${line?.runs} runs, ${cricketFieldData?.batter} to ${passedPositionsText}`;
       handleWagonWheelCoords(line?.endX, line?.endY, remark, null);
     }
   }, [line]);
@@ -83,7 +86,10 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
   const handleShotType = (shot) => {
     if (shot && line) {
       setSelectedShotType(shot.name);
-      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter} hit towards ${shot.name} ${line?.position} with ${line?.runs} runs`;
+      const passedPositionsText = line?.passedPositions?.length
+      ? `${line.passedPositions.join(", ")}`
+      : "";
+      const remark = `${cricketFieldData?.bowler} to ${cricketFieldData?.batter}, ${line?.runs} runs, ${cricketFieldData?.batter} ${shot.name} to ${passedPositionsText}`;      
       handleWagonWheelCoords(line?.endX, line?.endY, remark, shot?.name);
     }
   };

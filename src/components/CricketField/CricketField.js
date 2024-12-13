@@ -111,7 +111,23 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
       },
       { name: null, distance: Infinity }
     );
-  
+
+    const linePositions = Object.entries(fieldingPositions)
+    .filter(([name, coords]) => {
+      const startToEndDistance = Math.sqrt(
+        Math.pow(endX - drawingLine.startX, 2) + Math.pow(endY - drawingLine.startY, 2)
+      );
+      const startToPosDistance = Math.sqrt(
+        Math.pow(coords.x - drawingLine.startX, 2) + Math.pow(coords.y - drawingLine.startY, 2)
+      );
+      const posToEndDistance = Math.sqrt(
+        Math.pow(endX - coords.x, 2) + Math.pow(endY - coords.y, 2)
+      );
+      // Check if the position is close enough to be considered "on" the line
+      return startToPosDistance + posToEndDistance <= startToEndDistance + 10; // 10 is a threshold to consider a point on the line
+    })
+    .map(([name]) => name);
+
     setLine({
       startX: fieldCenter.x,
       startY: fieldCenter.y,
@@ -120,6 +136,7 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
       position: closestPosition.name,
       runs,
       boundary,
+      passedPositions: linePositions,
     });
     setDrawingLine(null);
   };
@@ -166,6 +183,22 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
       { name: null, distance: Infinity }
     );
 
+    const linePositions = Object.entries(fieldingPositions)
+    .filter(([name, coords]) => {
+      const startToEndDistance = Math.sqrt(
+        Math.pow(endX - drawingLine.startX, 2) + Math.pow(endY - drawingLine.startY, 2)
+      );
+      const startToPosDistance = Math.sqrt(
+        Math.pow(coords.x - drawingLine.startX, 2) + Math.pow(coords.y - drawingLine.startY, 2)
+      );
+      const posToEndDistance = Math.sqrt(
+        Math.pow(endX - coords.x, 2) + Math.pow(endY - coords.y, 2)
+      );
+      // Check if the position is close enough to be considered "on" the line
+      return startToPosDistance + posToEndDistance <= startToEndDistance + 10; // 10 is a threshold to consider a point on the line
+    })
+    .map(([name]) => name);
+
     setLine({
       startX: fieldCenter.x,
       startY: fieldCenter.y,
@@ -174,6 +207,7 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
       position: closestPosition.name,
       runs,
       boundary,
+      passedPositions: linePositions
     });
     setDrawingLine(null);
   };
