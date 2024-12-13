@@ -101,17 +101,20 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
         <span className="mx-2 text-center">Ball : {cricketFieldData?.overCount}  {cricketFieldData?.bowler}  to {cricketFieldData?.batter}</span>
       </ModalHeader>
       <ModalBody>
+      <div className="d-flex align-items-center">
+        <span>Tracking a selection shot type</span>
         <Switch
           width={70}
           uncheckedIcon={<OffsymbolStatus />}
           checkedIcon={<OnSymbolStatus />}
-          className="pe-0"
+          className="pe-0 mx-2"
           onColor="#02a499"
           onChange={() => {
             handleShotTypeToggle(!isShotType)
           }}
           checked={isShotType}
         />
+      </div>
         <div className="d-flex justify-content-center">
         {currentStep === 2 && isShotType ? (
           <div className="shot-types-container d-flex flex-wrap w-100">

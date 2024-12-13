@@ -124,6 +124,60 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
     setDrawingLine(null);
   };
 
+  const handleTouchStart = (e) => {
+    const { clientX, clientY } = e.touches[0];
+    const offsetX = clientX - 200; // Adjust to center
+    const offsetY = clientY - 180; // Adjust to center
+    setDrawingLine({
+      startX: fieldCenter.x,
+      startY: fieldCenter.y,
+      endX: offsetX,
+      endY: offsetY,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    const { clientX, clientY } = e.touches[0];
+    const offsetX = clientX - 200; // Adjust to center
+    const offsetY = clientY - 180; // Adjust to center
+    setHoverPosition({ x: offsetX, y: offsetY });
+
+    if (drawingLine) {
+      setDrawingLine({ ...drawingLine, endX: offsetX, endY: offsetY });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!drawingLine) return;
+
+    const { endX, endY } = drawingLine;
+
+    // Find the closest fielding position
+    const closestPosition = Object.entries(fieldingPositions).reduce(
+      (closest, [name, coords]) => {
+        const distance = Math.sqrt(
+          Math.pow(endX - coords.x, 2) + Math.pow(endY - coords.y, 2)
+        );
+        if (distance < closest.distance) {
+          return { name, distance };
+        }
+        return closest;
+      },
+      { name: null, distance: Infinity }
+    );
+
+    setLine({
+      startX: fieldCenter.x,
+      startY: fieldCenter.y,
+      endX,
+      endY,
+      position: closestPosition.name,
+      runs,
+      boundary,
+    });
+    setDrawingLine(null);
+  };
+
   return (
     <div className="cricket-field">
       <img
@@ -138,6 +192,9 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Draw positions */}
         {Object.keys(fieldingPositions).map((position) => (
