@@ -74,7 +74,7 @@ const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
                             />
                             <div className={`${index === 0 ? 'first-player-name' : 'remaining-player-name'}`}>{partnership.batter1Name}</div>
                             <div className={`${index === 0 ? 'first-player-stats' : 'remaining-player-stats'}`}>
-                                {partnership.p1Run || 0}({partnership.p1Ball || 0})
+                                {partnership.batter1Runs || 0}({partnership.batter1Balls || 0})
                             </div>
                         </div>
                         <div className={`${index === 0 ? 'first-partnership-stats' : 'remaining-partnership-stats'}`}>
@@ -93,7 +93,7 @@ const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
                             />
                             <div className={`${index === 0 ? 'first-player-name' : 'remaining-player-name'}`}>{partnership.batter2Name}</div>
                             <div className={`${index === 0 ? 'first-player-stats' : 'remaining-player-stats'}`}>
-                                {partnership.p2Run || 0}({partnership.p2Ball || 0})
+                                {partnership.batter2Runs || 0}({partnership.batter2Balls || 0})
                             </div>
                         </div>
                     </div>
