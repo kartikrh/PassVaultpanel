@@ -1814,6 +1814,7 @@ const Commentary = (props) => {
             // setOverBallByBallDisplay([])
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
+            setOnPitchPlayers({...onPitchPlayers, [CURRENT_BOWLER]: null})
             changeOver()
             setChangeOverOnPopupClick(undefined)
         }
@@ -2038,7 +2039,7 @@ const Commentary = (props) => {
                 );
             });
     };
-
+    
     return <>
         <CommentaryScreen
             commentaryId={commentaryDetails?.commentaryId}
