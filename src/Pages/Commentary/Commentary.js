@@ -98,7 +98,6 @@ const Commentary = (props) => {
         superOverApiData, error
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
-    console.log({ isUndoingLastOver });
 
     const handleCommentaryConsole = async (temp, main) => {
         const currentState = {
@@ -134,7 +133,12 @@ const Commentary = (props) => {
     }, [currentOver.ballCount, isWheelShowComplete, isWheelShow]);
 
     const checkForOverSwitch = () => {
-        if (!isUndoingLastOver && (currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6) && (isWheelShowComplete || !isWheelShow))) {
+        const isBallCountExceeded = currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6);
+        const shouldShowWheel = isWheelShowComplete || !isWheelShow;
+        const isNotUndoing = !isUndoingLastOver;
+        const isOverNotComplete = !currentOver.isComplete;
+
+        if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
             setShowChangeOverModal(true);
         }
     };
