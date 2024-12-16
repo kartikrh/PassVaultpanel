@@ -87,6 +87,7 @@ const Commentary = (props) => {
     const [cricketFieldData, setCricketFieldData] = useState(null);
     const [isWheelShow, setIsWheelShow] = useState(undefined);
     const [isWheelShowComplete, setIsWheelShowComplete] = useState(undefined);
+    const [isUndoingLastOver, setIsUndoingLastOver] = useState(false);
 
     const [isShotType, setIsShotType] = useState(undefined);
     const {
@@ -97,7 +98,7 @@ const Commentary = (props) => {
         superOverApiData, error
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
-    console.log({ currentPartnership });
+    console.log({ isUndoingLastOver });
 
     const handleCommentaryConsole = async (temp, main) => {
         const currentState = {
@@ -133,10 +134,11 @@ const Commentary = (props) => {
     }, [currentOver.ballCount, isWheelShowComplete, isWheelShow]);
 
     const checkForOverSwitch = () => {
-        if ((currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6 ) && (isWheelShowComplete || !isWheelShow))) {
+        if (!isUndoingLastOver && (currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6) && (isWheelShowComplete || !isWheelShow))) {
             setShowChangeOverModal(true);
         }
     };
+
     const checkInningsSwitch = (checkFor) => {
         const teamToCheck = _teams || teams
         const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
@@ -383,6 +385,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
+        setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
         const syncTeam = isEmpty(_teams) ? teams : _teams
         const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver
@@ -783,9 +786,9 @@ const Commentary = (props) => {
     }
     const handleWicket = (wicketData) => {
         // if (!wicketData.isExtraWicket)
-        if(isWheelShow){
-          setShowCricketFieldModal(true);
-          setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: currentBall?.commentaryBallByBallId, run: currentBall?.ballRun, isBoundary: currentBall?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: currentBall?.overCount});
+        if (isWheelShow) {
+            setShowCricketFieldModal(true);
+            setCricketFieldData({ commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: currentBall?.commentaryBallByBallId, run: currentBall?.ballRun, isBoundary: currentBall?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: currentBall?.overCount });
         }
         setCurrentBall({})
         const ballToUpdateOnWicket = (wicketData.isExtraWicket || (wicketData.wicketType === RETIRED_OUT) || (wicketData.wicketType === TIMED_OUT)) ? 0 : 1
@@ -1447,7 +1450,7 @@ const Commentary = (props) => {
 
     const updateAfterOverUndo = () => {
         console.log("inside here");
-
+        setIsUndoingLastOver(true);
         // removing 2 becaus length and index difference
         const previousBall = ballHistory[ballHistory.length - 2]
         const previousOver = overHistory[overHistory.length - 2]
@@ -1814,7 +1817,7 @@ const Commentary = (props) => {
             // setOverBallByBallDisplay([])
             checkInningsSwitch(OVER)
             changePlayer(CURRENT_BOWLER)
-            setOnPitchPlayers({...onPitchPlayers, [CURRENT_BOWLER]: null})
+            setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: null })
             changeOver()
             setChangeOverOnPopupClick(undefined)
         }
@@ -1900,12 +1903,12 @@ const Commentary = (props) => {
         if (!isEmpty(commentaryDataToUpdate)) {
             // Update Over history on over change
             setIsWheelShowComplete(false);
-            if(isWheelShow){
-                if(commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun && !showWicketModal){
-                  setShowCricketFieldModal(true);
-                  setCricketFieldData({commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount});
+            if (isWheelShow) {
+                if (commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun && !showWicketModal) {
+                    setShowCricketFieldModal(true);
+                    setCricketFieldData({ commentaryId: commentaryDetails.commentaryId, commentaryBallByBallId: commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId, run: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun, isBoundary: commentaryDataToUpdate?.commentaryBallByBallDetails?.ballIsBoundry, batter: onPitchPlayers[ON_STRIKE]?.playerName, bowler: onPitchPlayers[CURRENT_BOWLER]?.playerName, overCount: commentaryDataToUpdate?.commentaryBallByBallDetails?.overCount });
                 } else if (commentaryDataToUpdate?.commentaryBallByBallDetails?.ballRun === 0) {
-                  setIsWheelShowComplete(true);
+                    setIsWheelShowComplete(true);
                 }
             }
             if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
@@ -2039,7 +2042,7 @@ const Commentary = (props) => {
                 );
             });
     };
-    
+
     return <>
         <CommentaryScreen
             commentaryId={commentaryDetails?.commentaryId}
@@ -2219,18 +2222,18 @@ const Commentary = (props) => {
         }
         {retryModel && <RetryModel errorMsg={retryModel} />}
         {showCricketFieldModal && (
-        <CricketFieldModal
-          cricketFieldData={cricketFieldData}
-          shotTypes={propsData?.commentaryData?.shotTypes}
-          isShotType={isShotType}
-          handleShotTypeToggle={handleShotTypeToggle}
-          isOpen={showCricketFieldModal}
-          toggle={() => {
-            setShowCricketFieldModal(undefined);
-            setIsWheelShowComplete(true);
-          }}
-        />
-      )}
+            <CricketFieldModal
+                cricketFieldData={cricketFieldData}
+                shotTypes={propsData?.commentaryData?.shotTypes}
+                isShotType={isShotType}
+                handleShotTypeToggle={handleShotTypeToggle}
+                isOpen={showCricketFieldModal}
+                toggle={() => {
+                    setShowCricketFieldModal(undefined);
+                    setIsWheelShowComplete(true);
+                }}
+            />
+        )}
     </>
 }
 
