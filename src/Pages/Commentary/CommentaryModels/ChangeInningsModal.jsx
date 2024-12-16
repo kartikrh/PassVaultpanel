@@ -14,7 +14,7 @@ const ChangeInningsModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
     }, [])
     return (
         <Modal backdrop="static" className="commentary-modal red-warning-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Change Innings
             </ModalHeader>
             <ModalBody>
@@ -23,6 +23,7 @@ const ChangeInningsModal = ({ isOpen, toggle, onYesClick, onNoClick }) => {
             <ModalFooter className='d-block'>
                 <Button color="success" className="decision-Button" onClick={onYesClick}>Yes</Button>
                 <Button color="danger" className="decision-Button text-right " onClick={onNoClick}>No</Button>
+                <Button color="light" className="decision-Button text-right" onClick={() => toggle()}>Close</Button>
             </ModalFooter>
         </Modal>
     )

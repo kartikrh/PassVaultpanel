@@ -6,7 +6,7 @@ const UpdateInningsModal = ({ isOpen, toggle, onsubmit, currentInningTeams }) =>
     const [battingTeamId, setBattingTeamId] = useState({});
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Update Innigns
             </ModalHeader>
             <ModalBody>
@@ -31,6 +31,7 @@ const UpdateInningsModal = ({ isOpen, toggle, onsubmit, currentInningTeams }) =>
             </ModalBody>
             <ModalFooter>
                 <Button color="success" className="decision-Button" onClick={() => onsubmit(battingTeamId)}>Submit</Button>
+                <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
             </ModalFooter>
         </Modal >
     )

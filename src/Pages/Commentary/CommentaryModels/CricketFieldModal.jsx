@@ -103,7 +103,7 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
       toggle={toggle}
       size="lg"
     >
-      <ModalHeader toggle={toggle} className="d-flex align-items-center">
+      <ModalHeader className="d-flex align-items-center">
         <span className="mx-2 text-center">Ball : {cricketFieldData?.overCount}  {cricketFieldData?.bowler}  to {cricketFieldData?.batter}</span>
       </ModalHeader>
       <ModalBody>
@@ -172,6 +172,7 @@ const CricketFieldModal = ({ cricketFieldData, shotTypes, isShotType, handleShot
         >
           {currentStep === 1 ? "Next" : "Submit"}
         </Button> */}
+          <Button color="light" className="decision-Button text-right" onClick={() => toggle()}>Close</Button>
       </ModalFooter>
     </Modal>
   );

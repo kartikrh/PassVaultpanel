@@ -7,7 +7,7 @@ export const UndoErrorModal = ({ toggle, undoError }) => {
     };
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Warning
             </ModalHeader>
             <ModalBody>
