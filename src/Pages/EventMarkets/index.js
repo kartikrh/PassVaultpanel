@@ -31,6 +31,9 @@ import CloseModel from "./CloseModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
+  const commentaryId = +sessionStorage.getItem('EventMarketsID') || 0;
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('EventMarketDetails') || "{}");
+
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
@@ -45,7 +48,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
-  const [competitionId, setCompetitionId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(commentaryId ? commentaryDetails?.competitionId : null);
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [closeAllModelVisable, setCloseAllModelVisable] = useState(false);
@@ -62,6 +65,20 @@ const Index = () => {
     rateSourceRefId: 1,
     rateSourceType: "Ratesource"
   })
+
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    event: null,
+    competition: null,
+    eventList: null,
+  });
+
+
+  useEffect(() => {
+    if (commentaryId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
+  }, [])
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
@@ -70,8 +87,15 @@ const Index = () => {
     setEventTypeActive(tableActions?.isActive)
     let payload = {
       ...(latestValueFromTable || tableActions),
-      rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
+      rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
     };
+    if (commentaryId !== 0) {
+      let payload = {
+        ...(latestValueFromTable || tableActions),
+        rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
+        commentaryId: commentaryId
+      };
+    }
     if (isSearch) {
       payload = {
         ...payload,
@@ -85,7 +109,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/all`, payload)
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>b?.eventMarketId - a?.eventMarketId);
+        const apiData = response?.result?.sort((a, b) => b?.eventMarketId - a?.eventMarketId);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.eventMarketId);
@@ -109,7 +133,7 @@ const Index = () => {
         setEventTypes(response.result);
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const fetchCompetitionList = async () => {
     await axiosInstance
@@ -120,7 +144,7 @@ const Index = () => {
         setCompetitionList(response.result);
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const fetchEventList = async () => {
     await axiosInstance
@@ -131,7 +155,7 @@ const Index = () => {
         setEventList(response.result);
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const handleSingleCheck = (e) => {
@@ -145,6 +169,17 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck);
   };
+
+    useEffect(()=>{
+      if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
+        setIsSearch(false)
+        fetchEventTypeData(commentaryDetails?.eventTypeId);
+        fetchCompetitionList(commentaryDetails?.competitionId);
+        fetchEventList(commentaryDetails?.competitionId)
+      } else {
+        setIsSearch(true)
+      }
+    },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
 
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -536,18 +571,18 @@ const Index = () => {
       title: "Allow",
       key: "isAllow",
       render: (text, record) => (
-      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isAllow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleAllowPermissions("isAllow", record, record.isAllow);
-          }}
-        >
-          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isAllow ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleAllowPermissions("isAllow", record, record.isAllow);
+            }}
+          >
+            <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -555,22 +590,22 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleActiveInactivePermissions(
-              "isActive",
-              record,
-              record.isActive
-            );
-          }}
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactivePermissions(
+                "isActive",
+                record,
+                record.isActive
+              );
+            }}
+          >
+            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -579,18 +614,18 @@ const Index = () => {
       key: "close",
       render: (text, record) => (
         <>
-        <Tooltip title={"Close Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-          <Button
-            color="danger"
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleClose(record);
-            }}
-          >
-            C
-          </Button>{" "}
-        </Tooltip>
+          <Tooltip title={"Close Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color="danger"
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleClose(record);
+              }}
+            >
+              C
+            </Button>{" "}
+          </Tooltip>
         </>
       ),
       style: { width: "5%", textAlign: "center" },
@@ -610,43 +645,43 @@ const Index = () => {
     {
       render: (text, record) => (
         <>
-        <Tooltip title={"View Status Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-          <Button
-            color="primary"
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleSL(record);
-            }}
-          >
-            SL
-          </Button>
-        </Tooltip>{" "}
-        <Tooltip title={"View Data Logs"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-          <Button
-            color="primary"
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleDS(record);
-            }}
-          >
-            DS
-          </Button>
-        </Tooltip>
-        <Tooltip title={"Close Suspend Time"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-          <Button
-            color="primary"
-            size="sm"
-            className="btn mx-1"
-            onClick={() => {
-              setCloseSuspendTimeModelVisible(true);
-              setCloseSuspendTimeRecord(record);
-            }}
-          >
-            AT
-          </Button>
-        </Tooltip>
+          <Tooltip title={"View Status Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color="primary"
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleSL(record);
+              }}
+            >
+              SL
+            </Button>
+          </Tooltip>{" "}
+          <Tooltip title={"View Data Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color="primary"
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleDS(record);
+              }}
+            >
+              DS
+            </Button>
+          </Tooltip>
+          <Tooltip title={"Close Suspend Time"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color="primary"
+              size="sm"
+              className="btn mx-1"
+              onClick={() => {
+                setCloseSuspendTimeModelVisible(true);
+                setCloseSuspendTimeRecord(record);
+              }}
+            >
+              AT
+            </Button>
+          </Tooltip>
         </>
       ),
       style: { width: "10%", textAlign: "center" },
@@ -683,8 +718,8 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if(EventTypeActive){
-     fetchEventTypeData();
+    if (EventTypeActive) {
+      fetchEventTypeData();
     }
   }, [EventTypeActive]);
 
@@ -693,9 +728,22 @@ const Index = () => {
       fetchCompetitionList();
     }
   }, [eventTypeId]);
+  useEffect(() => {
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryStatus) {
+      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
+      const competition = competitionList.find(c => c.competitionId === commentaryDetails.competitionId)
+      const selectedEventList = eventList.find(c => c.eventList === commentaryDetails.eventList)
+
+      setSelectedTableElements({
+        eventType: { value: event?.eventTypeId, label: event?.eventType },
+        competition: { value: competition?.competitionId, label: competition?.competition },
+        eventList: { value: selectedEventList?.eventId, label: selectedEventList?.eventName }
+      });
+    }
+  }, [commentaryDetails.eventTypeId, competitionList, eventTypes, commentaryDetails.competitionId, commentaryDetails.commentaryStatus]);
 
   useEffect(() => {
-    if (competitionId) {
+    if (competitionId || commentaryId) {
       fetchEventList();
     } else {
       setEventList([]);
@@ -731,6 +779,7 @@ const Index = () => {
             delay={delay}
             setDelay={setDelay}
             handleDelay={handleDelay}
+            selectedTableElementsLogs = {selectedTableElements}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
@@ -773,14 +822,14 @@ const Index = () => {
           singleCheck={checekedList}
           fetchData={fetchData}
         />
-        {closeSuspendTimeModelVisible && 
-        <CloseSuspendTimeModel
-          closeSuspendTimeModelVisible={closeSuspendTimeModelVisible}
-          setCloseSuspendTimeModelVisible={setCloseSuspendTimeModelVisible}
-          handleCloseSuspendTime={handleCloseSuspendTime}
-          closeSuspendTimeRecord={closeSuspendTimeRecord}
-          setCloseSuspendTimeRecord={setCloseSuspendTimeRecord}
-        />}
+        {closeSuspendTimeModelVisible &&
+          <CloseSuspendTimeModel
+            closeSuspendTimeModelVisible={closeSuspendTimeModelVisible}
+            setCloseSuspendTimeModelVisible={setCloseSuspendTimeModelVisible}
+            handleCloseSuspendTime={handleCloseSuspendTime}
+            closeSuspendTimeRecord={closeSuspendTimeRecord}
+            setCloseSuspendTimeRecord={setCloseSuspendTimeRecord}
+          />}
       </div>
     </React.Fragment>
   );
