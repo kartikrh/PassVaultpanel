@@ -263,19 +263,20 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>
                 </Row>
-                <Row className="py-2">
+                <div className="d-flex align-items-center py-2">
+                    <span>Tracking a Ball</span>
                     <Switch
                         width={70}
                         uncheckedIcon={<OffsymbolStatus />}
                         checkedIcon={<OnSymbolStatus />}
-                        className="pe-0"
+                        className="pe-0 mx-2"
                         onColor="#02a499"
                         onChange={() => {
                             handleWheelShowToggle(!isWheelShow);
                         }}
                         checked={isWheelShow}
                     />
-                </Row>
+                </div>
             </Col>
             <Col className="over-render" xs={12} md={6} lg={6}>
                 <Row>

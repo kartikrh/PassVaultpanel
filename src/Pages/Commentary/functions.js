@@ -18,7 +18,7 @@ export function mapCommentaryStatus(status) {
   }
 }
 
-export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPlayers, currentBall }) => {
+export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPlayers, currentBall,currentPartnership }) => {
   return {
     "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
     "commentaryId": commentaryDetails.commentaryId,
@@ -47,7 +47,8 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "nextBatStrikeId": currentBall.nextBatStrikeId || onPitchPlayers[ON_STRIKE]?.commentaryPlayerId || 0,
     "nextBatNonStrikeId": currentBall.nextBatNonStrikeId || onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || 0,
     "currentInnings": commentaryDetails.currentInnings,
-    "autoStrikeBallCount": currentBall.autoStrikeBallCount || 0
+    "autoStrikeBallCount": currentBall.autoStrikeBallCount || 0,
+    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0
   }
 }
 
@@ -89,6 +90,10 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "extras": currentPartnership.extras || 0,
     "commentaryBallByBallId": currentPartnership.commentaryBallByBallId || 0,
     "currentInnings": commentaryDetails.currentInnings,
+    "batter1Runs": currentPartnership.batter1Runs || 0,
+    "batter2Runs": currentPartnership.batter2Runs || 0,
+    "batter1Balls": currentPartnership.batter1Balls || 0,
+    "batter2Balls": currentPartnership.batter2Balls || 0
   };
 }
 
