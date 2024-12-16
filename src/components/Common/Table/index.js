@@ -1182,7 +1182,8 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElements?.competition}
+                              value={selectedTableElementsLogs?.competition || selectedTableElements?.competition}
+                              isDisabled={selectedTableElementsLogs?.competition}
                               placeholder="Competition List"
                               onChange={(e) => {
                                 setCompetitionId(e?.value);
@@ -1210,7 +1211,8 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElements?.eventName}
+                              value={selectedTableElementsLogs?.eventList ||selectedTableElements?.eventName}
+                              isDisabled={selectedTableElementsLogs?.eventList}
                               placeholder="Event List"
                               onChange={(e) => {
                                 handleTableActions("eventId", e);
@@ -1237,6 +1239,7 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               value={selectedTableElements?.statusType}
+                              // isDisabled={selectedTableElementsLogs?.status}
                               // defaultValue={statusList?.find(item => item.statusId === 1)?.statusType}
                               placeholder="Status Type"
                               onChange={(e) => {
