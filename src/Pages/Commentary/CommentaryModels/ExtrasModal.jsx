@@ -31,7 +31,7 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
     }, [isOpen]);
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader className='normal-header' toggle={toggle}>
+            <ModalHeader className='normal-header'>
                 Select&nbsp;
                 <b>{extraType}</b> Extra Run
             </ModalHeader>
@@ -73,6 +73,7 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
             </ModalBody>
             <ModalFooter className='d-block' >
                 <Button color="danger" className="decision-Button text-left" onClick={() => handleSubmit(WICKET)}>Wicket</Button>
+                <Button color="light" className="decision-Button text-right" onClick={() => toggle()}>Close</Button>
                 <Button color="success" className="decision-Button text-right" onClick={() => handleSubmit(EXTRAS)}>Update</Button>
             </ModalFooter>
         </Modal >

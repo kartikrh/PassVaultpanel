@@ -273,7 +273,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
 
     return (
         <Modal backdrop="static" size="lg" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 <div className="wicket-modal-header">Wicket</div>
             </ModalHeader>
             <ModalBody className="wicket-modal-body">
@@ -377,9 +377,12 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                         <Button color="secondary" className="wicket-modal-back-btn" onClick={handleBack}>
                             Back
                         </Button>
+                        <div>
                         <Button color="success" className="wicket-modal-confirm-btn" onClick={handleSubmit}>
                             Confirm
                         </Button>
+                        <Button color="light" className="decision-Button mx-2" onClick={() => toggle()}>Close</Button>
+                        </div>
                     </div>
                 )}
             </ModalFooter>

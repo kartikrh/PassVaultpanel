@@ -96,7 +96,7 @@ const ChangeOverModal = ({
 
     return (
         <Modal isOpen={isOpen} toggle={toggle} className="over-modal-container">
-            <ModalHeader toggle={toggle} className="over-modal-header">
+            <ModalHeader className="over-modal-header">
                 <span className="over-modal-title">Over Complete</span>
             </ModalHeader>
             <ModalBody className="over-modal-body">
@@ -170,6 +170,7 @@ const ChangeOverModal = ({
                     >
                         CONTINUE THIS OVER
                     </Button>
+                    <Button color="light" className="decision-Button" onClick={() => toggle()}>Close</Button>
                 </div>
             </ModalBody>
         </Modal >

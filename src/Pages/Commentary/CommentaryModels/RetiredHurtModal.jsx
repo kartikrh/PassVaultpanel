@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
+import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import "../CommentaryCss.css"
 import CardComponent from '../CardComponent';
 import { NON_STRIKE, ON_STRIKE, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER } from '../CommentartConst';
@@ -35,7 +35,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
 
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Retired Hurt
             </ModalHeader>
             <ModalBody>
@@ -59,6 +59,9 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
                     </Col>
                 </Row>
             </ModalBody>
+            <ModalFooter>
+                <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
+            </ModalFooter>
             {changePlayerType &&
                 <SelectPlayerModal
                     isOpen={true}
