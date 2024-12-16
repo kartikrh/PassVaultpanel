@@ -32,7 +32,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     }, [isOpen]);
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Select Player
             </ModalHeader>
             <ModalBody>
