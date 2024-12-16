@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Input, Modal, ModalBody, ModalHeader, Table } from 'reactstrap';
+import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader, Table } from 'reactstrap';
 import axiosInstance from '../../../Features/axios.js';
 import SpinnerModel from "../../../components/Model/SpinnerModel/index.js";
 
@@ -48,7 +48,7 @@ export const PenaltyModal = ({ toggle, isOpen, selectedPenalty }) => {
 
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Select Penalty Run :
             </ModalHeader>
             <ModalBody>
@@ -74,6 +74,9 @@ export const PenaltyModal = ({ toggle, isOpen, selectedPenalty }) => {
                     </tbody>
                 </Table>
             </ModalBody>
+            <ModalFooter>
+                <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
+            </ModalFooter>
         </Modal >
     )
 }
