@@ -225,9 +225,7 @@ const Index = () => {
             dataIndex: "title",
             key: "title",
             render: (text, record) => (
-                <span style={{ cursor: "pointer" }} onClick={() => {
-                    handleActionClick(record?.id)
-                }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+                <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
             ),
             style: { width: "20%" },
             sort: true,
