@@ -18,7 +18,7 @@ const SuperOverModal = ({ toggle, onSuperOverClick, onResultClick, currentInning
     }, [])
     return (
         <Modal backdrop="static" className="commentary-modal " zIndex={1000} isOpen={true} toggle={toggle} >
-            <ModalHeader toggle={toggle}>
+            <ModalHeader>
                 Super Over
             </ModalHeader>
             <ModalBody>
@@ -72,6 +72,7 @@ const SuperOverModal = ({ toggle, onSuperOverClick, onResultClick, currentInning
                     <Button color="success" className="decision-Button" onClick={() => onSuperOverClick({ overs, battingTeamId })}>Submit</Button>
                     : <>
                         <Button color="success" className="decision-Button" onClick={() => { setIsSuperOver(true) }}>Super Over</Button>
+                        <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
                         <Button color="danger" className="decision-Button text-right " onClick={onResultClick}>Declare Result</Button>
                     </>}
 

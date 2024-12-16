@@ -352,6 +352,13 @@ const Index = () => {
     sessionStorage.setItem('undoLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
+  const handleEventMarketClick = (details) => {
+    console.log("details", details);
+    const url = new URL(window.location.origin + "/eventMarkets");
+    sessionStorage.setItem('EventMarketsID', "" + details?.commentaryId);
+    sessionStorage.setItem('EventMarketDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
   const handleCommentaryMarketTemplateClick = (id) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
     localStorage.setItem('marketTemplateCommentaryId', "" + id);
@@ -1288,6 +1295,22 @@ const Index = () => {
               className="btn"
               onClick={() => {
                 handleUndoLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"Event Market"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"danger"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleEventMarketClick(record)
               }}
             >
               <i class="bx bxs-up-arrow-square"></i>

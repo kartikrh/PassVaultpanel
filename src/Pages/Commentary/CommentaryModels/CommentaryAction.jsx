@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
+import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import "../CommentaryCss.css";
 import { NO_BALL_BYE, NO_BALL_LEG_BYE } from '../CommentartConst';
 import RunsModal from './RunsModal';
@@ -49,7 +49,7 @@ const CommentaryAction = ({
         <>
             {isLoading && <SpinnerModel />}
             <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle}>
-                <ModalHeader toggle={toggle}>
+                <ModalHeader>
                     Actions
                 </ModalHeader>
                 <ModalBody>
@@ -94,6 +94,9 @@ const CommentaryAction = ({
                         </Col>
                     </Row>
                 </ModalBody>
+                <ModalFooter>
+                    <Button color="light" className="decision-Button text-right" onClick={() => toggle()}>Close</Button>
+                </ModalFooter>
             </Modal>
             {showRunsPopup && (
                 <RunsModal
