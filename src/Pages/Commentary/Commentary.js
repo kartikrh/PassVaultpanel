@@ -2101,7 +2101,6 @@ const Commentary = (props) => {
                     else if (isChangeBowler.isChange) onBowlerChange(newPlayerId)
                     else onPlayerChange(newPlayerId)
                 }}
-                isWicketChange={isWicketChange}
             />}
         {extrasType && < ExtrasModal
             isOpen={true}
