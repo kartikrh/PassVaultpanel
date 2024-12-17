@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader, Table } from 'reactstrap';
 
-const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isWicketChange }) => {
+const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
 
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
@@ -53,11 +53,6 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isWicketC
                     </tbody>
                 </Table>
             </ModalBody>
-            {!isWicketChange &&
-                <ModalFooter>
-                    <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
-                </ModalFooter>
-            }
         </Modal >
     )
 }
