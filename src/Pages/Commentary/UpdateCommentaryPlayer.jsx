@@ -11,7 +11,7 @@ import {
   convertDateUTCToLocal,
 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Card, CardBody, Col, Container, Row } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
@@ -23,13 +23,16 @@ const PlayerCommentary = () => {
   const location = useLocation();
   let navigate = useNavigate();
   const [isDataLoading, setIsDataLoading] = useState(false);
-  const commentaryId = +localStorage.getItem('updatePlayerCommentaryId') || "0";
-  const commentaryDetails = JSON.parse(localStorage.getItem('updatePlayerCommentaryDetails'));
+  const commentaryId = +localStorage.getItem("updatePlayerCommentaryId") || "0";
+  const commentaryDetails = JSON.parse(
+    localStorage.getItem("updatePlayerCommentaryDetails")
+  );
   // const commentaryId = location.state?.commentaryId || "0";
   // const commentaryDetails = location.state?.commentaryDetails;
   const dispatch = useDispatch();
   const [teams, setTeams] = useState([]);
-
+  const [commentaryData, setCommentaryData] = useState(null);
+  
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
@@ -42,20 +45,21 @@ const PlayerCommentary = () => {
   const fetchData = async (commentaryId) => {
     setIsDataLoading(true);
     await axiosInstance
-      .post("/admin/commentary/getTeamAndPlayerById", { commentaryId })
+      .post("/admin/commentary/getTeamAndPlayerByIdV1", { commentaryId })
       .then((response) => {
-       
-        const teams = response?.result?.commentaryTeams?.map((team) => {
-          // Sort team players by playerName in alphabetical order
-         
-          const sortedPlayers = team.commentaryTeamPlayers.sort((a, b) =>
-            a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
-          );
-          // Return team with sorted players
-          return { ...team, commentaryTeamPlayers: sortedPlayers };
-        });
-       
+        // const teams = response?.result?.commentaryTeams?.map((team) => {
+        //   // Sort team players by playerName in alphabetical order
+
+        //   const sortedPlayers = team.commentaryTeamPlayers.sort((a, b) =>
+        //     a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
+        //   );
+        //   // Return team with sorted players
+        //   return { ...team, commentaryTeamPlayers: sortedPlayers };
+        // });
+        const teams = response?.result?.commentaryTeams;
+        const commentaryDetailsData = response?.result?.commentaryDetails;
         setTeams(teams);
+        setCommentaryData(commentaryDetailsData);
         //setTeams(response?.result?.commentaryTeams);
         setIsDataLoading(false);
       })
@@ -74,7 +78,7 @@ const PlayerCommentary = () => {
   const handleBackClick = () => {
     navigate("/commentary");
   };
-
+  
   return (
     <React.Fragment>
       <div className="page-content">
@@ -101,19 +105,19 @@ const PlayerCommentary = () => {
                   </Col>
                 </Row>
                 <div className="py-2 px-3 mb-2 d-flex flex-column flex-md-row bg-light">
-                <div className="ml-2" style={{marginRight:"20px",}}>
+                  <div className="ml-2" style={{ marginRight: "20px" }}>
                     <strong>Event Ref Id:</strong>{" "}
                     <span>{commentaryDetails?.eventRefId}</span>
                   </div>
-                  <div className="ml-2" style={{marginRight:"20px",}}>
+                  <div className="ml-2" style={{ marginRight: "20px" }}>
                     <strong>Event Type:</strong>{" "}
                     <span>{commentaryDetails?.eventType}</span>
                   </div>
-                  <div className="ml-2" style={{marginRight:"20px",}}>
+                  <div className="ml-2" style={{ marginRight: "20px" }}>
                     <strong>Event Name:</strong>{" "}
                     <span>{commentaryDetails?.eventName}</span>
                   </div>
-                  <div className="ml-2" style={{marginRight:"20px",}}>
+                  <div className="ml-2" style={{ marginRight: "20px" }}>
                     <strong>Event Date:</strong>{" "}
                     <span>
                       {convertDateUTCToLocal(
@@ -151,11 +155,27 @@ const PlayerCommentary = () => {
                         key={index}
                         class="col-12 col-lg-6 col-sm-6 col-md-6"
                       >
-                        <TeamPlayerCard
-                          commentaryId={commentaryId}
-                          teamDetails={teamDetails}
-                          fetchData={fetchData}
-                        />
+                        <Card>
+                          <CardHeader>{teamDetails?.teamName}</CardHeader>
+                          {teamDetails?.commentaryTeamPlayers &&
+                            Object.keys(teamDetails.commentaryTeamPlayers).length > 0 &&
+                            Object.keys(teamDetails.commentaryTeamPlayers).map(
+                              (inningKey) => {
+                                const inningPlayers = teamDetails.commentaryTeamPlayers[inningKey];
+                                return (
+                                  <CardBody key={inningKey}>
+                                    {commentaryData?.totalInnings > 1 ? <h6> Innings : {inningPlayers[0]?.currentInnings}</h6> : null}
+                                    <TeamPlayerCard
+                                      commentaryId={commentaryId}
+                                      teamDetails={teamDetails}
+                                      inningPlayers={inningPlayers}
+                                      fetchData={fetchData}
+                                    />
+                                  </CardBody>
+                                );
+                              }
+                            )}
+                        </Card>
                       </div>
                     ))}
                   </Row>
