@@ -38,6 +38,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                     setSelectedPlayer(undefined);
+                    fetchData(commentaryId);
                     setIsLoading(false);
                 })
                 .catch((error) => {
@@ -106,8 +107,8 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                 return { commentaryId, teamId: teamDetails?.teamId, playerId , batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings };
             });
             await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
-            setIsLoading(false);
             fetchData(commentaryId);
+            setIsLoading(false);
             setEditedPlayers({});
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
