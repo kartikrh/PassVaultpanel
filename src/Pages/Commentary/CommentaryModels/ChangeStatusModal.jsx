@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Input, Modal, ModalBody, ModalHeader, Row, Table } from 'reactstrap';
+import { Button, Col, Input, Modal, ModalBody, ModalFooter, ModalHeader, Row, Table } from 'reactstrap';
 import "../CommentaryCss.css"
 
 const ChangeStatusModal = ({ statusList, toggle, onSubmit }) => {
@@ -25,8 +25,8 @@ const ChangeStatusModal = ({ statusList, toggle, onSubmit }) => {
     }, []);
 
     return (
-        <Modal backdrop="static" size='xl' className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} scrollable>
-            <ModalHeader toggle={toggle}> <div className='modal-header-style'>Status</div> </ModalHeader>
+        <Modal backdrop="static" size='lg' className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} scrollable>
+            <ModalHeader> <div className='modal-header-style'>Status</div> </ModalHeader>
             <ModalBody>
                 Update Commentary Display Status
                 <Row className="pt-2">
@@ -70,6 +70,9 @@ const ChangeStatusModal = ({ statusList, toggle, onSubmit }) => {
                     </Table>
                 </Row>
             </ModalBody>
+            <ModalFooter>
+                <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
+            </ModalFooter>
         </Modal >
     )
 }
