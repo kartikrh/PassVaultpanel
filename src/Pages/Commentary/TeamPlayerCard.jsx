@@ -9,7 +9,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import "./CommentaryCss.css";
 import { isEmpty } from 'lodash';
 
-const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
+const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -19,24 +19,26 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (teamDetails?.commentaryTeamPlayers && teamDetails?.teamPlayers) {
-            const teamPlayers = teamDetails?.commentaryTeamPlayers.filter((item)=>item?.playerId !== null && item?.playerName !== null);
+        if (inningPlayers && teamDetails?.teamPlayers) {
+            const teamPlayers = inningPlayers.filter((item)=>item?.playerId !== null && item?.playerName !== null);
             setCommentaryTeamPlayers(teamPlayers);
             const selectedIds = teamPlayers.map(player => player.playerId)
-            setNonCommentaryTeamPlayers(teamPlayers.filter(player => !selectedIds.includes(player.playerId)))
+            const dropdownValues = teamDetails?.teamPlayers.filter(player => !selectedIds.includes(player.playerId));
+            setNonCommentaryTeamPlayers(dropdownValues)
         }
     }, [teamDetails]);
-
+    
     const handleAddPlayer = async () => {
         const playerIndex = nonCommentaryTeamPlayers.findIndex(player => player.playerId === selectedPlayer?.value)
         if (playerIndex !== -1) {
             setIsLoading(true);
             await axiosInstance
-                .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value })
+                .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: inningPlayers?.[0]?.currentInnings })
                 .then((response) => {
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                     setSelectedPlayer(undefined);
+                    fetchData(commentaryId);
                     setIsLoading(false);
                 })
                 .catch((error) => {
@@ -86,27 +88,27 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
     const handleSave = async () => {
         setIsLoading(true);
         try {
-            const playerDataArray = Object.keys(editedPlayers).map(playerId => {
-                let { batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven } = editedPlayers[playerId];
+            const playerDataArray = Object.keys(editedPlayers).map(commentaryPlayerId => {
+                let { batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, playerId, currentInnings } = editedPlayers[commentaryPlayerId];
                 if (!batsmanAverage) {
-                    batsmanAverage = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.batsmanAverage || 0
+                    batsmanAverage = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.batsmanAverage || 0
                 }
                 if (!batsmanStrikeRate) {
-                    batsmanStrikeRate = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.batsmanStrikeRate || 0
+                    batsmanStrikeRate = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.batsmanStrikeRate || 0
                 }
                 if (!boundary) {
-                    boundary = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.boundary || 0
+                    boundary = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.boundary || 0
                 }
                 if(!playerBallFaced) {
-                    playerBallFaced = commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.playerBallFaced || 0
+                    playerBallFaced = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.playerBallFaced || 0
                 }
-                isInPlayingEleven = Object.keys(updatedPlayingXiPlayer).includes(playerId) ? isInPlayingEleven :
-                    commentaryTeamPlayers.find((item) => +item.playerId === +playerId)?.isInPlayingEleven || false
-                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven };
+                isInPlayingEleven = Object.keys(updatedPlayingXiPlayer).includes(commentaryPlayerId) ? isInPlayingEleven :
+                    commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.isInPlayingEleven || false
+                return { commentaryId, teamId: teamDetails?.teamId, playerId , batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings };
             });
             await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
-            setIsLoading(false);
             fetchData(commentaryId);
+            setIsLoading(false);
             setEditedPlayers({});
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -114,76 +116,84 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
         }
     };
 
-    const handleAvgChange = (playerId, avg) => {
+    const handleAvgChange = (commentaryPlayerId, playerId, currentInnings, avg) => {
         setEditedPlayers(prevState => ({
             ...prevState,
-            [playerId]: {
-                ...prevState[playerId],
+            [commentaryPlayerId]: {
+                ...prevState[commentaryPlayerId],
                 batsmanAverage: +avg,
-                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
+                playerId: playerId,
+                currentInnings: currentInnings,
+                isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
     };
 
-    const handleStrikeRateChange = (playerId, strikeRate) => {
+    const handleStrikeRateChange = (commentaryPlayerId, playerId, currentInnings, strikeRate) => {
         setEditedPlayers(prevState => ({
             ...prevState,
-            [playerId]: {
-                ...prevState[playerId],
+            [commentaryPlayerId]: {
+                ...prevState[commentaryPlayerId],
                 batsmanStrikeRate: +strikeRate,
-                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
+                playerId: playerId,
+                currentInnings: currentInnings,
+                isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
     };
 
-    const handleBoundaryChange = (playerId, bdry) => {
+    const handleBoundaryChange = (commentaryPlayerId, playerId, currentInnings, bdry) => {
         setEditedPlayers(prevState => ({
             ...prevState,
-            [playerId]: {
-                ...prevState[playerId],
+            [commentaryPlayerId]: {
+                ...prevState[commentaryPlayerId],
                 boundary: +bdry,
-                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
+                playerId: playerId,
+                currentInnings: currentInnings,
+                isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
     };
 
-    const handleBallFacedChange = (playerId, playerBallFaced) => {
+    const handleBallFacedChange = (commentaryPlayerId, playerId, currentInnings, playerBallFaced) => {
         setEditedPlayers(prevState => ({
             ...prevState,
-            [playerId]: {
-                ...prevState[playerId],
+            [commentaryPlayerId]: {
+                ...prevState[commentaryPlayerId],
                 playerBallFaced: +playerBallFaced,
-                isInPlayingEleven: prevState[playerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[playerId] ?? commentaryTeamPlayers.find(p => p.playerId === playerId)?.isInPlayingEleven
+                playerId: playerId,
+                currentInnings: currentInnings,
+                isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
     };
 
-    const handlePlayingXiChange = (playerId, isPlayXi) => {
+    const handlePlayingXiChange = (commentaryPlayerId, playerId, currentInnings, isPlayXi) => {
         setEditedPlayers(prevState => ({
             ...prevState,
-            [playerId]: {
-                ...prevState[playerId],
+            [commentaryPlayerId]: {
+                ...prevState[commentaryPlayerId],
+                playerId: playerId,
+                currentInnings: currentInnings,
                 isInPlayingEleven: isPlayXi,
             }
         }));
-        setUpdatedPlayingXi(prevState => ({ ...prevState, [playerId]: isPlayXi }))
+        setUpdatedPlayingXi(prevState => ({ ...prevState, [commentaryPlayerId]: isPlayXi }))
     };
 
     useEffect(() => {
         if (!isEmpty(commentaryTeamPlayers)) {
             const tempTeamXiPlayers = updatedPlayingXiPlayer
             commentaryTeamPlayers.forEach(player => {
-                if (!Object.keys(updatedPlayingXiPlayer).includes(player.playerId))
-                    tempTeamXiPlayers[player.playerId] = player.isInPlayingEleven
+                if (!Object.keys(updatedPlayingXiPlayer).includes(player.commentaryPlayerId))
+                    tempTeamXiPlayers[player.commentaryPlayerId] = player.isInPlayingEleven
             })
             setUpdatedPlayingXi(tempTeamXiPlayers)
         }
     }, [commentaryTeamPlayers])
     return (
-        <Card>
-            {isLoading && <SpinnerModel />}
-            <CardHeader>{teamDetails?.teamName}</CardHeader>
-            <CardBody>
+        <>
+                {isLoading && <SpinnerModel />}
                 <Row>
                     <Col lg={8} className="my-1">
                         <Select
@@ -232,7 +242,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                             </div>
                         </div>
                     </div>
-                    {commentaryTeamPlayers?.map((player, index) => (
+                    {commentaryTeamPlayers?.sort((a,b)=>a.commentaryPlayerId - b.commentaryPlayerId)?.map((player, index) => (
                         <div key={index} class="row d-flex align-items-center my-2 ">
                             {/* <div class="col-2">
                                 <Button
@@ -250,11 +260,11 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                             type="number"
                                             style={{ width: "55px" }}
                                             value={
-                                                +editedPlayers[player.playerId]?.batsmanAverage ||
+                                                +editedPlayers[player.commentaryPlayerId]?.batsmanAverage ||
                                                 +player.batsmanAverage
                                             }
                                             onChange={(e) =>
-                                                handleAvgChange(player.playerId, e.target.value)
+                                                handleAvgChange(player.commentaryPlayerId, player.playerId, player.currentInnings, e.target.value)
                                             }
                                         />
                                     </div>
@@ -263,12 +273,14 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                             type="number"
                                             style={{ width: "55px" }}
                                             value={
-                                                +editedPlayers[player.playerId]?.batsmanStrikeRate ||
+                                                +editedPlayers[player.commentaryPlayerId]?.batsmanStrikeRate ||
                                                 +player.batsmanStrikeRate
                                             }
                                             onChange={(e) =>
                                                 handleStrikeRateChange(
+                                                    player.commentaryPlayerId,
                                                     player.playerId,
+                                                    player.currentInnings,
                                                     e.target.value
                                                 )
                                             }
@@ -279,12 +291,14 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                             type="number"
                                             style={{ width: "55px" }}
                                             value={
-                                                +editedPlayers[player.playerId]?.boundary ||
+                                                +editedPlayers[player.commentaryPlayerId]?.boundary ||
                                                 +player.boundary
                                             }
                                             onChange={(e) =>
                                                 handleBoundaryChange(
+                                                    player.commentaryPlayerId,
                                                     player.playerId,
+                                                    player.currentInnings,
                                                     e.target.value
                                                 )
                                             }
@@ -295,12 +309,14 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                             type="number"
                                             style={{ width: "55px" }}
                                             value={
-                                                +editedPlayers[player.playerId]?.playerBallFaced ||
+                                                +editedPlayers[player.commentaryPlayerId]?.playerBallFaced ||
                                                 +player.playerBallFaced
                                             }
                                             onChange={(e) =>
                                                 handleBallFacedChange(
+                                                    player.commentaryPlayerId,
                                                     player.playerId,
+                                                    player.currentInnings,
                                                     e.target.value
                                                 )
                                             }
@@ -312,14 +328,16 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                                                 className="form-check-input"
                                                 type="checkbox"
                                                 id="customSwitchsizelg"
-                                                checked={updatedPlayingXiPlayer[player.playerId]}
+                                                checked={updatedPlayingXiPlayer[player.commentaryPlayerId]}
                                                 onChange={(e) => {
                                                     handlePlayingXiChange(
+                                                        player.commentaryPlayerId,
                                                         player.playerId,
-                                                        !updatedPlayingXiPlayer[player.playerId]
+                                                        player.currentInnings,
+                                                        !updatedPlayingXiPlayer[player.commentaryPlayerId]
                                                     )
                                                 }}
-                                                value={updatedPlayingXiPlayer[player.playerId]}
+                                                value={updatedPlayingXiPlayer[player.commentaryPlayerId]}
                                             />
                                         </div>
                                     </div>
@@ -335,8 +353,7 @@ const TeamPlayerCard = ({ teamDetails, commentaryId, fetchData }) => {
                 >
                     Save
                 </Button>
-            </CardBody>
-        </Card>
+        </>
     )
 }
 

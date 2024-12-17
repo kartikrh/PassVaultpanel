@@ -227,8 +227,7 @@ export const CreateEventMarket = () => {
                 processPlayerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 29) {
                 processPlayerBoundaryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-            }
-            else if (template.marketTypeCategoryId === 30) {
+            } else if (template.marketTypeCategoryId === 30) {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
@@ -409,7 +408,7 @@ export const CreateEventMarket = () => {
                     runnerId: "0",
                     marketTemplateId: market.marketTemplateId,
                     runner: market?.marketName,
-                    line: null,
+                    line: market.defaultLine || null,
                     overRate: null,
                     underRate: null,
                     lastUpdate: new Date().toISOString(),
@@ -485,8 +484,9 @@ export const CreateEventMarket = () => {
                     playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
                     teamId: team.teamId,
-                    over: 0
-                };
+                    over: 0,
+                    defaultLine: parseFloat(player.batsmanAverage)
+                }
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
         });
@@ -501,7 +501,8 @@ export const CreateEventMarket = () => {
                     playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
                     teamId: team.teamId,
-                    over: 0
+                    over: 0,
+                    defaultLine: parseFloat(player.boundary) || 0
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
@@ -511,15 +512,15 @@ export const CreateEventMarket = () => {
     const processPlayerBallMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
             team.players.forEach(player => {
-                const specialMarketName = market.marketName.replace("{player}", player.playerName)
+                const specialMarketName = market.marketName.replace("{player}", player.playerName);
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
                     marketName: specialMarketName,
                     teamId: team.teamId,
-                    over: 0
+                    over: 0,
+                    defaultLine: parseFloat(player.playerBallFaced)
                 };
-                console.log({ specialMarket });
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
         });
