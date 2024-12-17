@@ -14,10 +14,15 @@ import {
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
-import { ERROR, SUCCESS, TAB_PLAYER_EVENT_HISTORY } from "../../components/Common/Const";
+import {
+  ERROR,
+  SUCCESS,
+  TAB_PLAYER_EVENT_HISTORY,
+} from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "antd";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import DeletePlayerHistoryModel from "../../components/Model/DeletePlayerHistoryModel";
 
 const MatchHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +31,10 @@ const MatchHistory = () => {
   document.title = TAB_PLAYER_EVENT_HISTORY;
   const [battingHistory, setBattingHistory] = useState([]);
   const [bowlingHistory, setBowlingHistory] = useState([]);
+  const [deleteBattingModelVisable, setDeleteBattingModelVisable] =
+    useState(false);
+  const [deleteBowlingModelVisable, setDeleteBowlingModelVisable] =
+    useState(false);
   const playerId = +sessionStorage.getItem("playerId") || "0";
   const playerDetails = JSON.parse(
     sessionStorage.getItem("playerDetails") || "{}"
@@ -102,17 +111,125 @@ const MatchHistory = () => {
     }
   }, [playerId, matchTypeId]);
 
+  const handleSelectBattingAll = (event) => {
+    const isChecked = event.target.checked;
+    const newBattingHistory = battingHistory.map((item) => {
+      return {
+        ...item,
+        selected: isChecked,
+      };
+    });
+    setBattingHistory(newBattingHistory);
+  };
+
+  const handleBattingSelectRow = (index) => {
+    setBattingHistory((prevHistory) => {
+      const updatedHistory = [...prevHistory];
+      updatedHistory[index].selected = !updatedHistory[index].selected;
+      return updatedHistory;
+    });
+  };
+
+  const battingDelete = async () => {
+    const modifiedRows = battingHistory.filter((item) => item.selected);
+
+    if (modifiedRows.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "Please select at least one row.",
+          title: "Batting History Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+
+    const deleteIds =
+      modifiedRows.length > 0
+        ? modifiedRows.filter((i) => i?.id !== null).map((item) => item.id)
+        : [];
+
+    if (deleteIds.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "No batting history IDs selected for deletion.",
+          title: "Batting History Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+    setDeleteBattingModelVisable(true);
+  };
+
+  const handleBattingDelete = async () => {
+    const modifiedRows = battingHistory.filter((item) => item.selected);
+
+    const deleteIds =
+      modifiedRows.length > 0
+        ? modifiedRows.filter((i) => i?.id !== null).map((item) => item.id)
+        : [];
+
+    try {
+      const response = await axiosInstance.post(
+        "/admin/commPlayerHistory/deleteBatHis",
+        { id: deleteIds }
+      );
+      fetchPlayerBatHistory(playerId, matchTypeId);
+      setDeleteBattingModelVisable(false);
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      setDeleteBattingModelVisable(false);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   const battingColumns = [
+    {
+      title: (
+        <Input
+          type="checkbox"
+          checked={
+            battingHistory.length > 0 &&
+            battingHistory.every((item) => item.selected)
+          }
+          onChange={handleSelectBattingAll}
+        />
+      ),
+      dataIndex: "select",
+      render: (text, record, index) => (
+        <Input
+          type="checkbox"
+          checked={record.selected || false}
+          onChange={() => handleBattingSelectRow(index)}
+        />
+      ),
+      key: "select",
+      style: { width: "5%" },
+    },
     {
       title: "Event",
       dataIndex: "eventName",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
-      render: (text, record) => (<Input
-        className="form-control medium-text-fields"
-        disabled
-        type="text"
-        value={text ? text : "-"}
-      />),
+      render: (text, record) => (
+        <Input
+          className="form-control medium-text-fields"
+          disabled
+          type="text"
+          value={text != null ? text : "-"}
+        />
+      ),
       key: "eventName",
       style: { width: "10%" },
     },
@@ -152,14 +269,12 @@ const MatchHistory = () => {
           <span className="text-danger">{record?.error?.matchCount}</span>
         </>
       ),
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "matchCount",
       style: { width: "3%" },
     },
     {
       title: "Inns",
       dataIndex: "inningsCount",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -180,7 +295,6 @@ const MatchHistory = () => {
     {
       title: "NO",
       dataIndex: "notOut",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -201,7 +315,6 @@ const MatchHistory = () => {
     {
       title: "Runs",
       dataIndex: "totalRuns",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -222,7 +335,6 @@ const MatchHistory = () => {
     {
       title: "OC",
       dataIndex: "outCount",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -243,7 +355,6 @@ const MatchHistory = () => {
     {
       title: "HS",
       dataIndex: "highestScore",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -264,7 +375,6 @@ const MatchHistory = () => {
     {
       title: "Ave",
       dataIndex: "average",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -272,7 +382,7 @@ const MatchHistory = () => {
             disabled
             className="form-control small-text-fields"
             type="text"
-            value={text != null ? text : '-'}
+            value={text != null ? text : "-"}
             onChange={(e) =>
               handleBattingValueChange(index, "average", e.target.value)
             }
@@ -286,7 +396,6 @@ const MatchHistory = () => {
     {
       title: "BF",
       dataIndex: "ballsFacedCount",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -307,7 +416,6 @@ const MatchHistory = () => {
     {
       title: "SR",
       dataIndex: "strikeRate",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -328,7 +436,6 @@ const MatchHistory = () => {
     {
       title: "100s",
       dataIndex: "countOf100",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -349,7 +456,6 @@ const MatchHistory = () => {
     {
       title: "50s",
       dataIndex: "countOf50",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -370,7 +476,6 @@ const MatchHistory = () => {
     {
       title: "4s",
       dataIndex: "countOf4",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -391,7 +496,6 @@ const MatchHistory = () => {
     {
       title: "6s",
       dataIndex: "countOf6",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -412,7 +516,6 @@ const MatchHistory = () => {
     {
       title: "Ct",
       dataIndex: "catchCount",
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -433,8 +536,6 @@ const MatchHistory = () => {
     {
       title: "St",
       dataIndex: "stumpCount",
-
-      // render: (text, record) => <span>{text ? text : "-"}</span>,
       render: (text, record, index) => (
         <>
           <Input
@@ -461,7 +562,6 @@ const MatchHistory = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            console.log(text, record, ind);
             if (editingIndex === ind) {
               // If already editing, save the data
               handleBattingSave(record);
@@ -481,16 +581,125 @@ const MatchHistory = () => {
     },
   ];
 
+  const handleSelectBowlingAll = (event) => {
+    const isChecked = event.target.checked;
+    const newBowlingHistory = bowlingHistory.map((item) => {
+      return {
+        ...item,
+        selected: isChecked,
+      };
+    });
+    setBowlingHistory(newBowlingHistory);
+  };
+
+  const handleBowlingSelectRow = (index) => {
+    setBowlingHistory((prevHistory) => {
+      const updatedHistory = [...prevHistory];
+      updatedHistory[index].selected = !updatedHistory[index].selected;
+      return updatedHistory;
+    });
+  };
+
+  const bowlingDelete = async () => {
+    const modifiedRows = bowlingHistory.filter((item) => item.selected);
+
+    if (modifiedRows.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "Please select at least one row.",
+          title: "Bowling History Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+
+    const deleteIds =
+      modifiedRows.length > 0
+        ? modifiedRows.filter((i) => i?.id !== null).map((item) => item.id)
+        : [];
+
+    if (deleteIds.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "No bowling history IDs selected for deletion.",
+          title: "Bowling History Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+    setDeleteBowlingModelVisable(true);
+  };
+
+  const handleBowlingDelete = async () => {
+    const modifiedRows = bowlingHistory.filter((item) => item.selected);
+
+    const deleteIds =
+      modifiedRows.length > 0
+        ? modifiedRows.filter((i) => i?.id !== null).map((item) => item.id)
+        : [];
+
+    try {
+      const response = await axiosInstance.post(
+        "/admin/commPlayerHistory/deleteBowlHis",
+        { id: deleteIds }
+      );
+      fetchPlayerBallHistory(playerId, matchTypeId);
+      setDeleteBowlingModelVisable(false);
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      setDeleteBowlingModelVisable(false);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   const bowlingColumns = [
+    {
+      title: (
+        <Input
+          type="checkbox"
+          checked={
+            bowlingHistory.length > 0 &&
+            bowlingHistory.every((item) => item.selected)
+          }
+          onChange={handleSelectBowlingAll}
+        />
+      ),
+      dataIndex: "select",
+      render: (text, record, index) => (
+        <Input
+          type="checkbox"
+          checked={record.selected || false}
+          onChange={() => handleBowlingSelectRow(index)}
+        />
+      ),
+      key: "select",
+      style: { width: "5%" },
+    },
     {
       title: "Event",
       dataIndex: "eventName",
-      render: (text, record) => (<Input
-        className="form-control medium-text-fields"
-        disabled
-        type="text"
-        value={text ? text : "-"}
-      />),
+      render: (text, record) => (
+        <Input
+          className="form-control medium-text-fields"
+          disabled
+          type="text"
+          value={text != null ? text : "-"}
+        />
+      ),
       key: "eventName",
       style: { width: "10%" },
     },
@@ -520,10 +729,16 @@ const MatchHistory = () => {
             type="text"
             value={text != null ? text : "-"}
             onChange={(e) =>
-              handleBowlingValueChange(index, "bowlerPlayedMatchCount", e.target.value)
+              handleBowlingValueChange(
+                index,
+                "bowlerPlayedMatchCount",
+                e.target.value
+              )
             }
           />
-          <span className="text-danger">{record?.error?.bowlerPlayedMatchCount}</span>
+          <span className="text-danger">
+            {record?.error?.bowlerPlayedMatchCount}
+          </span>
         </>
       ),
       key: "bowlerPlayedMatchCount",
@@ -540,10 +755,16 @@ const MatchHistory = () => {
             type="text"
             value={text != null ? text : "-"}
             onChange={(e) =>
-              handleBowlingValueChange(index, "bowlerPlayedInningsCount", e.target.value)
+              handleBowlingValueChange(
+                index,
+                "bowlerPlayedInningsCount",
+                e.target.value
+              )
             }
           />
-          <span className="text-danger">{record?.error?.bowlerPlayedInningsCount}</span>
+          <span className="text-danger">
+            {record?.error?.bowlerPlayedInningsCount}
+          </span>
         </>
       ),
       key: "bowlerPlayedInningsCount",
@@ -583,7 +804,9 @@ const MatchHistory = () => {
               handleBowlingValueChange(index, "runsFromBowler", e.target.value)
             }
           />
-          <span className="text-danger">{record?.error?.balrunsFromBowlerlCount}</span>
+          <span className="text-danger">
+            {record?.error?.balrunsFromBowlerlCount}
+          </span>
         </>
       ),
       key: "runsFromBowler",
@@ -620,10 +843,16 @@ const MatchHistory = () => {
             type="text"
             value={text != null ? text : "-"}
             onChange={(e) =>
-              handleBowlingValueChange(index, "bestBowlingInInnings", e.target.value)
+              handleBowlingValueChange(
+                index,
+                "bestBowlingInInnings",
+                e.target.value
+              )
             }
           />
-          <span className="text-danger">{record?.error?.bestBowlingInInnings}</span>
+          <span className="text-danger">
+            {record?.error?.bestBowlingInInnings}
+          </span>
         </>
       ),
       key: "bestBowlingInInnings",
@@ -640,10 +869,16 @@ const MatchHistory = () => {
             type="text"
             value={text != null ? text : "-"}
             onChange={(e) =>
-              handleBowlingValueChange(index, "bestBowlingInMatch", e.target.value)
+              handleBowlingValueChange(
+                index,
+                "bestBowlingInMatch",
+                e.target.value
+              )
             }
           />
-          <span className="text-danger">{record?.error?.bestBowlingInMatch}</span>
+          <span className="text-danger">
+            {record?.error?.bestBowlingInMatch}
+          </span>
         </>
       ),
       key: "bestBowlingInMatch",
@@ -700,7 +935,11 @@ const MatchHistory = () => {
             type="text"
             value={text != null ? text : "-"}
             onChange={(e) =>
-              handleBowlingValueChange(index, "bowlerStrikeRate", e.target.value)
+              handleBowlingValueChange(
+                index,
+                "bowlerStrikeRate",
+                e.target.value
+              )
             }
           />
           <span className="text-danger">{record?.error?.bowlerStrikeRate}</span>
@@ -778,7 +1017,6 @@ const MatchHistory = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            console.log(text, record, ind);
             if (editingIndexforBowl === ind) {
               // If already editing, save the data
               handleBowlingSave(record);
@@ -806,6 +1044,10 @@ const MatchHistory = () => {
             <h5 className="mb-0 font-size-16 font-bold">
               Batting Career Summary
             </h5>
+            <Button color="danger" className="btn" onClick={battingDelete}>
+              {" "}
+              Delete{" "}
+            </Button>
           </CardHeader>
           <CardBody className="p-1">
             <Table responsive>
@@ -827,10 +1069,10 @@ const MatchHistory = () => {
                           <td className="p-2" key={colIndex}>
                             {column.render
                               ? column.render(
-                                item[column.dataIndex],
-                                item,
-                                index
-                              )
+                                  item[column.dataIndex],
+                                  item,
+                                  index
+                                )
                               : item[column.dataIndex]}
                           </td>
                         ))}
@@ -849,6 +1091,10 @@ const MatchHistory = () => {
         <Card>
           <CardHeader className="d-flex align-items-center justify-content-between">
             <h5 className="mb-0 font-size-16">Bowling Career Summary</h5>
+            <Button color="danger" className="btn" onClick={bowlingDelete}>
+              {" "}
+              Delete{" "}
+            </Button>
           </CardHeader>
           <CardBody className="p-1">
             <Table responsive>
@@ -870,10 +1116,10 @@ const MatchHistory = () => {
                           <td className="p-2" key={colIndex}>
                             {column.render
                               ? column.render(
-                                item[column.dataIndex],
-                                item,
-                                index
-                              )
+                                  item[column.dataIndex],
+                                  item,
+                                  index
+                                )
                               : item[column.dataIndex]}
                           </td>
                         ))}
@@ -903,17 +1149,20 @@ const MatchHistory = () => {
           updatedHistory[index][key] = value;
 
           // Calculate average if key is 'outCount' or 'totalRuns'
-          if (key === 'outCount' || key === 'totalRuns') {
+          if (key === "outCount" || key === "totalRuns") {
             const batRun = Number(updatedHistory[index].totalRuns) || 0;
             const batOutCount = Number(updatedHistory[index].outCount) || 0;
-            updatedHistory[index].average = batOutCount !== 0 ? batRun / batOutCount : batRun;
+            updatedHistory[index].average =
+              batOutCount !== 0 ? batRun / batOutCount : batRun;
           }
 
           // Calculate strike rate if key is 'ballsFacedCount' or 'totalRuns'
-          if (key === 'ballsFacedCount' || key === 'totalRuns') {
+          if (key === "ballsFacedCount" || key === "totalRuns") {
             const batRun = Number(updatedHistory[index].totalRuns) || 0;
-            const ballsFacedCount = Number(updatedHistory[index].ballsFacedCount) || 0;
-            updatedHistory[index].strikeRate = ballsFacedCount !== 0 ? (batRun / ballsFacedCount) * 100 : 0;
+            const ballsFacedCount =
+              Number(updatedHistory[index].ballsFacedCount) || 0;
+            updatedHistory[index].strikeRate =
+              ballsFacedCount !== 0 ? (batRun / ballsFacedCount) * 100 : 0;
           }
         }
         return updatedHistory;
@@ -923,7 +1172,7 @@ const MatchHistory = () => {
 
   const handleBowlingValueChange = (index, key, value) => {
     const regex = /^\d*\.?\d*$/; // Only allow numbers and one optional decimal point
-  
+
     if (regex.test(value)) {
       setBowlingHistory((prevHistory) => {
         const updatedHistory = [...prevHistory];
@@ -935,7 +1184,7 @@ const MatchHistory = () => {
       });
     }
   };
-  
+
   const handleBattingSave = async (obj) => {
     const payload = {
       id: Number(obj.id),
@@ -1073,6 +1322,18 @@ const MatchHistory = () => {
                 </Row>
                 {renderMainSections()}
               </CardBody>
+              <DeletePlayerHistoryModel
+                deleteModelVisable={deleteBattingModelVisable}
+                setDeleteModelVisable={setDeleteBattingModelVisable}
+                handleDelete={handleBattingDelete}
+                data={"batting"}
+              />
+              <DeletePlayerHistoryModel
+                deleteModelVisable={deleteBowlingModelVisable}
+                setDeleteModelVisable={setDeleteBowlingModelVisable}
+                handleDelete={handleBowlingDelete}
+                data={"bowling"}
+              />
             </Card>
           </Row>
         </Container>
