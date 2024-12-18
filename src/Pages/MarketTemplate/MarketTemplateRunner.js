@@ -301,18 +301,6 @@ const MarketTemplateRunner = () => {
       style: { width: "10%" },
     },
     {
-      title: "Yes Rate",
-      dataIndex: "backPrice",
-      key: "backPrice",
-      style: { width: "10%" },
-    },
-    {
-      title: "Yes Point",
-      dataIndex: "backSize",
-      key: "backSize",
-      style: { width: "10%" },
-    },
-    {
       title: "No Rate",
       dataIndex: "layPrice",
       key: "layPrice",
@@ -322,6 +310,18 @@ const MarketTemplateRunner = () => {
       title: "No Point",
       dataIndex: "laySize",
       key: "laySize",
+      style: { width: "10%" },
+    },
+    {
+      title: "Yes Rate",
+      dataIndex: "backPrice",
+      key: "backPrice",
+      style: { width: "10%" },
+    },
+    {
+      title: "Yes Point",
+      dataIndex: "backSize",
+      key: "backSize",
       style: { width: "10%" },
     },
   ];
