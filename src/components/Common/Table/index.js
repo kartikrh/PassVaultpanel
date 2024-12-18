@@ -97,6 +97,7 @@ const Index = forwardRef(
       isDeletePermission,
       isSuspendPermission,
       isClosePermission,
+      isCancelPermission,
       isDeleteAllPermission,
       breadCrumbs,
       onBreadCrumbsClick,
@@ -1059,6 +1060,25 @@ const Index = forwardRef(
                             }}
                           >
                             Close
+                          </Button>
+                        )}
+                        {isCancelPermission && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              setSearchTerm("")
+                              singleCheck.length > 0
+                                ? cancelModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                          >
+                            Cancel
                           </Button>
                         )}
                         {isDeletePermission && (

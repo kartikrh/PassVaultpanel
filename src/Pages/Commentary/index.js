@@ -1451,7 +1451,6 @@ const Index = () => {
     competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
-    isCancelMarket: true,
     statusOptions: [
       {
         label: "All",
@@ -1533,6 +1532,11 @@ const Index = () => {
               PERMISSION_EDIT
             )}
             isClosePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_EDIT
+            )}
+            isCancelPermission={checkPermission(
               permissionObj,
               pageName,
               PERMISSION_EDIT
