@@ -170,7 +170,6 @@ const ChangeOverModal = ({
                     >
                         CONTINUE THIS OVER
                     </Button>
-                    <Button color="light" className="decision-Button" onClick={() => toggle()}>Close</Button>
                 </div>
             </ModalBody>
         </Modal >
