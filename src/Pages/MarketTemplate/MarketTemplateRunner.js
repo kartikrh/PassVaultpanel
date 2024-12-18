@@ -32,6 +32,7 @@ const MarketTemplateRunner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [newFormData, setNewFormData] = useState({});
+  const [isLineEdited, setIsLineEdited] = useState(false);
   const [marketTemplateId, setMarketTemplateId] = useState(
     +sessionStorage.getItem('marketTemplateRunnerId') || "0"
   );
@@ -140,12 +141,19 @@ const MarketTemplateRunner = () => {
 
   const handleReset = () => {
     fetchData(marketTemplateId);
+    setIsLineEdited(false);
   };
   const handleBackClick = () => {
     navigate("/marketTemplate");
   };
   const onFormDataChange = (newFormData) => {
-    setNewFormData(newFormData);
+    if (newFormData?.predefinedValue != newFormData?.line && !isLineEdited) {
+      const updatedFormData = { ...newFormData, line: newFormData?.predefinedValue };
+      setNewFormData(updatedFormData);
+      finalizeRef.current.updateFormFromParent(updatedFormData);
+    } else {
+      setNewFormData(newFormData);
+    }
   };
 
   const onGenerateClick = async () => {
@@ -156,6 +164,7 @@ const MarketTemplateRunner = () => {
           : 0,
         marketTemplateId: +marketTemplateId,
         runner: newFormData?.runner,
+        predefinedValue: newFormData?.predefinedValue,
         line: +newFormData?.line,
         overRate: +newFormData?.overRate,
         underRate: +newFormData?.underRate,
@@ -194,6 +203,14 @@ const MarketTemplateRunner = () => {
     }
   };
 
+  const handleFieldChange = (field, value) => {
+    if (field === "line") {
+      setIsLineEdited(true);
+    } else if (field === "predefinedValue") {
+      setIsLineEdited(false);
+    }
+  };
+  
   const columns = [
     {
       title: (
@@ -257,6 +274,12 @@ const MarketTemplateRunner = () => {
       title: "Runner",
       dataIndex: "runner",
       key: "runner",
+      style: { width: "10%" },
+    },
+    {
+      title: "Predefine",
+      dataIndex: "predefinedValue",
+      key: "predefinedValue",
       style: { width: "10%" },
     },
     {
@@ -348,6 +371,7 @@ const MarketTemplateRunner = () => {
                 fields={MarketTemplateRunnerFileds}
                 onFormDataChange={onFormDataChange}
                 generateAlias={onGenerateClick}
+                handleFieldChange={handleFieldChange}
               />
             </CardBody>
           </Card>
