@@ -15,21 +15,23 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                     dataSource={singleRunnerMarkets.map(market => {
                         const firstRunner = market?.runner && market.runner?.length > 0 ? market.runner[0] : undefined;
                         return {
-                        ...market,
-                        isSendData: market?.isSendData,
-                        rateDiff: market?.rateDiff,
-                        backPrice: firstRunner?.backPrice,
-                        backSize: firstRunner?.backSize,
-                        layPrice: firstRunner?.layPrice,
-                        laySize: firstRunner?.laySize,
-                        line: firstRunner?.line,
-                        overRate: firstRunner?.overRate,
-                        runnerId: firstRunner?.runnerId,
-                        runnerName: firstRunner?.runnerName,
-                        status: market?.status,
-                        underRate: firstRunner?.underRate,
-                        // ...(market.runner && market.runner[0]),
-                    }})}
+                            ...market,
+                            isSendData: market?.isSendData,
+                            rateDiff: market?.rateDiff,
+                            backPrice: firstRunner?.backPrice,
+                            backSize: firstRunner?.backSize,
+                            layPrice: firstRunner?.layPrice,
+                            laySize: firstRunner?.laySize,
+                            line: firstRunner?.line,
+                            overRate: firstRunner?.overRate,
+                            runnerId: firstRunner?.runnerId,
+                            runnerName: firstRunner?.runnerName,
+                            status: market?.status,
+                            underRate: firstRunner?.underRate,
+                            predefinedValue: firstRunner?.predefinedValue,
+                            // ...(market.runner && market.runner[0]),
+                        }
+                    })}
                     tableElement={{ title: `${category} - Single Runner Markets`, displayTitle: true }}
                     tableClassName="open-market-table-class"
                 />
