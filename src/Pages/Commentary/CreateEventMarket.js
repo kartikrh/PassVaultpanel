@@ -612,7 +612,7 @@ export const CreateEventMarket = () => {
             const marketKey = Object.keys(updatedMarkets).find(k => updatedMarkets[k].includes(market));
             const marketIndex = updatedMarkets[marketKey].findIndex(m => m === market);
             const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
-            // const updatedRunners = [...updatedMarket.runners];
+
             if (!updatedMarket.runners) {
                 updatedMarket.runners = [];
             }
@@ -621,15 +621,33 @@ export const CreateEventMarket = () => {
             }
             const updatedRunners = [...updatedMarket.runners];
 
-            // Parse the value as a float for numeric fields
-            const parsedValue = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'].includes(key)
+            const parsedValue = ['line', 'predefinedValue', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'].includes(key)
                 ? (value === null ? "" : parseFloat(value))
                 : value;
 
             updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
 
-            // If the line changes, recalculate the runner values
-            if (key === 'line' && !market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+            // If predefinedValue changes, update line and recalculate runner values
+            if (key === 'predefinedValue') {
+                updatedRunners[runnerIndex].line = parsedValue;
+
+                if (!market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
+                    const newRunnerValues = generateOverUnderLineMarketFancy({
+                        ...updatedRunners[runnerIndex],
+                        margin: updatedMarket.margin,
+                        rateDiff: updatedMarket?.rateDiff,
+                    });
+                    updatedRunners[runnerIndex] = { ...newRunnerValues, predefinedValue: parsedValue, line: parsedValue };
+                } else if (!market?.isPredefineRunnerValue) {
+                    const newRunnerValues = generateOverUnder({
+                        ...updatedRunners[runnerIndex],
+                        margin: updatedMarket.margin
+                    });
+                    updatedRunners[runnerIndex] = { ...newRunnerValues, predefinedValue: parsedValue, line: parsedValue };
+                }
+            }
+            // Existing line change logic
+            else if (key === 'line' && !market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
                 const newRunnerValues = generateOverUnderLineMarketFancy({
                     ...updatedRunners[runnerIndex],
                     margin: updatedMarket.margin,
@@ -642,13 +660,7 @@ export const CreateEventMarket = () => {
                     margin: updatedMarket.margin
                 });
                 updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } /* else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
-                const newRunnerValues = generateSameLayBack({
-                    ...updatedRunners[runnerIndex],
-                    margin: updatedMarket.margin
-                });
-                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } */
+            }
 
             updatedMarket.runners = updatedRunners;
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
@@ -1035,6 +1047,20 @@ export const CreateEventMarket = () => {
             ),
             style: { width: "15%" },
         },
+        {
+            title: "Pre",
+            key: "predefinedValue",
+            render: (text, record, onChange) => (
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.predefinedValue}
+                    onChange={(newValue) => onChange("predefinedValue", newValue)}
+                    placeholder="Predefined Value"
+                />
+            ),
+            style: { width: "5%" },
+        },
+
         {
             title: "Line",
             key: "line",
