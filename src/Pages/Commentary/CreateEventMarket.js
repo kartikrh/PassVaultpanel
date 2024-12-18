@@ -607,53 +607,77 @@ export const CreateEventMarket = () => {
     };
 
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
-        setProcessedMarkets(prevMarkets => {
+        setProcessedMarkets((prevMarkets) => {
             const updatedMarkets = { ...prevMarkets };
-            const marketKey = Object.keys(updatedMarkets).find(k => updatedMarkets[k].includes(market));
-            const marketIndex = updatedMarkets[marketKey].findIndex(m => m === market);
+            const marketKey = Object.keys(updatedMarkets).find((k) => updatedMarkets[k].includes(market));
+            const marketIndex = updatedMarkets[marketKey].findIndex((m) => m === market);
             const updatedMarket = { ...updatedMarkets[marketKey][marketIndex] };
-            // const updatedRunners = [...updatedMarket.runners];
+
             if (!updatedMarket.runners) {
                 updatedMarket.runners = [];
             }
-            if (!updatedMarket.runners[runnerIndex]) {
-                updatedMarket.runners[runnerIndex] = {};
+
+            if (key === "predefinedValue") {
+                // Update both predefinedValue and line
+                updatedMarket.runners[runnerIndex] = {
+                    ...updatedMarket.runners[runnerIndex],
+                    predefinedValue: parseFloat(value),
+                    line: parseFloat(value), // Ensure line gets updated to the same value
+                };
+
+                // Recalculate runner-related fields if necessary
+                updatedMarket.runners[runnerIndex] = {
+                    ...updatedMarket.runners[runnerIndex],
+                    ...generateRunnerValues(
+                        updatedMarket.runners[runnerIndex],
+                        updatedMarket.margin,
+                        updatedMarket.rateDiff
+                    ),
+                };
+            } else if (key === "line") {
+                // Update line but do not update predefinedValue
+                updatedMarket.runners[runnerIndex] = {
+                    ...updatedMarket.runners[runnerIndex],
+                    line: parseFloat(value),
+                };
+
+                // Recalculate runner-related fields
+                updatedMarket.runners[runnerIndex] = {
+                    ...updatedMarket.runners[runnerIndex],
+                    ...generateRunnerValues(
+                        updatedMarket.runners[runnerIndex],
+                        updatedMarket.margin,
+                        updatedMarket.rateDiff
+                    ),
+                };
+            } else {
+                // Update other fields as usual
+                const parsedValue = ["line", "predefinedValue", "overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
+                    ? value === null
+                        ? ""
+                        : parseFloat(value)
+                    : value;
+
+                updatedMarket.runners[runnerIndex] = {
+                    ...updatedMarket.runners[runnerIndex],
+                    [key]: parsedValue,
+                };
             }
-            const updatedRunners = [...updatedMarket.runners];
 
-            // Parse the value as a float for numeric fields
-            const parsedValue = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'].includes(key)
-                ? (value === null ? "" : parseFloat(value))
-                : value;
-
-            updatedRunners[runnerIndex] = { ...updatedRunners[runnerIndex], [key]: parsedValue };
-
-            // If the line changes, recalculate the runner values
-            if (key === 'line' && !market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket)) {
-                const newRunnerValues = generateOverUnderLineMarketFancy({
-                    ...updatedRunners[runnerIndex],
-                    margin: updatedMarket.margin,
-                    rateDiff: updatedMarket?.rateDiff,
-                });
-                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } else if (key === 'line' && !market?.isPredefineRunnerValue) {
-                const newRunnerValues = generateOverUnder({
-                    ...updatedRunners[runnerIndex],
-                    margin: updatedMarket.margin
-                });
-                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } /* else if (key === 'line' && !market?.isPredefineRunnerValue && parseInt(market.lineType) === 2) {
-                const newRunnerValues = generateSameLayBack({
-                    ...updatedRunners[runnerIndex],
-                    margin: updatedMarket.margin
-                });
-                updatedRunners[runnerIndex] = { ...newRunnerValues, line: parsedValue };
-            } */
-
-            updatedMarket.runners = updatedRunners;
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
             return updatedMarkets;
         });
+    };
+
+    // Helper function to generate runner values based on line
+    const generateRunnerValues = (runner, margin, rateDiff) => {
+        const isFancyOrLineMarket = runner.marketTypeId === marketTypeObj?.Fancy || runner.marketTypeId === marketTypeObj?.LineMarket;
+
+        if (isFancyOrLineMarket) {
+            return generateOverUnderLineMarketFancy({ ...runner, margin, rateDiff });
+        } else {
+            return generateOverUnder({ ...runner, margin });
+        }
     };
 
     const renderTable = (markets, sectionKey) => {
@@ -1035,6 +1059,20 @@ export const CreateEventMarket = () => {
             ),
             style: { width: "15%" },
         },
+        {
+            title: "Pre",
+            key: "predefinedValue",
+            render: (text, record, onChange) => (
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.predefinedValue}
+                    onChange={(newValue) => onChange("predefinedValue", newValue)}
+                    placeholder="Predefined Value"
+                />
+            ),
+            style: { width: "5%" },
+        },
+
         {
             title: "Line",
             key: "line",
