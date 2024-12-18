@@ -32,7 +32,7 @@ const MarketTemplateRunner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [newFormData, setNewFormData] = useState({});
-  const [isLineEdited, setIsLineEdited] = useState(false);
+  const [isPredefineEdited, setIsPredefineEdited] = useState(false);
   const [marketTemplateId, setMarketTemplateId] = useState(
     +sessionStorage.getItem('marketTemplateRunnerId') || "0"
   );
@@ -141,13 +141,13 @@ const MarketTemplateRunner = () => {
 
   const handleReset = () => {
     fetchData(marketTemplateId);
-    setIsLineEdited(false);
+    setIsPredefineEdited(false);
   };
   const handleBackClick = () => {
     navigate("/marketTemplate");
   };
   const onFormDataChange = (newFormData) => {
-    if (newFormData?.predefinedValue != newFormData?.line && !isLineEdited) {
+    if (newFormData?.predefinedValue != newFormData?.line && isPredefineEdited) {
       const updatedFormData = { ...newFormData, line: newFormData?.predefinedValue };
       setNewFormData(updatedFormData);
       finalizeRef.current.updateFormFromParent(updatedFormData);
@@ -204,10 +204,10 @@ const MarketTemplateRunner = () => {
   };
 
   const handleFieldChange = (field, value) => {
-    if (field === "line") {
-      setIsLineEdited(true);
-    } else if (field === "predefinedValue") {
-      setIsLineEdited(false);
+    if (field === "predefinedValue") {
+      setIsPredefineEdited(true);
+    } else {
+      setIsPredefineEdited(false);
     }
   };
   
