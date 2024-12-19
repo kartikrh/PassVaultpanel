@@ -6,7 +6,7 @@ import { PERMISSION_VIEW, TAB_SCORING_LOGS } from "../../components/Common/Const
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
 
@@ -57,7 +57,8 @@ function ScoringLogs() {
     if (isSearch) {
       payload = {
         ...payload,
-        ...dateRange,
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
     await axiosInstance

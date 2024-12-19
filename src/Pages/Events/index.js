@@ -10,7 +10,7 @@ import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import moment from "moment";
 import { Tooltip } from "antd";
@@ -41,7 +41,8 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/events/all`, {
         ...(value || tableActions),
-        ...dateRange
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.eventId - b?.eventId);

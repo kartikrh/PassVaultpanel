@@ -20,6 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
+  convertDateLocalToUTC,
   convertDateUTCToLocal,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -99,7 +100,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        ...dateRange,
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
     if (latestValueFromTable?.eventTypeId === null) {
