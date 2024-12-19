@@ -170,10 +170,27 @@ export const OpenMarket = () => {
                 if (market.marketId === record.marketId) {
                     let updatedMarket = { ...market };
 
+                    // Handle predefinedValue changes
+                    if (key === 'predefinedValue') {
+                        updatedMarket.predefinedValue = value;
+                        // If you want to update line when predefinedValue changes
+                        if (Array.isArray(updatedMarket.runner) && updatedMarket.runner.length === 1) {
+                            updatedMarket.runner[0].line = value;
+                            // Update other dependent values
+                            updatedMarket = generateOverUnderLineType({
+                                ...updatedMarket,
+                                line: value,
+                                backSize: updatedMarket.runner[0]?.backSize,
+                                laySize: updatedMarket.runner[0]?.laySize
+                            }, marketTypeObj);
+                        }
+                        return updatedMarket;
+                    }
+
+                    // Rest of the existing handleValueChange logic...
                     // Check if this is a status change at market level
                     if (key === 'status') {
                         updatedMarket.status = +value;
-                        // Update all runners' status to match market status
                         if (Array.isArray(updatedMarket.runner)) {
                             updatedMarket.runner = updatedMarket.runner.map(runner => ({
                                 ...runner,
@@ -183,7 +200,6 @@ export const OpenMarket = () => {
                         return updatedMarket;
                     }
 
-                    // Original logic for other changes remains the same
                     const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
                         updatedMarket.runner = updatedMarket.runner.map(runner => ({
@@ -366,6 +382,7 @@ export const OpenMarket = () => {
             if (eventMarket.runner) {
                 return {
                     ...eventMarket,
+                    predefinedValue: eventMarket.predefinedValue, // Explicitly preserve predefinedValue
                     teamName: teamData[eventMarket.teamId],
                     // Keep the original market status
                     status: eventMarket.status,
@@ -415,6 +432,7 @@ export const OpenMarket = () => {
                     let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
+                        predefinedValue: eventMarket.predefinedValue,
                         isNewSocketData: true,
                         margin: parseFloat(eventMarket.margin).toFixed(2), // Preserve margin formatting
                         runner: runners // Ensure runner is always an array
@@ -527,10 +545,17 @@ export const OpenMarket = () => {
             updatedRecord.runner = [{
                 ...record.runner[0],
                 line: newValue,
+                predefinedValue: newValue, // Keep both values in sync
                 layPrice: roundedLine,
                 backPrice: (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket) ? roundedLine + parseFloat(record?.rateDiff || 0) : roundedLine + 1
             }];
-            updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType, marketTypeId: updatedRecord.marketTypeId, rateDiff: updatedRecord?.rateDiff }, marketTypeObj);
+            updatedRecord.runner[0] = generateOverUnderLineType({
+                ...updatedRecord.runner[0],
+                margin: updatedRecord.margin,
+                lineType: updatedRecord.lineType,
+                marketTypeId: updatedRecord.marketTypeId,
+                rateDiff: updatedRecord?.rateDiff
+            }, marketTypeObj);
         } else {
             const roundedLine = Math.round(parseFloat(newValue));
             // Multi-runner market or market-level change
@@ -606,6 +631,27 @@ export const OpenMarket = () => {
             key: "status",
             className: "p-0",
             columnClassName: "p-1"
+        },
+        {
+            title: "Predefined",
+            dataIndex: "predefinedValue",
+            render: (text, record) => {
+                // Only show for single runner markets
+                if (record.runner && record.runner.length === 1) {
+                    return (
+                        <CustomInput
+                            className="form-control small-text-fields"
+                            value={text === null ? "" : text}
+                            onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
+                        />
+                    );
+                }
+                return null;
+            },
+            key: "predefinedValue",
+            className: "p-0",
+            columnClassName: "p-1",
+            hidden: true
         },
         {
             title: "Line",
