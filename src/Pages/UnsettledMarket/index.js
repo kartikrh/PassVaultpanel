@@ -12,7 +12,7 @@ import {
   PERMISSION_VIEW,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import CancelModal from "./CancelModal";
 import ResultModal from "./ResultModal";
 import "./modal.css";
@@ -63,7 +63,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        ...dateRange,
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
     if (latestValueFromTable?.eventTypeId === null) {
