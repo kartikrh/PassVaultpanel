@@ -32,6 +32,7 @@ const MarketTemplateRunner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [newFormData, setNewFormData] = useState({});
+  const [isPredefineEdited, setIsPredefineEdited] = useState(false);
   const [marketTemplateId, setMarketTemplateId] = useState(
     +sessionStorage.getItem('marketTemplateRunnerId') || "0"
   );
@@ -140,12 +141,19 @@ const MarketTemplateRunner = () => {
 
   const handleReset = () => {
     fetchData(marketTemplateId);
+    setIsPredefineEdited(false);
   };
   const handleBackClick = () => {
     navigate("/marketTemplate");
   };
   const onFormDataChange = (newFormData) => {
-    setNewFormData(newFormData);
+    if (newFormData?.predefinedValue != newFormData?.line && isPredefineEdited) {
+      const updatedFormData = { ...newFormData, line: newFormData?.predefinedValue };
+      setNewFormData(updatedFormData);
+      finalizeRef.current.updateFormFromParent(updatedFormData);
+    } else {
+      setNewFormData(newFormData);
+    }
   };
 
   const onGenerateClick = async () => {
@@ -156,6 +164,7 @@ const MarketTemplateRunner = () => {
           : 0,
         marketTemplateId: +marketTemplateId,
         runner: newFormData?.runner,
+        predefinedValue: newFormData?.predefinedValue,
         line: +newFormData?.line,
         overRate: +newFormData?.overRate,
         underRate: +newFormData?.underRate,
@@ -194,6 +203,14 @@ const MarketTemplateRunner = () => {
     }
   };
 
+  const handleFieldChange = (field, value) => {
+    if (field === "predefinedValue") {
+      setIsPredefineEdited(true);
+    } else {
+      setIsPredefineEdited(false);
+    }
+  };
+  
   const columns = [
     {
       title: (
@@ -260,6 +277,12 @@ const MarketTemplateRunner = () => {
       style: { width: "10%" },
     },
     {
+      title: "Predefine",
+      dataIndex: "predefinedValue",
+      key: "predefinedValue",
+      style: { width: "10%" },
+    },
+    {
       title: "Line",
       dataIndex: "line",
       key: "line",
@@ -278,18 +301,6 @@ const MarketTemplateRunner = () => {
       style: { width: "10%" },
     },
     {
-      title: "Yes Rate",
-      dataIndex: "backPrice",
-      key: "backPrice",
-      style: { width: "10%" },
-    },
-    {
-      title: "Yes Point",
-      dataIndex: "backSize",
-      key: "backSize",
-      style: { width: "10%" },
-    },
-    {
       title: "No Rate",
       dataIndex: "layPrice",
       key: "layPrice",
@@ -299,6 +310,18 @@ const MarketTemplateRunner = () => {
       title: "No Point",
       dataIndex: "laySize",
       key: "laySize",
+      style: { width: "10%" },
+    },
+    {
+      title: "Yes Rate",
+      dataIndex: "backPrice",
+      key: "backPrice",
+      style: { width: "10%" },
+    },
+    {
+      title: "Yes Point",
+      dataIndex: "backSize",
+      key: "backSize",
       style: { width: "10%" },
     },
   ];
@@ -348,6 +371,7 @@ const MarketTemplateRunner = () => {
                 fields={MarketTemplateRunnerFileds}
                 onFormDataChange={onFormDataChange}
                 generateAlias={onGenerateClick}
+                handleFieldChange={handleFieldChange}
               />
             </CardBody>
           </Card>

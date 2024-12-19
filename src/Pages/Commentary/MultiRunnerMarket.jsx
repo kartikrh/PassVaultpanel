@@ -52,7 +52,17 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
             runner: localMarket.runner.map(runner => {
                 if (runner.runnerId === runnerId) {
                     let updatedRunner = { ...runner, [key]: value };
-                    if (key === 'line') {
+                    if (key === 'predefinedValue') {
+                        updatedRunner = { ...runner, "line": value }
+                        updatedRunner = generateOverUnderLineType({
+                            ...updatedRunner,
+                            margin: localMarket.margin, // Use market-level margin
+                            lineType: localMarket?.lineType,
+                            marketTypeId: localMarket?.marketTypeId,
+                            rateDiff: localMarket?.rateDiff,
+                        }, marketTypeObj);
+                    }
+                    else if (key === 'line') {
                         updatedRunner = generateOverUnderLineType({
                             ...updatedRunner,
                             margin: localMarket.margin, // Use market-level margin
@@ -206,6 +216,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                     <tr>
                         <th>Runner</th>
                         <th>Status</th>
+                        <th>Pre</th>
                         <th>Line</th>
                         <th>R-R</th>
                         <th>R-No</th>
@@ -230,6 +241,13 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                         <option key={key} value={key}>{value}</option>
                                     )}
                                 </select>
+                            </td>
+                            <td>
+                                <CustomInput
+                                    className="form-control small-text-fields input-line-field"
+                                    value={runner?.predefinedValue === null ? "" : runner.predefinedValue}
+                                    onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "predefinedValue", newValue)}
+                                />
                             </td>
                             <td>
                                 <CustomInput

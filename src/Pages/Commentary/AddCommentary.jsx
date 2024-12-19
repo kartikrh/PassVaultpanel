@@ -48,6 +48,7 @@ function AddCommentary() {
     const location = useLocation();
     const [id, setId] = useState(location.state?.userId || "0");
     const [competitionId, setCompetitionId] = useState(0);
+    const [isFormAValid, setIsFormAValid] = useState(false);
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -97,6 +98,30 @@ function AddCommentary() {
     const handleFormADataChange = (newFormData) => {
         setSavedFormState(newFormData);
         setCompetitionId(newFormData["competitionId"]);
+        const requiredFields = ["competitionId", "eventTypeId", "eventId", "matchTypeId", "eventRefId", "eventName", "eventDate", "delay"];
+        const isValid = requiredFields.every(
+           (field) => newFormData[field] && newFormData[field] !== "0"
+        );
+        setIsFormAValid(isValid);
+
+        if (newFormData["competitionId"] && newFormData["competitionId"] != 0 && newFormData["competitionId"] !== savedFormState["competitionId"]) {
+            setIsApiLoading(true);
+            axiosInstance.post('/admin/commentary/teamList', { competitionId : newFormData["competitionId"] })
+            .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item?.teamName, value: item?.teamId }
+                }).filter(element => element.value);
+                setMasterData((preData) => ({
+                    ...preData,
+                    "team1Id": formattedData,
+                    "team2Id": formattedData
+                }));
+                setIsApiLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
+            });
+        }    
         if (newFormData["eventTypeId"] !== savedFormState["eventTypeId"]) {
             setMasterData((preData) => ({
                 ...preData,
@@ -350,22 +375,22 @@ function AddCommentary() {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsApiLoading(false);
             });
-        setIsApiLoading(true);
-        axiosInstance.post('/admin/commentary/teamList', {})
-            .then((response) => {
-                const formattedData = response?.result?.map(item => {
-                    return { label: item?.teamName, value: item?.teamId }
-                }).filter(element => element.value);
-                setMasterData((preData) => ({
-                    ...preData,
-                    "team1Id": formattedData,
-                    "team2Id": formattedData
-                }));
-                setIsApiLoading(false);
-            }).catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                setIsApiLoading(false);
-            });
+        // setIsApiLoading(true);
+        // axiosInstance.post('/admin/commentary/teamList', {})
+        //     .then((response) => {
+        //         const formattedData = response?.result?.map(item => {
+        //             return { label: item?.teamName, value: item?.teamId }
+        //         }).filter(element => element.value);
+        //         setMasterData((preData) => ({
+        //             ...preData,
+        //             "team1Id": formattedData,
+        //             "team2Id": formattedData
+        //         }));
+        //         setIsApiLoading(false);
+        //     }).catch((error) => {
+        //         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        //         setIsApiLoading(false);
+        //     });
         setIsApiLoading(true);
         axiosInstance.post('/admin/commentary/eventTypeList', {})
             .then((response) => {
@@ -529,12 +554,15 @@ function AddCommentary() {
                                                 }}>Previous</Link>
                                         </li>}
                                         {activeTab !== 2 && <li className="next">
-                                            <Link to="#"
+                                            <Button
+                                                color="primary"
+                                                className="btn"
+                                                disabled={!isFormAValid}
                                                 onClick={() => {
                                                     toggleTab(activeTab + 1);
                                                 }}>
                                                 Next
-                                            </Link>
+                                            </Button>
                                         </li>}
                                     </ul>
                                 </div>
