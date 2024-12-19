@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { NON_STRIKE, ON_STRIKE } from '../CommentartConst';
+import { generateBallLabelFromBall } from '../functions';
 
 const ChangeOverModal = ({
     isOpen,
@@ -36,48 +37,81 @@ const ChangeOverModal = ({
         }
     };
 
-    const generateBalls = (ballArray = []) => {
-        if (!Array.isArray(ballArray)) return null;
+    // const generateBalls = (ballArray = []) => {
+    //     if (!Array.isArray(ballArray)) return null;
 
-        return ballArray.map((element, index) => {
-            const previousValue = ballArray[index - 1];
-            const nextValue = ballArray[index + 1];
-            const isWicket = +element?.isWicket !== 0;
-            const isBoundary = +element?.isBoundary !== 0;
-            const ballTypeAdd = generateBallLabel(element?.type, isWicket);
-            const ballColor = isWicket ? "over-modal-wicket" :
-                ballTypeAdd ? "over-modal-extra" :
-                    isBoundary ? "over-modal-boundary" :
-                        "over-modal-normal";
+    //     return ballArray.map((element, index) => {
+    //         const previousValue = ballArray[index - 1];
+    //         const nextValue = ballArray[index + 1];
+    //         const isWicket = +element?.isWicket !== 0;
+    //         const isBoundary = +element?.isBoundary !== 0;
+    //         const ballTypeAdd = generateBallLabel(element?.type, isWicket);
+    //         const ballColor = isWicket ? "over-modal-wicket" :
+    //             ballTypeAdd ? "over-modal-extra" :
+    //                 isBoundary ? "over-modal-boundary" :
+    //                     "over-modal-normal";
 
-            const ballValue = ballTypeAdd ?
-                (element.value > 0 ? element.value : "") :
-                element.value;
+    //         const ballValue = ballTypeAdd ?
+    //             (element.value > 0 ? element.value : "") :
+    //             element.value;
 
-            if (previousValue && previousValue.isWicket &&
-                previousValue?.overCount === element?.overCount) {
-                return null;
-            }
+    //         if (previousValue && previousValue.isWicket &&
+    //             previousValue?.overCount === element?.overCount) {
+    //             return null;
+    //         }
 
-            let displayValue;
-            if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
-                const nextIsWicket = +nextValue?.isWicket !== 0;
-                const nextBallTypeAdd = generateBallLabel(nextValue?.type, nextIsWicket);
-                const nextBallValue = nextBallTypeAdd ?
-                    (nextValue.value > 0 ? nextValue.value : "") :
-                    nextValue.value;
-                displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`;
-            } else {
-                displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
-            }
+    //         let displayValue;
+    //         if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
+    //             const nextIsWicket = +nextValue?.isWicket !== 0;
+    //             const nextBallTypeAdd = generateBallLabel(nextValue?.type, nextIsWicket);
+    //             const nextBallValue = nextBallTypeAdd ?
+    //                 (nextValue.value > 0 ? nextValue.value : "") :
+    //                 nextValue.value;
+    //             displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`;
+    //         } else {
+    //             displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
+    //         }
 
-            return (
-                <div key={`ball ${index}`} className={`over-modal-ball ${ballColor}`}>
+    //         return (
+    //             <div key={`ball ${index}`} className={`over-modal-ball ${ballColor}`}>
+    //                 {displayValue}
+    //             </div>
+    //         );
+    //     });
+    // };
+
+    const generateBallfromArray = (ballArray = []) => {
+            return ballArray?.map((element, index) => {
+                const previousValue = ballArray[index - 1]
+                const nextValue = ballArray[index + 1]
+                const isWicket = +element?.isWicket !== 0
+                const isBoundary = +element?.isBoundary !== 0
+                const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
+                const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
+                const ballValue = ballTypeAdd ?
+                    element.value > 0 ?
+                        element.value : ""
+                    : element.value
+                if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
+                    return null;
+                }
+                let displayValue
+                if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
+                    const nextIsWicket = +nextValue?.isWicket !== 0
+                    const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
+                    const nextBallValue = nextBallTypeAdd ?
+                        nextValue.value > 0 ?
+                            nextValue.value : ""
+                        : nextValue.value
+                    displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`
+                } else {
+                    displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
+                }
+                return <div key={`ball ${index}`} className={`px-3 py-md-2 py-1 shadow-sm rounded mx-1 over-ball-display ${ballColor}`}>
                     {displayValue}
                 </div>
-            );
-        });
-    };
+            })
+        }
 
     const nextOverNumber = Math.ceil(currentOver?.over || 0) + 1;
     const overKey = `${currentOver?.currentInnings}_##_${battingTeam?.teamId}_##_${nextOverNumber}`;
@@ -152,7 +186,7 @@ const ChangeOverModal = ({
                         End of over {Math.ceil(battingTeam?.teamOver || 0)} by {bowlerName}
                     </div>
                     <div className="over-modal-balls-container">
-                        {generateBalls(currentOverBalls)}
+                        {generateBallfromArray(currentOverBalls)}
                         <span className="over-modal-total">= {currentOver?.totalRun}</span>
                     </div>
                 </div>
