@@ -114,7 +114,6 @@ export const OpenMarket = () => {
                 workingRecord.runner = workingRecord.runner.map(runner => ({
                     ...runner,
                     line: +(runner.line || 0),
-                    predefinedValue: +(runner.predefinedValue || 0),
                     overRate: +(runner.overRate || 0),
                     underRate: +(runner.underRate || 0),
                     backPrice: +(runner.backPrice || 0),
@@ -129,7 +128,6 @@ export const OpenMarket = () => {
                 workingRecord.runner = [{
                     ...workingRecord.runner,
                     line: +(workingRecord.runner.line || 0),
-                    predefinedValue: +(workingRecord.runner.predefinedValue || 0),
                     overRate: +(workingRecord.runner.overRate || 0),
                     underRate: +(workingRecord.runner.underRate || 0),
                     backPrice: +(workingRecord.runner.backPrice || 0),
@@ -186,7 +184,7 @@ export const OpenMarket = () => {
                     }
 
                     // Original logic for other changes remains the same
-                    const runnerProperties = ['line', 'predefinedValue', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
                         updatedMarket.runner = updatedMarket.runner.map(runner => ({
                             ...runner,
@@ -394,7 +392,6 @@ export const OpenMarket = () => {
                         runnerId: runner.runnerId,
                         runnerName: runner.runner,
                         line: runner.line,
-                        predefinedValue: runner.predefinedValue,
                         overRate: runner.overRate,
                         underRate: runner.underRate,
                         status: +runner.status, // Ensure status is a number
@@ -406,7 +403,6 @@ export const OpenMarket = () => {
                         runnerId: eventMarket.runnerId,
                         runnerName: eventMarket.runner,
                         line: eventMarket.line,
-                        predefinedValue: eventMarket.predefinedValue,
                         overRate: eventMarket.overRate,
                         underRate: eventMarket.underRate,
                         status: +eventMarket.status, // Ensure status is a number
@@ -425,7 +421,7 @@ export const OpenMarket = () => {
                     };
 
                     // Remove redundant fields from the top level after mapping runner
-                    const redundantFields = ['runnerId', 'line', 'predefinedValue', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    const redundantFields = ['runnerId', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     redundantFields.forEach(field => delete updatedMarketData[field]);
 
                     // Ensure that the new data replaces old data in the market
@@ -609,20 +605,6 @@ export const OpenMarket = () => {
             ),
             key: "status",
             className: "p-0",
-            columnClassName: "p-1"
-        },
-        {
-            title: "Pre",
-            dataIndex: "predefinedValue",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-line-field"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => updateLineAndDependency(record, newValue)}
-                />
-            ),
-            key: "predefinedValue",
-            className: "p-0 input-line-field",
             columnClassName: "p-1"
         },
         {
