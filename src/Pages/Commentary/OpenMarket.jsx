@@ -114,7 +114,6 @@ export const OpenMarket = () => {
                 workingRecord.runner = workingRecord.runner.map(runner => ({
                     ...runner,
                     line: +(runner.line || 0),
-                    predefinedValue: +(runner.predefinedValue || 0),
                     overRate: +(runner.overRate || 0),
                     underRate: +(runner.underRate || 0),
                     backPrice: +(runner.backPrice || 0),
@@ -129,7 +128,6 @@ export const OpenMarket = () => {
                 workingRecord.runner = [{
                     ...workingRecord.runner,
                     line: +(workingRecord.runner.line || 0),
-                    predefinedValue: +(workingRecord.runner.predefinedValue || 0),
                     overRate: +(workingRecord.runner.overRate || 0),
                     underRate: +(workingRecord.runner.underRate || 0),
                     backPrice: +(workingRecord.runner.backPrice || 0),
@@ -172,10 +170,27 @@ export const OpenMarket = () => {
                 if (market.marketId === record.marketId) {
                     let updatedMarket = { ...market };
 
+                    // Handle predefinedValue changes
+                    if (key === 'predefinedValue') {
+                        updatedMarket.predefinedValue = value;
+                        // If you want to update line when predefinedValue changes
+                        if (Array.isArray(updatedMarket.runner) && updatedMarket.runner.length === 1) {
+                            updatedMarket.runner[0].line = value;
+                            // Update other dependent values
+                            updatedMarket = generateOverUnderLineType({
+                                ...updatedMarket,
+                                line: value,
+                                backSize: updatedMarket.runner[0]?.backSize,
+                                laySize: updatedMarket.runner[0]?.laySize
+                            }, marketTypeObj);
+                        }
+                        return updatedMarket;
+                    }
+
+                    // Rest of the existing handleValueChange logic...
                     // Check if this is a status change at market level
                     if (key === 'status') {
                         updatedMarket.status = +value;
-                        // Update all runners' status to match market status
                         if (Array.isArray(updatedMarket.runner)) {
                             updatedMarket.runner = updatedMarket.runner.map(runner => ({
                                 ...runner,
@@ -185,8 +200,7 @@ export const OpenMarket = () => {
                         return updatedMarket;
                     }
 
-                    // Original logic for other changes remains the same
-                    const runnerProperties = ['line', 'predefinedValue', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
                         updatedMarket.runner = updatedMarket.runner.map(runner => ({
                             ...runner,
@@ -368,6 +382,7 @@ export const OpenMarket = () => {
             if (eventMarket.runner) {
                 return {
                     ...eventMarket,
+                    predefinedValue: eventMarket.predefinedValue, // Explicitly preserve predefinedValue
                     teamName: teamData[eventMarket.teamId],
                     // Keep the original market status
                     status: eventMarket.status,
@@ -394,7 +409,6 @@ export const OpenMarket = () => {
                         runnerId: runner.runnerId,
                         runnerName: runner.runner,
                         line: runner.line,
-                        predefinedValue: runner.predefinedValue,
                         overRate: runner.overRate,
                         underRate: runner.underRate,
                         status: +runner.status, // Ensure status is a number
@@ -406,7 +420,6 @@ export const OpenMarket = () => {
                         runnerId: eventMarket.runnerId,
                         runnerName: eventMarket.runner,
                         line: eventMarket.line,
-                        predefinedValue: eventMarket.predefinedValue,
                         overRate: eventMarket.overRate,
                         underRate: eventMarket.underRate,
                         status: +eventMarket.status, // Ensure status is a number
@@ -419,13 +432,14 @@ export const OpenMarket = () => {
                     let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
+                        predefinedValue: eventMarket.predefinedValue,
                         isNewSocketData: true,
                         margin: parseFloat(eventMarket.margin).toFixed(2), // Preserve margin formatting
                         runner: runners // Ensure runner is always an array
                     };
 
                     // Remove redundant fields from the top level after mapping runner
-                    const redundantFields = ['runnerId', 'line', 'predefinedValue', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    const redundantFields = ['runnerId', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     redundantFields.forEach(field => delete updatedMarketData[field]);
 
                     // Ensure that the new data replaces old data in the market
@@ -531,10 +545,17 @@ export const OpenMarket = () => {
             updatedRecord.runner = [{
                 ...record.runner[0],
                 line: newValue,
+                predefinedValue: newValue, // Keep both values in sync
                 layPrice: roundedLine,
                 backPrice: (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket) ? roundedLine + parseFloat(record?.rateDiff || 0) : roundedLine + 1
             }];
-            updatedRecord.runner[0] = generateOverUnderLineType({ ...updatedRecord.runner[0], margin: updatedRecord.margin, lineType: updatedRecord.lineType, marketTypeId: updatedRecord.marketTypeId, rateDiff: updatedRecord?.rateDiff }, marketTypeObj);
+            updatedRecord.runner[0] = generateOverUnderLineType({
+                ...updatedRecord.runner[0],
+                margin: updatedRecord.margin,
+                lineType: updatedRecord.lineType,
+                marketTypeId: updatedRecord.marketTypeId,
+                rateDiff: updatedRecord?.rateDiff
+            }, marketTypeObj);
         } else {
             const roundedLine = Math.round(parseFloat(newValue));
             // Multi-runner market or market-level change
@@ -612,18 +633,25 @@ export const OpenMarket = () => {
             columnClassName: "p-1"
         },
         {
-            title: "Pre",
+            title: "Predefined",
             dataIndex: "predefinedValue",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-line-field"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => updateLineAndDependency(record, newValue)}
-                />
-            ),
+            render: (text, record) => {
+                // Only show for single runner markets
+                if (record.runner && record.runner.length === 1) {
+                    return (
+                        <CustomInput
+                            className="form-control small-text-fields"
+                            value={text === null ? "" : text}
+                            onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
+                        />
+                    );
+                }
+                return null;
+            },
             key: "predefinedValue",
-            className: "p-0 input-line-field",
-            columnClassName: "p-1"
+            className: "p-0",
+            columnClassName: "p-1",
+            hidden: true
         },
         {
             title: "Line",
