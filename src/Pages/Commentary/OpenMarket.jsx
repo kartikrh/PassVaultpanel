@@ -33,6 +33,8 @@ export const OpenMarket = () => {
     const [debouncedLineRatio, setDebouncedLineRatio] = useState(lineRatio);
     const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const [originalMarketData, setOriginalMarketData] = useState({});
+    const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
+
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -56,7 +58,7 @@ export const OpenMarket = () => {
     };
 
     useEffect(() => {
-        if (!isEmpty(data)) {
+        if (!isEmpty(data) && isDataFromApiOrSocket) {
             // Store original data for reference
             const newOriginalData = {};
             data.forEach(market => {
@@ -69,8 +71,9 @@ export const OpenMarket = () => {
                 }
             });
             setOriginalMarketData(newOriginalData);
+            setIsDataFromApiOrSocket(false); // Reset flag after updating
         }
-    }, [data]);
+    }, [data, isDataFromApiOrSocket]);
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -532,6 +535,7 @@ export const OpenMarket = () => {
                 const sortedData = _.orderBy(finalDataToSet, ['marketId'], ['asc']);
                 return sortedData;
             });
+            setIsDataFromApiOrSocket(true);
         }
     };
 
@@ -547,6 +551,7 @@ export const OpenMarket = () => {
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setTeams(teamsObj)
                     setData(formattedData.data);
+                    setIsDataFromApiOrSocket(true);
                     setCategories(newCategoryObj)
                     // setLineRatio(formattedData.lineRatio)
                 }
@@ -588,12 +593,14 @@ export const OpenMarket = () => {
 
             if ([12, 29, 30].includes(record.marketTypeCategoryId)) {
                 // For special market categories, predefinedValue is based on playerScore
-                updatedRecord.predefinedValue = roundedLine - (originalData?.playerScore || 0);
+                updatedRecord.predefinedValue = newValue - (originalData?.playerScore || 0);
                 updatedRecord.lineDifference = updatedRecord.predefinedValue - (originalData?.predefinedValue || 0);
             } else {
                 // For other single runner markets
-                const lineDifference = roundedLine - (originalData?.line || 0);
+                const lineDifference = newValue - (originalData?.line || 0);
                 updatedRecord.lineDifference = lineDifference;
+                console.log({ lineDifference });
+
                 updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
             }
 
