@@ -633,27 +633,6 @@ export const OpenMarket = () => {
             columnClassName: "p-1"
         },
         {
-            title: "Predefined",
-            dataIndex: "predefinedValue",
-            render: (text, record) => {
-                // Only show for single runner markets
-                if (record.runner && record.runner.length === 1) {
-                    return (
-                        <CustomInput
-                            className="form-control small-text-fields"
-                            value={text === null ? "" : text}
-                            onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
-                        />
-                    );
-                }
-                return null;
-            },
-            key: "predefinedValue",
-            className: "p-0",
-            columnClassName: "p-1",
-            hidden: true
-        },
-        {
             title: "Line",
             dataIndex: "line",
             render: (text, record) => (
@@ -917,6 +896,27 @@ export const OpenMarket = () => {
             key: "rateDiff",
             className: "p-0",
             columnClassName: "p-1"
+        },
+        {
+            title: "Pre",
+            dataIndex: "predefinedValue",
+            render: (text, record) => {
+                // Only show for single runner markets
+                if (record.runner && record.runner.length === 1) {
+                    return (
+                        <CustomInput
+                            className="form-control small-text-fields"
+                            value={text === null ? "" : text}
+                            onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
+                        />
+                    );
+                }
+                return null;
+            },
+            key: "predefinedValue",
+            className: "p-0",
+            columnClassName: "p-1",
+            hidden: true
         },
     ];
 
