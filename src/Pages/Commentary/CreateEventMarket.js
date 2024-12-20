@@ -324,9 +324,11 @@ export const CreateEventMarket = () => {
         });
         setSelectedMarkets(initialSelection);
     };
+
+    // Modified validateMarketRow function to include predefinedValue
     const validateMarketRow = (market) => {
         const requiredFields = ['marketName', 'margin', 'status'];
-        const requiredRunnerFields = ['runner', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
+        const requiredRunnerFields = ['runner', 'predefinedValue', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
 
         const errors = [];
 
@@ -335,10 +337,11 @@ export const CreateEventMarket = () => {
                 errors.push(`${field}`);
             }
         });
+
         if (market.runners && market.runners.length > 0) {
             market.runners.forEach((runner, index) => {
                 requiredRunnerFields.forEach(field => {
-                    if (!runner[field]) {
+                    if (runner[field] === undefined || runner[field] === null || runner[field] === '') {
                         errors.push(`${index + 1} ${field}`);
                     }
                 });
@@ -350,15 +353,23 @@ export const CreateEventMarket = () => {
         return errors;
     };
 
-    // Modified handleSelectMarket for Fall of Wicket markets
+    // Modified handleSelectMarket function
     const handleSelectMarket = (sectionKey, index) => {
         const markets = processedMarkets[sectionKey];
         const market = markets[index];
         const errors = validateMarketRow(market);
 
-        // Special handling only for Fall of Wicket markets (category 31)
+        if (errors.length > 0) {
+            dispatch(updateToastData({
+                data: `Please fill in all required fields: ${errors.join(', ')}`,
+                title: "Market Error",
+                type: ERROR
+            }));
+            return;
+        }
+
+        // Special handling for Fall of Wicket markets (category 31)
         if (market.marketTypeCategoryId === 31) {
-            // Check if all previous markets are filled
             for (let i = 0; i < index; i++) {
                 const prevMarket = markets[i];
                 const prevErrors = validateMarketRow(prevMarket);
@@ -372,32 +383,18 @@ export const CreateEventMarket = () => {
                 }
             }
 
-            // If current market is valid, select all previous valid markets
-            if (errors.length === 0) {
-                setSelectedMarkets(prev => {
-                    const sectionSelections = [...(prev[sectionKey] || [])];
-                    // Select all previous unselected valid markets
-                    for (let i = 0; i <= index; i++) {
-                        if (!sectionSelections[i] && validateMarketRow(markets[i]).length === 0) {
-                            sectionSelections[i] = true;
-                        }
+            setSelectedMarkets(prev => {
+                const sectionSelections = [...(prev[sectionKey] || [])];
+                for (let i = 0; i <= index; i++) {
+                    if (!sectionSelections[i] && validateMarketRow(markets[i]).length === 0) {
+                        sectionSelections[i] = true;
                     }
-                    return {
-                        ...prev,
-                        [sectionKey]: sectionSelections
-                    };
-                });
-                return;
-            }
-        }
-
-        // Original logic for other markets
-        if (errors.length > 0) {
-            dispatch(updateToastData({
-                data: `Please fill in all required fields: ${errors.join(', ')}`,
-                title: "Market Error",
-                type: ERROR
-            }));
+                }
+                return {
+                    ...prev,
+                    [sectionKey]: sectionSelections
+                };
+            });
             return;
         }
 
@@ -691,7 +688,7 @@ export const CreateEventMarket = () => {
             })) || []
         };
     };
-    // Modified handleRunnerValueChange for Fall of Wicket markets
+    // Modified handleRunnerValueChange function
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
         setProcessedMarkets((prevMarkets) => {
             const updatedMarkets = { ...prevMarkets };
@@ -703,71 +700,62 @@ export const CreateEventMarket = () => {
                 updatedMarket.runners = [];
             }
 
-            // Special handling for Fall of Wicket markets (category 31)
-            if (updatedMarket.marketTypeCategoryId === 31) {
-                if (key === 'predefinedValue') {
-                    // Only update predefinedValue, don't affect line
-                    const inputValue = value === null || value === "" ? "" : Number(value);
-                    updatedMarket.runners[runnerIndex] = {
-                        ...updatedMarket.runners[runnerIndex],
-                        predefinedValue: inputValue
-                    };
-                } else if (key === 'line') {
-                    // Update line and subsequent wicket lines
-                    const newLine = value === null || value === "" ? "" : Number(value);
-                    updatedMarket.runners[runnerIndex] = {
-                        ...updatedMarket.runners[runnerIndex],
-                        line: newLine,
-                        ...generateRunnerValues(
-                            { ...updatedMarket.runners[runnerIndex], line: newLine },
-                            updatedMarket.margin,
-                            updatedMarket.rateDiff
-                        )
-                    };
+            // Handle value change
+            if (key === 'line' || key === 'predefinedValue') {
+                const newValue = value === null || value === "" ? "" : Number(value);
 
-                    // Only update subsequent markets if we have a valid number
-                    if (!isNaN(newLine) && newLine !== "") {
+                // Update the specific field first
+                updatedMarket.runners[runnerIndex] = {
+                    ...updatedMarket.runners[runnerIndex],
+                    [key]: newValue
+                };
+
+                if (updatedMarket.marketTypeCategoryId === 31) {
+                    // For Fall of Wicket markets
+                    if (key === 'line' && newValue !== "") {
+                        // Update current market's values
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+
+                        // Update subsequent markets only when line changes
                         updatedMarkets[marketKey] = updateSubsequentWicketLines(
                             updatedMarkets[marketKey],
                             marketIndex,
-                            newLine
+                            newValue
                         );
                     }
+                    // If it's predefinedValue change, do nothing more
                 } else {
-                    // Handle other field changes
-                    const parsedValue = ["overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
-                        ? (value === null || value === "" ? "" : Number(value))
-                        : value;
-
-                    updatedMarket.runners[runnerIndex] = {
-                        ...updatedMarket.runners[runnerIndex],
-                        [key]: parsedValue
-                    };
+                    // For all other market categories
+                    if (key === 'predefinedValue' && newValue !== "") {
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            line: newValue,
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+                    } else if (key === 'line' && newValue !== "") {
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+                    }
                 }
-                return updatedMarkets;
-            }
-
-            if (key === "predefinedValue") {
-                // Ensure full number is captured for predefinedValue
-                const inputValue = value === null || value === "" ? "" : Number(value);
-                const updatedRunner = {
-                    ...updatedMarket.runners[runnerIndex],
-                    predefinedValue: inputValue
-                };
-
-                // For non-category-31 markets, also update line
-                if (updatedMarket.marketTypeCategoryId !== 31) {
-                    updatedRunner.line = inputValue;
-                    Object.assign(updatedRunner, generateRunnerValues(
-                        { ...updatedRunner, line: inputValue },
-                        updatedMarket.margin,
-                        updatedMarket.rateDiff
-                    ));
-                }
-
-                updatedMarket.runners[runnerIndex] = updatedRunner;
             } else {
-                const parsedValue = ["line", "predefinedValue", "overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
+                const parsedValue = ["overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
                     ? (value === null || value === "" ? "" : Number(value))
                     : value;
 
@@ -775,6 +763,18 @@ export const CreateEventMarket = () => {
                     ...updatedMarket.runners[runnerIndex],
                     [key]: parsedValue
                 };
+            }
+
+            // Auto-unselect if validation fails
+            if (selectedMarkets[marketKey]?.[marketIndex]) {
+                const errors = validateMarketRow(updatedMarket);
+                if (errors.length > 0) {
+                    setSelectedMarkets(prev => {
+                        const updated = { ...prev };
+                        updated[marketKey][marketIndex] = false;
+                        return updated;
+                    });
+                }
             }
 
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
