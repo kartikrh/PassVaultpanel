@@ -112,15 +112,16 @@ export const CommentaryScreen = ({
             }
         )
     }
-
+    
     let filteredPartnerships = partnerships
-        .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null)
-        .filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.batter1Id === value.batter1Id && t.batter2Id === value.batter2Id
-            ))
+    .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null) // Filter out entries with null batter IDs
+    .filter((value, index, self) =>
+        index === self.findLastIndex((t) => 
+            (t.batter1Id === value.batter1Id && t.batter2Id === value.batter2Id) || 
+            (t.batter1Id === value.batter2Id && t.batter2Id === value.batter1Id) // Check for both combinations to handle swapped order
         )
-        .reverse();
+    ).reverse();
+
 
     useEffect(() => {
         if (anyPopup || actionPopup) window.removeEventListener('keydown', handleKeyPress);
