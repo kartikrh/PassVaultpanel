@@ -60,7 +60,7 @@ const TournamentCompetitionPoints = () => {
       ),
       key: "eventDate",
       sort: true,
-      style: { width: "5%" },
+      style: { width: "10%" },
     },
     {
       title: "Event Id",
@@ -92,70 +92,75 @@ const TournamentCompetitionPoints = () => {
       style: { width: "10%" },
     },
     {
-      title: "Matches",
-      dataIndex: "totalMatches",
+      title: "Team1",
+      dataIndex: "team1Name",
       render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "totalMatches",
+      key: "team1Name",
       style: { width: "10%" },
     },
     {
-      title: "Win",
-      dataIndex: "totalWin",
+      title: "Team2",
+      dataIndex: "team2Name",
       render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "totalWin",
-      style: { width: "5%" },
-    },
-    {
-      title: "Lose",
-      dataIndex: "totalLose",
-      render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "totalLose",
-      style: { width: "5%" },
-    },
-    {
-      title: "Tie",
-      dataIndex: "totalTie",
-      render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "totalTie",
+      key: "team2Name",
       style: { width: "10%" },
     },
     {
-      title: "No Result",
-      dataIndex: "noResult",
+      title: "Result",
+      dataIndex: "commentaryResult",
       render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "noResult",
+      key: "commentaryResult",
       style: { width: "10%" },
     },
-    {
-      title: "Points",
-      dataIndex: "totalPoint",
-      render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "totalPoint",
-      style: { width: "10%" },
-    },
-    {
-      title: "Run Rate",
-      dataIndex: "netRunRate",
-      render: (text, record) => <span>{text ? text : "-"}</span>,
-      key: "netRunRate",
-      style: { width: "10%" },
-    },
-    {
-      title: "isActive",
-      dataIndex: "isActive",
-      render: (text, record) => (
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      ),
-      key: "isActive",
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "Matches",
+    //   dataIndex: "totalMatches",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "totalMatches",
+    //   style: { width: "5%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Win",
+    //   dataIndex: "totalWin",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "totalWin",
+    //   style: { width: "5%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Lose",
+    //   dataIndex: "totalLose",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "totalLose",
+    //   style: { width: "5%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Tie",
+    //   dataIndex: "totalTie",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "totalTie",
+    //   style: { width: "5%", textAlign: "center" },
+    // },
+    // {
+    //   title: "No Result",
+    //   dataIndex: "noResult",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "noResult",
+    //   style: { width: "10%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Points",
+    //   dataIndex: "totalPoint",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "totalPoint",
+    //   style: { width: "5%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Run Rate",
+    //   dataIndex: "netRunRate",
+    //   render: (text, record) => <span>{text ? text : "-"}</span>,
+    //   key: "netRunRate",
+    //   style: { width: "10%", textAlign: "center" },
+    // },
   ];
 
   return (
