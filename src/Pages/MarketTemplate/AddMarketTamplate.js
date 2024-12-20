@@ -228,6 +228,7 @@ function AddMarketTemaplate() {
       defaultBackSize: 100,
       defaultLaySize: 100,
       rateDiff: 1,
+      howManyOpenMarkets: 1,
       // beforeSuspendMin: null,
       // beforeCloseMin: null,
     };
