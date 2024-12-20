@@ -15,8 +15,6 @@ export const MarketTemplateFileds = [
         name: "templateName",
         label: "Template Name",
         type: TEXT,
-        isRequired: true,
-        requiredErrorMessage: "Template Name Is Missing",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -25,6 +23,14 @@ export const MarketTemplateFileds = [
         label: "Predefine Market",
         type: SWITCH,
         defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "howManyOpenMarkets",
+        label: "How Many Open Markets",
+        type: TEXT,
+        defaultValue: 1,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -61,14 +67,6 @@ export const MarketTemplateFileds = [
         type: TEXT,
         placeholder: "Player Name",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
-    },
-    {
-        name: "isAutoCancel",
-        label: "Auto Cancel",
-        type: SWITCH,
-        defaultValue: false,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "createType",
@@ -317,6 +315,14 @@ export const MarketTemplateFileds = [
         defaultValue: 1,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "isAutoCancel",
+        label: "Auto Cancel",
+        type: SWITCH,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "isDefaultBetAllowed",

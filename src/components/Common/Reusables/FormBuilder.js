@@ -53,6 +53,7 @@ const FormBuilder = forwardRef(
       disabledFields,
       onFormDataChange,
       generateAlias,
+      handleFieldChange,
     },
     ref
   ) => {
@@ -232,6 +233,9 @@ const FormBuilder = forwardRef(
     };
 
     const handleChange = (field, value) => {
+      if (handleFieldChange) {
+        handleFieldChange(field.name, value);
+      }
       const errors = { ...fieldErrors };
       const dependentFieldValue = formData[field.dependsOnField];
       if (

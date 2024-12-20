@@ -8,6 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
 import SuspendTabModel from "../../components/Model/SuspendModel";
 import CloseTabModel from "../../components/Model/CloseModel";
+import CancelTabModel from "../../components/Model/CancelModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
@@ -26,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
   convertDateUTCToLocal,
+  convertDateLocalToUTC,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -71,7 +73,8 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadModelVisable, setLoadModelVisable] = useState(false);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
-  const [closeModelVisable, setCloseModelVisable] = useState(false);
+  const [closeModelVisible, setCloseModelVisible] = useState(false);
+  const [cancelModelVisible, setCancelModelVisible] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const [runnerModelVisible, setRunnerModelVisible] = useState(false);
@@ -98,7 +101,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        ...dateRange,
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
     await axiosInstance
@@ -271,7 +275,51 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        setCloseModelVisable(false);
+        setCloseModelVisible(false);
+        if (response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
+          });
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleCancel = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/cancelCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setCancelModelVisible(false);
         if (response?.result?.callPredictions?.length > 0) {
           response.result.callPredictions.forEach((prediction) => {
             if (prediction?.predictioncallSuccess === false) {
@@ -1460,7 +1508,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             loadModelFunction={setLoadModelVisable}
             suspendModelFunction={setSuspendModelVisable}
-            closeModelFunction={setCloseModelVisable}
+            closeModelFunction={setCloseModelVisible}
+            cancelModelFunction={setCancelModelVisible}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
@@ -1489,6 +1538,11 @@ const Index = () => {
               pageName,
               PERMISSION_EDIT
             )}
+            isCancelPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_EDIT
+            )}
             setDateRange={setDateRange}
             dateRange={dateRange}
             isSearch={isSearch}
@@ -1501,9 +1555,15 @@ const Index = () => {
             singleCheck={checekedList}
           />
           <CloseTabModel
-            closeModelVisible={closeModelVisable}
-            setCloseModelVisable={setCloseModelVisable}
+            closeModelVisible={closeModelVisible}
+            setCloseModelVisable={setCloseModelVisible}
             handleClose={handleClose}
+            singleCheck={checekedList}
+          />
+          <CancelTabModel
+            cancelModelVisible={cancelModelVisible}
+            setCancelModelVisible={setCancelModelVisible}
+            handleCancel={handleCancel}
             singleCheck={checekedList}
           />
           <DeleteTabModel

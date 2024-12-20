@@ -6,30 +6,39 @@ import MultiRunnerMarket from "./MultiRunnerMarket";
 const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading) => {
     const singleRunnerMarkets = markets.filter(market => !market.runner || market.runner.length <= 1);
     const multiRunnerMarkets = markets.filter(market => market.runner && market.runner.length > 1);
-
+    const getVisibleColumns = (isSingleRunner) => {
+        return columns.filter(col => {
+            if (col.hidden) {
+                // For predefinedValue column, only show for single runner markets
+                return isSingleRunner;
+            }
+            return true;
+        });
+    };
     return (
         <>
             {singleRunnerMarkets.length > 0 && (
                 <ListingElement
-                    columns={columns}
+                    columns={getVisibleColumns(true)}
                     dataSource={singleRunnerMarkets.map(market => {
                         const firstRunner = market?.runner && market.runner?.length > 0 ? market.runner[0] : undefined;
                         return {
-                        ...market,
-                        isSendData: market?.isSendData,
-                        rateDiff: market?.rateDiff,
-                        backPrice: firstRunner?.backPrice,
-                        backSize: firstRunner?.backSize,
-                        layPrice: firstRunner?.layPrice,
-                        laySize: firstRunner?.laySize,
-                        line: firstRunner?.line,
-                        overRate: firstRunner?.overRate,
-                        runnerId: firstRunner?.runnerId,
-                        runnerName: firstRunner?.runnerName,
-                        status: market?.status,
-                        underRate: firstRunner?.underRate,
-                        // ...(market.runner && market.runner[0]),
-                    }})}
+                            ...market,
+                            isSendData: market?.isSendData,
+                            rateDiff: market?.rateDiff,
+                            backPrice: firstRunner?.backPrice,
+                            backSize: firstRunner?.backSize,
+                            layPrice: firstRunner?.layPrice,
+                            laySize: firstRunner?.laySize,
+                            line: firstRunner?.line,
+                            overRate: firstRunner?.overRate,
+                            runnerId: firstRunner?.runnerId,
+                            runnerName: firstRunner?.runnerName,
+                            status: market?.status,
+                            underRate: firstRunner?.underRate,
+                            // ...(market.runner && market.runner[0]),
+                        }
+                    })}
                     tableElement={{ title: `${category} - Single Runner Markets`, displayTitle: true }}
                     tableClassName="open-market-table-class"
                 />

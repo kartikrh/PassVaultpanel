@@ -11,6 +11,15 @@ export const MarketTemplateRunnerFileds = [
         fieldColspan: { xs: 12, md: 2, lg: 2 }
     },
     {
+        name: "predefinedValue",
+        label: "Predefine",
+        type: TEXT,
+        isRequired: true,
+        requiredErrorMessage: "Please enter Predefine.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 2, lg: 2 }
+    },
+    {
         name: "line",
         label: "Line",
         type: TEXT,
@@ -26,7 +35,7 @@ export const MarketTemplateRunnerFileds = [
         isRequired: true,
         requiredErrorMessage: "Please enter overRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 2, lg: 2 }
+        fieldColspan: { xs: 12, md: 2, lg: 4 }
     },
     {
         name: "underRate",
@@ -35,25 +44,7 @@ export const MarketTemplateRunnerFileds = [
         isRequired: true,
         requiredErrorMessage: "Please enter underRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 2, lg: 2 }
-    },
-    {
-        name: "backPrice",
-        label: "Yes Rate",
-        type: TEXT,
-        isRequired: true,
-        requiredErrorMessage: "Please enter yesRate.",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 2, lg: 2 }
-    },
-    {
-        name: "backSize",
-        label: "Yes Point",
-        type: TEXT,
-        isRequired: true,
-        requiredErrorMessage: "Please enter yesPoint.",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 2, lg: 2 }
+        fieldColspan: { xs: 12, md: 2, lg: 4 }
     },
     {
         name: "layPrice",
@@ -62,7 +53,7 @@ export const MarketTemplateRunnerFileds = [
         isRequired: true,
         requiredErrorMessage: "Please enter noRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 2, lg: 2 }
+        fieldColspan: { xs: 12, md: 2, lg: 4 }
     },
     {
         name: "laySize",
@@ -71,7 +62,25 @@ export const MarketTemplateRunnerFileds = [
         isRequired: true,
         requiredErrorMessage: "Please enter noPoint.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 2, lg: 2 }
+        fieldColspan: { xs: 12, md: 2, lg: 4 }
+    },
+    {
+        name: "backPrice",
+        label: "Yes Rate",
+        type: TEXT,
+        isRequired: true,
+        requiredErrorMessage: "Please enter yesRate.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 2, lg: 3 }
+    },
+    {
+        name: "backSize",
+        label: "Yes Point",
+        type: TEXT,
+        isRequired: true,
+        requiredErrorMessage: "Please enter yesPoint.",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 2, lg: 3 }
     },
     {
         name: "generate",

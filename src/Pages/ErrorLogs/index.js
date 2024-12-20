@@ -12,7 +12,7 @@ import {
   TAB_ERROR_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
 
 const Index = () => {
@@ -48,7 +48,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        ...dateRange,
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
     await axiosInstance
