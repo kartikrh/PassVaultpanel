@@ -1119,6 +1119,7 @@ const MatchHistory = () => {
       bowlerStrikeRate: Number(obj.bowlerStrikeRate),
       wickets4: Number(obj.wickets4),
       wickets5: Number(obj.wickets5),
+      wickets10: Number(obj.wickets10)
     };
 
     try {
