@@ -353,29 +353,26 @@ export const CreateEventMarket = () => {
         return errors;
     };
 
-    // Modified handleSelectMarket function
+    // Modified handleSelectMarket function to handle category 31 markets
     const handleSelectMarket = (sectionKey, index) => {
         const markets = processedMarkets[sectionKey];
         const market = markets[index];
         const errors = validateMarketRow(market);
 
-        if (errors.length > 0) {
-            dispatch(updateToastData({
-                data: `Please fill in all required fields: ${errors.join(', ')}`,
-                title: "Market Error",
-                type: ERROR
-            }));
-            return;
-        }
-
         // Special handling for Fall of Wicket markets (category 31)
         if (market.marketTypeCategoryId === 31) {
+            // If trying to unselect a market, prevent it
+            if (selectedMarkets[sectionKey]?.[index]) {
+                return; // Prevent unselection by returning early
+            }
+
+            // Check if all previous markets are filled and selected
             for (let i = 0; i < index; i++) {
                 const prevMarket = markets[i];
                 const prevErrors = validateMarketRow(prevMarket);
-                if (prevErrors.length > 0) {
+                if (prevErrors.length > 0 || !selectedMarkets[sectionKey]?.[i]) {
                     dispatch(updateToastData({
-                        data: `Please fill in all fields for Fall of ${i + 1} Wicket first`,
+                        data: `Please fill in all fields and select Fall of ${i + 1} Wicket first`,
                         title: "Market Error",
                         type: ERROR
                     }));
@@ -383,29 +380,60 @@ export const CreateEventMarket = () => {
                 }
             }
 
+            // Check if current market has any errors
+            if (errors.length > 0) {
+                dispatch(updateToastData({
+                    data: `Please fill in all required fields: ${errors.join(', ')}`,
+                    title: "Market Error",
+                    type: ERROR
+                }));
+                return;
+            }
+
+            // If all validations pass, select the current market
             setSelectedMarkets(prev => {
-                const sectionSelections = [...(prev[sectionKey] || [])];
-                for (let i = 0; i <= index; i++) {
-                    if (!sectionSelections[i] && validateMarketRow(markets[i]).length === 0) {
-                        sectionSelections[i] = true;
-                    }
-                }
+                const updatedSelections = { ...prev };
+                const sectionSelections = [...(updatedSelections[sectionKey] || Array(markets.length).fill(false))];
+                sectionSelections[index] = true;
+                updatedSelections[sectionKey] = sectionSelections;
+                return updatedSelections;
+            });
+        } else {
+            // Regular handling for non-category-31 markets
+            if (errors.length > 0) {
+                dispatch(updateToastData({
+                    data: `Please fill in all required fields: ${errors.join(', ')}`,
+                    title: "Market Error",
+                    type: ERROR
+                }));
+                return;
+            }
+
+            setSelectedMarkets(prev => {
+                const sectionSelections = prev[sectionKey] || [];
+                const updatedSelections = [...sectionSelections];
+                updatedSelections[index] = !updatedSelections[index];
                 return {
                     ...prev,
-                    [sectionKey]: sectionSelections
+                    [sectionKey]: updatedSelections
                 };
             });
-            return;
         }
+    };
 
+    // Add this new function to handle auto-unselection of subsequent markets
+    const handleAutoUnselectSubsequentMarkets = (sectionKey, startIndex) => {
         setSelectedMarkets(prev => {
-            const sectionSelections = prev[sectionKey] || [];
-            const updatedSelections = [...sectionSelections];
-            updatedSelections[index] = !updatedSelections[index];
-            return {
-                ...prev,
-                [sectionKey]: updatedSelections
-            };
+            const updatedSelections = { ...prev };
+            const sectionSelections = [...(updatedSelections[sectionKey] || [])];
+
+            // Unselect all markets after the given index
+            for (let i = startIndex; i < sectionSelections.length; i++) {
+                sectionSelections[i] = false;
+            }
+
+            updatedSelections[sectionKey] = sectionSelections;
+            return updatedSelections;
         });
     };
 
@@ -688,7 +716,6 @@ export const CreateEventMarket = () => {
             })) || []
         };
     };
-    // Modified handleRunnerValueChange function
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
         setProcessedMarkets((prevMarkets) => {
             const updatedMarkets = { ...prevMarkets };
@@ -730,7 +757,14 @@ export const CreateEventMarket = () => {
                             newValue
                         );
                     }
-                    // If it's predefinedValue change, do nothing more
+                    // If it's predefinedValue change, do nothing more for category 31
+
+                    // Check if the current market becomes invalid
+                    const errors = validateMarketRow(updatedMarket);
+                    if (errors.length > 0 && selectedMarkets[marketKey]?.[marketIndex]) {
+                        // If current market becomes invalid, unselect it and all subsequent markets
+                        handleAutoUnselectSubsequentMarkets(marketKey, marketIndex);
+                    }
                 } else {
                     // For all other market categories
                     if (key === 'predefinedValue' && newValue !== "") {
@@ -753,8 +787,20 @@ export const CreateEventMarket = () => {
                             )
                         };
                     }
+
+                    // Check if the current market becomes invalid (for non-category-31)
+                    const errors = validateMarketRow(updatedMarket);
+                    if (errors.length > 0 && selectedMarkets[marketKey]?.[marketIndex]) {
+                        // If current market becomes invalid, just unselect it
+                        setSelectedMarkets(prev => {
+                            const updated = { ...prev };
+                            updated[marketKey][marketIndex] = false;
+                            return updated;
+                        });
+                    }
                 }
             } else {
+                // Handle other field changes (overRate, underRate, backPrice, etc.)
                 const parsedValue = ["overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
                     ? (value === null || value === "" ? "" : Number(value))
                     : value;
@@ -763,17 +809,21 @@ export const CreateEventMarket = () => {
                     ...updatedMarket.runners[runnerIndex],
                     [key]: parsedValue
                 };
-            }
 
-            // Auto-unselect if validation fails
-            if (selectedMarkets[marketKey]?.[marketIndex]) {
+                // Check for validation after other field changes
                 const errors = validateMarketRow(updatedMarket);
-                if (errors.length > 0) {
-                    setSelectedMarkets(prev => {
-                        const updated = { ...prev };
-                        updated[marketKey][marketIndex] = false;
-                        return updated;
-                    });
+                if (errors.length > 0 && selectedMarkets[marketKey]?.[marketIndex]) {
+                    if (updatedMarket.marketTypeCategoryId === 31) {
+                        // For category 31, unselect current and subsequent markets
+                        handleAutoUnselectSubsequentMarkets(marketKey, marketIndex);
+                    } else {
+                        // For other categories, just unselect the current market
+                        setSelectedMarkets(prev => {
+                            const updated = { ...prev };
+                            updated[marketKey][marketIndex] = false;
+                            return updated;
+                        });
+                    }
                 }
             }
 
