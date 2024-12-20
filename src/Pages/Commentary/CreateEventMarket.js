@@ -40,9 +40,9 @@ export const CreateEventMarket = () => {
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
-    // useEffect(() => {
-    //     console.log({ selectedMarkets, processedMarkets })
-    // })
+    useEffect(() => {
+        console.log({ selectedMarkets, processedMarkets })
+    })
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
             document.title = `MT ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
@@ -231,7 +231,10 @@ export const CreateEventMarket = () => {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-            } else {
+            } else if (template.marketTypeCategoryId === 31) {
+                processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            }
+            else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
                 });
@@ -287,6 +290,32 @@ export const CreateEventMarket = () => {
         return processedMarketsObj;
     };
 
+    const updateSubsequentWicketLines = (markets, startIndex, previousWicketLine) => {
+        return markets.map((market, index) => {
+            if (index > startIndex) {
+                // Get the predefined value for current wicket
+                const currentPredefinedValue = market.runners[0].predefinedValue || 0;
+                // New line is previous wicket's line plus current wicket's predefined value
+                const newLine = previousWicketLine + (currentPredefinedValue || 0);
+
+                const updatedMarket = {
+                    ...market,
+                    runners: market.runners.map(runner => ({
+                        ...runner,
+                        line: newLine,
+                        ...generateRunnerValues(
+                            { ...runner, line: newLine },
+                            market.margin,
+                            market.rateDiff
+                        )
+                    }))
+                };
+                previousWicketLine = newLine; // Update for next iteration
+                return updatedMarket;
+            }
+            return market;
+        });
+    };
 
     const initializeSelectedMarkets = (markets) => {
         const initialSelection = {};
@@ -321,9 +350,48 @@ export const CreateEventMarket = () => {
         return errors;
     };
 
+    // Modified handleSelectMarket for Fall of Wicket markets
     const handleSelectMarket = (sectionKey, index) => {
-        const market = processedMarkets[sectionKey][index];
+        const markets = processedMarkets[sectionKey];
+        const market = markets[index];
         const errors = validateMarketRow(market);
+
+        // Special handling only for Fall of Wicket markets (category 31)
+        if (market.marketTypeCategoryId === 31) {
+            // Check if all previous markets are filled
+            for (let i = 0; i < index; i++) {
+                const prevMarket = markets[i];
+                const prevErrors = validateMarketRow(prevMarket);
+                if (prevErrors.length > 0) {
+                    dispatch(updateToastData({
+                        data: `Please fill in all fields for Fall of ${i + 1} Wicket first`,
+                        title: "Market Error",
+                        type: ERROR
+                    }));
+                    return;
+                }
+            }
+
+            // If current market is valid, select all previous valid markets
+            if (errors.length === 0) {
+                setSelectedMarkets(prev => {
+                    const sectionSelections = [...(prev[sectionKey] || [])];
+                    // Select all previous unselected valid markets
+                    for (let i = 0; i <= index; i++) {
+                        if (!sectionSelections[i] && validateMarketRow(markets[i]).length === 0) {
+                            sectionSelections[i] = true;
+                        }
+                    }
+                    return {
+                        ...prev,
+                        [sectionKey]: sectionSelections
+                    };
+                });
+                return;
+            }
+        }
+
+        // Original logic for other markets
         if (errors.length > 0) {
             dispatch(updateToastData({
                 data: `Please fill in all required fields: ${errors.join(', ')}`,
@@ -332,6 +400,7 @@ export const CreateEventMarket = () => {
             }));
             return;
         }
+
         setSelectedMarkets(prev => {
             const sectionSelections = prev[sectionKey] || [];
             const updatedSelections = [...sectionSelections];
@@ -342,6 +411,7 @@ export const CreateEventMarket = () => {
             };
         });
     };
+
     const processMarketAndRunners = (market, teamId, keyPrefix, processedMarketsObj) => {
         const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
 
@@ -526,6 +596,22 @@ export const CreateEventMarket = () => {
         });
     };
 
+    const processFallOfWicketMarkets = (market, teams, processedMarketsObj) => {
+        const maxWickets = market.afterWicketAutoSuspend - 1;  // Subtract 1 to not include the suspend wicket
+
+        teams.forEach(team => {
+            for (let wicket = 1; wicket <= maxWickets; wicket++) {
+                const marketName = market.templateName.replace("{wicket}", wicket);
+                const specialMarket = {
+                    ...market,
+                    marketName: `${marketName} - ${team.shortName}`,
+                    teamId: team.teamId
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
+        });
+    };
+
     const processMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
             const specialMarketName = `${market.marketName} - ${team.shortName}`;
@@ -605,7 +691,7 @@ export const CreateEventMarket = () => {
             })) || []
         };
     };
-
+    // Modified handleRunnerValueChange for Fall of Wicket markets
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
         setProcessedMarkets((prevMarkets) => {
             const updatedMarkets = { ...prevMarkets };
@@ -617,50 +703,77 @@ export const CreateEventMarket = () => {
                 updatedMarket.runners = [];
             }
 
+            // Special handling for Fall of Wicket markets (category 31)
+            if (updatedMarket.marketTypeCategoryId === 31) {
+                if (key === 'predefinedValue') {
+                    // Only update predefinedValue, don't affect line
+                    const inputValue = value === null || value === "" ? "" : Number(value);
+                    updatedMarket.runners[runnerIndex] = {
+                        ...updatedMarket.runners[runnerIndex],
+                        predefinedValue: inputValue
+                    };
+                } else if (key === 'line') {
+                    // Update line and subsequent wicket lines
+                    const newLine = value === null || value === "" ? "" : Number(value);
+                    updatedMarket.runners[runnerIndex] = {
+                        ...updatedMarket.runners[runnerIndex],
+                        line: newLine,
+                        ...generateRunnerValues(
+                            { ...updatedMarket.runners[runnerIndex], line: newLine },
+                            updatedMarket.margin,
+                            updatedMarket.rateDiff
+                        )
+                    };
+
+                    // Only update subsequent markets if we have a valid number
+                    if (!isNaN(newLine) && newLine !== "") {
+                        updatedMarkets[marketKey] = updateSubsequentWicketLines(
+                            updatedMarkets[marketKey],
+                            marketIndex,
+                            newLine
+                        );
+                    }
+                } else {
+                    // Handle other field changes
+                    const parsedValue = ["overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
+                        ? (value === null || value === "" ? "" : Number(value))
+                        : value;
+
+                    updatedMarket.runners[runnerIndex] = {
+                        ...updatedMarket.runners[runnerIndex],
+                        [key]: parsedValue
+                    };
+                }
+                return updatedMarkets;
+            }
+
             if (key === "predefinedValue") {
-                // Update both predefinedValue and line
-                updatedMarket.runners[runnerIndex] = {
+                // Ensure full number is captured for predefinedValue
+                const inputValue = value === null || value === "" ? "" : Number(value);
+                const updatedRunner = {
                     ...updatedMarket.runners[runnerIndex],
-                    predefinedValue: parseFloat(value),
-                    line: parseFloat(value), // Ensure line gets updated to the same value
+                    predefinedValue: inputValue
                 };
 
-                // Recalculate runner-related fields if necessary
-                updatedMarket.runners[runnerIndex] = {
-                    ...updatedMarket.runners[runnerIndex],
-                    ...generateRunnerValues(
-                        updatedMarket.runners[runnerIndex],
+                // For non-category-31 markets, also update line
+                if (updatedMarket.marketTypeCategoryId !== 31) {
+                    updatedRunner.line = inputValue;
+                    Object.assign(updatedRunner, generateRunnerValues(
+                        { ...updatedRunner, line: inputValue },
                         updatedMarket.margin,
                         updatedMarket.rateDiff
-                    ),
-                };
-            } else if (key === "line") {
-                // Update line but do not update predefinedValue
-                updatedMarket.runners[runnerIndex] = {
-                    ...updatedMarket.runners[runnerIndex],
-                    line: parseFloat(value),
-                };
+                    ));
+                }
 
-                // Recalculate runner-related fields
-                updatedMarket.runners[runnerIndex] = {
-                    ...updatedMarket.runners[runnerIndex],
-                    ...generateRunnerValues(
-                        updatedMarket.runners[runnerIndex],
-                        updatedMarket.margin,
-                        updatedMarket.rateDiff
-                    ),
-                };
+                updatedMarket.runners[runnerIndex] = updatedRunner;
             } else {
-                // Update other fields as usual
                 const parsedValue = ["line", "predefinedValue", "overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
-                    ? value === null
-                        ? ""
-                        : parseFloat(value)
+                    ? (value === null || value === "" ? "" : Number(value))
                     : value;
 
                 updatedMarket.runners[runnerIndex] = {
                     ...updatedMarket.runners[runnerIndex],
-                    [key]: parsedValue,
+                    [key]: parsedValue
                 };
             }
 
