@@ -2211,7 +2211,7 @@ const Commentary = (props) => {
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
             allBattingPlayers={players[BATTING_TEAM]}
         />}
-        {superOverModal &&
+        {superOverModal ?
             <SuperOverModal
                 toggle={() => {
                     setSuperOverModal(false)
@@ -2223,7 +2223,7 @@ const Commentary = (props) => {
                 }}
                 currentInningTeams={Object.values(teams || {})}
             />
-        }
+            : null}
         {retryModel && <RetryModel errorMsg={retryModel} />}
         {showCricketFieldModal && (
             <CricketFieldModal
