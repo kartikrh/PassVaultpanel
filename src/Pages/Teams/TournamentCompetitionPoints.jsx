@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { ERROR } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import "../Competition/tournament.css";
+import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 
 const TournamentCompetitionPoints = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,11 +53,43 @@ const TournamentCompetitionPoints = () => {
 
   const columns = [
     {
+      title: "Date",
+      dataIndex: "eventDate",
+      render: (text, record) => (
+        <span>{convertDateUTCToLocal(text, "index")}</span>
+      ),
+      key: "eventDate",
+      sort: true,
+      style: { width: "5%" },
+    },
+    {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-1">
+          <span style={{ cursor: record.isPredictMarket && "pointer" }}>
+            {text}
+          </span>
+        </div>
+      ),
+      key: "eventRefId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Event",
+      dataIndex: "eventName",
+      render: (text, record) => <span>{text}</span>,
+      key: "eventName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Competition",
       dataIndex: "competitionName",
       render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "competitionName",
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Matches",
@@ -70,14 +103,14 @@ const TournamentCompetitionPoints = () => {
       dataIndex: "totalWin",
       render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalWin",
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Lose",
       dataIndex: "totalLose",
       render: (text, record) => <span>{text ? text : "-"}</span>,
       key: "totalLose",
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Tie",
