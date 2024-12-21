@@ -204,12 +204,22 @@ export const CreateEventMarket = () => {
         };
 
         // Helper function to merge runners
-        const mergeRunners = (templateRunners, apiRunners, marketName) => {
+        const mergeRunners = (templateRunners, apiRunners, marketName, marketPredefinedValue) => {
             if (apiRunners.length > 0) {
                 return apiRunners.map(apiRunner => ({
                     ...apiRunner,
                     runner: apiRunner.runner || marketName,
-                    runnerId: apiRunner.runnerId || apiRunner.selectionId || apiRunner.runner || marketName
+                    runnerId: apiRunner.runnerId || apiRunner.selectionId || apiRunner.runner || marketName,
+                    predefinedValue: marketPredefinedValue, // Copy market level predefinedValue to runner
+                    line: apiRunner.line,
+                    overRate: apiRunner.overRate,
+                    underRate: apiRunner.underRate,
+                    backPrice: apiRunner.backPrice,
+                    layPrice: apiRunner.layPrice,
+                    backSize: apiRunner.backSize,
+                    laySize: apiRunner.laySize,
+                    order: apiRunner.order,
+                    selectionId: apiRunner.selectionId
                 }));
             }
             return templateRunners;
@@ -233,8 +243,7 @@ export const CreateEventMarket = () => {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 31) {
                 processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-            }
-            else {
+            } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
                 });
@@ -262,7 +271,12 @@ export const CreateEventMarket = () => {
                     ...templateMarket,
                     ...apiMarket,
                     isCreate: false,
-                    runners: mergeRunners(templateMarket.runners, apiMarket.runners, apiMarket.marketName)
+                    runners: mergeRunners(
+                        templateMarket.runners,
+                        apiMarket.runners,
+                        apiMarket.marketName,
+                        apiMarket.predefinedValue // Pass market level predefinedValue
+                    )
                 };
                 processedMarketsObj[key][existingMarketIndex] = updatedMarket;
             } else {
@@ -270,7 +284,12 @@ export const CreateEventMarket = () => {
                 processedMarketsObj[key].push({
                     ...apiMarket,
                     isCreate: false,
-                    runners: mergeRunners([], apiMarket.runners, apiMarket.marketName)
+                    runners: mergeRunners(
+                        [],
+                        apiMarket.runners,
+                        apiMarket.marketName,
+                        apiMarket.predefinedValue // Pass market level predefinedValue
+                    )
                 });
             }
         });
@@ -1018,13 +1037,55 @@ export const CreateEventMarket = () => {
             .flatMap(([key, markets]) =>
                 markets.filter((_, index) => selectedMarkets[key]?.[index])
             )
-            .map(market => ({
-                ...market,
-                runners: market.runners.map(runner => ({
-                    ...runner,
-                    marketTemplateId: market.marketTemplateId
-                }))
-            }));
+            .map(market => {
+                // Get predefinedValue from the first runner
+                const predefinedValue = market.runners[0]?.predefinedValue;
+
+                return {
+                    eventMarketId: market.eventMarketId || 0,
+                    isCreate: market.isCreate !== undefined ? market.isCreate : true,
+                    status: market.status || "1",
+                    margin: market.margin,
+                    data: market.data || "",
+                    playerId: market.playerId || null,
+                    marketTypeId: market.marketTypeId,
+                    marketTypeCategoryId: market.marketTypeCategoryId,
+                    marketTemplateId: market.marketTemplateId,
+                    commentaryId: market.commentaryId,
+                    eventRefId: market.eventRefId,
+                    marketName: market.marketName,
+                    teamId: market.teamId,
+                    inningsId: market.inningsId || 1,
+                    isAllow: market.isAllow !== undefined ? market.isAllow : false,
+                    isActive: market.isActive !== undefined ? market.isActive : true,
+                    index: market.index || 0,
+                    over: market.over || null,
+                    rateDiff: market.rateDiff || null,
+                    beforeSuspendMin: market.beforeSuspendMin,
+                    beforeCloseMin: market.beforeCloseMin,
+                    isPredefineRunnerValue: market.isPredefineRunnerValue,
+                    predefinedValue: predefinedValue, // Add predefinedValue at market level
+                    runners: market.runners.map(runner => {
+                        // Remove predefinedValue from runner level
+                        const { predefinedValue: _, ...runnerWithoutPredefined } = runner;
+                        return {
+                            ...runnerWithoutPredefined,
+                            marketTemplateId: market.marketTemplateId,
+                            runnerId: runner.runnerId || "0",
+                            runner: runner.runner,
+                            line: runner.line,
+                            overRate: runner.overRate,
+                            underRate: runner.underRate,
+                            backPrice: runner.backPrice,
+                            layPrice: runner.layPrice,
+                            backSize: runner.backSize,
+                            laySize: runner.laySize,
+                            order: runner.order,
+                            selectionId: runner.selectionId
+                        };
+                    })
+                };
+            });
 
         if (savedData.length === 0) {
             dispatch(updateToastData({
