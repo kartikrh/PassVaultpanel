@@ -313,13 +313,13 @@ export const CreateEventMarket = () => {
         return markets.map((market, index) => {
             if (index > startIndex) {
                 // Get the predefined value for current wicket
-                const currentPredefinedValue = market.runners[0].predefinedValue || 0;
+                const currentPredefinedValue = market?.runners[0]?.predefinedValue || 0;
                 // New line is previous wicket's line plus current wicket's predefined value
                 const newLine = previousWicketLine + (currentPredefinedValue || 0);
 
                 const updatedMarket = {
                     ...market,
-                    runners: market.runners.map(runner => ({
+                    runners: market?.runners?.filter((item)=> (item?.line || item?.predefinedValue))?.map(runner => ({
                         ...runner,
                         line: newLine,
                         ...generateRunnerValues(
@@ -774,6 +774,36 @@ export const CreateEventMarket = () => {
                             updatedMarkets[marketKey],
                             marketIndex,
                             newValue
+                        );
+                    } else if (key === 'predefinedValue' && newValue !== "") {
+
+                        let prevMarket = {...updatedMarkets[marketKey][marketIndex-1]};
+                        let prevMarketIndex = marketIndex - 1;
+                        // Iterate backwards through previous markets until we find a valid line value
+                        while (!prevMarket?.runners?.[runnerIndex]?.line && prevMarketIndex > 0) {
+                          prevMarket = {...updatedMarkets[marketKey][prevMarketIndex-1]};  // Get the previous market
+                          prevMarketIndex--;
+                        }
+
+                        const prevLineValue = prevMarket?.runners?.[runnerIndex]?.line || 0;
+                        const newLineValue = prevLineValue + newValue;
+
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            predefinedValue: newValue,
+                            line: newLineValue,
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newLineValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+
+                        //Update subsequent markets only when line changes
+                        updatedMarkets[marketKey] = updateSubsequentWicketLines(
+                            updatedMarkets[marketKey],
+                            marketIndex,
+                            newLineValue
                         );
                     }
                     // If it's predefinedValue change, do nothing more for category 31
