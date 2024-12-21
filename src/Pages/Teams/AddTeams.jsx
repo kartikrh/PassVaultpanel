@@ -35,17 +35,6 @@ const formatMultiSelectDataPlayers = (inputList) => {
   return outputList;
 };
 
-const formatMultiSelectDataCompetitions = (inputList) => {
-  const outputList = [];
-
-  inputList.forEach((item) =>
-    item.displayOrder !== undefined
-      ? (outputList[item.displayOrder - 1] = item.competitionId)
-      : outputList.push(item.competitionId)
-  );
-
-  return outputList;
-};
 
 function AddTeams() {
   const pageName = TAB_TEAMS
@@ -53,8 +42,6 @@ function AddTeams() {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const [eventType, setEventType] = useState(undefined);
-  const [eventTypeList, setEventTypeList] = useState([]);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading } = useSelector(
@@ -105,7 +92,6 @@ function AddTeams() {
         setInitialEditData({
           ...response?.result,
           playerId: formatMultiSelectDataPlayers(response?.result?.players),
-          competitionId: formatMultiSelectDataCompetitions(response?.result?.competition)
         });
       })
       .catch((error) => {
@@ -117,7 +103,6 @@ function AddTeams() {
     await axiosInstance
       .post("/admin/team/eventTypeList", {})
       .then((response) => {
-        setEventTypeList(response?.result)
         setMasterData((preData) => ({
           ...preData,
           eventTypeId: response.result?.map((item) => {
@@ -144,30 +129,6 @@ function AddTeams() {
       });
   };
 
-  const onFormDataChange = (newFormData) => {
-    if(newFormData?.eventTypeId && newFormData?.eventTypeId !== "0" && newFormData?.eventTypeId !== eventType?.eventTypeId) {
-      const newEventType = eventTypeList.find(
-        (item) => item.eventTypeId === newFormData.eventTypeId
-      );
-      setEventType(newEventType)
-      if(newEventType?.eventTypeId) {
-      axiosInstance
-      .post("/admin/team/competitionListByEventTypeId", {isActive: true, eventTypeId: newEventType?.eventTypeId})
-      .then((response) => {
-        setMasterData((preData) => ({
-          ...preData,
-          competitionId: response.result?.map((item) => {
-            return { label: item.competition, value: item.competitionId };
-          }),
-        }));
-      })
-      .catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
-      }
-    }
-
-  }
   const handleSaveClick = async (saveAction) => {
     const dataToSave1 = finalizeRef.current.finalizeData()
     if (dataToSave1) {
@@ -248,7 +209,6 @@ function AddTeams() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
-                  onFormDataChange={onFormDataChange}
                 />
               </CardBody>
             </Card>
