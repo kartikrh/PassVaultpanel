@@ -319,15 +319,20 @@ export const CreateEventMarket = () => {
 
                 const updatedMarket = {
                     ...market,
-                    runners: market?.runners?.filter((item)=> (item?.line || item?.predefinedValue))?.map(runner => ({
-                        ...runner,
-                        line: newLine,
-                        ...generateRunnerValues(
-                            { ...runner, line: newLine },
-                            market.margin,
-                            market.rateDiff
-                        )
-                    }))
+                    runners: market?.runners?.map(runner => {
+                        if (runner?.line || runner?.predefinedValue) {
+                            return {
+                                ...runner,
+                                line: newLine,
+                                ...generateRunnerValues(
+                                    { ...runner, line: newLine },
+                                    market.margin,
+                                    market.rateDiff
+                                )
+                            };
+                        }
+                        return runner;
+                    })
                 };
                 previousWicketLine = newLine; // Update for next iteration
                 return updatedMarket;
@@ -755,7 +760,7 @@ export const CreateEventMarket = () => {
                     ...updatedMarket.runners[runnerIndex],
                     [key]: newValue
                 };
-
+                
                 if (updatedMarket.marketTypeCategoryId === 31) {
                     // For Fall of Wicket markets
                     if (key === 'line' && newValue !== "") {
@@ -780,7 +785,7 @@ export const CreateEventMarket = () => {
                         let prevMarket = {...updatedMarkets[marketKey][marketIndex-1]};
                         let prevMarketIndex = marketIndex - 1;
                         // Iterate backwards through previous markets until we find a valid line value
-                        while (!prevMarket?.runners?.[runnerIndex]?.line && prevMarketIndex > 0) {
+                        while (((prevMarket?.runners?.[runnerIndex]?.line === null || prevMarket?.runners?.[runnerIndex]?.line === "" || prevMarket?.runners?.[runnerIndex]?.line === undefined) && (prevMarket?.runners?.[runnerIndex]?.predefinedValue === null || prevMarket?.runners?.[runnerIndex]?.predefinedValue === "" || prevMarket?.runners?.[runnerIndex]?.predefinedValue === undefined)) && prevMarketIndex > 0) {
                           prevMarket = {...updatedMarkets[marketKey][prevMarketIndex-1]};  // Get the previous market
                           prevMarketIndex--;
                         }
