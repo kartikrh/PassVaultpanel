@@ -335,11 +335,11 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Tournament",
+      title: "Snap",
       key: "competitionId",
       render: (text, record) => (
         <>
-          <Tooltip title={"Tournament"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip title={"Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
               color={"primary"}
               size="sm"

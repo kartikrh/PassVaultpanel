@@ -23,23 +23,11 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
-  const [competitionList, setCompetitionList] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const filteredCompetitiondata = () => {
-    if (eventTypeId && competitionId) {
-      let res =  competitionList.filter(
-        (comp) => comp.eventTypeId === parseInt(eventTypeId)
-      );
-      setData(res)
-    }
-  }
-  useEffect(() => {
-    filteredCompetitiondata()
-  }, [competitionId]);
 
   // fetch data
   const fetchData = async (latestValueFromTable) => {
@@ -75,18 +63,6 @@ const Index = () => {
       .catch((error) => { });
   };
 
-  const fetchCompetitionList = async () => {
-    await axiosInstance
-      .post(`/admin/team/competitionListByEventTypeId`, {
-        isActive: true,
-        eventTypeId: eventTypeId,
-      })
-      .then((response) => {
-        setCompetitionList(response.result);
-        setIsLoading(false);
-      })
-      .catch((error) => {});
-  };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
     if (checekedList.includes(e.teamId)) {
@@ -250,11 +226,11 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
-      title: "Tournament",
+      title: "Snap",
       key: "teamId",
       render: (text, record) => (
         <>
-          <Tooltip title={"Tournament"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip title={"Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
               color={"primary"}
               size="sm"
@@ -278,7 +254,6 @@ const Index = () => {
     headerSelect: false,
     switch: false,
     eventTypeSelect: true,
-    competitionsListSelect: true,
     resetButton: true,
     reloadButton: true,
   };
@@ -290,12 +265,6 @@ const Index = () => {
     fetchData();
     fetchEventTypeData()
   }, []);
-
-  useEffect(() => {
-    if (eventTypeId) {
-      fetchCompetitionList();
-    }
-  }, [eventTypeId]);
 
   const handleReload = (value) => {
     fetchData();
@@ -318,7 +287,6 @@ const Index = () => {
             handleReset={handleReset}
             handleReload={handleReload}
             eventTypes={eventTypes}
-            competitionList={competitionList}
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}

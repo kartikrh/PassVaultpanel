@@ -1202,7 +1202,7 @@ const Commentary = (props) => {
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
                     if (!LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(currentBall.ballWicketType))
                         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
-                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2] }
+                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2], commentaryBallByBallId: currentPartnership?.commentaryBallByBallId }
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
                 const bowler = playersOnPitch[CURRENT_BOWLER]

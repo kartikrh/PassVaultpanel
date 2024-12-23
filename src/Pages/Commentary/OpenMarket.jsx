@@ -185,10 +185,41 @@ export const OpenMarket = () => {
         }
     }, []);
 
+    // Helper function to generate runner values based on line, margin, and market type
+    const generateRunnerValues = (runner, marketTypeObj) => {
+        if (!runner) return {};
+
+        const roundedLine = Math.round(parseFloat(runner.line || 0));
+        const thresholdValue = Math.floor(parseFloat(runner.line || 0)) + 0.5;
+        const marginAdjustment = runner.margin ? ((runner.margin / 100) + 1) : 1;
+
+        // Calculate rates based on market type
+        if (runner.marketTypeId === marketTypeObj?.Fancy || runner.marketTypeId === marketTypeObj?.LineMarket) {
+            return {
+                backPrice: parseFloat((roundedLine + parseFloat(runner.rateDiff || 0)).toFixed(2)),
+                layPrice: parseFloat(roundedLine.toFixed(2)),
+                backSize: parseFloat(runner.backSize) || 100,
+                laySize: parseFloat(runner.laySize) || 100,
+                overRate: runner.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(runner.line - thresholdValue))))).toFixed(2))) : null,
+                underRate: runner.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(runner.line - thresholdValue))))).toFixed(2))) : null,
+            };
+        } else {
+            return {
+                backPrice: parseFloat((roundedLine + 1).toFixed(2)),
+                layPrice: parseFloat(roundedLine.toFixed(2)),
+                backSize: parseFloat(runner.backSize) || 100,
+                laySize: parseFloat(runner.laySize) || 100,
+                overRate: runner.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(-(runner.line - thresholdValue))))).toFixed(2))) : null,
+                underRate: runner.margin ? parseFloat(((1 / (marginAdjustment / (1 + Math.exp(+(runner.line - thresholdValue))))).toFixed(2))) : null,
+            };
+        }
+    };
+
     const handleCategoryChange = (selectedOptions) => {
         setSelectedCategories(selectedOptions);
         localStorage.setItem("selectedCategories", JSON.stringify(selectedOptions));
     };
+    // Handle value changes for markets
     const handleValueChange = (record, key, value) => {
         setHasUnsavedChanges(true);
         setData(prevData => {
@@ -196,6 +227,22 @@ export const OpenMarket = () => {
                 if (market.marketId === record.marketId) {
                     let updatedMarket = { ...market };
 
+                    // Special handling for category 31 (Fall of Wicket) markets
+                    if (market.marketTypeCategoryId === 31) {
+                        if (key === 'predefinedValue') {
+                            // For category 31, only update predefinedValue without affecting line
+                            updatedMarket.predefinedValue = value;
+                            return updatedMarket;
+                        }
+
+                        if (key === 'line') {
+                            // Handle line updates for category 31 through updateLineAndDependency
+                            updateLineAndDependency(market, value);
+                            return updatedMarket;
+                        }
+                    }
+
+                    // Handle predefinedValue for other categories
                     if (key === 'predefinedValue') {
                         const originalData = originalMarketData[market.marketId];
                         if (originalData && market.runner?.length === 1) {
@@ -212,12 +259,7 @@ export const OpenMarket = () => {
                             }];
 
                             // Update other dependent values
-                            updatedMarket = generateOverUnderLineType({
-                                ...updatedMarket,
-                                line: newLine,
-                                backSize: updatedMarket.runner[0]?.backSize,
-                                laySize: updatedMarket.runner[0]?.laySize
-                            }, marketTypeObj);
+                            updatedMarket = generateRunnerValues(updatedMarket, marketTypeObj);
 
                             return updatedMarket;
                         }
@@ -250,32 +292,15 @@ export const OpenMarket = () => {
                     if ((updatedMarket?.marketTypeId == marketTypeObj?.Fancy ||
                         updatedMarket?.marketTypeId == marketTypeObj?.LineMarket) &&
                         Array.isArray(updatedMarket?.runner)) {
-                        const marketStatus = updatedMarket?.status;
-                        updatedMarket.runner = updatedMarket?.runner?.length > 0 &&
-                            updatedMarket.runner.map(runner => ({
-                                ...runner,
-                                status: marketStatus
-                            }));
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            status: updatedMarket.status
+                        }));
                     }
 
                     // Update line-dependent values
                     if (key === 'line' || key === 'margin' || key === "rateDiff") {
-                        updatedMarket = generateOverUnderLineType({
-                            ...updatedMarket,
-                            line: updatedMarket.runner[0]?.line,
-                            backSize: updatedMarket.runner[0]?.backSize,
-                            laySize: updatedMarket.runner[0]?.laySize
-                        }, marketTypeObj);
-
-                        updatedMarket.runner[0] = {
-                            ...updatedMarket.runner[0],
-                            backPrice: updatedMarket.backPrice,
-                            layPrice: updatedMarket.layPrice,
-                            backSize: updatedMarket.backSize,
-                            laySize: updatedMarket.laySize,
-                            overRate: updatedMarket.overRate,
-                            underRate: updatedMarket.underRate,
-                        };
+                        updatedMarket = generateRunnerValues(updatedMarket, marketTypeObj);
                     }
 
                     return updatedMarket;
@@ -588,6 +613,7 @@ export const OpenMarket = () => {
         navigate("/commentary");
     };
 
+    // Main function to update line and dependent values
     const updateLineAndDependency = (record, newValue) => {
         let updatedRecord = { ...record };
         const originalData = originalMarketData[record.marketId];
@@ -595,15 +621,77 @@ export const OpenMarket = () => {
         if (record.runner && record.runner.length === 1) {
             const roundedLine = Math.round(parseFloat(newValue));
 
+            if (record.marketTypeCategoryId === 31) {
+                // For Fall of Wicket markets
+                updatedRecord.runner = [{
+                    ...record.runner[0],
+                    line: newValue
+                }];
+
+                // Update current market's dependent values
+                updatedRecord.runner[0] = {
+                    ...updatedRecord.runner[0],
+                    layPrice: roundedLine,
+                    backPrice: (record?.marketTypeId == marketTypeObj?.Fancy ||
+                        record?.marketTypeId == marketTypeObj?.LineMarket)
+                        ? roundedLine + parseFloat(record?.rateDiff || 0)
+                        : roundedLine + 1,
+                    ...generateRunnerValues(
+                        { ...updatedRecord.runner[0] },
+                        updatedRecord.margin,
+                        updatedRecord.rateDiff
+                    )
+                };
+
+                // Find all related category 31 markets
+                const relatedMarkets = data.filter(m =>
+                    m.marketTypeCategoryId === 31 &&
+                    m.teamId === record.teamId &&
+                    m.marketId > record.marketId
+                );
+
+                // Update each subsequent market's line based on its predefined value
+                let previousLine = newValue;
+                relatedMarkets.forEach(market => {
+                    const marketIndex = data.findIndex(m => m.marketId === market.marketId);
+                    if (marketIndex !== -1) {
+                        const nextLine = previousLine + (market.runner[0]?.predefinedValue || 0);
+                        const roundedNextLine = Math.round(parseFloat(nextLine));
+
+                        data[marketIndex] = {
+                            ...market,
+                            runner: [{
+                                ...market.runner[0],
+                                line: nextLine,
+                                layPrice: roundedNextLine,
+                                backPrice: (market?.marketTypeId == marketTypeObj?.Fancy ||
+                                    market?.marketTypeId == marketTypeObj?.LineMarket)
+                                    ? roundedNextLine + parseFloat(market?.rateDiff || 0)
+                                    : roundedNextLine + 1,
+                                ...generateRunnerValues(
+                                    { ...market.runner[0], line: nextLine },
+                                    market.margin,
+                                    market.rateDiff
+                                )
+                            }]
+                        };
+                        previousLine = nextLine;
+                    }
+                });
+
+                // Update the state with all changes
+                setData([...data]);
+                setHasUnsavedChanges(true);
+                return; // Exit early as we've handled all updates
+            }
+
+            // Original logic for other categories...
             if ([12, 29, 30].includes(record.marketTypeCategoryId)) {
-                // For special market categories, predefinedValue is based on playerScore
                 updatedRecord.predefinedValue = newValue - (originalData?.playerScore || 0);
                 updatedRecord.lineDifference = updatedRecord.predefinedValue - (originalData?.predefinedValue || 0);
             } else {
-                // For other single runner markets
                 const lineDifference = newValue - (originalData?.line || 0);
                 updatedRecord.lineDifference = lineDifference;
-
                 updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
             }
 
@@ -617,23 +705,7 @@ export const OpenMarket = () => {
                     : roundedLine + 1
             }];
 
-            updatedRecord.runner[0] = generateOverUnderLineType({
-                ...updatedRecord.runner[0],
-                margin: updatedRecord.margin,
-                lineType: updatedRecord.lineType,
-                marketTypeId: updatedRecord.marketTypeId,
-                rateDiff: updatedRecord?.rateDiff
-            }, marketTypeObj);
-        } else {
-            // Multi-runner market logic remains unchanged
-            const roundedLine = Math.round(parseFloat(newValue));
-            updatedRecord.line = newValue;
-            updatedRecord.layPrice = roundedLine;
-            updatedRecord.backPrice = (record?.marketTypeId == marketTypeObj?.Fancy ||
-                record?.marketTypeId == marketTypeObj?.LineMarket)
-                ? roundedLine + parseFloat(record?.rateDiff || 0)
-                : roundedLine + 1;
-            updatedRecord = generateOverUnderLineType(updatedRecord, marketTypeObj);
+            updatedRecord = generateRunnerValues(updatedRecord, marketTypeObj);
         }
 
         const indexOfData = data.findIndex(i => i.marketId === record.marketId);
