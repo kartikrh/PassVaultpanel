@@ -188,41 +188,115 @@ export const OpenMarket = () => {
         setSelectedCategories(selectedOptions);
         localStorage.setItem("selectedCategories", JSON.stringify(selectedOptions));
     };
+
     const handleValueChange = (record, key, value) => {
         setHasUnsavedChanges(true);
         setData(prevData => {
-            return prevData.map(market => {
-                if (market.marketId === record.marketId) {
-                    let updatedMarket = { ...market };
+            let updatedData = [...prevData];
+            const marketIndex = updatedData.findIndex(m => m.marketId === record.marketId);
 
-                    if (key === 'predefinedValue') {
-                        const originalData = originalMarketData[market.marketId];
-                        if (originalData && market.runner?.length === 1) {
-                            const predefinedDifference = value - (originalData.predefinedValue || 0);
-                            const newLine = (originalData.line || 0) + predefinedDifference;
+            if (marketIndex === -1) return prevData;
 
-                            updatedMarket.predefinedValue = value;
-                            updatedMarket.lineDifference = predefinedDifference;
+            let updatedMarket = { ...record };
 
-                            // Update line and dependent values
-                            updatedMarket.runner = [{
-                                ...market.runner[0],
-                                line: newLine
-                            }];
+            // Special handling for category 31
+            if (record.marketTypeCategoryId === 31) {
+                if (key === 'predefinedValue') {
+                    const teamMarkets = updatedData.filter(
+                        m => m.marketTypeCategoryId === 31 &&
+                            m.teamId === record.teamId
+                    );
+                    const currentMarketPosition = teamMarkets.findIndex(
+                        m => m.marketId === record.marketId
+                    );
 
-                            // Update other dependent values
-                            updatedMarket = generateOverUnderLineType({
-                                ...updatedMarket,
-                                line: newLine,
-                                backSize: updatedMarket.runner[0]?.backSize,
-                                laySize: updatedMarket.runner[0]?.laySize
-                            }, marketTypeObj);
-
-                            return updatedMarket;
-                        }
+                    let previousLine = 0;
+                    if (currentMarketPosition > 0) {
+                        previousLine = teamMarkets[currentMarketPosition - 1].line || 0;
                     }
 
-                    // Status change logic
+                    const newLine = previousLine + Number(value);
+
+                    updatedMarket = {
+                        ...updatedMarket,
+                        predefinedValue: Number(value),
+                        line: newLine
+                    };
+
+                    if (updatedMarket.runner && updatedMarket.runner.length > 0) {
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            line: newLine,
+                            layPrice: Math.round(newLine),
+                            backPrice: (record?.marketTypeId == marketTypeObj?.Fancy ||
+                                record?.marketTypeId == marketTypeObj?.LineMarket)
+                                ? Math.round(newLine) + parseFloat(record?.rateDiff || 0)
+                                : Math.round(newLine) + 1
+                        }));
+                    }
+
+                    updatedMarket = generateOverUnderLineType({
+                        ...updatedMarket,
+                        margin: updatedMarket.margin,
+                        lineType: updatedMarket.lineType,
+                        marketTypeId: updatedMarket.marketTypeId,
+                        rateDiff: updatedMarket?.rateDiff
+                    }, marketTypeObj);
+
+                    const updatedMarkets = updateSubsequentLines(
+                        teamMarkets,
+                        currentMarketPosition,
+                        newLine
+                    );
+
+                    updatedData = updatedData.map(market => {
+                        const updatedMarket = updatedMarkets.find(m => m.marketId === market.marketId);
+                        return updatedMarket || market;
+                    });
+                } else if (key === 'line') {
+                    const newLine = Number(value);
+                    const teamMarkets = updatedData.filter(
+                        m => m.marketTypeCategoryId === 31 &&
+                            m.teamId === record.teamId
+                    );
+                    const currentIndex = teamMarkets.findIndex(m => m.marketId === record.marketId);
+
+                    if (currentIndex > 0) {
+                        const previousMarket = teamMarkets[currentIndex - 1];
+                        const previousLine = previousMarket.line || 0;
+                        updatedMarket.predefinedValue = newLine - previousLine;
+                    } else {
+                        updatedMarket.predefinedValue = newLine;
+                    }
+
+                    updatedMarket.line = newLine;
+                    if (updatedMarket.runner && updatedMarket.runner.length > 0) {
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            line: newLine,
+                            layPrice: Math.round(newLine),
+                            backPrice: (record?.marketTypeId == marketTypeObj?.Fancy ||
+                                record?.marketTypeId == marketTypeObj?.LineMarket)
+                                ? Math.round(newLine) + parseFloat(record?.rateDiff || 0)
+                                : Math.round(newLine) + 1
+                        }));
+                    }
+
+                    updatedMarket = generateOverUnderLineType({
+                        ...updatedMarket,
+                        margin: updatedMarket.margin,
+                        lineType: updatedMarket.lineType,
+                        marketTypeId: updatedMarket.marketTypeId,
+                        rateDiff: updatedMarket?.rateDiff
+                    }, marketTypeObj);
+
+                    const updatedMarkets = updateSubsequentLines(teamMarkets, currentIndex, newLine);
+                    updatedData = updatedData.map(market => {
+                        const updatedMarket = updatedMarkets.find(m => m.marketId === market.marketId);
+                        return updatedMarket || market;
+                    });
+                } else {
+                    // Handle other fields for category 31
                     if (key === 'status') {
                         updatedMarket.status = +value;
                         if (Array.isArray(updatedMarket.runner)) {
@@ -231,10 +305,29 @@ export const OpenMarket = () => {
                                 status: +value
                             }));
                         }
-                        return updatedMarket;
+                    } else {
+                        const runnerProperties = ['overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                        if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
+                            updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                                ...runner,
+                                [key]: value
+                            }));
+                        } else {
+                            updatedMarket[key] = value;
+                        }
                     }
-
-                    // Property updates
+                }
+            } else {
+                // Original handling for other categories
+                if (key === 'status') {
+                    updatedMarket.status = +value;
+                    if (Array.isArray(updatedMarket.runner)) {
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            status: +value
+                        }));
+                    }
+                } else {
                     const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
                         updatedMarket.runner = updatedMarket.runner.map(runner => ({
@@ -245,7 +338,6 @@ export const OpenMarket = () => {
                         updatedMarket[key] = value;
                     }
 
-                    // Update runner status for Fancy and LineMarket
                     if ((updatedMarket?.marketTypeId == marketTypeObj?.Fancy ||
                         updatedMarket?.marketTypeId == marketTypeObj?.LineMarket) &&
                         Array.isArray(updatedMarket?.runner)) {
@@ -257,7 +349,6 @@ export const OpenMarket = () => {
                             }));
                     }
 
-                    // Update line-dependent values
                     if (key === 'line' || key === 'margin' || key === "rateDiff") {
                         updatedMarket = generateOverUnderLineType({
                             ...updatedMarket,
@@ -266,21 +357,23 @@ export const OpenMarket = () => {
                             laySize: updatedMarket.runner[0]?.laySize
                         }, marketTypeObj);
 
-                        updatedMarket.runner[0] = {
-                            ...updatedMarket.runner[0],
-                            backPrice: updatedMarket.backPrice,
-                            layPrice: updatedMarket.layPrice,
-                            backSize: updatedMarket.backSize,
-                            laySize: updatedMarket.laySize,
-                            overRate: updatedMarket.overRate,
-                            underRate: updatedMarket.underRate,
-                        };
+                        if (updatedMarket.runner && updatedMarket.runner.length > 0) {
+                            updatedMarket.runner[0] = {
+                                ...updatedMarket.runner[0],
+                                backPrice: updatedMarket.backPrice,
+                                layPrice: updatedMarket.layPrice,
+                                backSize: updatedMarket.backSize,
+                                laySize: updatedMarket.laySize,
+                                overRate: updatedMarket.overRate,
+                                underRate: updatedMarket.underRate,
+                            };
+                        }
                     }
-
-                    return updatedMarket;
                 }
-                return market;
-            });
+            }
+
+            updatedData[marketIndex] = updatedMarket;
+            return updatedData;
         });
     };
 
@@ -300,6 +393,44 @@ export const OpenMarket = () => {
         }
     };
 
+    const updateSubsequentLines = (markets, startIndex, previousLine) => {
+        return markets.map((market, index) => {
+            if (index > startIndex) {
+                const predefinedValue = market.predefinedValue || 0;
+                const newLine = previousLine + predefinedValue;
+
+                const updatedMarket = {
+                    ...market,
+                    line: newLine,
+                    predefinedValue
+                };
+
+                if (updatedMarket.runner && updatedMarket.runner.length > 0) {
+                    updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                        ...runner,
+                        line: newLine,
+                        layPrice: Math.round(newLine),
+                        backPrice: (market?.marketTypeId == marketTypeObj?.Fancy ||
+                            market?.marketTypeId == marketTypeObj?.LineMarket)
+                            ? Math.round(newLine) + parseFloat(market?.rateDiff || 0)
+                            : Math.round(newLine) + 1
+                    }));
+                }
+
+                const result = generateOverUnderLineType({
+                    ...updatedMarket,
+                    margin: updatedMarket.margin,
+                    lineType: updatedMarket.lineType,
+                    marketTypeId: updatedMarket.marketTypeId,
+                    rateDiff: updatedMarket?.rateDiff
+                }, marketTypeObj);
+
+                previousLine = newLine;
+                return result;
+            }
+            return market;
+        });
+    };
 
     const handleAction = async ({ changeIn, key, value, action }) => {
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
@@ -587,62 +718,109 @@ export const OpenMarket = () => {
     };
 
     const updateLineAndDependency = (record, newValue) => {
-        let updatedRecord = { ...record };
-        const originalData = originalMarketData[record.marketId];
-
-        if (record.runner && record.runner.length === 1) {
+        if (record.marketTypeCategoryId === 31) {
             const roundedLine = Math.round(parseFloat(newValue));
+            let updatedRecord = { ...record };
 
-            if ([12, 29, 30].includes(record.marketTypeCategoryId)) {
-                // For special market categories, predefinedValue is based on playerScore
-                updatedRecord.predefinedValue = newValue - (originalData?.playerScore || 0);
-                updatedRecord.lineDifference = updatedRecord.predefinedValue - (originalData?.predefinedValue || 0);
+            setData(prevData => {
+                const teamMarkets = prevData.filter(
+                    m => m.marketTypeCategoryId === 31 &&
+                        m.teamId === record.teamId
+                );
+                const currentIndex = teamMarkets.findIndex(m => m.marketId === record.marketId);
+
+                if (currentIndex > 0) {
+                    const previousMarket = teamMarkets[currentIndex - 1];
+                    const previousLine = previousMarket.line || 0;
+                    updatedRecord.predefinedValue = roundedLine - previousLine;
+                } else {
+                    updatedRecord.predefinedValue = roundedLine;
+                }
+
+                updatedRecord.line = roundedLine;
+                if (updatedRecord.runner && updatedRecord.runner.length > 0) {
+                    updatedRecord.runner = updatedRecord.runner.map(runner => ({
+                        ...runner,
+                        line: roundedLine,
+                        layPrice: roundedLine,
+                        backPrice: (record?.marketTypeId == marketTypeObj?.Fancy ||
+                            record?.marketTypeId == marketTypeObj?.LineMarket)
+                            ? roundedLine + parseFloat(record?.rateDiff || 0)
+                            : roundedLine + 1
+                    }));
+                }
+
+                updatedRecord = generateOverUnderLineType({
+                    ...updatedRecord,
+                    margin: updatedRecord.margin,
+                    lineType: updatedRecord.lineType,
+                    marketTypeId: updatedRecord.marketTypeId,
+                    rateDiff: updatedRecord?.rateDiff
+                }, marketTypeObj);
+
+                const updatedMarkets = updateSubsequentLines(teamMarkets, currentIndex, roundedLine);
+
+                return prevData.map(market => {
+                    if (market.marketId === record.marketId) return updatedRecord;
+                    const updatedMarket = updatedMarkets.find(m => m.marketId === market.marketId);
+                    return updatedMarket || market;
+                });
+            });
+
+            setHasUnsavedChanges(true);
+        } else {
+            let updatedRecord = { ...record };
+            const originalData = originalMarketData[record.marketId];
+
+            if (record.runner && record.runner.length === 1) {
+                const roundedLine = Math.round(parseFloat(newValue));
+
+                if ([12, 29, 30].includes(record.marketTypeCategoryId)) {
+                    updatedRecord.predefinedValue = newValue - (originalData?.playerScore || 0);
+                    updatedRecord.lineDifference = updatedRecord.predefinedValue - (originalData?.predefinedValue || 0);
+                } else {
+                    const lineDifference = newValue - (originalData?.line || 0);
+                    updatedRecord.lineDifference = lineDifference;
+                    updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
+                }
+
+                updatedRecord.runner = [{
+                    ...record.runner[0],
+                    line: newValue,
+                    layPrice: roundedLine,
+                    backPrice: (record?.marketTypeId == marketTypeObj?.Fancy ||
+                        record?.marketTypeId == marketTypeObj?.LineMarket)
+                        ? roundedLine + parseFloat(record?.rateDiff || 0)
+                        : roundedLine + 1
+                }];
+
+                updatedRecord.runner[0] = generateOverUnderLineType({
+                    ...updatedRecord.runner[0],
+                    margin: updatedRecord.margin,
+                    lineType: updatedRecord.lineType,
+                    marketTypeId: updatedRecord.marketTypeId,
+                    rateDiff: updatedRecord?.rateDiff
+                }, marketTypeObj);
             } else {
-                // For other single runner markets
-                const lineDifference = newValue - (originalData?.line || 0);
-                updatedRecord.lineDifference = lineDifference;
-                console.log({ lineDifference });
-
-                updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
-            }
-
-            updatedRecord.runner = [{
-                ...record.runner[0],
-                line: newValue,
-                layPrice: roundedLine,
-                backPrice: (record?.marketTypeId == marketTypeObj?.Fancy ||
+                const roundedLine = Math.round(parseFloat(newValue));
+                updatedRecord.line = newValue;
+                updatedRecord.layPrice = roundedLine;
+                updatedRecord.backPrice = (record?.marketTypeId == marketTypeObj?.Fancy ||
                     record?.marketTypeId == marketTypeObj?.LineMarket)
                     ? roundedLine + parseFloat(record?.rateDiff || 0)
-                    : roundedLine + 1
-            }];
+                    : roundedLine + 1;
+                updatedRecord = generateOverUnderLineType(updatedRecord, marketTypeObj);
+            }
 
-            updatedRecord.runner[0] = generateOverUnderLineType({
-                ...updatedRecord.runner[0],
-                margin: updatedRecord.margin,
-                lineType: updatedRecord.lineType,
-                marketTypeId: updatedRecord.marketTypeId,
-                rateDiff: updatedRecord?.rateDiff
-            }, marketTypeObj);
-        } else {
-            // Multi-runner market logic remains unchanged
-            const roundedLine = Math.round(parseFloat(newValue));
-            updatedRecord.line = newValue;
-            updatedRecord.layPrice = roundedLine;
-            updatedRecord.backPrice = (record?.marketTypeId == marketTypeObj?.Fancy ||
-                record?.marketTypeId == marketTypeObj?.LineMarket)
-                ? roundedLine + parseFloat(record?.rateDiff || 0)
-                : roundedLine + 1;
-            updatedRecord = generateOverUnderLineType(updatedRecord, marketTypeObj);
-        }
-
-        const indexOfData = data.findIndex(i => i.marketId === record.marketId);
-        if (indexOfData !== -1) {
-            setData(prev => [
-                ...prev.slice(0, indexOfData),
-                updatedRecord,
-                ...prev.slice(indexOfData + 1),
-            ]);
-            setHasUnsavedChanges(true);
+            const indexOfData = data.findIndex(i => i.marketId === record.marketId);
+            if (indexOfData !== -1) {
+                setData(prev => [
+                    ...prev.slice(0, indexOfData),
+                    updatedRecord,
+                    ...prev.slice(indexOfData + 1),
+                ]);
+                setHasUnsavedChanges(true);
+            }
         }
     };
 
