@@ -21,6 +21,7 @@ export const OpenMarket = () => {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [teams, setTeams] = useState({});
     const [categories, setCategories] = useState([]);
+    const [fullCategories, setFullCategories] = useState([]);
     const [categorisedData, setCategorisedData] = useState([]);
     const [lineRatio, setLineRatio] = useState(0);
     const [commentaryInfo, setCommentaryInfo] = useState({});
@@ -34,6 +35,8 @@ export const OpenMarket = () => {
     const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
+
+    const selectedCategoriesData = selectedCategories.map(category => { })
 
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
@@ -546,6 +549,7 @@ export const OpenMarket = () => {
                 if (response?.result) {
                     const teamsObj = {}
                     const newCategoryObj = {}
+                    setFullCategories(response?.result?.categories || [])
                     response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
                     response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
@@ -599,7 +603,6 @@ export const OpenMarket = () => {
                 // For other single runner markets
                 const lineDifference = newValue - (originalData?.line || 0);
                 updatedRecord.lineDifference = lineDifference;
-                console.log({ lineDifference });
 
                 updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
             }
@@ -1039,7 +1042,6 @@ export const OpenMarket = () => {
         });
     };
 
-
     useEffect(() => {
         if (commentaryId !== "0") {
             fetchTableData(commentaryId);
@@ -1081,24 +1083,53 @@ export const OpenMarket = () => {
     }, [isAutoUpdate, isSocketConnected])
 
     useEffect(() => {
-        const tempCategorisedData = {}
+        const tempCategorisedData = {};
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
-            data.forEach(market => {
 
-                tempCategorisedData[categories[market.marketTypeCategoryId]] =
-                    [].concat(
-                        tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
-                    )
-            })
-            setCategorisedData(tempCategorisedData)
+            // Group data by categories
+            data.forEach((market) => {
+                const categoryName = categories[market.marketTypeCategoryId];
+                tempCategorisedData[categoryName] = [].concat(
+                    tempCategorisedData[categoryName] || [],
+                    [market]
+                );
+            });
+
+            // Separate selected and non-selected categories
+            const selectedCategoryNames = selectedCategories.map(
+                (selected) => fullCategories.find((cat) => cat.marketTypeCategoryId === selected.value)?.categoryName
+            ).filter(Boolean);
+
+            const selectedData = {};
+            const remainingData = {};
+
+            fullCategories
+                .sort((a, b) => a.displayOrder - b.displayOrder)
+                .forEach((category) => {
+                    const categoryName = category.categoryName;
+                    if (selectedCategoryNames.includes(categoryName)) {
+                        if (tempCategorisedData[categoryName]) {
+                            selectedData[categoryName] = tempCategorisedData[categoryName];
+                        }
+                    } else {
+                        if (tempCategorisedData[categoryName]) {
+                            remainingData[categoryName] = tempCategorisedData[categoryName];
+                        }
+                    }
+                });
+
+            // Combine selected and remaining data
+            const sortedCategorisedData = { ...selectedData, ...remainingData };
+            setCategorisedData(sortedCategorisedData);
         } else {
             window.removeEventListener('keydown', handleKeyPress);
         }
+
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data])
+    }, [data, selectedCategories]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
