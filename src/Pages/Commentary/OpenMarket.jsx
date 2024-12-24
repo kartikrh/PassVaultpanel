@@ -223,18 +223,21 @@ export const OpenMarket = () => {
                         // Update current market
                         updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
 
-                        // Update subsequent markets in category 31
+                        // Update all subsequent markets in category 31
                         const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
                         const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
+                        // Keep track of the previous market's line for chaining updates
+                        let previousLine = newLine;
+
+                        // Update all markets after the current one
                         for (let i = currentIndex + 1; i < category31Markets.length; i++) {
                             const nextMarket = category31Markets[i];
-                            const prevMarket = category31Markets[i - 1];
                             const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
 
                             if (nextMarketIndex !== -1) {
-                                // Calculate new line for next market based on previous market's line
-                                const newNextLine = prevMarket.runner[0].line + nextMarket.predefinedValue;
+                                // Calculate new line based on previous market's line plus current predefined value
+                                const newNextLine = previousLine + nextMarket.predefinedValue;
 
                                 updatedData[nextMarketIndex] = {
                                     ...nextMarket,
@@ -248,7 +251,12 @@ export const OpenMarket = () => {
                                             : Math.round(newNextLine) + 1
                                     }]
                                 };
+
+                                // Update over/under rates for the next market
                                 updatedData[nextMarketIndex] = generateOverUnderLineType(updatedData[nextMarketIndex], marketTypeObj);
+
+                                // Update previous line for next iteration
+                                previousLine = newNextLine;
                             }
                         }
                     } else {
@@ -272,6 +280,7 @@ export const OpenMarket = () => {
                     }
                 }
             } else if (key === 'status') {
+                // Existing status change logic...
                 updatedMarket.status = +value;
                 if (Array.isArray(updatedMarket.runner)) {
                     updatedMarket.runner = updatedMarket.runner.map(runner => ({
@@ -310,28 +319,30 @@ export const OpenMarket = () => {
                     if (key === 'line') {
                         const originalData = originalMarketData[updatedMarket.marketId];
                         if (originalData) {
-                            const lineDifference = value - (originalData.line || 0);
+                            // Keep decimal precision in calculations
+                            const lineDifference = parseFloat(value) - (originalData.line || 0);
                             updatedMarket.lineDifference = lineDifference;
                             updatedMarket.predefinedValue = (originalData.predefinedValue || 0) + lineDifference;
                         }
 
-                        // If category 31 and line change, update ALL subsequent markets
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
                             const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
-                            let previousLine = value;
+                            let previousLine = parseFloat(value);
                             for (let i = currentIndex + 1; i < category31Markets.length; i++) {
                                 const nextMarket = category31Markets[i];
                                 const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
 
                                 if (nextMarketIndex !== -1) {
-                                    const newNextLine = previousLine + nextMarket.predefinedValue;
+                                    // Maintain decimal precision in calculations
+                                    const newNextLine = previousLine + parseFloat(nextMarket.predefinedValue || 0);
                                     updatedData[nextMarketIndex] = {
                                         ...nextMarket,
                                         runner: [{
                                             ...nextMarket.runner[0],
                                             line: newNextLine,
+                                            // Only round display values, not calculation values
                                             layPrice: Math.round(newNextLine),
                                             backPrice: (nextMarket.marketTypeId === marketTypeObj?.Fancy ||
                                                 nextMarket.marketTypeId === marketTypeObj?.LineMarket)
@@ -828,14 +839,12 @@ export const OpenMarket = () => {
                 <CustomInput
                     className="form-control small-text-fields input-line-field"
                     value={text === null ? "" : text}
-                    onChange={(newValue) => updateLineAndDependency(
-                        record,
-                        newValue,
-                        data, // Make sure 'data' is accessible here
-                        setData,
-                        originalMarketData,
-                        marketTypeObj
-                    )}
+                    onChange={(newValue) => {
+                        // Allow decimal input by not rounding here
+                        handleValueChange(record, "line", parseFloat(newValue))
+                    }}
+                    // Add step="0.1" to allow decimal input
+                    inputProps={{ step: "0.1" }}
                 />
             ),
             key: "line",
@@ -846,8 +855,8 @@ export const OpenMarket = () => {
             title: "",
             dataIndex: "lineVal",
             render: (text, record) => {
-                // Only render buttons if record has valid line value
-                if (!record?.runner?.[0]?.line) return null;
+                // // Only render buttons if record has valid line value
+                // if (!record?.runner?.[0]?.line) return null;
 
                 const currentLine = parseFloat(record.runner[0].line);
 
