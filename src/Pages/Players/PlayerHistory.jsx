@@ -134,6 +134,71 @@ const PlayerHistory = () => {
   //   return errors;
   // };
 
+  const handleBattingRecalculator = async () => {
+    const selectedMatchTypeIds = battingHistory
+      .filter(item => item.selected === true) // Filter items with selected: true
+      .map(item => item.matchTypeId);        // Extract matchTypeId from the filtered items
+
+    const payload = {
+      "playerId": playerId,
+      "matchTypeId": selectedMatchTypeIds
+    }
+
+    try {
+      const response = await axiosInstance.post("/admin/playerHistory/batSummary", payload);
+      if (response?.result) {
+        dispatch(
+          updateToastData({
+            data: "Batting history recalculated successfully",
+            title: "Success",
+            type: SUCCESS,
+          })
+        );
+        fetchPlayerHistory(playerId);
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  }
+  const handleBowlingRecalculator = async () => {
+    const selectedMatchTypeIds = bowlingHistory
+      .filter(item => item.selected === true) // Filter items with selected: true
+      .map(item => item.matchTypeId);        // Extract matchTypeId from the filtered items
+
+    const payload = {
+      "playerId": playerId,
+      "matchTypeId": selectedMatchTypeIds
+    }
+
+    try {
+      const response = await axiosInstance.post("/admin/playerHistory/bowlSummary", payload);
+      if (response?.result) {
+        dispatch(
+          updateToastData({
+            data: "Bowling history recalculated successfully",
+            title: "Success",
+            type: SUCCESS,
+          })
+        );
+        fetchPlayerHistory(playerId);
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  }
+
   const handleBattingSelectRow = (index) => {
     setBattingHistory((prevHistory) => {
       // const row = prevHistory[index];
@@ -334,8 +399,8 @@ const PlayerHistory = () => {
     const deleteIds =
       modifiedRows.length > 0
         ? modifiedRows
-            .filter((i) => i?.battingHistoryId !== null)
-            .map((item) => item.battingHistoryId)
+          .filter((i) => i?.battingHistoryId !== null)
+          .map((item) => item.battingHistoryId)
         : [];
 
     if (deleteIds.length === 0) {
@@ -357,8 +422,8 @@ const PlayerHistory = () => {
     const deleteIds =
       modifiedRows.length > 0
         ? modifiedRows
-            .filter((i) => i?.battingHistoryId !== null)
-            .map((item) => item.battingHistoryId)
+          .filter((i) => i?.battingHistoryId !== null)
+          .map((item) => item.battingHistoryId)
         : [];
 
     try {
@@ -468,8 +533,8 @@ const PlayerHistory = () => {
     const deleteIds =
       modifiedRows.length > 0
         ? modifiedRows
-            .filter((i) => i?.bowlingHistoryId !== null)
-            .map((item) => item.bowlingHistoryId)
+          .filter((i) => i?.bowlingHistoryId !== null)
+          .map((item) => item.bowlingHistoryId)
         : [];
 
     if (deleteIds.length === 0) {
@@ -491,8 +556,8 @@ const PlayerHistory = () => {
     const deleteIds =
       modifiedRows.length > 0
         ? modifiedRows
-            .filter((i) => i?.bowlingHistoryId !== null)
-            .map((item) => item.bowlingHistoryId)
+          .filter((i) => i?.bowlingHistoryId !== null)
+          .map((item) => item.bowlingHistoryId)
         : [];
 
     try {
@@ -1200,6 +1265,14 @@ const PlayerHistory = () => {
             <h5 className="mb-0 font-size-16">Batting & Fielding</h5>
             <div>
               <Button
+                color="warning"
+                className="btn mx-2"
+                onClick={handleBattingRecalculator}
+              >
+                {" "}
+                Re-Calculate{" "}
+              </Button>
+              <Button
                 color="primary"
                 className="btn mx-2"
                 onClick={handleBattingSave}
@@ -1237,10 +1310,10 @@ const PlayerHistory = () => {
                           <td className="p-2" key={colIndex}>
                             {column.render
                               ? column.render(
-                                  item[column.dataIndex],
-                                  item,
-                                  index
-                                )
+                                item[column.dataIndex],
+                                item,
+                                index
+                              )
                               : item[column.dataIndex]}
                           </td>
                         ))}
@@ -1255,6 +1328,14 @@ const PlayerHistory = () => {
           <CardHeader className="d-flex align-items-center justify-content-between">
             <h5 className="mb-0 font-size-16">Bowling</h5>
             <div>
+              <Button
+                color="warning"
+                className="btn mx-2"
+                onClick={handleBowlingRecalculator}
+              >
+                {" "}
+                Re-Calculate{" "}
+              </Button>
               <Button
                 color="primary"
                 className="btn mx-2"
@@ -1293,10 +1374,10 @@ const PlayerHistory = () => {
                           <td className="p-2" key={colIndex}>
                             {column.render
                               ? column.render(
-                                  item[column.dataIndex],
-                                  item,
-                                  index
-                                )
+                                item[column.dataIndex],
+                                item,
+                                index
+                              )
                               : item[column.dataIndex]}
                           </td>
                         ))}
@@ -1320,9 +1401,9 @@ const PlayerHistory = () => {
               <CardBody className="p-1">
                 {isLoading && <SpinnerModel />}
                 <Row className="mt-3 mt-lg-3 mt-md-3 mb-3">
-                {playerDetails && 
-                  <Col className="col-sm-auto d-flex align-items-center">
-                    {playerDetails?.image ? (
+                  {playerDetails &&
+                    <Col className="col-sm-auto d-flex align-items-center">
+                      {playerDetails?.image ? (
                         <img
                           className="avatar-sm rounded-circle"
                           alt=""
@@ -1332,9 +1413,9 @@ const PlayerHistory = () => {
                         <Avatar src="#" alt="ET">
                           Image
                         </Avatar>
-                    )}
-                    <h4 className="mb-0 font-size-18 mx-2">{`${playerDetails?.playerName} History`}</h4>
-                  </Col>}
+                      )}
+                      <h4 className="mb-0 font-size-18 mx-2">{`${playerDetails?.playerName} History`}</h4>
+                    </Col>}
                   <Col className="float-right">
                     <Button
                       className="btn btn-danger text-right mx-2"
