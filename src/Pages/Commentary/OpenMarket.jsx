@@ -838,12 +838,10 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-line-field"
-                    value={text === null ? "" : text}
+                    value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
                     onChange={(newValue) => {
-                        // Allow decimal input by not rounding here
                         handleValueChange(record, "line", parseFloat(newValue))
                     }}
-                    // Add step="0.1" to allow decimal input
                     inputProps={{ step: "0.1" }}
                 />
             ),
@@ -855,12 +853,9 @@ export const OpenMarket = () => {
             title: "",
             dataIndex: "lineVal",
             render: (text, record) => {
-                // // Only render buttons if record has valid line value
-                // if (!record?.runner?.[0]?.line) return null;
+                if (!record?.runner?.[0]?.line) return null;
 
                 const currentLine = parseFloat(record.runner[0].line);
-
-                // Create array of line value adjustments
                 const adjustments = [-2, -1, 0, 1, 2];
 
                 return (
@@ -882,7 +877,7 @@ export const OpenMarket = () => {
                                         handleValueChange(updatedRecord, 'line', newValue);
                                     }}
                                 >
-                                    {Math.round(newValue)}
+                                    {parseFloat(newValue).toFixed(1)}
                                 </Button>
                             );
                         })}
