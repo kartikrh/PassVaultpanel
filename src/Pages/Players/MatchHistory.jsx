@@ -46,6 +46,66 @@ const MatchHistory = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
+  console.log("battingHistory", battingHistory);
+
+  const handleBattingRecalculator = async () => {
+    const payload = {
+      "playerId": playerId,
+      "matchTypeId": [matchTypeId]
+    }
+
+    try {
+      const response = await axiosInstance.post("/admin/playerHistory/batSummary", payload);
+      if (response?.result) {
+        dispatch(
+          updateToastData({
+            data: "Batting history recalculated successfully",
+            title: "Success",
+            type: SUCCESS,
+          })
+        );
+        fetchPlayerBatHistory(playerId, matchTypeId);
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  }
+  const handleBowlingRecalculator = async () => {
+
+    const payload = {
+      "playerId": playerId,
+      "matchTypeId": [matchTypeId]
+    }
+
+    try {
+      const response = await axiosInstance.post("/admin/playerHistory/bowlSummary", payload);
+      if (response?.result) {
+        dispatch(
+          updateToastData({
+            data: "Bowling history recalculated successfully",
+            title: "Success",
+            type: SUCCESS,
+          })
+        );
+        fetchPlayerBallHistory(playerId, matchTypeId);
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  }
+
   const fetchPlayerBatHistory = async (playerId, matchTypeId) => {
     setIsLoading(true);
     await axiosInstance
@@ -54,7 +114,12 @@ const MatchHistory = () => {
         matchTypeId,
       })
       .then((response) => {
-        if (response?.result) {
+        if (response?.result?.length > 0) {
+          setBattingHistory(
+            response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
+          );
+          setIsLoading(false);
+        } else {
           setBattingHistory([
             {
               id: 0,
@@ -82,9 +147,7 @@ const MatchHistory = () => {
               eventName: "",
               eventDate: "",
             },
-            ...response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           ]);
-          setIsLoading(false);
         }
       })
       .catch((error) => {
@@ -523,16 +586,16 @@ const MatchHistory = () => {
             Update
           </Button>
           {/* {record.id ? ( */}
-            <Button
-              color={"danger"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                battingDelete(record);
-              }}
-            >
-              Delete
-            </Button>
+          <Button
+            color={"danger"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              battingDelete(record);
+            }}
+          >
+            Delete
+          </Button>
           {/* ) : null} */}
         </div>
       ),
@@ -895,16 +958,16 @@ const MatchHistory = () => {
             Update
           </Button>
           {/* {record.id ? ( */}
-            <Button
-              color={"danger"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                bowlingDelete(record);
-              }}
-            >
-              Delete
-            </Button>
+          <Button
+            color={"danger"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              bowlingDelete(record);
+            }}
+          >
+            Delete
+          </Button>
           {/* ) : null} */}
         </div>
       ),
@@ -921,6 +984,14 @@ const MatchHistory = () => {
             <h5 className="mb-0 font-size-16 font-bold">
               Batting Career Summary
             </h5>
+            <Button
+              color="warning"
+              className="btn mx-2"
+              onClick={handleBattingRecalculator}
+            >
+              {" "}
+              Re-Calculate{" "}
+            </Button>
           </CardHeader>
           <CardBody className="p-1">
             <Table responsive>
@@ -942,10 +1013,10 @@ const MatchHistory = () => {
                           <td className="p-2" key={colIndex}>
                             {column.render
                               ? column.render(
-                                  item[column.dataIndex],
-                                  item,
-                                  index
-                                )
+                                item[column.dataIndex],
+                                item,
+                                index
+                              )
                               : item[column.dataIndex]}
                           </td>
                         ))}
@@ -964,6 +1035,14 @@ const MatchHistory = () => {
         <Card>
           <CardHeader className="d-flex align-items-center justify-content-between">
             <h5 className="mb-0 font-size-16">Bowling Career Summary</h5>
+            <Button
+              color="warning"
+              className="btn mx-2"
+              onClick={handleBowlingRecalculator}
+            >
+              {" "}
+              Re-Calculate{" "}
+            </Button>
           </CardHeader>
           <CardBody className="p-1">
             <Table responsive>
@@ -985,10 +1064,10 @@ const MatchHistory = () => {
                           <td className="p-2" key={colIndex}>
                             {column.render
                               ? column.render(
-                                  item[column.dataIndex],
-                                  item,
-                                  index
-                                )
+                                item[column.dataIndex],
+                                item,
+                                index
+                              )
                               : item[column.dataIndex]}
                           </td>
                         ))}
@@ -1036,6 +1115,7 @@ const MatchHistory = () => {
         }
         return updatedHistory;
       });
+      console.log("battingHistory ", battingHistory);
     }
   };
 
@@ -1055,6 +1135,7 @@ const MatchHistory = () => {
   };
 
   const handleBattingSave = async (obj) => {
+    console.log("obj", obj);
     const payload = {
       id: Number(obj.id),
       matchTypeId: Number(obj.matchTypeId),
