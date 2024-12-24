@@ -313,21 +313,26 @@ export const CreateEventMarket = () => {
         return markets.map((market, index) => {
             if (index > startIndex) {
                 // Get the predefined value for current wicket
-                const currentPredefinedValue = market?.runners[0]?.predefinedValue || 0;
+                const currentPredefinedValue = market?.runners[0]?.predefinedValue;
                 // New line is previous wicket's line plus current wicket's predefined value
-                const newLine = previousWicketLine + (currentPredefinedValue || 0);
+                const newLine = previousWicketLine ? (+previousWicketLine + currentPredefinedValue) : null;
 
                 const updatedMarket = {
                     ...market,
-                    runners: market?.runners?.filter((item)=> (item?.line || item?.predefinedValue))?.map(runner => ({
-                        ...runner,
-                        line: newLine,
-                        ...generateRunnerValues(
-                            { ...runner, line: newLine },
-                            market.margin,
-                            market.rateDiff
-                        )
-                    }))
+                    runners: market?.runners?.map(runner => {
+                        if (runner?.line || runner?.predefinedValue) {
+                            return {
+                                ...runner,
+                                line: newLine,
+                                ...generateRunnerValues(
+                                    { ...runner, line: newLine },
+                                    market.margin,
+                                    market.rateDiff
+                                )
+                            };
+                        }
+                        return runner;
+                    })
                 };
                 previousWicketLine = newLine; // Update for next iteration
                 return updatedMarket;
@@ -755,10 +760,10 @@ export const CreateEventMarket = () => {
                     ...updatedMarket.runners[runnerIndex],
                     [key]: newValue
                 };
-
+                
                 if (updatedMarket.marketTypeCategoryId === 31) {
                     // For Fall of Wicket markets
-                    if (key === 'line' && newValue !== "") {
+                    if (key === 'line') {
                         // Update current market's values
                         updatedMarket.runners[runnerIndex] = {
                             ...updatedMarket.runners[runnerIndex],
@@ -775,19 +780,19 @@ export const CreateEventMarket = () => {
                             marketIndex,
                             newValue
                         );
-                    } else if (key === 'predefinedValue' && newValue !== "") {
+                    } else if (key === 'predefinedValue') {
 
                         let prevMarket = {...updatedMarkets[marketKey][marketIndex-1]};
                         let prevMarketIndex = marketIndex - 1;
                         // Iterate backwards through previous markets until we find a valid line value
-                        while (!prevMarket?.runners?.[runnerIndex]?.line && prevMarketIndex > 0) {
+                        while (((prevMarket?.runners?.[runnerIndex]?.line === null || prevMarket?.runners?.[runnerIndex]?.line === "" || prevMarket?.runners?.[runnerIndex]?.line === undefined) && (prevMarket?.runners?.[runnerIndex]?.predefinedValue === null || prevMarket?.runners?.[runnerIndex]?.predefinedValue === "" || prevMarket?.runners?.[runnerIndex]?.predefinedValue === undefined)) && prevMarketIndex > 0) {
                           prevMarket = {...updatedMarkets[marketKey][prevMarketIndex-1]};  // Get the previous market
                           prevMarketIndex--;
                         }
 
-                        const prevLineValue = prevMarket?.runners?.[runnerIndex]?.line || 0;
-                        const newLineValue = prevLineValue + newValue;
-
+                        const prevLineValue = prevMarket?.runners?.[runnerIndex]?.line;
+                        const newLineValue = newValue ? (prevLineValue + newValue) : null;
+                        
                         updatedMarket.runners[runnerIndex] = {
                             ...updatedMarket.runners[runnerIndex],
                             predefinedValue: newValue,
@@ -1319,7 +1324,7 @@ export const CreateEventMarket = () => {
             render: (text, record, onChange) => (
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={record?.predefinedValue}
+                    value={record?.predefinedValue == null ? "" : record?.predefinedValue}
                     onChange={(newValue) => onChange("predefinedValue", newValue)}
                     placeholder="Predefined Value"
                 />
@@ -1340,7 +1345,7 @@ export const CreateEventMarket = () => {
                 // />
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={record?.line}
+                    value={record?.line == null ? "" : record?.line}
                     onChange={(newValue) => onChange("line", newValue)}
                     placeholder="Line"
                 />
