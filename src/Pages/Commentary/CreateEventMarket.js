@@ -40,6 +40,8 @@ export const CreateEventMarket = () => {
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
+
+    console.log({ processedMarkets })
     useEffect(() => {
         console.log({ selectedMarkets, processedMarkets })
     })
@@ -760,7 +762,7 @@ export const CreateEventMarket = () => {
                     ...updatedMarket.runners[runnerIndex],
                     [key]: newValue
                 };
-                
+
                 if (updatedMarket.marketTypeCategoryId === 31) {
                     // For Fall of Wicket markets
                     if (key === 'line') {
@@ -782,17 +784,17 @@ export const CreateEventMarket = () => {
                         );
                     } else if (key === 'predefinedValue') {
 
-                        let prevMarket = {...updatedMarkets[marketKey][marketIndex-1]};
+                        let prevMarket = { ...updatedMarkets[marketKey][marketIndex - 1] };
                         let prevMarketIndex = marketIndex - 1;
                         // Iterate backwards through previous markets until we find a valid line value
                         while (((prevMarket?.runners?.[runnerIndex]?.line === null || prevMarket?.runners?.[runnerIndex]?.line === "" || prevMarket?.runners?.[runnerIndex]?.line === undefined) && (prevMarket?.runners?.[runnerIndex]?.predefinedValue === null || prevMarket?.runners?.[runnerIndex]?.predefinedValue === "" || prevMarket?.runners?.[runnerIndex]?.predefinedValue === undefined)) && prevMarketIndex > 0) {
-                          prevMarket = {...updatedMarkets[marketKey][prevMarketIndex-1]};  // Get the previous market
-                          prevMarketIndex--;
+                            prevMarket = { ...updatedMarkets[marketKey][prevMarketIndex - 1] };  // Get the previous market
+                            prevMarketIndex--;
                         }
 
                         const prevLineValue = prevMarket?.runners?.[runnerIndex]?.line;
                         const newLineValue = newValue ? (prevLineValue + newValue) : null;
-                        
+
                         updatedMarket.runners[runnerIndex] = {
                             ...updatedMarket.runners[runnerIndex],
                             predefinedValue: newValue,
@@ -1068,6 +1070,7 @@ export const CreateEventMarket = () => {
     };
 
     const handleSave = async () => {
+        console.log(Object.entries(processedMarkets));
         const savedData = Object.entries(processedMarkets)
             .flatMap(([key, markets]) =>
                 markets.filter((_, index) => selectedMarkets[key]?.[index])
@@ -1077,6 +1080,7 @@ export const CreateEventMarket = () => {
                 const predefinedValue = market.runners[0]?.predefinedValue;
 
                 return {
+                    ...market,
                     eventMarketId: market.eventMarketId || 0,
                     isCreate: market.isCreate !== undefined ? market.isCreate : true,
                     status: market.status || "1",
