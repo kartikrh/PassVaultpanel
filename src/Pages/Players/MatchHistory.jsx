@@ -46,8 +46,6 @@ const MatchHistory = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
-  console.log("battingHistory", battingHistory);
-
   const handleBattingRecalculator = async () => {
     const payload = {
       "playerId": playerId,
@@ -1115,7 +1113,6 @@ const MatchHistory = () => {
         }
         return updatedHistory;
       });
-      console.log("battingHistory ", battingHistory);
     }
   };
 
@@ -1135,7 +1132,6 @@ const MatchHistory = () => {
   };
 
   const handleBattingSave = async (obj) => {
-    console.log("obj", obj);
     const payload = {
       id: Number(obj.id),
       matchTypeId: Number(obj.matchTypeId),
