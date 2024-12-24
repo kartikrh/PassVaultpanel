@@ -313,7 +313,7 @@ export const CreateEventMarket = () => {
         return markets.map((market, index) => {
             if (index > startIndex) {
                 // Get the predefined value for current wicket
-                const currentPredefinedValue = market?.runners[0]?.predefinedValue;
+                const currentPredefinedValue = market?.runners[0]?.predefinedValue || null;
                 // New line is previous wicket's line plus current wicket's predefined value
                 const newLine = previousWicketLine ? (+previousWicketLine + currentPredefinedValue) : null;
 
