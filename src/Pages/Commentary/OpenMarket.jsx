@@ -264,7 +264,7 @@ export const OpenMarket = () => {
                         const newLine = (originalData.line || 0) + predefinedDifference;
 
                         updatedMarket.predefinedValue = value;
-                        updatedMarket.lineDifference = predefinedDifference;
+                        updatedMarket.lineDiff = predefinedDifference;
 
                         updatedMarket.runner = [{
                             ...updatedMarket.runner[0],
@@ -321,7 +321,7 @@ export const OpenMarket = () => {
                         if (originalData) {
                             // Keep decimal precision in calculations
                             const lineDifference = parseFloat(value) - (originalData.line || 0);
-                            updatedMarket.lineDifference = lineDifference;
+                            updatedMarket.lineDiff = lineDifference;
                             updatedMarket.predefinedValue = (originalData.predefinedValue || 0) + lineDifference;
                         }
 
@@ -707,7 +707,7 @@ export const OpenMarket = () => {
 
                 // Update the line difference and predefined value
                 const lineDifference = roundedLine - (originalData?.line || 0);
-                updatedRecord.lineDifference = lineDifference;
+                updatedRecord.lineDiff = lineDifference;
                 updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
 
                 // Update the runner with new values
