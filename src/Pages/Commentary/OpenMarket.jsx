@@ -877,7 +877,7 @@ export const OpenMarket = () => {
                                         handleValueChange(updatedRecord, 'line', newValue);
                                     }}
                                 >
-                                    {parseFloat(newValue).toFixed(1)}
+                                    {Math.round(newValue)}
                                 </Button>
                             );
                         })}
@@ -1107,8 +1107,9 @@ export const OpenMarket = () => {
                     return (
                         <CustomInput
                             className="form-control small-text-fields"
-                            value={text === null ? "" : text}
+                            value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
                             onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
+                            inputProps={{ step: "0.1" }}
                         />
                     );
                 }
@@ -1118,7 +1119,7 @@ export const OpenMarket = () => {
             className: "p-0",
             columnClassName: "p-1",
             hidden: true
-        },
+        }
     ];
 
     const lineRatioField = <>
