@@ -51,10 +51,11 @@ const MatchHistory = () => {
       "playerId": playerId,
       "matchTypeId": [matchTypeId]
     }
-
+    setIsLoading(true)
     try {
       const response = await axiosInstance.post("/admin/playerHistory/batSummary", payload);
       if (response?.result) {
+        setIsLoading(false)
         dispatch(
           updateToastData({
             data: "Batting history recalculated successfully",
@@ -65,6 +66,7 @@ const MatchHistory = () => {
         fetchPlayerBatHistory(playerId, matchTypeId);
       }
     } catch (error) {
+      setIsLoading(false)
       dispatch(
         updateToastData({
           data: error?.message,
@@ -80,10 +82,11 @@ const MatchHistory = () => {
       "playerId": playerId,
       "matchTypeId": [matchTypeId]
     }
-
+    setIsLoading(true);
     try {
       const response = await axiosInstance.post("/admin/playerHistory/bowlSummary", payload);
       if (response?.result) {
+        setIsLoading(false);
         dispatch(
           updateToastData({
             data: "Bowling history recalculated successfully",
@@ -94,6 +97,7 @@ const MatchHistory = () => {
         fetchPlayerBallHistory(playerId, matchTypeId);
       }
     } catch (error) {
+      setIsLoading(false);
       dispatch(
         updateToastData({
           data: error?.message,
@@ -101,6 +105,7 @@ const MatchHistory = () => {
           type: ERROR,
         })
       );
+
     }
   }
 
@@ -168,7 +173,12 @@ const MatchHistory = () => {
         matchTypeId,
       })
       .then((response) => {
-        if (response?.result) {
+        if (response?.result?.length > 0) {
+          setBowlingHistory(
+            response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
+          );
+        }
+        else {
           setBowlingHistory([
             {
               id: 0,
@@ -194,10 +204,11 @@ const MatchHistory = () => {
               eventName: "",
               eventDate: "",
             },
-            ...response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
+
           ]);
           setIsLoading(false);
         }
+        setIsLoading(false);
       })
       .catch((error) => {
         dispatch(
@@ -1099,7 +1110,7 @@ const MatchHistory = () => {
             const batRun = Number(updatedHistory[index].totalRuns) || 0;
             const batOutCount = Number(updatedHistory[index].outCount) || 0;
             updatedHistory[index].average =
-              batOutCount !== 0 ? batRun / batOutCount : batRun;
+              (batOutCount !== 0 ? batRun / batOutCount : batRun).toFixed(2);
           }
 
           // Calculate strike rate if key is 'ballsFacedCount' or 'totalRuns'
@@ -1108,7 +1119,7 @@ const MatchHistory = () => {
             const ballsFacedCount =
               Number(updatedHistory[index].ballsFacedCount) || 0;
             updatedHistory[index].strikeRate =
-              ballsFacedCount !== 0 ? (batRun / ballsFacedCount) * 100 : 0;
+              (ballsFacedCount !== 0 ? (batRun / ballsFacedCount) * 100 : 0).toFixed(2);
           }
         }
         return updatedHistory;
@@ -1117,14 +1128,32 @@ const MatchHistory = () => {
   };
 
   const handleBowlingValueChange = (index, key, value) => {
-    const regex = /^\d*\.?\d*$/; // Only allow numbers and one optional decimal point
-
+    const regex = /^\d*\.?\d*\/?\d*\.?\d*$/; // Only allow numbers and one optional decimal point
+    // && key != "bestBowlingInInnings" && value != "bestBowlingInMatch"
     if (regex.test(value)) {
       setBowlingHistory((prevHistory) => {
         const updatedHistory = [...prevHistory];
         if (index !== -1) {
           updatedHistory[index][key] = value;
           // updatedHistory[index].selected = true;
+          if (key === "wicketsCount" || key === "runsFromBowler") {
+            const bowlRun = Number(updatedHistory[index].runsFromBowler) || 0;
+            const wicketsCount = Number(updatedHistory[index].wicketsCount) || 0;
+            updatedHistory[index].bowlerAverage =
+              (wicketsCount !== 0 ? bowlRun / wicketsCount : bowlRun)?.toFixed(2);
+          }
+          if (key === "ballCount" || key === "runsFromBowler") {
+            const totalOvers = Math.floor(updatedHistory[index].ballCount / 6) + (updatedHistory[index].ballCount % 6) / 6;
+            const bowlRun = Number(updatedHistory[index].runsFromBowler) || 0;
+            updatedHistory[index].economy =
+              (totalOvers > 0 ? bowlRun / totalOvers : 0)?.toFixed(2);
+          }
+          if (key === "ballCount" || key === "wicketsCount") {
+            const ballCount = Number(updatedHistory[index].ballCount)
+            const wicketsCount = Number(updatedHistory[index].wicketsCount) || 0;
+            updatedHistory[index].bowlerStrikeRate =
+              (wicketsCount === 0 ? 0 : ballCount / wicketsCount)?.toFixed(2);
+          }
         }
         return updatedHistory;
       });
@@ -1133,6 +1162,7 @@ const MatchHistory = () => {
 
   const handleBattingSave = async (obj) => {
     const payload = {
+      playerId: Number(obj.playerId),
       id: Number(obj.id),
       matchTypeId: Number(obj.matchTypeId),
       matchCount: Number(obj.matchCount),
@@ -1151,7 +1181,7 @@ const MatchHistory = () => {
       stumpCount: Number(obj.stumpCount),
       outCount: Number(obj.outCount),
     };
-
+    setIsLoading(true)
     try {
       const response = await axiosInstance.post(
         "/admin/playerHistory/upPlayerBatHist",
@@ -1159,7 +1189,7 @@ const MatchHistory = () => {
       );
 
       fetchPlayerBatHistory(playerId, matchTypeId);
-
+      setIsLoading(false)
       dispatch(
         updateToastData({
           data: response?.message,
@@ -1167,7 +1197,9 @@ const MatchHistory = () => {
           type: SUCCESS,
         })
       );
+
     } catch (error) {
+      setIsLoading(false)
       dispatch(
         updateToastData({
           data: error?.message,
@@ -1175,6 +1207,7 @@ const MatchHistory = () => {
           type: ERROR,
         })
       );
+
     }
   };
   const handleBowlingSave = async (obj) => {
@@ -1198,14 +1231,14 @@ const MatchHistory = () => {
       wickets5: Number(obj.wickets5),
       wickets10: Number(obj.wickets10)
     };
-
+    setIsLoading(true)
     try {
       const response = await axiosInstance.post(
         "/admin/playerHistory/upPlayerBallHist",
         payload
       );
-
       fetchPlayerBallHistory(obj.playerId, obj.matchTypeId);
+      setIsLoading(false)
       dispatch(
         updateToastData({
           data: response?.message,
@@ -1214,6 +1247,7 @@ const MatchHistory = () => {
         })
       );
     } catch (error) {
+      setIsLoading(false)
       dispatch(
         updateToastData({
           data: error?.message,
