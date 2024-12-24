@@ -853,7 +853,6 @@ export const OpenMarket = () => {
             title: "",
             dataIndex: "lineVal",
             render: (text, record) => {
-                if (!record?.runner?.[0]?.line) return null;
 
                 const currentLine = parseFloat(record.runner[0].line);
                 const adjustments = [-2, -1, 0, 1, 2];
