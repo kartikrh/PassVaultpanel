@@ -87,6 +87,8 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "batter2Name": currentPartnership.batter2Name,
     "totalRuns": currentPartnership.totalRuns || 0,
     "totalBalls": currentPartnership.totalBalls || 0,
+    "totalSix": currentPartnership.totalSix || 0,
+    "totalFour": currentPartnership.totalFour || 0,
     "extras": currentPartnership.extras || 0,
     "commentaryBallByBallId": currentPartnership.commentaryBallByBallId || 0,
     "currentInnings": commentaryDetails.currentInnings,
