@@ -48,7 +48,7 @@ export const OpenMarket = () => {
 
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
-            document.title = `OM ${commentaryInfo.eid} ${commentaryInfo.en}`;
+            document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
     }, [commentaryInfo])
 
     const filterDataBySelectedCategories = (dataToFilter) => {
@@ -399,6 +399,17 @@ export const OpenMarket = () => {
     };
 
     const handleAction = async ({ changeIn, key, value, action }) => {
+        let filteredData = filterDataBySelectedCategories(changeIn);
+        
+        if (_.isEmpty(filteredData)) {
+            dispatch(updateToastData({
+              data: "No data to update based on current filter",
+              title: "Update Skipped",
+              type: WARNING
+            }));
+            return;
+        }
+
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
             if (key === "status" && value === INACTIVE_VALUE) {
                 return record.status !== INACTIVE_VALUE;
@@ -442,7 +453,7 @@ export const OpenMarket = () => {
                 })
             );
         } else {
-            dispatch(updateToastData({ data: "No data to update based on current filter", title: "Update Skipped", type: WARNING }));
+            dispatch(updateToastData({ data: "No records to update", title: "Update Skipped", type: WARNING }));
         }
     };
 
@@ -1260,7 +1271,7 @@ export const OpenMarket = () => {
                                 <Row>
                                     <Col className="p-0" xs={12} md={6} lg={2}>
                                         <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
-                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND}</button>
+                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND} (Z)</button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>
