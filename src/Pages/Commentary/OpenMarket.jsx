@@ -140,7 +140,7 @@ export const OpenMarket = () => {
                 if (originalData) {
                     const newLine = workingRecord.runner[0].line;
                     const oldLine = originalData.line;
-                    workingRecord.lineDifference = newLine - oldLine;
+                    workingRecord.lineDiff = newLine - oldLine;
                 }
             }
 
