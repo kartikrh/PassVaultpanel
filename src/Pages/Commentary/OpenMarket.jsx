@@ -48,7 +48,7 @@ export const OpenMarket = () => {
 
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
-            document.title = `OM ${commentaryInfo.eid} ${commentaryInfo.en}`;
+            document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
     }, [commentaryInfo])
 
     const filterDataBySelectedCategories = (dataToFilter) => {
@@ -201,15 +201,21 @@ export const OpenMarket = () => {
             if (key === 'predefinedValue') {
                 const originalData = originalMarketData[updatedMarket.marketId];
                 if (originalData && updatedMarket.runner?.length === 1) {
-                    // Calculate the difference between new and original predefined values
+                    // Reset all lineDiffs to 0
+                    updatedData = updatedData.map(market => ({
+                        ...market,
+                        lineDiff: 0
+                    }));
+
                     const predefinedDifference = value - (originalData.predefinedValue || 0);
 
-                    // For category 31
                     if (updatedMarket.marketTypeCategoryId === 31) {
                         updatedMarket.predefinedValue = value;
-
-                        // Update current market's line based on predefined difference
                         const newLine = (originalData.line || 0) + predefinedDifference;
+
+                        // Calculate lineDiff only for the changed market
+                        updatedMarket.lineDiff = newLine - (originalData.line || 0);
+
                         updatedMarket.runner = [{
                             ...updatedMarket.runner[0],
                             line: newLine,
@@ -220,52 +226,38 @@ export const OpenMarket = () => {
                                 : Math.round(newLine) + 1
                         }];
 
-                        // Update current market
                         updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
 
-                        // Update all subsequent markets in category 31
+                        // Update subsequent markets without lineDiff
                         const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
                         const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
-                        // Keep track of the previous market's line for chaining updates
                         let previousLine = newLine;
-
-                        // Update all markets after the current one
                         for (let i = currentIndex + 1; i < category31Markets.length; i++) {
                             const nextMarket = category31Markets[i];
                             const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
 
                             if (nextMarketIndex !== -1) {
-                                // Calculate new line based on previous market's line plus current predefined value
-                                const newNextLine = previousLine + nextMarket.predefinedValue;
-
+                                const nextNewLine = previousLine + nextMarket.predefinedValue;
                                 updatedData[nextMarketIndex] = {
                                     ...nextMarket,
                                     runner: [{
                                         ...nextMarket.runner[0],
-                                        line: newNextLine,
-                                        layPrice: Math.round(newNextLine),
+                                        line: nextNewLine,
+                                        layPrice: Math.round(nextNewLine),
                                         backPrice: (nextMarket.marketTypeId === marketTypeObj?.Fancy ||
                                             nextMarket.marketTypeId === marketTypeObj?.LineMarket)
-                                            ? Math.round(newNextLine) + parseFloat(nextMarket.rateDiff || 0)
-                                            : Math.round(newNextLine) + 1
+                                            ? Math.round(nextNewLine) + parseFloat(nextMarket.rateDiff || 0)
+                                            : Math.round(nextNewLine) + 1
                                     }]
                                 };
-
-                                // Update over/under rates for the next market
                                 updatedData[nextMarketIndex] = generateOverUnderLineType(updatedData[nextMarketIndex], marketTypeObj);
-
-                                // Update previous line for next iteration
-                                previousLine = newNextLine;
+                                previousLine = nextNewLine;
                             }
                         }
                     } else {
-                        // For other categories
                         const newLine = (originalData.line || 0) + predefinedDifference;
-
                         updatedMarket.predefinedValue = value;
-                        updatedMarket.lineDifference = predefinedDifference;
-
                         updatedMarket.runner = [{
                             ...updatedMarket.runner[0],
                             line: newLine,
@@ -280,7 +272,6 @@ export const OpenMarket = () => {
                     }
                 }
             } else if (key === 'status') {
-                // Existing status change logic...
                 updatedMarket.status = +value;
                 if (Array.isArray(updatedMarket.runner)) {
                     updatedMarket.runner = updatedMarket.runner.map(runner => ({
@@ -289,43 +280,36 @@ export const OpenMarket = () => {
                     }));
                 }
                 updatedData[marketIndex] = updatedMarket;
-            } else {
-                // Handle runner property updates
-                const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
-                if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
-                    updatedMarket.runner = updatedMarket.runner.map(runner => ({
-                        ...runner,
-                        [key]: value
-                    }));
-                } else {
-                    updatedMarket[key] = value;
-                }
-
-                // Update runner status for Fancy and LineMarket
-                if ((updatedMarket?.marketTypeId === marketTypeObj?.Fancy ||
-                    updatedMarket?.marketTypeId === marketTypeObj?.LineMarket) &&
-                    Array.isArray(updatedMarket?.runner)) {
-                    const marketStatus = updatedMarket?.status;
-                    updatedMarket.runner = updatedMarket?.runner?.length > 0 &&
-                        updatedMarket.runner.map(runner => ({
-                            ...runner,
-                            status: marketStatus
+            } else if (key === 'line' || key === 'margin' || key === "rateDiff") {
+                if (key === 'line') {
+                    const originalData = originalMarketData[updatedMarket.marketId];
+                    if (originalData) {
+                        // Reset all lineDiffs to 0
+                        updatedData = updatedData.map(market => ({
+                            ...market,
+                            lineDiff: 0
                         }));
-                }
 
-                // Update line-dependent values
-                if (key === 'line' || key === 'margin' || key === "rateDiff") {
-                    // First update the predefinedValue based on line change
-                    if (key === 'line') {
-                        const originalData = originalMarketData[updatedMarket.marketId];
-                        if (originalData) {
-                            // Keep decimal precision in calculations
-                            const lineDifference = parseFloat(value) - (originalData.line || 0);
-                            updatedMarket.lineDifference = lineDifference;
-                            updatedMarket.predefinedValue = (originalData.predefinedValue || 0) + lineDifference;
-                        }
+                        const lineDifference = parseFloat(value) - (originalData.line || 0);
+                        updatedMarket.predefinedValue = (originalData.predefinedValue || 0) + lineDifference;
 
                         if (updatedMarket.marketTypeCategoryId === 31) {
+                            // Calculate lineDiff only for the changed market
+                            updatedMarket.lineDiff = lineDifference;
+
+                            updatedMarket.runner = [{
+                                ...updatedMarket.runner[0],
+                                line: parseFloat(value),
+                                layPrice: Math.round(value),
+                                backPrice: (updatedMarket.marketTypeId === marketTypeObj?.Fancy ||
+                                    updatedMarket.marketTypeId === marketTypeObj?.LineMarket)
+                                    ? Math.round(value) + parseFloat(updatedMarket.rateDiff || 0)
+                                    : Math.round(value) + 1
+                            }];
+
+                            updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
+
+                            // Update subsequent markets without lineDiff
                             const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
                             const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
@@ -335,26 +319,70 @@ export const OpenMarket = () => {
                                 const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
 
                                 if (nextMarketIndex !== -1) {
-                                    // Maintain decimal precision in calculations
-                                    const newNextLine = previousLine + parseFloat(nextMarket.predefinedValue || 0);
+                                    const nextNewLine = previousLine + parseFloat(nextMarket.predefinedValue || 0);
                                     updatedData[nextMarketIndex] = {
                                         ...nextMarket,
                                         runner: [{
                                             ...nextMarket.runner[0],
-                                            line: newNextLine,
-                                            // Only round display values, not calculation values
-                                            layPrice: Math.round(newNextLine),
+                                            line: nextNewLine,
+                                            layPrice: Math.round(nextNewLine),
                                             backPrice: (nextMarket.marketTypeId === marketTypeObj?.Fancy ||
                                                 nextMarket.marketTypeId === marketTypeObj?.LineMarket)
-                                                ? Math.round(newNextLine) + parseFloat(nextMarket.rateDiff || 0)
-                                                : Math.round(newNextLine) + 1
+                                                ? Math.round(nextNewLine) + parseFloat(nextMarket.rateDiff || 0)
+                                                : Math.round(nextNewLine) + 1
                                         }]
                                     };
                                     updatedData[nextMarketIndex] = generateOverUnderLineType(updatedData[nextMarketIndex], marketTypeObj);
-                                    previousLine = newNextLine;
+                                    previousLine = nextNewLine;
                                 }
                             }
+                        } else {
+                            updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                                ...runner,
+                                [key]: value
+                            }));
+
+                            if ((updatedMarket?.marketTypeId === marketTypeObj?.Fancy ||
+                                updatedMarket?.marketTypeId === marketTypeObj?.LineMarket) &&
+                                Array.isArray(updatedMarket?.runner)) {
+                                const marketStatus = updatedMarket?.status;
+                                updatedMarket.runner = updatedMarket?.runner?.length > 0 &&
+                                    updatedMarket.runner.map(runner => ({
+                                        ...runner,
+                                        status: marketStatus
+                                    }));
+                            }
+
+                            updatedMarket = generateOverUnderLineType({
+                                ...updatedMarket,
+                                line: updatedMarket.runner[0]?.line,
+                                backSize: updatedMarket.runner[0]?.backSize,
+                                laySize: updatedMarket.runner[0]?.laySize
+                            }, marketTypeObj);
+
+                            updatedMarket.runner[0] = {
+                                ...updatedMarket.runner[0],
+                                backPrice: updatedMarket.backPrice,
+                                layPrice: updatedMarket.layPrice,
+                                backSize: updatedMarket.backSize,
+                                laySize: updatedMarket.laySize,
+                                overRate: updatedMarket.overRate,
+                                underRate: updatedMarket.underRate,
+                            };
+
+                            updatedData[marketIndex] = updatedMarket;
                         }
+                    }
+                } else {
+                    // Handle margin and rateDiff changes
+                    const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                    if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            [key]: value
+                        }));
+                    } else {
+                        updatedMarket[key] = value;
                     }
 
                     updatedMarket = generateOverUnderLineType({
@@ -364,15 +392,28 @@ export const OpenMarket = () => {
                         laySize: updatedMarket.runner[0]?.laySize
                     }, marketTypeObj);
 
-                    updatedMarket.runner[0] = {
-                        ...updatedMarket.runner[0],
-                        backPrice: updatedMarket.backPrice,
-                        layPrice: updatedMarket.layPrice,
-                        backSize: updatedMarket.backSize,
-                        laySize: updatedMarket.laySize,
-                        overRate: updatedMarket.overRate,
-                        underRate: updatedMarket.underRate,
-                    };
+                    updatedData[marketIndex] = updatedMarket;
+                }
+            } else {
+                const runnerProperties = ['overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
+                if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
+                    updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                        ...runner,
+                        [key]: value
+                    }));
+                } else {
+                    updatedMarket[key] = value;
+                }
+
+                if ((updatedMarket?.marketTypeId === marketTypeObj?.Fancy ||
+                    updatedMarket?.marketTypeId === marketTypeObj?.LineMarket) &&
+                    Array.isArray(updatedMarket?.runner)) {
+                    const marketStatus = updatedMarket?.status;
+                    updatedMarket.runner = updatedMarket?.runner?.length > 0 &&
+                        updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            status: marketStatus
+                        }));
                 }
 
                 updatedData[marketIndex] = updatedMarket;
@@ -399,6 +440,17 @@ export const OpenMarket = () => {
     };
 
     const handleAction = async ({ changeIn, key, value, action }) => {
+        let filteredData = filterDataBySelectedCategories(changeIn);
+
+        if (_.isEmpty(filteredData)) {
+            dispatch(updateToastData({
+                data: "No data to update based on current filter",
+                title: "Update Skipped",
+                type: WARNING
+            }));
+            return;
+        }
+
         let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
             if (key === "status" && value === INACTIVE_VALUE) {
                 return record.status !== INACTIVE_VALUE;
@@ -442,7 +494,7 @@ export const OpenMarket = () => {
                 })
             );
         } else {
-            dispatch(updateToastData({ data: "No data to update based on current filter", title: "Update Skipped", type: WARNING }));
+            dispatch(updateToastData({ data: "No records to update", title: "Update Skipped", type: WARNING }));
         }
     };
 
@@ -482,6 +534,18 @@ export const OpenMarket = () => {
 
             if (response?.result) {
                 const updatedData = response.result.marketList || [];
+
+                // Update original values after successful save
+                updatedData.forEach(market => {
+                    if (market.runner && market.runner.length === 1) {
+                        originalMarketData[market.marketId] = {
+                            line: market.runner[0].line,
+                            predefinedValue: market.predefinedValue,
+                            playerScore: market.playerScore
+                        };
+                    }
+                });
+
                 setData(prevData =>
                     prevData.map(market => {
                         const updatedMarket = updatedData.find(u => u.marketId === market.marketId);
@@ -499,7 +563,6 @@ export const OpenMarket = () => {
             }
 
             setIsLoading(false);
-            // Handle success message and other logic...
         } catch (error) {
             setIsLoading(false);
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -707,7 +770,7 @@ export const OpenMarket = () => {
 
                 // Update the line difference and predefined value
                 const lineDifference = roundedLine - (originalData?.line || 0);
-                updatedRecord.lineDifference = lineDifference;
+                updatedRecord.lineDiff = lineDifference;
                 updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
 
                 // Update the runner with new values
@@ -853,7 +916,6 @@ export const OpenMarket = () => {
             title: "",
             dataIndex: "lineVal",
             render: (text, record) => {
-                if (!record?.runner?.[0]?.line) return null;
 
                 const currentLine = parseFloat(record.runner[0].line);
                 const adjustments = [-2, -1, 0, 1, 2];
@@ -1250,22 +1312,28 @@ export const OpenMarket = () => {
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
                                 <Row>
-                                    <Col >
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Open Market" page="updatecp" />
+                                    {!isEmpty(commentaryInfo) && <Col>
+                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ `} <strong>{`${commentaryInfo.en}`}</strong>{`/ Ref: `} <strong>{`${commentaryInfo.eid}`}</strong> {`[ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    }
+                                    <Col className="p-0" xs={2} md={1} lg={1}>
+                                        <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
-                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND}</button>
+                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND} (Z)</button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: false })}>{NOT_ALLOW}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: true })}>{ACTIVE}</Button>
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: false })}>{DEACTIVE}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         {isSocketConnected ?
                                             <span className="mx-3 live-css" /> :
                                             <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "AE" : "AS"}</Button>
@@ -1273,15 +1341,6 @@ export const OpenMarket = () => {
                                         <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>
                                             <i className='bx bx-refresh'></i></Button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={1} lg={1}>
-                                        <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    {!isEmpty(commentaryInfo) && <Col className="mb-1">
-                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ ${commentaryInfo.en}/ Ref: ${commentaryInfo.eid} [ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
-                                    </Col>
-                                    }
                                 </Row>
                                 {data.length > 0 &&
                                     <Row>
@@ -1330,6 +1389,7 @@ export const OpenMarket = () => {
                                         setIsLoading={setIsLoading}
                                         openAccordions={openAccordions}
                                         toggleAccordion={toggleAccordion}
+                                        commentaryInfo={commentaryInfo}
                                     />
                                 )}
                             </CardBody>
