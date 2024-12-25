@@ -1249,22 +1249,28 @@ export const OpenMarket = () => {
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
                                 <Row>
-                                    <Col >
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Open Market" page="updatecp" />
+                                    {!isEmpty(commentaryInfo) && <Col>
+                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ `} <strong>{`${commentaryInfo.en}`}</strong>{`/ Ref: `} <strong>{`${commentaryInfo.eid}`}</strong> {`[ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    }
+                                    <Col className="p-0" xs={2} md={1} lg={1}>
+                                        <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
                                         <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND}</button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: false })}>{NOT_ALLOW}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: true })}>{ACTIVE}</Button>
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: false })}>{DEACTIVE}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={2} lg={1}>
+                                    <Col className="p-0" xs={12} md={6} lg={2}>
                                         {isSocketConnected ?
                                             <span className="mx-3 live-css" /> :
                                             <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "AE" : "AS"}</Button>
@@ -1272,15 +1278,6 @@ export const OpenMarket = () => {
                                         <Button color="primary" className="table-header-button" onClick={() => fetchTableData(commentaryId)}>
                                             <i className='bx bx-refresh'></i></Button>
                                     </Col>
-                                    <Col className="p-0" xs={2} md={1} lg={1}>
-                                        <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    {!isEmpty(commentaryInfo) && <Col className="mb-1">
-                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ ${commentaryInfo.en}/ Ref: ${commentaryInfo.eid} [ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
-                                    </Col>
-                                    }
                                 </Row>
                                 {data.length > 0 &&
                                     <Row>
@@ -1329,6 +1326,7 @@ export const OpenMarket = () => {
                                         setIsLoading={setIsLoading}
                                         openAccordions={openAccordions}
                                         toggleAccordion={toggleAccordion}
+                                        commentaryInfo={commentaryInfo}
                                     />
                                 )}
                             </CardBody>

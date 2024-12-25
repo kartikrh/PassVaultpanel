@@ -119,12 +119,12 @@ export const OPEN_MARKET_STATUS = {
     "4": "Close",
 }
 
-export const INACTIVE = "InAc"
-export const SUSPEND = "Sp"
-export const ALLOW = "Al"
-export const NOT_ALLOW = "NA"
-export const ACTIVE = "Ac"
-export const DEACTIVE = "DAc"
+export const INACTIVE = "InActive"
+export const SUSPEND = "Suspend"
+export const ALLOW = "Allow"
+export const NOT_ALLOW = "Not Allow"
+export const ACTIVE = "Active"
+export const DEACTIVE = "Deactive"
 export const INACTIVE_VALUE = 2
 export const SUSPEND_VALUE = 3
 export const OPEN_VALUE = 1
