@@ -226,7 +226,7 @@ export const CreateEventMarket = () => {
             }
             return templateRunners;
         };
-
+        
         // Process templates first to ensure all markets are generated
         templates.forEach(template => {
             if (template.isPerEvent) {
@@ -598,6 +598,7 @@ export const CreateEventMarket = () => {
 
     const processPlayerRunsMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
+            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Runs`;
                 const specialMarket = {
@@ -615,6 +616,7 @@ export const CreateEventMarket = () => {
 
     const processPlayerBoundaryMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
+            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Boundaries`;
                 const specialMarket = {
@@ -632,6 +634,7 @@ export const CreateEventMarket = () => {
 
     const processPlayerBallMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
+            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = market.marketName.replace("{player}", player.playerName);
                 const specialMarket = {
