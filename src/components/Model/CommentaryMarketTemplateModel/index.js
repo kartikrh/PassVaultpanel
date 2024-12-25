@@ -264,7 +264,12 @@ const Index = ({
                 <ul className="list-group market-template-list">
                   {unassignedMarket.length > 0 &&
                     unassignedMarket
-                      .sort((a, b) => a?.marketTypeCategoryId - b?.marketTypeCategoryId)
+                      .sort((a, b) => {
+                        if (a?.marketTypeCategoryId == b?.marketTypeCategoryId) {
+                          return a?.templateName.localeCompare(b?.templateName);
+                        }
+                        return a?.marketTypeCategoryId - b?.marketTypeCategoryId;
+                      })
                       .map((template) => (
                         <li
                           key={template.marketTemplateId}
@@ -303,7 +308,12 @@ const Index = ({
                 <ul className="list-group market-template-list">
                   {assignedMarket.length > 0 &&
                     assignedMarket
-                      .sort((a, b) => a?.marketTypeCategoryId - b?.marketTypeCategoryId)
+                      .sort((a, b) => {
+                        if (a?.marketTypeCategoryId === b?.marketTypeCategoryId) {
+                          return a?.templateName.localeCompare(b?.templateName);
+                        }
+                        return a?.marketTypeCategoryId - b?.marketTypeCategoryId;
+                      })
                       .map((template) => (
                         <li
                           key={template.id}
