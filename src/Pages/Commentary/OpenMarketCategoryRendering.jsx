@@ -3,7 +3,7 @@ import { Accordion, AccordionBody, AccordionHeader, AccordionItem } from "reacts
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import MultiRunnerMarket from "./MultiRunnerMarket";
 
-const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading) => {
+const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo) => {
     const singleRunnerMarkets = markets.filter(market => !market.runner || market.runner.length <= 1);
     const multiRunnerMarkets = markets.filter(market => market.runner && market.runner.length > 1);
     const getVisibleColumns = (isSingleRunner) => {
@@ -39,7 +39,8 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                             // ...(market.runner && market.runner[0]),
                         }
                     })}
-                    tableElement={{ title: `${category} - Single Runner Markets`, displayTitle: true }}
+                    tableElement={{ title: `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`, displayTitle: true }}
+                    // tableElement={{ title: `${category} - Single Runner Markets`, displayTitle: true }}
                     tableClassName="open-market-table-class"
                 />
             )}
@@ -61,7 +62,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
     );
 };
 
-const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion }) => {
+const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo }) => {
     return (
         <>
             {Object.entries(categorisedData).map(([category, markets]) => (
@@ -72,7 +73,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionHeader>
                         <AccordionBody className="market-category-body" accordionId={category}>
                             {markets.length > 0 ? (
-                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading)
+                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo)
                             ) : (
                                 <div className="m-4 text-center">No record found</div>
                             )}
