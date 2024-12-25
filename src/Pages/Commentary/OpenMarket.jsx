@@ -60,7 +60,7 @@ export const OpenMarket = () => {
 
     useEffect(() => {
         if (!isEmpty(data) && isDataFromApiOrSocket) {
-            // Store original data for reference
+            // Update originalMarketData whenever we get new data from API/socket
             const newOriginalData = {};
             data.forEach(market => {
                 if (market.runner && market.runner.length === 1) {
@@ -72,7 +72,7 @@ export const OpenMarket = () => {
                 }
             });
             setOriginalMarketData(newOriginalData);
-            setIsDataFromApiOrSocket(false); // Reset flag after updating
+            setIsDataFromApiOrSocket(false);
         }
     }, [data, isDataFromApiOrSocket]);
 
@@ -130,10 +130,20 @@ export const OpenMarket = () => {
     //     }, 500),
     //     []
     // );
-
     const formatDataBeforeSend = (dataToChange = []) => {
         return dataToChange.map(record => {
             let workingRecord = _.clone(record);
+
+            // Calculate lineDifference only for marketTypeCategoryId = 31 by comparing current line with previous line of same market
+            if (workingRecord.marketTypeCategoryId === 31 && workingRecord.runner && workingRecord.runner.length === 1) {
+                const originalData = originalMarketData[workingRecord.marketId];
+                if (originalData) {
+                    const newLine = workingRecord.runner[0].line;
+                    const oldLine = originalData.line;
+                    workingRecord.lineDifference = newLine - oldLine;
+                }
+            }
+
             // Check if runner exists and is an array
             if (Array.isArray(workingRecord.runner)) {
                 workingRecord.runner = workingRecord.runner.map(runner => ({
@@ -506,11 +516,28 @@ export const OpenMarket = () => {
                         return market;
                     })
                 );
+
+                // After successful save, update originalMarketData with the current data
+                // This will make line difference calculations start from 0
+                const newOriginalData = {};
+                dataToSave.forEach(market => {
+                    if (market.runner && market.runner.length === 1) {
+                        newOriginalData[market.marketId] = {
+                            line: market.runner[0].line,
+                            predefinedValue: market.predefinedValue,
+                            playerScore: market.playerScore
+                        };
+                    }
+                });
+                setOriginalMarketData(prevOriginalData => ({
+                    ...prevOriginalData,
+                    ...newOriginalData
+                }));
+
                 setHasUnsavedChanges(false);
             }
 
             setIsLoading(false);
-            // Handle success message and other logic...
         } catch (error) {
             setIsLoading(false);
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -528,29 +555,32 @@ export const OpenMarket = () => {
     }
 
     const formatAPIDataForState = ({ responseData, teamData }) => {
-        let highestLineRatio = 1
+        let highestLineRatio = 1;
         let updatedDatalist = responseData.map(eventMarket => {
             if ((eventMarket.marketTypeCategoryId === lineRatioForMarketCategoryId)
                 && (highestLineRatio < (+eventMarket.lineRatio || 0)))
-                highestLineRatio = +eventMarket.lineRatio
-            // Don't spread runner properties at market level
+                highestLineRatio = +eventMarket.lineRatio;
+
             if (eventMarket.runner) {
                 return {
                     ...eventMarket,
-                    predefinedValue: eventMarket.predefinedValue, // Explicitly preserve predefinedValue
+                    predefinedValue: eventMarket.predefinedValue,
                     teamName: teamData[eventMarket.teamId],
-                    // Keep the original market status
                     status: eventMarket.status,
-                    // Keep runners as an array
                     runner: Array.isArray(eventMarket.runner) ? eventMarket.runner : [eventMarket.runner]
-                }
+                };
             }
-            return null
-        }).filter(x => x)
+            return null;
+        }).filter(x => x);
 
         updatedDatalist = _.orderBy(updatedDatalist, ['marketId'], ['asc']);
-        return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
-    }
+        setIsDataFromApiOrSocket(true);
+
+        return {
+            data: updatedDatalist,
+            lineRatio: highestLineRatio * 5
+        };
+    };
 
     const formatSocketDataForState = (responseData) => {
         if (!isEmpty(responseData)) {
@@ -559,69 +589,65 @@ export const OpenMarket = () => {
             responseData.forEach(eventMarketString => {
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
-                    // Ensure the runner is always treated as an array
-                    let runners = Array.isArray(eventMarket.runner) ? eventMarket.runner.map(runner => ({
-                        runnerId: runner.runnerId,
-                        runnerName: runner.runner,
-                        line: runner.line,
-                        overRate: runner.overRate,
-                        underRate: runner.underRate,
-                        status: +runner.status, // Ensure status is a number
-                        backPrice: runner.backPrice,
-                        layPrice: runner.layPrice,
-                        backSize: runner.backSize,
-                        laySize: runner.laySize
-                    })) : [{
-                        runnerId: eventMarket.runnerId,
-                        runnerName: eventMarket.runner,
-                        line: eventMarket.line,
-                        overRate: eventMarket.overRate,
-                        underRate: eventMarket.underRate,
-                        status: +eventMarket.status, // Ensure status is a number
-                        backPrice: eventMarket.backPrice,
-                        layPrice: eventMarket.layPrice,
-                        backSize: eventMarket.backSize,
-                        laySize: eventMarket.laySize
-                    }];
+                    let runners = Array.isArray(eventMarket.runner)
+                        ? eventMarket.runner.map(runner => ({
+                            runnerId: runner.runnerId,
+                            runnerName: runner.runner,
+                            line: runner.line,
+                            overRate: runner.overRate,
+                            underRate: runner.underRate,
+                            status: +runner.status,
+                            backPrice: runner.backPrice,
+                            layPrice: runner.layPrice,
+                            backSize: runner.backSize,
+                            laySize: runner.laySize
+                        }))
+                        : [{
+                            runnerId: eventMarket.runnerId,
+                            runnerName: eventMarket.runner,
+                            line: eventMarket.line,
+                            overRate: eventMarket.overRate,
+                            underRate: eventMarket.underRate,
+                            status: +eventMarket.status,
+                            backPrice: eventMarket.backPrice,
+                            layPrice: eventMarket.layPrice,
+                            backSize: eventMarket.backSize,
+                            laySize: eventMarket.laySize
+                        }];
 
                     let updatedMarketData = {
                         ...eventMarket,
                         teamName: teams[eventMarket.teamId],
                         predefinedValue: eventMarket.predefinedValue,
                         isNewSocketData: true,
-                        margin: parseFloat(eventMarket.margin).toFixed(2), // Preserve margin formatting
-                        runner: runners // Ensure runner is always an array
+                        margin: parseFloat(eventMarket.margin).toFixed(2),
+                        runner: runners
                     };
 
-                    // Remove redundant fields from the top level after mapping runner
                     const redundantFields = ['runnerId', 'line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     redundantFields.forEach(field => delete updatedMarketData[field]);
 
-                    // Ensure that the new data replaces old data in the market
                     newMarketData[eventMarket.marketId] = updatedMarketData;
                 }
             });
 
             setData(prevData => {
-                // Replace the existing market data with the new market data from the socket
                 const updatedData = prevData.map(market => {
                     const newMarket = newMarketData[market.marketId];
                     if (newMarket) {
                         return {
                             ...market,
                             ...newMarket,
-                            // Ensure runner remains an array
                             runner: Array.isArray(newMarket.runner) ? newMarket.runner : [newMarket.runner]
                         };
                     }
                     return market;
                 });
-                // Add new markets that are in newMarketData but not in prevData
+
                 const newMarkets = Object.keys(newMarketData)
                     .filter(marketId => {
-                        // Check if marketId is already in prevData or updatedData
                         const existsInPrevData = updatedData.some(market => parseInt(market.marketId) === parseInt(marketId));
-                        return !existsInPrevData; // Only include new markets
+                        return !existsInPrevData;
                     })
                     .map(marketId => ({
                         marketId: parseInt(marketId),
@@ -629,11 +655,21 @@ export const OpenMarket = () => {
                         runner: Array.isArray(newMarketData[marketId].runner) ? newMarketData[marketId].runner : [newMarketData[marketId].runner]
                     }));
 
-                // Combine updatedData with newMarkets
                 const combinedData = [...updatedData, ...newMarkets];
-
-                // Filter based on statusListToInclude
                 const finalDataToSet = combinedData.filter(e => statusListToInclude.includes(e.status));
+
+                // Update originalMarketData with the new values from socket
+                const newOriginalData = {};
+                finalDataToSet.forEach(market => {
+                    if (market.runner && market.runner.length === 1) {
+                        newOriginalData[market.marketId] = {
+                            line: market.runner[0].line,
+                            predefinedValue: market.predefinedValue,
+                            playerScore: market.playerScore
+                        };
+                    }
+                });
+                setOriginalMarketData(newOriginalData);
 
                 setTimeout(() => {
                     setData((storedData) =>
@@ -642,10 +678,10 @@ export const OpenMarket = () => {
                     setHasUnsavedChanges(false);
                 }, 3000);
 
+                setIsDataFromApiOrSocket(true);
                 const sortedData = _.orderBy(finalDataToSet, ['marketId'], ['asc']);
                 return sortedData;
             });
-            setIsDataFromApiOrSocket(true);
         }
     };
 
@@ -661,14 +697,26 @@ export const OpenMarket = () => {
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setTeams(teamsObj)
                     setData(formattedData.data);
+
+                    // Update originalMarketData with the new values from API
+                    const newOriginalData = {};
+                    formattedData.data.forEach(market => {
+                        if (market.runner && market.runner.length === 1) {
+                            newOriginalData[market.marketId] = {
+                                line: market.runner[0].line,
+                                predefinedValue: market.predefinedValue,
+                                playerScore: market.playerScore
+                            };
+                        }
+                    });
+                    setOriginalMarketData(newOriginalData);
+
                     setIsDataFromApiOrSocket(true);
                     setCategories(newCategoryObj)
-                    // setLineRatio(formattedData.lineRatio)
                 }
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                // setIsLading(false);
             });
     };
 
