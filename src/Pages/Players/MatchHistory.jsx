@@ -272,7 +272,7 @@ const MatchHistory = () => {
       render: (text, record) => (
         <Input
           className="form-control medium-text-fields"
-          // disabled
+          disabled
           type="text"
           value={text ? convertDateUTCToLocal(text, "index") : "-"}
         />
@@ -287,6 +287,7 @@ const MatchHistory = () => {
       render: (text, record) => (
         <Input
           className="form-control medium-text-fields"
+          disabled
           type="text"
           value={text ? text : "-"}
         />
@@ -592,20 +593,20 @@ const MatchHistory = () => {
               handleBattingSave(record);
             }}
           >
-            Update
+            {record?.id === 0 ? "save" : "Update"}
           </Button>
-          {/* {record.id ? ( */}
-          <Button
-            color={"danger"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              battingDelete(record);
-            }}
-          >
-            Delete
-          </Button>
-          {/* ) : null} */}
+          {record?.id !== 0 ?
+            <Button
+              color={"danger"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                bowlingDelete(record);
+              }}
+            >
+              Delete
+            </Button>
+            : null}
         </div>
       ),
       key: "",
@@ -652,7 +653,7 @@ const MatchHistory = () => {
       render: (text, record) => (
         <Input
           className="form-control medium-text-fields"
-          // disabled
+          disabled
           type="text"
           value={text ? convertDateUTCToLocal(text, "index") : "-"}
         />
@@ -668,6 +669,7 @@ const MatchHistory = () => {
         <Input
           className="form-control medium-text-fields"
           type="text"
+          disabled
           value={text ? text : "-"}
         />
       ),
@@ -964,19 +966,21 @@ const MatchHistory = () => {
               handleBowlingSave(record);
             }}
           >
-            Update
+            {record?.id === 0 ? "save" : "Update"}
           </Button>
-          {/* {record.id ? ( */}
-          <Button
-            color={"danger"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              bowlingDelete(record);
-            }}
-          >
-            Delete
-          </Button>
+          {record?.id !== 0 ?
+            <Button
+              color={"danger"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                bowlingDelete(record);
+              }}
+            >
+              Delete
+            </Button>
+            : null}
+
           {/* ) : null} */}
         </div>
       ),

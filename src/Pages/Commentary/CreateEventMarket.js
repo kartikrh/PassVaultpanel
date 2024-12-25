@@ -382,13 +382,12 @@ export const CreateEventMarket = () => {
         const markets = processedMarkets[sectionKey];
         const market = markets[index];
         const errors = validateMarketRow(market);
-
         // Special handling for Fall of Wicket markets (category 31)
         if (market.marketTypeCategoryId === 31) {
             // If trying to unselect a market, prevent it
-            if (selectedMarkets[sectionKey]?.[index]) {
-                return; // Prevent unselection by returning early
-            }
+            // if (selectedMarkets[sectionKey]?.[index]) {
+            //     return; // Prevent unselection by returning early
+            // }
 
             // Check if all previous markets are filled and selected
             for (let i = 0; i < index; i++) {
@@ -417,8 +416,20 @@ export const CreateEventMarket = () => {
             // If all validations pass, select the current market
             setSelectedMarkets(prev => {
                 const updatedSelections = { ...prev };
+
                 const sectionSelections = [...(updatedSelections[sectionKey] || Array(markets.length).fill(false))];
-                sectionSelections[index] = true;
+
+                // If deselecting the current index, deselect all subsequent indexes
+                if (sectionSelections[index]) {
+                    sectionSelections[index] = false; // Deselect the clicked index
+                    // Deselect all subsequent indexes
+                    for (let i = index + 1; i < sectionSelections.length; i++) {
+                        sectionSelections[i] = false;
+                    }
+                } else {
+                    sectionSelections[index] = true; // Select the clicked index
+                }
+
                 updatedSelections[sectionKey] = sectionSelections;
                 return updatedSelections;
             });
@@ -432,11 +443,20 @@ export const CreateEventMarket = () => {
                 }));
                 return;
             }
-
+            
             setSelectedMarkets(prev => {
                 const sectionSelections = prev[sectionKey] || [];
                 const updatedSelections = [...sectionSelections];
-                updatedSelections[index] = !updatedSelections[index];
+
+                // If deselecting the current index, deselect all subsequent indexes
+                if (updatedSelections[index]) {
+                    for (let i = index; i < updatedSelections.length; i++) {
+                        updatedSelections[i] = false;
+                    }
+                } else {
+                    updatedSelections[index] = true; // Select the clicked index
+                }
+
                 return {
                     ...prev,
                     [sectionKey]: updatedSelections
@@ -699,6 +719,7 @@ export const CreateEventMarket = () => {
             lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
+            isActive: template?.isDefaultMarketActive || false,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             beforeSuspendMin: template.beforeSuspendMin,
@@ -729,6 +750,7 @@ export const CreateEventMarket = () => {
             lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
+            isActive: template?.isDefaultMarketActive || false,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             rateDiff: template?.rateDiff,
@@ -760,7 +782,7 @@ export const CreateEventMarket = () => {
                     ...updatedMarket.runners[runnerIndex],
                     [key]: newValue
                 };
-                
+
                 if (updatedMarket.marketTypeCategoryId === 31) {
                     // For Fall of Wicket markets
                     if (key === 'line') {
@@ -782,17 +804,17 @@ export const CreateEventMarket = () => {
                         );
                     } else if (key === 'predefinedValue') {
 
-                        let prevMarket = {...updatedMarkets[marketKey][marketIndex-1]};
+                        let prevMarket = { ...updatedMarkets[marketKey][marketIndex - 1] };
                         let prevMarketIndex = marketIndex - 1;
                         // Iterate backwards through previous markets until we find a valid line value
                         while (((prevMarket?.runners?.[runnerIndex]?.line === null || prevMarket?.runners?.[runnerIndex]?.line === "" || prevMarket?.runners?.[runnerIndex]?.line === undefined) && (prevMarket?.runners?.[runnerIndex]?.predefinedValue === null || prevMarket?.runners?.[runnerIndex]?.predefinedValue === "" || prevMarket?.runners?.[runnerIndex]?.predefinedValue === undefined)) && prevMarketIndex > 0) {
-                          prevMarket = {...updatedMarkets[marketKey][prevMarketIndex-1]};  // Get the previous market
-                          prevMarketIndex--;
+                            prevMarket = { ...updatedMarkets[marketKey][prevMarketIndex - 1] };  // Get the previous market
+                            prevMarketIndex--;
                         }
 
                         const prevLineValue = prevMarket?.runners?.[runnerIndex]?.line;
                         const newLineValue = newValue ? (prevLineValue + newValue) : null;
-                        
+
                         updatedMarket.runners[runnerIndex] = {
                             ...updatedMarket.runners[runnerIndex],
                             predefinedValue: newValue,
