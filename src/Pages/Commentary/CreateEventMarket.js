@@ -387,9 +387,9 @@ export const CreateEventMarket = () => {
         // Special handling for Fall of Wicket markets (category 31)
         if (market.marketTypeCategoryId === 31) {
             // If trying to unselect a market, prevent it
-            if (selectedMarkets[sectionKey]?.[index]) {
-                return; // Prevent unselection by returning early
-            }
+            // if (selectedMarkets[sectionKey]?.[index]) {
+            //     return; // Prevent unselection by returning early
+            // }
 
             // Check if all previous markets are filled and selected
             for (let i = 0; i < index; i++) {
