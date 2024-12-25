@@ -384,7 +384,6 @@ export const CreateEventMarket = () => {
         const markets = processedMarkets[sectionKey];
         const market = markets[index];
         const errors = validateMarketRow(market);
-
         // Special handling for Fall of Wicket markets (category 31)
         if (market.marketTypeCategoryId === 31) {
             // If trying to unselect a market, prevent it
@@ -419,8 +418,20 @@ export const CreateEventMarket = () => {
             // If all validations pass, select the current market
             setSelectedMarkets(prev => {
                 const updatedSelections = { ...prev };
+
                 const sectionSelections = [...(updatedSelections[sectionKey] || Array(markets.length).fill(false))];
-                sectionSelections[index] = true;
+
+                // If deselecting the current index, deselect all subsequent indexes
+                if (sectionSelections[index]) {
+                    sectionSelections[index] = false; // Deselect the clicked index
+                    // Deselect all subsequent indexes
+                    for (let i = index + 1; i < sectionSelections.length; i++) {
+                        sectionSelections[i] = false;
+                    }
+                } else {
+                    sectionSelections[index] = true; // Select the clicked index
+                }
+
                 updatedSelections[sectionKey] = sectionSelections;
                 return updatedSelections;
             });
@@ -434,11 +445,20 @@ export const CreateEventMarket = () => {
                 }));
                 return;
             }
-
+            
             setSelectedMarkets(prev => {
                 const sectionSelections = prev[sectionKey] || [];
                 const updatedSelections = [...sectionSelections];
-                updatedSelections[index] = !updatedSelections[index];
+
+                // If deselecting the current index, deselect all subsequent indexes
+                if (updatedSelections[index]) {
+                    for (let i = index; i < updatedSelections.length; i++) {
+                        updatedSelections[i] = false;
+                    }
+                } else {
+                    updatedSelections[index] = true; // Select the clicked index
+                }
+
                 return {
                     ...prev,
                     [sectionKey]: updatedSelections
@@ -704,6 +724,7 @@ export const CreateEventMarket = () => {
             lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
+            isActive: template?.isDefaultMarketActive || false,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             beforeSuspendMin: template.beforeSuspendMin,
@@ -734,6 +755,7 @@ export const CreateEventMarket = () => {
             lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
+            isActive: template?.isDefaultMarketActive || false,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             rateDiff: template?.rateDiff,

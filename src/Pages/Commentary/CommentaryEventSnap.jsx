@@ -15,6 +15,9 @@ import Crickfeed_logo from '../../assets/images/Crickfeed_logo.png'
 
 export const CommentaryEventSnap = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownload, setIsDownload] = useState(false);
+  const [originalWidth, setoriginalWidth] = useState();
+  const [originalheight, setoriginalHeight] = useState();
   const [downloadBtnDisabled, setDownloadBtnDisabled] = useState(false);
   const [eventSnapData, setEventSnapData] = useState(null);
   document.title = "CommentaryEventSnap";
@@ -26,78 +29,111 @@ export const CommentaryEventSnap = () => {
   );
   const componentRef = useRef();
 
-  const downloadImage = async () => {
-  if (!componentRef.current) return;
+  const previewImage = async () => {
+    if (!componentRef.current) return;
 
-  componentRef.current.classList.add('d-flex', 'justify-content-center');
-  const element = document.querySelector('.event-snap-table-hover');
-  const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
+    const element = document.querySelector('.event-snap-table-hover');
+    const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
 
-  const originalStyles = {
-    containerOverflow: element.style.overflow,
-    containerHeight: element.style.height,
-    bodyOverflow: document.body.style.overflow,
+    // Save original styles
+    const originalStyles = {
+      containerOverflow: element.style.overflow,
+      containerHeight: element.style.height,
+      bodyOverflow: document.body.style.overflow,
+      targetHeight: targetDiv.style.height,
+      position: targetDiv.style.position,
+      storedWidth: `${targetDiv.scrollWidth}px`,
+      storedHeight: `${targetDiv.scrollHeight}px`
+    };
+    setoriginalWidth(originalStyles.storedWidth);
+
+    // Apply preview styles
+    document.body.style.overflow = 'scroll';
+    element.style.overflow = 'visible';
+    element.style.height = `${targetDiv.scrollHeight}px`;
+
+    // Set the targetDiv width to 800px and center it
+    targetDiv.style.width = '800px'; // Fixed width of 800px for preview
+    targetDiv.style.height = `${targetDiv.scrollHeight}px`; // Adjust height according to content
+    targetDiv.style.position = 'relative'; // Ensure the div is positioned correctly
+
+    // Center the targetDiv within the parent container (flexbox or absolute positioning)
+    const parentDiv = componentRef.current;
+    parentDiv.style.display = 'flex';
+    parentDiv.style.justifyContent = 'center'; // Horizontally center
+    parentDiv.style.alignItems = 'center'; // Vertically center
+    parentDiv.style.height = '100%'; // Ensure the parent takes up full height
+
+    // Create watermark
+    const watermark = document.createElement('img');
+    watermark.src = Crickfeed_logo;
+    watermark.alt = 'CRICFEED';
+    watermark.style.position = 'absolute';
+    watermark.style.width = '200px';
+    watermark.style.opacity = '0.3';
+    watermark.style.pointerEvents = 'none';
+    watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
+    watermark.style.zIndex = '1000';
+    watermark.style.filter = 'brightness(0.7)';
+    watermark.style.mixBlendMode = 'multiply';
+
+    const targetRect = targetDiv.getBoundingClientRect();
+    watermark.style.top = `${targetRect.height / 2}px`;
+    watermark.style.left = `${targetRect.width / 2}px`;
+
+    targetDiv.appendChild(watermark);
+
+    try {
+      setDownloadBtnDisabled(true);
+
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      setIsDownload(true); // Change button to "Download"
+    } catch (error) {
+      dispatch(updateToastData({ data: `Preview failed: ${error.message}`, type: ERROR }));
+    } finally {
+      setDownloadBtnDisabled(false); // Enable the button
+      previewImage.originalStyles = originalStyles;
+    }
   };
+  const downloadImage = async () => {
+    if (!componentRef.current) return;
 
-  document.body.style.overflow = 'hidden';
-  element.style.overflow = 'visible';
-  element.style.height = `${targetDiv.scrollHeight}px`;
+    const element = document.querySelector('.event-snap-table-hover');
+    const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
+    const watermark = targetDiv.querySelector('img[alt="CRICFEED"]');
 
-  const watermark = document.createElement('img');
-  watermark.src = Crickfeed_logo;
-  watermark.alt = 'CRICFEED';
-  watermark.style.position = 'absolute';
-  watermark.style.width = '200px';
-  watermark.style.opacity = '0.3';
-  watermark.style.pointerEvents = 'none';
-  watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
-  watermark.style.zIndex = '1000';
-  watermark.style.filter = 'brightness(0.7)';
-  watermark.style.mixBlendMode = 'multiply';
+    try {
+      const dataUrl = await toJpeg(componentRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        width: targetDiv.offsetWidth,
+        height: targetDiv.scrollHeight,
+        backgroundColor: '#ffffff',
+      });
 
-  const targetRect = targetDiv.getBoundingClientRect();
-  watermark.style.top = `${targetRect.height / 2}px`;
-  watermark.style.left = `${targetRect.width / 2}px`;
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `${(commentaryDetails?.eventName || 'image').split(' ').join('-')}.jpeg`;
+      link.click();
 
-  targetDiv.style.position = 'relative';
-  targetDiv.appendChild(watermark);
+      setIsDownload(false); // Change button back to "Preview"
+    } catch (error) {
+      dispatch(updateToastData({ data: `Download failed: ${error.message}`, type: ERROR }));
+    } finally {
+      // Reset the styles to original
+      targetDiv.style.width = originalWidth;
+      document.body.style.overflow = "auto"
+      // targetDiv.style.height = '823px';
+      if (watermark && watermark.parentNode) {
+        watermark.parentNode.removeChild(watermark); // Remove watermark after download
+      }
 
-  try {
-    setDownloadBtnDisabled(true);
-
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    await new Promise(resolve => setTimeout(resolve, 200));
-
-    const dataUrl = await toJpeg(componentRef.current, {
-      cacheBust: true,
-      pixelRatio: 2,
-      width: targetDiv.offsetWidth,
-      height: targetDiv.scrollHeight,
-      backgroundColor: '#ffffff',
-    });
-
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
-    link.click();
-
-    componentRef.current.classList.remove('d-flex', 'justify-content-center');
-    targetDiv.removeChild(watermark);
-
-    document.body.style.overflow = originalStyles.bodyOverflow;
-    element.style.overflow = originalStyles.containerOverflow;
-    element.style.height = originalStyles.containerHeight;
-
-    setDownloadBtnDisabled(false);
-  } catch (error) {
-    document.body.style.overflow = originalStyles.bodyOverflow;
-    element.style.overflow = originalStyles.containerOverflow;
-    element.style.height = originalStyles.containerHeight;
-
-    dispatch(updateToastData({ data: error.message, type: ERROR }));
-  }
-};
-
+      // Enable the image again
+      targetDiv.style.pointerEvents = 'auto';
+    }
+  };
 
   const formatDate = (date) => {
     const options = {
@@ -202,11 +238,11 @@ export const CommentaryEventSnap = () => {
                     <Button
                       color="primary"
                       className="btn text-right text-right mx-2"
-                      onClick={downloadImage}
+                      onClick={isDownload ? downloadImage : previewImage}
                       disabled={downloadBtnDisabled}
                     >
                       {" "}
-                      Download{" "}
+                      {isDownload ? "Download" : "Preview"}{" "}
                     </Button>
                   </Col>
                 </Row>
