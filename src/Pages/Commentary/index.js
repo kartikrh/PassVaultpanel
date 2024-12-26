@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
   convertDateUTCToLocal,
+  convertDateLocalToUTC,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -100,7 +101,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        ...dateRange,
+        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
     await axiosInstance

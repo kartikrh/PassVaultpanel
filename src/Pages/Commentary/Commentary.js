@@ -98,6 +98,7 @@ const Commentary = (props) => {
         superOverApiData, error
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
+    console.log({ "partnership4s": currentPartnership.totalFour, "partnership6s": currentPartnership.totalSix });
 
     const handleCommentaryConsole = async (temp, main) => {
         const currentState = {
@@ -457,12 +458,14 @@ const Commentary = (props) => {
                 updateBall["ballFour"] = 1
                 updateBatter["batFour"] = (batter.batFour || 0) + 1
                 updateOver["totalFour"] = (syncOver.totalFour || 0) + 1
+                updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) + 1
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
             } else if (run === 6) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballSix"] = 1
                 updateBatter["batSix"] = (batter.batSix || 0) + 1
                 updateOver["totalSix"] = (syncOver.totalSix || 0) + 1
+                updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
             }
         } else if (run % 2 !== 0) isChangeStrike = freezePlayers ? false : true
@@ -519,11 +522,13 @@ const Commentary = (props) => {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballFour"] = 1
                 updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
+                updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) + 1
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
             } else if (+runs === 6) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballSix"] = 1
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
+                updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
             }
         }
@@ -1202,7 +1207,7 @@ const Commentary = (props) => {
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
                     if (!LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(currentBall.ballWicketType))
                         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
-                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2] }
+                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2], commentaryBallByBallId: currentPartnership?.commentaryBallByBallId }
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
                 const bowler = playersOnPitch[CURRENT_BOWLER]
@@ -1248,11 +1253,13 @@ const Commentary = (props) => {
                     if (currentBall.ballFour === 1 && currentBall.ballIsBoundry) {
                         updateBatter["batFour"] = getNonNegativeValue((batter.batFour || 0) - 1)
                         updateOver["totalFour"] = getNonNegativeValue((currentOver.totalFour || 0) - 1)
+                        updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) - 1
                         updateBowler["bowlerFour"] = getNonNegativeValue((bowler.bowlerFour || 0) - 1)
 
                     } else if (currentBall.ballSix === 1 && currentBall.ballIsBoundry) {
                         updateBatter["batSix"] = getNonNegativeValue((batter.batSix || 0) - 1)
                         updateOver["totalSix"] = getNonNegativeValue((currentOver.totalSix || 0) - 1)
+                        updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) - 1
                         updateBowler["bowlerSix"] = getNonNegativeValue((bowler.bowlerSix || 0) - 1)
                     }
                     updateBatter = { ...playersOnPitch[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
@@ -2211,7 +2218,7 @@ const Commentary = (props) => {
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
             allBattingPlayers={players[BATTING_TEAM]}
         />}
-        {superOverModal &&
+        {superOverModal ?
             <SuperOverModal
                 toggle={() => {
                     setSuperOverModal(false)
@@ -2223,7 +2230,7 @@ const Commentary = (props) => {
                 }}
                 currentInningTeams={Object.values(teams || {})}
             />
-        }
+            : null}
         {retryModel && <RetryModel errorMsg={retryModel} />}
         {showCricketFieldModal && (
             <CricketFieldModal

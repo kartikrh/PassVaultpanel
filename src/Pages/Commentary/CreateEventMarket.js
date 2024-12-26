@@ -40,9 +40,11 @@ export const CreateEventMarket = () => {
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
-    // useEffect(() => {
-    //     console.log({ selectedMarkets, processedMarkets })
-    // })
+
+    console.log({ processedMarkets })
+    useEffect(() => {
+        console.log({ selectedMarkets, processedMarkets })
+    })
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
             document.title = `MT ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
@@ -204,12 +206,22 @@ export const CreateEventMarket = () => {
         };
 
         // Helper function to merge runners
-        const mergeRunners = (templateRunners, apiRunners, marketName) => {
+        const mergeRunners = (templateRunners, apiRunners, marketName, marketPredefinedValue) => {
             if (apiRunners.length > 0) {
                 return apiRunners.map(apiRunner => ({
                     ...apiRunner,
                     runner: apiRunner.runner || marketName,
-                    runnerId: apiRunner.runnerId || apiRunner.selectionId || apiRunner.runner || marketName
+                    runnerId: apiRunner.runnerId || apiRunner.selectionId || apiRunner.runner || marketName,
+                    predefinedValue: marketPredefinedValue, // Copy market level predefinedValue to runner
+                    line: apiRunner.line,
+                    overRate: apiRunner.overRate,
+                    underRate: apiRunner.underRate,
+                    backPrice: apiRunner.backPrice,
+                    layPrice: apiRunner.layPrice,
+                    backSize: apiRunner.backSize,
+                    laySize: apiRunner.laySize,
+                    order: apiRunner.order,
+                    selectionId: apiRunner.selectionId
                 }));
             }
             return templateRunners;
@@ -231,6 +243,8 @@ export const CreateEventMarket = () => {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 31) {
+                processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
@@ -259,7 +273,12 @@ export const CreateEventMarket = () => {
                     ...templateMarket,
                     ...apiMarket,
                     isCreate: false,
-                    runners: mergeRunners(templateMarket.runners, apiMarket.runners, apiMarket.marketName)
+                    runners: mergeRunners(
+                        templateMarket.runners,
+                        apiMarket.runners,
+                        apiMarket.marketName,
+                        apiMarket.predefinedValue // Pass market level predefinedValue
+                    )
                 };
                 processedMarketsObj[key][existingMarketIndex] = updatedMarket;
             } else {
@@ -267,7 +286,12 @@ export const CreateEventMarket = () => {
                 processedMarketsObj[key].push({
                     ...apiMarket,
                     isCreate: false,
-                    runners: mergeRunners([], apiMarket.runners, apiMarket.marketName)
+                    runners: mergeRunners(
+                        [],
+                        apiMarket.runners,
+                        apiMarket.marketName,
+                        apiMarket.predefinedValue // Pass market level predefinedValue
+                    )
                 });
             }
         });
@@ -287,6 +311,37 @@ export const CreateEventMarket = () => {
         return processedMarketsObj;
     };
 
+    const updateSubsequentWicketLines = (markets, startIndex, previousWicketLine) => {
+        return markets.map((market, index) => {
+            if (index > startIndex) {
+                // Get the predefined value for current wicket
+                const currentPredefinedValue = market?.runners[0]?.predefinedValue || null;
+                // New line is previous wicket's line plus current wicket's predefined value
+                const newLine = previousWicketLine ? (+previousWicketLine + currentPredefinedValue) : null;
+
+                const updatedMarket = {
+                    ...market,
+                    runners: market?.runners?.map(runner => {
+                        if (runner?.line || runner?.predefinedValue) {
+                            return {
+                                ...runner,
+                                line: newLine,
+                                ...generateRunnerValues(
+                                    { ...runner, line: newLine },
+                                    market.margin,
+                                    market.rateDiff
+                                )
+                            };
+                        }
+                        return runner;
+                    })
+                };
+                previousWicketLine = newLine; // Update for next iteration
+                return updatedMarket;
+            }
+            return market;
+        });
+    };
 
     const initializeSelectedMarkets = (markets) => {
         const initialSelection = {};
@@ -295,9 +350,11 @@ export const CreateEventMarket = () => {
         });
         setSelectedMarkets(initialSelection);
     };
+
+    // Modified validateMarketRow function to include predefinedValue
     const validateMarketRow = (market) => {
         const requiredFields = ['marketName', 'margin', 'status'];
-        const requiredRunnerFields = ['runner', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
+        const requiredRunnerFields = ['runner', 'predefinedValue', 'line', 'underRate', 'overRate', 'layPrice', 'backPrice', 'laySize', 'backSize'];
 
         const errors = [];
 
@@ -306,10 +363,11 @@ export const CreateEventMarket = () => {
                 errors.push(`${field}`);
             }
         });
+
         if (market.runners && market.runners.length > 0) {
             market.runners.forEach((runner, index) => {
                 requiredRunnerFields.forEach(field => {
-                    if (!runner[field]) {
+                    if (runner[field] === undefined || runner[field] === null || runner[field] === '') {
                         errors.push(`${index + 1} ${field}`);
                     }
                 });
@@ -321,27 +379,110 @@ export const CreateEventMarket = () => {
         return errors;
     };
 
+    // Modified handleSelectMarket function to handle category 31 markets
     const handleSelectMarket = (sectionKey, index) => {
-        const market = processedMarkets[sectionKey][index];
+        const markets = processedMarkets[sectionKey];
+        const market = markets[index];
         const errors = validateMarketRow(market);
-        if (errors.length > 0) {
-            dispatch(updateToastData({
-                data: `Please fill in all required fields: ${errors.join(', ')}`,
-                title: "Market Error",
-                type: ERROR
-            }));
-            return;
+        // Special handling for Fall of Wicket markets (category 31)
+        if (market.marketTypeCategoryId === 31) {
+            // If trying to unselect a market, prevent it
+            // if (selectedMarkets[sectionKey]?.[index]) {
+            //     return; // Prevent unselection by returning early
+            // }
+
+            // Check if all previous markets are filled and selected
+            for (let i = 0; i < index; i++) {
+                const prevMarket = markets[i];
+                const prevErrors = validateMarketRow(prevMarket);
+                if (prevErrors.length > 0 || !selectedMarkets[sectionKey]?.[i]) {
+                    dispatch(updateToastData({
+                        data: `Please fill in all fields and select Fall of ${i + 1} Wicket first`,
+                        title: "Market Error",
+                        type: ERROR
+                    }));
+                    return;
+                }
+            }
+
+            // Check if current market has any errors
+            if (errors.length > 0) {
+                dispatch(updateToastData({
+                    data: `Please fill in all required fields: ${errors.join(', ')}`,
+                    title: "Market Error",
+                    type: ERROR
+                }));
+                return;
+            }
+
+            // If all validations pass, select the current market
+            setSelectedMarkets(prev => {
+                const updatedSelections = { ...prev };
+
+                const sectionSelections = [...(updatedSelections[sectionKey] || Array(markets.length).fill(false))];
+
+                // If deselecting the current index, deselect all subsequent indexes
+                if (sectionSelections[index]) {
+                    sectionSelections[index] = false; // Deselect the clicked index
+                    // Deselect all subsequent indexes
+                    for (let i = index + 1; i < sectionSelections.length; i++) {
+                        sectionSelections[i] = false;
+                    }
+                } else {
+                    sectionSelections[index] = true; // Select the clicked index
+                }
+
+                updatedSelections[sectionKey] = sectionSelections;
+                return updatedSelections;
+            });
+        } else {
+            // Regular handling for non-category-31 markets
+            if (errors.length > 0) {
+                dispatch(updateToastData({
+                    data: `Please fill in all required fields: ${errors.join(', ')}`,
+                    title: "Market Error",
+                    type: ERROR
+                }));
+                return;
+            }
+            
+            setSelectedMarkets(prev => {
+                const sectionSelections = prev[sectionKey] || [];
+                const updatedSelections = [...sectionSelections];
+
+                // If deselecting the current index, deselect all subsequent indexes
+                if (updatedSelections[index]) {
+                    for (let i = index; i < updatedSelections.length; i++) {
+                        updatedSelections[i] = false;
+                    }
+                } else {
+                    updatedSelections[index] = true; // Select the clicked index
+                }
+
+                return {
+                    ...prev,
+                    [sectionKey]: updatedSelections
+                };
+            });
         }
+    };
+
+    // Add this new function to handle auto-unselection of subsequent markets
+    const handleAutoUnselectSubsequentMarkets = (sectionKey, startIndex) => {
         setSelectedMarkets(prev => {
-            const sectionSelections = prev[sectionKey] || [];
-            const updatedSelections = [...sectionSelections];
-            updatedSelections[index] = !updatedSelections[index];
-            return {
-                ...prev,
-                [sectionKey]: updatedSelections
-            };
+            const updatedSelections = { ...prev };
+            const sectionSelections = [...(updatedSelections[sectionKey] || [])];
+
+            // Unselect all markets after the given index
+            for (let i = startIndex; i < sectionSelections.length; i++) {
+                sectionSelections[i] = false;
+            }
+
+            updatedSelections[sectionKey] = sectionSelections;
+            return updatedSelections;
         });
     };
+
     const processMarketAndRunners = (market, teamId, keyPrefix, processedMarketsObj) => {
         const baseKey = `${keyPrefix}_##_${market.marketTypeId}_##_${market.marketTypeCategoryId}`;
 
@@ -477,6 +618,7 @@ export const CreateEventMarket = () => {
 
     const processPlayerRunsMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
+            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Runs`;
                 const specialMarket = {
@@ -494,6 +636,7 @@ export const CreateEventMarket = () => {
 
     const processPlayerBoundaryMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
+            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Boundaries`;
                 const specialMarket = {
@@ -511,6 +654,7 @@ export const CreateEventMarket = () => {
 
     const processPlayerBallMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
+            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = market.marketName.replace("{player}", player.playerName);
                 const specialMarket = {
@@ -523,6 +667,23 @@ export const CreateEventMarket = () => {
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
+        });
+    };
+
+    const processFallOfWicketMarkets = (market, teams, processedMarketsObj) => {
+        const maxWickets = market.afterWicketAutoSuspend - 1;  // Subtract 1 to not include the suspend wicket
+
+        teams.forEach(team => {
+            for (let wicket = 1; wicket <= maxWickets; wicket++) {
+                const marketName = market.templateName.replace("{wicket}", wicket);
+                const specialMarket = {
+                    ...market,
+                    marketName: `${marketName} - ${team.shortName}`,
+                    wicketNo: wicket,
+                    teamId: team.teamId
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
         });
     };
 
@@ -564,6 +725,7 @@ export const CreateEventMarket = () => {
             lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
+            isActive: template?.isDefaultMarketActive || false,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             beforeSuspendMin: template.beforeSuspendMin,
@@ -594,6 +756,7 @@ export const CreateEventMarket = () => {
             lineType: template?.lineType,
             teamId: null,
             inningsId: 1,
+            isActive: template?.isDefaultMarketActive || false,
             isAllow: template.isDefaultBetAllowed || false,
             index: 0,
             rateDiff: template?.rateDiff,
@@ -605,7 +768,6 @@ export const CreateEventMarket = () => {
             })) || []
         };
     };
-
     const handleRunnerValueChange = (market, runnerIndex, key, value) => {
         setProcessedMarkets((prevMarkets) => {
             const updatedMarkets = { ...prevMarkets };
@@ -617,51 +779,134 @@ export const CreateEventMarket = () => {
                 updatedMarket.runners = [];
             }
 
-            if (key === "predefinedValue") {
-                // Update both predefinedValue and line
+            // Handle value change
+            if (key === 'line' || key === 'predefinedValue') {
+                const newValue = value === null || value === "" ? "" : Number(value);
+
+                // Update the specific field first
                 updatedMarket.runners[runnerIndex] = {
                     ...updatedMarket.runners[runnerIndex],
-                    predefinedValue: parseFloat(value),
-                    line: parseFloat(value), // Ensure line gets updated to the same value
+                    [key]: newValue
                 };
 
-                // Recalculate runner-related fields if necessary
-                updatedMarket.runners[runnerIndex] = {
-                    ...updatedMarket.runners[runnerIndex],
-                    ...generateRunnerValues(
-                        updatedMarket.runners[runnerIndex],
-                        updatedMarket.margin,
-                        updatedMarket.rateDiff
-                    ),
-                };
-            } else if (key === "line") {
-                // Update line but do not update predefinedValue
-                updatedMarket.runners[runnerIndex] = {
-                    ...updatedMarket.runners[runnerIndex],
-                    line: parseFloat(value),
-                };
+                if (updatedMarket.marketTypeCategoryId === 31) {
+                    // For Fall of Wicket markets
+                    if (key === 'line') {
+                        // Update current market's values
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
 
-                // Recalculate runner-related fields
-                updatedMarket.runners[runnerIndex] = {
-                    ...updatedMarket.runners[runnerIndex],
-                    ...generateRunnerValues(
-                        updatedMarket.runners[runnerIndex],
-                        updatedMarket.margin,
-                        updatedMarket.rateDiff
-                    ),
-                };
+                        // Update subsequent markets only when line changes
+                        updatedMarkets[marketKey] = updateSubsequentWicketLines(
+                            updatedMarkets[marketKey],
+                            marketIndex,
+                            newValue
+                        );
+                    } else if (key === 'predefinedValue') {
+
+                        let prevMarket = { ...updatedMarkets[marketKey][marketIndex - 1] };
+                        let prevMarketIndex = marketIndex - 1;
+                        // Iterate backwards through previous markets until we find a valid line value
+                        while (((prevMarket?.runners?.[runnerIndex]?.line === null || prevMarket?.runners?.[runnerIndex]?.line === "" || prevMarket?.runners?.[runnerIndex]?.line === undefined) && (prevMarket?.runners?.[runnerIndex]?.predefinedValue === null || prevMarket?.runners?.[runnerIndex]?.predefinedValue === "" || prevMarket?.runners?.[runnerIndex]?.predefinedValue === undefined)) && prevMarketIndex > 0) {
+                            prevMarket = { ...updatedMarkets[marketKey][prevMarketIndex - 1] };  // Get the previous market
+                            prevMarketIndex--;
+                        }
+
+                        const prevLineValue = prevMarket?.runners?.[runnerIndex]?.line;
+                        const newLineValue = newValue ? (prevLineValue + newValue) : null;
+
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            predefinedValue: newValue,
+                            line: newLineValue,
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newLineValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+
+                        //Update subsequent markets only when line changes
+                        updatedMarkets[marketKey] = updateSubsequentWicketLines(
+                            updatedMarkets[marketKey],
+                            marketIndex,
+                            newLineValue
+                        );
+                    }
+                    // If it's predefinedValue change, do nothing more for category 31
+
+                    // Check if the current market becomes invalid
+                    const errors = validateMarketRow(updatedMarket);
+                    if (errors.length > 0 && selectedMarkets[marketKey]?.[marketIndex]) {
+                        // If current market becomes invalid, unselect it and all subsequent markets
+                        handleAutoUnselectSubsequentMarkets(marketKey, marketIndex);
+                    }
+                } else {
+                    // For all other market categories
+                    if (key === 'predefinedValue' && newValue !== "") {
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            line: newValue,
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+                    } else if (key === 'line' && newValue !== "") {
+                        updatedMarket.runners[runnerIndex] = {
+                            ...updatedMarket.runners[runnerIndex],
+                            ...generateRunnerValues(
+                                { ...updatedMarket.runners[runnerIndex], line: newValue },
+                                updatedMarket.margin,
+                                updatedMarket.rateDiff
+                            )
+                        };
+                    }
+
+                    // Check if the current market becomes invalid (for non-category-31)
+                    const errors = validateMarketRow(updatedMarket);
+                    if (errors.length > 0 && selectedMarkets[marketKey]?.[marketIndex]) {
+                        // If current market becomes invalid, just unselect it
+                        setSelectedMarkets(prev => {
+                            const updated = { ...prev };
+                            updated[marketKey][marketIndex] = false;
+                            return updated;
+                        });
+                    }
+                }
             } else {
-                // Update other fields as usual
-                const parsedValue = ["line", "predefinedValue", "overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
-                    ? value === null
-                        ? ""
-                        : parseFloat(value)
+                // Handle other field changes (overRate, underRate, backPrice, etc.)
+                const parsedValue = ["overRate", "underRate", "backPrice", "layPrice", "backSize", "laySize"].includes(key)
+                    ? (value === null || value === "" ? "" : Number(value))
                     : value;
 
                 updatedMarket.runners[runnerIndex] = {
                     ...updatedMarket.runners[runnerIndex],
-                    [key]: parsedValue,
+                    [key]: parsedValue
                 };
+
+                // Check for validation after other field changes
+                const errors = validateMarketRow(updatedMarket);
+                if (errors.length > 0 && selectedMarkets[marketKey]?.[marketIndex]) {
+                    if (updatedMarket.marketTypeCategoryId === 31) {
+                        // For category 31, unselect current and subsequent markets
+                        handleAutoUnselectSubsequentMarkets(marketKey, marketIndex);
+                    } else {
+                        // For other categories, just unselect the current market
+                        setSelectedMarkets(prev => {
+                            const updated = { ...prev };
+                            updated[marketKey][marketIndex] = false;
+                            return updated;
+                        });
+                    }
+                }
             }
 
             updatedMarkets[marketKey][marketIndex] = updatedMarket;
@@ -851,17 +1096,61 @@ export const CreateEventMarket = () => {
     };
 
     const handleSave = async () => {
+        console.log(Object.entries(processedMarkets));
         const savedData = Object.entries(processedMarkets)
             .flatMap(([key, markets]) =>
                 markets.filter((_, index) => selectedMarkets[key]?.[index])
             )
-            .map(market => ({
-                ...market,
-                runners: market.runners.map(runner => ({
-                    ...runner,
-                    marketTemplateId: market.marketTemplateId
-                }))
-            }));
+            .map(market => {
+                // Get predefinedValue from the first runner
+                const predefinedValue = market.runners[0]?.predefinedValue;
+
+                return {
+                    ...market,
+                    eventMarketId: market.eventMarketId || 0,
+                    isCreate: market.isCreate !== undefined ? market.isCreate : true,
+                    status: market.status || "1",
+                    margin: market.margin,
+                    data: market.data || "",
+                    playerId: market.playerId || null,
+                    marketTypeId: market.marketTypeId,
+                    marketTypeCategoryId: market.marketTypeCategoryId,
+                    marketTemplateId: market.marketTemplateId,
+                    commentaryId: market.commentaryId,
+                    eventRefId: market.eventRefId,
+                    marketName: market.marketName,
+                    teamId: market.teamId,
+                    inningsId: market.inningsId || 1,
+                    isAllow: market.isAllow !== undefined ? market.isAllow : false,
+                    isActive: market.isActive !== undefined ? market.isActive : true,
+                    index: market.index || 0,
+                    over: market.over || 0,
+                    rateDiff: market.rateDiff || null,
+                    beforeSuspendMin: market.beforeSuspendMin,
+                    beforeCloseMin: market.beforeCloseMin,
+                    isPredefineRunnerValue: market.isPredefineRunnerValue,
+                    predefinedValue: predefinedValue, // Add predefinedValue at market level
+                    runners: market.runners.map(runner => {
+                        // Remove predefinedValue from runner level
+                        const { predefinedValue: _, ...runnerWithoutPredefined } = runner;
+                        return {
+                            ...runnerWithoutPredefined,
+                            marketTemplateId: market.marketTemplateId,
+                            runnerId: runner.runnerId || "0",
+                            runner: runner.runner,
+                            line: runner.line,
+                            overRate: runner.overRate,
+                            underRate: runner.underRate,
+                            backPrice: runner.backPrice,
+                            layPrice: runner.layPrice,
+                            backSize: runner.backSize,
+                            laySize: runner.laySize,
+                            order: runner.order,
+                            selectionId: runner.selectionId
+                        };
+                    })
+                };
+            });
 
         if (savedData.length === 0) {
             dispatch(updateToastData({
@@ -1065,7 +1354,7 @@ export const CreateEventMarket = () => {
             render: (text, record, onChange) => (
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={record?.predefinedValue}
+                    value={record?.predefinedValue == null ? "" : record?.predefinedValue}
                     onChange={(newValue) => onChange("predefinedValue", newValue)}
                     placeholder="Predefined Value"
                 />
@@ -1086,7 +1375,7 @@ export const CreateEventMarket = () => {
                 // />
                 <CustomInput
                     className="form-control small-text-fields"
-                    value={record?.line}
+                    value={record?.line == null ? "" : record?.line}
                     onChange={(newValue) => onChange("line", newValue)}
                     placeholder="Line"
                 />

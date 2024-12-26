@@ -112,16 +112,23 @@ const Index = ({
         (item) => item.marketTemplateId !== template.marketTemplateId
       )
     );
-    const assignedTemplate = { ...template, id: 0 };
+    const assignedTemplate = { ...template, id: template?.id ? template?.id : 0 };
     setAssignedMarket((prevAssigned) => [...prevAssigned, assignedTemplate]);
-    setSaveTemplates((prevSaveTemplates) => [
-      ...prevSaveTemplates,
-      {
-        commentaryId: marketTemplateRecord?.commentaryId,
-        marketTemplateId: template.marketTemplateId,
-        id: 0,
-      },
-    ]);
+
+    if (!template?.id) {
+      setSaveTemplates((prevSaveTemplates) => [
+        ...prevSaveTemplates,
+        {
+          commentaryId: marketTemplateRecord?.commentaryId,
+          marketTemplateId: template.marketTemplateId,
+          id: template?.id ? template?.id : 0,
+        },
+      ]);
+    } else {
+      setDltTemplate((prevDltTemplate) =>
+        prevDltTemplate.filter((id) => id !== template?.id)
+      );
+    }
   };
 
   const handleDelete = (template) => {
@@ -138,15 +145,19 @@ const Index = ({
         )
       );
       return;
+    } else {
+      setUnassignedMarket((prevUnassigned) => [...prevUnassigned, template]);
+      setAssignedMarket((prevAssigned) =>
+        prevAssigned.filter((item) => item?.id !== template?.id)
+      );
+      setSaveTemplates((prevAssigned) =>
+        prevAssigned.filter(
+          (item) => item.id !== template?.id
+        )
+      );
+      setDltTemplate((prevDltTemplate) => [...prevDltTemplate, template.id]);
     }
-
-    setAssignedMarket((prevAssigned) =>
-      prevAssigned.filter((item) => item.id !== template.id)
-    );
-
-    setDltTemplate((prevDltTemplate) => [...prevDltTemplate, template.id]);
-  };
-
+  };  
   const handleAssignAll = () => {
     if (unassignedMarket.length === 0) {
       dispatch(
@@ -161,18 +172,19 @@ const Index = ({
 
     const updatedAssigned = unassignedMarket.map((template) => ({
       ...template,
-      id: 0,
+      id: template?.id ? template?.id : 0,
     }));
     setAssignedMarket((prevAssigned) => [...prevAssigned, ...updatedAssigned]);
-    const newSaveTemplates = unassignedMarket.map((template) => ({
+    const newSaveTemplates = unassignedMarket?.filter((i)=> !i?.id)?.map((template) => ({
       commentaryId: marketTemplateRecord?.commentaryId,
       marketTemplateId: template.marketTemplateId,
-      id: 0,
+      id: template?.id ? template?.id : 0,
     }));
     setSaveTemplates((prevSaveTemplates) => [
       ...prevSaveTemplates,
       ...newSaveTemplates,
     ]);
+    setDltTemplate([]);
     setUnassignedMarket([]);
   };
 
@@ -188,14 +200,11 @@ const Index = ({
       return;
     }
 
-    const templatesToRevert = assignedMarket.filter(
-      (template) => template.id === 0
-    );
 
     // Revert templates with id 0 back to unassigned
     setUnassignedMarket((prevUnassigned) => [
       ...prevUnassigned,
-      ...templatesToRevert,
+      ...assignedMarket,
     ]);
 
     setDltTemplate((prevDltTemplate) => [
@@ -255,7 +264,12 @@ const Index = ({
                 <ul className="list-group market-template-list">
                   {unassignedMarket.length > 0 &&
                     unassignedMarket
-                      .sort((a, b) => a?.marketTemplateId - b?.marketTemplateId)
+                      .sort((a, b) => {
+                        if (a?.marketTypeCategoryId == b?.marketTypeCategoryId) {
+                          return a?.templateName.localeCompare(b?.templateName);
+                        }
+                        return a?.marketTypeCategoryId - b?.marketTypeCategoryId;
+                      })
                       .map((template) => (
                         <li
                           key={template.marketTemplateId}
@@ -294,7 +308,12 @@ const Index = ({
                 <ul className="list-group market-template-list">
                   {assignedMarket.length > 0 &&
                     assignedMarket
-                      .sort((a, b) => a?.id - b?.id)
+                      .sort((a, b) => {
+                        if (a?.marketTypeCategoryId === b?.marketTypeCategoryId) {
+                          return a?.templateName.localeCompare(b?.templateName);
+                        }
+                        return a?.marketTypeCategoryId - b?.marketTypeCategoryId;
+                      })
                       .map((template) => (
                         <li
                           key={template.id}

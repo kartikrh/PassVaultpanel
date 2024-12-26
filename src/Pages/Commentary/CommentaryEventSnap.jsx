@@ -15,6 +15,9 @@ import Crickfeed_logo from '../../assets/images/Crickfeed_logo.png'
 
 export const CommentaryEventSnap = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownload, setIsDownload] = useState(false);
+  const [originalWidth, setoriginalWidth] = useState();
+  const [originalheight, setoriginalHeight] = useState();
   const [downloadBtnDisabled, setDownloadBtnDisabled] = useState(false);
   const [eventSnapData, setEventSnapData] = useState(null);
   document.title = "CommentaryEventSnap";
@@ -26,88 +29,109 @@ export const CommentaryEventSnap = () => {
   );
   const componentRef = useRef();
 
-  const downloadImage = async () => {
+  const previewImage = async () => {
     if (!componentRef.current) return;
 
-    // Add temporary classes to center the component and adjust layout
-    componentRef.current.classList.add('d-flex', 'justify-content-center');
     const element = document.querySelector('.event-snap-table-hover');
     const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
 
-    // Save original styles to restore them later
+    // Save original styles
     const originalStyles = {
       containerOverflow: element.style.overflow,
       containerHeight: element.style.height,
       bodyOverflow: document.body.style.overflow,
+      targetHeight: targetDiv.style.height,
+      position: targetDiv.style.position,
+      storedWidth: `${targetDiv.scrollWidth}px`,
+      storedHeight: `${targetDiv.scrollHeight}px`
     };
+    setoriginalWidth(originalStyles.storedWidth);
 
-    // Temporarily expand the container and disable scrollbars
-    document.body.style.overflow = 'hidden'; // Prevent scrollbars on the entire page
-    element.style.overflow = 'visible'; // Ensure no scrollbars for the container
-    element.style.height = `${targetDiv.scrollHeight}px`; // Match height to table content
+    // Apply preview styles
+    document.body.style.overflow = 'scroll';
+    element.style.overflow = 'visible';
+    element.style.height = `${targetDiv.scrollHeight}px`;
 
-    // Create watermark image
+    // Set the targetDiv width to 800px and center it
+    targetDiv.style.width = '800px'; // Fixed width of 800px for preview
+    targetDiv.style.height = `${targetDiv.scrollHeight}px`; // Adjust height according to content
+    targetDiv.style.position = 'relative'; // Ensure the div is positioned correctly
+
+    // Center the targetDiv within the parent container (flexbox or absolute positioning)
+    const parentDiv = componentRef.current;
+    parentDiv.style.display = 'flex';
+    parentDiv.style.justifyContent = 'center'; // Horizontally center
+    parentDiv.style.alignItems = 'center'; // Vertically center
+    parentDiv.style.height = '100%'; // Ensure the parent takes up full height
+
+    // Create watermark
     const watermark = document.createElement('img');
-    watermark.src = Crickfeed_logo; // Assuming Crickfeed_logo is the path to the logo
+    watermark.src = Crickfeed_logo;
     watermark.alt = 'CRICFEED';
     watermark.style.position = 'absolute';
-    watermark.style.width = '200px'; // Adjust watermark size
-    watermark.style.opacity = '0.3'; // Set watermark opacity
-    watermark.style.pointerEvents = 'none'; // Disable pointer events on watermark
-    watermark.style.transform = 'rotate(340deg)'; // Rotate watermark for styling
+    watermark.style.width = '200px';
+    watermark.style.opacity = '0.3';
+    watermark.style.pointerEvents = 'none';
+    watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
     watermark.style.zIndex = '1000';
-    watermark.style.filter = "brightness(0.7)"; // Adjust brightness for blending
-    watermark.style.mixBlendMode = "multiply";
+    watermark.style.filter = 'brightness(0.7)';
+    watermark.style.mixBlendMode = 'multiply';
 
-    // Dynamically calculate the center of the component
     const targetRect = targetDiv.getBoundingClientRect();
     watermark.style.top = `${targetRect.height / 2}px`;
     watermark.style.left = `${targetRect.width / 2}px`;
-    watermark.style.transform = 'translate(-50%, -50%) rotate(340deg)';
 
-    // Ensure the parent element has a relative position to position the watermark correctly
-    targetDiv.style.position = 'relative';
-    targetDiv.appendChild(watermark); // Append watermark to the component
+    targetDiv.appendChild(watermark);
 
     try {
       setDownloadBtnDisabled(true);
 
-      // Force a reflow to ensure watermark is rendered before capturing the image
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for rendering
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
-      // Generate the image with dynamically calculated dimensions
+      setIsDownload(true); // Change button to "Download"
+    } catch (error) {
+      dispatch(updateToastData({ data: `Preview failed: ${error.message}`, type: ERROR }));
+    } finally {
+      setDownloadBtnDisabled(false); // Enable the button
+      previewImage.originalStyles = originalStyles;
+    }
+  };
+  const downloadImage = async () => {
+    if (!componentRef.current) return;
+
+    const element = document.querySelector('.event-snap-table-hover');
+    const targetDiv = componentRef.current.querySelector('.border.border-dark.border-4');
+    const watermark = targetDiv.querySelector('img[alt="CRICFEED"]');
+
+    try {
       const dataUrl = await toJpeg(componentRef.current, {
-        cacheBust: true, // To avoid cache issues when generating the image
-        pixelRatio: 2, // For higher resolution
-        width: targetDiv.offsetWidth, // Use the actual width of the table
-        height: targetDiv.scrollHeight, // Use the total height of the table
-        backgroundColor: '#ffffff', // Optional: Set a background color
+        cacheBust: true,
+        pixelRatio: 2,
+        width: targetDiv.offsetWidth,
+        height: targetDiv.scrollHeight,
+        backgroundColor: '#ffffff',
       });
 
-      // Create a link and trigger the download
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `${(commentaryDetails?.eventName).split(' ').join('-')}.jpeg`;
+      link.download = `${(commentaryDetails?.eventName || 'image').split(' ').join('-')}.jpeg`;
       link.click();
 
-      // Clean up
-      componentRef.current.classList.remove('d-flex', 'justify-content-center');
-      targetDiv.removeChild(watermark); // Remove watermark after image generation
-
-      // Restore original styles
-      document.body.style.overflow = originalStyles.bodyOverflow;
-      element.style.overflow = originalStyles.containerOverflow;
-      element.style.height = originalStyles.containerHeight;
-
-      setDownloadBtnDisabled(false);
+      setIsDownload(false); // Change button back to "Preview"
     } catch (error) {
-      // Restore original styles even in case of error
-      document.body.style.overflow = originalStyles.bodyOverflow;
-      element.style.overflow = originalStyles.containerOverflow;
-      element.style.height = originalStyles.containerHeight;
+      dispatch(updateToastData({ data: `Download failed: ${error.message}`, type: ERROR }));
+    } finally {
+      // Reset the styles to original
+      targetDiv.style.width = originalWidth;
+      document.body.style.overflow = "auto"
+      // targetDiv.style.height = '823px';
+      if (watermark && watermark.parentNode) {
+        watermark.parentNode.removeChild(watermark); // Remove watermark after download
+      }
 
-      dispatch(updateToastData({ data: error.message, type: ERROR }));
+      // Enable the image again
+      targetDiv.style.pointerEvents = 'auto';
     }
   };
 
@@ -214,11 +238,11 @@ export const CommentaryEventSnap = () => {
                     <Button
                       color="primary"
                       className="btn text-right text-right mx-2"
-                      onClick={downloadImage}
+                      onClick={isDownload ? downloadImage : previewImage}
                       disabled={downloadBtnDisabled}
                     >
                       {" "}
-                      Download{" "}
+                      {isDownload ? "Download" : "Preview"}{" "}
                     </Button>
                   </Col>
                 </Row>

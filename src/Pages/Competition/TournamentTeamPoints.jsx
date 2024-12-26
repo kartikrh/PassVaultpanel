@@ -199,6 +199,13 @@ const TournamentTeamPoints = () => {
     }
   };
 
+  const handleTournamentTeam = (details) => {
+    const url = new URL(window.location.origin + "/tournamentCompetitionPoints");
+    sessionStorage.setItem('teamId', "" + details?.teamId);
+    sessionStorage.setItem('teamDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
+
   const handleRowDelete = async (record) => {
     try {
       const response = await axiosInstance.post(
@@ -430,6 +437,33 @@ const TournamentTeamPoints = () => {
           </>
         );
       },
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Team",
+      key: "teamId",
+      render: (text, record) => {
+        const team = teamOptions.find((option) => option.value === record?.teamId);
+        return (
+        <>
+          <Tooltip
+            title={"Tournament Team points"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleTournamentTeam({...record, teamName: team?.label });
+              }}
+            >
+              <i class="bx bxs-store"></i>
+            </Button>
+          </Tooltip>
+        </>
+      )},
       style: { width: "2%", textAlign: "center" },
     },
     {
