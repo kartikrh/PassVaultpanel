@@ -226,7 +226,7 @@ export const CreateEventMarket = () => {
             }
             return templateRunners;
         };
-        
+
         // Process templates first to ensure all markets are generated
         templates.forEach(template => {
             if (template.isPerEvent) {
@@ -659,6 +659,7 @@ export const CreateEventMarket = () => {
                 const specialMarket = {
                     ...market,
                     marketName: `${marketName} - ${team.shortName}`,
+                    wicketNo: wicket,
                     teamId: team.teamId
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
