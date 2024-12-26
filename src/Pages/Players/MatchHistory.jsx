@@ -121,7 +121,6 @@ const MatchHistory = () => {
           setBattingHistory(
             response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           );
-          setIsLoading(false);
         } else {
           setBattingHistory([
             {
@@ -152,6 +151,7 @@ const MatchHistory = () => {
             },
           ]);
         }
+        setIsLoading(false);
       })
       .catch((error) => {
         dispatch(
@@ -601,7 +601,7 @@ const MatchHistory = () => {
               size="sm"
               className="btn"
               onClick={() => {
-                bowlingDelete(record);
+                battingDelete(record);
               }}
             >
               Delete
