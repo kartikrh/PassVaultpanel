@@ -391,7 +391,23 @@ export const OpenMarket = () => {
                             updatedData[marketIndex] = updatedMarket;
                         }
                     }
-                } else {
+                }
+                else if (key === "rateDiff") {
+                    const updatedRunner = generateOverUnderLineType({
+                        ...updatedMarket,
+                        rateDiff: value,
+                        line: updatedMarket.runner[0]?.line,
+                        backSize: updatedMarket.runner[0]?.backSize,
+                        laySize: updatedMarket.runner[0]?.laySize
+                    }, marketTypeObj);
+                    updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                        ...runner,
+                        ...updatedRunner
+                    }));
+                    updatedMarket.rateDiff = value
+                    updatedData[marketIndex] = updatedMarket;
+                }
+                else {
                     // Handle margin and rateDiff changes
                     const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
@@ -551,6 +567,7 @@ export const OpenMarket = () => {
             });
 
             if (response?.result) {
+                dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
                 // Update original values after successful save
