@@ -192,7 +192,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             <>
                                 <br />
                                 {overDetails?.totalWicket} <b>Wk</b>
-                            </>
+                            </> 
                         )}
                     </Typography>
 

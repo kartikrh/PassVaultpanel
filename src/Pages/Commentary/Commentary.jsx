@@ -3,7 +3,7 @@ import { Col, Row } from "reactstrap"
 import "./CommentaryCss.css"
 import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_STATUS, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, NO_BALL, ON_STRIKE } from "./CommentartConst"
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
-import CommentaryRightPanel from "./CommentaryRightPanel"
+import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
 
 export const CommentaryScreen = ({
