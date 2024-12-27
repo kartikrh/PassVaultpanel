@@ -2084,6 +2084,9 @@ const Commentary = (props) => {
             }}
             handleRetiredHurt={() => setShowRretiredHurt(true)}
             overBalls={overBallByBallDisplay}
+            overHistory={overHistory}
+            currentOver={currentOver}
+            players={players}
             showPaneltyRuns={setIsPaneltyPopup}
             target={target}
             partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}

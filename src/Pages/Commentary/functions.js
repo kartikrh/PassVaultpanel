@@ -225,7 +225,7 @@ export const getBallsForAllOver = (ballHistory = []) => {
             value: ballValue,
             isWicket: ball.ballWicketType || false,
             isBoundary: ball.ballIsBoundry || false,
-            overCount: ball?.overCount
+            overCount: ball?.overCount,
           }
         ]);
       }
