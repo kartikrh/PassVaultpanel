@@ -130,6 +130,7 @@ import MarketType from "../Pages/MarketType"
 import AddPhotos from "../Pages/PhotoLibrary/AddPhotos.jsx";
 import ShotType from "../Pages/ShotType";
 import AddShotType from "../Pages/ShotType/AddShotType.jsx";
+import EventResult from "../Pages/EventResult";
 
 const authProtectedRoutes = [
   //dashboard
@@ -245,6 +246,7 @@ const authProtectedRoutes = [
   { path: "/predictorLogs", component: <PredictorLogs /> },
   { path: "/undoLogs", component: <UndoLogs /> },
   { path: "/scoringLogs", component: <ScoringLogs /> },
+  { path: "/eventResult", component: <EventResult /> },
   { path: "/photoLibrary", component: <PhotoLibrary /> },
   { path: "/addPhotoLibrary", component: <AddPhotoLibrary /> },
   { path: "/addPhotos", component: <AddPhotos /> },

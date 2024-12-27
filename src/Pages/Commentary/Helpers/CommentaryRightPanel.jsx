@@ -1,56 +1,9 @@
 import React, { useState } from "react";
-import { Row, Col } from "reactstrap";
-import { STRING_SEPERATOR } from "../../components/Common/Const";
-import { generateBallLabelFromBall } from "./functions";
-import { CURRENT_BOWLER } from "./CommentartConst";
+import OversAccordion from "./OverAccordian";
 
-const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
+const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver }) => {
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
-
-    const generateBallfromArray = (ballArray = []) => {
-        return ballArray?.map((element, index) => {
-            const previousValue = ballArray[index - 1]
-            const nextValue = ballArray[index + 1]
-            const isWicket = +element?.isWicket !== 0
-            const isBoundary = +element?.isBoundary !== 0
-            const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
-            const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
-            const ballValue = ballTypeAdd ?
-                element.value > 0 ?
-                    element.value : ""
-                : element.value
-            if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
-                return null;
-            }
-            let displayValue
-            if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
-                const nextIsWicket = +nextValue?.isWicket !== 0
-                const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
-                const nextBallValue = nextBallTypeAdd ?
-                    nextValue.value > 0 ?
-                        nextValue.value : ""
-                    : nextValue.value
-                displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`
-            } else {
-                displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
-            }
-            return <div key={`ball ${index}`} className={`px-3 py-md-2 py-1 shadow-sm rounded mx-1 over-ball-display ${ballColor}`}>
-                {displayValue}
-            </div>
-        })
-    }
-
-    const generateRightSideOvers = () => {
-        return Object.keys(overBalls).map((over, index) =>
-            <div key={`over ${index}`} className={`ball-by-ball-display ${index % 2 !== 0 ? "background-nth " : ""} `}>
-                <b>Ov-{over.split(STRING_SEPERATOR)?.[2]} : </b>
-                {(overBalls[over].length === 0 && (onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0) % 1 === 0) &&
-                    <> Yet to start Over </>
-                }
-                {generateBallfromArray(overBalls[over])}
-            </div>)
-    }
-
+    console.log({ overHistory, players })
     const renderPartnerships = () => {
         return partnerships.map((partnership, index) => {
             return (
@@ -120,9 +73,13 @@ const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
 
             <div className="tab-content">
                 {activeTab === 'overs' ? (
-                    <Row>
-                        {generateRightSideOvers()}
-                    </Row>
+                    <OversAccordion
+                        overBalls={overBalls}
+                        teamDetails={teamDetails}
+                        overHistory={overHistory}
+                        playersList={players}
+                        currentOver={currentOver}
+                    />
                 ) : (
                     <div className="partnerships-container">
                         {renderPartnerships()}

@@ -829,6 +829,24 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
+      title: "Edit",
+      key: "edit",
+      render: (text, record) => (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleEdit(record.commentaryId);
+          }}
+        >
+          <i
+            className="bx bx-edit"
+
+          ></i>
+        </span>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
     {
       title: "Date",
       dataIndex: "eventDate",
@@ -914,6 +932,25 @@ const Index = () => {
       title: "Competition",
       dataIndex: "competition",
       key: "competition",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Match Type",
+      dataIndex: "matchType",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangeModelVisible(true);
+            setSelectedCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text} {" "}
+          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+        </span>
+      ),
+      key: "matchType",
       sort: true,
       style: { width: "10%" },
     },
@@ -1210,43 +1247,6 @@ const Index = () => {
         </span>
       ),
       key: "delay",
-      sort: true,
-      style: { width: "10%" },
-    },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
-      title: "Edit",
-      key: "edit",
-      render: (text, record) => (
-        <span
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            handleEdit(record.commentaryId);
-          }}
-        >
-          <i
-            className="bx bx-edit"
-
-          ></i>
-        </span>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Match Type",
-      dataIndex: "matchType",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setChangeModelVisible(true);
-            setSelectedCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {" "}
-          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
-        </span>
-      ),
-      key: "matchType",
       sort: true,
       style: { width: "10%" },
     },
