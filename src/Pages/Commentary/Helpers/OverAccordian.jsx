@@ -187,8 +187,16 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
                 <RunsInfo>
                     <Typography variant="subtitle2">
-                        {overDetails?.totalRun || 0} runs
+                        {overDetails?.totalRun || 0} <b>Runs</b>
+                        {overDetails?.totalWicket > 0 && (
+                            <>
+                                <br />
+                                {overDetails?.totalWicket} <b>Wk</b>
+                            </>
+                        )}
                     </Typography>
+
+
                 </RunsInfo>
             </OverContainer>
         );
@@ -205,8 +213,8 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
                 teamIdB === currentOver.teamId.toString();
 
-            if (isCurrentA) return -1;
-            if (isCurrentB) return 1;
+            if (isCurrentA) return 1;
+            if (isCurrentB) return -1;
         }
 
         return b.localeCompare(a);
