@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Row, Col } from "reactstrap";
+// import { Row, Col } from "reactstrap";
 import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { generateBallLabelFromBall } from "./functions";
 import { CURRENT_BOWLER } from "./CommentartConst";
+import OversAccordion from "./Helpers/OverAccordian";
 
-const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
+const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships, teamDetails, overHistory, players, currentOver }) => {
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
-
+    console.log({ overHistory, players })
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map((element, index) => {
             const previousValue = ballArray[index - 1]
@@ -120,9 +121,16 @@ const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships }) => {
 
             <div className="tab-content">
                 {activeTab === 'overs' ? (
-                    <Row>
-                        {generateRightSideOvers()}
-                    </Row>
+                    // <Row>
+                    //     {generateRightSideOvers()}
+                    // </Row>
+                    <OversAccordion
+                        overBalls={overBalls}
+                        teamDetails={teamDetails}
+                        overHistory={overHistory}
+                        playersList={players}
+                        currentOver={currentOver}
+                    />
                 ) : (
                     <div className="partnerships-container">
                         {renderPartnerships()}

@@ -9,8 +9,10 @@ import Switch from "react-switch";
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow }) => {
+    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
+    players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined)
+    console.log({ overBalls, teamDetails });
 
     const OffsymbolStatus = () => {
         return (
@@ -112,15 +114,15 @@ export const CommentaryScreen = ({
             }
         )
     }
-    
+
     let filteredPartnerships = partnerships
-    .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null) // Filter out entries with null batter IDs
-    .filter((value, index, self) =>
-        index === self.findLastIndex((t) => 
-            (t.batter1Id === value.batter1Id && t.batter2Id === value.batter2Id) || 
-            (t.batter1Id === value.batter2Id && t.batter2Id === value.batter1Id) // Check for both combinations to handle swapped order
-        )
-    ).reverse();
+        .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null) // Filter out entries with null batter IDs
+        .filter((value, index, self) =>
+            index === self.findLastIndex((t) =>
+                (t.batter1Id === value.batter1Id && t.batter2Id === value.batter2Id) ||
+                (t.batter1Id === value.batter2Id && t.batter2Id === value.batter1Id) // Check for both combinations to handle swapped order
+            )
+        ).reverse();
 
 
     useEffect(() => {
@@ -291,6 +293,10 @@ export const CommentaryScreen = ({
                     overBalls={overBalls}
                     onPitchPlayers={onPitchPlayers}
                     partnerships={filteredPartnerships}
+                    teamDetails={teamDetails}
+                    overHistory={overHistory}
+                    players={players}
+                    currentOver={currentOver}
                 />
             </Col>
         </Row >
