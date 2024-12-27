@@ -551,6 +551,7 @@ export const OpenMarket = () => {
             });
 
             if (response?.result) {
+                dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
                 // Update original values after successful save
