@@ -206,6 +206,14 @@ const TournamentTeamPoints = () => {
     window.open(url.href, '_blank');
   };
 
+  const handleCompetitionClick = (details) => {
+    const url = new URL(window.location.origin + "/eventResult");
+    sessionStorage.setItem('eventResultCompetitionId', "" + details?.competitionId);
+    sessionStorage.setItem('eventResultTeamId', "" + details?.teamId);
+    sessionStorage.setItem('eventResultDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
+
   const handleRowDelete = async (record) => {
     try {
       const response = await axiosInstance.post(
@@ -245,7 +253,7 @@ const TournamentTeamPoints = () => {
         const team = teamOptions.find((option) => option.value === text);
         return (
           <>
-            <span>{team ? team.label : ""}</span>
+            <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick({...record, teamName: team?.label, competition: competitionDetails?.competition}); }}>{team ? team.label : ""}</span>
             <span className="text-danger">{record?.error?.teamId}</span>
           </>
         );
