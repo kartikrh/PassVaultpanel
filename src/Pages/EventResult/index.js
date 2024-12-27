@@ -201,7 +201,7 @@ const Index = () => {
     fetchTeamData();
   };
 
-  const title = competitionDetails 
+  const title = (competitionDetails?.teamName || competitionDetails?.competition)
   ? competitionDetails?.teamName 
     ? `History of ${competitionDetails?.teamName} In ${competitionDetails?.competition}` 
     : `History of ${competitionDetails?.competition}`
