@@ -301,7 +301,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Event Snap",
+      title: "Snap",
       key: "isEventSnap",
       render: (text, record) => (
         <Button
@@ -318,7 +318,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Point Table",
+      title: "Table",
       key: "isPointTable",
       render: (text, record) => (
         <Button
@@ -335,7 +335,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Snap",
+      title: "Teams",
       key: "competitionId",
       render: (text, record) => (
         <>
