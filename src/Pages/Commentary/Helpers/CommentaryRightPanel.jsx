@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import OversAccordion from "./OverAccordian";
 
-const CommentaryRightPanel = ({ overBalls, onPitchPlayers, partnerships, teamDetails, overHistory, players, currentOver }) => {
+const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver }) => {
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
     console.log({ overHistory, players })
     const renderPartnerships = () => {

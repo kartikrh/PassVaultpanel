@@ -291,7 +291,6 @@ export const CommentaryScreen = ({
                 </Row>
                 <CommentaryRightPanel
                     overBalls={overBalls}
-                    onPitchPlayers={onPitchPlayers}
                     partnerships={filteredPartnerships}
                     teamDetails={teamDetails}
                     overHistory={overHistory}

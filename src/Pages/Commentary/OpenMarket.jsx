@@ -166,12 +166,30 @@ export const OpenMarket = () => {
                 workingRecord.runner = [];
             }
 
-            return {
+            const formattedRecord = {
                 ...workingRecord,
                 status: +(workingRecord.status || 0),
                 lineRatio: +(workingRecord.lineRatio || 0),
                 margin: +(workingRecord.margin || 0),
             };
+
+            // Calculate lineDiff for markets not in category 1 or 31
+            if (workingRecord.marketTypeCategoryId !== 1 &&
+                workingRecord.marketTypeCategoryId !== 31 &&
+                workingRecord.runner?.[0]?.line &&
+                originalMarketData[workingRecord.marketId]) {
+
+                const currentLine = +(workingRecord.runner[0].line);
+                const originalLine = +(originalMarketData[workingRecord.marketId].line || 0);
+                const calculatedLineDiff = currentLine - originalLine;
+
+                // Only add lineDiff if there's an actual difference
+                if (calculatedLineDiff !== 0) {
+                    formattedRecord.lineDiff = +calculatedLineDiff.toFixed(2);
+                }
+            }
+
+            return formattedRecord;
         });
     };
 
