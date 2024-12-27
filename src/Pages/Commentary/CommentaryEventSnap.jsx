@@ -15,6 +15,7 @@ import Crickfeed_logo from '../../assets/images/Crickfeed_logo.png'
 
 export const CommentaryEventSnap = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [downloadText, setDownloadText] = useState('Download');
   const [isDownload, setIsDownload] = useState(false);
   const [originalWidth, setoriginalWidth] = useState();
   const [originalheight, setoriginalHeight] = useState();
@@ -43,9 +44,10 @@ export const CommentaryEventSnap = () => {
       targetHeight: targetDiv.style.height,
       position: targetDiv.style.position,
       storedWidth: `${targetDiv.scrollWidth}px`,
-      storedHeight: `${targetDiv.scrollHeight}px`
+      storedHeight: `${targetDiv.scrollHeight+100}px`
     };
     setoriginalWidth(originalStyles.storedWidth);
+    setoriginalHeight(originalStyles.storedHeight);
 
     // Apply preview styles
     document.body.style.overflow = 'scroll';
@@ -53,8 +55,10 @@ export const CommentaryEventSnap = () => {
     element.style.height = `${targetDiv.scrollHeight}px`;
 
     // Set the targetDiv width to 800px and center it
+  targetDiv.style.margin = "10px 0px";
     targetDiv.style.width = '800px'; // Fixed width of 800px for preview
-    targetDiv.style.height = `${targetDiv.scrollHeight}px`; // Adjust height according to content
+    // targetDiv.style.height = `${targetDiv.scrollHeight}px`; // Adjust height according to content
+    targetDiv.style.height = originalheight; // Adjust height according to content
     targetDiv.style.position = 'relative'; // Ensure the div is positioned correctly
 
     // Center the targetDiv within the parent container (flexbox or absolute positioning)
@@ -105,6 +109,7 @@ export const CommentaryEventSnap = () => {
     const watermark = targetDiv.querySelector('img[alt="CRICFEED"]');
 
     try {
+      setDownloadBtnDisabled(true);
       const dataUrl = await toJpeg(componentRef.current, {
         cacheBust: true,
         pixelRatio: 2,
@@ -112,20 +117,21 @@ export const CommentaryEventSnap = () => {
         height: targetDiv.scrollHeight,
         backgroundColor: '#ffffff',
       });
-
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `${(commentaryDetails?.eventName || 'image').split(' ').join('-')}.jpeg`;
       link.click();
-
-      setIsDownload(false); // Change button back to "Preview"
+      setIsDownload(false);
+      setDownloadBtnDisabled(false); // Change button back to "Preview"
     } catch (error) {
       dispatch(updateToastData({ data: `Download failed: ${error.message}`, type: ERROR }));
     } finally {
       // Reset the styles to original
       targetDiv.style.width = originalWidth;
       document.body.style.overflow = "auto"
-      // targetDiv.style.height = '823px';
+      // targetDiv.style.height = originalheight;
+      element.style.height = originalheight;
+      targetDiv.style.margin = "10px 0px";
       if (watermark && watermark.parentNode) {
         watermark.parentNode.removeChild(watermark); // Remove watermark after download
       }
@@ -134,22 +140,31 @@ export const CommentaryEventSnap = () => {
       targetDiv.style.pointerEvents = 'auto';
     }
   };
+  const formatDate = (isoDateString) => {
+    try {
+      console.log('Input date:', isoDateString);
 
-  const formatDate = (date) => {
-    const options = {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    };
+      // Ensure the input date is properly formatted
+      if (typeof isoDateString !== 'string' || !isoDateString.trim()) {
+        throw new Error('Date must be a non-empty string.');
+      }
 
-    const formattedDate = new Date(date).toLocaleString('en-GB', options);
-    const timePeriod = formattedDate.slice(-2).toUpperCase(); // Extract and capitalize "AM"/"PM"
-    const dateWithoutTimePeriod = formattedDate.slice(0, -2); // Remove the "AM"/"PM" part
+      const date = new Date(isoDateString);
 
-    return `${dateWithoutTimePeriod} ${timePeriod}`;
+      const options = {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      };
+
+      return date.toLocaleString('en-GB', options);
+    } catch (error) {
+      console.error(error.message);
+      throw error; // Re-throw to let the calling code handle it
+    }
   };
 
   const fetchData = async (commentaryId) => {
@@ -206,10 +221,6 @@ export const CommentaryEventSnap = () => {
     navigate("/commentary");
   };
 
-  const MarketDetailsDate = commentaryDetails?.eventDate
-    ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
-    : "";
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -261,7 +272,7 @@ export const CommentaryEventSnap = () => {
                           </div>
                           <div className="d-flex justify-content-center">
                             <p className="m-0">
-                              {formatDate(MarketDetailsDate)}
+                              {formatDate(commentaryDetails?.eventDate || '')}
                             </p>
                           </div>
                         </div>
