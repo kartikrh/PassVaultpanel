@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Accordion,
     AccordionSummary,
@@ -32,35 +32,59 @@ const BallBox = styled(Box)(({ theme, balltype }) => ({
     '&.wicket': { color: '#fff' }
 }));
 
-const OverContainer = styled(Box)(() => ({
+const OverContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: '8px 16px',
     borderBottom: '1px solid #eee',
-    '&:last-child': { borderBottom: 'none' }
+    '&:last-child': { borderBottom: 'none' },
+    [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        padding: '8px'
+    },
 }));
 
-const PlayerInfo = styled(Box)(() => ({
+const PlayerInfo = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     width: '20%',
     minWidth: '150px',
-    gap: '8px'
+    gap: '8px',
+    order: 1,
+    [theme.breakpoints.down('sm')]: {
+        order: 1, // Reorder on small devices
+    },
 }));
 
-const BallsContainer = styled(Box)(() => ({
+const BallsContainer = styled(Box)(({ theme }) => ({
     width: '70%',
-    padding: '0 8px'
+    padding: '0 16px',
+    order: 2,
+    [theme.breakpoints.down('sm')]: {
+        width: '100%',
+        order: 3,
+        padding: '8px 0px',
+        marginTop: '8px', // Adds spacing from the previous row
+    },
 }));
 
-const RunsInfo = styled(Box)(() => ({
+const RunsInfo = styled(Box)(({ theme }) => ({
     width: '10%',
     minWidth: '60px',
-    textAlign: 'right'
+    textAlign: 'right',
+    order: 3,
+    [theme.breakpoints.down('sm')]: {
+        order: 2, // Reorder on small devices
+        textAlign: 'left', // Optional: adjust text alignment for better UX
+    },
 }));
 
+
 const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver }) => {
-    // Process and merge overHistory with currentOver at initialization
+    // const viewportWidth = window.innerWidth;
+    const [viewportWidth, setViewportWidth] = useState();
     const processedHistory = React.useMemo(() => {
         if (!overHistory?.length) return [];
 
@@ -111,8 +135,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     };
 
     const getOverDetails = (overNum, innings, teamId) => {
-        console.log({ processedHistory })
-        console.log({ overNum, innings, teamId })
         // Find the over in processed history
         const over = processedHistory.find(oh =>
             (oh.over + 1) === Math.floor(parseFloat(overNum)) &&
@@ -140,6 +162,9 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
         return (
             <BallBox
+                sx={{
+                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                }}
                 balltype={ballType}
                 className={isBoundary ? 'boundary' : isWicket ? 'wicket' : ''}
             >
@@ -148,57 +173,122 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         );
     };
 
+    useEffect(() => {
+        const handleResize = () => {
+            setViewportWidth(window.innerWidth);
+        };
+
+        // Add event listener
+        window.addEventListener("resize", handleResize);
+
+        // Set initial width
+        handleResize();
+
+        // Cleanup event listener on unmount
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
     const renderOver = (balls, overKey) => {
         const [innings, teamId, overNum] = overKey.split('_##_');
         const overDetails = getOverDetails(overNum, innings, teamId);
-        console.log({ overDetails });
 
         const bowler = getBowlerDetails(overDetails?.bowlerId);
 
         const sortedBalls = [...balls].sort((a, b) => b.overCount - a.overCount);
-
-        return (
-            <OverContainer>
-                <PlayerInfo>
-                    <Avatar
-                        src="/api/placeholder/48/48"
-                        alt={bowler?.playerName || 'Bowler'}
-                        sx={{ width: 32, height: 32 }}
-                    />
-                    <Box>
-                        <Typography variant="subtitle2" fontWeight="bold" noWrap>
-                            {bowler?.playerName || 'Unknown Bowler'}
+        // const viewportWidth = window.innerWidth;
+        return (<>
+            {viewportWidth < 578 ?
+                <OverContainer>
+                    <div className="d-flex justify-content-between w-100 px-0">
+                        <PlayerInfo>
+                            <Avatar
+                                src="/api/placeholder/48/48"
+                                alt={bowler?.playerName || 'Bowler'}
+                                sx={{ width: 32, height: 32 }}
+                            />
+                            <Box>
+                                <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
+                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                }}>
+                                    {bowler?.playerName || 'Unknown Bowler'}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary" sx={{
+                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                }}>
+                                    Over {Math.floor(parseFloat(overNum))}
+                                </Typography>
+                            </Box>
+                        </PlayerInfo>
+                        <RunsInfo>
+                            <Typography variant="subtitle2" sx={{
+                                fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                            }}>
+                                {overDetails?.totalRun || 0} <b>Runs</b>
+                                {overDetails?.totalWicket > 0 && (
+                                    <>
+                                        <br />
+                                        {overDetails?.totalWicket} <b>Wk</b>
+                                    </>
+                                )}
+                            </Typography>
+                        </RunsInfo>
+                    </div>
+                    <BallsContainer>
+                        <Box display="flex" flexWrap="wrap" gap={0.5} >
+                            {sortedBalls.map((ball, idx) => (
+                                <React.Fragment key={idx}>
+                                    {renderBall(ball)}
+                                </React.Fragment>
+                            ))}
+                        </Box>
+                    </BallsContainer>
+                </OverContainer>
+                : <OverContainer>
+                    <PlayerInfo>
+                        <Avatar
+                            src="/api/placeholder/48/48"
+                            alt={bowler?.playerName || 'Bowler'}
+                            sx={{ width: 32, height: 32 }}
+                        />
+                        <Box>
+                            <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
+                                fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                            }}>
+                                {bowler?.playerName || 'Unknown Bowler'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{
+                                fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                            }}>
+                                Over {Math.floor(parseFloat(overNum))}
+                            </Typography>
+                        </Box>
+                    </PlayerInfo>
+                    <BallsContainer>
+                        <Box display="flex" flexWrap="wrap" gap={0.5}>
+                            {sortedBalls.map((ball, idx) => (
+                                <React.Fragment key={idx}>
+                                    {renderBall(ball)}
+                                </React.Fragment>
+                            ))}
+                        </Box>
+                    </BallsContainer>
+                    <RunsInfo>
+                        <Typography variant="subtitle2" sx={{
+                            fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                        }}>
+                            {overDetails?.totalRun || 0} <b>Runs</b>
+                            {overDetails?.totalWicket > 0 && (
+                                <>
+                                    <br />
+                                    {overDetails?.totalWicket} <b>Wk</b>
+                                </>
+                            )}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                            Over {Math.floor(parseFloat(overNum))}
-                        </Typography>
-                    </Box>
-                </PlayerInfo>
-
-                <BallsContainer>
-                    <Box display="flex" flexWrap="wrap" gap={0.5}>
-                        {sortedBalls.map((ball, idx) => (
-                            <React.Fragment key={idx}>
-                                {renderBall(ball)}
-                            </React.Fragment>
-                        ))}
-                    </Box>
-                </BallsContainer>
-
-                <RunsInfo>
-                    <Typography variant="subtitle2">
-                        {overDetails?.totalRun || 0} <b>Runs</b>
-                        {overDetails?.totalWicket > 0 && (
-                            <>
-                                <br />
-                                {overDetails?.totalWicket} <b>Wk</b>
-                            </> 
-                        )}
-                    </Typography>
-
-
-                </RunsInfo>
-            </OverContainer>
+                    </RunsInfo>
+                </OverContainer>}
+        </>
         );
     };
 
@@ -246,15 +336,19 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             sx={{ px: 2 }}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
-                                <Typography fontWeight="bold">
+                                <Typography fontWeight="bold" sx={{
+                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                }}>
                                     {team.teamName}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="text.secondary" sx={{
+                                    fontFamily: "'Work Sans', sans-serif",
+                                }}>
                                     Innings {innings}
                                 </Typography>
                             </Box>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ p: 0 }}>
+                        <AccordionDetails sx={{ p: 0 }} >
                             {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey))}
                         </AccordionDetails>
                     </Accordion>

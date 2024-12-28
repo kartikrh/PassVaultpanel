@@ -38,7 +38,7 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
             <ModalBody>
                 <Table responsive>
                     <Row>
-                        {<Col xs={6} md={6} lg={6} >
+                        {<Col xs={12} md={6} lg={6} >
                             Runs
                             <input
                                 className="form-control"
@@ -52,7 +52,7 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
                             />
                         </Col >}
                         {((+run === 4) || (+run === 6)) &&
-                            <Col xs={6} md={6} lg={6} >
+                            <Col xs={12} md={6} lg={6}>
                                 Is Boundary
                                 <div className="switch-padding form-switch form-switch-lg ">
                                     <input
