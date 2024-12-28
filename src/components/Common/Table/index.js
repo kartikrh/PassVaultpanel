@@ -563,16 +563,32 @@ const Index = forwardRef(
       });
 
       const sortedData = data.slice().sort((a, b) => {
-        const valueA =
-          typeof a[propName] === "string" ? a[propName] : a[propName];
-        const valueB =
-          typeof b[propName] === "string" ? b[propName] : b[propName];
-
-        if (order === "ascending") {
-          return valueA.localeCompare(valueB);
-        } else {
-          return valueB.localeCompare(valueA);
+        const valueA = a[propName];
+        const valueB = b[propName];
+      
+        // Handle null or undefined values
+        if (valueA == null || valueB == null) {
+          return valueA == null ? 1 : -1; // Treat null/undefined as "greater" for descending order
         }
+      
+        // If both are strings, use localeCompare
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          return order === 'ascending'
+            ? valueA.localeCompare(valueB)
+            : valueB.localeCompare(valueA);
+        }
+      
+        // For numbers or other types, use subtraction for sorting
+        if (typeof valueA === 'number' && typeof valueB === 'number') {
+          return order === 'ascending' ? valueA - valueB : valueB - valueA;
+        }
+      
+        // Convert other types to strings and compare
+        const stringValueA = String(valueA);
+        const stringValueB = String(valueB);
+        return order === 'ascending'
+          ? stringValueA.localeCompare(stringValueB)
+          : stringValueB.localeCompare(stringValueA);
       });
 
       setData(sortedData);
@@ -1386,8 +1402,9 @@ const Index = forwardRef(
                         ) : null}
                         {tableElement?.teamsList ? (
                           <Select
-                            value={selectedTableElements?.team}
-                            placeholder="Select Team"
+                            value={selectedTableElementsLogs?.team?.value ? selectedTableElementsLogs?.team : selectedTableElements?.team}
+                            isDisabled={selectedTableElementsLogs?.team?.value}
+                            placeholder="Team"
                             styles={{
                               control: (provided) => ({
                                 ...provided,
@@ -2036,7 +2053,7 @@ const Index = forwardRef(
                               <tr>
                                 {columns.map((column) => (
                                   <th key={column.key} style={column.style}>
-                                    <div className="d-flex" style={{ visibility: column?.key === "select" && "hidden" }}>
+                                    <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                       <span>{column.title}</span>
                                       {column.sort ? (
                                         <span className="d-flex flex-column align-items-center">
@@ -2055,7 +2072,7 @@ const Index = forwardRef(
                                                 ? "gray"
                                                 : "lightGray"
                                                 }`,
-                                              fontSize: "12px",
+                                              fontSize: "14px",
                                               marginTop: "2px",
                                               cursor: "pointer",
                                             }}
@@ -2075,8 +2092,8 @@ const Index = forwardRef(
                                                 ? "gray"
                                                 : "lightGray"
                                                 }`,
-                                              marginTop: "-5px",
-                                              fontSize: "12px",
+                                              marginTop: "-8px",
+                                              fontSize: "14px",
                                               cursor: "pointer",
                                             }}
                                           ></i>
@@ -2141,10 +2158,10 @@ const Index = forwardRef(
                         <tr>
                           {columns.map((column) => (
                             <th key={column.key} style={column.style} className={column.className}>
-                              <div className="d-flex" style={{ visibility: column?.key === "select" && "hidden" }}>
+                              <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
-                                  <span className="d-flex flex-column align-items-center">
+                                  <span className="d-flex flex-column align-items-center">                                   
                                     <i
                                       className={"bx bx-caret-up " + column.className}
                                       onClick={() => {
@@ -2164,7 +2181,7 @@ const Index = forwardRef(
                                           ? "gray"
                                           : "lightGray"
                                           }`,
-                                        fontSize: "12px",
+                                        fontSize: "14px",
                                         marginTop: "2px",
                                         cursor: "pointer",
                                       }}
@@ -2188,8 +2205,8 @@ const Index = forwardRef(
                                           ? "gray"
                                           : "lightGray"
                                           }`,
-                                        marginTop: "-5px",
-                                        fontSize: "12px",
+                                        marginTop: "-8px",
+                                        fontSize: "14px",
                                         cursor: "pointer",
                                       }}
                                     ></i>

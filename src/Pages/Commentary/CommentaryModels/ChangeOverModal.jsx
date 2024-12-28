@@ -26,17 +26,6 @@ const ChangeOverModal = ({
         };
     }, []);
 
-    const generateBallLabel = (type, isWicket) => {
-        if (isWicket) return "W";
-        switch (type) {
-            case 2: return "WD";
-            case 3: return "NB";
-            case 4: return "B";
-            case 5: return "LB";
-            default: return "";
-        }
-    };
-
     // const generateBalls = (ballArray = []) => {
     //     if (!Array.isArray(ballArray)) return null;
 

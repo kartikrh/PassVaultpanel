@@ -166,12 +166,30 @@ export const OpenMarket = () => {
                 workingRecord.runner = [];
             }
 
-            return {
+            const formattedRecord = {
                 ...workingRecord,
                 status: +(workingRecord.status || 0),
                 lineRatio: +(workingRecord.lineRatio || 0),
                 margin: +(workingRecord.margin || 0),
             };
+
+            // Calculate lineDiff for markets not in category 1 or 31
+            if (workingRecord.marketTypeCategoryId !== 1 &&
+                workingRecord.marketTypeCategoryId !== 31 &&
+                workingRecord.runner?.[0]?.line &&
+                originalMarketData[workingRecord.marketId]) {
+
+                const currentLine = +(workingRecord.runner[0].line);
+                const originalLine = +(originalMarketData[workingRecord.marketId].line || 0);
+                const calculatedLineDiff = currentLine - originalLine;
+
+                // Only add lineDiff if there's an actual difference
+                if (calculatedLineDiff !== 0) {
+                    formattedRecord.lineDiff = +calculatedLineDiff.toFixed(2);
+                }
+            }
+
+            return formattedRecord;
         });
     };
 
@@ -373,7 +391,23 @@ export const OpenMarket = () => {
                             updatedData[marketIndex] = updatedMarket;
                         }
                     }
-                } else {
+                }
+                else if (key === "rateDiff") {
+                    const updatedRunner = generateOverUnderLineType({
+                        ...updatedMarket,
+                        rateDiff: value,
+                        line: updatedMarket.runner[0]?.line,
+                        backSize: updatedMarket.runner[0]?.backSize,
+                        laySize: updatedMarket.runner[0]?.laySize
+                    }, marketTypeObj);
+                    updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                        ...runner,
+                        ...updatedRunner
+                    }));
+                    updatedMarket.rateDiff = value
+                    updatedData[marketIndex] = updatedMarket;
+                }
+                else {
                     // Handle margin and rateDiff changes
                     const runnerProperties = ['line', 'overRate', 'underRate', 'backPrice', 'layPrice', 'backSize', 'laySize'];
                     if (runnerProperties.includes(key) && Array.isArray(updatedMarket.runner)) {
@@ -533,6 +567,7 @@ export const OpenMarket = () => {
             });
 
             if (response?.result) {
+                dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
                 // Update original values after successful save

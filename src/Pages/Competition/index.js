@@ -74,6 +74,13 @@ const Index = () => {
     setCheckedList(updateSingleCheck)
   };
 
+  const handleCompetitionClick = (details) => {
+    const url = new URL(window.location.origin + "/eventResult");
+    sessionStorage.setItem('eventResultCompetitionId', "" + details?.competitionId);
+    sessionStorage.setItem('eventResultDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
+
   //permissions function
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -261,6 +268,16 @@ const Index = () => {
     {
       title: "Competition",
       dataIndex: "competition",
+      render: (text, record) => (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleCompetitionClick(record);
+          }}
+        >
+          {text}
+        </span>
+      ),
       key: "competition",
       style: { width: "60%" },
     },
@@ -301,7 +318,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Event Snap",
+      title: "Snap",
       key: "isEventSnap",
       render: (text, record) => (
         <Button
@@ -318,7 +335,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Point Table",
+      title: "Table",
       key: "isPointTable",
       render: (text, record) => (
         <Button
@@ -335,7 +352,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Snap",
+      title: "Teams",
       key: "competitionId",
       render: (text, record) => (
         <>
