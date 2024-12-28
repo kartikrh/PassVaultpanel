@@ -48,7 +48,7 @@
     font-weight: bold;
     /* color: white; */
     text-align: center;
-    padding: 0.4rem;
+    /* padding: 0.4rem; */
     font-size: 22px;
 }
 
@@ -60,6 +60,8 @@
 .overs-header {
     background-color: rgba(117, 219, 253, 0.473);
     color: rgb(11, 112, 184);
+    padding: 0px;
+    margin: 0px;
 }
 
 .team-2 {
@@ -374,7 +376,8 @@
     border-style: solid;
     border-top: none;
     border-color: transparent;
-    padding: 0 0 0 1rem;
+    padding: 0px;
+    /* padding: 0 0 0 1rem; */
 }
 
 .section-info {
@@ -934,19 +937,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0px 20px;
 }
 
 .first-card-player-section {
     display: flex;
-    flex: 1;
+    /* flex: 1; */
     text-align: center;
     padding: 0.5rem;
 }
 
 .remaining-card-player-section {
-    flex: 1;
+    display: flex;
+    justify-content: center;
+    /* flex: 1; */
     text-align: center;
-    padding: 0.5rem;
+    padding: 1rem 0.5rem;
 }
 
 .first-player-image {
@@ -961,7 +967,6 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    margin-bottom: 0.5rem;
     object-fit: cover;
 }
 
@@ -1005,7 +1010,7 @@
 
 .remaining-total-runs {
     font-weight: bold;
-    color: #0056b3;
+    /* color: #0056b3; */
 }
 
 .first-total-balls {
@@ -1033,6 +1038,117 @@
     max-height: 500px;
     overflow-y: auto;
     padding: 1rem;
+}
+
+.overs-accordion{
+    font-family: "Work Sans", sans-serif !important;
+}
+
+ .css-lhsbas-MuiTypography-root .css-1wle3ir-MuiTypography-root .css-5neixw-MuiTypography-root.css-1ypmsg6-MuiTypography-root{
+    font-family: "Work Sans", sans-serif !important;
+} 
+
+@media (max-width: 575.98px) {
+    .first-player-name {
+        font-size: 10px !important;
+    }
+    .table-responsive{
+        overflow-x: hidden!important;
+    }
+    .first-player-stats {
+        font-size: 10px !important;
+    }
+    .remaining-card-body {
+        padding: 0px !important;
+    }
+    .first-card-header {
+        font-size: 14px !important;
+        padding: 0.5rem;
+    }
+    .first-total-runs{
+        font-size: 16px !important;
+    }
+    .first-total-balls-span{
+        font-size: 12px !important;
+    }
+    .first-total-balls{
+        font-size: 8px !important;
+    }
+    .first-partnership-extras{
+        font-size: 10px !important;
+    }
+    .scoring-row {
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+
+    .partnerships-container {
+        padding: 0px;
+        margin: 0px;
+    }
+    .first-player-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-bottom: 0px !important;
+        object-fit: cover;
+    }
+    .first-card-body{
+        padding: 10px 0px !important;
+    }
+
+    .first-card-player-section {
+        display: flex;
+        /* justify-content: center; */
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0.5rem;
+    }
+    .remaining-card-player-section{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .remaining-player-name{
+        font-size: 10px !important;
+    }
+    .remaining-total-balls{
+        font-size: 8px !important;
+    }
+    .remaining-player-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .player-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .remaining-player-stats{
+        font-size: 8px !important;
+    }
+
+    .circle-display{
+        display: none;
+    }
+    .wicket-card-title{
+        font-size: 10px !important;
+    }
+    .card-body {
+        /* flex: 1 1 auto; */
+        padding: 4px 6px !important;
+    }
+    .card {
+        margin-bottom: 8px !important;
+        display: flex !important;
+        justify-content: start!important;
+    }
 }
 
 /* Ensure proper spacing between cards */

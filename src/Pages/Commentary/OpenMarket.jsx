@@ -726,6 +726,7 @@ export const OpenMarket = () => {
                 if (response?.result) {
                     const teamsObj = {}
                     const newCategoryObj = {}
+                    setFullCategories(response?.result?.categories || [])
                     response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
                     response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
@@ -1298,21 +1299,50 @@ export const OpenMarket = () => {
         const tempCategorisedData = {}
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
-            data.forEach(market => {
+            // data.forEach(market => {
 
-                tempCategorisedData[categories[market.marketTypeCategoryId]] =
-                    [].concat(
-                        tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
-                    )
-            })
-            setCategorisedData(tempCategorisedData)
+            //     tempCategorisedData[categories[market.marketTypeCategoryId]] =
+            //         [].concat(
+            //             tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
+            //         )
+            // })
+            data.forEach((market) => {
+                const categoryName = categories[market.marketTypeCategoryId];
+                tempCategorisedData[categoryName] = [].concat(
+                    tempCategorisedData[categoryName] || [],
+                    [market]
+                );
+            });
+            // Separate selected and non-selected categories
+            const selectedCategoryNames = selectedCategories.map(
+                (selected) => fullCategories.find((cat) => cat.marketTypeCategoryId === selected.value)?.categoryName
+            ).filter(Boolean);
+            const selectedData = {};
+            const remainingData = {};
+            fullCategories
+                .sort((a, b) => a.displayOrder - b.displayOrder)
+                .forEach((category) => {
+                    const categoryName = category.categoryName;
+                    if (selectedCategoryNames.includes(categoryName)) {
+                        if (tempCategorisedData[categoryName]) {
+                            selectedData[categoryName] = tempCategorisedData[categoryName];
+                        }
+                    } else {
+                        if (tempCategorisedData[categoryName]) {
+                            remainingData[categoryName] = tempCategorisedData[categoryName];
+                        }
+                    }
+                });
+            // Combine selected and remaining data
+            const sortedCategorisedData = { ...selectedData, ...remainingData };
+            setCategorisedData(sortedCategorisedData);
         } else {
             window.removeEventListener('keydown', handleKeyPress);
         }
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data])
+    }, [data, selectedCategories])
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);

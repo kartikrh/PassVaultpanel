@@ -13,17 +13,17 @@ const CardComponent = ({ title, titleIcon, name, bgColor, onClickColor, onClick,
         <div className="">
           <div className="d-flex flex-column justify-content-center align-items-center">
             <i
-              className={check ? "bx bxs-check-circle" : "bx bx-circle"}
+              className={check ? "bx bxs-check-circle circle-display" : "bx bx-circle circle-display"}
               style={{ fontSize: "25px", color: "white" }}
             ></i>
             <span
-              className=""
+              className="wicket-card-title"
               style={{
                 fontWeight: 600,
                 fontSize: "18px",
-                marginLeft: "15px",
                 color: "white",
-                display:"flex", alignItems:"center"
+                display:"flex", 
+                alignItems:"center"
               }}
             >
               {titleIcon && <img src={titleIcon} style={{ marginRight: "10px" }} width={25} height={25} alt="icon" />} {" "}
