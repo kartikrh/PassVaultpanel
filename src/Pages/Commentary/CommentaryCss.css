@@ -289,6 +289,12 @@
     padding: 0.2rem !important;
 }
 
+.table-header-button-2 {
+    margin: 1% 1%;
+    width: 30% !important;
+    padding: 0.2rem !important;
+}
+
 .btn-color-yellow {
     color: #60530b !important;
     background-color: #f4f481 !important;
@@ -299,6 +305,12 @@
 .btn-color-orange {
     color: #60400b !important;
     background-color: #ffc98f !important;
+    font-weight: 500;
+    border-color: #60400b !important;
+}
+.btn-color-purple {
+    color: #8000ffe2 !important;
+    background-color: #c089f7a4 !important;
     font-weight: 500;
     border-color: #60400b !important;
 }
