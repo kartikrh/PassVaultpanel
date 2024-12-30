@@ -78,6 +78,8 @@ const Index = forwardRef(
       delay,
       setDelay,
       handleDelay,
+      sendDataList,
+      createdTypeList,
       selectedClientSocket,
       setSelectedClientSocket,
       handleClientSocketChange,
@@ -147,7 +149,7 @@ const Index = forwardRef(
         [index]: !prev[index],
       }));
     };
-
+    
     const OffsymbolStatus = () => {
       return (
         <div
@@ -781,7 +783,15 @@ const Index = forwardRef(
         videoType: {
           value: 0,
           label: "Select Video Type"
-        }
+        },
+        createdTypeName: {
+          value: 0,
+          label: "Created Type"
+        },
+        sendDataType: {
+          value: 0,
+          label: "Send Data Type"
+        },
       });
       if (tableElement?.dateRange) {
         setDateRange({
@@ -851,7 +861,15 @@ const Index = forwardRef(
         videoType: {
           value: 0,
           label: "Select Video Type"
-        }
+        },
+        createdTypeName: {
+          value: 0,
+          label: "Created Type"
+        },
+        sendDataType: {
+          value: 0,
+          label: "Send Data Type"
+        },
       });
       if (tableElement?.dateRange) {
         setDateRange({
@@ -999,6 +1017,58 @@ const Index = forwardRef(
                             Multi Clone
                           </Button>
                         ) : null}
+                        {tableElement?.sendDataListSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.sendDataType}
+                              placeholder="Send Data Type"
+                              onChange={(e) => {
+                                handleTableActions("isSendData", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  sendDataType: e,
+                                });
+                              }}
+                              options={sendDataList?.map((item) => ({
+                                label: item?.sendDataType,
+                                value: item?.isSendData,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.createdTypeListSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.createdTypeName}
+                              placeholder="Created Type"
+                              onChange={(e) => {
+                                handleTableActions("createdType", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  createdTypeName: e,
+                                });
+                              }}
+                              options={createdTypeList?.map((item) => ({
+                                label: item?.createdTypeName,
+                                value: item?.createdType,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
                         {tableElement?.isDatePrice && (
                           <Button
                             color="btn btn-primary"
@@ -1008,7 +1078,7 @@ const Index = forwardRef(
                                 ? datePriceModelFunction(true)
                                 : dispatch(
                                   updateToastData({
-                                    data: "Select at least two row",
+                                    data: "Select at least two rows to open request info modal",
                                     title: "Error",
                                     type: ERROR,
                                   })

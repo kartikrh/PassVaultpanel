@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CardHeader, Col, Container, Row, Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR } from "../../components/Common/Const";
@@ -6,7 +6,7 @@ import Table from "../../components/Common/Table";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
 import { Tooltip } from "antd";
@@ -28,14 +28,19 @@ function MarketDataLogs() {
   const [datePriceValues, setDatePriceValues] = useState([]);
   const eventMarketId = +sessionStorage.getItem('eventMarketDataLogId') || "0";
   const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketDataLogDetails') || "{}");
+  const finalizeRef = useRef(null);
 
-  const fetchData = async (eventMarketId) => {
+  const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
+    const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post("/admin/eventMarket/getDSReport", { 
+      .post("/admin/eventMarket/getDSReport", {
+        ...(latestValueFromTable || tableActions), 
         eventMarketId,
         page: currentPage+1,
         limit: pageSize,
+        isSendData: latestValueFromTable?.isSendData,
+        createdType: latestValueFromTable?.createdType,
       })
       .then((response) => {
         setTotal(response?.result?.totalRecords || 0); 
@@ -83,7 +88,7 @@ function MarketDataLogs() {
 
   useEffect(() => {
     if (eventMarketId !== "0") {
-      fetchData(eventMarketId);
+      fetchData();
     }
   }, [eventMarketId, currentPage, pageSize]);
 
@@ -175,7 +180,7 @@ function MarketDataLogs() {
     {
       title: "Date",
       dataIndex: "createdDate",
-      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, "index")}</span>,
+      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal2(text, "index")}</span>,
       key: "createdDate",
       style: { width: "10%" },
       sort: true,
@@ -253,7 +258,24 @@ function MarketDataLogs() {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Bet Allow",
+      title: "Send Data",
+      key: "isSendData",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record?.isSendData ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i className={`bx ${record?.isSendData ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Bet Allow",
       key: "isAllow",
       render: (text, record) => (
       <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -325,7 +347,7 @@ function MarketDataLogs() {
     {
       title: "Date",
       dataIndex: "createdDate",
-      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, "index")}</span>,
+      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal2(text, "index")}</span>,
       key: "createdDate",
       style: { width: "5%" },
       sort: true,
@@ -361,7 +383,24 @@ function MarketDataLogs() {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Is Bet Allow",
+      title: "Send Data",
+      key: "isSendData",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record?.isSendData ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i className={`bx ${record?.isSendData ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Bet Allow",
       key: "isAllow",
       render: (text, record) => (
       <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
@@ -391,7 +430,7 @@ function MarketDataLogs() {
   //     dataIndex: "createdDate",
   //     render: (text, record) => (
   //       <span style={{ cursor: "pointer" }}>
-  //         {convertDateUTCToLocal(text, "index")}
+  //         {convertDateUTCToLocal2(text, "index")}
   //       </span>
   //     ),
   //     key: "createdDate",
@@ -430,13 +469,55 @@ function MarketDataLogs() {
   // ];
 
   const MarketDetailsDate = marketDetails?.eventDate
-    ? convertDateUTCToLocal(marketDetails.eventDate, "index")
+    ? convertDateUTCToLocal2(marketDetails.eventDate, "index")
     : "";
 
   const tableElement = {
     title: "Market Data Logs",
     isServerPagination: true,
     isDatePrice: true,
+    sendDataListSelect: true,
+    createdTypeListSelect: true,
+    resetButton: true,
+    reloadButton: true,
+  };
+
+  const sendDataList = [
+    {
+      sendDataType: "All",
+      isSendData: null
+    },
+    {
+      sendDataType: "true",
+      isSendData: true
+    },
+    {
+      sendDataType: "false",
+      isSendData: false
+    }
+  ]
+
+  const createdTypeList = [
+    {
+      createdTypeName: "Both",
+      createdType: null
+    },
+    {
+      createdTypeName: "Panel",
+      createdType: 1
+    },
+    {
+      createdTypeName: "Python",
+      createdType: 2
+    }
+  ]
+
+  const handleReset = (value) => {
+    fetchData(value);
+  };
+
+  const handleReload = (value) => {
+    fetchData();
   };
 
   return (
@@ -459,6 +540,7 @@ function MarketDataLogs() {
           </CardHeader>
           {(marketDetails?.marketTypeId == marketTypeObj?.Fancy || marketDetails?.marketTypeId == marketTypeObj?.LineMarket) ?
           <Table
+            ref={finalizeRef}
             columns={columns}
             dataSource={data.map((item) => {
                 const logObject = item?.data && JSON.parse(item.data);
@@ -467,6 +549,7 @@ function MarketDataLogs() {
                   status: logObject?.status,
                   isActive: logObject?.isActive,
                   isAllow: logObject?.isAllow,
+                  isSendData: item?.isSendData,
                   runner: logObject?.runner?.[0]?.runner || "",
                   layPrice: logObject?.runner?.[0]?.layPrice || "",
                   laySize: logObject?.runner?.[0]?.laySize || "",
@@ -486,8 +569,13 @@ function MarketDataLogs() {
             setServerCurrentPage={setCurrentPage}
             setServerPageSize={setPageSize}
             datePriceModelFunction={setDateModelVisable}
+            sendDataList={sendDataList}
+            createdTypeList={createdTypeList}
+            handleReset={handleReset}
+            handleReload={handleReload}
           /> : 
           <Table
+            ref={finalizeRef}
             columns={customColumns}
             tableElement={tableElement}
             singleCheck={checekedList}
@@ -509,9 +597,14 @@ function MarketDataLogs() {
                 status: logObject?.status,
                 isActive: logObject?.isActive,
                 isAllow: logObject?.isAllow,
+                isSendData: item?.isSendData,
                 nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
               };
             })}
+            sendDataList={sendDataList}
+            createdTypeList={createdTypeList}
+            handleReset={handleReset}
+            handleReload={handleReload}
           />}
           {dateModelVisable &&
           <CheckBackLayPrice
