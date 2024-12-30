@@ -245,6 +245,8 @@ export const CreateEventMarket = () => {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 31) {
                 processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 32) {
+                processPartnershipBoundariesMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
@@ -649,6 +651,23 @@ export const CreateEventMarket = () => {
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
+        });
+    };
+
+    const processPartnershipBoundariesMarkets = (market, teams, processedMarketsObj) => {
+        const maxWickets = market?.afterWicketAutoSuspend - 2;  // Subtract 2 to not include the suspend wicket
+
+        teams.forEach(team => {
+            for (let wicket = 1; wicket <= maxWickets; wicket++) {
+                const marketName = market.templateName.replace("{wicket}", wicket);
+                const specialMarket = {
+                    ...market,
+                    marketName: `${marketName} - ${team.shortName}`,
+                    wicketNo: wicket,
+                    teamId: team.teamId
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
         });
     };
 
