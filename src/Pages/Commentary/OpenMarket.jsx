@@ -7,7 +7,7 @@ import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap"
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
-import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, OPEN_MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE } from "./CommentartConst";
+import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, OPEN_MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE, ALL_SUSPEND } from "./CommentartConst";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
 import { generateOverUnderLineType } from "./functions";
@@ -743,6 +743,7 @@ export const OpenMarket = () => {
                 if (response?.result) {
                     const teamsObj = {}
                     const newCategoryObj = {}
+                    setFullCategories(response?.result?.categories || [])
                     response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
                     response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
@@ -1315,21 +1316,50 @@ export const OpenMarket = () => {
         const tempCategorisedData = {}
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
-            data.forEach(market => {
+            // data.forEach(market => {
 
-                tempCategorisedData[categories[market.marketTypeCategoryId]] =
-                    [].concat(
-                        tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
-                    )
-            })
-            setCategorisedData(tempCategorisedData)
+            //     tempCategorisedData[categories[market.marketTypeCategoryId]] =
+            //         [].concat(
+            //             tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
+            //         )
+            // })
+            data.forEach((market) => {
+                const categoryName = categories[market.marketTypeCategoryId];
+                tempCategorisedData[categoryName] = [].concat(
+                    tempCategorisedData[categoryName] || [],
+                    [market]
+                );
+            });
+            // Separate selected and non-selected categories
+            const selectedCategoryNames = selectedCategories.map(
+                (selected) => fullCategories.find((cat) => cat.marketTypeCategoryId === selected.value)?.categoryName
+            ).filter(Boolean);
+            const selectedData = {};
+            const remainingData = {};
+            fullCategories
+                .sort((a, b) => a.displayOrder - b.displayOrder)
+                .forEach((category) => {
+                    const categoryName = category.categoryName;
+                    if (selectedCategoryNames.includes(categoryName)) {
+                        if (tempCategorisedData[categoryName]) {
+                            selectedData[categoryName] = tempCategorisedData[categoryName];
+                        }
+                    } else {
+                        if (tempCategorisedData[categoryName]) {
+                            remainingData[categoryName] = tempCategorisedData[categoryName];
+                        }
+                    }
+                });
+            // Combine selected and remaining data
+            const sortedCategorisedData = { ...selectedData, ...remainingData };
+            setCategorisedData(sortedCategorisedData);
         } else {
             window.removeEventListener('keydown', handleKeyPress);
         }
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data])
+    }, [data, selectedCategories])
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
@@ -1357,8 +1387,9 @@ export const OpenMarket = () => {
                                 </Row>
                                 <Row>
                                     <Col className="p-0" xs={12} md={6} lg={2}>
-                                        <button className="table-header-button btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
-                                        <button className="table-header-button btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{SUSPEND} (Z)</button>
+                                        <button className="table-header-button-2 btn btn-color-purple" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{ALL_SUSPEND} (Z)</button>
+                                        <button className="table-header-button-2 btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
+                                        <button className="table-header-button-2 btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE })}>{SUSPEND}</button>
                                     </Col>
                                     <Col className="p-0" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>

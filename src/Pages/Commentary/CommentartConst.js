@@ -121,6 +121,7 @@ export const OPEN_MARKET_STATUS = {
 
 export const INACTIVE = "InActive"
 export const SUSPEND = "Suspend"
+export const ALL_SUSPEND = "All Suspend"
 export const ALLOW = "Allow"
 export const NOT_ALLOW = "Not Allow"
 export const ACTIVE = "Active"

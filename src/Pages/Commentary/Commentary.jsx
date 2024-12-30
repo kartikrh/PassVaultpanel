@@ -12,7 +12,6 @@ export const CommentaryScreen = ({
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined)
-    console.log({ overBalls, teamDetails });
 
     const OffsymbolStatus = () => {
         return (
@@ -134,7 +133,7 @@ export const CommentaryScreen = ({
     }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
 
     return <React.Fragment>
-        <Row>
+        <Row className='scoring-row'>
             <Col xs={12} md={6} lg={6}>
                 <Row>
                     <Col className="team-name team-1" xs={6} md={6} lg={6}>
