@@ -914,7 +914,9 @@ const Commentary = (props) => {
                 "batter1Name": updatedOnPitchPlayer[ON_STRIKE]?.playerName,
                 "batter2Id": updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId,
                 "batter2Name": updatedOnPitchPlayer[NON_STRIKE]?.playerName,
-                "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0")
+                "order": currentPartnership.order + 1,
+                "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
+                
             }
             const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
             const objToSave = {

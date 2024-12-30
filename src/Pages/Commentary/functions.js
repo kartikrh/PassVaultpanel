@@ -95,7 +95,8 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "batter1Runs": currentPartnership.batter1Runs || 0,
     "batter2Runs": currentPartnership.batter2Runs || 0,
     "batter1Balls": currentPartnership.batter1Balls || 0,
-    "batter2Balls": currentPartnership.batter2Balls || 0
+    "batter2Balls": currentPartnership.batter2Balls || 0, 
+    "order" : currentPartnership.order || 1
   };
 }
 
