@@ -1254,6 +1254,9 @@ export const OpenMarket = () => {
                 handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
                 break;
             case 'z':
+                handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE });
+                break;
+            case 'q':
                 handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" });
                 break;
             default:
