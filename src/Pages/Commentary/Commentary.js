@@ -501,7 +501,7 @@ const Commentary = (props) => {
         })
         _setCurrentPartnership((prevValue) => {
             const actualPrevData = isEmpty(prevValue) ? currentPartnership : prevValue
-            return { ...actualPrevData, ...updatePartnership, isActive : false }
+            return { ...actualPrevData, ...updatePartnership, isActive: freezePlayers ? false : true }
         })
         setSaveToDb(true)
         // }
@@ -970,7 +970,7 @@ const Commentary = (props) => {
             "batterOrder": newPlayer["batterOrder"],
             "bowlerOrder": newPlayer["bowlerOrder"],
         }
-        
+
         const listToUpdate = players[teamType]?.map((player) => {
             if (isEqual(player.commentaryPlayerId, oldPlayer.commentaryPlayerId)) return updatedOldPlayer
             else if (isEqual(player.commentaryPlayerId, newPlayer.commentaryPlayerId)) return updatedNewPlayer
@@ -1586,7 +1586,9 @@ const Commentary = (props) => {
             "batter1Runs": 0,
             "batter2Runs": 0,
             "batter1Balls": 0,
-            "batter2Balls": 0
+            "batter2Balls": 0,
+            "order": currentPartnership?.order + 1,
+            "isActive": true,
         }
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         const objToSave = {
