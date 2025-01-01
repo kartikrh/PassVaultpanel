@@ -46,6 +46,8 @@ export const OpenMarket = () => {
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
 
+    console.log({ originalMarketData, categorisedData });
+
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
             document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
@@ -570,16 +572,23 @@ export const OpenMarket = () => {
                 dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
-                // Update original values after successful save
+                updatedData.forEach(market => {
+                    if (market.marketTypeCategoryId === 31) {
+                        market.lineDiff = 0;
+                    }
+                });
+
+                const newOriginalData = {};
                 updatedData.forEach(market => {
                     if (market.runner && market.runner.length === 1) {
-                        originalMarketData[market.marketId] = {
+                        newOriginalData[market.marketId] = {
                             line: market.runner[0].line,
                             predefinedValue: market.predefinedValue,
                             playerScore: market.playerScore
                         };
                     }
                 });
+                setOriginalMarketData(newOriginalData);
 
                 setData(prevData =>
                     prevData.map(market => {
