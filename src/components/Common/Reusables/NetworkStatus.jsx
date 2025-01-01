@@ -76,7 +76,7 @@ const NetworkStatus = () => {
         <div>
             <div className='d-flex'>
                 <FaWifi color={getColor()} size={32} />
-                <div className='pl-2'>
+                <div className='mx-2'>
                     <span>Latency: {latency !== null ? `${latency} ms` : 'N/A'}</span>
                     <br />
                     <span>Speed: {networkStatus !== 'unknown' ? networkStatus : 'N/A'}</span>
