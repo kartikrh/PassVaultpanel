@@ -917,7 +917,7 @@ const Commentary = (props) => {
                 "order": currentPartnership.order + 1,
                 "isActive": true,
                 "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
-                
+
             }
             const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
             const objToSave = {
@@ -1699,7 +1699,7 @@ const Commentary = (props) => {
         //         partnershipFromApi = partnershipDetails
         //     }
         // });
-        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i)=>i?.isActive) || {};
+        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive) || {};
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
             if (
                 isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) &&
@@ -2106,7 +2106,7 @@ const Commentary = (props) => {
             handleWheelShowToggle={handleWheelShowToggle}
             isWheelShow={isWheelShow}
         />
-        {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+        {!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={isWicketChange ? false : () => {
