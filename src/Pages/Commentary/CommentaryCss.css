@@ -297,6 +297,15 @@
     padding: 0.2rem !important;
 }
 
+@media (max-width: 600px) {
+    .table-header-button-2 {
+        width: 48% !important;
+    }
+    .table-header-button-2.table-header-button-3{
+        width: 100% !important;
+    }
+}
+
 .btn-color-yellow {
     color: #60530b !important;
     background-color: #f4f481 !important;
@@ -414,7 +423,7 @@
 
 .live-css {
     color: green;
-    width: 10px;
+    width: 100;
     height: 10px;
     display: inline-block;
     border-radius: 50%;
