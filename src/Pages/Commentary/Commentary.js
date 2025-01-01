@@ -100,33 +100,33 @@ const Commentary = (props) => {
     let navigate = useNavigate();
     console.log({ "partnership4s": currentPartnership.totalFour, "partnership6s": currentPartnership.totalSix });
 
-    const handleCommentaryConsole = async (temp, main) => {
-        const currentState = {
-            over: main?.over,
-            ballCount: main?.ballCount,
-            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-        }
-        const temporaryState = {
-            over: temp?.over,
-            ballCount: temp?.ballCount,
-            teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM]
-                ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
-                : '0/0',
-        }
-        const payload = {
-            currentState: JSON.stringify(currentState),
-            temporaryState: JSON.stringify(temporaryState),
-            ballCount: main?.ballCount,
-            over: main?.over,
-            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-            commentaryId: main?.commentaryId,
-        }
-        try {
-            await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
-        } catch (error) {
-            console.error("Error updating commentary console:", error);
-        }
-    };
+    // const handleCommentaryConsole = async (temp, main) => {
+    //     const currentState = {
+    //         over: main?.over,
+    //         ballCount: main?.ballCount,
+    //         teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+    //     }
+    //     const temporaryState = {
+    //         over: temp?.over,
+    //         ballCount: temp?.ballCount,
+    //         teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM]
+    //             ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
+    //             : '0/0',
+    //     }
+    //     const payload = {
+    //         currentState: JSON.stringify(currentState),
+    //         temporaryState: JSON.stringify(temporaryState),
+    //         ballCount: main?.ballCount,
+    //         over: main?.over,
+    //         teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+    //         commentaryId: main?.commentaryId,
+    //     }
+    //     try {
+    //         await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
+    //     } catch (error) {
+    //         console.error("Error updating commentary console:", error);
+    //     }
+    // };
 
 
     useEffect(() => {
@@ -501,7 +501,7 @@ const Commentary = (props) => {
         })
         _setCurrentPartnership((prevValue) => {
             const actualPrevData = isEmpty(prevValue) ? currentPartnership : prevValue
-            return { ...actualPrevData, ...updatePartnership, }
+            return { ...actualPrevData, ...updatePartnership, isActive: freezePlayers ? false : true }
         })
         setSaveToDb(true)
         // }
@@ -841,7 +841,7 @@ const Commentary = (props) => {
                     "fielderId1": wicketData.fielder1,
                     "fielderId2": wicketData.fielder2,
                     "isPlay": null,
-                    "onStrike": null
+                    "onStrike": null,
                 }
                 updatedBatter = playerDataToList
                 return playerDataToList
@@ -914,7 +914,10 @@ const Commentary = (props) => {
                 "batter1Name": updatedOnPitchPlayer[ON_STRIKE]?.playerName,
                 "batter2Id": updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId,
                 "batter2Name": updatedOnPitchPlayer[NON_STRIKE]?.playerName,
-                "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0")
+                "order": currentPartnership.order + 1,
+                "isActive": true,
+                "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
+
             }
             const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
             const objToSave = {
@@ -1207,7 +1210,7 @@ const Commentary = (props) => {
                     updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
                     if (!LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(currentBall.ballWicketType))
                         updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
-                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2], commentaryBallByBallId: currentPartnership?.commentaryBallByBallId }
+                    updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2], isActive: true }
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
                 const bowler = playersOnPitch[CURRENT_BOWLER]
@@ -1583,7 +1586,9 @@ const Commentary = (props) => {
             "batter1Runs": 0,
             "batter2Runs": 0,
             "batter1Balls": 0,
-            "batter2Balls": 0
+            "batter2Balls": 0,
+            "order": currentPartnership?.order + 1,
+            "isActive": true,
         }
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         const objToSave = {
@@ -1683,17 +1688,18 @@ const Commentary = (props) => {
                 }
             }
         });
-        propsData.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
-            if (
-                (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) &&
-                    isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)) ||
-                (
-                    isEqual(partnershipDetails.batter1Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId) &&
-                    isEqual(partnershipDetails.batter2Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId)
-                )) {
-                partnershipFromApi = partnershipDetails
-            }
-        });
+        // propsData.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
+        //     if (
+        //         (isEqual(partnershipDetails.batter1Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId) &&
+        //             isEqual(partnershipDetails.batter2Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)) ||
+        //         (
+        //             isEqual(partnershipDetails.batter1Id, onPitchPlayers[NON_STRIKE]?.commentaryPlayerId) &&
+        //             isEqual(partnershipDetails.batter2Id, onPitchPlayers[ON_STRIKE]?.commentaryPlayerId)
+        //         )) {
+        //         partnershipFromApi = partnershipDetails
+        //     }
+        // });
+        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive) || {};
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
             if (
                 isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) &&
@@ -1708,13 +1714,13 @@ const Commentary = (props) => {
         overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
         const partnershipData = propsData.commentaryData.commentaryPartnership || []
         let currentBallToUpdate = currentBall.commentaryBallByBallId ? currentBall : _.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined
-        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : !isEmpty(partnershipData)
+        let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : (!isEmpty(partnershipData) && !isEmpty(partnershipFromApi))
             ? [
                 ...partnershipData.filter(
                     obj => obj.batter1Id !== partnershipFromApi.batter1Id ||
                         obj.batter2Id !== partnershipFromApi.batter2Id
                 ),
-                { ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate }
+                { ...partnershipFromApi, "commentaryBallByBallId": currentBallToUpdate?.commentaryBallByBallId }
             ]
             : partnershipData;
         // let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : !isEmpty(partnershipData) ?
@@ -1725,7 +1731,9 @@ const Commentary = (props) => {
             "batter1Name": onPitchPlayers[ON_STRIKE]?.playerName,
             "batter2Id": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
             "batter2Name": onPitchPlayers[NON_STRIKE]?.playerName,
-            "commentaryBallByBallId": currentBallToUpdate?.commentaryBallByBallId || "0"
+            "commentaryBallByBallId": currentBallToUpdate?.commentaryBallByBallId || "0",
+            "order": currentInningsTeams?.[BATTING_TEAM]?.teamWicket + 1 || 1,
+            "isActive": true,
         }
         setTeams(currentInningsTeams)
         setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
@@ -1944,7 +1952,7 @@ const Commentary = (props) => {
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
-                handleCommentaryConsole(_currentOver, currentOver);
+                // handleCommentaryConsole(_currentOver, currentOver);
                 // console.log(`Temporary _over : ${_currentOver?.over}, _ballCount: ${_currentOver?.ballCount}, _teamScore: ${_currentOver?.teamScore} & permanent over : ${currentOver?.over}, ballCount: ${currentOver?.ballCount}, teamScore: ${currentOver?.teamScore}`);
             } else if (
                 currentBall.commentaryBallByBallId && commentaryDataToUpdate.commentaryBallByBallDetails
@@ -1959,7 +1967,8 @@ const Commentary = (props) => {
                 (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId !== 0)))) {
                 const newPartnership = {
                     ...commentaryDataToUpdate.commentaryPartnershipDetails,
-                    "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId)
+                    "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId),
+                    isActive: true,
                 }
                 setCurrentPartnership(newPartnership)
                 setPartnershipHistory([].concat(partnershipHistory || [], [newPartnership]))
@@ -2097,7 +2106,7 @@ const Commentary = (props) => {
             handleWheelShowToggle={handleWheelShowToggle}
             isWheelShow={isWheelShow}
         />
-        {!(inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+        {!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={isWicketChange ? false : () => {

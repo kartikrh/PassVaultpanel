@@ -15,7 +15,6 @@ const CheckBackLayPrice = ({
 
   const formatDateToIST = (date) => {
     const options = {
-      weekday: "short",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -55,7 +54,7 @@ const CheckBackLayPrice = ({
           if (runner?.layPrice) layPrices.add(runner?.layPrice);
         });
       });
-
+      
       // Set the min and max dates
       setStartDate(formatDateToIST(minDate.toISOString()));
       setEndDate(formatDateToIST(maxDate.toISOString()));
@@ -113,7 +112,7 @@ const CheckBackLayPrice = ({
             </div>
             <div className="my-1 d-flex align-items-center justify-content-start">
               <span className="margin-right-10 label-price-width">Price :</span>
-              <input className="form-control" type="text" value={prices.length > 0 ? prices.join(", ") : ""} disabled />
+              <input className="form-control" type="text" value={prices.length > 0 ? prices.join(",") : ""} disabled />
             </div>
             <div className="hstack gap-2 justify-content-end">
               <button

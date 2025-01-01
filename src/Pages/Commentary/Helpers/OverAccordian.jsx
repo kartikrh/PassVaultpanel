@@ -10,6 +10,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
+import { generateBallLabelFromBall } from '../functions';
 
 // Styled components remain the same
 const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -154,11 +155,30 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         if (isWicket) ballType = 'wicket';
         else if (isBoundary) ballType = 'boundary';
         else if (isExtra) ballType = 'extra';
+        // let displayValue = generateBallLabelFromBall(ball.type, isWicket)
+        //         export const BALL_TYPE_OVER_COMPLETE = 0;
+        // export const BALL_TYPE_REGULAR = 1;
+        // export const BALL_TYPE_WIDE = 2;
+        // export const BALL_TYPE_BYE = 3;
+        // export const BALL_TYPE_LEG_BYE = 4;
+        // export const BALL_TYPE_NO_BALL = 5;
+        // export const BALL_TYPE_NO_BALL_BYE = 6;
+        // export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
+        // export const BALL_TYPE_PANELTY_RUN = 8;
+        // export const BALL_TYPE_RETIRED_HURT = 9;
+        // export const BALL_TYPE_BOWLER_RETIRED_HURT = 10;
 
         let displayValue = ball.value;
         if (isWicket) displayValue = 'W';
         if (isExtra && ball.type === 2) displayValue = 'WB';
         if (isExtra && ball.type === 3) displayValue = 'NB';
+        if (isExtra && ball.type === 4) displayValue = 'B';
+        if (isExtra && ball.type === 5) displayValue = 'B';
+        if (isExtra && ball.type === 6) displayValue = 'B';
+        if (isExtra && ball.type === 7) displayValue = 'NLB';
+        if (isExtra && ball.type === 8) displayValue = 'B';
+        if (isExtra && ball.type === 9) displayValue = 'B';
+        if (isExtra && ball.type === 10) displayValue = 'B';
 
         return (
             <BallBox
@@ -168,10 +188,45 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 balltype={ballType}
                 className={isBoundary ? 'boundary' : isWicket ? 'wicket' : ''}
             >
+                {/* {ball.type != 1 ? displayValue} */}
                 {displayValue}
             </BallBox>
         );
     };
+
+    const generateBallfromArray = (ballArray = []) => {
+        return ballArray?.map((element, index) => {
+            const previousValue = ballArray[index - 1]
+            const nextValue = ballArray[index + 1]
+            const isWicket = +element?.isWicket !== 0
+            const isBoundary = +element?.isBoundary !== 0
+            const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
+            const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
+            const ballFontColor = isWicket ? "text-white" : ballTypeAdd ? "text-white" : isBoundary ? "text-white" : "text-muted"
+            const ballValue = ballTypeAdd ?
+                element.value > 0 ?
+                    element.value : ""
+                : element.value
+            if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
+                return null;
+            }
+            let displayValue
+            if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
+                const nextIsWicket = +nextValue?.isWicket !== 0
+                const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
+                const nextBallValue = nextBallTypeAdd ?
+                    nextValue.value > 0 ?
+                        nextValue.value : ""
+                    : nextValue.value
+                displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`
+            } else {
+                displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
+            }
+            return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}>
+                {displayValue}
+            </div>
+        })
+    }
 
     useEffect(() => {
         const handleResize = () => {
@@ -197,6 +252,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         const bowler = getBowlerDetails(overDetails?.bowlerId);
 
         const sortedBalls = [...balls].sort((a, b) => b.overCount - a.overCount);
+
         // const viewportWidth = window.innerWidth;
         return (<>
             {viewportWidth < 578 ?
@@ -237,11 +293,9 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </div>
                     <BallsContainer>
                         <Box display="flex" flexWrap="wrap" gap={0.5} >
-                            {sortedBalls.map((ball, idx) => (
-                                <React.Fragment key={idx}>
-                                    {renderBall(ball)}
-                                </React.Fragment>
-                            ))}
+                            <React.Fragment >
+                                {generateBallfromArray(balls)}
+                            </React.Fragment>
                         </Box>
                     </BallsContainer>
                 </OverContainer>
@@ -267,11 +321,9 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </PlayerInfo>
                     <BallsContainer>
                         <Box display="flex" flexWrap="wrap" gap={0.5}>
-                            {sortedBalls.map((ball, idx) => (
-                                <React.Fragment key={idx}>
-                                    {renderBall(ball)}
-                                </React.Fragment>
-                            ))}
+                            <React.Fragment >
+                                {generateBallfromArray(balls)}
+                            </React.Fragment>
                         </Box>
                     </BallsContainer>
                     <RunsInfo>

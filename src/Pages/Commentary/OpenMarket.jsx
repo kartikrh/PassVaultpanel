@@ -46,6 +46,8 @@ export const OpenMarket = () => {
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
 
+    console.log({ originalMarketData, categorisedData });
+
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
             document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
@@ -570,16 +572,23 @@ export const OpenMarket = () => {
                 dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
-                // Update original values after successful save
+                updatedData.forEach(market => {
+                    if (market.marketTypeCategoryId === 31) {
+                        market.lineDiff = 0;
+                    }
+                });
+
+                const newOriginalData = {};
                 updatedData.forEach(market => {
                     if (market.runner && market.runner.length === 1) {
-                        originalMarketData[market.marketId] = {
+                        newOriginalData[market.marketId] = {
                             line: market.runner[0].line,
                             predefinedValue: market.predefinedValue,
                             playerScore: market.playerScore
                         };
                     }
                 });
+                setOriginalMarketData(newOriginalData);
 
                 setData(prevData =>
                     prevData.map(market => {
@@ -1254,6 +1263,9 @@ export const OpenMarket = () => {
                 handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
                 break;
             case 'z':
+                handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE });
+                break;
+            case 'q':
                 handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" });
                 break;
             default:
@@ -1386,20 +1398,20 @@ export const OpenMarket = () => {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col className="p-0" xs={12} md={6} lg={2}>
-                                        <button className="table-header-button-2 btn btn-color-purple" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{ALL_SUSPEND} (Z)</button>
-                                        <button className="table-header-button-2 btn btn-color-yellow" onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
-                                        <button className="table-header-button-2 btn btn-color-orange" onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE })}>{SUSPEND}</button>
+                                    <Col className="p-0 d-flex align-items-center flex-wrap" xs={12} md={6} lg={6}>
+                                        <button className="table-header-button-2 table-header-button-3 btn btn-color-purple" style={{ width: "150px" }}  onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{ALL_SUSPEND} (Q)</button>
+                                        <button className="table-header-button-2 btn btn-color-yellow" style={{ width: "100px" }}  onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
+                                        <button className="table-header-button-2 btn btn-color-orange" style={{ width: "100px" }}  onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE })}>{SUSPEND} (Z)</button>
                                     </Col>
-                                    <Col className="p-0" xs={12} md={6} lg={2}>
+                                    <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: false })}>{NOT_ALLOW}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={12} md={6} lg={2}>
+                                    <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: true })}>{ACTIVE}</Button>
                                         <Button color="danger" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isActive", value: false })}>{DEACTIVE}</Button>
                                     </Col>
-                                    <Col className="p-0" xs={12} md={6} lg={2}>
+                                    <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={2}>
                                         {isSocketConnected ?
                                             <span className="mx-3 live-css" /> :
                                             <Button color={isAutoUpdate ? "danger" : "primary"} className="table-header-button" onClick={() => setIsAutoUpdate(!isAutoUpdate)}>{isAutoUpdate ? "AE" : "AS"}</Button>

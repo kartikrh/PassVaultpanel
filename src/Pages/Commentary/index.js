@@ -985,21 +985,6 @@ const Index = () => {
       style: { width: "40%" },
     },
     {
-      title: "DLS",
-      dataIndex: "dls",
-      render: (text, record) => (
-        <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            size="sm"
-            className="dls-button btn"
-            onClick={() => { setDlsModalCommentary(record) }}>
-            <i class='bx bx-cloud-light-rain'></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "10%" },
-    },
-    {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
@@ -1251,48 +1236,6 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Set Runner",
-      dataIndex: "setRunner",
-      render: (text, record) => (
-        <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={"warning"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              setRunnerModelVisible(true);
-              setSelectedCommentaryRunner(record);
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <i class='bx bxs-up-arrow-square' ></i>
-          </Button>
-        </Tooltip>
-      ),
-      key: "setRunner",
-      sort: true,
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Team Prediction",
-      key: "isTeamPredictionOn",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
-            }}
-          >
-            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "Created By",
       dataIndex: "createdBy",
       key: "createdBy",
@@ -1348,25 +1291,90 @@ const Index = () => {
               <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
-          <Tooltip
-            title={"Event Market"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"danger"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleEventMarketClick(record)
-              }}
-            >
-              <i class="bx bxs-up-arrow-square"></i>
-            </Button>
-          </Tooltip>
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Event Market",
+      dataIndex: "EventMarket",
+      render: (text, record) => (
+        <Tooltip
+          title={"Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"danger"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleEventMarketClick(record)
+            }}
+          >
+            <i class="bx bxs-up-arrow-square"></i>
+          </Button>
+        </Tooltip>
+      ),
+      key: "EventMarket",
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Set Runner",
+      dataIndex: "setRunner",
+      render: (text, record) => (
+        <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setRunnerModelVisible(true);
+              setSelectedCommentaryRunner(record);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            <i class='bx bxs-up-arrow-square' ></i>
+          </Button>
+        </Tooltip>
+      ),
+      key: "setRunner",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Team Prediction",
+      key: "isTeamPredictionOn",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
+            }}
+          >
+            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "DLS",
+      dataIndex: "dls",
+      render: (text, record) => (
+        <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            size="sm"
+            className="dls-button btn"
+            onClick={() => { setDlsModalCommentary(record) }}>
+            <i class='bx bx-cloud-light-rain'></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "10%" },
     },
   ];
 
@@ -1412,18 +1420,18 @@ const Index = () => {
       title: "Event Snap",
       dataIndex: "eventSnap",
       render: (text, record) => (
-      <Tooltip title={"Event Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-        <Button
-          color={"primary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleCommentaryEventSnapClick(record);
-          }}
-        >
-          <i class='bx bxs-up-arrow-square' ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Event Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"primary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCommentaryEventSnapClick(record);
+            }}
+          >
+            <i class='bx bxs-up-arrow-square' ></i>
+          </Button>
+        </Tooltip>
       ),
       key: "eventSnap",
       sort: true,
@@ -1643,7 +1651,7 @@ const Index = () => {
           {showAwardModel && <AwardSelectionComponent
             commentaryId={showAwardModel}
             onClose={() => { setShowAwardModel(undefined) }} />}
-          {marketTemplateModelVisible && 
+          {marketTemplateModelVisible &&
             <CommentaryMarketTemplateModel
               marketTemplateModelVisible={marketTemplateModelVisible}
               setMarketTemplateModelVisible={setMarketTemplateModelVisible}
