@@ -902,7 +902,7 @@ export const OpenMarket = () => {
                 </>
             ),
             key: "teamName",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
@@ -917,7 +917,7 @@ export const OpenMarket = () => {
                 </span>
             ),
             key: "marketId",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
@@ -937,7 +937,7 @@ export const OpenMarket = () => {
                 </select>
             ),
             key: "status",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
@@ -945,7 +945,7 @@ export const OpenMarket = () => {
             dataIndex: "line",
             render: (text, record) => (
                 <CustomInput
-                    className="form-control small-text-fields input-line-field"
+                    className="form-control small-text-fields input-line-field text-bold"
                     value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
                     onChange={(newValue) => {
                         handleValueChange(record, "line", parseFloat(newValue))
@@ -954,7 +954,7 @@ export const OpenMarket = () => {
                 />
             ),
             key: "line",
-            className: "p-0 input-line-field",
+            className: "py-0 input-line-field",
             columnClassName: "p-1"
         },
         {
@@ -992,28 +992,36 @@ export const OpenMarket = () => {
                 );
             },
             key: "lineVal",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
-            title: "R-Rate",
+            title: "RR",
             render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2)}`}</span>),
             key: "inningsId",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
             title: "R-No",
             dataIndex: "layPrice",
             render: (text, record) => (
+                <>
                 <CustomInput
-                    className="form-control small-text-fields input-no-field"
+                    className="form-control price-text-fields input-no-field text-bold"
                     value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                 />
+                <CustomInput
+                    className="form-control size-text-fields input-no-field mt-1"
+                    value={record?.laySize === null ? "" : record?.laySize}
+                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
+                    steps={5}
+                />
+                </>
             ),
             key: "layPrice",
-            className: "p-0 input-no-field",
+            className: "py-0 input-no-field",
             columnClassName: "p-1"
 
         },
@@ -1021,19 +1029,27 @@ export const OpenMarket = () => {
             title: "R-Yes",
             dataIndex: "backPrice",
             render: (text, record) => (
+                <>
                 <CustomInput
-                    className="form-control small-text-fields input-yes-field"
+                    className="form-control price-text-fields input-yes-field text-bold"
                     value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                 />
+                <CustomInput
+                    className="form-control size-text-fields input-yes-field mt-1"
+                    value={record?.backSize === null ? "" : record?.backSize}
+                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
+                    steps={5}
+                />
+                </>
             ),
             key: "backPrice",
-            className: "p-0 input-yes-field",
+            className: "py-0 input-yes-field",
             columnClassName: "p-1"
 
         },
         {
-            title: "Active",
+            title: "A",
             dataIndex: "isActive",
             render: (text, record) => (
                 <Button
@@ -1048,12 +1064,12 @@ export const OpenMarket = () => {
                 </Button>
             ),
             key: "isActive",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1",
             style: { width: "2%", textAlign: "center" },
         },
         {
-            title: "Allow",
+            title: "B",
             dataIndex: "isAllow",
             render: (text, record) => (
                 <Button
@@ -1068,12 +1084,12 @@ export const OpenMarket = () => {
                 </Button>
             ),
             key: "isAllow",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1",
             style: { width: "2%", textAlign: "center" },
         },
         {
-            title: "Send",
+            title: "S",
             dataIndex: "isSendData",
             render: (text, record) => (
                 <Button
@@ -1088,7 +1104,7 @@ export const OpenMarket = () => {
                 </Button>
             ),
             style: { width: "2%", textAlign: "center" },
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1",
         },
         {
@@ -1105,7 +1121,7 @@ export const OpenMarket = () => {
                 />
             ),
             key: "underRate",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
@@ -1114,8 +1130,44 @@ export const OpenMarket = () => {
                 <Button color="primary" className="small-button" onClick={() => updateRecords(record)}>Save</Button>
             ),
             key: "isSendData",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
+        },
+        {
+            title: "R-Diff",
+            dataIndex: "rateDiff",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={text === null ? "" : text}
+                    onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
+                />
+            ),
+            key: "rateDiff",
+            className: "py-0",
+            columnClassName: "p-1"
+        },
+        {
+            title: "PR",
+            dataIndex: "predefinedValue",
+            render: (text, record) => {
+                // Only show for single runner markets
+                if (record.runner && record.runner.length === 1) {
+                    return (
+                        <CustomInput
+                            className="form-control small-text-fields text-bold"
+                            value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
+                            onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
+                            inputProps={{ step: "0.1" }}
+                        />
+                    );
+                }
+                return null;
+            },
+            key: "predefinedValue",
+            className: "py-0",
+            columnClassName: "p-1",
+            hidden: true
         },
         {
             title: "Margin",
@@ -1128,7 +1180,7 @@ export const OpenMarket = () => {
                 />
             ),
             key: "margin",
-            className: "p-0",
+            className: "py-0",
             columnClassName: "p-1"
         },
         {
@@ -1142,7 +1194,7 @@ export const OpenMarket = () => {
                 />
             ),
             key: "underRate",
-            className: "p-0 input-under-field",
+            className: "py-0 input-under-field",
             columnClassName: "p-1"
 
         },
@@ -1157,76 +1209,9 @@ export const OpenMarket = () => {
                 />
             ),
             key: "overRate",
-            className: "p-0 input-over-field",
-            columnClassName: "p-1"
-
-        },
-        {
-            title: "P-No",
-            dataIndex: "laySize",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-no-field"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
-                />
-            ),
-            key: "laySize",
-            className: "p-0 input-no-field",
-            columnClassName: "p-1"
-
-        },
-        {
-            title: "P-Yes",
-            dataIndex: "backSize",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-yes-field"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
-                />
-            ),
-            key: "backSize",
-            className: "p-0 input-yes-field",
-            columnClassName: "p-1"
-
-        },
-        {
-            title: "Rate Diff",
-            dataIndex: "rateDiff",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
-                />
-            ),
-            key: "rateDiff",
-            className: "p-0",
+            className: "py-0 input-over-field",
             columnClassName: "p-1"
         },
-        {
-            title: "Pre",
-            dataIndex: "predefinedValue",
-            render: (text, record) => {
-                // Only show for single runner markets
-                if (record.runner && record.runner.length === 1) {
-                    return (
-                        <CustomInput
-                            className="form-control small-text-fields"
-                            value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
-                            onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
-                            inputProps={{ step: "0.1" }}
-                        />
-                    );
-                }
-                return null;
-            },
-            key: "predefinedValue",
-            className: "p-0",
-            columnClassName: "p-1",
-            hidden: true
-        }
     ];
 
     const lineRatioField = <>

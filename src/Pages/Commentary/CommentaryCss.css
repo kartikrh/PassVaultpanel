@@ -250,6 +250,20 @@
     font-size: 12px !important;
 }
 
+.price-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 3.5rem !important;
+    line-height: 26px !important;
+    font-size: 14px !important;
+}
+
+.size-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 3.5rem !important;
+    line-height: 26px !important;
+    font-size: 11px !important;
+}
+
 .medium-text-fields {
     padding: 0 0.3rem !important;
     min-width: 8.5rem !important;
@@ -365,6 +379,9 @@
     color: #294503 !important;
 }
 
+.text-bold {
+  font-weight: 600 !important;
+}
 
 .ball-by-ball-display {
     padding: 8px 0;
@@ -526,7 +543,7 @@
 }
 
 .open-market-table-class {
-    padding: 0 1rem !important;
+    padding: 0 0 !important;
 }
 
 .color-light-grey {
