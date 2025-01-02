@@ -1006,11 +1006,18 @@ export const OpenMarket = () => {
             title: "R-No",
             dataIndex: "layPrice",
             render: (text, record) => (
+                <>
                 <CustomInput
                     className="form-control small-text-fields input-no-field text-bold"
                     value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                 />
+                <CustomInput
+                    className="form-control small-text-fields input-no-field mt-1"
+                    value={record?.laySize === null ? "" : record?.laySize}
+                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
+                />
+                </>
             ),
             key: "layPrice",
             className: "py-0 input-no-field",
@@ -1021,11 +1028,18 @@ export const OpenMarket = () => {
             title: "R-Yes",
             dataIndex: "backPrice",
             render: (text, record) => (
+                <>
                 <CustomInput
                     className="form-control small-text-fields input-yes-field text-bold"
                     value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                 />
+                <CustomInput
+                    className="form-control small-text-fields input-yes-field mt-1"
+                    value={record?.backSize === null ? "" : record?.backSize}
+                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
+                />
+                </>
             ),
             key: "backPrice",
             className: "py-0 input-yes-field",
@@ -1116,36 +1130,6 @@ export const OpenMarket = () => {
             key: "isSendData",
             className: "py-0",
             columnClassName: "p-1"
-        },
-        {
-            title: "P-No",
-            dataIndex: "laySize",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-no-field"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
-                />
-            ),
-            key: "laySize",
-            className: "py-0 input-no-field",
-            columnClassName: "p-1"
-
-        },
-        {
-            title: "P-Yes",
-            dataIndex: "backSize",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields input-yes-field"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
-                />
-            ),
-            key: "backSize",
-            className: "py-0 input-yes-field",
-            columnClassName: "p-1"
-
         },
         {
             title: "R-Diff",
