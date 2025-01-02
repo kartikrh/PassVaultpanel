@@ -940,7 +940,7 @@ const Commentary = (props) => {
                 "batter1Name": updatedOnPitchPlayer[ON_STRIKE]?.playerName,
                 "batter2Id": updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId,
                 "batter2Name": updatedOnPitchPlayer[NON_STRIKE]?.playerName,
-                "order": currentPartnership.order + 1,
+                "order": teams?.[BATTING_TEAM]?.teamWicket + 1,
                 "isActive": true,
                 "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
 
@@ -1613,7 +1613,7 @@ const Commentary = (props) => {
             "batter2Runs": 0,
             "batter1Balls": 0,
             "batter2Balls": 0,
-            "order": currentPartnership?.order + 1,
+            "order": teams?.[BATTING_TEAM]?.teamWicket + 1,
             "isActive": true,
         }
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })

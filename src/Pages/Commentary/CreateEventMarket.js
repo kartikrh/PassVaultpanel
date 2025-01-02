@@ -329,6 +329,7 @@ export const CreateEventMarket = () => {
                                 ...runner,
                                 line: newLine,
                                 ...generateRunnerValues(
+                                    market,
                                     { ...runner, line: newLine },
                                     market.margin,
                                     market.rateDiff
@@ -815,6 +816,7 @@ export const CreateEventMarket = () => {
                         updatedMarket.runners[runnerIndex] = {
                             ...updatedMarket.runners[runnerIndex],
                             ...generateRunnerValues(
+                                updatedMarket,
                                 { ...updatedMarket.runners[runnerIndex], line: newValue },
                                 updatedMarket.margin,
                                 updatedMarket.rateDiff
@@ -845,6 +847,7 @@ export const CreateEventMarket = () => {
                             predefinedValue: newValue,
                             line: newLineValue,
                             ...generateRunnerValues(
+                                updatedMarket,
                                 { ...updatedMarket.runners[runnerIndex], line: newLineValue },
                                 updatedMarket.margin,
                                 updatedMarket.rateDiff
@@ -873,6 +876,7 @@ export const CreateEventMarket = () => {
                             ...updatedMarket.runners[runnerIndex],
                             line: newValue,
                             ...generateRunnerValues(
+                                updatedMarket,
                                 { ...updatedMarket.runners[runnerIndex], line: newValue },
                                 updatedMarket.margin,
                                 updatedMarket.rateDiff
@@ -882,6 +886,7 @@ export const CreateEventMarket = () => {
                         updatedMarket.runners[runnerIndex] = {
                             ...updatedMarket.runners[runnerIndex],
                             ...generateRunnerValues(
+                                updatedMarket,
                                 { ...updatedMarket.runners[runnerIndex], line: newValue },
                                 updatedMarket.margin,
                                 updatedMarket.rateDiff
@@ -934,8 +939,8 @@ export const CreateEventMarket = () => {
     };
 
     // Helper function to generate runner values based on line
-    const generateRunnerValues = (runner, margin, rateDiff) => {
-        const isFancyOrLineMarket = runner.marketTypeId === marketTypeObj?.Fancy || runner.marketTypeId === marketTypeObj?.LineMarket;
+    const generateRunnerValues = (market, runner, margin, rateDiff) => {
+        const isFancyOrLineMarket = !market?.isPredefineRunnerValue && (market?.marketTypeId == marketTypeObj?.Fancy || market?.marketTypeId == marketTypeObj?.LineMarket);
 
         if (isFancyOrLineMarket) {
             return generateOverUnderLineMarketFancy({ ...runner, margin, rateDiff });
