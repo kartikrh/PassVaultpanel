@@ -369,9 +369,12 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
             </ModalBody>
             <ModalFooter className="wicket-modal-footer">
                 {currentStep === 1 ? (
-                    <Button color="success" className="wicket-modal-next-btn" onClick={handleNext}>
-                        Next
-                    </Button>
+                    <div>
+                      <Button color="success" className="wicket-modal-next-btn" onClick={handleNext}>
+                          Next
+                      </Button>
+                      <Button color="light" className="decision-Button mx-2" onClick={() => toggle()}>Close</Button>
+                    </div>
                 ) : (
                     <div className="wicket-modal-actions">
                         <Button color="secondary" className="wicket-modal-back-btn" onClick={handleBack}>
