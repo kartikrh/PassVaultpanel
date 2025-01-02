@@ -8,7 +8,7 @@ export const ListingElement = ({ columns, dataSource = [], tableElement, tableEx
     return (
         <Row>
             <Col lg={12}>
-                <Card>
+                <Card className="mb-0">
                     <CardBody className={tableClassName}>
                         {dataSource.length > 0 ? <div id="customerList">
                             {!hideHeader &&

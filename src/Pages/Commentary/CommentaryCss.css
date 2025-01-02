@@ -363,6 +363,9 @@
     color: #294503 !important;
 }
 
+.text-bold {
+  font-weight: 600 !important;
+}
 
 .ball-by-ball-display {
     padding: 8px 0;
@@ -524,7 +527,7 @@
 }
 
 .open-market-table-class {
-    padding: 0 1rem !important;
+    padding: 0 0 !important;
 }
 
 .color-light-grey {
