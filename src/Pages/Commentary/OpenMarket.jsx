@@ -1008,12 +1008,12 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <>
                 <CustomInput
-                    className="form-control small-text-fields input-no-field text-bold"
+                    className="form-control price-text-fields input-no-field text-bold"
                     value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                 />
                 <CustomInput
-                    className="form-control small-text-fields input-no-field mt-1"
+                    className="form-control size-text-fields input-no-field mt-1"
                     value={record?.laySize === null ? "" : record?.laySize}
                     onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                 />
@@ -1030,12 +1030,12 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <>
                 <CustomInput
-                    className="form-control small-text-fields input-yes-field text-bold"
+                    className="form-control price-text-fields input-yes-field text-bold"
                     value={text === null ? "" : text}
                     onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                 />
                 <CustomInput
-                    className="form-control small-text-fields input-yes-field mt-1"
+                    className="form-control size-text-fields input-yes-field mt-1"
                     value={record?.backSize === null ? "" : record?.backSize}
                     onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                 />
