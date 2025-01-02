@@ -259,6 +259,11 @@ const Commentary = (props) => {
             }
             setRedirectOnScreenChange(true)
         }
+        const partnershipDetails = {
+            ...currentPartnership,
+            "isActive": false,
+        }
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
@@ -266,6 +271,7 @@ const Commentary = (props) => {
                 ...commentaryUpdates
             },
             "commentaryTeams": teamUpdates,
+            "commentaryPartnership": updatedPartnership,
             "commentaryPlayers": setAllPlayerToNull(),
             "isEndInnings": true
         }
