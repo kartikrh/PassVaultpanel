@@ -98,7 +98,7 @@ const Commentary = (props) => {
         superOverApiData, error
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
-    console.log({ "partnership4s": currentPartnership.totalFour, "partnership6s": currentPartnership.totalSix });
+    // console.log({ "partnership4s": currentPartnership.totalFour, "partnership6s": currentPartnership.totalSix });
 
     // const handleCommentaryConsole = async (temp, main) => {
     //     const currentState = {
@@ -779,14 +779,40 @@ const Commentary = (props) => {
 
     }
     const handleMissingPlayerChange = (playerType, player) => {
+        const order = props.data.commentaryData.commentaryTeams.filter((t) => t.teamBattingOrder === 1)
+        const commentaryDetailsobj = props.data.commentaryData.commentaryDetails
+        const onPitchPlayersobj = {...onPitchPlayers, [playerType]: player }
         const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true } }
-        const objToSave = {
-            "commentaryId": commentaryDetails.commentaryId,
-            "commentaryDetails": {
-                ...commentaryDetails,
-                "displayStatus": "Player Changed"
-            },
-            "commentaryPlayers": Object.values(updatedOnPitchPlyer),
+        const partnershipDetails = {
+            "batter1Id": onPitchPlayersobj[ON_STRIKE]?.commentaryPlayerId,
+            "batter1Name": onPitchPlayersobj[ON_STRIKE]?.playerName,
+            "batter2Id": onPitchPlayersobj[NON_STRIKE]?.commentaryPlayerId,
+            "batter2Name": onPitchPlayersobj[NON_STRIKE]?.playerName,
+            "order": order[0].teamWicket + 1,
+            "isActive": true,
+            "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
+        }
+        const updatedPartnership = generatePartnership({ commentaryDetails: commentaryDetailsobj, currentPartnership: partnershipDetails, teams })
+        let objToSave = {}
+        if(isEmpty(currentPartnership)){
+            objToSave = {
+                "commentaryId": commentaryDetails.commentaryId,
+                "commentaryDetails": {
+                    ...commentaryDetails,
+                    "displayStatus": "Player Changed"
+                },
+                "commentaryPartnership": updatedPartnership,
+                "commentaryPlayers": Object.values(updatedOnPitchPlyer),
+            }
+        }else{
+            objToSave = {
+                "commentaryId": commentaryDetails.commentaryId,
+                "commentaryDetails": {
+                    ...commentaryDetails,
+                    "displayStatus": "Player Changed"
+                },
+                "commentaryPlayers": Object.values(updatedOnPitchPlyer),
+            }
         }
         if (playerType === CURRENT_BOWLER) {
             if (!currentOver || currentOver.isComplete) {
@@ -1754,7 +1780,7 @@ const Commentary = (props) => {
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
-        if (isEmpty(partnershipFromApi) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
+       if (isEmpty(partnershipFromApi) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams })
         if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
