@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader, Table } from 'reactstrap';
+import ball from '../../../../src/assets/images/cricket-icons/cricket-ball.png';
+import bat from '../../../../src/assets/images/cricket-icons/cricket-bat.png';
+import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png';
+import keeper from '../../../../src/assets/images/cricket-icons/game.png';
 
 const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
+    console.log("playerList", playerList)
 
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
@@ -29,6 +34,38 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
             }, 150);
         }
     }, [isOpen]);
+
+    const playerTypeOrder = {
+        "BatsMan": 1,
+        "Wicketkeeper": 2,
+        "AllRounder": 3,
+        "Bowler": 4
+    };
+    
+    // Sort by player type first, then player name alphabetically
+    let sortedPlayers = playerList.sort((a, b) => {
+        // First, compare by playerType
+        const typeCompare = playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
+        if (typeCompare !== 0) return typeCompare;
+    
+        // If playerType is the same, compare alphabetically by playerName
+        return a.playerName.localeCompare(b.playerName);
+    });
+    sortedPlayers = sortedPlayers.filter((player) => player.isInPlayingEleven)
+
+    const imageRender = (playerType) => {
+        if (playerType === "BatsMan") {
+            return <img src={bat} alt="bat" style={{ width: "20px", height: "20px" }} />
+        } else if (playerType === "Wicketkeeper") {
+            return <img src={keeper} alt="keeper" style={{ width: "20px", height: "20px" }} />
+        }
+        else if (playerType === "AllRounder") {
+            return <img src={allrounder} alt="allrounder" style={{ width: "20px", height: "20px" }} />
+        } else {
+            return <img src={ball} alt="ball" style={{ width: "20px", height: "20px" }} />
+        }
+    }
+
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
             <ModalHeader>
@@ -47,8 +84,8 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                         />
                     </thead>
                     <tbody>
-                        {players?.map(value => <tr key={value.commentaryPlayerId}>
-                            <td role='button' onClick={() => selectPlayer(value.commentaryPlayerId)} >{value.playerName}</td>
+                        {sortedPlayers?.map(value => <tr key={value.commentaryPlayerId}>
+                            <td role='button' onClick={() => selectPlayer(value.commentaryPlayerId)}><span className='pe-4'>{imageRender(value.playerType)}</span>{value.playerName}</td>
                         </tr>)}
                     </tbody>
                 </Table>
