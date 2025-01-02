@@ -1016,6 +1016,7 @@ export const OpenMarket = () => {
                     className="form-control size-text-fields input-no-field mt-1"
                     value={record?.laySize === null ? "" : record?.laySize}
                     onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
+                    steps={5}
                 />
                 </>
             ),
@@ -1038,6 +1039,7 @@ export const OpenMarket = () => {
                     className="form-control size-text-fields input-yes-field mt-1"
                     value={record?.backSize === null ? "" : record?.backSize}
                     onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
+                    steps={5}
                 />
                 </>
             ),
