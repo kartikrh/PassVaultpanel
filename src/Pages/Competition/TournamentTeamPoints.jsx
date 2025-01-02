@@ -245,6 +245,37 @@ const TournamentTeamPoints = () => {
     }
   };
 
+  const handleRecalculator = async () => {
+    const selectedTeamIds = tournamentData && tournamentData?.map(item => item?.teamId);
+
+    const payload = {
+      competitionId: competitionId,
+      teamId: selectedTeamIds || [],
+    };
+    
+    try {
+      const response = await axiosInstance.post("/admin/tournamentTeamPoints/recalculation", payload);
+      if (response?.result) {
+        dispatch(
+          updateToastData({
+            data: "Tournament Team Points recalculated successfully",
+            title: "Success",
+            type: SUCCESS,
+          })
+        );
+        fetchTournament(competitionId);
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  }
+
   const columns = [
     {
       title: "Team",
@@ -554,14 +585,23 @@ const TournamentTeamPoints = () => {
                       options={teamOptions}
                     />
                   </Col>
-                  <Col md={2}>
+                  <Col md={1}>
                     <Button
                       color="primary"
-                      className="btn mx-2"
+                      className="btn"
                       onClick={handleSave}
                     >
                       {" "}
                       Save{" "}
+                    </Button>
+                  </Col>
+                  <Col md={2}>
+                    <Button
+                      color="warning"
+                      className="btn"
+                      onClick={handleRecalculator}
+                    >
+                      Re-Calculate
                     </Button>
                   </Col>
                 </Row>
