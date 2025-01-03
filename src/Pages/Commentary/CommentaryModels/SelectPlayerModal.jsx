@@ -43,7 +43,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     };
     
     // Sort by player type first, then player name alphabetically
-    let sortedPlayers = playerList.sort((a, b) => {
+    let sortedPlayers = playerList?.sort((a, b) => {
         // First, compare by playerType
         const typeCompare = playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
         if (typeCompare !== 0) return typeCompare;
@@ -51,7 +51,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
         // If playerType is the same, compare alphabetically by playerName
         return a.playerName.localeCompare(b.playerName);
     });
-    sortedPlayers = sortedPlayers.filter((player) => player.isInPlayingEleven)
+    sortedPlayers = sortedPlayers?.filter((player) => player.isInPlayingEleven)
 
     const imageRender = (playerType) => {
         if (playerType === "BatsMan") {
