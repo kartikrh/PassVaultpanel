@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from "reactstrap";
 import "./CustomInput.css";
 
-const CustomInput = ({ value, onChange, ...rest }) => {
+const CustomInput = ({ value, onChange, steps, ...rest }) => {
   const handleChange = (e) => {
     const inputValue = e.target.value;
     if (inputValue === "") {
@@ -18,13 +18,13 @@ const CustomInput = ({ value, onChange, ...rest }) => {
   };
 
   const handleIncrement = () => {
-    const newValue = +value + 1;
+    const newValue = +value + (steps || 1);
     onChange(Math.max(newValue.toFixed(2)));
   };
 
   const handleDecrement = () => {
     if (value !== null && value > 0) {
-      const newValue = +value - 1;
+      const newValue = +value - (steps || 1);
       onChange(Math.max(newValue.toFixed(2), 0));
     }
   };
@@ -44,7 +44,7 @@ const CustomInput = ({ value, onChange, ...rest }) => {
       <Input
         className="form-control small-text-fields"
         type="number"
-        step={1}
+        step={steps || 1}
         min={0}
         value={value}
         onChange={handleChange}

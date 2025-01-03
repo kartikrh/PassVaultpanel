@@ -43,7 +43,7 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
       setCloneValues({});
     }
     return (
-    <Modal isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
+    <Modal backdrop="static" isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
     <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">

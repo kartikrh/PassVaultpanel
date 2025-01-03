@@ -250,6 +250,20 @@
     font-size: 12px !important;
 }
 
+.price-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 3.5rem !important;
+    line-height: 26px !important;
+    font-size: 14px !important;
+}
+
+.size-text-fields {
+    padding: 0 0.3rem !important;
+    min-width: 3.5rem !important;
+    line-height: 26px !important;
+    font-size: 11px !important;
+}
+
 .medium-text-fields {
     padding: 0 0.3rem !important;
     min-width: 8.5rem !important;
@@ -301,7 +315,8 @@
     .table-header-button-2 {
         width: 48% !important;
     }
-    .table-header-button-2.table-header-button-3{
+
+    .table-header-button-2.table-header-button-3 {
         width: 100% !important;
     }
 }
@@ -319,6 +334,7 @@
     font-weight: 500;
     border-color: #60400b !important;
 }
+
 .btn-color-purple {
     color: #8000ffe2 !important;
     background-color: #c089f7a4 !important;
@@ -363,6 +379,9 @@
     color: #294503 !important;
 }
 
+.text-bold {
+  font-weight: 600 !important;
+}
 
 .ball-by-ball-display {
     padding: 8px 0;
@@ -524,7 +543,7 @@
 }
 
 .open-market-table-class {
-    padding: 0 1rem !important;
+    padding: 0 0 !important;
 }
 
 .color-light-grey {
@@ -1061,43 +1080,52 @@
     /* padding: 1rem; */
 }
 
-.overs-accordion{
+.overs-accordion {
     font-family: "Work Sans", sans-serif !important;
 }
 
- .css-lhsbas-MuiTypography-root .css-1wle3ir-MuiTypography-root .css-5neixw-MuiTypography-root.css-1ypmsg6-MuiTypography-root{
+.css-lhsbas-MuiTypography-root .css-1wle3ir-MuiTypography-root .css-5neixw-MuiTypography-root.css-1ypmsg6-MuiTypography-root {
     font-family: "Work Sans", sans-serif !important;
-} 
+}
 
 @media (max-width: 575.98px) {
     .first-player-name {
         font-size: 10px !important;
     }
-    .table-responsive{
-        overflow-x: hidden!important;
+
+    .table-responsive {
+        overflow-x: hidden !important;
     }
+
     .first-player-stats {
         font-size: 10px !important;
     }
+
     .remaining-card-body {
         padding: 0px !important;
     }
+
     .first-card-header {
         font-size: 14px !important;
         padding: 0.4rem;
     }
-    .first-total-runs{
+
+    .first-total-runs {
         font-size: 16px !important;
     }
-    .first-total-balls-span{
+
+    .first-total-balls-span {
         font-size: 12px !important;
     }
-    .first-total-balls{
+
+    .first-total-balls {
         font-size: 8px !important;
     }
-    .first-partnership-extras{
+
+    .first-partnership-extras {
         font-size: 10px !important;
     }
+
     .scoring-row {
         margin: 0px !important;
         padding: 0px !important;
@@ -1107,6 +1135,7 @@
         padding: 0px;
         margin: 0px;
     }
+
     .first-player-image {
         width: 40px;
         height: 40px;
@@ -1114,7 +1143,8 @@
         margin-bottom: 0px !important;
         object-fit: cover;
     }
-    .first-card-body{
+
+    .first-card-body {
         padding: 10px 0px !important;
     }
 
@@ -1126,19 +1156,23 @@
         text-align: center;
         padding: 0.5rem;
     }
-    .remaining-card-player-section{
+
+    .remaining-card-player-section {
         display: flex;
         justify-content: center;
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
-    .remaining-player-name{
+
+    .remaining-player-name {
         font-size: 10px !important;
     }
-    .remaining-total-balls{
+
+    .remaining-total-balls {
         font-size: 8px !important;
     }
+
     .remaining-player-image {
         width: 30px;
         height: 30px;
@@ -1151,24 +1185,28 @@
         flex-direction: column;
         align-items: center;
     }
-    .remaining-player-stats{
+
+    .remaining-player-stats {
         font-size: 8px !important;
     }
 
-    .circle-display{
+    .circle-display {
         display: none;
     }
-    .wicket-card-title{
+
+    .wicket-card-title {
         font-size: 10px !important;
     }
+
     .card-body {
         /* flex: 1 1 auto; */
         padding: 4px 6px !important;
     }
+
     .card {
         margin-bottom: 8px !important;
         display: flex !important;
-        justify-content: start!important;
+        justify-content: start !important;
     }
 }
 
@@ -1210,4 +1248,20 @@
     left: 0;
     cursor: crosshair;
     border-radius: 100%;
+}
+
+.playerNameScroll {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    scrollbar-width: none !important;
+}
+
+.playerNameScroll:hover {
+    cursor: pointer;
+}
+
+.playerNameScroll::-webkit-scrollbar {
+    display: none;
+    /* For Chrome, Safari, and newer Edge versions */
 }

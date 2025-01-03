@@ -8,6 +8,10 @@ import { ERROR } from '../../components/Common/Const';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import "./CommentaryCss.css";
 import { isEmpty } from 'lodash';
+import ball from '../../../src/assets/images/cricket-icons/cricket-ball.png';
+import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
+import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
+import keeper from '../../../src/assets/images/cricket-icons/game.png';
 
 const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
@@ -20,14 +24,14 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
 
     useEffect(() => {
         if (inningPlayers && teamDetails?.teamPlayers) {
-            const teamPlayers = inningPlayers.filter((item)=>item?.playerId !== null && item?.playerName !== null);
+            const teamPlayers = inningPlayers.filter((item) => item?.playerId !== null && item?.playerName !== null);
             setCommentaryTeamPlayers(teamPlayers);
             const selectedIds = teamPlayers.map(player => player.playerId)
             const dropdownValues = teamDetails?.teamPlayers.filter(player => !selectedIds.includes(player.playerId));
             setNonCommentaryTeamPlayers(dropdownValues)
         }
     }, [teamDetails]);
-    
+
     const handleAddPlayer = async () => {
         const playerIndex = nonCommentaryTeamPlayers.findIndex(player => player.playerId === selectedPlayer?.value)
         if (playerIndex !== -1) {
@@ -35,6 +39,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
             await axiosInstance
                 .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: inningPlayers?.[0]?.currentInnings })
                 .then((response) => {
+                    console.log("response", response)
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                     setSelectedPlayer(undefined);
@@ -65,15 +70,18 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
     //             });
     //     }
     // }
+    console.log("nonCommentaryTeamPlayers", nonCommentaryTeamPlayers)
 
     const handleReloadTeam = async () => {
         setIsLoading(true);
         await axiosInstance
             .post("/admin/commentary/loadTeamPlayer", { teamId: teamDetails?.teamId })
             .then((response) => {
+                console.log("response", response)
                 if (response?.result) {
                     const teamPlayers = response?.result;
                     const selectedIds = commentaryTeamPlayers.map(player => player.playerId);
+                    console.log("selectedIds", selectedIds)
                     setNonCommentaryTeamPlayers(teamPlayers.filter(player => !selectedIds.includes(player.playerId)));
                     setSelectedPlayer(undefined);
                 }
@@ -99,12 +107,12 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                 if (!boundary) {
                     boundary = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.boundary || 0
                 }
-                if(!playerBallFaced) {
+                if (!playerBallFaced) {
                     playerBallFaced = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.playerBallFaced || 0
                 }
                 isInPlayingEleven = Object.keys(updatedPlayingXiPlayer).includes(commentaryPlayerId) ? isInPlayingEleven :
                     commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.isInPlayingEleven || false
-                return { commentaryId, teamId: teamDetails?.teamId, playerId , batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings };
+                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings };
             });
             await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
             fetchData(commentaryId);
@@ -191,60 +199,93 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
             setUpdatedPlayingXi(tempTeamXiPlayers)
         }
     }, [commentaryTeamPlayers])
+    console.log("commentaryTeamPlayers", commentaryTeamPlayers)
+
+    const playerTypeOrder = {
+        BatsMan: 1,
+        Wicketkeeper: 2,
+        AllRounder: 3,
+        Bowler: 4,
+    };
+
+    const imageRender = (playerType) => {
+        if (playerType === "BatsMan") {
+            return <img src={bat} alt="bat" style={{ width: "20px", height: "20px" }} />
+        } else if (playerType === "Wicketkeeper") {
+            return <img src={keeper} alt="keeper" style={{ width: "20px", height: "20px" }} />
+        }
+        else if (playerType === "AllRounder") {
+            return <img src={allrounder} alt="allrounder" style={{ width: "20px", height: "20px" }} />
+        } else {
+            return <img src={ball} alt="ball" style={{ width: "20px", height: "20px" }} />
+        }
+    }
+
+    const sortedData = commentaryTeamPlayers.sort((a, b) => {
+        // Compare by playerType using the defined order
+        const typeComparison = playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
+        if (typeComparison !== 0) return typeComparison;
+
+        // If playerType is the same, compare by playerName alphabetically
+        return a.playerName.localeCompare(b.playerName);
+    });
+
+
+    // console.log("commentaryTeamPlayers?.sort((a,b)=>a.commentaryPlayerId - b.commentaryPlayerId)", commentaryTeamPlayers?.sort((a,b)=>a.commentaryPlayerId - b.commentaryPlayerId))
     return (
         <>
-                {isLoading && <SpinnerModel />}
-                <Row>
-                    <Col lg={8} className="my-1">
-                        <Select
-                            class="form-control"
-                            value={selectedPlayer || ""}
-                            onChange={(value) => {
-                                setSelectedPlayer(value);
-                            }}
-                            options={nonCommentaryTeamPlayers.map(player => ({
-                                label: player?.playerName,
-                                value: player?.playerId,
-                            }))}
-                        />
-                    </Col>
-                    <Col id="addreloadicon" lg={4} className="my-1 d-flex justify-content-around">
-                        <Button
-                            color="success"
-                            className="btn-sm px-3"
-                            id="create-btn"
-                            onClick={handleAddPlayer}
-                        >
-                            <i className="ri-add-line" style={{ width: "30px" }} ></i>
-                        </Button>
-                        <div className="mx-1"></div>
-                        <Button
-                            color="primary"
-                            className="btn-sm px-3"
-                            onClick={handleReloadTeam}
-                        >
-                            <i class="ri-refresh-line"></i>
-                        </Button>
-                    </Col>
-                </Row>
-                <Row className="rounded py-3">
-                    <div class="row d-flex align-items-center my-2 ">
+            {isLoading && <SpinnerModel />}
+            <Row>
+                <Col lg={8} className="my-1">
+                    <Select
+                        class="form-control"
+                        value={selectedPlayer || ""}
+                        onChange={(value) => {
+                            setSelectedPlayer(value);
+                        }}
+                        options={nonCommentaryTeamPlayers.map(player => ({
+                            label: player?.playerName,
+                            value: player?.playerId,
+                        }))}
+                    />
+                </Col>
+                <Col id="addreloadicon" lg={4} className="my-1 d-flex justify-content-around">
+                    <Button
+                        color="success"
+                        className="btn-sm px-3"
+                        id="create-btn"
+                        onClick={handleAddPlayer}
+                    >
+                        <i className="ri-add-line" style={{ width: "30px" }} ></i>
+                    </Button>
+                    <div className="mx-1"></div>
+                    <Button
+                        color="primary"
+                        className="btn-sm px-3"
+                        onClick={handleReloadTeam}
+                    >
+                        <i class="ri-refresh-line"></i>
+                    </Button>
+                </Col>
+            </Row>
+            <Row className="rounded py-3">
+                <div class="row d-flex align-items-center my-2 ">
                     {/* <div className="col-2"></div> Remove Pls Add After if you want to set Remove Delete Players*/}
-                        <div class="col-12 ps-4">
-                            <div className="row">
-                                <div className="col-3">Player</div>
-                                <div className="col-2">Avg</div>
-                                <div className="col-2">SR</div>
-                                <div className="col-2">BDRY</div>
-                                <div className="col-2">PBF</div>
-                                <div className="col-1">XI</div>
-
-                            </div>
+                    <div class="col-12 ps-4">
+                        <div className="row">
+                            <div className="col-1"></div>
+                            <div className="col-3">Player</div>
+                            <div className="col-2">Avg</div>
+                            <div className="col-1">SR</div>
+                            <div className="col-2">BDRY</div>
+                            <div className="col-2">PBF</div>
+                            <div className="col-1">XI</div>
                         </div>
                     </div>
-                    {commentaryTeamPlayers?.sort((a,b)=>a.commentaryPlayerId - b.commentaryPlayerId)?.map((player, index) => (
-                        <div key={index} class="row d-flex align-items-center my-2 ">
-                            {/* <div class="col-2">
+                </div>
+                {sortedData?.map((player, index) => (
+                    <div key={index} class="row d-flex align-items-center my-2 ">
+                        {/* <div class="col-2">
                                 <Button
                                     color="soft-danger"
                                     onClick={(e) => handleDeletePlayer(player.playerId)}
@@ -252,107 +293,108 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                                     <i className="ri-delete-bin-2-line"></i>
                                 </Button>
                             </div> */}
-                            <div class="col-12 ps-4">
-                                <div className="row">
-                                    <div className="col-3">{player?.playerName}</div>
-                                    <div className="col-2">
+                        <div class="col-12 ps-4">
+                            <div className="row">
+                                <div className="col-1">{imageRender(player?.playerType)}</div>
+                                <div className="col-3 playerNameScroll">{player?.playerName}</div>
+                                <div className="col-2">
+                                    <input
+                                        type="number"
+                                        style={{ width: "45x" }}
+                                        value={
+                                            +editedPlayers[player.commentaryPlayerId]?.batsmanAverage ||
+                                            +player.batsmanAverage
+                                        }
+                                        onChange={(e) =>
+                                            handleAvgChange(player.commentaryPlayerId, player.playerId, player.currentInnings, e.target.value)
+                                        }
+                                    />
+                                </div>
+                                <div className="col-1">
+                                    <input
+                                        type="number"
+                                        style={{ width: "50px" }}
+                                        value={
+                                            +editedPlayers[player.commentaryPlayerId]?.batsmanStrikeRate ||
+                                            +player.batsmanStrikeRate
+                                        }
+                                        onChange={(e) =>
+                                            handleStrikeRateChange(
+                                                player.commentaryPlayerId,
+                                                player.playerId,
+                                                player.currentInnings,
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div className="col-2">
+                                    <input
+                                        type="number"
+                                        style={{ width: "50px"}}
+                                        value={
+                                            +editedPlayers[player.commentaryPlayerId]?.boundary ||
+                                            +player.boundary
+                                        }
+                                        onChange={(e) =>
+                                            handleBoundaryChange(
+                                                player.commentaryPlayerId,
+                                                player.playerId,
+                                                player.currentInnings,
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div className="col-2">
+                                    <input
+                                        type="number"
+                                        style={{ width: "55px" }}
+                                        value={
+                                            +editedPlayers[player.commentaryPlayerId]?.playerBallFaced ||
+                                            +player.playerBallFaced
+                                        }
+                                        onChange={(e) =>
+                                            handleBallFacedChange(
+                                                player.commentaryPlayerId,
+                                                player.playerId,
+                                                player.currentInnings,
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div className="col-1">
+                                    <div className="form-check form-switch form-switch-lg">
                                         <input
-                                            type="number"
-                                            style={{ width: "55px" }}
-                                            value={
-                                                +editedPlayers[player.commentaryPlayerId]?.batsmanAverage ||
-                                                +player.batsmanAverage
-                                            }
-                                            onChange={(e) =>
-                                                handleAvgChange(player.commentaryPlayerId, player.playerId, player.currentInnings, e.target.value)
-                                            }
-                                        />
-                                    </div>
-                                    <div className="col-2">
-                                        <input
-                                            type="number"
-                                            style={{ width: "55px" }}
-                                            value={
-                                                +editedPlayers[player.commentaryPlayerId]?.batsmanStrikeRate ||
-                                                +player.batsmanStrikeRate
-                                            }
-                                            onChange={(e) =>
-                                                handleStrikeRateChange(
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="customSwitchsizelg"
+                                            checked={updatedPlayingXiPlayer[player.commentaryPlayerId]}
+                                            onChange={(e) => {
+                                                handlePlayingXiChange(
                                                     player.commentaryPlayerId,
                                                     player.playerId,
                                                     player.currentInnings,
-                                                    e.target.value
+                                                    !updatedPlayingXiPlayer[player.commentaryPlayerId]
                                                 )
-                                            }
+                                            }}
+                                            value={updatedPlayingXiPlayer[player.commentaryPlayerId]}
                                         />
-                                    </div>
-                                    <div className="col-2">
-                                        <input
-                                            type="number"
-                                            style={{ width: "55px" }}
-                                            value={
-                                                +editedPlayers[player.commentaryPlayerId]?.boundary ||
-                                                +player.boundary
-                                            }
-                                            onChange={(e) =>
-                                                handleBoundaryChange(
-                                                    player.commentaryPlayerId,
-                                                    player.playerId,
-                                                    player.currentInnings,
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                    <div className="col-2">
-                                        <input
-                                            type="number"
-                                            style={{ width: "55px" }}
-                                            value={
-                                                +editedPlayers[player.commentaryPlayerId]?.playerBallFaced ||
-                                                +player.playerBallFaced
-                                            }
-                                            onChange={(e) =>
-                                                handleBallFacedChange(
-                                                    player.commentaryPlayerId,
-                                                    player.playerId,
-                                                    player.currentInnings,
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                    <div className="col-1">
-                                        <div className="form-check form-switch form-switch-lg">
-                                            <input
-                                                className="form-check-input"
-                                                type="checkbox"
-                                                id="customSwitchsizelg"
-                                                checked={updatedPlayingXiPlayer[player.commentaryPlayerId]}
-                                                onChange={(e) => {
-                                                    handlePlayingXiChange(
-                                                        player.commentaryPlayerId,
-                                                        player.playerId,
-                                                        player.currentInnings,
-                                                        !updatedPlayingXiPlayer[player.commentaryPlayerId]
-                                                    )
-                                                }}
-                                                value={updatedPlayingXiPlayer[player.commentaryPlayerId]}
-                                            />
-                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>)
-                    )}
-                </Row>
-                <Button
-                    color="success"
-                    className="btn-sm px-3"
-                    onClick={handleSave}
-                >
-                    Save
-                </Button>
+                        </div>
+                    </div>)
+                )}
+            </Row>
+            <Button
+                color="success"
+                className="btn-sm px-3"
+                onClick={handleSave}
+            >
+                Save
+            </Button>
         </>
     )
 }

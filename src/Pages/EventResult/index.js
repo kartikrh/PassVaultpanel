@@ -8,11 +8,16 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
+  ERROR,
+  PERMISSION_DELETE,
   PERMISSION_VIEW,
+  SUCCESS,
   TAB_EVENT_RESULT,
 } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { isEqual } from "lodash";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_EVENT_RESULT;
@@ -21,6 +26,7 @@ const Index = () => {
   document.title = "Event Result";
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -43,6 +49,7 @@ const Index = () => {
   const competitionDetails = JSON.parse(sessionStorage.getItem('eventResultDetails') || "{}");
   
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -71,12 +78,13 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/competition/result`, payload)
       .then((response) => {
-        const logsData = response?.result?.data?.sort((a,b)=>b?.id - a?.id);
+        const logsData = response?.result?.data?.sort((a,b)=>b?.commentaryId - a?.commentaryId);
         let logsDataIdList = [];
         logsData.forEach((ele) => {
-          logsDataIdList.push(ele?.id);
+          logsDataIdList.push(ele?.commentaryId);
         });
         setData(logsData);
+        setDataIndexList(logsDataIdList);
         setTotal(response?.result?.totalRecords || 0); 
         setCheckedList([]);
         setIsLoading(false);
@@ -95,6 +103,18 @@ const Index = () => {
       setIsSearch(true);
     }
   },[competitionId, teamId])
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.commentaryId)) {
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.commentaryId
+      );
+    } else {
+      updateSingleCheck = [...checekedList, e.commentaryId];
+    }
+    setCheckedList(updateSingleCheck);
+  };
 
   useEffect(() => {
     if (competitionId || teamId) {
@@ -123,8 +143,79 @@ const Index = () => {
       })
       .catch((error) => { });
   };
+
+  const handleDelete = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/deleteResult`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setDeleteModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setCheckedList([]);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setCheckedList([]);
+      });
+  };
+
   //table columns
   const columns = [
+    {
+          title: (
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                name="chk_child"
+                value="option1"
+                checked={
+                  data?.length > 0 &&
+                  isEqual(checekedList?.sort(), dataIndexList?.sort())
+                }
+                onChange={() => {
+                  setCheckedList(
+                    isEqual(checekedList?.sort(), dataIndexList?.sort())
+                      ? []
+                      : dataIndexList
+                  );
+                }}
+              />
+            </div>
+          ),
+          render: (text, record) => (
+            <div className="form-check d-flex align-items-center justify-between">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                name="chk_child"
+                value="option1"
+                checked={checekedList.includes(record.commentaryId)}
+                onChange={() => {
+                  handleSingleCheck(record);
+                }}
+              />
+            </div>
+          ),
+          key: "select",
+          style: { width: "2%" },
+    },
     {
       title: "Date",
       dataIndex: "eventDate",
@@ -152,6 +243,27 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Team1 Score",
+      dataIndex: "team1Score",
+      key: "team1Score",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Team1 Over",
+      dataIndex: "team1Over",
+      key: "team1Over",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Team1 Wicket",
+      dataIndex: "team1Wicket",
+      key: "team1Wicket",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
       title: "Team2",
       dataIndex: "team2Name",
       key: "team2Name",
@@ -159,9 +271,37 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Team2 Score",
+      dataIndex: "team2Score",
+      key: "team2Score",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Team2 Over",
+      dataIndex: "team2Over",
+      key: "team2Over",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Team2 Wicket",
+      dataIndex: "team2Wicket",
+      key: "team2Wicket",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
       title: "Winner",
       dataIndex: "winnerName",
       key: "winnerName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Result",
+      dataIndex: "result",
+      key: "result",
       sort: true,
       style: { width: "10%" },
     },
@@ -226,6 +366,11 @@ const Index = () => {
             selectedTableElementsLogs={selectedTableElements}
             handleReset={handleReset}
             handleReload={handleReload}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
             setDateRange={setDateRange}
             dateRange={dateRange}
             serverCurrentPage={currentPage}
@@ -239,6 +384,7 @@ const Index = () => {
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
+            handleDelete={handleDelete}
             singleCheck={checekedList}
           />
           <TabModel
