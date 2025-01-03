@@ -6,7 +6,6 @@ import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png'
 import keeper from '../../../../src/assets/images/cricket-icons/game.png';
 
 const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
-    console.log("playerList", playerList)
 
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
@@ -43,7 +42,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     };
     
     // Sort by player type first, then player name alphabetically
-    let sortedPlayers = playerList?.sort((a, b) => {
+    let sortedPlayers = players?.sort((a, b) => {
         // First, compare by playerType
         const typeCompare = playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
         if (typeCompare !== 0) return typeCompare;
