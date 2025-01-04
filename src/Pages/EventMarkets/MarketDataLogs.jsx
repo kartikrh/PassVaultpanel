@@ -241,6 +241,12 @@ function MarketDataLogs() {
       style: { width: "5%", textAlign: "center" },
     },
     {
+      title: "Line Diff",
+      dataIndex: "lineDiff",
+      key: "lineDiff",
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (

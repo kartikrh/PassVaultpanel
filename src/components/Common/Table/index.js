@@ -812,7 +812,8 @@ const Index = forwardRef(
       }
     };
 
-    const handleTableReload = () => {
+    const handleTableReload = (e) => {
+      e.preventDefault();
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -1601,8 +1602,8 @@ const Index = forwardRef(
                           <div>
                             <button
                               className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReload();
+                              onClick={(e) => {
+                                handleTableReload(e);
                               }}
                               type="reload"
                               id="create-btn"
@@ -1742,8 +1743,8 @@ const Index = forwardRef(
                           <div>
                             <button
                               className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReload();
+                              onClick={(e) => {
+                                handleTableReload(e);
                               }}
                               type="reload"
                               id="create-btn"
@@ -1832,8 +1833,8 @@ const Index = forwardRef(
                           <div>
                             <button
                               className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReload();
+                              onClick={(e) => {
+                                handleTableReload(e);
                               }}
                               type="reload"
                               id="create-btn"

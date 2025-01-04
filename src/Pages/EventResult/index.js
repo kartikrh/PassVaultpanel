@@ -248,23 +248,14 @@ const Index = () => {
     {
       title: "Team1 Score",
       dataIndex: "team1Score",
+      render: (text, record) => (
+        <span>
+          {text != null ? `${text} runs / ${record?.team1Wicket} wicket [${record?.team1Over} over]` : ""}
+        </span>
+      ),
       key: "team1Score",
       sort: true,
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Team1 Over",
-      dataIndex: "team1Over",
-      key: "team1Over",
-      sort: true,
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Team1 Wicket",
-      dataIndex: "team1Wicket",
-      key: "team1Wicket",
-      sort: true,
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "10%" },
     },
     {
       title: "Team2",
@@ -276,23 +267,21 @@ const Index = () => {
     {
       title: "Team2 Score",
       dataIndex: "team2Score",
+      render: (text, record) => (
+        <span>
+          {text != null ? `${text} runs / ${record?.team2Wicket} wicket [${record?.team2Over} over]` : ""}
+        </span>
+      ),
       key: "team2Score",
       sort: true,
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "10%" },
     },
     {
-      title: "Team2 Over",
-      dataIndex: "team2Over",
-      key: "team2Over",
+      title: "Toss Won By",
+      dataIndex: "tossWonBy",
+      key: "tossWonBy",
       sort: true,
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Team2 Wicket",
-      dataIndex: "team2Wicket",
-      key: "team2Wicket",
-      sort: true,
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "10%" },
     },
     {
       title: "Winner",
