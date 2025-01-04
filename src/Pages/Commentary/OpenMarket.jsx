@@ -15,6 +15,7 @@ import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
 import OpenMarketCategories from "./OpenMarketCategoryRendering";
+import Switch from "react-switch";
 
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
@@ -35,6 +36,7 @@ export const OpenMarket = () => {
     const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
+    const [isScorecardShow, setIsScorecardShow] = useState(undefined);
 
     const selectedCategoriesData = selectedCategories.map(category => { })
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
@@ -45,7 +47,8 @@ export const OpenMarket = () => {
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
-
+    const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
+    const scoreboardUrl = `${scoreCardUrl}/scoreboard2?id=${commentaryInfo?.eid}&color=000`;
     console.log({ originalMarketData, categorisedData });
 
     useEffect(() => {
@@ -132,6 +135,43 @@ export const OpenMarket = () => {
     //     }, 500),
     //     []
     // );
+
+    const OffsymbolStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    paddingRight: "10px",
+                }}
+            >
+                {" "}
+                ScoreCard
+            </div>
+        );
+    };
+    const OnSymbolStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    paddingLeft: "11px",
+                }}
+            >
+                {" "}
+                ScoreCard
+            </div>
+        );
+    };
 
     const formatDataBeforeSend = (dataToChange = []) => {
         return dataToChange.map(record => {
@@ -1420,7 +1460,7 @@ export const OpenMarket = () => {
                                             />
                                         </Col>
                                         {lineRatioField}
-                                        <Col className="p-0 d-flex" xs={12} md={6} lg={6}>
+                                        <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={6}>
                                             <Button
                                                 color="primary"
                                                 // style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
@@ -1441,8 +1481,34 @@ export const OpenMarket = () => {
                                                 onClick={() => updateRecords()}
                                                 disabled={selectedCategories.length === 0}
                                             >{`Save All (A)`}</Button>
+                                            <Switch
+                                               width={80}
+                                               uncheckedIcon={<OffsymbolStatus />}
+                                               checkedIcon={<OnSymbolStatus />}
+                                               className="mx-2"
+                                               onColor="#02a499"
+                                               onChange={() => {
+                                                setIsScorecardShow(!isScorecardShow);
+                                               }}
+                                               checked={isScorecardShow}
+                                            />
                                         </Col>
                                     </Row>}
+                                {isScorecardShow && (
+                                    <Row>
+                                        <Col xs={12}>
+                                            <iframe 
+                                               title="YouTube video player"
+                                               width="100%" 
+                                               height="auto"
+                                               src={scoreboardUrl} 
+                                               frameborder="0" 
+                                               className="mb-0"
+                                            >
+                                            </iframe>
+                                        </Col>
+                                    </Row>
+                                 )}
                                 {Object.keys(categorisedData).length > 0 && (
                                     <OpenMarketCategories
                                         categorisedData={categorisedData}
