@@ -97,12 +97,15 @@ const Index = () => {
   useEffect(()=>{
     if(competitionId !== 0 || teamId !== 0){
       setIsSearch(false);
-      fetchCompetitionData();
-      fetchTeamData();
     } else {
       setIsSearch(true);
     }
   },[competitionId, teamId])
+
+  useEffect(()=>{
+    fetchCompetitionData();
+    fetchTeamData();
+  },[])
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -117,15 +120,15 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (competitionId || teamId) {
-      const competitionData = competitions.find(c => c.competitionId === competitionId)
-      const teamData = teams.find(c => c.teamId === teamId)
+    if ((competitionDetails?.competitionId || competitionDetails?.teamId)) {
+      const competitionData = competitions.find(c => c.competitionId === competitionDetails?.competitionId)
+      const teamData = teams.find(c => c.teamId === competitionDetails?.teamId)
       setSelectedTableElements({
-        competition: {value: competitionData?.competitionId, label: competitionData?.competition},
-        team: {value: teamData?.teamId, label: teamData?.teamName },
+        competition: competitionDetails?.competitionId ? {value: competitionData?.competitionId || competitionDetails?.competitionId, label: competitionData?.competition || competitionDetails?.competition} : null,
+        team: competitionDetails?.teamId ? {value: teamData?.teamId || competitionDetails?.teamId, label: teamData?.teamName || competitionDetails?.teamName } : null,
       });
     }
-  }, [competitionId, teamId, competitions, teams]);
+  }, [competitionDetails?.competitionId, competitionDetails?.teamId, competitions, teams]);
 
   const fetchCompetitionData = async (value) => {
     await axiosInstance
