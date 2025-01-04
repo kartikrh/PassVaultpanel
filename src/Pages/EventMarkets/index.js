@@ -32,8 +32,8 @@ import CloseModel from "./CloseModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
-  const commentaryId = +sessionStorage.getItem('EventMarketsID') || 0;
-  const commentaryDetails = JSON.parse(sessionStorage.getItem('EventMarketDetails') || "{}");
+  const commentaryId = +sessionStorage.getItem('commentaryEventMarketId') || 0;
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('commentaryEventMarketDetails') || "{}");
 
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
@@ -68,9 +68,9 @@ const Index = () => {
   })
 
   const [selectedTableElements, setSelectedTableElements] = useState({
-    event: null,
+    eventType: null,
     competition: null,
-    eventList: null,
+    eventName: null,
   });
 
 
@@ -91,7 +91,7 @@ const Index = () => {
       rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
     };
     if (commentaryId !== 0) {
-      let payload = {
+      payload = {
         ...(latestValueFromTable || tableActions),
         rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
         commentaryId: commentaryId
@@ -137,7 +137,7 @@ const Index = () => {
       })
       .catch((error) => { });
   };
-  const fetchCompetitionList = async () => {
+  const fetchCompetitionList = async (eventTypeId) => {
     await axiosInstance
       .post(`/admin/eventMarket/competitionListByEventTypeId`, {
         eventTypeId: eventTypeId,
@@ -148,7 +148,7 @@ const Index = () => {
       })
       .catch((error) => { });
   };
-  const fetchEventList = async () => {
+  const fetchEventList = async (competitionId) => {
     await axiosInstance
       .post(`/admin/eventMarket/eventListByCompetitionId`, {
         competitionId: competitionId,
@@ -173,15 +173,15 @@ const Index = () => {
   };
 
     useEffect(()=>{
-      if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
+      if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.eventId){
         setIsSearch(false)
-        fetchEventTypeData(commentaryDetails?.eventTypeId);
-        fetchCompetitionList(commentaryDetails?.competitionId);
-        fetchEventList(commentaryDetails?.competitionId)
+        fetchEventTypeData();
+        fetchCompetitionList(commentaryDetails?.eventTypeId);
+        fetchEventList(commentaryDetails?.competitionId);
       } else {
         setIsSearch(true)
       }
-    },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
+    },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.eventId])
 
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -727,26 +727,26 @@ const Index = () => {
 
   useEffect(() => {
     if (eventTypeId) {
-      fetchCompetitionList();
+      fetchCompetitionList(eventTypeId);
     }
   }, [eventTypeId]);
   useEffect(() => {
-    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryStatus) {
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.eventId) {
       const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
       const competition = competitionList.find(c => c.competitionId === commentaryDetails.competitionId)
-      const selectedEventList = eventList.find(c => c.eventList === commentaryDetails.eventList)
+      const eventListData = eventList.find(c => c.eventId === commentaryDetails.eventId)
 
       setSelectedTableElements({
         eventType: { value: event?.eventTypeId, label: event?.eventType },
         competition: { value: competition?.competitionId, label: competition?.competition },
-        eventList: { value: selectedEventList?.eventId, label: selectedEventList?.eventName }
+        eventName: { value: eventListData?.eventId, label: eventListData?.eventName }
       });
     }
-  }, [commentaryDetails.eventTypeId, competitionList, eventTypes, commentaryDetails.competitionId, commentaryDetails.commentaryStatus]);
+  }, [commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.eventId, competitionList, eventTypes, eventList]);
 
   useEffect(() => {
-    if (competitionId || commentaryId) {
-      fetchEventList();
+    if (competitionId) {
+      fetchEventList(competitionId);
     } else {
       setEventList([]);
     }
