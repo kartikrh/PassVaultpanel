@@ -1472,8 +1472,8 @@ const Index = forwardRef(
                         ) : null}
                         {tableElement?.teamsList ? (
                           <Select
-                            value={selectedTableElementsLogs?.team?.value ? selectedTableElementsLogs?.team : selectedTableElements?.team}
-                            isDisabled={selectedTableElementsLogs?.team?.value}
+                            value={selectedTableElementsLogs?.team ? selectedTableElementsLogs?.team : selectedTableElements?.team}
+                            isDisabled={selectedTableElementsLogs?.team}
                             placeholder="Team"
                             styles={{
                               control: (provided) => ({
