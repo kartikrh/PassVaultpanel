@@ -41,10 +41,6 @@ export const CreateEventMarket = () => {
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
 
-    console.log({ processedMarkets })
-    useEffect(() => {
-        console.log({ selectedMarkets, processedMarkets })
-    })
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
             document.title = `MT ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
@@ -71,6 +67,18 @@ export const CreateEventMarket = () => {
             setIsLoading(false);
         }
     };
+
+    const sortbasedOnthePlayerTypeAndPlayerName = (team) => {
+        const typeOrder = ["BatsMan", "Wicketkeeper", "AllRounder", "Bowler"];
+            team.sort((a, b) => {
+            // Compare playerType based on typeOrder
+            const typeComparison = typeOrder.indexOf(a.playerType) - typeOrder.indexOf(b.playerType);
+            if (typeComparison !== 0) return typeComparison;
+
+            // If playerType is the same, compare playerName alphabetically
+            return a.playerName.localeCompare(b.playerName);
+        });
+    }
 
     // const handleSelectAllInSection = (sectionKey) => {
     //     setSelectedMarkets(prev => {
@@ -247,6 +255,8 @@ export const CreateEventMarket = () => {
                 processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 32) {
                 processPartnershipBoundariesMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 33) {
+                processWicketLostBallsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
@@ -621,7 +631,8 @@ export const CreateEventMarket = () => {
 
     const processPlayerRunsMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
-            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            sortbasedOnthePlayerTypeAndPlayerName(team.players);
+            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Runs`;
                 const specialMarket = {
@@ -639,7 +650,8 @@ export const CreateEventMarket = () => {
 
     const processPlayerBoundaryMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
-            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            sortbasedOnthePlayerTypeAndPlayerName(team.players);
             team.players.forEach(player => {
                 const specialMarketName = `${player.playerName} Boundaries`;
                 const specialMarket = {
@@ -672,9 +684,27 @@ export const CreateEventMarket = () => {
         });
     };
 
+    const processWicketLostBallsMarkets = (market, teams, processedMarketsObj) => {
+        const maxWickets = market?.afterWicketAutoSuspend - 2;  // Subtract 2 to not include the suspend wicket
+
+        teams.forEach(team => {
+            for (let wicket = 1; wicket <= maxWickets; wicket++) {
+                const marketName = market.templateName.replace("{wicket}", wicket);
+                const specialMarket = {
+                    ...market,
+                    marketName: `${marketName} - ${team.shortName}`,
+                    wicketNo: wicket,
+                    teamId: team.teamId
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
+        });
+    };
+
     const processPlayerBallMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
-            team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            sortbasedOnthePlayerTypeAndPlayerName(team.players);
             team.players.forEach(player => {
                 const specialMarketName = market.marketName.replace("{player}", player.playerName);
                 const specialMarket = {
@@ -1047,7 +1077,7 @@ export const CreateEventMarket = () => {
     const renderMarketType = (typeId, categories, teamId) => (
         <Card key={typeId}>
             <CardHeader>
-                {marketData.marketTypes.find(type => type.marketTypeId === parseInt(typeId))?.marketTypeName || `Type ${typeId}`}
+                {/* {marketData.marketTypes.find(type => type.marketTypeId === parseInt(typeId))?.marketTypeName || `Type ${typeId}`} */}
             </CardHeader>
             <CardBody className="p-1">
                 {Object.entries(categories).map(([categoryId, markets]) => {
@@ -1057,6 +1087,18 @@ export const CreateEventMarket = () => {
             </CardBody>
         </Card>
     );
+
+    // const typeOrder = ["batsmen", "wicket-keeper", "allrounder", "bowler"];
+
+    // processedMarkets["1_##_2_##_12"]?.sort((a, b) => {
+    //     console.log("a", a, b);
+    //     // Compare by playerType order
+    //     const typeComparison = typeOrder.indexOf(a.playerType) - typeOrder.indexOf(b.playerType);
+    //     if (typeComparison !== 0) return typeComparison;
+      
+    //     // Compare by playerName alphabetically
+    //     return a.playerName?.localeCompare(b.playerName);
+    //   });
 
     // const renderTeamMarkets = (teamId, typeCategories) => (
     //     <Card key={teamId}>
@@ -1120,7 +1162,6 @@ export const CreateEventMarket = () => {
     };
 
     const handleSave = async () => {
-        console.log(Object.entries(processedMarkets));
         const savedData = Object.entries(processedMarkets)
             .flatMap(([key, markets]) =>
                 markets.filter((_, index) => selectedMarkets[key]?.[index])
@@ -1555,7 +1596,6 @@ export const CreateEventMarket = () => {
                                                 isOpen={isModalOpen}
                                                 onClose={() => setIsModalOpen(false)}
                                                 apiResponse={marketData}
-                                                onSubmit={() => { console.log() }}
                                             />
                                             <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
                                             <div>{`Ref: ${commentaryDetails?.eventRefId} [

@@ -5,21 +5,24 @@ import bat from '../../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../../src/assets/images/cricket-icons/game.png';
 
-const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
-    console.log("playerList", playerList)
-
+const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler }) => {
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
             a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
         );
     }
     const [players, setPlayers] = useState(playerList);
+    const [isBowlerChange, setIsBowlerChange] = useState(false);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
         setSearch("");
         setPlayers(playerList);
+        
     }, [isOpen, playerList]);
+    useEffect(() => {
+        setIsBowlerChange(isBowler)
+    }, [isBowler]);
 
     useEffect(() => {
         const filteredPlayers = playerList?.filter(value => value.playerName?.toLowerCase().includes(search.toLowerCase()));
@@ -43,11 +46,10 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
     };
     
     // Sort by player type first, then player name alphabetically
-    let sortedPlayers = playerList?.sort((a, b) => {
+    let sortedPlayers = players?.sort((a, b) => {
         // First, compare by playerType
-        const typeCompare = playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
+        const typeCompare = isBowlerChange ? playerTypeOrder[b.playerType] - playerTypeOrder[a.playerType] : playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
         if (typeCompare !== 0) return typeCompare;
-    
         // If playerType is the same, compare alphabetically by playerName
         return a.playerName.localeCompare(b.playerName);
     });
@@ -85,7 +87,11 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer }) => {
                     </thead>
                     <tbody>
                         {sortedPlayers?.map(value => <tr key={value.commentaryPlayerId}>
-                            <td role='button' onClick={() => selectPlayer(value.commentaryPlayerId)}><span className='pe-4'>{imageRender(value.playerType)}</span>{value.playerName}</td>
+                            <td role='button' onClick={() =>{
+                                setIsBowlerChange(false)
+                                selectPlayer(value.commentaryPlayerId)
+                            }}
+                                ><span className='pe-4'>{imageRender(value.playerType)}</span>{value.playerName}</td>
                         </tr>)}
                     </tbody>
                 </Table>
