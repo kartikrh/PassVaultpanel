@@ -278,8 +278,8 @@ const Index = () => {
     },
     {
       title: "Toss Won By",
-      dataIndex: "tossWonBy",
-      key: "tossWonBy",
+      dataIndex: "tossWonTeam",
+      key: "tossWonTeam",
       sort: true,
       style: { width: "10%" },
     },
