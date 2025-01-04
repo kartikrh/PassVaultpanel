@@ -57,6 +57,7 @@ const Commentary = (props) => {
     const [changeOverOnPopupClick, setChangeOverOnPopupClick] = useState(undefined)
     const [showChangeOverModal, setShowChangeOverModal] = useState(undefined)
     const [showWicketModal, setShowWicketModal] = useState(undefined)
+    const [isBowlerrChange, setIsBowlerrChange] = useState(undefined)
     const [saveToDb, setSaveToDb] = useState(undefined)
     const [isOverChange, setIsOverChange] = useState(undefined)
     const [isPaneltyPopup, setIsPaneltyPopup] = useState(undefined)
@@ -2146,11 +2147,15 @@ const Commentary = (props) => {
                     setIsSwapPlayer(undefined)
                     setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
                 }}
+                isBowler= {(isChangeBowler.isChange || isBowlerrChange) ? true : false}
                 playerList={changePlayerList}
                 selectPlayer={(newPlayerId) => {
                     if (isSwapPlayer) swapPlayer(newPlayerId)
                     else if (isChangeBowler.isChange) onBowlerChange(newPlayerId)
-                    else onPlayerChange(newPlayerId)
+                    else {
+                        setIsBowlerrChange(undefined)
+                        onPlayerChange(newPlayerId)
+                    }
                 }}
             />}
         {extrasType && < ExtrasModal
@@ -2163,6 +2168,7 @@ const Commentary = (props) => {
             toggle={() => { setShowChangeOverModal(undefined) }}
             onNoClick={() => { setShowChangeOverModal(undefined) }}
             onYesClick={() => {
+                setIsBowlerrChange(true)
                 setShowChangeOverModal(undefined);
                 setChangeOverOnPopupClick(true)
             }}
