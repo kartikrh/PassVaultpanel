@@ -20,6 +20,15 @@ const MARKET_STATUS = {
     3: "Suspend",
 };
 
+const getOrdinalSuffix = (n) => {
+    const suffixes = ["st", "nd", "rd"];
+    const remainder = n % 10;
+    if (remainder >= 4 || (n >= 11 && n <= 13)) {
+        return `${n}th`;
+    }
+    return `${n}${suffixes[remainder - 1] || "th"}`;
+};
+
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -672,7 +681,8 @@ export const CreateEventMarket = () => {
 
         teams.forEach(team => {
             for (let wicket = 1; wicket <= maxWickets; wicket++) {
-                const marketName = market.templateName.replace("{wicket}", wicket);
+                const wicketOrdinal = getOrdinalSuffix(wicket);
+                const marketName = market.templateName.replace("{wicket}", wicketOrdinal);
                 const specialMarket = {
                     ...market,
                     marketName: `${marketName} - ${team.shortName}`,
@@ -689,7 +699,8 @@ export const CreateEventMarket = () => {
 
         teams.forEach(team => {
             for (let wicket = 1; wicket <= maxWickets; wicket++) {
-                const marketName = market.templateName.replace("{wicket}", wicket);
+                const wicketOrdinal = getOrdinalSuffix(wicket);
+                const marketName = market.templateName.replace("{wicket}", wicketOrdinal);
                 const specialMarket = {
                     ...market,
                     marketName: `${marketName} - ${team.shortName}`,
@@ -725,7 +736,8 @@ export const CreateEventMarket = () => {
 
         teams.forEach(team => {
             for (let wicket = 1; wicket <= maxWickets; wicket++) {
-                const marketName = market.templateName.replace("{wicket}", wicket);
+                const wicketOrdinal = getOrdinalSuffix(wicket);
+                const marketName = market.templateName.replace("{wicket}", wicketOrdinal);
                 const specialMarket = {
                     ...market,
                     marketName: `${marketName} - ${team.shortName}`,
