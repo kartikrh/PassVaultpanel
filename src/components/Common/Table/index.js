@@ -1318,8 +1318,8 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElementsLogs?.eventList ||selectedTableElements?.eventName}
-                              isDisabled={selectedTableElementsLogs?.eventList}
+                              value={selectedTableElementsLogs?.eventName ||selectedTableElements?.eventName}
+                              isDisabled={selectedTableElementsLogs?.eventName}
                               placeholder="Event List"
                               onChange={(e) => {
                                 handleTableActions("eventId", e);

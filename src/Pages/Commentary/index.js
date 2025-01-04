@@ -403,8 +403,8 @@ const Index = () => {
   const handleEventMarketClick = (details) => {
     console.log("details", details);
     const url = new URL(window.location.origin + "/eventMarkets");
-    sessionStorage.setItem('EventMarketsID', "" + details?.commentaryId);
-    sessionStorage.setItem('EventMarketDetails', "" + JSON.stringify(details));
+    sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
+    sessionStorage.setItem('commentaryEventMarketDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleCommentaryMarketTemplateClick = (id) => {
