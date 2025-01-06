@@ -812,7 +812,8 @@ const Index = forwardRef(
       }
     };
 
-    const handleTableReload = () => {
+    const handleTableReload = (e) => {
+      e.preventDefault();
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -1317,8 +1318,8 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElementsLogs?.eventList ||selectedTableElements?.eventName}
-                              isDisabled={selectedTableElementsLogs?.eventList}
+                              value={selectedTableElementsLogs?.eventName ||selectedTableElements?.eventName}
+                              isDisabled={selectedTableElementsLogs?.eventName}
                               placeholder="Event List"
                               onChange={(e) => {
                                 handleTableActions("eventId", e);
@@ -1601,8 +1602,8 @@ const Index = forwardRef(
                           <div>
                             <button
                               className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReload();
+                              onClick={(e) => {
+                                handleTableReload(e);
                               }}
                               type="reload"
                               id="create-btn"
@@ -1742,8 +1743,8 @@ const Index = forwardRef(
                           <div>
                             <button
                               className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReload();
+                              onClick={(e) => {
+                                handleTableReload(e);
                               }}
                               type="reload"
                               id="create-btn"
@@ -1832,8 +1833,8 @@ const Index = forwardRef(
                           <div>
                             <button
                               className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReload();
+                              onClick={(e) => {
+                                handleTableReload(e);
                               }}
                               type="reload"
                               id="create-btn"

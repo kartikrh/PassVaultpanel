@@ -117,10 +117,40 @@ const MatchHistory = () => {
         matchTypeId,
       })
       .then((response) => {
-        if (response?.result?.length > 0) {
+        if (response?.result?.length > 0  && response?.result?.some(item => !item.eventName || !item.eventDate)) {
           setBattingHistory(
             response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           );
+        } else if(response?.result?.length > 0){
+          setBattingHistory([
+            {
+              id: 0,
+              matchTypeId: matchTypeId,
+              playerId: playerId,
+              commentaryId: 0,
+              commentaryPlayerId: 0,
+              matchCount: 0,
+              inningsCount: 0,
+              notOut: 0,
+              totalRuns: 0,
+              highestScore: "0",
+              average: 0,
+              ballsFacedCount: 0,
+              strikeRate: 0,
+              countOf100: 0,
+              countOf50: 0,
+              countOf4: 0,
+              countOf6: 0,
+              catchCount: 0,
+              stumpCount: 0,
+              createdBy: null,
+              createdAt: "",
+              outCount: 0,
+              eventName: "",
+              eventDate: "",
+            },
+            ...response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
+          ]);
         } else {
           setBattingHistory([
             {
@@ -173,12 +203,11 @@ const MatchHistory = () => {
         matchTypeId,
       })
       .then((response) => {
-        if (response?.result?.length > 0) {
+        if (response?.result?.length > 0 && response?.result?.some(item => !item.eventName || !item.eventDate)) {
           setBowlingHistory(
             response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           );
-        }
-        else {
+        } else if(response?.result?.length > 0){
           setBowlingHistory([
             {
               id: 0,
@@ -204,9 +233,35 @@ const MatchHistory = () => {
               eventName: "",
               eventDate: "",
             },
-
+            ...response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           ]);
-          setIsLoading(false);
+        } else {
+          setBowlingHistory([
+            {
+              id: 0,
+              matchTypeId: matchTypeId,
+              playerId: playerId,
+              commentaryId: 0,
+              commentaryPlayerId: 0,
+              bowlerPlayedMatchCount: 0,
+              bowlerPlayedInningsCount: 0,
+              ballCount: 0,
+              runsFromBowler: 0,
+              wicketsCount: 0,
+              bowlerAverage: 0,
+              bestBowlingInInnings: "0",
+              bestBowlingInMatch: "0",
+              economy: 0,
+              bowlerStrikeRate: 0,
+              wickets4: 0,
+              wickets5: 0,
+              wickets10: 0,
+              createdBy: null,
+              createdAt: "",
+              eventName: "",
+              eventDate: "",
+            },
+          ]);
         }
         setIsLoading(false);
       })
