@@ -722,6 +722,34 @@ const Index = () => {
         );
       });
   };
+  const handleIsCountInPoint = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/isCountInPoint`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleTeamPredictionPermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -999,6 +1027,27 @@ const Index = () => {
           >
             <i
               className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Count In Point",
+      key: "isCountInPoint",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isCountInPoint ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
+            }}
+          >
+            <i
+              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
             ></i>
           </Button>
         </Tooltip>

@@ -986,23 +986,56 @@ const Commentary = (props) => {
         players[teamType]?.forEach((player) => {
             if (isEqual(player.commentaryPlayerId, newPlayerId)) newPlayer = player
         })
-        let updatedNewPlayer = {
-            ...newPlayer,
-            "playerId": oldPlayer["playerId"],
-            "playerName": oldPlayer["playerName"],
-            "batsmanAverage": oldPlayer["batsmanAverage"],
-            "bowlerAverage": oldPlayer["bowlerAverage"],
-            "batterOrder": null,
-            "bowlerOrder": null,
-        }
-        let updatedOldPlayer = {
-            ...oldPlayer,
-            "playerId": newPlayer["playerId"],
-            "playerName": newPlayer["playerName"],
-            "batsmanAverage": newPlayer["batsmanAverage"],
-            "bowlerAverage": newPlayer["bowlerAverage"],
-            "batterOrder": newPlayer["batterOrder"],
-            "bowlerOrder": newPlayer["bowlerOrder"],
+        // let updatedNewPlayer = {
+        //     ...newPlayer,
+        //     "playerId": oldPlayer["playerId"],
+        //     "playerName": oldPlayer["playerName"],
+        //     "batsmanAverage": oldPlayer["batsmanAverage"],
+        //     "bowlerAverage": oldPlayer["bowlerAverage"],
+        //     "batterOrder": null,
+        //     "bowlerOrder": null,
+        // }
+        // let updatedOldPlayer = {
+        //     ...oldPlayer,
+        //     "playerId": newPlayer["playerId"],
+        //     "playerName": newPlayer["playerName"],
+        //     "batsmanAverage": newPlayer["batsmanAverage"],
+        //     "bowlerAverage": newPlayer["bowlerAverage"],
+        //     "batterOrder": newPlayer["batterOrder"],
+        //     "bowlerOrder": newPlayer["bowlerOrder"],
+        // }
+        let updatedNewPlayer = {}
+        let updatedOldPlayer = {}
+        if(oldPlayer?.batBall || oldPlayer?.batRun) {
+            updatedNewPlayer = {
+              ...newPlayer,
+              "playerId": oldPlayer["playerId"],
+              "playerName": oldPlayer["playerName"],
+              "batsmanAverage": oldPlayer["batsmanAverage"],
+              "bowlerAverage": oldPlayer["bowlerAverage"],
+              "batterOrder": null,
+              "bowlerOrder": null,
+            }
+            updatedOldPlayer = {
+              ...oldPlayer,
+              "playerId": newPlayer["playerId"],
+              "playerName": newPlayer["playerName"],
+              "batsmanAverage": newPlayer["batsmanAverage"],
+              "bowlerAverage": newPlayer["bowlerAverage"],
+              "batterOrder": newPlayer["batterOrder"],
+              "bowlerOrder": newPlayer["bowlerOrder"],
+            }
+        } else {
+            updatedNewPlayer = {
+                ...oldPlayer,
+                "isPlay": newPlayer?.isPlay,
+                "onStrike": newPlayer?.onStrike,
+            }
+            updatedOldPlayer = {
+                ...newPlayer,
+                "isPlay": oldPlayer?.isPlay,
+                "onStrike": oldPlayer?.onStrike,
+            }
         }
 
         const listToUpdate = players[teamType]?.map((player) => {
@@ -1025,7 +1058,9 @@ const Commentary = (props) => {
             const updatedPartnership = {
                 ...currentPartnership,
                 batter1Name: updatedOnPitchPlayer?.[ON_STRIKE]?.playerName,
-                batter2Name: updatedOnPitchPlayer?.[NON_STRIKE]?.playerName
+                batter1Id: updatedOnPitchPlayer?.[ON_STRIKE]?.commentaryPlayerId,
+                batter2Name: updatedOnPitchPlayer?.[NON_STRIKE]?.playerName,
+                batter2Id: updatedOnPitchPlayer?.[NON_STRIKE]?.commentaryPlayerId,
             }
             objToSave["commentaryPartnership"] = updatedPartnership
             _setCurrentPartnership(updatedPartnership)
