@@ -55,6 +55,7 @@ const Commentary = (props) => {
     const [extrasType, setExtrasType] = useState(undefined)
     const [playerToChange, setPlayerToChange] = useState(undefined)
     const [changeOverOnPopupClick, setChangeOverOnPopupClick] = useState(undefined)
+    const [overPopUpForBowler, setOverPopUpForBowler] = useState(undefined)
     const [showChangeOverModal, setShowChangeOverModal] = useState(undefined)
     const [showWicketModal, setShowWicketModal] = useState(undefined)
     const [isBowlerrChange, setIsBowlerrChange] = useState(undefined)
@@ -1906,6 +1907,7 @@ const Commentary = (props) => {
             changePlayer(CURRENT_BOWLER)
             setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: null })
             changeOver()
+            setOverPopUpForBowler(true)
             setChangeOverOnPopupClick(undefined)
         }
     }, [changeOverOnPopupClick])
@@ -2180,14 +2182,17 @@ const Commentary = (props) => {
                 toggle={isWicketChange ? false : () => {
                     setChangePlayerList(undefined)
                     setIsSwapPlayer(undefined)
+                    setOverPopUpForBowler(undefined)
                     setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
                 }}
+                overPopUpForBowler = {overPopUpForBowler}
                 isBowler={(isChangeBowler.isChange || isBowlerrChange) ? true : false}
                 playerList={changePlayerList}
                 selectPlayer={(newPlayerId) => {
-                    if (isSwapPlayer) { setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
-                    else if (isChangeBowler.isChange) { setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
+                    if (isSwapPlayer) { setOverPopUpForBowler(undefined);setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
+                    else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined);setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
                     else {
+                        setOverPopUpForBowler(undefined)
                         setIsBowlerrChange(undefined)
                         onPlayerChange(newPlayerId)
                     }
