@@ -39,7 +39,6 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
             await axiosInstance
                 .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: inningPlayers?.[0]?.currentInnings })
                 .then((response) => {
-                    console.log("response", response)
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                     setSelectedPlayer(undefined);
@@ -70,18 +69,15 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
     //             });
     //     }
     // }
-    console.log("nonCommentaryTeamPlayers", nonCommentaryTeamPlayers)
 
     const handleReloadTeam = async () => {
         setIsLoading(true);
         await axiosInstance
             .post("/admin/commentary/loadTeamPlayer", { teamId: teamDetails?.teamId })
             .then((response) => {
-                console.log("response", response)
                 if (response?.result) {
                     const teamPlayers = response?.result;
                     const selectedIds = commentaryTeamPlayers.map(player => player.playerId);
-                    console.log("selectedIds", selectedIds)
                     setNonCommentaryTeamPlayers(teamPlayers.filter(player => !selectedIds.includes(player.playerId)));
                     setSelectedPlayer(undefined);
                 }
@@ -199,7 +195,6 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
             setUpdatedPlayingXi(tempTeamXiPlayers)
         }
     }, [commentaryTeamPlayers])
-    console.log("commentaryTeamPlayers", commentaryTeamPlayers)
 
     const playerTypeOrder = {
         BatsMan: 1,
@@ -230,8 +225,6 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
         return a.playerName.localeCompare(b.playerName);
     });
 
-
-    // console.log("commentaryTeamPlayers?.sort((a,b)=>a.commentaryPlayerId - b.commentaryPlayerId)", commentaryTeamPlayers?.sort((a,b)=>a.commentaryPlayerId - b.commentaryPlayerId))
     return (
         <>
             {isLoading && <SpinnerModel />}
@@ -370,16 +363,17 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                                             className="form-check-input"
                                             type="checkbox"
                                             id="customSwitchsizelg"
-                                            checked={updatedPlayingXiPlayer[player.commentaryPlayerId]}
+                                            checked={updatedPlayingXiPlayer[player.commentaryPlayerId] == null ? player?.isInPlayingEleven : updatedPlayingXiPlayer[player.commentaryPlayerId]}
                                             onChange={(e) => {
+                                                const commentaryPlayerId = updatedPlayingXiPlayer[player.commentaryPlayerId] == null ? player?.isInPlayingEleven : updatedPlayingXiPlayer[player.commentaryPlayerId]
                                                 handlePlayingXiChange(
                                                     player.commentaryPlayerId,
                                                     player.playerId,
                                                     player.currentInnings,
-                                                    !updatedPlayingXiPlayer[player.commentaryPlayerId]
+                                                    !commentaryPlayerId
                                                 )
                                             }}
-                                            value={updatedPlayingXiPlayer[player.commentaryPlayerId]}
+                                            value={updatedPlayingXiPlayer[player.commentaryPlayerId] == null ? player?.isInPlayingEleven : updatedPlayingXiPlayer[player.commentaryPlayerId]}
                                         />
                                     </div>
                                 </div>
