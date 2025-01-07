@@ -360,7 +360,6 @@ export const getPlayerNameById = (players = [], playerIdToCheck, isBattingTeam) 
 
   // Find the player by playerId
   const player = teamPlayers.find(player => player.commentaryPlayerId === playerIdToCheck);
-  console.log("##################", player);
   return player?.playerName || null; // Return the player or null if not found
 
 };
