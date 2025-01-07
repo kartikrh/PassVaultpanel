@@ -48,6 +48,7 @@ const Index = forwardRef(
       cloneModelFunction,
       multiCloneModelFunction,
       deleteModelFunction,
+      noCalculateModelFunction,
       loadModelFunction,
       suspendModelFunction,
       closeModelFunction,
@@ -1185,6 +1186,25 @@ const Index = forwardRef(
                             }}
                           >
                             <i className="ri-delete-bin-2-line"></i>
+                          </Button>
+                        )}
+                        {tableElement?.isNotCalculate && (
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              setSearchTerm("")
+                              singleCheck.length > 0
+                                ? noCalculateModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one (only One) row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                          >
+                            Not Calculate
                           </Button>
                         )}
                         {tableElement?.displayTypeDropDown ? (
