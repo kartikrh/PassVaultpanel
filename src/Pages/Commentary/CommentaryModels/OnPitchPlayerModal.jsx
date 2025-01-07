@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
 import CardComponent from '../CardComponent';
 import { BATTING_TEAM, BOWLING_TEAM, CURRENT_BOWLER, NON_STRIKE, ON_STRIKE } from '../CommentartConst';
@@ -7,6 +7,7 @@ import "../CommentaryCss.css"
 
 const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, toggle }) => {
     const [playerList, setPlayerList] = useState(false);
+    const [isBowlerrChange, setIsBowlerrChange] = useState(false);
     const [changePlayerType, setChangePlayerType] = useState(false);
 
     const onChangePlayerClick = (playerType) => {
@@ -32,10 +33,19 @@ const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, tog
         setPlayerList(null)
         setChangePlayerType(null)
         updatePlayerOnParent(changePlayerType, playerToAdd)
+        setIsBowlerrChange(false)
     }
+    
+    useEffect(() => {
+        if(onPitchPlayers[CURRENT_BOWLER] === null) {
+            setIsBowlerrChange(true)
+        }else if(onPitchPlayers[CURRENT_BOWLER]){
+            setIsBowlerrChange(false)
+        }
+    }, [onPitchPlayers])
 
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} keyboard={false} toggle={toggle} >
             <ModalHeader>
                 Player Selection
             </ModalHeader>
@@ -78,6 +88,7 @@ const OnPitchPlayerModal = ({ onPitchPlayers, players, updatePlayerOnParent, tog
                         setPlayerList(null)
                         setChangePlayerType(null)
                     }}
+                    isBowler = {isBowlerrChange}
                     playerList={playerList}
                     selectPlayer={onSubmitClick}
                 />}

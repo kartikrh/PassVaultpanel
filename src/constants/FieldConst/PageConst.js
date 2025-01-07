@@ -117,8 +117,8 @@ export const PageFields = [
         parentclassName: "",
         type: SELECT,
         isRequired: true,
-        // labelColspan: { xs: 12, md: 2, lg: 2 },
-        // fieldColspan: { xs: 12, md: 10, lg: 10 }
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
     },
     {
         name: "isStatic",

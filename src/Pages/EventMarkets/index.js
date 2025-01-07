@@ -57,7 +57,7 @@ const Index = () => {
   const [closeSuspendTimeModelVisible, setCloseSuspendTimeModelVisible] = useState(false);
   const [closeSuspendTimeRecord, setCloseSuspendTimeRecord] = useState({});
   const [delay, setDelay] = useState(null);
-  const [isSearch, setIsSearch] = useState(true);
+  const [isSearch, setIsSearch] = useState(false);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -111,7 +111,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/all`, payload)
       .then((response) => {
-        const apiData = response?.result?.sort((a, b) => b?.eventMarketId - a?.eventMarketId);
+        const apiData = response?.result?.sort((a, b) => a?.eventMarketId - b?.eventMarketId);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.eventMarketId);
@@ -178,9 +178,9 @@ const Index = () => {
         fetchEventTypeData();
         fetchCompetitionList(commentaryDetails?.eventTypeId);
         fetchEventList(commentaryDetails?.competitionId);
-      } else {
+      } /* else {
         setIsSearch(true)
-      }
+      } */
     },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.eventId])
 
   const handleAllowPermissions = async (pType, record, cState) => {

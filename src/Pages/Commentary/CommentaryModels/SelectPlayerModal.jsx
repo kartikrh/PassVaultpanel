@@ -5,7 +5,7 @@ import bat from '../../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../../src/assets/images/cricket-icons/game.png';
 
-const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler }) => {
+const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler, overPopUpForBowler }) => {
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
             a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
@@ -18,7 +18,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler 
     useEffect(() => {
         setSearch("");
         setPlayers(playerList);
-        
+
     }, [isOpen, playerList]);
     useEffect(() => {
         setIsBowlerChange(isBowler)
@@ -44,7 +44,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler 
         "AllRounder": 3,
         "Bowler": 4
     };
-    
+
     // Sort by player type first, then player name alphabetically
     let sortedPlayers = players?.sort((a, b) => {
         // First, compare by playerType
@@ -67,10 +67,9 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler 
             return <img src={ball} alt="ball" style={{ width: "20px", height: "20px" }} />
         }
     }
-
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader>
+        <Modal backdrop="static" keyboard={false} className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+            <ModalHeader toggle={!overPopUpForBowler ? toggle : null}>
                 Select Player
             </ModalHeader>
             <ModalBody>
@@ -87,11 +86,11 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler 
                     </thead>
                     <tbody>
                         {sortedPlayers?.map(value => <tr key={value.commentaryPlayerId}>
-                            <td role='button' onClick={() =>{
+                            <td role='button' onClick={() => {
                                 setIsBowlerChange(false)
                                 selectPlayer(value.commentaryPlayerId)
                             }}
-                                ><span className='pe-4'>{imageRender(value.playerType)}</span>{value.playerName}</td>
+                            ><span className='pe-4'>{imageRender(value.playerType)}</span>{value.playerName}</td>
                         </tr>)}
                     </tbody>
                 </Table>

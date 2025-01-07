@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { isEqual } from "lodash";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { Button } from "reactstrap";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_EVENT_RESULT;
@@ -178,6 +180,34 @@ const Index = () => {
       });
   };
 
+  const handleIsCountInPoint = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/isCountInPoint`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   //table columns
   const columns = [
     {
@@ -296,6 +326,27 @@ const Index = () => {
       key: "result",
       sort: true,
       style: { width: "10%" },
+    },
+    {
+      title: "Count In Point",
+      key: "isCountInPoint",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isCountInPoint ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
+            }}
+          >
+            <i
+              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
   //elements required
