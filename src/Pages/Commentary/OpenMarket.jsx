@@ -924,10 +924,10 @@ export const OpenMarket = () => {
         });
     };
 
-    const handleDS = (id) => {
-        localStorage.setItem('EventMarketDataLogId', "" + id);
+    const handleDS = (details) => {
         const url = new URL(window.location.origin + "/marketDataLogs");
-        url.searchParams.append("eventMarketId", id);
+        sessionStorage.setItem('eventMarketDataLogId', "" + details?.eventMarketId);
+        sessionStorage.setItem('eventMarketDataLogDetails', "" + JSON.stringify(details));
         window.open(url.href, '_blank');
     };
 
@@ -951,7 +951,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <span
                     style={{ cursor: "pointer" }}
-                    onClick={() => { handleDS(text) }}>
+                    onClick={() => { handleDS({...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventMarketId: commentaryInfo?.eid}) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </span>
