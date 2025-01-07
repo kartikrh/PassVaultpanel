@@ -4,12 +4,11 @@ import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
-import DeleteTabModel from "../../components/Model/DeleteModel";
+import CancelCalculationModel from "../../components/Model/CancelCalculationModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
   ERROR,
-  PERMISSION_DELETE,
   PERMISSION_VIEW,
   SUCCESS,
   TAB_EVENT_RESULT,
@@ -18,8 +17,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { isEqual } from "lodash";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { Button } from "reactstrap";
-import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_EVENT_RESULT;
@@ -31,7 +28,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [cancelCalculateModelVisable, setCancelCalculateModelVisable] = useState(false);
   const [competitions, setCompetitions] = useState([]);
   const [teams, setTeams] = useState([]);
   const [isSearch, setIsSearch] = useState(true);
@@ -149,15 +146,15 @@ const Index = () => {
       .catch((error) => { });
   };
 
-  const handleDelete = async (e) => {
+  const handleNoCalculate = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/commentary/deleteResult`, {
+      .post(`/admin/commentary/changeIsCountInPoint`, {
         commentaryId: checekedList,
       })
       .then((response) => {
         fetchData();
-        setDeleteModelVisable(false);
+        setCancelCalculateModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -180,34 +177,34 @@ const Index = () => {
       });
   };
 
-  const handleIsCountInPoint = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/isCountInPoint`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
+  // const handleIsCountInPoint = async (pType, record, cState) => {
+  //   setIsLoading(true);
+  //   await axiosInstance
+  //     .post(`/admin/commentary/isCountInPoint`, {
+  //       commentaryId: record?.commentaryId,
+  //       [pType]: cState ? false : true,
+  //     })
+  //     .then((response) => {
+  //       fetchData();
+  //       dispatch(
+  //         updateToastData({
+  //           data: response?.message,
+  //           title: response?.title,
+  //           type: SUCCESS,
+  //         })
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       setIsLoading(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: error?.message,
+  //           title: error?.title,
+  //           type: ERROR,
+  //         })
+  //       );
+  //     });
+  // };
   //table columns
   const columns = [
     {
@@ -327,27 +324,27 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
-    {
-      title: "Count In Point",
-      key: "isCountInPoint",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isCountInPoint ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
-            }}
-          >
-            <i
-              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "Count In Point",
+    //   key: "isCountInPoint",
+    //   render: (text, record) => (
+    //     <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         color={`${record.isCountInPoint ? "primary" : "danger"}`}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
+    //         }}
+    //       >
+    //         <i
+    //           className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
+    //         ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
   ];
   //elements required
   const tableElement = {
@@ -357,6 +354,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     isServerPagination: true,
+    isNotCalculate: true,
     isDateRange: true,
   };
 
@@ -401,7 +399,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
+            noCalculateModelFunction={setCancelCalculateModelVisable}
             competitions={competitions}
             teams={teams}
             singleCheck={checekedList}
@@ -409,11 +407,6 @@ const Index = () => {
             selectedTableElementsLogs={selectedTableElements}
             handleReset={handleReset}
             handleReload={handleReload}
-            isDeletePermission={checkPermission(
-              permissionObj,
-              pageName,
-              PERMISSION_DELETE
-            )}
             setDateRange={setDateRange}
             dateRange={dateRange}
             serverCurrentPage={currentPage}
@@ -424,10 +417,10 @@ const Index = () => {
             isSearch={isSearch}
             setIsSearch={setIsSearch}
           />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
+          <CancelCalculationModel
+            cancelCalculateModelVisable={cancelCalculateModelVisable}
+            setCancelCalculateModelVisable={setCancelCalculateModelVisable}
+            handleNoCalculate={handleNoCalculate}
             singleCheck={checekedList}
           />
           <TabModel
