@@ -951,7 +951,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <span
                     style={{ cursor: "pointer" }}
-                    onClick={() => { handleDS({...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventMarketId: commentaryInfo?.eid}) }}>
+                    onClick={() => { handleDS({...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: record?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et}) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </span>

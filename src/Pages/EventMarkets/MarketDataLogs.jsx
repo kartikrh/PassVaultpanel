@@ -476,6 +476,8 @@ function MarketDataLogs() {
 
   const MarketDetailsDate = marketDetails?.eventDate
     ? convertDateUTCToLocal2(marketDetails.eventDate, "index")
+    : (marketDetails?.eventDay && marketDetails?.eventTime) 
+    ? `${marketDetails?.eventDay} ${marketDetails?.eventTime}`
     : "";
 
   const tableElement = {
