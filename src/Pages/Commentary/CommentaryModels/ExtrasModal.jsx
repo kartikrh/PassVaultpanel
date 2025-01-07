@@ -30,7 +30,7 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
         }
     }, [isOpen]);
     return (
-        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
+        <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} keyboard={false} scrollable>
             <ModalHeader className='normal-header'>
                 Select&nbsp;
                 <b>{extraType}</b> Extra Run

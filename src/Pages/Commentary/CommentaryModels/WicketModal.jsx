@@ -272,8 +272,8 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     };
 
     return (
-        <Modal backdrop="static" size="lg" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader>
+        <Modal backdrop="static" size="lg" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} keyboard={false} scrollable>
+            <ModalHeader toggle={toggle}>
                 <div className="wicket-modal-header">Wicket</div>
             </ModalHeader>
             <ModalBody className="wicket-modal-body">

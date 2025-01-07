@@ -48,7 +48,7 @@ const CommentaryAction = ({
     return (
         <>
             {isLoading && <SpinnerModel />}
-            <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle}>
+            <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} keyboard={false} toggle={toggle}>
                 <ModalHeader>
                     Actions
                 </ModalHeader>
