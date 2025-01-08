@@ -288,8 +288,12 @@ export const OpenMarket = () => {
 
                         updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
 
-                        // Update subsequent markets without lineDiff
-                        const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
+                        // Filter category31Markets to only include markets for the same team
+                        const category31Markets = updatedData.filter(m => {
+                            return m.marketTypeCategoryId === 31 &&
+                                ((m.inningsId === updatedMarket.inningsId) && (m.teamId === updatedMarket.teamId))
+                        }
+                        );
                         const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
                         let previousLine = newLine;
@@ -369,8 +373,10 @@ export const OpenMarket = () => {
 
                             updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
 
-                            // Update subsequent markets without lineDiff
-                            const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
+                            const category31Markets = updatedData.filter(m => {
+                                return m.marketTypeCategoryId === 31 &&
+                                    ((m.inningsId === updatedMarket.inningsId) && (m.teamId === updatedMarket.teamId))
+                            });
                             const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
                             let previousLine = parseFloat(value);
@@ -831,98 +837,98 @@ export const OpenMarket = () => {
         navigate("/commentary");
     };
 
-    const updateLineAndDependency = (record, newValue) => {
-        setHasUnsavedChanges(true);
-        setData(currentData => {
-            if (!Array.isArray(currentData)) {
-                console.error('Invalid data array provided to updateLineAndDependency');
-                return currentData;
-            }
+    // const updateLineAndDependency = (record, newValue) => {
+    //     setHasUnsavedChanges(true);
+    //     setData(currentData => {
+    //         if (!Array.isArray(currentData)) {
+    //             console.error('Invalid data array provided to updateLineAndDependency');
+    //             return currentData;
+    //         }
 
-            let updatedData = [...currentData];
-            const marketIndex = updatedData.findIndex(market => market.marketId === record.marketId);
+    //         let updatedData = [...currentData];
+    //         const marketIndex = updatedData.findIndex(market => market.marketId === record.marketId);
 
-            if (marketIndex === -1) {
-                console.error('Market not found in data array');
-                return currentData;
-            }
+    //         if (marketIndex === -1) {
+    //             console.error('Market not found in data array');
+    //             return currentData;
+    //         }
 
-            let updatedRecord = { ...record };
-            const originalData = originalMarketData[record.marketId];
+    //         let updatedRecord = { ...record };
+    //         const originalData = originalMarketData[record.marketId];
 
-            if (record.runner && record.runner.length === 1) {
-                const roundedLine = Math.round(parseFloat(newValue));
+    //         if (record.runner && record.runner.length === 1) {
+    //             const roundedLine = Math.round(parseFloat(newValue));
 
-                // Update the line difference and predefined value
-                const lineDifference = roundedLine - (originalData?.line || 0);
-                updatedRecord.lineDiff = lineDifference;
-                updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
+    //             // Update the line difference and predefined value
+    //             const lineDifference = roundedLine - (originalData?.line || 0);
+    //             updatedRecord.lineDiff = lineDifference;
+    //             updatedRecord.predefinedValue = (originalData?.predefinedValue || 0) + lineDifference;
 
-                // Update the runner with new values
-                updatedRecord.runner = [{
-                    ...record.runner[0],
-                    line: roundedLine,
-                    layPrice: roundedLine,
-                    backPrice: (record?.marketTypeId === marketTypeObj?.Fancy ||
-                        record?.marketTypeId === marketTypeObj?.LineMarket)
-                        ? roundedLine + parseFloat(record?.rateDiff || 0)
-                        : roundedLine + 1
-                }];
+    //             // Update the runner with new values
+    //             updatedRecord.runner = [{
+    //                 ...record.runner[0],
+    //                 line: roundedLine,
+    //                 layPrice: roundedLine,
+    //                 backPrice: (record?.marketTypeId === marketTypeObj?.Fancy ||
+    //                     record?.marketTypeId === marketTypeObj?.LineMarket)
+    //                     ? roundedLine + parseFloat(record?.rateDiff || 0)
+    //                     : roundedLine + 1
+    //             }];
 
-                // Update over/under rates
-                updatedRecord = generateOverUnderLineType({
-                    ...updatedRecord,
-                    line: roundedLine,
-                    backSize: updatedRecord.runner[0]?.backSize,
-                    laySize: updatedRecord.runner[0]?.laySize
-                }, marketTypeObj);
+    //             // Update over/under rates
+    //             updatedRecord = generateOverUnderLineType({
+    //                 ...updatedRecord,
+    //                 line: roundedLine,
+    //                 backSize: updatedRecord.runner[0]?.backSize,
+    //                 laySize: updatedRecord.runner[0]?.laySize
+    //             }, marketTypeObj);
 
-                // Update the current market
-                updatedData[marketIndex] = updatedRecord;
+    //             // Update the current market
+    //             updatedData[marketIndex] = updatedRecord;
 
-                // If category 31, update ALL subsequent markets
-                if (record.marketTypeCategoryId === 31) {
-                    const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
-                    const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
+    //             // If category 31, update ALL subsequent markets
+    //             if (record.marketTypeCategoryId === 31) {
+    //                 const category31Markets = updatedData.filter(m => m.marketTypeCategoryId === 31);
+    //                 const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
 
-                    // Update all markets after the current one
-                    let previousLine = roundedLine;
-                    for (let i = currentIndex + 1; i < category31Markets.length; i++) {
-                        const nextMarket = category31Markets[i];
-                        const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
+    //                 // Update all markets after the current one
+    //                 let previousLine = roundedLine;
+    //                 for (let i = currentIndex + 1; i < category31Markets.length; i++) {
+    //                     const nextMarket = category31Markets[i];
+    //                     const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
 
-                        if (nextMarketIndex !== -1) {
-                            // Calculate new line based on previous line and current predefined value
-                            const newNextLine = previousLine + nextMarket.predefinedValue;
+    //                     if (nextMarketIndex !== -1) {
+    //                         // Calculate new line based on previous line and current predefined value
+    //                         const newNextLine = previousLine + nextMarket.predefinedValue;
 
-                            updatedData[nextMarketIndex] = {
-                                ...nextMarket,
-                                runner: [{
-                                    ...nextMarket.runner[0],
-                                    line: newNextLine,
-                                    layPrice: Math.round(newNextLine),
-                                    backPrice: (nextMarket.marketTypeId === marketTypeObj?.Fancy ||
-                                        nextMarket.marketTypeId === marketTypeObj?.LineMarket)
-                                        ? Math.round(newNextLine) + parseFloat(nextMarket.rateDiff || 0)
-                                        : Math.round(newNextLine) + 1
-                                }]
-                            };
+    //                         updatedData[nextMarketIndex] = {
+    //                             ...nextMarket,
+    //                             runner: [{
+    //                                 ...nextMarket.runner[0],
+    //                                 line: newNextLine,
+    //                                 layPrice: Math.round(newNextLine),
+    //                                 backPrice: (nextMarket.marketTypeId === marketTypeObj?.Fancy ||
+    //                                     nextMarket.marketTypeId === marketTypeObj?.LineMarket)
+    //                                     ? Math.round(newNextLine) + parseFloat(nextMarket.rateDiff || 0)
+    //                                     : Math.round(newNextLine) + 1
+    //                             }]
+    //                         };
 
-                            updatedData[nextMarketIndex] = generateOverUnderLineType(updatedData[nextMarketIndex], marketTypeObj);
+    //                         updatedData[nextMarketIndex] = generateOverUnderLineType(updatedData[nextMarketIndex], marketTypeObj);
 
-                            // Update the previous line for the next iteration
-                            previousLine = newNextLine;
-                        }
-                    }
-                }
-            } else if (record.runner && record.runner.length > 1) {
-                // Handle multi-runner case if needed
-                handleMultiRunnerUpdate(record);
-            }
+    //                         // Update the previous line for the next iteration
+    //                         previousLine = newNextLine;
+    //                     }
+    //                 }
+    //             }
+    //         } else if (record.runner && record.runner.length > 1) {
+    //             // Handle multi-runner case if needed
+    //             handleMultiRunnerUpdate(record);
+    //         }
 
-            return updatedData;
-        });
-    };
+    //         return updatedData;
+    //     });
+    // };
 
     const handleDS = (details) => {
         const url = new URL(window.location.origin + "/marketDataLogs");
@@ -1047,17 +1053,17 @@ export const OpenMarket = () => {
             dataIndex: "layPrice",
             render: (text, record) => (
                 <>
-                <CustomInput
-                    className="form-control price-text-fields input-no-field text-bold"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
-                />
-                <CustomInput
-                    className="form-control size-text-fields input-no-field mt-1"
-                    value={record?.laySize === null ? "" : record?.laySize}
-                    onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
-                    steps={5}
-                />
+                    <CustomInput
+                        className="form-control price-text-fields input-no-field text-bold"
+                        value={text === null ? "" : text}
+                        onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
+                    />
+                    <CustomInput
+                        className="form-control size-text-fields input-no-field mt-1"
+                        value={record?.laySize === null ? "" : record?.laySize}
+                        onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
+                        steps={5}
+                    />
                 </>
             ),
             key: "layPrice",
@@ -1070,17 +1076,17 @@ export const OpenMarket = () => {
             dataIndex: "backPrice",
             render: (text, record) => (
                 <>
-                <CustomInput
-                    className="form-control price-text-fields input-yes-field text-bold"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
-                />
-                <CustomInput
-                    className="form-control size-text-fields input-yes-field mt-1"
-                    value={record?.backSize === null ? "" : record?.backSize}
-                    onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
-                    steps={5}
-                />
+                    <CustomInput
+                        className="form-control price-text-fields input-yes-field text-bold"
+                        value={text === null ? "" : text}
+                        onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
+                    />
+                    <CustomInput
+                        className="form-control size-text-fields input-yes-field mt-1"
+                        value={record?.backSize === null ? "" : record?.backSize}
+                        onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
+                        steps={5}
+                    />
                 </>
             ),
             key: "backPrice",
@@ -1426,9 +1432,9 @@ export const OpenMarket = () => {
                                 </Row>
                                 <Row>
                                     <Col className="p-0 d-flex align-items-center flex-wrap" xs={12} md={6} lg={6}>
-                                        <button className="table-header-button-2 table-header-button-3 btn btn-color-purple" style={{ width: "150px" }}  onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{ALL_SUSPEND} (Q)</button>
-                                        <button className="table-header-button-2 btn btn-color-yellow" style={{ width: "100px" }}  onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
-                                        <button className="table-header-button-2 btn btn-color-orange" style={{ width: "100px" }}  onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE })}>{SUSPEND} (Z)</button>
+                                        <button className="table-header-button-2 table-header-button-3 btn btn-color-purple" style={{ width: "150px" }} onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" })}>{ALL_SUSPEND} (Q)</button>
+                                        <button className="table-header-button-2 btn btn-color-yellow" style={{ width: "100px" }} onClick={() => handleAction({ changeIn: data, key: "status", value: INACTIVE_VALUE })}>{INACTIVE}</button>
+                                        <button className="table-header-button-2 btn btn-color-orange" style={{ width: "100px" }} onClick={() => handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE })}>{SUSPEND} (Z)</button>
                                     </Col>
                                     <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={2}>
                                         <Button color="primary" className="table-header-button" onClick={() => handleAction({ changeIn: data, key: "isAllow", value: true })}>{ALLOW}</Button>
@@ -1484,33 +1490,33 @@ export const OpenMarket = () => {
                                                 disabled={selectedCategories.length === 0}
                                             >{`Save All (A)`}</Button>
                                             <Switch
-                                               width={80}
-                                               uncheckedIcon={<OffsymbolStatus />}
-                                               checkedIcon={<OnSymbolStatus />}
-                                               className="mx-2"
-                                               onColor="#02a499"
-                                               onChange={() => {
-                                                setIsScorecardShow(!isScorecardShow);
-                                               }}
-                                               checked={isScorecardShow}
+                                                width={80}
+                                                uncheckedIcon={<OffsymbolStatus />}
+                                                checkedIcon={<OnSymbolStatus />}
+                                                className="mx-2"
+                                                onColor="#02a499"
+                                                onChange={() => {
+                                                    setIsScorecardShow(!isScorecardShow);
+                                                }}
+                                                checked={isScorecardShow}
                                             />
                                         </Col>
                                     </Row>}
                                 {isScorecardShow && (
                                     <Row>
                                         <Col xs={12}>
-                                            <iframe 
-                                               title="YouTube video player"
-                                               width="100%" 
-                                               height="auto"
-                                               src={scoreboardUrl} 
-                                               frameborder="0" 
-                                               className="mb-0"
+                                            <iframe
+                                                title="YouTube video player"
+                                                width="100%"
+                                                height="auto"
+                                                src={scoreboardUrl}
+                                                frameborder="0"
+                                                className="mb-0"
                                             >
                                             </iframe>
                                         </Col>
                                     </Row>
-                                 )}
+                                )}
                                 {Object.keys(categorisedData).length > 0 && (
                                     <OpenMarketCategories
                                         categorisedData={categorisedData}
