@@ -79,6 +79,8 @@ const Index = () => {
     sessionStorage.setItem('eventResultCompetitionId', "" + details?.competitionId);
     sessionStorage.setItem('eventResultDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("eventResultCompetitionId");
+    sessionStorage.removeItem("eventResultDetails");
   };
 
   //permissions function
