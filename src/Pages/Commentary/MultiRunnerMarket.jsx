@@ -148,7 +148,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 color={localMarket.isActive ? "primary" : "danger"}
                                 size="sm"
                                 className="btn"
-                                onClick={() => handleAction("isActive", !localMarket.isActive)}
+                                onClick={() => handleMarketValueChange("isActive", !localMarket.isActive)}
                             >
                                 <i className={`bx ${localMarket.isActive ? "bx-check" : "bx-block"}`}></i>
                             </Button>
@@ -158,7 +158,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 color={localMarket.isAllow ? "primary" : "danger"}
                                 size="sm"
                                 className="btn"
-                                onClick={() => handleAction("isAllow", !localMarket.isAllow)}
+                                onClick={() => handleMarketValueChange("isAllow", !localMarket.isAllow)}
                             >
                                 <i className={`bx ${localMarket.isAllow ? "bx-check" : "bx-block"}`}></i>
                             </Button>

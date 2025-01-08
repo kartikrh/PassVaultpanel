@@ -381,30 +381,40 @@ const Index = () => {
     sessionStorage.setItem('scoringLogsId', "" + details?.commentaryId);
     sessionStorage.setItem('scoringLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("scoringLogsId");
+    sessionStorage.removeItem("scoringLogsDetails");
   };
   const handlePredictorDetailsClick = (details) => {
     const url = new URL(window.location.origin + "/predictorLogs");
     sessionStorage.setItem('predictorLogsId', "" + details?.commentaryId);
     sessionStorage.setItem('predictorLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("predictorLogsId");
+    sessionStorage.removeItem("predictorLogsDetails");
   };
   const handleCommentaryLogsClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryLogs");
     sessionStorage.setItem('commentaryLogsId', "" + details?.commentaryId);
     sessionStorage.setItem('commentaryLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("commentaryLogsId");
+    sessionStorage.removeItem("commentaryLogsDetails");
   };
   const handleUndoLogsClick = (details) => {
     const url = new URL(window.location.origin + "/undoLogs");
     sessionStorage.setItem('undoLogsId', "" + details?.commentaryId);
     sessionStorage.setItem('undoLogsDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("undoLogsId");
+    sessionStorage.removeItem("undoLogsDetails");
   };
   const handleEventMarketClick = (details) => {
     const url = new URL(window.location.origin + "/eventMarkets");
     sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
     sessionStorage.setItem('commentaryEventMarketDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("commentaryEventMarketId");
+    sessionStorage.removeItem("commentaryEventMarketDetails");
   };
   const handleCommentaryMarketTemplateClick = (id) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });

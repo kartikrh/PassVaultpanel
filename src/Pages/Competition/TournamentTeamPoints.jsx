@@ -212,6 +212,9 @@ const TournamentTeamPoints = () => {
     sessionStorage.setItem('eventResultTeamId', "" + details?.teamId);
     sessionStorage.setItem('eventResultDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+    sessionStorage.removeItem("eventResultCompetitionId");
+    sessionStorage.removeItem("eventResultTeamId");
+    sessionStorage.removeItem("eventResultDetails");
   };
 
   const handleRowDelete = async (record) => {

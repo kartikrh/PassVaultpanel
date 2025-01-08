@@ -23,6 +23,7 @@ export const ChangeRunnerModel = ({
   const [isTeamsData, setIsTeamsData] = useState(false);
   const [isMatchOdds, setIsMatchOdds] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
+  const [manualMarket, setManualMarket] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -37,6 +38,7 @@ export const ChangeRunnerModel = ({
       })
       .then((response) => {
         const runnerData = response?.result;
+        setManualMarket(response?.result?.data);
         if (runnerData?.teamsDetails) {
           setIsTeamsData(true);
           setTeam1({
@@ -58,6 +60,7 @@ export const ChangeRunnerModel = ({
             runnerDataIdList.push({
               label: `${ele?.runner} - ${ele?.selectionId}`,
               value: ele?.selectionId,
+              runnerId: ele?.runnerId,
             });
           });
         }
@@ -78,6 +81,27 @@ export const ChangeRunnerModel = ({
     fetchData();
   }, []);
 
+  const defaultTeam1 = manualMarket?.find((item)=> item?.teamId === team1?.teamId) || null;
+  const defaultTeam2 = manualMarket?.find((item)=> item?.teamId === team2?.teamId) || null;
+
+  useEffect(()=>{
+    if(defaultTeam1 || defaultTeam2){
+      setSelectedCommentaryRunner((prev) => ({
+        ...prev,
+        team1: {
+          selectionId: defaultTeam1?.selectionId,
+          teamId: team1?.teamId,
+          runnerId: defaultTeam1?.runnerId,
+        },
+        team2: {
+          selectionId: defaultTeam2?.selectionId,
+          teamId: team2?.teamId,
+          runnerId: defaultTeam2?.runnerId,
+        },
+      }));
+    }
+  },[defaultTeam1, defaultTeam2])
+
   const handleTeam1Change = (selectedOption) => {
     const selectionId = selectedOption?.value?.toString();
     setSelectedCommentaryRunner((prev) => ({
@@ -85,6 +109,7 @@ export const ChangeRunnerModel = ({
       team1: {
         selectionId,
         teamId: team1?.teamId,
+        runnerId: selectedOption?.runnerId,
       },
     }));
 
@@ -103,6 +128,7 @@ export const ChangeRunnerModel = ({
       team2: {
         selectionId,
         teamId: team2?.teamId,
+        runnerId: selectedOption?.runnerId,
       },
     }));
 
@@ -164,10 +190,11 @@ export const ChangeRunnerModel = ({
                   id="runnerType1"
                   name="runnerType1"
                   placeholder="Select Runner"
-                  defaultValue={{
-                    label: "Select Runner Value",
-                    value: 0,
-                  }}
+                  defaultValue={
+                    defaultTeam1
+                      ? { label: `${defaultTeam1?.runner} - ${defaultTeam1?.selectionId}`, value: defaultTeam1?.selectionId, runnerId: defaultTeam1?.runnerId}
+                      : { label: "Select Runner Value", value: 0 }
+                  }
                   options={runnerTypeList}
                   onChange={handleTeam1Change}
                   required={true}
@@ -184,10 +211,11 @@ export const ChangeRunnerModel = ({
                   id="runnerType2"
                   name="runnerType2"
                   placeholder="Select Runner"
-                  defaultValue={{
-                    label: "Select Runner Value",
-                    value: 0,
-                  }}
+                  defaultValue={
+                    defaultTeam2
+                      ? { label: `${defaultTeam2?.runner} - ${defaultTeam2?.selectionId}`, value: defaultTeam2?.selectionId,  runnerId: defaultTeam2?.runnerId}
+                      : { label: "Select Runner Value", value: 0 }
+                  }
                   options={runnerTypeList}
                   onChange={handleTeam2Change}
                   required={true}
