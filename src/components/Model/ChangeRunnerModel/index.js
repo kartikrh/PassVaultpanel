@@ -33,7 +33,7 @@ export const ChangeRunnerModel = ({
 
   const fetchData = async () => {
     await axiosInstance
-      .post(`/admin/ImportMarket/getlistManualMarket`, {
+      .post(`/admin/commentary/getRunnerOfMarket`, {
         refID: selectedCommentaryRunner?.eventRefId,
       })
       .then((response) => {
