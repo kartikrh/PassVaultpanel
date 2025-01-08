@@ -81,6 +81,27 @@ export const ChangeRunnerModel = ({
     fetchData();
   }, []);
 
+  const defaultTeam1 = manualMarket?.find((item)=> item?.teamId === team1?.teamId) || null;
+  const defaultTeam2 = manualMarket?.find((item)=> item?.teamId === team2?.teamId) || null;
+
+  useEffect(()=>{
+    if(defaultTeam1 || defaultTeam2){
+      setSelectedCommentaryRunner((prev) => ({
+        ...prev,
+        team1: {
+          selectionId: defaultTeam1?.selectionId,
+          teamId: team1?.teamId,
+          runnerId: defaultTeam1?.runnerId,
+        },
+        team2: {
+          selectionId: defaultTeam2?.selectionId,
+          teamId: team2?.teamId,
+          runnerId: defaultTeam2?.runnerId,
+        },
+      }));
+    }
+  },[defaultTeam1, defaultTeam2])
+
   const handleTeam1Change = (selectedOption) => {
     const selectionId = selectedOption?.value?.toString();
     setSelectedCommentaryRunner((prev) => ({
@@ -134,8 +155,6 @@ export const ChangeRunnerModel = ({
       handleChange();
     }
   };
-  const defaultTeam1 = manualMarket?.find((item)=> item?.teamId === team1?.teamId) || null;
-  const defaultTeam2 = manualMarket?.find((item)=> item?.teamId === team2?.teamId) || null;
 
   return (
     <Modal
