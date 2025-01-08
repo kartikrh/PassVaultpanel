@@ -518,7 +518,7 @@ export const OpenMarket = () => {
     const handleAction = async ({ changeIn, key, value, action }) => {
         let filteredData = filterDataBySelectedCategories(changeIn);
 
-        if (_.isEmpty(filteredData)) {
+        if (_.isEmpty(filteredData) && action !== 'SUSPEND') {
             dispatch(updateToastData({
                 data: "No data to update based on current filter",
                 title: "Update Skipped",
@@ -527,26 +527,26 @@ export const OpenMarket = () => {
             return;
         }
 
-        let dataToUpdate = filterDataBySelectedCategories(changeIn).filter(record => {
-            if (key === "status" && value === INACTIVE_VALUE) {
-                return record.status !== INACTIVE_VALUE;
-            }
-            return !_.isEqual(+record[key], +value);
-        }).map(record => {
-            // Create updated record with new status
-            const updatedRecord = { ...record, [key]: value };
-
-            // If this is a status change, update runner status too
-            if (key === "status" && Array.isArray(updatedRecord.runner)) {
-                updatedRecord.runner = updatedRecord.runner.map(runner => ({
-                    ...runner,
-                    status: +value
-                }));
-            }
-
-            return updatedRecord;
-        });
-
+        let dataToUpdate = (action === "SUSPEND" ? changeIn : filterDataBySelectedCategories(changeIn)).filter(record => {
+                if (key === "status" && value === INACTIVE_VALUE) {
+                    return record.status !== INACTIVE_VALUE;
+                }
+                return !_.isEqual(+record[key], +value);
+            }).map(record => {
+                // Create updated record with new status
+                const updatedRecord = { ...record, [key]: value };
+    
+                // If this is a status change, update runner status too
+                if (key === "status" && Array.isArray(updatedRecord.runner)) {
+                    updatedRecord.runner = updatedRecord.runner.map(runner => ({
+                        ...runner,
+                        status: +value
+                    }));
+                }
+    
+                return updatedRecord;
+            });
+         
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
             await saveData({ dataToSave: dataToUpdate, action });
