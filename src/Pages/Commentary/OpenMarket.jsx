@@ -924,10 +924,10 @@ export const OpenMarket = () => {
         });
     };
 
-    const handleDS = (id) => {
-        localStorage.setItem('EventMarketDataLogId', "" + id);
+    const handleDS = (details) => {
         const url = new URL(window.location.origin + "/marketDataLogs");
-        url.searchParams.append("eventMarketId", id);
+        sessionStorage.setItem('eventMarketDataLogId', "" + details?.eventMarketId);
+        sessionStorage.setItem('eventMarketDataLogDetails', "" + JSON.stringify(details));
         window.open(url.href, '_blank');
     };
 
@@ -951,7 +951,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <span
                     style={{ cursor: "pointer" }}
-                    onClick={() => { handleDS(text) }}>
+                    onClick={() => { handleDS({...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: record?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et}) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </span>
@@ -1097,7 +1097,8 @@ export const OpenMarket = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleSingleAction(record, "isActive", !record.isActive);
+                        // handleSingleAction(record, "isActive", !record.isActive);
+                        handleValueChange(record, "isActive", !record.isActive);
                     }}
                 >
                     <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
@@ -1117,7 +1118,8 @@ export const OpenMarket = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleSingleAction(record, "isAllow", !record.isAllow);
+                        // handleSingleAction(record, "isAllow", !record.isAllow);
+                        handleValueChange(record, "isAllow", !record.isAllow);
                     }}
                 >
                     <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
@@ -1466,7 +1468,7 @@ export const OpenMarket = () => {
                                                 // style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
                                                 className="table-header-button"
                                                 onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
-                                                disabled={selectedCategories.length === 0}
+                                                disabled={selectedCategories.length === 0 || hasUnsavedChanges}
                                             > {`${SEND_ALL} (S)`}</Button>
                                             <Button
                                                 color="primary"

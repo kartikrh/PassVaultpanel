@@ -401,7 +401,6 @@ const Index = () => {
     window.open(url.href, '_blank');
   };
   const handleEventMarketClick = (details) => {
-    console.log("details", details);
     const url = new URL(window.location.origin + "/eventMarkets");
     sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
     sessionStorage.setItem('commentaryEventMarketDetails', "" + JSON.stringify(details));
@@ -1034,27 +1033,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Count In Point",
-      key: "isCountInPoint",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isCountInPoint ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
-            }}
-          >
-            <i
-              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
@@ -1424,6 +1402,27 @@ const Index = () => {
         </Tooltip>
       ),
       style: { width: "10%" },
+    },
+    {
+      title: "Count In Point",
+      key: "isCountInPoint",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isCountInPoint ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
+            }}
+          >
+            <i
+              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 
