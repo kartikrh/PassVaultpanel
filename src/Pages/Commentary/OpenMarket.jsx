@@ -836,7 +836,7 @@ export const OpenMarket = () => {
     const handleBackClick = () => {
         navigate("/commentary");
     };
-    
+
     const handleDS = (details) => {
         const url = new URL(window.location.origin + "/marketDataLogs");
         sessionStorage.setItem('eventMarketDataLogId', "" + details?.eventMarketId);
@@ -1194,13 +1194,13 @@ export const OpenMarket = () => {
         const key = event.key.toLowerCase();
         switch (key) {
             case 'a':
-                updateRecords();
+                if (selectedCategories.length > 0 && hasUnsavedChanges) updateRecords();
                 break;
             case 's':
-                handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
+                if (selectedCategories.length > 0 && !hasUnsavedChanges) handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
                 break;
             case 'd':
-                handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
+                if (selectedCategories.length > 0) handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
                 break;
             case 'z':
                 handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE });
