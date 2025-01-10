@@ -1265,3 +1265,26 @@
     display: none;
     /* For Chrome, Safari, and newer Edge versions */
 }
+
+.no-rate {
+    background-color: #850912 !important;
+    color: #fff !important;
+}
+
+.rate-font {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.point-font {
+    font-size: 12px;
+}
+
+.yes-rate {
+    background-color: #0c5d78 !important;
+    color: #fff !important;
+}
+
+.market-runner {
+    width: 60%;
+}
