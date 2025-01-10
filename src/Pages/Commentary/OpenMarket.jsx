@@ -534,25 +534,25 @@ export const OpenMarket = () => {
         }
 
         let dataToUpdate = (action === "SUSPEND" ? changeIn : filterDataBySelectedCategories(changeIn)).filter(record => {
-                if (key === "status" && value === INACTIVE_VALUE) {
-                    return record.status !== INACTIVE_VALUE;
-                }
-                return !_.isEqual(+record[key], +value);
-            }).map(record => {
-                // Create updated record with new status
-                const updatedRecord = { ...record, [key]: value };
-    
-                // If this is a status change, update runner status too
-                if (key === "status" && Array.isArray(updatedRecord.runner)) {
-                    updatedRecord.runner = updatedRecord.runner.map(runner => ({
-                        ...runner,
-                        status: +value
-                    }));
-                }
-    
-                return updatedRecord;
-            });
-         
+            if (key === "status" && value === INACTIVE_VALUE) {
+                return record.status !== INACTIVE_VALUE;
+            }
+            return !_.isEqual(+record[key], +value);
+        }).map(record => {
+            // Create updated record with new status
+            const updatedRecord = { ...record, [key]: value };
+
+            // If this is a status change, update runner status too
+            if (key === "status" && Array.isArray(updatedRecord.runner)) {
+                updatedRecord.runner = updatedRecord.runner.map(runner => ({
+                    ...runner,
+                    status: +value
+                }));
+            }
+
+            return updatedRecord;
+        });
+
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
             await saveData({ dataToSave: dataToUpdate, action });
@@ -957,7 +957,7 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <span
                     style={{ cursor: "pointer" }}
-                    onClick={() => { handleDS({...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: record?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et}) }}>
+                    onClick={() => { handleDS({ ...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: record?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et }) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
                     <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
                 </span>
@@ -1487,7 +1487,7 @@ export const OpenMarket = () => {
                                                 className="table-header-button"
                                                 style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
                                                 onClick={() => updateRecords()}
-                                                disabled={selectedCategories.length === 0}
+                                                disabled={selectedCategories.length === 0 || !hasUnsavedChanges}
                                             >{`Save All (A)`}</Button>
                                             <Switch
                                                 width={80}
