@@ -429,6 +429,12 @@ const Index = () => {
     sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
+  const handleCommentaryMarketRunnerClick = (details) => {
+    const url = new URL(window.location.origin + "/commentaryMarketRunner");
+    sessionStorage.setItem('marketRunnerCommentaryId', "" + details?.commentaryId);
+    sessionStorage.setItem('marketRunnerCommentaryDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
   const handleCommentaryEventSnapClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryEventSnap");
     sessionStorage.setItem('eventSnapId', "" + details?.commentaryId);
@@ -1429,6 +1435,25 @@ const Index = () => {
             <i
               className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
             ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Market Runner",
+      key: "marketRunner",
+      render: (text, record) => (
+        <Tooltip title={"Market Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"primary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCommentaryMarketRunnerClick(record);
+            }}
+          >
+            <i class='bx bxs-store' ></i>
           </Button>
         </Tooltip>
       ),

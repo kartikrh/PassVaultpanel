@@ -92,7 +92,7 @@ import MatchTypePredictor from "../Pages/MatchType/MatchTypePredictor.jsx";
 import UpdateCommentaryPlayer from "../Pages/Commentary/UpdateCommentaryPlayer.jsx";
 import { CreateEventMarket } from "../Pages/Commentary/CreateEventMarket.js";
 import { OpenMarket } from "../Pages/Commentary/OpenMarket.jsx";
-
+import { CommentaryMarketRunner } from "../Pages/Commentary/CommentaryMarketRunner.js";
 import { CommentaryFeatures } from "../Pages/Commentary/CommentaryFeatures.jsx";
 import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.js";
 import { OddsView } from "../Pages/Commentary/OddsView.jsx";
@@ -184,6 +184,7 @@ const authProtectedRoutes = [
     component: <CommentaryEventSnap />,
   },
   { path: "/openMarket", component: <OpenMarket /> },
+  { path: "/commentaryMarketRunner", component: <CommentaryMarketRunner /> },
   { path: "/photos", component: <Photos /> },
   { path: "/oddsView", component: <OddsView /> },
   { path: "/autoEvent", component: <ImportMarket /> },
