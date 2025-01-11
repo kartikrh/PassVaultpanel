@@ -65,22 +65,24 @@ export const OpenMarket = () => {
 
     useEffect(() => {
         if (!isEmpty(data) && isDataFromApiOrSocket) {
-            // Store original data for reference
-            const newOriginalData = {};
-            data.forEach(market => {
-                if (market.runner && market.runner.length === 1) {
-                    newOriginalData[market.marketId] = {
-                        line: market.runner[0].line,
-                        predefinedValue: market.predefinedValue,
-                        playerScore: market.playerScore
-                    };
-                }
-            });
-            setOriginalMarketData(newOriginalData);
+            updateOriginalValues(data)
             setIsDataFromApiOrSocket(false); // Reset flag after updating
         }
     }, [data, isDataFromApiOrSocket]);
 
+    const updateOriginalValues = (dataToWorkWith) => {
+        const newOriginalData = {};
+        dataToWorkWith.forEach(market => {
+            if (market.runner && market.runner.length === 1) {
+                newOriginalData[market.marketId] = {
+                    line: market.runner[0].line,
+                    predefinedValue: market.predefinedValue,
+                    playerScore: market.playerScore
+                };
+            }
+        });
+        setOriginalMarketData(newOriginalData);
+    }
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedLineRatio(lineRatio);
@@ -785,6 +787,7 @@ export const OpenMarket = () => {
                 }, 3000);
 
                 const sortedData = _.orderBy(finalDataToSet, ['marketId'], ['asc']);
+                updateOriginalValues(sortedData)
                 return sortedData;
             });
             setIsDataFromApiOrSocket(true);
