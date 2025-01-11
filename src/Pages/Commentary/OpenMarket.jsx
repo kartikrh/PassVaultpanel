@@ -580,9 +580,9 @@ export const OpenMarket = () => {
         }
     };
 
-    const updateRecords = (record) => {
+    const updateRecords = (record, sendSaveAll = false) => {
         let dataToSend = [];
-        let isSaveAll = false;
+        let isSaveAll = sendSaveAll;
         if (record) {
             dataToSend = [record];
         } else {
@@ -1082,7 +1082,7 @@ export const OpenMarket = () => {
         {
             title: "Save",
             render: (text, record) => (
-                <Button color="primary" className="small-button" onClick={() => updateRecords(record)}>Save</Button>
+                <Button color="primary" className="small-button" onClick={() => updateRecords(record, "SAVE_ALL")}>Save</Button>
             ),
             key: "isSendData",
             className: "py-0",
