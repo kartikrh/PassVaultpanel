@@ -79,7 +79,7 @@ export const CreateEventMarket = () => {
 
     const sortbasedOnthePlayerTypeAndPlayerName = (team) => {
         const typeOrder = ["BatsMan", "Wicketkeeper", "AllRounder", "Bowler"];
-            team.sort((a, b) => {
+        team.sort((a, b) => {
             // Compare playerType based on typeOrder
             const typeComparison = typeOrder.indexOf(a.playerType) - typeOrder.indexOf(b.playerType);
             if (typeComparison !== 0) return typeComparison;
@@ -467,7 +467,7 @@ export const CreateEventMarket = () => {
                 }));
                 return;
             }
-            
+
             setSelectedMarkets(prev => {
                 const sectionSelections = prev[sectionKey] || [];
                 const updatedSelections = [...sectionSelections];
@@ -1242,11 +1242,31 @@ export const CreateEventMarket = () => {
             const response = await axiosInstance.post(`/admin/eventMarket/saveEventMarketV1`, {
                 eventMarket: savedData,
             });
-            fetchData(commentaryId);
-            dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+
+            // Show success message
+            dispatch(updateToastData({
+                data: response?.message,
+                title: response?.title,
+                type: SUCCESS
+            }));
+
+            // Refresh the page after successful save
+            window.location.reload();
+
         } catch (error) {
             setIsLoading(false);
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+
+            // Show error message
+            dispatch(updateToastData({
+                data: error?.message || "An error occurred while saving. Page will refresh.",
+                title: error?.title || "Error",
+                type: ERROR
+            }));
+
+            // Refresh the page after error
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000); // Give user time to see the error message
         }
     };
 
