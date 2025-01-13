@@ -380,7 +380,7 @@
 }
 
 .text-bold {
-  font-weight: 600 !important;
+    font-weight: 600 !important;
 }
 
 .ball-by-ball-display {
@@ -1291,4 +1291,8 @@
 
 .runner-table {
     width: 50%;
+}
+
+.runner-button-commentary {
+    color: #e289e8;
 }

@@ -1193,7 +1193,7 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip>
-            <Tooltip
+            {record.isPredictMarket && <Tooltip
               title={"Event Market"}
               color={"#e8e8ea"}
               overlayInnerStyle={{ color: "#000" }}
@@ -1208,7 +1208,8 @@ const Index = () => {
               >
                 <i class="bx bxs-up-arrow-square"></i>
               </Button>
-            </Tooltip>
+            </Tooltip>}
+
           </>
         </div>
       ),
@@ -1329,14 +1330,13 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Set Runner",
+      title: "SR",
       dataIndex: "setRunner",
       render: (text, record) => (
         <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
-            color={"warning"}
             size="sm"
-            className="btn"
+            className="btn runner-button-commentary"
             onClick={() => {
               setRunnerModelVisible(true);
               setSelectedCommentaryRunner(record);
@@ -1367,7 +1367,7 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Count In Point",
+      title: "CP",
       key: "isCountInPoint",
       render: (text, record) => (
         <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
