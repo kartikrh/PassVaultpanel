@@ -52,7 +52,7 @@ export const CommentaryMarketRunner = () => {
                   setIsSocketConnected(true)
                   socket.on(MARKET_RUNNER_DATA, (socketData) => {
                     const socketDataValue = socketData?.value;
-                    if(socketDataValue & socketDataValue.length > 0) {
+                    if(socketDataValue && socketDataValue.length > 0) {
                     setMarketData((prevMarketData) => {
                       // For each market in the socket data
                       return socketDataValue.map((socketMarket) => {
