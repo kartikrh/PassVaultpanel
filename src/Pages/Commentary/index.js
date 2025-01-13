@@ -1201,7 +1201,7 @@ const Index = () => {
               <Button
                 color={"danger"}
                 size="sm"
-                className="btn"
+                className="bstn"
                 onClick={() => {
                   handleEventMarketClick(record)
                 }}
