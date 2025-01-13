@@ -1285,6 +1285,10 @@
     color: #fff !important;
 }
 
-.market-runner {
-    width: 60%;
+.market-back-lay {
+    width: 100px;
+}
+
+.runner-table {
+    width: 50%;
 }
