@@ -6,15 +6,19 @@ import { useNavigate } from "react-router-dom";
 import { isEmpty } from "lodash";
 import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import createSocket from "../../Features/socket";
+import { MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA } from "../../components/Common/Const";
 
 export const CommentaryMarketRunner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [marketData, setMarketData] = useState([]);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
   document.title = "commentaryMarketRunner";
+  const socket = createSocket();
 
   let navigate = useNavigate();
   const commentaryId =
-    +sessionStorage.getItem("marketRunnerCommentaryId") || "0";
+    +sessionStorage.getItem("marketRunnerCommentaryId") || 0;
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("marketRunnerCommentaryDetails") || "{}"
   );
@@ -23,11 +27,6 @@ export const CommentaryMarketRunner = () => {
     if (!isEmpty(commentaryDetails))
       document.title = `MR ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
   }, [commentaryDetails]);
-
-  useEffect(() => {
-    fetchData(commentaryId);
-  }, []);
-
   const fetchData = async (commentaryId) => {
     setIsLoading(true);
     try {
@@ -44,6 +43,71 @@ export const CommentaryMarketRunner = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+          if (commentaryId && commentaryDetails?.eventRefId) {
+              fetchData(commentaryId);
+              if (socket) {
+                  socket.emit(MARKET_RUNNER_CONNECT, [ commentaryDetails.eventRefId ]);
+                  setIsSocketConnected(true)
+                  socket.on(MARKET_RUNNER_DATA, (socketData) => {
+                    const socketDataValue = socketData?.value;
+                    if(socketDataValue && socketDataValue.length > 0) {
+                    setMarketData((prevMarketData) => {
+                      // For each market in the socket data
+                      return socketDataValue.map((socketMarket) => {
+                        // Check if the eventMarketId exists in the previous marketData
+                        const existingMarket = prevMarketData && prevMarketData.length > 0 && prevMarketData.find(
+                          (market) => market.eventMarketId == socketMarket.eventMarketId
+                        );
+            
+                        if (existingMarket) {
+                          // If the market exists, update the runners
+                          existingMarket.runner = existingMarket.runner.map((runner) => {
+                            const socketRunner = socketMarket?.runners && socketMarket.runners.length > 0 && socketMarket.runners.find(
+                              (socketRunner) => socketRunner.runnerId == runner.runnerId
+                            );
+            
+                            if (socketRunner) {
+                              // Update runner information if the runnerId exists
+                              return {
+                                ...runner,
+                                backPrice: socketRunner.backPrice,
+                                layPrice: socketRunner.layPrice,
+                                backSize: socketRunner.backSize,
+                                laySize: socketRunner.laySize,
+                              };
+                            }
+                            return runner; // If no update, return the original runner
+                          });
+            
+                          // Check if there are any new runners from the socket that do not exist in the current market
+                          socketMarket?.runners && socketMarket.runners.forEach((socketRunner) => {
+                            const existingRunner = existingMarket.runner.find(
+                              (runner) => runner.runnerId == socketRunner.runnerId
+                            );
+            
+                            // If the runner doesn't exist in the current market, add it
+                            if (!existingRunner) {
+                              existingMarket.runner.push(socketRunner);
+                            }
+                          });
+            
+                          return existingMarket; // Return the updated market
+                        } else {
+                          // If the market doesn't exist in the current marketData, add it
+                          return socketMarket; // Add the new market with all its runners
+                        }
+                      });
+                    });
+                    }
+                  });
+              } else setIsSocketConnected(false)
+          }
+          return () => {
+              socket.off(MARKET_RUNNER_DATA);
+          };
+      }, [commentaryId, commentaryDetails?.eventRefId]);
 
   const handleBackClick = () => {
     navigate("/commentary");
@@ -99,7 +163,7 @@ export const CommentaryMarketRunner = () => {
                           >
                             <thead>
                               <tr>
-                                <th className="market-runner">{market.marketName}</th>
+                                <th className="market-runner">{market?.marketName}</th>
                                 <th> Back </th>
                                 <th> Lay </th>
                               </tr>
@@ -109,12 +173,12 @@ export const CommentaryMarketRunner = () => {
                                 <tr key={runner.runnerId}>
                                   <td>{runner.runner}</td>
                                   <td className="yes-rate text-center py-0">
-                                        <div className="rate-font">{runner.backPrice || "0"}</div>
-                                        <div className="point-font">{runner.backSize || "0"}</div>
+                                        <div className="rate-font">{runner?.backPrice || "0"}</div>
+                                        <div className="point-font">{runner?.backSize || "0"}</div>
                                   </td>
                                   <td className="no-rate text-center py-0"> 
-                                        <div className="rate-font">{runner.layPrice || "0"}</div>
-                                        <div className="point-font">{runner.laySize || "0"}</div>
+                                        <div className="rate-font">{runner?.layPrice || "0"}</div>
+                                        <div className="point-font">{runner?.laySize || "0"}</div>
                                 </td>
                                 </tr>
                               ))}
