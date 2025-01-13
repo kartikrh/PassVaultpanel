@@ -154,7 +154,7 @@ export const CommentaryMarketRunner = () => {
                 {!isEmpty(marketData) && (
                   <>
                     {marketData?.length > 0 && marketData.sort((a,b)=>a.eventMarketId - b.eventMarketId).map((market, index) => (
-                      <div key={market.eventMarketId} className="mt-3">
+                      <div key={market.eventMarketId} className="mt-3 runner-table">
                           <Table  
                             className="table"
                             responsive
@@ -163,9 +163,9 @@ export const CommentaryMarketRunner = () => {
                           >
                             <thead>
                               <tr>
-                                <th className="market-runner">{market?.marketName}</th>
-                                <th> Back </th>
-                                <th> Lay </th>
+                                <th>{market?.marketName}</th>
+                                <th className="market-back-lay text-end"> Back </th>
+                                <th className="market-back-lay"> Lay </th>
                               </tr>
                             </thead>
                             <tbody>
