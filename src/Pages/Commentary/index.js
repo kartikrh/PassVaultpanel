@@ -408,6 +408,12 @@ const Index = () => {
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
+  const handleCommentaryMarketRunnerClick = (details) => {
+    const url = new URL(window.location.origin + "/commentaryMarketRunner");
+    sessionStorage.setItem('marketRunnerCommentaryId', "" + details?.commentaryId);
+    sessionStorage.setItem('marketRunnerCommentaryDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+  };
   const handleEventMarketClick = (details) => {
     const url = new URL(window.location.origin + "/eventMarkets");
     sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
@@ -427,12 +433,6 @@ const Index = () => {
     const url = new URL(window.location.origin + "/commentaryMarkets");
     sessionStorage.setItem('marketTemplateCommentaryId', "" + details?.commentaryId);
     sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
-  };
-  const handleCommentaryMarketRunnerClick = (details) => {
-    const url = new URL(window.location.origin + "/commentaryMarketRunner");
-    sessionStorage.setItem('marketRunnerCommentaryId', "" + details?.commentaryId);
-    sessionStorage.setItem('marketRunnerCommentaryDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
   };
   const handleCommentaryEventSnapClick = (details) => {
@@ -1401,6 +1401,25 @@ const Index = () => {
             }}
           >
             <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Rates",
+      key: "marketRunner",
+      render: (text, record) => (
+        <Tooltip title={"Market Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCommentaryMarketRunnerClick(record);
+            }}
+          >
+            <i class='bx bxs-store' ></i>
           </Button>
         </Tooltip>
       ),
