@@ -64,7 +64,7 @@ export const CommentaryMarketRunner = () => {
                         if (existingMarket) {
                           // If the market exists, update the runners
                           existingMarket.runner = existingMarket.runner.map((runner) => {
-                            const socketRunner = socketMarket.runner && socketMarket.runner.length > 0 && socketMarket.runner.find(
+                            const socketRunner = socketMarket?.runners && socketMarket.runners.length > 0 && socketMarket.runners.find(
                               (socketRunner) => socketRunner.runnerId == runner.runnerId
                             );
             
@@ -82,7 +82,7 @@ export const CommentaryMarketRunner = () => {
                           });
             
                           // Check if there are any new runners from the socket that do not exist in the current market
-                          socketMarket.runner.forEach((socketRunner) => {
+                          socketMarket?.runners && socketMarket.runners.forEach((socketRunner) => {
                             const existingRunner = existingMarket.runner.find(
                               (runner) => runner.runnerId == socketRunner.runnerId
                             );
@@ -163,7 +163,7 @@ export const CommentaryMarketRunner = () => {
                           >
                             <thead>
                               <tr>
-                                <th className="market-runner">{market.marketName}</th>
+                                <th className="market-runner">{market?.marketName}</th>
                                 <th> Back </th>
                                 <th> Lay </th>
                               </tr>
@@ -173,12 +173,12 @@ export const CommentaryMarketRunner = () => {
                                 <tr key={runner.runnerId}>
                                   <td>{runner.runner}</td>
                                   <td className="yes-rate text-center py-0">
-                                        <div className="rate-font">{runner.backPrice || "0"}</div>
-                                        <div className="point-font">{runner.backSize || "0"}</div>
+                                        <div className="rate-font">{runner?.backPrice || "0"}</div>
+                                        <div className="point-font">{runner?.backSize || "0"}</div>
                                   </td>
                                   <td className="no-rate text-center py-0"> 
-                                        <div className="rate-font">{runner.layPrice || "0"}</div>
-                                        <div className="point-font">{runner.laySize || "0"}</div>
+                                        <div className="rate-font">{runner?.layPrice || "0"}</div>
+                                        <div className="point-font">{runner?.laySize || "0"}</div>
                                 </td>
                                 </tr>
                               ))}
