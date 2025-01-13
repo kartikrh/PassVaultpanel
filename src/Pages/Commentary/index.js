@@ -1193,6 +1193,22 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip>
+            <Tooltip
+              title={"Event Market"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color={"danger"}
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handleEventMarketClick(record)
+                }}
+              >
+                <i class="bx bxs-up-arrow-square"></i>
+              </Button>
+            </Tooltip>
           </>
         </div>
       ),
@@ -1260,32 +1276,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Delay",
-      dataIndex: "delay",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setDelayModelVisible(true);
-            setSelectedDelay(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {" "}
-          <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
-        </span>
-      ),
-      key: "delay",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      sort: true,
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
       title: "Logs",
       key: "commentaryId",
       render: (text, record) => (
@@ -1339,30 +1329,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Event Market",
-      dataIndex: "EventMarket",
-      render: (text, record) => (
-        <Tooltip
-          title={"Event Market"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"danger"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleEventMarketClick(record)
-            }}
-          >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
-      key: "EventMarket",
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
       title: "Set Runner",
       dataIndex: "setRunner",
       render: (text, record) => (
@@ -1384,25 +1350,6 @@ const Index = () => {
       key: "setRunner",
       sort: true,
       style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Team Prediction",
-      key: "isTeamPredictionOn",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
-            }}
-          >
-            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "DLS",
@@ -1441,23 +1388,49 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Market Runner",
-      key: "marketRunner",
+      title: "Win %",
+      key: "isTeamPredictionOn",
       render: (text, record) => (
-        <Tooltip title={"Market Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
-            color={"primary"}
+            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleCommentaryMarketRunnerClick(record);
+              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
             }}
           >
-            <i class='bx bxs-store' ></i>
+            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
           </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Delay",
+      dataIndex: "delay",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setDelayModelVisible(true);
+            setSelectedDelay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text} {" "}
+          <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+        </span>
+      ),
+      key: "delay",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      sort: true,
+      style: { width: "5%", textAlign: "center" },
     },
   ];
 
