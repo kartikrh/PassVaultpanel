@@ -131,6 +131,7 @@ import AddPhotos from "../Pages/PhotoLibrary/AddPhotos.jsx";
 import ShotType from "../Pages/ShotType";
 import AddShotType from "../Pages/ShotType/AddShotType.jsx";
 import EventResult from "../Pages/EventResult";
+import { ManualOddsMarket } from "../Pages/Commentary/ManualOddsMarket.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -252,6 +253,7 @@ const authProtectedRoutes = [
   { path: "/addPhotoLibrary", component: <AddPhotoLibrary /> },
   { path: "/addPhotos", component: <AddPhotos /> },
   { path: "/videoLibrary", component: <VideoLibrary /> },
+  { path: "/manualOddsMarket", component: <ManualOddsMarket /> },
   { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
   {
     path: "/changePassword",
