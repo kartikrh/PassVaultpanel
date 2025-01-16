@@ -178,6 +178,7 @@ export const OpenMarket = () => {
     const formatDataBeforeSend = (dataToChange = []) => {
         return dataToChange.map(record => {
             let workingRecord = _.clone(record);
+            workingRecord.rateDiff = +(workingRecord.rateDiff || 0);
             // Check if runner exists and is an array
             if (Array.isArray(workingRecord.runner)) {
                 workingRecord.runner = workingRecord.runner.map(runner => ({
@@ -686,6 +687,7 @@ export const OpenMarket = () => {
                     // Keep the original market status
                     status: eventMarket.status,
                     // Keep runners as an array
+                    rateDiff: +(eventMarket.rateDiff || 0),  // Add this line
                     runner: Array.isArray(eventMarket.runner) ? eventMarket.runner : [eventMarket.runner]
                 }
             }
@@ -730,6 +732,7 @@ export const OpenMarket = () => {
 
                     let updatedMarketData = {
                         ...eventMarket,
+                        rateDiff: +(eventMarket.rateDiff || 0),  // Add this line
                         teamName: teams[eventMarket.teamId],
                         predefinedValue: eventMarket.predefinedValue,
                         isNewSocketData: true,
