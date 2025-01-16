@@ -12,6 +12,7 @@ import { MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA } from "../../components/Comm
 export const CommentaryMarketRunner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [marketData, setMarketData] = useState([]);
+  const [marketId, setMarketId] = useState([]);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   document.title = "commentaryMarketRunner";
   const socket = createSocket();
@@ -35,7 +36,9 @@ export const CommentaryMarketRunner = () => {
         { commentaryId }
       );
       if (response?.result) {
-        setMarketData(response?.result);
+        setMarketData(response.result);
+        const marketIds = response.result?.length > 0 && response.result.map((i)=>i.eventMarketId);
+        setMarketId(marketIds)
       }
     } catch (error) {
       console.error("Error fetching market data:", error);
@@ -43,19 +46,23 @@ export const CommentaryMarketRunner = () => {
       setIsLoading(false);
     }
   };
-
+  
+  useEffect(()=>{
+    if(commentaryId) {
+      fetchData(commentaryId);
+    }
+  },[commentaryId])
+  
   useEffect(() => {
-          if (commentaryId && commentaryDetails?.eventRefId) {
-              fetchData(commentaryId);
+          if (marketId.length > 0) {
               if (socket) {
-                  socket.emit(MARKET_RUNNER_CONNECT, [ commentaryDetails.eventRefId ]);
+                  socket.emit(MARKET_RUNNER_CONNECT, marketId);
                   setIsSocketConnected(true)
                   socket.on(MARKET_RUNNER_DATA, (socketData) => {
-                    const socketDataValue = socketData?.value;
-                    if(socketDataValue && socketDataValue.length > 0) {
+                    if(socketData && socketData.length > 0) {
                     setMarketData((prevMarketData) => {
                       // For each market in the socket data
-                      return socketDataValue.map((socketMarket) => {
+                      return socketData.map((socketMarket) => {
                         // Check if the eventMarketId exists in the previous marketData
                         const existingMarket = prevMarketData && prevMarketData.length > 0 && prevMarketData.find(
                           (market) => market.eventMarketId == socketMarket.eventMarketId
@@ -107,7 +114,7 @@ export const CommentaryMarketRunner = () => {
           return () => {
               socket.off(MARKET_RUNNER_DATA);
           };
-      }, [commentaryId, commentaryDetails?.eventRefId]);
+      }, [marketId]);
 
   const handleBackClick = () => {
     navigate("/commentary");
