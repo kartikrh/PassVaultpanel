@@ -2158,7 +2158,8 @@ const Commentary = (props) => {
             updateDisplayStatus={(displayStatus) => {
                 dispatch(updateCommentaryDisplayStatus({
                     "commentaryId": commentaryDetails.commentaryId,
-                    "displayStatus": displayStatus
+                    "displayStatus": displayStatus,
+                    "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
                 }))
             }}
             handleRetiredHurt={() => setShowRretiredHurt(true)}
