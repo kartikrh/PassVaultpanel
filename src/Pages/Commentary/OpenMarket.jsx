@@ -37,7 +37,7 @@ export const OpenMarket = () => {
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
     const [isScorecardShow, setIsScorecardShow] = useState(undefined);
-
+    const [isKeyPressed, setIsKeyPressed] = useState(undefined);
     const selectedCategoriesData = selectedCategories.map(category => { })
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
@@ -49,7 +49,8 @@ export const OpenMarket = () => {
     const lineRatioForMarketCategoryId = 23
     const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
     const scoreboardUrl = `${scoreCardUrl}/scoreboard2?id=${commentaryInfo?.eid}&color=000`;
-    console.log({ originalMarketData, categorisedData });
+    // console.log({ originalMarketData, categorisedData });
+    // console.log({ isKeyPressed })
 
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
@@ -654,10 +655,11 @@ export const OpenMarket = () => {
                 );
                 setHasUnsavedChanges(false);
             }
-
+            setIsKeyPressed(false)
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
+            setIsKeyPressed(false)
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         }
     };
@@ -1194,24 +1196,35 @@ export const OpenMarket = () => {
         </Col>
     </>
     const handleKeyPress = (event) => {
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') {
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || isKeyPressed) {
             return; // Don't trigger shortcuts if focus is on input or select elements
         }
         const key = event.key.toLowerCase();
         switch (key) {
             case 'a':
-                if (selectedCategories.length > 0 && hasUnsavedChanges) updateRecords();
+                if (selectedCategories.length > 0 && hasUnsavedChanges) {
+                    setIsKeyPressed(true)
+                    updateRecords();
+                }
                 break;
             case 's':
-                if (selectedCategories.length > 0 && !hasUnsavedChanges) handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
+                if (selectedCategories.length > 0 && !hasUnsavedChanges) {
+                    setIsKeyPressed(true)
+                    handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
+                }
                 break;
             case 'd':
-                if (selectedCategories.length > 0) handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
+                if (selectedCategories.length > 0) {
+                    setIsKeyPressed(true)
+                    handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
+                }
                 break;
             case 'z':
+                setIsKeyPressed(true)
                 handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE });
                 break;
             case 'q':
+                setIsKeyPressed(true)
                 handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" });
                 break;
             default:
@@ -1317,14 +1330,14 @@ export const OpenMarket = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories])
+    }, [data, selectedCategories, isKeyPressed])
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories]);
+    }, [data, selectedCategories, isKeyPressed]);
 
     return (
         <React.Fragment>
