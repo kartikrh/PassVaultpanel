@@ -104,17 +104,17 @@ function CommentaryMaster() {
                 setCommentaryData(commentaryDataToUpdate)
                 setStatusList(commentaryDataToUpdate.commentaryDisplayStatus)
                 setIsDataLoading(false)
-                if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-                    const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-                    const endPoint = response?.result?.callPrediction?.endPoint;
-                    dispatch(
-                        updateToastData({
-                            data: `${endPoint}\n${predictionMessage}`,
-                            title: "Call Prediction",
-                            type: WARNING,
-                        })
-                    );
-                }
+                // if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+                //     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+                //     const endPoint = response?.result?.callPrediction?.endPoint;
+                //     dispatch(
+                //         updateToastData({
+                //             data: `${endPoint}\n${predictionMessage}`,
+                //             title: "Call Prediction",
+                //             type: WARNING,
+                //         })
+                //     );
+                // }
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)
