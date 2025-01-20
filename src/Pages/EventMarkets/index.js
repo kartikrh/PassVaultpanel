@@ -111,7 +111,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/all`, payload)
       .then((response) => {
-        const apiData = response?.result?.sort((a, b) => a?.eventMarketId - b?.eventMarketId);
+        const apiData = response?.result;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.eventMarketId);
