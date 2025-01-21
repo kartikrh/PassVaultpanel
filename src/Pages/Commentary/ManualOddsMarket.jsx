@@ -5,8 +5,10 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { isEmpty } from 'lodash';
 import axiosInstance from "../../Features/axios.js";
 import { updateToastData } from "../../Features/toasterSlice.js";
-import { ERROR } from "../../components/Common/Const.js";
+import { ERROR, SUCCESS } from "../../components/Common/Const.js";
 import { useDispatch } from "react-redux";
+import SpinnerModel from "../../components/Model/SpinnerModel";
+import { useNavigate } from 'react-router-dom';
 
 export const ManualOddsMarket = () => {
     const dispatch = useDispatch();
@@ -27,7 +29,7 @@ export const ManualOddsMarket = () => {
         rateSourceRefID: ""
     });
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId")
-
+    let navigate = useNavigate();
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -80,11 +82,19 @@ export const ManualOddsMarket = () => {
         }
     }, [eventData.teams, eventData.tpMarkets]);
 
+    const handleDynamicNavigation = (navigateTo) => {
+        navigate(navigateTo);
+    };
+
     const fetchMarketData = async () => {
         setIsLoading(true);
         await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId })
             .then((response) => {
                 if (response?.result) {
+                    if (response.result.market) {
+                        handleDynamicNavigation("/commentary")
+                        return;
+                    }
                     setEventData({
                         comDetails: response.result.comDetails || null,
                         teams: response.result.teams || [],
@@ -106,15 +116,15 @@ export const ManualOddsMarket = () => {
     };
 
     const handleSave = async () => {
+        setIsLoading(true); // Use the same loading state
         const formattedRunners = formData.runners.map((runner, index) => {
             if (runner.selectionId && runner.selectionId.includes(commentaryId)) {
-                // If it's a new runner (not from tpMarkets)
                 return {
                     ...runner,
                     selectionId: `${commentaryId}0${index}`,
                 };
             }
-            return runner; // Return as is if it's from tpMarkets
+            return runner;
         });
 
         const dataToSend = {
@@ -123,25 +133,29 @@ export const ManualOddsMarket = () => {
             commentaryId,
             marketTypeId: 5,
             marketTypeCategoryId: 8,
+            inningsId: formData.inningsId || "0"
         };
         await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
             .then((response) => {
-                if (response?.result?.success) {
-
+                if (response?.result?.success || response?.success) {
                     dispatch(updateToastData({
-                        data: "Market data saved successfully",
-                        title: "Success",
-                        type: "success"
+                        data: response?.result || response?.message,
+                        title: response?.title || "Success",
+                        type: SUCCESS
                     }));
+                    handleDynamicNavigation("/commentary")
                 }
             })
             .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     };
 
     const handleBackClick = () => {
-        window.history.back();
+        handleDynamicNavigation("/commentary")
     };
 
     const addRunner = () => {
@@ -160,9 +174,23 @@ export const ManualOddsMarket = () => {
     };
 
     const removeRunner = (id) => {
+        if (formData.runners.length <= 1) {
+            return;
+        }
+
+        const updatedRunners = formData.runners
+            .filter(runner => runner.id !== id)
+            .map((runner, index) => ({
+                ...runner,
+                id: index + 1,
+                selectionId: runner.selectionId.includes(commentaryId) ?
+                    `${commentaryId}0${index + 1}` :
+                    runner.selectionId
+            }));
+
         setFormData({
             ...formData,
-            runners: formData.runners.filter(runner => runner.id !== id)
+            runners: updatedRunners
         });
     };
 
@@ -195,7 +223,7 @@ export const ManualOddsMarket = () => {
                                         <Button color="danger" onClick={handleBackClick}>Exit</Button>
                                     </Col>
                                 </Row>
-
+                                {isLoading && <SpinnerModel />}
                                 <Row>
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Col className="mb-3">
