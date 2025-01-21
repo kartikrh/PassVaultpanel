@@ -160,3 +160,21 @@ export const fixDecimal = (value, decimalNumber) => {
   if (value === Infinity || isNaN(value)) return 0
   else return value
 }
+
+export const getDateRange = (daysAgo = 7) => {
+  const today = new Date();
+  
+  // Calculate the start date by subtracting the specified number of days
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - daysAgo);
+  startDate.setHours(0, 0, 0, 0);  // Set time to 00:00:00
+  
+  // Set end date to today at 23:59:00
+  const endDate = new Date(today);
+  endDate.setHours(23, 59, 0, 0);  // Set time to 23:59:00
+
+  return {
+    startDate: `${startDate.toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${endDate.toISOString().split("T")[0]}T23:59:00`,
+  };
+};
