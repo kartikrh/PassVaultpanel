@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, WARNING } from "../../components/Common/Const";
+import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -1257,6 +1257,17 @@ export const OpenMarket = () => {
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
                     formatSocketDataForState(socketData || [])
+                });
+                socket.on(UNDO_CALLED, (data) => {
+                  if(data){ 
+                    dispatch(
+                      updateToastData({
+                        data: `${data?.message}`,
+                        title: "Undo Called",
+                        type: WARNING,
+                      })
+                    );
+                  }
                 });
             } else {
                 setIsSocketConnected(false)
