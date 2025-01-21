@@ -17,19 +17,22 @@ export const ManualOddsMarket = () => {
         ],
         isActive: false,
         isAllow: false,
-        markegin: '',
+        margin: '',
         delay: '',
-        lineRation: '',
+        lineRatio: '',
         isConnectedMarket: false,
-        marketRefID: '',
-        rateDiffernet: ''
+        eventRefId: '',
+        inningsId: "",
+        rateDiff: '',
+        rateSourceRefID: ""
     });
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId")
 
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
-        commentaryDetails: null
+        commentaryDetails: null,
+        tpMarkets: [] // Add this
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +40,45 @@ export const ManualOddsMarket = () => {
     useEffect(() => {
         fetchMarketData();
     }, []);
+
+    useEffect(() => {
+        if (eventData?.tpMarkets?.length > 0) {
+            const market = eventData.tpMarkets[0]; // Taking first market
+            setFormData(prev => ({
+                ...prev,
+                isConnectedMarket: true,
+                eventRefId: market.eventRefId,
+                rateSourceRefID: market.eventMarketId,
+                inningsId: market.inningsId,
+                // rateDiff: market.rateDiff,
+                // margin: market.margin // Note: fixing the spelling from 'margin'
+            }));
+        }
+    }, [eventData.tpMarkets]);
+
+    useEffect(() => {
+        // Initialize with 2 default runners using team data
+        if (eventData.teams.length > 0) {
+            const defaultRunners = eventData.teams.slice(0, 2).map((team, index) => {
+                const tpRunner = eventData.tpMarkets?.[0]?.runners?.find(r => r.teamId === team.teamId);
+                const selectionId = tpRunner ?
+                    tpRunner.selectionId :
+                    `${commentaryId}0${index}`;
+
+                return {
+                    id: index + 1,
+                    name: team.teamName,
+                    teamId: team.teamId,
+                    selectionId,
+                };
+            });
+
+            setFormData(prev => ({
+                ...prev,
+                runners: defaultRunners
+            }));
+        }
+    }, [eventData.teams, eventData.tpMarkets]);
 
     const fetchMarketData = async () => {
         setIsLoading(true);
@@ -46,7 +88,8 @@ export const ManualOddsMarket = () => {
                     setEventData({
                         comDetails: response.result.comDetails || null,
                         teams: response.result.teams || [],
-                        commentaryDetails: response.result.commentaryDetails || null
+                        commentaryDetails: response.result.commentaryDetails || null,
+                        tpMarkets: response.result.tpMarkets || [] // Add this
                     });
 
                     if (response.result.market) {
@@ -63,9 +106,28 @@ export const ManualOddsMarket = () => {
     };
 
     const handleSave = async () => {
-        await axiosInstance.post('/admin/eventMarket/saveManualMarket', formData)
+        const formattedRunners = formData.runners.map((runner, index) => {
+            if (runner.selectionId && runner.selectionId.includes(commentaryId)) {
+                // If it's a new runner (not from tpMarkets)
+                return {
+                    ...runner,
+                    selectionId: `${commentaryId}0${index}`,
+                };
+            }
+            return runner; // Return as is if it's from tpMarkets
+        });
+
+        const dataToSend = {
+            ...formData,
+            runners: formattedRunners,
+            commentaryId,
+            marketTypeId: 5,
+            marketTypeCategoryId: 8,
+        };
+        await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
             .then((response) => {
                 if (response?.result?.success) {
+
                     dispatch(updateToastData({
                         data: "Market data saved successfully",
                         title: "Success",
@@ -84,9 +146,16 @@ export const ManualOddsMarket = () => {
 
     const addRunner = () => {
         const newId = formData.runners.length + 1;
+        const newRunner = {
+            id: newId,
+            name: '',
+            teamId: '',
+            selectionId: `${commentaryId}0${newId}`,
+        };
+
         setFormData({
             ...formData,
-            runners: [...formData.runners, { id: newId, name: '', teamId: '' }]
+            runners: [...formData.runners, newRunner]
         });
     };
 
@@ -101,7 +170,11 @@ export const ManualOddsMarket = () => {
         setFormData({
             ...formData,
             runners: formData.runners.map(runner =>
-                runner.id === id ? { ...runner, [field]: value } : runner
+                runner.id === id
+                    ? field === 'runner'
+                        ? value  // If updating entire runner object
+                        : { ...runner, [field]: value }  // If updating single field
+                    : runner
             )
         });
     };
@@ -187,12 +260,12 @@ export const ManualOddsMarket = () => {
                                                     </div>
 
                                                     <div className="mb-3">
-                                                        <label className="form-label">Markegin:</label>
+                                                        <label className="form-label">Margin:</label>
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            value={formData.markegin}
-                                                            onChange={(e) => setFormData({ ...formData, markegin: e.target.value })}
+                                                            value={formData.margin}
+                                                            onChange={(e) => setFormData({ ...formData, margin: e.target.value })}
                                                         />
                                                     </div>
 
@@ -211,8 +284,8 @@ export const ManualOddsMarket = () => {
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            value={formData.lineRation}
-                                                            onChange={(e) => setFormData({ ...formData, lineRation: e.target.value })}
+                                                            value={formData.lineRatio}
+                                                            onChange={(e) => setFormData({ ...formData, lineRatio: e.target.value })}
                                                         />
                                                     </div>
 
@@ -245,18 +318,18 @@ export const ManualOddsMarket = () => {
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            value={formData.marketRefID}
-                                                            onChange={(e) => setFormData({ ...formData, marketRefID: e.target.value })}
+                                                            value={formData.rateSourceRefID}
+                                                            onChange={(e) => setFormData({ ...formData, rateSourceRefID: e.target.value })}
                                                         />
                                                     </div>
 
                                                     <div className="mb-3">
-                                                        <label className="form-label">Rate Differnet:</label>
+                                                        <label className="form-label">Rate Difference:</label>
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            value={formData.rateDiffernet}
-                                                            onChange={(e) => setFormData({ ...formData, rateDiffernet: e.target.value })}
+                                                            value={formData.rateDiff}
+                                                            onChange={(e) => setFormData({ ...formData, rateDiff: e.target.value })}
                                                         />
                                                     </div>
                                                 </div>
@@ -281,7 +354,7 @@ export const ManualOddsMarket = () => {
                                                     </Button>
                                                 </div>
                                                 <div className="runners-container">
-                                                    {formData.runners.map((runner, index) => (
+                                                    {formData.runners?.map((runner, index) => (
                                                         <Card key={runner.id} className="mb-2 runner-card">
                                                             <CardBody className="py-2">
                                                                 <div className="d-flex align-items-center gap-2">
@@ -294,20 +367,47 @@ export const ManualOddsMarket = () => {
                                                                         onChange={(e) => handleRunnerChange(runner.id, 'name', e.target.value)}
                                                                         style={{ width: '120px' }}
                                                                     />
-                                                                    <select
-                                                                        className="form-select form-select-sm"
-                                                                        value={runner.teamId}
-                                                                        onChange={(e) => handleRunnerChange(runner.id, 'teamId', e.target.value)}
-                                                                        style={{ width: '150px' }}
-                                                                    >
-                                                                        <option value="">Select Team</option>
-                                                                        {eventData.teams.map(team => (
-                                                                            <option key={team.teamId} value={team.teamId}>
-                                                                                {team.teamName}
-                                                                            </option>
-                                                                        ))}
-                                                                    </select>
-                                                                    {index > 0 && (
+                                                                    {eventData.tpMarkets?.length > 0 && (
+                                                                        <select
+                                                                            className="form-select form-select-sm"
+                                                                            value={runner.selectionId || ''}
+                                                                            onChange={(e) => {
+                                                                                const selectedRunner = eventData.tpMarkets[0].runners.find(
+                                                                                    r => r.selectionId === e.target.value
+                                                                                );
+
+                                                                                if (selectedRunner) {
+                                                                                    // Create a new runner object with all fields from the selected TP runner
+                                                                                    // but keep the existing name
+                                                                                    const updatedRunner = {
+                                                                                        ...runner,
+                                                                                        teamId: selectedRunner.teamId,
+                                                                                        selectionId: selectedRunner.selectionId,
+                                                                                    };
+                                                                                    // Update the entire runner object at once
+                                                                                    handleRunnerChange(runner.id, 'runner', updatedRunner);
+                                                                                } else {
+                                                                                    // If "None" is selected, reset the runner to default values but keep the name
+                                                                                    const defaultRunner = {
+                                                                                        ...runner,
+                                                                                        // name: '',  // Remove this line to keep existing name
+                                                                                        teamId: '',
+                                                                                        selectionId: `${commentaryId}0${index}`,
+                                                                                    };
+                                                                                    handleRunnerChange(runner.id, 'runner', defaultRunner);
+                                                                                }
+                                                                            }}
+                                                                            style={{ width: '150px' }}
+                                                                        >
+                                                                            <option value="">None</option>
+                                                                            {eventData.tpMarkets[0].runners.map(tpRunner => (
+                                                                                <option key={tpRunner.selectionId} value={tpRunner.selectionId}>
+                                                                                    {tpRunner.runner}
+                                                                                </option>
+                                                                            ))}
+                                                                        </select>
+                                                                    )}
+                                                                    {index >= 0 && (
                                                                         <Button
                                                                             color="danger"
                                                                             size="sm"
