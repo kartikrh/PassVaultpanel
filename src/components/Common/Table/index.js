@@ -25,7 +25,7 @@ import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 import { RSelect } from "../Reusables/FormElements";
 import { DatePicker, Space, Tooltip } from "antd";
 import moment from "moment";
-import { convertDateUTCToLocal } from "../Reusables/reusableMethods";
+import { convertDateUTCToLocal, getDateRange } from "../Reusables/reusableMethods";
 import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
 const { RangePicker } = DatePicker;
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
@@ -794,7 +794,9 @@ const Index = forwardRef(
           label: "Send Data Type"
         },
       });
-      if (tableElement?.dateRange) {
+      if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
+        setDateRange(() => getDateRange(5));
+      } else if (tableElement?.dateRange) {
         setDateRange({
           startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
           endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
@@ -873,7 +875,9 @@ const Index = forwardRef(
           label: "Send Data Type"
         },
       });
-      if (tableElement?.dateRange) {
+      if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
+        setDateRange(() => getDateRange(5));
+      } else if (tableElement?.dateRange) {
         setDateRange({
           startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
           endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
@@ -1603,7 +1607,7 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
-                        {!tableElement?.isDateRange && tableElement?.resetButton ? (
+                        {!tableElement?.isDateRange && tableElement?.resetButton && (tableElement?.title !== "Commentary History") ? (
                           <div>
                             <button
                               className="btn btn-primary"
@@ -1618,7 +1622,7 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
-                        {(!tableElement?.isDateRange && tableElement?.reloadButton && (tableElement?.title !== "Error Logs" && tableElement?.title !== "Thirdparty Logs")) ? (
+                        {(!tableElement?.isDateRange && tableElement?.reloadButton && (tableElement?.title !== "Error Logs" && tableElement?.title !== "Thirdparty Logs" && tableElement?.title !== "Commentary History")) ? (
                           <div>
                             <button
                               className="btn btn-primary"
@@ -1759,7 +1763,23 @@ const Index = forwardRef(
                           {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                         </button>
 
-                        {(tableElement?.reloadButton && (tableElement?.title === "Error Logs" || tableElement?.title === "Thirdparty Logs")) ? (
+                        {tableElement?.resetButton && (tableElement?.title === "Commentary History") ? (
+                          <div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handleTableReset();
+                              }}
+                              type="reset"
+                              id="create-btn"
+                            >
+                              Reset
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                          </div>
+                        ) : null}
+
+                        {(tableElement?.reloadButton && (tableElement?.title === "Error Logs" || tableElement?.title === "Thirdparty Logs" || tableElement?.title === "Commentary History")) ? (
                           <div>
                             <button
                               className="btn btn-primary"
