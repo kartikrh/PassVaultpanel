@@ -6,7 +6,7 @@ import { PERMISSION_VIEW, TAB_SCORING_LOGS } from "../../components/Common/Const
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
 
@@ -103,7 +103,7 @@ function ScoringLogs() {
       setSelectedTableElements({
         eventType: {value: event?.eventTypeId, label: event?.eventType},
         competition: {value: competition?.competitionId, label: competition?.competition},
-        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal(commentaryData.eventDate, "index")})` : ""},
+        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : ""},
       });
     }
   }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
@@ -143,7 +143,7 @@ function ScoringLogs() {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {convertDateUTCToLocal2(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -193,7 +193,7 @@ function ScoringLogs() {
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {convertDateUTCToLocal2(text, "index")}
         </span>
       ),
       key: "createdDate",

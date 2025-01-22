@@ -12,7 +12,7 @@ import {
   TAB_THIRDPARTY_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 
 const Index = () => {
   const pageName = TAB_THIRDPARTY_LOGS;
@@ -74,7 +74,7 @@ const Index = () => {
       dataIndex: "requestStartTime",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {convertDateUTCToLocal2(text, "index")}
         </span>
       ),
       key: "requestStartTime",
