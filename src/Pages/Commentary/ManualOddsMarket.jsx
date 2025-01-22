@@ -92,7 +92,7 @@ export const ManualOddsMarket = () => {
             .then((response) => {
                 if (response?.result) {
                     if (response.result.market) {
-                        handleDynamicNavigation("/commentary")
+                        handleDynamicNavigation("/updateManualOdds")
                         return;
                     }
                     setEventData({
@@ -143,7 +143,7 @@ export const ManualOddsMarket = () => {
                         title: response?.title || "Success",
                         type: SUCCESS
                     }));
-                    handleDynamicNavigation("/commentary")
+                    handleDynamicNavigation("/updateManualOdds")
                 }
             })
             .catch((error) => {
