@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Paper, Radio, RadioGroup, FormControlLabel, FormControl,
     Switch, TextField, Table, TableBody, TableCell, TableContainer,
@@ -15,6 +15,7 @@ import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, SUCCESS } from "../..
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
+import { RiRefreshLine } from 'react-icons/ri';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -66,8 +67,6 @@ export const UpdateManualOdds = () => {
         teams: [],
         market: [],
     });
-
-    // Betting interface states
     const [status, setStatus] = useState({
         suspended: false,
         inactive: true,
@@ -75,7 +74,6 @@ export const UpdateManualOdds = () => {
         betAllow: true,
         active: true
     });
-
     const [settings, setSettings] = useState({
         rateRange: '',
         ballStartAfter: 1,
@@ -93,7 +91,8 @@ export const UpdateManualOdds = () => {
             O: '', P: ''
         }
     });
-
+    const [originalShortcutValues, setOriginalShortcutValues] = useState({});
+    const [hasShortcutChanges, setHasShortcutChanges] = useState(false);
     const [runners, setRunners] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [selectedRunnerDetails, setSelectedRunnerDetails] = useState({
@@ -133,29 +132,46 @@ export const UpdateManualOdds = () => {
         });
     };
 
-    // Handle settings changes
     const handleSettingChange = (key, value, isShortcut = false) => {
         if (isShortcut) {
+            const newShortcutValues = {
+                ...settings.shortcutValues,
+                [key]: value
+            };
+
+            // Check if any values are different from original
+            const hasChanges = Object.entries(newShortcutValues).some(
+                ([k, v]) => v !== originalShortcutValues[k]
+            );
+
+            setHasShortcutChanges(hasChanges);
             setSettings(prev => ({
                 ...prev,
-                shortcutValues: {
-                    ...prev.shortcutValues,
-                    [key]: value
-                }
+                shortcutValues: newShortcutValues
             }));
         } else {
             setSettings(prev => ({ ...prev, [key]: value }));
         }
     };
 
-    // Handle shortcut keys
-    const handleKeyPress = (event) => {
+    const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
-        if (settings.shortcutValues[key]) {
-            handleSettingChange('rateDifferent', settings.shortcutValues[key]);
-        }
+        // Use callback to ensure we get latest settings
+        setSettings(currentSettings => {
+            const value = currentSettings.shortcutValues[key];
+            if (value) {
+                return {
+                    ...currentSettings,
+                    rateDifferent: value
+                };
+            }
+            return currentSettings;
+        });
+    }, []); //
+    const handleSync = () => {
+        setOriginalShortcutValues(settings.shortcutValues);
+        setHasShortcutChanges(false);
     };
-
     // Prepare data for saving
     const prepareMarketData = () => ({
         commentaryId,
@@ -238,9 +254,10 @@ export const UpdateManualOdds = () => {
         }
     };
 
-    // Effects
     useEffect(() => {
         fetchMarketData();
+        // Store original shortcut values
+        setOriginalShortcutValues(settings.shortcutValues);
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
@@ -458,21 +475,41 @@ export const UpdateManualOdds = () => {
                                     />
                                 </Box>
                             </Box>
-                            {/* Shortcut Keys */}
-                            <Box display="flex" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
-                                {Object.entries(settings.shortcutValues).map(([key, value]) => (
-                                    <Box width="9%" key={key}>
-                                        <KeyBox>
-                                            <Box className="key">{key}</Box>
-                                            <TextField
-                                                className="value"
-                                                size="small"
-                                                value={value}
-                                                onChange={(e) => handleSettingChange(key, e.target.value, true)}
-                                            />
-                                        </KeyBox>
-                                    </Box>
-                                ))}
+                            <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
+                                <Box display="flex" flexWrap="wrap" gap={1} sx={{ flex: 1 }}>
+                                    {Object.entries(settings.shortcutValues).map(([key, value]) => (
+                                        <Box width="8%" key={key}>
+                                            <KeyBox>
+                                                <Box className="key" sx={{ py: 0.5 }}>{key}</Box>
+                                                <TextField
+                                                    className="value"
+                                                    size="small"
+                                                    value={value}
+                                                    onChange={(e) => handleSettingChange(key, e.target.value, true)}
+                                                    sx={{ '& .MuiInputBase-input': { py: 0.5 } }}
+                                                />
+                                            </KeyBox>
+                                        </Box>
+                                    ))}
+                                </Box>
+                                <Box width="8%">  {/* Same width as shortcut cards */}
+                                    <Button
+                                        color="primary"
+                                        disabled={!hasShortcutChanges}
+                                        onClick={handleSync}
+                                        sx={{
+                                            height: '100%',  // Match height of KeyBox
+                                            width: '100%',   // Take full width of container
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: theme => theme.spacing(1),  // Match KeyBox padding
+                                        }}
+                                    >
+                                        <RiRefreshLine className="me-1" size={16} />
+                                        Sync
+                                    </Button>
+                                </Box>
                             </Box>
                             <TableContainer>
                                 <Table size="small">
