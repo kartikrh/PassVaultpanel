@@ -439,6 +439,7 @@ const Index = () => {
     const url = new URL(window.location.origin + "/commentaryEventSnap");
     sessionStorage.setItem('eventSnapId', "" + details?.commentaryId);
     sessionStorage.setItem('eventSnapDetails', "" + JSON.stringify(details));
+    sessionStorage.setItem('eventSnapCommentaryHistory', true);
     window.open(url.href, '_blank');
   };
   const handleMarketEventActionClick = (id) => {

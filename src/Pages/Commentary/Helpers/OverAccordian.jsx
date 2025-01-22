@@ -259,11 +259,19 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 <OverContainer>
                     <div className="d-flex justify-content-between w-100 px-0">
                         <PlayerInfo>
-                            <Avatar
-                                src="/api/placeholder/48/48"
-                                alt={bowler?.playerName || 'Bowler'}
-                                sx={{ width: 32, height: 32 }}
-                            />
+                            {console.log("bowler", bowler)}
+                            {bowler?.playerimage ?
+                                <Avatar
+                                    src={bowler?.playerimage}
+                                    alt={bowler?.playerName || 'Bowler'}
+                                    sx={{ width: 32, height: 32 }}
+                                />
+                                : <Avatar
+                                    src="/api/placeholder/48/48"
+                                    alt={bowler?.playerName || 'Bowler'}
+                                    sx={{ width: 32, height: 32 }}
+                                />
+                            }
                             <Box>
                                 <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
                                     fontFamily: "'Work Sans', sans-serif", color: '#505d69'
@@ -300,12 +308,19 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                 </OverContainer>
                 : <OverContainer>
+                    {console.log("bowler dsad", bowler)}
                     <PlayerInfo>
-                        <Avatar
-                            src="/api/placeholder/48/48"
-                            alt={bowler?.playerName || 'Bowler'}
-                            sx={{ width: 32, height: 32 }}
-                        />
+                        {bowler?.playerimage ?
+                            <Avatar
+                                src={bowler?.playerimage}
+                                alt={bowler?.playerName || 'Bowler'}
+                                sx={{ width: 30 }}
+                            />
+                            : <Avatar
+                                src="/api/placeholder/48/48"
+                                alt={bowler?.playerName || 'Bowler'}
+                                sx={{ width: 32, height: 32 }}
+                            />}
                         <Box>
                             <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
                                 fontFamily: "'Work Sans', sans-serif", color: '#505d69'
