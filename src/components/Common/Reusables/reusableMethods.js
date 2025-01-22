@@ -171,6 +171,7 @@ export const getDateRange = (daysAgo = 7) => {
   
   // Set end date to today at 23:59:00
   const endDate = new Date(today);
+  endDate.setDate(today.getDate() - (daysAgo + 1));
   endDate.setHours(23, 59, 0, 0);  // Set time to 23:59:00
 
   return {
