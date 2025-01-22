@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Grid, Paper, Radio, RadioGroup, FormControlLabel, FormControl,
+    Paper, Radio, RadioGroup, FormControlLabel, FormControl,
     Switch, TextField, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Typography, Box, Select, MenuItem
 } from '@mui/material';
@@ -11,9 +11,10 @@ import { Container, Button } from 'reactstrap';
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, SUCCESS } from "../../components/Common/Const";
+import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, SUCCESS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
+import createSocket from '../../Features/socket.js';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -55,7 +56,9 @@ export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
-
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const [rateSourceRefID, setRateSourceRefID] = useState([]);
+    const socket = createSocket();
     // Main states
     const [isLoading, setIsLoading] = useState(false);
     const [eventData, setEventData] = useState({
@@ -82,8 +85,8 @@ export const UpdateManualOdds = () => {
         lRateDifferent: 0.01,
         volumeType: 'auto',
         volumeLength: 3,
-        bRateVolume: 300,
-        lRateVolume: 200,
+        bRateVolume: 0,
+        lRateVolume: 0,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -95,23 +98,22 @@ export const UpdateManualOdds = () => {
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [selectedRunnerDetails, setSelectedRunnerDetails] = useState({
         runnerId: null,
-        field1: '',
-        field2: ''
+        main: '',
+        point: ''
     });
-
-    // Initialize runners with default values
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => ({
             ...runner,
+            selectionId: runner.selectionId, // Make sure this is included
             isSelected: false,
             autoVolume: true,
             back: {
                 price: runner.backPrice || 0,
-                volume: settings.bRateVolume
+                volume: runner.backSize || 0
             },
             lay: {
                 price: runner.layPrice || 0,
-                volume: settings.lRateVolume
+                volume: runner.laySize || 0
             }
         }));
         setRunners(formattedRunners);
@@ -126,8 +128,8 @@ export const UpdateManualOdds = () => {
         setSelectedRunner(runnerId);
         setSelectedRunnerDetails({
             runnerId,
-            field1: '',
-            field2: ''
+            main: '',
+            point: ''
         });
     };
 
@@ -200,24 +202,27 @@ export const UpdateManualOdds = () => {
         }
     };
 
-    // Fetch market data
     const fetchMarketData = async () => {
         setIsLoading(true);
         try {
             const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
-
             if (response?.result) {
                 if (!response.result.market) {
                     navigate("/manualOddsMarket");
                     return;
                 }
-
                 setEventData({
                     comDetails: response.result.comDetails || null,
                     teams: response.result.teams || [],
                     market: response.result.market || [],
                 });
 
+                // Set rateSourceRefID for socket
+                if (response.result.market?.[0]?.rateSourceRefID) {
+                    setRateSourceRefID([response.result.market[0].rateSourceRefID]);
+                }
+
+                // Initialize runners
                 if (response.result.market?.[0]?.runners) {
                     initializeRunners(response.result.market[0].runners);
                 }
@@ -240,25 +245,70 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
+    useEffect(() => {
+        if (rateSourceRefID.length > 0 && socket) {
+            socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+            setIsSocketConnected(true);
+
+            socket.on(MARKET_RUNNER_DATA, (socketData) => {
+
+                if (socketData && socketData[0] && socketData[0]?.runner?.length > 0) {
+                    const marketData = socketData[0]; // Get the first market
+
+                    if (marketData?.runner) {
+                        setRunners(prevRunners => {
+                            return prevRunners.map(prevRunner => {
+                                // Find matching runner using selectionId
+                                const socketRunner = marketData.runner.find(
+                                    r => r.selectionId === prevRunner.selectionId
+                                );
+                                if (socketRunner) {
+                                    return {
+                                        ...prevRunner,
+                                        back: {
+                                            price: socketRunner.backPrice,
+                                            volume: socketRunner.backSize
+                                        },
+                                        lay: {
+                                            price: socketRunner.layPrice,
+                                            volume: socketRunner.laySize
+                                        }
+                                    };
+                                }
+                                return prevRunner;
+                            });
+                        });
+                    }
+                }
+            });
+        }
+
+        return () => {
+            if (socket) {
+                socket.off(MARKET_RUNNER_DATA);
+            }
+        };
+    }, [rateSourceRefID]);
+
     return (
         <Box className="page-content">
             <Container fluid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                <Box display="flex" flexWrap="wrap" gap={2}>
+                    <Box width="100%">
                         <Paper elevation={1} sx={{ p: 3 }}>
                             {/* Header */}
-                            <Grid container alignItems="center" spacing={2} sx={{ mb: 3 }}>
-                                <Grid item xs={8}>
+                            <Box display="flex" alignItems="center" gap={2} sx={{ mb: 3 }}>
+                                <Box width="66.67%">
                                     <Breadcrumbs
                                         title="ScoreCard"
                                         breadcrumbItem="Update Manual Odds Market"
                                     />
-                                </Grid>
-                                <Grid item xs={4} sx={{ textAlign: 'right' }}>
+                                </Box>
+                                <Box width="33.33%" sx={{ textAlign: 'right' }}>
                                     <Button color="primary" className="me-2" onClick={handleSave}>Save</Button>
                                     <Button color="danger" onClick={() => navigate("/commentary")}>Exit</Button>
-                                </Grid>
-                            </Grid>
+                                </Box>
+                            </Box>
 
                             {isLoading && <SpinnerModel />}
 
@@ -273,8 +323,8 @@ export const UpdateManualOdds = () => {
                             )}
 
                             {/* Status Controls */}
-                            <Grid container spacing={2} sx={{ mb: 3 }}>
-                                <Grid item xs={8}>
+                            <Box display="flex" gap={2} sx={{ mb: 3 }}>
+                                <Box width="66.67%">
                                     <FormControl component="fieldset">
                                         <RadioGroup
                                             row
@@ -290,8 +340,8 @@ export const UpdateManualOdds = () => {
                                             <FormControlLabel value="close" control={<Radio />} label="Close" />
                                         </RadioGroup>
                                     </FormControl>
-                                </Grid>
-                                <Grid item xs={4}>
+                                </Box>
+                                <Box width="33.33%">
                                     <TextField
                                         label="Rate Range"
                                         size="small"
@@ -299,12 +349,12 @@ export const UpdateManualOdds = () => {
                                         value={settings.rateRange}
                                         onChange={(e) => handleSettingChange('rateRange', e.target.value)}
                                     />
-                                </Grid>
-                            </Grid>
+                                </Box>
+                            </Box>
 
                             {/* Settings Row */}
-                            <Grid container spacing={2} sx={{ mb: 3 }}>
-                                <Grid item xs={2.4}>
+                            <Box display="flex" gap={2} sx={{ mb: 3 }}>
+                                <Box width="20%">
                                     <TextField
                                         label="Show Rate"
                                         type="number"
@@ -313,8 +363,8 @@ export const UpdateManualOdds = () => {
                                         value={settings.showRate}
                                         onChange={(e) => handleSettingChange('showRate', e.target.value)}
                                     />
-                                </Grid>
-                                <Grid item xs={2.4}>
+                                </Box>
+                                <Box width="20%">
                                     <TextField
                                         label="Rate Different"
                                         type="number"
@@ -323,8 +373,8 @@ export const UpdateManualOdds = () => {
                                         value={settings.rateDifferent}
                                         onChange={(e) => handleSettingChange('rateDifferent', e.target.value)}
                                     />
-                                </Grid>
-                                <Grid item xs={2.4}>
+                                </Box>
+                                <Box width="20%">
                                     <TextField
                                         label="B.Rate Different"
                                         type="number"
@@ -333,8 +383,8 @@ export const UpdateManualOdds = () => {
                                         value={settings.bRateDifferent}
                                         onChange={(e) => handleSettingChange('bRateDifferent', e.target.value)}
                                     />
-                                </Grid>
-                                <Grid item xs={2.4}>
+                                </Box>
+                                <Box width="20%">
                                     <TextField
                                         label="L.Rate Different"
                                         type="number"
@@ -343,8 +393,8 @@ export const UpdateManualOdds = () => {
                                         value={settings.lRateDifferent}
                                         onChange={(e) => handleSettingChange('lRateDifferent', e.target.value)}
                                     />
-                                </Grid>
-                                <Grid item xs={2.4}>
+                                </Box>
+                                <Box width="20%">
                                     <TextField
                                         label="Ball Start After"
                                         type="number"
@@ -353,13 +403,65 @@ export const UpdateManualOdds = () => {
                                         value={settings.ballStartAfter}
                                         onChange={(e) => handleSettingChange('ballStartAfter', e.target.value)}
                                     />
-                                </Grid>
-                            </Grid>
-
+                                </Box>
+                            </Box>
+                            {/* Volume Controls */}
+                            <Box display="flex" gap={2} sx={{ mt: 3 }}>
+                                <Box width="50%">
+                                    <FormControl component="fieldset">
+                                        <RadioGroup
+                                            row
+                                            value={settings.volumeType}
+                                            onChange={(e) => handleSettingChange('volumeType', e.target.value)}
+                                        >
+                                            <FormControlLabel
+                                                value="auto"
+                                                control={<Radio />}
+                                                label="Auto Volume"
+                                            />
+                                            <FormControlLabel
+                                                value="custom"
+                                                control={<Radio />}
+                                                label="Cust.Volume"
+                                            />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <TextField
+                                        label="Volume Length"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.volumeLength}
+                                        onChange={(e) => handleSettingChange('volumeLength', e.target.value)}
+                                    />
+                                </Box>
+                                <Box width="16.67%">
+                                    <TextField
+                                        label="B.Rate Volume"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.bRateVolume}
+                                        onChange={(e) => handleSettingChange('bRateVolume', e.target.value)}
+                                    />
+                                </Box>
+                                <Box width="16.67%">
+                                    <TextField
+                                        label="L.Rate Volume"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.lRateVolume}
+                                        onChange={(e) => handleSettingChange('lRateVolume', e.target.value)}
+                                    />
+                                </Box>
+                            </Box>
                             {/* Shortcut Keys */}
-                            <Grid container spacing={1} sx={{ mb: 3 }}>
+                            <Box display="flex" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
                                 {Object.entries(settings.shortcutValues).map(([key, value]) => (
-                                    <Grid item xs={1.2} key={key}>
+                                    <Box width="9%" key={key}>
                                         <KeyBox>
                                             <Box className="key">{key}</Box>
                                             <TextField
@@ -369,9 +471,9 @@ export const UpdateManualOdds = () => {
                                                 onChange={(e) => handleSettingChange(key, e.target.value, true)}
                                             />
                                         </KeyBox>
-                                    </Grid>
+                                    </Box>
                                 ))}
-                            </Grid>
+                            </Box>
                             <TableContainer>
                                 <Table size="small">
                                     <TableHead>
@@ -397,20 +499,20 @@ export const UpdateManualOdds = () => {
                                                 <TableCell align="center">
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                                         <RateBox type="back" className="large">
-                                                            {runner.back.price}
+                                                            {runner.back.price || 0}
                                                         </RateBox>
                                                         <RateBox type="back" className="small">
-                                                            {runner.back.volume}
+                                                            {runner.back.volume || 0}
                                                         </RateBox>
                                                     </Box>
                                                 </TableCell>
                                                 <TableCell align="center">
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                                         <RateBox type="lay" className="large">
-                                                            {runner.lay.price}
+                                                            {runner.lay.price || 0}
                                                         </RateBox>
                                                         <RateBox type="lay" className="small">
-                                                            {runner.lay.volume}
+                                                            {runner.lay.volume || 0}
                                                         </RateBox>
                                                     </Box>
                                                 </TableCell>
@@ -424,8 +526,8 @@ export const UpdateManualOdds = () => {
                             {selectedRunner && (
                                 <Paper elevation={1} sx={{ mt: 3, p: 2 }}>
                                     <Typography variant="h6" sx={{ mb: 2 }}>Selected Runner Details</Typography>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={4}>
+                                    <Box display="flex" gap={2}>
+                                        <Box width="33.33%">
                                             <FormControl fullWidth size="small">
                                                 <Select
                                                     value={selectedRunnerDetails.runnerId || ''}
@@ -441,91 +543,37 @@ export const UpdateManualOdds = () => {
                                                     ))}
                                                 </Select>
                                             </FormControl>
-                                        </Grid>
-                                        <Grid item xs={4}>
+                                        </Box>
+                                        <Box width="33.33%">
                                             <TextField
                                                 fullWidth
                                                 size="small"
-                                                label="Field 1"
-                                                value={selectedRunnerDetails.field1}
+                                                label="Main"
+                                                value={selectedRunnerDetails.main}
                                                 onChange={(e) => setSelectedRunnerDetails(prev => ({
                                                     ...prev,
-                                                    field1: e.target.value
+                                                    main: e.target.value
                                                 }))}
                                             />
-                                        </Grid>
-                                        <Grid item xs={4}>
+                                        </Box>
+                                        <Box width="33.33%">
                                             <TextField
                                                 fullWidth
                                                 size="small"
-                                                label="Field 2"
-                                                value={selectedRunnerDetails.field2}
+                                                label="Point"
+                                                value={selectedRunnerDetails.point}
                                                 onChange={(e) => setSelectedRunnerDetails(prev => ({
                                                     ...prev,
-                                                    field2: e.target.value
+                                                    point: e.target.value
                                                 }))}
                                             />
-                                        </Grid>
-                                    </Grid>
+                                        </Box>
+                                    </Box>
                                 </Paper>
                             )}
-
-                            {/* Volume Controls */}
-                            <Grid container spacing={2} sx={{ mt: 3 }}>
-                                <Grid item xs={6}>
-                                    <FormControl component="fieldset">
-                                        <RadioGroup
-                                            row
-                                            value={settings.volumeType}
-                                            onChange={(e) => handleSettingChange('volumeType', e.target.value)}
-                                        >
-                                            <FormControlLabel
-                                                value="auto"
-                                                control={<Radio />}
-                                                label="Auto Volume"
-                                            />
-                                            <FormControlLabel
-                                                value="custom"
-                                                control={<Radio />}
-                                                label="Cust.Volume"
-                                            />
-                                        </RadioGroup>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        label="Volume Length"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.volumeLength}
-                                        onChange={(e) => handleSettingChange('volumeLength', e.target.value)}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        label="B.Rate Volume"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.bRateVolume}
-                                        onChange={(e) => handleSettingChange('bRateVolume', e.target.value)}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        label="L.Rate Volume"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.lRateVolume}
-                                        onChange={(e) => handleSettingChange('lRateVolume', e.target.value)}
-                                    />
-                                </Grid>
-                            </Grid>
                         </Paper>
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Box>
             </Container>
         </Box>
     );
