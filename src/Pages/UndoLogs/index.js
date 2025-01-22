@@ -12,7 +12,7 @@ import {
   TAB_UNDO_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
@@ -117,7 +117,7 @@ const Index = () => {
       setSelectedTableElements({
         eventType: {value: event?.eventTypeId, label: event?.eventType},
         competition: {value: competition?.competitionId, label: competition?.competition},
-        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal(commentaryData.eventDate, "index")})` : ""},
+        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : ""},
       });
     }
   }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
@@ -157,7 +157,7 @@ const Index = () => {
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {convertDateUTCToLocal2(text, "index")}
         </span>
       ),
       key: "createdDate",
