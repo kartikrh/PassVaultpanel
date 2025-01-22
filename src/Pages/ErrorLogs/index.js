@@ -12,7 +12,7 @@ import {
   TAB_ERROR_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
 
 const Index = () => {
@@ -77,7 +77,7 @@ const Index = () => {
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {convertDateUTCToLocal2(text, "index")}
         </span>
       ),
       key: "createdDate",
