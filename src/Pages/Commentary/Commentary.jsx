@@ -163,12 +163,22 @@ export const CommentaryScreen = ({
                     {onPitchPlayers[ON_STRIKE]?.batterOrder > onPitchPlayers[NON_STRIKE]?.batterOrder ? (
                         <>
                             <Col className="non-striker-end" xs={12} md={6} lg={6}>
+                                <span>
+                                    {onPitchPlayers[NON_STRIKE]?.playerimage ?
+                                        <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                        : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
+                                </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
                                 <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
                                 <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
                                 <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right">C</button>
                             </Col>
                             <Col className="striker-end" xs={12} md={6} lg={6}>
+                                <span >
+                                    {onPitchPlayers[ON_STRIKE]?.playerimage ?
+                                        <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                        : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
+                                </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
                                 <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
                                 <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
@@ -178,12 +188,22 @@ export const CommentaryScreen = ({
                     ) : (
                         <>
                             <Col className="striker-end" xs={12} md={6} lg={6}>
+                                <span >
+                                    {onPitchPlayers[ON_STRIKE]?.playerimage ?
+                                        <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                        : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
+                                </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
                                 <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
                                 <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
                                 <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
                             </Col>
                             <Col className="non-striker-end" xs={12} md={6} lg={6}>
+                                <span >
+                                    {onPitchPlayers[NON_STRIKE]?.playerimage ?
+                                        <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                        : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
+                                </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
                                 <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
                                 <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
@@ -195,6 +215,11 @@ export const CommentaryScreen = ({
 
                 <Row className="Bowler-header">
                     <Col xs={12} md={12} lg={12}>
+                        <span >
+                            {onPitchPlayers[CURRENT_BOWLER]?.playerimage ?
+                                <img src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} alt='player image' width={30} />
+                                : onPitchPlayers[CURRENT_BOWLER]?.playerName.split('')[0]}
+                        </span>
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                         <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
