@@ -1217,6 +1217,19 @@ const Index = () => {
               </Button>
             </Tooltip>}
 
+          {record.isPredictMarket &&
+          <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"success"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleUpdateManualOddsClick(record.commentaryId);
+              }}
+            >
+              <i class='bx bx-arrow-to-right' ></i>
+            </Button>
+          </Tooltip>}
           </>
         </div>
       ),
@@ -1432,26 +1445,27 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    // {
+    //   title: "M-Odds",
+    //   key: "commentaryMOdds",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         color={"success"}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleUpdateManualOddsClick(record.commentaryId);
+    //         }}
+    //       >
+    //         <i class='bx bx-arrow-to-right' ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // }, 
     {
-      title: "M-Odds",
-      key: "commentaryMOdds",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={"success"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleUpdateManualOddsClick(record.commentaryId);
-            }}
-          >
-            <i class='bx bx-arrow-to-right' ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    }, {
       title: "Delay",
       dataIndex: "delay",
       render: (text, record) => (
