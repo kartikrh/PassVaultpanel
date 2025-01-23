@@ -389,7 +389,8 @@ const Index = () => {
               marketTypeName: record?.marketTypeName,
               marketType: record?.marketType,
               runner: record?.runner,
-              rateSource: rateSource, 
+              rateSource: rateSource,
+              categoryType: record?.categoryType,
             });
             addMarketData({
               ...dataToDB,
@@ -400,6 +401,7 @@ const Index = () => {
               marketType: record?.marketType,
               runner: record?.runner,
               rateSource: rateSource,
+              categoryType: record?.categoryType,
             });
           }}
         >
@@ -482,7 +484,6 @@ const Index = () => {
         ...value
       })
     );
-    console.log(selectedMarket)
     if(!selectedMarket?.isCompitition && !selectedMarket?.isEvent)
       {
        setisShowTournamentList(true)

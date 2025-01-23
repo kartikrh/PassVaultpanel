@@ -25,6 +25,7 @@ export const CommentaryEventSnap = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
   const commentaryId = +sessionStorage.getItem("eventSnapId") || "0";
+  const eventSnapCommentaryHistory = sessionStorage.getItem("eventSnapCommentaryHistory");
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("eventSnapDetails") || "{}"
   );
@@ -238,14 +239,14 @@ export const CommentaryEventSnap = () => {
                       {" "}
                       Back{" "}
                     </Button>
-                    <Button
+                    {eventSnapCommentaryHistory == 'true' ? <Button
                       color="primary"
                       className="btn text-right"
                       onClick={handleUpdate}
                     >
                       {" "}
                       Update{" "}
-                    </Button>
+                    </Button> : null}
                     <Button
                       color="primary"
                       className="btn text-right text-right mx-2"
