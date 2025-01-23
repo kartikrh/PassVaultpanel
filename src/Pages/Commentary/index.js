@@ -1006,7 +1006,7 @@ const Index = () => {
     },
     {
       title: "Scoring",
-      key: "commentaryDetails",
+      key: "commentaryScoring",
       printType: "ignore",
       render: (text, record) => (
         <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
@@ -1285,7 +1285,7 @@ const Index = () => {
     },
     {
       title: "Logs",
-      key: "commentaryId",
+      key: "commentaryLogs",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
           <Tooltip
@@ -1434,7 +1434,7 @@ const Index = () => {
     },
     {
       title: "M-Odds",
-      key: "updateCommentary",
+      key: "commentaryMOdds",
       printType: "ignore",
       render: (text, record) => (
         <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
@@ -1500,7 +1500,7 @@ const Index = () => {
     };
     const AwardColumn = {
       title: "Award",
-      key: "commentaryDetails",
+      key: "commentaryAward",
       printType: "ignore",
       render: (text, record) => (
         <Tooltip title={"Awards"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
