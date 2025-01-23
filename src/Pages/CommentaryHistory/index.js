@@ -4,24 +4,15 @@ import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from "../Commentary/functions";
 import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import DeleteTabModel from "../../components/Model/DeleteModel";
-import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
-import SuspendTabModel from "../../components/Model/SuspendModel";
-import CloseTabModel from "../../components/Model/CloseModel";
-import CancelTabModel from "../../components/Model/CancelModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { CommentaryClone } from "../../components/Model/Clone";
 import { isEqual } from "lodash";
 import {
   ERROR,
-  PERMISSION_ADD,
-  PERMISSION_DELETE,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
   TAB_COMMENTARY_HISTORY,
-  WARNING,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -31,16 +22,8 @@ import {
   getDateRange,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
-import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
-import { ChangeResultModel } from "../../components/Model/ChangeResult";
-import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
-import { DlsModal } from "../Commentary/CommentaryModels/DlsModal";
 import "../Commentary/CommentaryCss.css"
-import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
-import AwardSelectionComponent from "../Commentary/CommentaryModels/AwardModal";
-import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_HISTORY;
@@ -49,36 +32,11 @@ const Index = () => {
   document.title = "Commentary History";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
-  const [cloneModelVisible, setCloneModelVisible] = useState(false);
-  const [changeModelVisible, setChangeModelVisible] = useState(false);
-  const [resultModelVisible, setResultModelVisible] = useState(false);
-  const [delayModelVisible, setDelayModelVisible] = useState(false);
-  const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
-  const [matchType, setMatchType] = useState("");
-  const [selectedCommentary, setSelectedCommentary] = useState({});
-  const [selectedResult, setSelectedResult] = useState({});
-  const [selectedDelay, setSelectedDelay] = useState({});
-  const [selectedEventRef, setSelectedEventRef] = useState({});
-  const [dlsModalCommentary, setDlsModalCommentary] = useState(false)
-  const [cloneValues, setCloneValues] = useState({
-    eventName: "",
-    eventRefId: "",
-  });
   const [dateRange, setDateRange] = useState(() => getDateRange(5));
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [loadModelVisable, setLoadModelVisable] = useState(false);
-  const [suspendModelVisable, setSuspendModelVisable] = useState(false);
-  const [closeModelVisible, setCloseModelVisible] = useState(false);
-  const [cancelModelVisible, setCancelModelVisible] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
-  const [runnerModelVisible, setRunnerModelVisible] = useState(false);
-  const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
-  const [showAwardModel, setShowAwardModel] = useState(undefined);
-  const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
-  const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -147,226 +105,8 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck);
   };
-  const handleDelete = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/delete`, {
-        commentaryId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setDeleteModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleLoadCommentary = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/loadMultiCommentary`, {
-        commentaryId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setLoadModelVisable(false);
-        if (response?.result?.callPredictions?.length > 0) {
-          response.result.callPredictions.forEach((prediction) => {
-            if (prediction?.predictioncallSuccess === false) {
-              const predictionMessage = prediction?.predictionMessage;
-              const endPoint = prediction?.endPoint;
-              dispatch(
-                updateToastData({
-                  data: `${endPoint}\n${predictionMessage}`,
-                  title: "Call Prediction",
-                  type: WARNING,
-                })
-              );
-            }
-          });
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleSuspend = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/eventMarket/suspendMarketByCId`, {
-        commentaryId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setSuspendModelVisable(false);
-        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-          const endPoint = response?.result?.callPrediction?.endPoint;
-          dispatch(
-            updateToastData({
-              data: `${endPoint}\n${predictionMessage}`,
-              title: "Call Prediction",
-              type: WARNING,
-            })
-          );
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleClose = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/closeCommentary`, {
-        commentaryId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setCloseModelVisible(false);
-        if (response?.result?.callPredictions?.length > 0) {
-          response.result.callPredictions.forEach((prediction) => {
-            if (prediction?.predictioncallSuccess === false) {
-              const predictionMessage = prediction?.predictionMessage;
-              const endPoint = prediction?.endPoint;
-              dispatch(
-                updateToastData({
-                  data: `${endPoint}\n${predictionMessage}`,
-                  title: "Call Prediction",
-                  type: WARNING,
-                })
-              );
-            }
-          });
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleCancel = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/cancelCommentary`, {
-        commentaryId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setCancelModelVisible(false);
-        if (response?.result?.callPredictions?.length > 0) {
-          response.result.callPredictions.forEach((prediction) => {
-            if (prediction?.predictioncallSuccess === false) {
-              const predictionMessage = prediction?.predictionMessage;
-              const endPoint = prediction?.endPoint;
-              dispatch(
-                updateToastData({
-                  data: `${endPoint}\n${predictionMessage}`,
-                  title: "Call Prediction",
-                  type: WARNING,
-                })
-              );
-            }
-          });
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
-  };
-  const handleDetailsClick = (id) => {
-    // navigate("/commentaryMaster", { state: { commentaryId: id } });
-    localStorage.setItem('commentaryMasterId', "" + id);
-    const url = new URL(window.location.origin + "/commentaryMaster");
-    window.open(url.href, '_blank');
-  };
-  const handleUpdatePlayersClick = (details) => {
-    // navigate("/updateCommentaryPlayer", {
-    //   state: {
-    //     commentaryId: details?.commentaryId,
-    //     commentaryDetails: details,
-    //   },
-    // });
-    localStorage.setItem('updatePlayerCommentaryId', "" + details?.commentaryId);
-    localStorage.setItem('updatePlayerCommentaryDetails', "" + JSON.stringify(details));
-    const url = new URL(window.location.origin + "/updateCommentaryPlayer");
-    window.open(url.href, '_blank');
   };
   const handleScoringLogsClick = (details) => {
     const url = new URL(window.location.origin + "/scoringLogs");
@@ -400,12 +140,6 @@ const Index = () => {
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
-  const handleCommentaryMarketRunnerClick = (details) => {
-    const url = new URL(window.location.origin + "/commentaryMarketRunner");
-    sessionStorage.setItem('marketRunnerCommentaryId', "" + details?.commentaryId);
-    sessionStorage.setItem('marketRunnerCommentaryDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
-  };
   const handleEventMarketClick = (details) => {
     const url = new URL(window.location.origin + "/eventMarkets");
     sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
@@ -414,270 +148,12 @@ const Index = () => {
     sessionStorage.removeItem("commentaryEventMarketId");
     sessionStorage.removeItem("commentaryEventMarketDetails");
   };
-  const handleCommentaryMarketTemplateClick = (id) => {
-    // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
-    localStorage.setItem('marketTemplateCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/commentaryMarketTemplate");
-    window.open(url.href, '_blank');
-  };
-  const handleCommentaryMarketTemplateClickV1 = (details) => {
-    // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
-    const url = new URL(window.location.origin + "/commentaryMarkets");
-    sessionStorage.setItem('marketTemplateCommentaryId', "" + details?.commentaryId);
-    sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
-  };
   const handleCommentaryEventSnapClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryEventSnap");
     sessionStorage.setItem('eventSnapId', "" + details?.commentaryId);
     sessionStorage.setItem('eventSnapDetails', "" + JSON.stringify(details));
     sessionStorage.setItem('eventSnapCommentaryHistory', false);
     window.open(url.href, '_blank');
-  };
-  const handleMarketEventActionClick = (id) => {
-    localStorage.setItem('openMarketCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/openMarket");
-    // url.searchParams.append("commentaryId", id);
-    window.open(url.href, '_blank');
-  };
-  const handleOddsViewClick = (id) => {
-    localStorage.setItem('oddsViewCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/oddsView");
-    // url.searchParams.append("commentaryId", id);
-    window.open(url.href, '_blank');
-  };
-  const handleShortCommentaryClick = (id) => {
-    // navigate("/shortCommentary", { state: { commentaryId: id } });
-    localStorage.setItem('shortCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/shortCommentary");
-    window.open(url.href, '_blank');
-  };
-  const handleUpdateCommentaryClick = (id) => {
-    // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/updateCommentaryFeature");
-    window.open(url.href, '_blank');
-  };
-  const handleUpdateManualOddsClick = (id) => {
-    // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateManualOddsCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/manualOddsMarket");
-    window.open(url.href, '_blank');
-  };
-  const handleClone = async () => {
-    if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
-      setIsLoading(true);
-      await axiosInstance
-        .post(`/admin/commentary/clone`, {
-          commentaryId: checekedList?.[0],
-          ...cloneValues,
-        })
-        .then((response) => {
-          fetchData();
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-          setCloneModelVisible(false);
-        })
-        .catch((error) => {
-          setIsLoading(false);
-          dispatch(
-            updateToastData({
-              data: error?.message,
-              title: error?.title,
-              type: ERROR,
-            })
-          );
-        });
-    } else {
-      dispatch(
-        updateToastData({
-          data: "Name and Reference Id are required",
-          title: "Required",
-          type: ERROR,
-        })
-      );
-    }
-  };
-  const handleChange = async () => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/changeMatchType`, {
-        ...selectedCommentary,
-      })
-      .then((response) => {
-        fetchData();
-        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-          const endPoint = response?.result?.callPrediction?.endPoint;
-          dispatch(
-            updateToastData({
-              data: `${endPoint}\n${predictionMessage}`,
-              title: "Call Prediction",
-              type: WARNING,
-            })
-          );
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-        setChangeModelVisible(false);
-      })
-      .catch((error) => {
-        setChangeModelVisible(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleChangeRunner = async () => {
-    setIsLoading(true);
-    const payload = [selectedCommentaryRunner?.team1, selectedCommentaryRunner?.team2]
-    await axiosInstance
-      .post(`/admin/ImportMarket/updateTeamId`, payload)
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-        setRunnerModelVisible(false);
-      })
-      .catch((error) => {
-        setRunnerModelVisible(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-        setIsLoading(false);
-      })
-  };
-  const handleChangeResult = async () => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/changeResult`, {
-        ...selectedResult,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-        setResultModelVisible(false);
-      })
-      .catch((error) => {
-        setResultModelVisible(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleChangeDelay = async () => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/changeDelay`, {
-        ...selectedDelay,
-      })
-      .then((response) => {
-        fetchData();
-        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-          const endPoint = response?.result?.callPrediction?.endPoint;
-          dispatch(
-            updateToastData({
-              data: `${endPoint}\n${predictionMessage}`,
-              title: "Call Prediction",
-              type: WARNING,
-            })
-          );
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-        setDelayModelVisible(false);
-      })
-      .catch((error) => {
-        setDelayModelVisible(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleChangeEventRef = async () => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/changeEventRefId`, {
-        ...selectedEventRef,
-      })
-      .then((response) => {
-        fetchData();
-        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
-          const endPoint = response?.result?.callPrediction?.endPoint;
-          dispatch(
-            updateToastData({
-              data: `${endPoint}\n${predictionMessage}`,
-              title: "Call Prediction",
-              type: WARNING,
-            })
-          );
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-        setEventRefModelVisible(false);
-      })
-      .catch((error) => {
-        setEventRefModelVisible(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
   };
   const handleActiveInactive = async (pType, record, cState) => {
     setIsLoading(true);
@@ -712,89 +188,6 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/commentary/updateShowClient`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleIsCountInPoint = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/isCountInPoint`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleTeamPredictionPermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/updateTeamPrediction`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const updatePredictMarket = async (pType, record, cState) => {
-    await axiosInstance
-      .post(`/admin/commentary/changePredictMarket`, {
         commentaryId: record?.commentaryId,
         [pType]: cState ? false : true,
       })
@@ -857,12 +250,6 @@ const Index = () => {
             checked={checekedList.includes(record.commentaryId)}
             onChange={() => {
               handleSingleCheck(record);
-              if (!checekedList.includes(record.commentaryId)) {
-                setCloneValues({
-                  eventName: record?.eventName,
-                  eventRefId: record?.eventRefId,
-                });
-              }
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -904,50 +291,6 @@ const Index = () => {
     {
       title: "Event Id",
       dataIndex: "eventRefId",
-      // render: (text, record) => (
-      //   <div className="d-flex align-items-center gap-1">
-      //   <span
-      //     style={{ cursor: record.isPredictMarket && "pointer" }}
-      //     onClick={() => {
-      //       if (record.isPredictMarket) {
-      //         handleOddsViewClick(record.commentaryId);
-      //       }
-      //     }}
-      //   >
-      //     {text}
-      //   </span>
-      //   <a
-      //   className="bx bx-edit-alt"
-      //   style={{ cursor: "pointer" }}
-      //   onClick={() => {
-      //     setEventRefModelVisible(true);
-      //     setSelectedEventRef(record);
-      //   }}
-      //   ></a>
-      //   </div>
-      // ),
-      render: (text, record) => (
-        <div className="d-flex align-items-center gap-1">
-          <span
-            style={{ cursor: record.isPredictMarket && "pointer" }}
-          // onClick={() => {
-          //   if (record.isPredictMarket) {
-          //     handleOddsViewClick(record.commentaryId);
-          //   }
-          // }}
-          >
-            {text}
-          </span>
-          {/* <span
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setEventRefModelVisible(true);
-              setSelectedEventRef(record);
-            }}> 
-            <Tooltip title="Edit Event Id" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
-          </span> */}
-        </div>
-      ),
       key: "eventRefId",
       sort: true,
       style: { width: "10%" },
@@ -955,18 +298,6 @@ const Index = () => {
     {
       title: "Event",
       dataIndex: "eventName",
-      render: (text, record) => (
-        <span
-          style={{ cursor: record.isPredictMarket && "pointer" }}
-          // onClick={() => {
-          //   if (record.isPredictMarket) {
-          //     handleMarketEventActionClick(record.commentaryId);
-          //   }
-          // }}
-        >
-          {text}
-        </span>
-      ),
       key: "eventName",
       sort: true,
       style: { width: "10%" },
@@ -981,42 +312,10 @@ const Index = () => {
     {
       title: "Match Type",
       dataIndex: "matchType",
-      render: (text, record) => (
-        <span
-          // onClick={() => {
-          //   setChangeModelVisible(true);
-          //   setSelectedCommentary(record);
-          // }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {" "}
-          {/* <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip> */}
-        </span>
-      ),
       key: "matchType",
       sort: true,
       style: { width: "10%" },
     },
-    // {
-    //   title: "Scoring",
-    //   key: "commentaryDetails",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"warning"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleDetailsClick(record.commentaryId);
-    //         }}
-    //       >
-    //         <i class='bx bxs-right-arrow' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
     {
       title: "Status",
       dataIndex: "commentaryStatus",
@@ -1071,40 +370,6 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    // {
-    //   title: "Player",
-    //   key: "updatePlayers",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Update Players"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"info"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleUpdatePlayersClick(record);
-    //         }}
-    //       >
-    //         <i class='bx bxs-up-arrow-square' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-    // {
-    //   title: "Team",
-    //   dataIndex: "team1Name",
-    //   key: "team1Name",
-    //   sort: true,
-    //   style: { width: "10%" },
-    // },
-    // {
-    //   title: "Competitor",
-    //   dataIndex: "team2Name",
-    //   key: "team2Name",
-    //   sort: true,
-    //   style: { width: "10%" },
-    // },
     {
       title: "Predict",
       key: "isPredictMarket",
@@ -1116,13 +381,6 @@ const Index = () => {
               size="sm"
               className="btn"
               disabled
-              // onClick={() => {
-              //   updatePredictMarket(
-              //     "isPredictMarket",
-              //     record,
-              //     record?.isPredictMarket
-              //   );
-              // }}
             >
               <i
                 className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
@@ -1131,59 +389,6 @@ const Index = () => {
             </Button>
           </Tooltip>
           <>
-            {/* {record.isPredictMarket &&
-              <Tooltip title={"Add Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                <Button
-                  color={"primary"}
-                  size="sm"
-                  className="btn"
-                  onClick={() => {
-                    setMarketTemplateModelVisible(true);
-                    setMarketTemplateTimeRecord(record);
-                  }}
-                >
-                  <i className="bx bx-plus"></i>
-                </Button>
-              </Tooltip>} */}
-            {/* {record.isPredictMarket &&
-              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                <Button
-                  color={"primary"}
-                  size="sm"
-                  className="btn"
-                  onClick={() => {
-                    handleCommentaryMarketTemplateClick(record.commentaryId);
-                  }}
-                >
-                  <i class='bx bxs-store' ></i>
-                </Button>
-              </Tooltip>} */}
-            {/* {record.isPredictMarket &&
-              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                <Button
-                  color={"primary"}
-                  size="sm"
-                  className="btn"
-                  onClick={() => {
-                    handleCommentaryMarketTemplateClickV1(record);
-                  }}
-                >
-                  <i class='bx bxs-store' ></i>
-                  {/* <i class='bx bxs-bookmarks'></i> */}
-                {/* </Button>
-              </Tooltip>}  */}
-            {/* <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-              <Button
-                color={"primary"}
-                size="sm"
-                className="btn"
-                onClick={() => {
-                  handlePredictorDetailsClick(record.commentaryId);
-                }}
-              >
-                <i class='bx bxs-up-arrow-square' ></i>
-              </Button>
-            </Tooltip> */}
             <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
@@ -1218,67 +423,6 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    // {
-    //   title: "P-Market",
-    //   key: "marketTemplate",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Button
-    //       color={"primary"}
-    //       size="sm"
-    //       disabled={
-    //         !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
-    //       }
-    //       className="btn"
-    //       onClick={() => {
-    //         handleCommentaryMarketTemplateClick(record.commentaryId);
-    //       }}
-    //     >
-    //       <i class='bx bxs-store' ></i>
-    //     </Button>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-    // {
-    //   title: "S-Score",
-    //   key: "shortCommentary",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Short Score"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"secondary"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleShortCommentaryClick(record.commentaryId);
-    //         }}
-    //       >
-    //         <i class='bx bxs-chevrons-right'></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-    // {
-    //   title: "S-Update",
-    //   key: "updateCommentary",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Update Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"success"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleUpdateCommentaryClick(record.commentaryId);
-    //         }}
-    //       >
-    //         <i class='bx bx-arrow-to-right' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
     {
       title: "Logs",
       key: "commentaryId",
@@ -1332,43 +476,6 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    // {
-    //   title: "SR",
-    //   dataIndex: "setRunner",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         size="sm"
-    //         className="btn runner-button-commentary"
-    //         onClick={() => {
-    //           setRunnerModelVisible(true);
-    //           setSelectedCommentaryRunner(record);
-    //         }}
-    //         style={{ cursor: "pointer" }}
-    //       >
-    //         <i class='bx bxs-up-arrow-square' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   key: "setRunner",
-    //   sort: true,
-    //   style: { width: "10%", textAlign: "center" },
-    // },
-    // {
-    //   title: "DLS",
-    //   dataIndex: "dls",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         size="sm"
-    //         className="dls-button btn"
-    //         onClick={() => { setDlsModalCommentary(record) }}>
-    //         <i class='bx bx-cloud-light-rain'></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "10%" },
-    // },
     {
       title: "CP",
       key: "isCountInPoint",
@@ -1379,9 +486,6 @@ const Index = () => {
             disabled
             size="sm"
             className="btn"
-            // onClick={() => {
-            //   handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
-            // }}
           >
             <i
               className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
@@ -1398,11 +502,9 @@ const Index = () => {
         <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
+            disabled
             size="sm"
             className="btn"
-            onClick={() => {
-              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
-            }}
           >
             <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
           </Button>
@@ -1410,60 +512,9 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    // {
-    //   title: "Rates",
-    //   key: "marketRunner",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Market Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"warning"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleCommentaryMarketRunnerClick(record);
-    //         }}
-    //       >
-    //         <i class='bx bxs-store' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-    // {
-    //   title: "M-Odds",
-    //   key: "updateCommentary",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"success"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleUpdateManualOddsClick(record.commentaryId);
-    //         }}
-    //       >
-    //         <i class='bx bx-arrow-to-right' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-     {
+    {
       title: "Delay",
       dataIndex: "delay",
-      render: (text, record) => (
-        <span
-          // onClick={() => {
-          //   setDelayModelVisible(true);
-          //   setSelectedDelay(record);
-          // }}
-          // style={{ cursor: "pointer" }}
-        >
-          {text} {" "}
-          {/* <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip> */}
-        </span>
-      ),
       key: "delay",
       sort: true,
       style: { width: "10%" },
@@ -1481,40 +532,10 @@ const Index = () => {
     const resultColumn = {
       title: "Change Result",
       dataIndex: "result",
-      render: (text, record) => (
-        <span
-          // onClick={() => {
-          //   setResultModelVisible(true);
-          //   setSelectedResult(record);
-          // }}
-          style={{ cursor: "pointer" }}
-        >
-          {text}
-        </span>
-      ),
       key: "result",
       sort: true,
       style: { width: "10%" },
     };
-    // const AwardColumn = {
-    //   title: "Award",
-    //   key: "commentaryDetails",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Awards"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         size="sm"
-    //         className="award-button btn"
-    //         onClick={() => {
-    //           setShowAwardModel(record.commentaryId)
-    //         }}
-    //       >
-    //         <i class='bx bxs-award'></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // }
     const eventSnapColumn = {
       title: "Event Snap",
       dataIndex: "eventSnap",
@@ -1539,7 +560,6 @@ const Index = () => {
     const updatedColumn = [...columns];
 
     if (data.some(record => record?.commentaryStatus === 4)) {
-      // updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
       updatedColumn.splice(8, 0, eventSnapColumn);
     }
@@ -1551,13 +571,10 @@ const Index = () => {
   const tableElement = {
     title: "Commentary History",
     headerSelect: false,
-    // eventTypeSelect: true,
+    eventTypeSelect: true,
     switch: false,
-    // clone: true,
-    // loadCommentary: true,
-    // suspend: true,
     commentaryStatus: true,
-    // competitionsSelect: true,
+    competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
     statusOptions: [
@@ -1612,149 +629,15 @@ const Index = () => {
             columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
-            loadModelFunction={setLoadModelVisable}
-            suspendModelFunction={setSuspendModelVisable}
-            closeModelFunction={setCloseModelVisible}
-            cancelModelFunction={setCancelModelVisible}
-            cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
-            // onAddNavigate={"/addCommentary"}
             competitions={competitions}
-            // isAddPermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_ADD
-            // )}
-            // isDeletePermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_DELETE
-            // )}
-            // isSuspendPermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_EDIT
-            // )}
-            // isClosePermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_EDIT
-            // )}
-            // isCancelPermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_EDIT
-            // )}
             setDateRange={setDateRange}
             dateRange={dateRange}
           />
-          <SuspendTabModel
-            suspendModelVisible={suspendModelVisable}
-            setSuspendModelVisable={setSuspendModelVisable}
-            handleSuspend={handleSuspend}
-            singleCheck={checekedList}
-          />
-          <CloseTabModel
-            closeModelVisible={closeModelVisible}
-            setCloseModelVisable={setCloseModelVisible}
-            handleClose={handleClose}
-            singleCheck={checekedList}
-          />
-          <CancelTabModel
-            cancelModelVisible={cancelModelVisible}
-            setCancelModelVisible={setCancelModelVisible}
-            handleCancel={handleCancel}
-            singleCheck={checekedList}
-          />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
-            singleCheck={checekedList}
-          />
-          <LoadCommentaryModel
-            loadModelVisable={loadModelVisable}
-            setLoadModelVisable={setLoadModelVisable}
-            handleLoad={handleLoadCommentary}
-          />
-          <CommentaryClone
-            cloneModelVisible={cloneModelVisible}
-            setCloneModelVisible={setCloneModelVisible}
-            handleClone={handleClone}
-            setCloneValues={setCloneValues}
-            cloneValues={cloneValues}
-            singleCheck={checekedList}
-          />
-          {changeModelVisible && (
-            <ChnageMatchTypeModel
-              changeModelVisible={changeModelVisible}
-              setChangeModelVisible={setChangeModelVisible}
-              handleChange={handleChange}
-              setMatchType={setMatchType}
-              singleCheck={checekedList}
-              selectedCommentary={selectedCommentary}
-              setSelectedCommentary={setSelectedCommentary}
-            />
-          )}
-          {resultModelVisible && (
-            <ChangeResultModel
-              resultModelVisible={resultModelVisible}
-              setResultModelVisible={setResultModelVisible}
-              handleChange={handleChangeResult}
-              singleCheck={checekedList}
-              selectedResult={selectedResult}
-              setSelectedResult={setSelectedResult}
-            />
-          )}
-          {delayModelVisible && (
-            <ChangeDelayModel
-              delayModelVisible={delayModelVisible}
-              setDelayModelVisible={setDelayModelVisible}
-              handleChange={handleChangeDelay}
-              singleCheck={checekedList}
-              selectedDelay={selectedDelay}
-              setSelectedDelay={setSelectedDelay}
-            />
-          )}
-          {eventRefModelVisible && (
-            <ChangeEventRefIdModel
-              eventRefModelVisible={eventRefModelVisible}
-              setEventRefModelVisible={setEventRefModelVisible}
-              handleChange={handleChangeEventRef}
-              singleCheck={checekedList}
-              selectedEventRef={selectedEventRef}
-              setSelectedEventRef={setSelectedEventRef}
-            />
-          )}
-          {runnerModelVisible && (
-            <ChangeRunnerModel
-              runnerModelVisible={runnerModelVisible}
-              setRunnerModelVisible={setRunnerModelVisible}
-              handleChange={handleChangeRunner}
-              singleCheck={checekedList}
-              selectedCommentaryRunner={selectedCommentaryRunner}
-              setSelectedCommentaryRunner={setSelectedCommentaryRunner}
-            />
-          )}
-          {dlsModalCommentary && <DlsModal
-            commentaryDetails={dlsModalCommentary}
-            toggle={() => { setDlsModalCommentary(false) }}
-          />}
-          {showAwardModel && <AwardSelectionComponent
-            commentaryId={showAwardModel}
-            onClose={() => { setShowAwardModel(undefined) }} />}
-          {marketTemplateModelVisible &&
-            <CommentaryMarketTemplateModel
-              marketTemplateModelVisible={marketTemplateModelVisible}
-              setMarketTemplateModelVisible={setMarketTemplateModelVisible}
-              marketTemplateRecord={marketTemplateRecord}
-              fetchData={fetchData}
-            />}
         </Container>
       </div>
     </React.Fragment>
