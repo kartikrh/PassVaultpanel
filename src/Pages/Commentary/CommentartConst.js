@@ -119,6 +119,8 @@ export const OPEN_MARKET_STATUS = {
     "4": "Close",
 }
 
+export const CUSTOM_STATUS = "custom"
+export const AUTO_STATUS = "auto"
 export const INACTIVE = "InActive"
 export const SUSPEND = "Suspend"
 export const ALL_SUSPEND = "All Suspend"
