@@ -91,7 +91,7 @@ export const UpdateManualOdds = () => {
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
-        market: [],
+        market: {},
     });
     const [settings, setSettings] = useState({
         rateRange: 10,
@@ -274,16 +274,16 @@ export const UpdateManualOdds = () => {
     const prepareMarketData = () => {
         const marketData = {
             eventMarket: [{
-                eventMarketId: eventData.market[0].eventMarketId,
-                marketName: eventData.market[0].marketName,
-                margin: eventData.market[0].margin,
+                eventMarketId: eventData.market.eventMarketId,
+                marketName: eventData.market.marketName,
+                margin: eventData.market.margin,
                 status: parseInt(marketStatus),
                 isActive: marketStatus === "1",
                 isAllow: true,
                 isSendData: true,
-                lineRatio: eventData.market[0].lineRatio,
+                lineRatio: eventData.market.lineRatio,
                 rateDiff: settings.rateDifferent,
-                predefinedValue: eventData.market[0].predefinedValue,
+                predefinedValue: eventData.market.predefinedValue,
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
                     line: runner.line,
@@ -592,7 +592,7 @@ export const UpdateManualOdds = () => {
                 setEventData({
                     comDetails: response.result.comDetails || null,
                     teams: response.result.teams || [],
-                    market: response.result.market || [],
+                    market: response.result.market?.[0] || {},
                 });
                 const marketData = response.result.market?.[0]
                 const settingDataToUpdate = {
@@ -776,10 +776,14 @@ export const UpdateManualOdds = () => {
                             {/* Header */}
                             <Box display="flex" alignItems="center" gap={2} sx={{ mb: 3 }}>
                                 <Box width="66.67%">
-                                    <Breadcrumbs
-                                        title="ScoreCard"
-                                        breadcrumbItem="Update Manual Odds Market"
-                                    />
+                                    {!isEmpty(eventData?.comDetails) && (
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventRefId}]`}</Typography>
+                                            <Typography variant="body2">
+                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
+                                            </Typography>
+                                        </Box>
+                                    )}
                                 </Box>
                                 <Box width="33.33%" sx={{ textAlign: 'right' }}>
                                     <Button color="primary" className="me-2" onClick={handleSave}>Save</Button>
@@ -788,17 +792,6 @@ export const UpdateManualOdds = () => {
                             </Box>
 
                             {isLoading && <SpinnerModel />}
-
-                            {/* Event Details */}
-                            {!isEmpty(eventData?.comDetails) && (
-                                <Box sx={{ mb: 3 }}>
-                                    <Typography variant="h6">{eventData.comDetails.eventName}</Typography>
-                                    <Typography variant="body2">
-                                        {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
-                                    </Typography>
-                                </Box>
-                            )}
-
                             {/* Status Controls */}
                             <Box display="flex" gap={2} sx={{ mb: 3 }}>
                                 <Box width="66.67%">
