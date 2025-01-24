@@ -19,17 +19,23 @@ import { RiRefreshLine } from 'react-icons/ri';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    backgroundColor: type === 'back' ? 'rgba(144, 202, 249, 0.2)' : 'rgba(255, 205, 210, 0.2)',
-    borderRadius: theme.shape.borderRadius,
-    '&.large': {
-        fontSize: '1.2rem',
-        padding: theme.spacing(1.5)
+    backgroundColor: type === 'back' ? 'rgba(144, 202, 249, 0.2)' :
+        type === 'lay' ? 'rgba(255, 182, 193, 0.2)' :
+            'inherit',
+    width: '100%',
+    '& .MuiInputBase-root': {
+        backgroundColor: 'transparent'
     },
-    '&.small': {
-        fontSize: '0.9rem',
-        padding: theme.spacing(0.5)
+    '& .MuiInputBase-input': {
+        padding: '4px',
+        textAlign: 'center',
+        fontSize: '1.1rem'
+    },
+    '& .price-field': {
+        height: '40px'
+    },
+    '& .volume-field': {
+        height: '24px'
     }
 }));
 
@@ -53,11 +59,26 @@ const KeyBox = styled(Box)(({ theme }) => ({
     }
 }));
 
+const StyledTableRow = styled(TableRow)(({ theme, selected }) => ({
+    backgroundColor: selected ? 'rgba(0, 0, 0, 0.04)' : 'inherit',
+    '&:hover': {
+        backgroundColor: selected ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+    }
+}));
+
+const StyledTableCell = styled(TableCell)(({ theme, type }) => ({
+    backgroundColor: type === 'back' ? 'rgba(144, 202, 249, 0.1)' :
+        type === 'lay' ? 'rgba(255, 182, 193, 0.1)' :
+            'inherit',
+    padding: '8px 4px' // Reduce padding
+}));
+
 export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const [isLive, setIsLive] = useState(true);
     const [rateSourceRefID, setRateSourceRefID] = useState([]);
     const socket = createSocket();
     // Main states
@@ -75,16 +96,16 @@ export const UpdateManualOdds = () => {
         active: true
     });
     const [settings, setSettings] = useState({
-        rateRange: '',
+        rateRange: 10,
         ballStartAfter: 1,
         showRate: 1,
-        rateDifferent: 0.01,
+        rateDifferent: 10,
         bRateDifferent: 0.01,
         lRateDifferent: 0.01,
         volumeType: 'auto',
         volumeLength: 3,
-        bRateVolume: 0,
-        lRateVolume: 0,
+        bRateVolume: 300,
+        lRateVolume: 300,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -101,77 +122,145 @@ export const UpdateManualOdds = () => {
         point: ''
     });
     const initializeRunners = (runnersData) => {
-        const formattedRunners = runnersData.map(runner => ({
-            ...runner,
-            selectionId: runner.selectionId, // Make sure this is included
-            isSelected: false,
-            autoVolume: true,
-            back: {
-                price: runner.backPrice || 0,
-                volume: runner.backSize || 0
-            },
-            lay: {
-                price: runner.layPrice || 0,
-                volume: runner.laySize || 0
-            }
-        }));
+        const formattedRunners = runnersData.map(runner => {
+            const rates = calculateRunnerRates({
+                back: { price: runner.backPrice || 0 }
+            }, settings);
+
+            return {
+                ...runner,
+                selectionId: runner.selectionId,
+                isSelected: false,
+                autoVolume: true,
+                back: {
+                    price: runner.backPrice || 0,
+                    volume: runner.backSize || 0
+                },
+                lay: {
+                    price: runner.layPrice || 0,
+                    volume: runner.laySize || 0
+                },
+                b2: rates.b2,
+                b1: rates.b1,
+                l1: rates.l1,
+                l2: rates.l2
+            };
+        });
         setRunners(formattedRunners);
+        // Auto-select first runner on initialization
+        if (formattedRunners.length > 0) {
+            handleRunnerSelection(formattedRunners[0].runnerId);
+        }
     };
 
     // Handle runner selection
     const handleRunnerSelection = (runnerId) => {
         setRunners(prev => prev.map(runner => ({
             ...runner,
-            isSelected: runner.runnerId === runnerId ? true : false
+            isSelected: runner.runnerId === runnerId
         })));
         setSelectedRunner(runnerId);
-        setSelectedRunnerDetails({
-            runnerId,
-            main: '',
-            point: ''
-        });
+        setSelectedRunnerDetails(prev => ({
+            ...prev,
+            runnerId
+        }));
     };
 
     const handleSettingChange = (key, value, isShortcut = false) => {
         if (isShortcut) {
-            const newShortcutValues = {
-                ...settings.shortcutValues,
-                [key]: value
-            };
-
-            // Check if any values are different from original
-            const hasChanges = Object.entries(newShortcutValues).some(
-                ([k, v]) => v !== originalShortcutValues[k]
-            );
-
-            setHasShortcutChanges(hasChanges);
-            setSettings(prev => ({
-                ...prev,
-                shortcutValues: newShortcutValues
-            }));
+            const newValue = settings.shortcutValues[value];
+            if (newValue) {
+                handleSettingChange('rateDifferent', newValue);
+            }
         } else {
-            setSettings(prev => ({ ...prev, [key]: value }));
+            // Ensure value is numeric for rate-related settings
+            const numericValue = value === '' ? '0' : value;
+            setSettings(prev => ({ ...prev, [key]: numericValue }));
+
+            // Trigger recalculation when rate differences or volumes change
+            if (['rateDifferent', 'bRateDifferent', 'lRateDifferent', 'bRateVolume', 'lRateVolume'].includes(key)) {
+                setRunners(prev => prev.map(runner => {
+                    const newSettings = { ...settings, [key]: numericValue };
+                    const newRates = calculateRunnerRates(runner, newSettings);
+
+                    // If volume rate changed, recalculate volumes
+                    if (key === 'bRateVolume' || key === 'lRateVolume') {
+                        const newVolumes = calculateCustomVolumes(runner.back.volume || 0, newSettings);
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2,
+                            ...newVolumes
+                        };
+                    }
+
+                    return {
+                        ...runner,
+                        b2: newRates.b2,
+                        b1: newRates.b1,
+                        back: { ...runner.back, price: newRates.back },
+                        lay: { ...runner.lay, price: newRates.lay },
+                        l1: newRates.l1,
+                        l2: newRates.l2
+                    };
+                }));
+            }
         }
     };
 
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
-        // Use callback to ensure we get latest settings
-        setSettings(currentSettings => {
-            const value = currentSettings.shortcutValues[key];
-            if (value) {
-                return {
-                    ...currentSettings,
-                    rateDifferent: value
-                };
-            }
-            return currentSettings;
-        });
-    }, []); //
+        const value = settings.shortcutValues[key];
+        if (value) {
+            handleSettingChange('rateDifferent', value);
+        }
+        switch (key) {
+            case 'S':
+                setStatus(prev => Object.fromEntries(Object.keys(prev).map(k => [k, k === 'suspended'])));
+                break;
+            case 'D':
+                setStatus(prev => Object.fromEntries(Object.keys(prev).map(k => [k, k === 'inactive'])));
+                break;
+            case 'F':
+                setStatus(prev => Object.fromEntries(Object.keys(prev).map(k => [k, k === 'close'])));
+                break;
+            default:
+                break;
+        }
+    }, [settings.shortcutValues]);
+
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
         setHasShortcutChanges(false);
     };
+    const calculateRunnerRates = (runner, settings) => {
+        // Ensure we have numeric values, default to 0 if undefined/null/NaN
+        const back = parseFloat(runner?.back?.price) || 0;
+        const bRateDiff = parseFloat(settings?.bRateDifferent) || 0;
+        const lRateDiff = parseFloat(settings?.lRateDifferent) || 0;
+        const rateDiff = parseFloat(settings?.rateDifferent) || 0;
+
+        // Calculate and ensure all values are numbers
+        const b2 = Number((back - (2 * bRateDiff)).toFixed(2));
+        const b1 = Number((back - bRateDiff).toFixed(2));
+        const lay = Number((back + rateDiff).toFixed(2));
+        const l1 = Number((back + rateDiff + lRateDiff).toFixed(2));
+        const l2 = Number((back + rateDiff + (2 * lRateDiff)).toFixed(2));
+
+        return {
+            b2,
+            b1,
+            back,
+            lay,
+            l1,
+            l2
+        };
+    };
+
     // Prepare data for saving
     const prepareMarketData = () => ({
         commentaryId,
@@ -187,7 +276,11 @@ export const UpdateManualOdds = () => {
             backPrice: runner.back.price,
             layPrice: runner.lay.price,
             backSize: runner.back.volume,
-            laySize: runner.lay.volume
+            laySize: runner.lay.volume,
+            b2: runner.b2,
+            b1: runner.b1,
+            l1: runner.l1,
+            l2: runner.l2
         })),
         selectedRunnerDetails
     });
@@ -218,6 +311,297 @@ export const UpdateManualOdds = () => {
         }
     };
 
+    const handleCellEdit = (runnerId, field, valueType, value) => {
+        // Validate numeric input
+        if (value !== '' && !/^\d*\.?\d*$/.test(value)) {
+            return;
+        }
+
+        setRunners(prev => prev.map(runner => {
+            if (runner.runnerId === runnerId) {
+                const newRunner = { ...runner };
+                const parsedValue = parseFloat(value) || 0;
+
+                // Handle price changes
+                if (valueType === 'price') {
+                    switch (field) {
+                        case 'b2':
+                            // When B2 changes, adjust B1 and Back
+                            const b1Value = parsedValue + parseFloat(settings.bRateDifferent);
+                            const backValue = b1Value + parseFloat(settings.bRateDifferent);
+                            const newRatesFromB2 = calculateRunnerRates({
+                                ...runner,
+                                back: { price: backValue }
+                            }, settings);
+
+                            return {
+                                ...newRunner,
+                                b2: parsedValue,
+                                b1: newRatesFromB2.b1,
+                                back: { ...runner.back, price: newRatesFromB2.back },
+                                lay: { ...runner.lay, price: newRatesFromB2.lay },
+                                l1: newRatesFromB2.l1,
+                                l2: newRatesFromB2.l2
+                            };
+
+                        case 'b1':
+                            // When B1 changes, adjust Back
+                            const newBackValue = parsedValue + parseFloat(settings.bRateDifferent);
+                            const newRatesFromB1 = calculateRunnerRates({
+                                ...runner,
+                                back: { price: newBackValue }
+                            }, settings);
+
+                            return {
+                                ...newRunner,
+                                b2: newRatesFromB1.b2,
+                                b1: parsedValue,
+                                back: { ...runner.back, price: newRatesFromB1.back },
+                                lay: { ...runner.lay, price: newRatesFromB1.lay },
+                                l1: newRatesFromB1.l1,
+                                l2: newRatesFromB1.l2
+                            };
+
+                        case 'back':
+                            // When Back changes, recalculate all
+                            const newRatesFromBack = calculateRunnerRates({
+                                ...runner,
+                                back: { price: parsedValue }
+                            }, settings);
+
+                            return {
+                                ...newRunner,
+                                b2: newRatesFromBack.b2,
+                                b1: newRatesFromBack.b1,
+                                back: { ...runner.back, price: parsedValue },
+                                lay: { ...runner.lay, price: newRatesFromBack.lay },
+                                l1: newRatesFromBack.l1,
+                                l2: newRatesFromBack.l2
+                            };
+
+                        case 'lay':
+                            // When Lay changes, adjust L1 and L2
+                            const newRatesFromLay = calculateRunnerRates({
+                                ...runner,
+                                back: { price: parsedValue - parseFloat(settings.rateDifferent) }
+                            }, settings);
+
+                            return {
+                                ...newRunner,
+                                b2: newRatesFromLay.b2,
+                                b1: newRatesFromLay.b1,
+                                back: { ...runner.back, price: newRatesFromLay.back },
+                                lay: { ...runner.lay, price: parsedValue },
+                                l1: newRatesFromLay.l1,
+                                l2: newRatesFromLay.l2
+                            };
+
+                        case 'l1':
+                            // When L1 changes, adjust L2 and back-calculate
+                            const layValue = parsedValue - parseFloat(settings.lRateDifferent);
+                            const backFromL1 = layValue - parseFloat(settings.rateDifferent);
+                            const newRatesFromL1 = calculateRunnerRates({
+                                ...runner,
+                                back: { price: backFromL1 }
+                            }, settings);
+
+                            return {
+                                ...newRunner,
+                                b2: newRatesFromL1.b2,
+                                b1: newRatesFromL1.b1,
+                                back: { ...runner.back, price: newRatesFromL1.back },
+                                lay: { ...runner.lay, price: newRatesFromL1.lay },
+                                l1: parsedValue,
+                                l2: newRatesFromL1.l2
+                            };
+
+                        case 'l2':
+                            // When L2 changes, back-calculate all values
+                            const l1FromL2 = parsedValue - parseFloat(settings.lRateDifferent);
+                            const layFromL2 = l1FromL2 - parseFloat(settings.lRateDifferent);
+                            const backFromL2 = layFromL2 - parseFloat(settings.rateDifferent);
+                            const newRatesFromL2 = calculateRunnerRates({
+                                ...runner,
+                                back: { price: backFromL2 }
+                            }, settings);
+
+                            return {
+                                ...newRunner,
+                                b2: newRatesFromL2.b2,
+                                b1: newRatesFromL2.b1,
+                                back: { ...runner.back, price: newRatesFromL2.back },
+                                lay: { ...runner.lay, price: newRatesFromL2.lay },
+                                l1: newRatesFromL2.l1,
+                                l2: parsedValue
+                            };
+
+                        default:
+                            return newRunner;
+                    }
+                }
+                // Handle volume changes
+                else if (valueType === 'volume') {
+                    // Add this block for custom volume handling
+                    if (settings.volumeType === 'custom' && field === 'back') {
+                        const newVolumes = calculateCustomVolumes(parsedValue, settings);
+                        return {
+                            ...newRunner,
+                            b2Volume: newVolumes.b2Volume,
+                            b1Volume: newVolumes.b1Volume,
+                            back: { ...runner.back, volume: newVolumes.backVolume },
+                            lay: { ...runner.lay, volume: newVolumes.layVolume },
+                            l1Volume: newVolumes.l1Volume,
+                            l2Volume: newVolumes.l2Volume
+                        };
+                    }
+                    if (settings.volumeType === 'custom' && valueType === 'volume') {
+                        if (field === 'lay') {
+                            const newVolumes = {
+                                l1Volume: parsedValue + parseFloat(settings.lRateVolume),
+                                l2Volume: parsedValue + (2 * parseFloat(settings.lRateVolume))
+                            };
+                            return {
+                                ...newRunner,
+                                lay: { ...runner.lay, volume: parsedValue },
+                                ...newVolumes
+                            };
+                        }
+                    }
+                    // Your existing volume change logic
+                    const fieldParts = field.split('.');
+                    if (fieldParts[0] === 'back') {
+                        return {
+                            ...newRunner,
+                            back: { ...runner.back, volume: value }
+                        };
+                    } else if (fieldParts[0] === 'lay') {
+                        return {
+                            ...newRunner,
+                            lay: { ...runner.lay, volume: value }
+                        };
+                    } else {
+                        return {
+                            ...newRunner,
+                            [`${field}Volume`]: value
+                        };
+                    }
+                }
+
+                return newRunner;
+            }
+            return runner;
+        }));
+    };
+
+    const handleShowRateChange = (value) => {
+        // Only allow 1, 2, or 3
+        if (/^[1-3]$/.test(value) || value === '') {
+            handleSettingChange('showRate', value);
+        }
+    };
+
+    const handleSelectedRunnerChange = (newRunnerId) => {
+        setSelectedRunnerDetails(prev => ({
+            ...prev,
+            runnerId: newRunnerId
+        }));
+        handleRunnerSelection(newRunnerId); // This will select the runner in the table
+    };
+
+    const RateCell = ({ runner, field, price, volume, isActive }) => {
+        const isBackType = ['b2', 'b1', 'back'].includes(field);
+        const isLayType = ['lay', 'l1', 'l2'].includes(field);
+        const type = isBackType ? 'back' : isLayType ? 'lay' : '';
+
+        if (!isActive) {
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <RateBox type={type} sx={{ height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</RateBox>
+                    <RateBox type={type} sx={{ height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</RateBox>
+                </Box>
+            );
+        }
+
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <RateBox type={type}>
+                    <TextField
+                        type="number"
+                        fullWidth
+                        size="small"
+                        value={price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0'}
+                        onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
+                        sx={{
+                            '& .MuiInputBase-root': { height: '40px' }
+                        }}
+                        inputProps={{ step: "0.1" }}
+                    />
+                </RateBox>
+                <RateBox type={type}>
+                    <TextField
+                        type="number"
+                        fullWidth
+                        size="small"
+                        value={volume || ''}
+                        onChange={(e) => handleCellEdit(runner.runnerId, field, 'volume', e.target.value)}
+                        className="volume-field"
+                        sx={{
+                            '& .MuiInputBase-root': { height: '24px' }
+                        }}
+                        inputProps={{ step: "1" }}
+
+                    />
+                </RateBox>
+            </Box>
+        );
+    };
+
+    const handleLiveToggle = (isLive) => {
+        setIsLive(isLive);
+        if (isLive) {
+            // Reconnect socket
+            if (socket && rateSourceRefID.length > 0) {
+                socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+                setIsSocketConnected(true);
+            }
+        } else {
+            // Disconnect socket
+            if (socket) {
+                socket.disconnect();
+                setIsSocketConnected(false);
+            }
+        }
+    };
+
+    const calculateCustomVolumes = (backVolume, settings) => {
+        return {
+            b2Volume: backVolume - (2 * parseFloat(settings.bRateVolume)),
+            b1Volume: backVolume - parseFloat(settings.bRateVolume),
+            backVolume: backVolume,
+            layVolume: backVolume,
+            l1Volume: backVolume + parseFloat(settings.lRateVolume),
+            l2Volume: backVolume + (2 * parseFloat(settings.lRateVolume))
+        };
+    };
+
+    const getActiveColumns = (showRate) => {
+        switch (parseInt(showRate)) {
+            case 1:
+                return ['back', 'lay'];
+            case 2:
+                return ['b1', 'back', 'lay', 'l1'];
+            case 3:
+                return ['b2', 'b1', 'back', 'lay', 'l1', 'l2'];
+            default:
+                return ['back', 'lay'];
+        }
+    };
+
+    const generateRandomVolume = (length) => {
+        const min = Math.pow(10, length - 1);
+        const max = Math.pow(10, length) - 1;
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    };
     const fetchMarketData = async () => {
         setIsLoading(true);
         try {
@@ -255,6 +639,40 @@ export const UpdateManualOdds = () => {
     };
 
     useEffect(() => {
+        let intervalId;
+        if (settings.volumeType === 'auto') {
+            intervalId = setInterval(() => {
+                setRunners(prev => prev.map(runner => {
+                    const activeColumns = getActiveColumns(settings.showRate);
+                    const newVolumes = {};
+
+                    activeColumns.forEach(field => {
+                        if (field === 'back' || field === 'lay') {
+                            const volume = generateRandomVolume(settings.volumeLength);
+                            if (field === 'back') {
+                                newVolumes.back = { ...runner.back, volume };
+                            } else {
+                                newVolumes.lay = { ...runner.lay, volume };
+                            }
+                        } else {
+                            newVolumes[`${field}Volume`] = generateRandomVolume(settings.volumeLength);
+                        }
+                    });
+
+                    return {
+                        ...runner,
+                        ...newVolumes
+                    };
+                }));
+            }, 1000);
+        }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [settings.volumeType, settings.volumeLength]);
+
+    useEffect(() => {
         fetchMarketData();
         // Store original shortcut values
         setOriginalShortcutValues(settings.shortcutValues);
@@ -263,23 +681,26 @@ export const UpdateManualOdds = () => {
     }, []);
 
     useEffect(() => {
-        if (rateSourceRefID.length > 0 && socket) {
+        if (rateSourceRefID.length > 0 && socket && isLive) {
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
             setIsSocketConnected(true);
 
             socket.on(MARKET_RUNNER_DATA, (socketData) => {
-
                 if (socketData && socketData[0] && socketData[0]?.runner?.length > 0) {
-                    const marketData = socketData[0]; // Get the first market
+                    const marketData = socketData[0];
 
                     if (marketData?.runner) {
                         setRunners(prevRunners => {
                             return prevRunners.map(prevRunner => {
-                                // Find matching runner using selectionId
                                 const socketRunner = marketData.runner.find(
                                     r => r.selectionId === prevRunner.selectionId
                                 );
                                 if (socketRunner) {
+                                    const newRates = calculateRunnerRates({
+                                        ...prevRunner,
+                                        back: { price: socketRunner.backPrice }
+                                    }, settings);
+
                                     return {
                                         ...prevRunner,
                                         back: {
@@ -289,7 +710,11 @@ export const UpdateManualOdds = () => {
                                         lay: {
                                             price: socketRunner.layPrice,
                                             volume: socketRunner.laySize
-                                        }
+                                        },
+                                        b2: newRates.b2,
+                                        b1: newRates.b1,
+                                        l1: newRates.l1,
+                                        l2: newRates.l2
                                     };
                                 }
                                 return prevRunner;
@@ -298,14 +723,18 @@ export const UpdateManualOdds = () => {
                     }
                 }
             });
-        }
 
-        return () => {
-            if (socket) {
+            return () => {
                 socket.off(MARKET_RUNNER_DATA);
-            }
-        };
-    }, [rateSourceRefID]);
+            };
+        }
+    }, [rateSourceRefID, isLive]);
+
+    useEffect(() => {
+        if (runners.length > 0 && !selectedRunner) {
+            handleRunnerSelection(runners[0].runnerId);
+        }
+    }, [runners]);
 
     return (
         <Box className="page-content">
@@ -357,6 +786,33 @@ export const UpdateManualOdds = () => {
                                             <FormControlLabel value="close" control={<Radio />} label="Close" />
                                         </RadioGroup>
                                     </FormControl>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={status.betAllow}
+                                                onChange={(e) => setStatus(prev => ({ ...prev, betAllow: e.target.checked }))}
+                                            />
+                                        }
+                                        label="Bet Allowed"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={status.active}
+                                                onChange={(e) => setStatus(prev => ({ ...prev, active: e.target.checked }))}
+                                            />
+                                        }
+                                        label="Active"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={isLive}
+                                                onChange={(e) => handleLiveToggle(e.target.checked)}
+                                            />
+                                        }
+                                        label="Live"
+                                    />
                                 </Box>
                                 <Box width="33.33%">
                                     <TextField
@@ -378,7 +834,11 @@ export const UpdateManualOdds = () => {
                                         size="small"
                                         fullWidth
                                         value={settings.showRate}
-                                        onChange={(e) => handleSettingChange('showRate', e.target.value)}
+                                        onChange={(e) => handleShowRateChange(e.target.value)}  // Changed this line
+                                        inputProps={{
+                                            min: 1,
+                                            max: 3
+                                        }}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -516,50 +976,89 @@ export const UpdateManualOdds = () => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Selections</TableCell>
+                                            <TableCell align="center">B2</TableCell>
+                                            <TableCell align="center">B1</TableCell>
                                             <TableCell align="center">Back</TableCell>
                                             <TableCell align="center">Lay</TableCell>
+                                            <TableCell align="center">L1</TableCell>
+                                            <TableCell align="center">L2</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {runners.map((runner) => (
-                                            <TableRow key={runner.runnerId}>
-                                                <TableCell>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        <Switch
-                                                            size="small"
-                                                            checked={runner.isSelected}
-                                                            onChange={() => handleRunnerSelection(runner.runnerId)}
+                                        {runners.map((runner) => {
+                                            const activeColumns = getActiveColumns(settings.showRate);
+                                            return (
+                                                <StyledTableRow key={runner.runnerId} selected={runner.isSelected}>
+                                                    <TableCell>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                            <Radio
+                                                                size="small"
+                                                                checked={runner.isSelected}
+                                                                onChange={() => handleRunnerSelection(runner.runnerId)}
+                                                            />
+                                                            <Typography>{runner.runner}</Typography>
+                                                        </Box>
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <RateCell
+                                                            runner={runner}
+                                                            field="b2"
+                                                            price={runner.b2}
+                                                            volume={runner.b2Volume}
+                                                            isActive={activeColumns.includes('b2')}
                                                         />
-                                                        <Typography>{runner.runner}</Typography>
-                                                    </Box>
-                                                </TableCell>
-                                                <TableCell align="center">
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                        <RateBox type="back" className="large">
-                                                            {runner.back.price || 0}
-                                                        </RateBox>
-                                                        <RateBox type="back" className="small">
-                                                            {runner.back.volume || 0}
-                                                        </RateBox>
-                                                    </Box>
-                                                </TableCell>
-                                                <TableCell align="center">
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                        <RateBox type="lay" className="large">
-                                                            {runner.lay.price || 0}
-                                                        </RateBox>
-                                                        <RateBox type="lay" className="small">
-                                                            {runner.lay.volume || 0}
-                                                        </RateBox>
-                                                    </Box>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <RateCell
+                                                            runner={runner}
+                                                            field="b1"
+                                                            price={runner.b1}
+                                                            volume={runner.b1Volume}
+                                                            isActive={activeColumns.includes('b1')}
+                                                        />
+                                                    </TableCell>
+                                                    <StyledTableCell align="center" type="back">
+                                                        <RateCell
+                                                            runner={runner}
+                                                            field="back"
+                                                            price={runner.back.price}
+                                                            volume={runner.back.volume}
+                                                            isActive={activeColumns.includes('back')}
+                                                        />
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" type="lay">
+                                                        <RateCell
+                                                            runner={runner}
+                                                            field="lay"
+                                                            price={runner.lay.price}
+                                                            volume={runner.lay.volume}
+                                                            isActive={activeColumns.includes('lay')}
+                                                        />
+                                                    </StyledTableCell>
+                                                    <TableCell align="center">
+                                                        <RateCell
+                                                            runner={runner}
+                                                            field="l1"
+                                                            price={runner.l1}
+                                                            volume={runner.l1Volume}
+                                                            isActive={activeColumns.includes('l1')}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <RateCell
+                                                            runner={runner}
+                                                            field="l2"
+                                                            price={runner.l2}
+                                                            volume={runner.l2Volume}
+                                                            isActive={activeColumns.includes('l2')}
+                                                        />
+                                                    </TableCell>
+                                                </StyledTableRow>
+                                            );
+                                        })}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-
-                            {/* Selected Runner Details Section */}
                             {selectedRunner && (
                                 <Paper elevation={1} sx={{ mt: 3, p: 2 }}>
                                     <Typography variant="h6" sx={{ mb: 2 }}>Selected Runner Details</Typography>
@@ -568,10 +1067,7 @@ export const UpdateManualOdds = () => {
                                             <FormControl fullWidth size="small">
                                                 <Select
                                                     value={selectedRunnerDetails.runnerId || ''}
-                                                    onChange={(e) => setSelectedRunnerDetails(prev => ({
-                                                        ...prev,
-                                                        runnerId: e.target.value
-                                                    }))}
+                                                    onChange={(e) => handleSelectedRunnerChange(e.target.value)}
                                                 >
                                                     {runners.map(runner => (
                                                         <MenuItem key={runner.runnerId} value={runner.runnerId}>
