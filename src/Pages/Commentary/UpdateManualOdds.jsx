@@ -218,6 +218,19 @@ export const UpdateManualOdds = () => {
         if (value) {
             handleSettingChange('rateDifferent', value);
         }
+        switch (key) {
+            case 'S':
+                setStatus(prev => Object.fromEntries(Object.keys(prev).map(k => [k, k === 'suspended'])));
+                break;
+            case 'D':
+                setStatus(prev => Object.fromEntries(Object.keys(prev).map(k => [k, k === 'inactive'])));
+                break;
+            case 'F':
+                setStatus(prev => Object.fromEntries(Object.keys(prev).map(k => [k, k === 'close'])));
+                break;
+            default:
+                break;
+        }
     }, [settings.shortcutValues]);
 
     const handleSync = () => {
