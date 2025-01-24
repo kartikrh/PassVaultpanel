@@ -39,7 +39,7 @@ const Index = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [resultModalData, setResultModalData] = useState(null);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
-  const [cancelAllModelVisable, setCancelAllModelVisable] = useState(false);
+  // const [cancelAllModelVisable, setCancelAllModelVisable] = useState(false);
   const [cancelModelVisable, setCancelModelVisable] = useState(false);
   const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
@@ -305,8 +305,9 @@ const Index = () => {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
+      title: "Cancel",
+      key: "cancel",
       render: (text, record) => (
-        <>
         <Tooltip title={"Cancel Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="danger"
@@ -316,9 +317,16 @@ const Index = () => {
               handleCancel(record);
             }}
           >
-            C
+            Cancel
           </Button>
-        </Tooltip>{" "}
+        </Tooltip>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Set Result",
+      key: "result",
+      render: (text, record) => (
         <Tooltip title={"Set Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
           <Button
             color="primary"
@@ -328,10 +336,9 @@ const Index = () => {
               handleResult(record);
             }}
           >
-            R
+            Set Result
           </Button>
         </Tooltip>
-        </>
       ),
       style: { width: "10%", textAlign: "center" },
     },
@@ -348,7 +355,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     isDateRange: true,
-    isCancelAllMarket: true,
+    // isCancelAllMarket: true,
     isCancelMarket: true,
   };
 
@@ -394,7 +401,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            cancelAllModelFunction={setCancelAllModelVisable}
+            // cancelAllModelFunction={setCancelAllModelVisable}
             cancelModelFunction={setCancelModelVisable}
             singleCheck={checekedList}
             eventTypes={eventTypes}
@@ -426,12 +433,12 @@ const Index = () => {
           data={resultModalData}
           fetchData={fetchData}
         />
-        <CancelAllModel
+        {/* <CancelAllModel
           cancelAllModelVisable={cancelAllModelVisable}
           setCancelAllModelVisable={setCancelAllModelVisable}
           singleCheck={checekedList}
           fetchData={fetchData}
-        />
+        /> */}
         <CancelSelectedModel
           cancelModelVisable={cancelModelVisable}
           setCancelModelVisable={setCancelModelVisable}
