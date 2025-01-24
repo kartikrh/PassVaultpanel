@@ -19,7 +19,7 @@ import CompleteCurrentMatchModal from "./CommentaryModels/CompleteMatchModal.jsx
 import ChangeBowlerModal from "./CommentaryModels/ChangeBowlerModal.jsx"
 import UndoOverModal from "./CommentaryModels/UndoOverModal.jsx"
 import OnPitchPlayerModal from "./CommentaryModels/OnPitchPlayerModal.jsx"
-import { BATTING_STATUS, BOWLING_STATUS, ERROR, STRING_SEPERATOR, SUCCESS } from "../../components/Common/Const.js"
+import { BATTING_STATUS, BOWLING_STATUS, COMMENTARY_UPDATE, ERROR, STRING_SEPERATOR, SUCCESS } from "../../components/Common/Const.js"
 import { UndoErrorModal } from "./CommentaryModels/UndoErrorModal.jsx"
 import { PenaltyModal } from "./CommentaryModels/PenaltyModal.jsx"
 import RetiredHurtModal from "./CommentaryModels/RetiredHurtModal.jsx"
@@ -28,6 +28,7 @@ import { RetryModel } from "./CommentaryModels/RetryModel.jsx"
 import axiosInstance from "../../Features/axios.js"
 import CricketFieldModal from "./CommentaryModels/CricketFieldModal.jsx"
 import { updateToastData } from "../../Features/toasterSlice.js"
+import createSocket from "../../Features/socket.js"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -90,7 +91,7 @@ const Commentary = (props) => {
     const [isWheelShow, setIsWheelShow] = useState(undefined);
     const [isWheelShowComplete, setIsWheelShowComplete] = useState(undefined);
     const [isUndoingLastOver, setIsUndoingLastOver] = useState(false);
-
+    const [ballStatus, setBallStatus] = useState(null);
     const [isShotType, setIsShotType] = useState(undefined);
     const {
         commentaryDataToUpdate,
@@ -100,6 +101,7 @@ const Commentary = (props) => {
         superOverApiData, error
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
+    const socket = createSocket();
     // console.log({ "Current Over Ball count": currentOver.ballCount, "OverHistory": overHistory });
 
     // const handleCommentaryConsole = async (temp, main) => {
@@ -398,6 +400,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
+        setBallStatus("scoring");
         setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
         const syncTeam = isEmpty(_teams) ? teams : _teams
@@ -1866,6 +1869,15 @@ const Commentary = (props) => {
             updateRuns(updateRunsFromWicket)
         }
     }, [updateRunsFromWicket])
+
+    useEffect(() => {
+            if (!isEmpty(commentaryDetails) && ballStatus) {
+                if (socket) {
+                  socket.emit(COMMENTARY_UPDATE, {ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId });
+                }
+            }
+    }, [commentaryDetails, ballStatus]);
+
     useEffect(() => {
         if (isUndoCompleted) {
             if (isUndoBall === WICKET || isUndoBall === RETIRED_HURT) {
@@ -2156,6 +2168,7 @@ const Commentary = (props) => {
                 setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
             }}
             updateDisplayStatus={(displayStatus) => {
+                setBallStatus("ballstart");
                 dispatch(updateCommentaryDisplayStatus({
                     "commentaryId": commentaryDetails.commentaryId,
                     "displayStatus": displayStatus,
