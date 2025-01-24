@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     layoutType: 'vertical',
     layoutWidth: 'fluid',
-    leftSideBarTheme: 'dark',
+    leftSideBarTheme: 'light',
     leftSideBarType: 'default',
     topbarTheme: 'light',
     showRightSidebar: false,
