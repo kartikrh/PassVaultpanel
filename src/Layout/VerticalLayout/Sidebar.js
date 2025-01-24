@@ -14,6 +14,7 @@ import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
 const Sidebar = (props) => {
   const ref = useRef();
   const newTabList = useSelector((state) => state.auth.tabList);
+  const theme = useSelector((state) => state.layout.leftSideBarTheme);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -139,7 +140,7 @@ const Sidebar = (props) => {
 
   return (
     <React.Fragment>
-      <div className="vertical-menu">
+      <div className="vertical-menu" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#1a2942" : "#f8f9fa"}}>
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">

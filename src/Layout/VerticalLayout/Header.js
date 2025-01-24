@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { connect } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 // import LanguageDropdown from "../../components/Common/TopbarDropdown/LanguageDropdown";
@@ -21,10 +21,14 @@ import logoLight from "../../assets/images/logo-light.png";
 //   changeSidebarType,
 // } from "../../store/actions";
 import ProfileMenu from "../../components/Common/TopbarDropdown/ProfileMenu";
+import { FormGroup, Input, Label } from "reactstrap";
+import { changeSidebarTheme } from "../../Features/Layout";
 // import AppsDropdown from "../../components/Common/TopbarDropdown/AppsDropdown";
 
 const Header = (props) => {
   const [search, setsearch] = useState(false);
+  const theme = useSelector((state) => state.layout.leftSideBarTheme);
+  const dispatch = useDispatch();
 
   function toggleFullscreen() {
     if (
@@ -65,7 +69,7 @@ const Header = (props) => {
 
   return (
     <React.Fragment>
-      <header id="page-topbar">
+      <header id="page-topbar" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#1a2942" : "#fff"}}>
         <div className="navbar-header">
           <div className="d-flex">
             <div className="navbar-brand-box text-center">
@@ -74,7 +78,7 @@ const Header = (props) => {
                   <img src={logoSm} alt="logo-sm-dark" height="22" />
                 </span>
                 <span className="logo-lg text-black" style={{fontSize: "medium"}}>
-                  <img src={logoDark} alt="logo-dark" height="24" /> <strong>Panel</strong>
+                  <img src={logoDark} alt="logo-dark" height="24" /> <strong style={{color: theme === 'dark' && "#6e7388"}}>Panel</strong>
                 </span>
               </Link>
 
@@ -111,7 +115,7 @@ const Header = (props) => {
             </form> */}
           </div>
 
-          <div className="d-flex">
+          <div className="d-flex align-items-center">
             <div className="dropdown d-inline-block d-lg-none ms-2">
               <button
                 onClick={() => {
@@ -153,6 +157,19 @@ const Header = (props) => {
 
             {/* <LanguageDropdown /> */}
             {/* <AppsDropdown /> */}
+            <FormGroup switch>
+              <Input
+                type="switch"
+                role="switch"
+                id="customSwitch1"
+                className="custom-switch"
+                checked={theme === 'dark'} // Correctly bind the Redux state
+                onChange={() => {
+                  const newTheme = theme === "light" ? "dark" : "light";
+                  dispatch(changeSidebarTheme(newTheme)); // Dispatch action with new theme
+                }}
+              />
+            </FormGroup>
 
             <div className="dropdown d-none d-lg-inline-block ms-1">
               <button
