@@ -1,10 +1,12 @@
 import React from "react"
+import { useSelector } from "react-redux";
 import { Container, Row, Col } from "reactstrap"
 
 const Footer = () => {
+  const theme = useSelector((state) => state.layout.leftSideBarTheme);
   return (
     <React.Fragment>
-      <footer className="footer">
+      <footer className="footer" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#1a2942" : "#f8f9fa"}}>
         <Container fluid={true}>
           <Row>
             <Col sm={6}>{/* {new Date().getFullYear()} © Upzet. */}</Col>

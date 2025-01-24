@@ -1,14 +1,16 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, Col, Row } from "reactstrap";
 
 const Breadcrumbs = (props) => {
+  const theme = useSelector((state) => state.layout.leftSideBarTheme);
   return (
     <React.Fragment>
       <Row>
         <Col xs="12">
           <div className="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 className="mb-0 font-size-18">{props.breadcrumbItem}</h4>
+            <h4 className="mb-0 font-size-18" style={{color: theme === "dark" && "#586075"}}>{props.breadcrumbItem}</h4>
             <div className="page-title-right">
               <Breadcrumb listClassName="m-0">
                 {/* <BreadcrumbItem>
