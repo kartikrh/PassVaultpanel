@@ -9,7 +9,10 @@ import {
 import CardComponent from "./CardComponent";
 import { useDispatch } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR } from "../../components/Common/Const";
+import { CONNECT_COMMENTARY, ERROR } from "../../components/Common/Const";
+import createSocket from "../../Features/socket";
+import { isEmpty } from "lodash";
+
 const Index = ({ data, next, save }) => {
   document.title = "Toss";
   const [commentaryDetails, setCommentaryDetails] = useState({});
@@ -21,6 +24,7 @@ const Index = ({ data, next, save }) => {
     choseTo: null,
     tossWonBy: null,
   });
+  const socket = createSocket();
   const dispatch = useDispatch();
   const handleDetails = (key, value) => {
     setValues((preValue) => {
@@ -61,6 +65,14 @@ const Index = ({ data, next, save }) => {
       commentaryTeams: [...restTeams, ...UpdatedCurrentInningTeams],
     })
   };
+
+  useEffect(() => {
+    if (!isEmpty(commentaryDetails)) {
+      if (socket) {
+        socket.emit(CONNECT_COMMENTARY, { commentaryId: commentaryDetails?.commentaryId, eventRefId : commentaryDetails?.eventRefId });
+      }
+    }
+  }, [commentaryDetails]);
 
   useEffect(() => {
     setCommentaryDetails(data?.commentaryDetails);

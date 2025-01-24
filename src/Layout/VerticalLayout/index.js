@@ -35,6 +35,7 @@ const Layout = props => {
     showRightSidebar: state?.Layout?.showRightSidebar,
     leftSideBarTheme: state?.Layout?.leftSideBarTheme,
   }));
+  const theme = useSelector((state) => state.layout.leftSideBarTheme);
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -101,7 +102,7 @@ const Layout = props => {
 
   return (
     <React.Fragment>
-      <div id="layout-wrapper">
+      <div id="layout-wrapper" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#535a71" : "#535a71"}}>
         <Header toggleMenuCallback={toggleMenuCallback} />
         <Sidebar
           theme={leftSideBarTheme}

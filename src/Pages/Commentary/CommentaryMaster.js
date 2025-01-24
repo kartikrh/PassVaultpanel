@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, SUCCESS, TAB_COMMENTARY, WARNING } from '../../components/Common/Const';
+import { BET_ALLOW, COMMENTARY_MAIN_SCREEN, COMMENTARY_PLAYER_SELECTION_SCREEN, COMMENTARY_TOSS_SCREEN, ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEXT, SUCCESS, TAB_COMMENTARY, WARNING } from '../../components/Common/Const';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -15,6 +15,8 @@ import "./CommentaryCss.css"
 import ChangeStatusModal from "./CommentaryModels/ChangeStatusModal"
 import NetworkStatus from '../../components/Common/Reusables/NetworkStatus';
 import { isEmpty } from 'lodash';
+import Switch from "react-switch";
+import createSocket from '../../Features/socket';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -40,6 +42,7 @@ function CommentaryMaster() {
     const [nextData, setNextData] = useState(undefined);
     const [statusPopup, setStatusPopup] = useState(undefined)
     const [statusList, setStatusList] = useState([])
+    const [isBetAllow, setIsBetAllow] = useState(false);
     const { isCommentaryDataUpdated, isCommentaryBallLoading } = useSelector(state => state.tabsData.commentary);
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const dispatch = useDispatch();
@@ -48,6 +51,45 @@ function CommentaryMaster() {
     // const commentaryId = location.state?.commentaryId || "0";
     const commentaryId = +localStorage.getItem('commentaryMasterId') || "0";
     const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
+    const socket = createSocket();
+
+    const OffsymbolStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: "2px",
+                }}
+            >
+                {" "}
+                Bet Allow
+            </div>
+        );
+    };
+    const OnSymbolStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 4,
+                    paddingLeft: "10px",
+                }}
+            >
+                {" "}
+                Bet Allow
+            </div>
+        );
+    };
 
     const updateDisplayStatus = (displayStatus) => {
         dispatch(updateCommentaryDisplayStatus({
@@ -121,6 +163,13 @@ function CommentaryMaster() {
             });
 
     };
+    useEffect(() => {
+        if (!isEmpty(commentaryData) && (ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN)) {
+            if (socket) {
+              socket.emit(BET_ALLOW, { commentaryId: commentaryData.commentaryDetails?.commentaryId, betAllow: isBetAllow, eventRefId: commentaryData.commentaryDetails?.eventRefId });
+            }
+        }
+    }, [commentaryData, isBetAllow]);
 
     const openIframePopup = () => {
         const url = `${scoreCardUrl}/scoreboard2?id=${commentaryData?.commentaryDetails?.eid}&color=000`
@@ -166,7 +215,24 @@ function CommentaryMaster() {
                                             </>}
                                     </Col>
                                     <Col className="pt-2" xs={12} md={6} lg={6}>
+                                      <div className='d-flex align-items-center justify-content-end'>
+                                       {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) &&
+                                       <div className="d-flex align-items-center py-2">
+                                          <span>Bet Allow</span>
+                                          <Switch
+                                            width={70}
+                                            uncheckedIcon={<OffsymbolStatus />}
+                                            checkedIcon={<OnSymbolStatus />}
+                                            className="pe-0 mx-2"
+                                            onColor="#02a499"
+                                            onChange={() => {
+                                               setIsBetAllow(!isBetAllow);
+                                            }}
+                                            checked={isBetAllow}
+                                          />
+                                        </div>}
                                         <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
+                                       </div>
                                         {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                                             <>
                                                 <NetworkStatus />
