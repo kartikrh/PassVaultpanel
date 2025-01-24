@@ -19,17 +19,23 @@ import { RiRefreshLine } from 'react-icons/ri';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    backgroundColor: type === 'back' ? 'rgba(144, 202, 249, 0.2)' : 'rgba(255, 205, 210, 0.2)',
-    borderRadius: theme.shape.borderRadius,
-    '&.large': {
-        fontSize: '1.2rem',
-        padding: theme.spacing(1.5)
+    backgroundColor: type === 'back' ? 'rgba(144, 202, 249, 0.2)' :
+        type === 'lay' ? 'rgba(255, 182, 193, 0.2)' :
+            'inherit',
+    width: '100%',
+    '& .MuiInputBase-root': {
+        backgroundColor: 'transparent'
     },
-    '&.small': {
-        fontSize: '0.9rem',
-        padding: theme.spacing(0.5)
+    '& .MuiInputBase-input': {
+        padding: '4px',
+        textAlign: 'center',
+        fontSize: '1.1rem'
+    },
+    '& .price-field': {
+        height: '40px'
+    },
+    '& .volume-field': {
+        height: '24px'
     }
 }));
 
@@ -59,13 +65,20 @@ const StyledTableRow = styled(TableRow)(({ theme, selected }) => ({
         backgroundColor: selected ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.04)',
     }
 }));
+
+const StyledTableCell = styled(TableCell)(({ theme, type }) => ({
+    backgroundColor: type === 'back' ? 'rgba(144, 202, 249, 0.1)' :
+        type === 'lay' ? 'rgba(255, 182, 193, 0.1)' :
+            'inherit',
+    padding: '8px 4px' // Reduce padding
+}));
+
 export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [isLive, setIsLive] = useState(true);
-
     const [rateSourceRefID, setRateSourceRefID] = useState([]);
     const socket = createSocket();
     // Main states
@@ -83,16 +96,16 @@ export const UpdateManualOdds = () => {
         active: true
     });
     const [settings, setSettings] = useState({
-        rateRange: '',
+        rateRange: 10,
         ballStartAfter: 1,
         showRate: 1,
-        rateDifferent: 0.01,
+        rateDifferent: 10,
         bRateDifferent: 0.01,
         lRateDifferent: 0.01,
         volumeType: 'auto',
         volumeLength: 3,
-        bRateVolume: 0,
-        lRateVolume: 0,
+        bRateVolume: 300,
+        lRateVolume: 300,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -155,23 +168,42 @@ export const UpdateManualOdds = () => {
 
     const handleSettingChange = (key, value, isShortcut = false) => {
         if (isShortcut) {
-            // Existing shortcut handling code
+            const newValue = settings.shortcutValues[value];
+            if (newValue) {
+                handleSettingChange('rateDifferent', newValue);
+            }
         } else {
-            setSettings(prev => ({ ...prev, [key]: value }));
+            // Ensure value is numeric for rate-related settings
+            const numericValue = value === '' ? '0' : value;
+            setSettings(prev => ({ ...prev, [key]: numericValue }));
 
-            // Trigger recalculation when rate differences change
-            if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
+            // Trigger recalculation when rate differences or volumes change
+            if (['rateDifferent', 'bRateDifferent', 'lRateDifferent', 'bRateVolume', 'lRateVolume'].includes(key)) {
                 setRunners(prev => prev.map(runner => {
-                    const newRates = calculateRunnerRates({
-                        ...runner,
-                        back: { price: runner.back.price }
-                    }, { ...settings, [key]: value });
+                    const newSettings = { ...settings, [key]: numericValue };
+                    const newRates = calculateRunnerRates(runner, newSettings);
+
+                    // If volume rate changed, recalculate volumes
+                    if (key === 'bRateVolume' || key === 'lRateVolume') {
+                        const newVolumes = calculateCustomVolumes(runner.back.volume || 0, newSettings);
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2,
+                            ...newVolumes
+                        };
+                    }
 
                     return {
                         ...runner,
                         b2: newRates.b2,
                         b1: newRates.b1,
-                        lay: { price: newRates.lay, volume: runner.lay.volume },
+                        back: { ...runner.back, price: newRates.back },
+                        lay: { ...runner.lay, price: newRates.lay },
                         l1: newRates.l1,
                         l2: newRates.l2
                     };
@@ -182,35 +214,37 @@ export const UpdateManualOdds = () => {
 
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
-        // Use callback to ensure we get latest settings
-        setSettings(currentSettings => {
-            const value = currentSettings.shortcutValues[key];
-            if (value) {
-                return {
-                    ...currentSettings,
-                    rateDifferent: value
-                };
-            }
-            return currentSettings;
-        });
-    }, []); //
+        const value = settings.shortcutValues[key];
+        if (value) {
+            handleSettingChange('rateDifferent', value);
+        }
+    }, [settings.shortcutValues]);
+
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
         setHasShortcutChanges(false);
     };
     const calculateRunnerRates = (runner, settings) => {
-        const back = parseFloat(runner.back.price) || 0;
-        const bRateDiff = parseFloat(settings.bRateDifferent) || 0;
-        const lRateDiff = parseFloat(settings.lRateDifferent) || 0;
-        const rateDiff = parseFloat(settings.rateDifferent) || 0;
+        // Ensure we have numeric values, default to 0 if undefined/null/NaN
+        const back = parseFloat(runner?.back?.price) || 0;
+        const bRateDiff = parseFloat(settings?.bRateDifferent) || 0;
+        const lRateDiff = parseFloat(settings?.lRateDifferent) || 0;
+        const rateDiff = parseFloat(settings?.rateDifferent) || 0;
+
+        // Calculate and ensure all values are numbers
+        const b2 = Number((back - (2 * bRateDiff)).toFixed(2));
+        const b1 = Number((back - bRateDiff).toFixed(2));
+        const lay = Number((back + rateDiff).toFixed(2));
+        const l1 = Number((back + rateDiff + lRateDiff).toFixed(2));
+        const l2 = Number((back + rateDiff + (2 * lRateDiff)).toFixed(2));
 
         return {
-            b2: back - (2 * bRateDiff),
-            b1: back - bRateDiff,
-            back: back,
-            lay: back + rateDiff,
-            l1: back + rateDiff + lRateDiff,
-            l2: back + rateDiff + (2 * lRateDiff)
+            b2,
+            b1,
+            back,
+            lay,
+            l1,
+            l2
         };
     };
 
@@ -394,6 +428,33 @@ export const UpdateManualOdds = () => {
                 }
                 // Handle volume changes
                 else if (valueType === 'volume') {
+                    // Add this block for custom volume handling
+                    if (settings.volumeType === 'custom' && field === 'back') {
+                        const newVolumes = calculateCustomVolumes(parsedValue, settings);
+                        return {
+                            ...newRunner,
+                            b2Volume: newVolumes.b2Volume,
+                            b1Volume: newVolumes.b1Volume,
+                            back: { ...runner.back, volume: newVolumes.backVolume },
+                            lay: { ...runner.lay, volume: newVolumes.layVolume },
+                            l1Volume: newVolumes.l1Volume,
+                            l2Volume: newVolumes.l2Volume
+                        };
+                    }
+                    if (settings.volumeType === 'custom' && valueType === 'volume') {
+                        if (field === 'lay') {
+                            const newVolumes = {
+                                l1Volume: parsedValue + parseFloat(settings.lRateVolume),
+                                l2Volume: parsedValue + (2 * parseFloat(settings.lRateVolume))
+                            };
+                            return {
+                                ...newRunner,
+                                lay: { ...runner.lay, volume: parsedValue },
+                                ...newVolumes
+                            };
+                        }
+                    }
+                    // Your existing volume change logic
                     const fieldParts = field.split('.');
                     if (fieldParts[0] === 'back') {
                         return {
@@ -435,32 +496,53 @@ export const UpdateManualOdds = () => {
     };
 
     const RateCell = ({ runner, field, price, volume, isActive }) => {
-        if (!isActive) return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <RateBox type={field.startsWith('b') ? 'back' : 'lay'} className="large">-</RateBox>
-                <RateBox type={field.startsWith('b') ? 'back' : 'lay'} className="small">-</RateBox>
-            </Box>
-        );
+        const isBackType = ['b2', 'b1', 'back'].includes(field);
+        const isLayType = ['lay', 'l1', 'l2'].includes(field);
+        const type = isBackType ? 'back' : isLayType ? 'lay' : '';
+
+        if (!isActive) {
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <RateBox type={type} sx={{ height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</RateBox>
+                    <RateBox type={type} sx={{ height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</RateBox>
+                </Box>
+            );
+        }
 
         return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <TextField
-                    size="small"
-                    value={price || ''}
-                    onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
-                    className="large"
-                    fullWidth
-                />
-                <TextField
-                    size="small"
-                    value={volume || ''}
-                    onChange={(e) => handleCellEdit(runner.runnerId, field, 'volume', e.target.value)}
-                    className="small"
-                    fullWidth
-                />
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <RateBox type={type}>
+                    <TextField
+                        type="number"
+                        fullWidth
+                        size="small"
+                        value={price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0'}
+                        onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
+                        sx={{
+                            '& .MuiInputBase-root': { height: '40px' }
+                        }}
+                        inputProps={{ step: "0.1" }}
+                    />
+                </RateBox>
+                <RateBox type={type}>
+                    <TextField
+                        type="number"
+                        fullWidth
+                        size="small"
+                        value={volume || ''}
+                        onChange={(e) => handleCellEdit(runner.runnerId, field, 'volume', e.target.value)}
+                        className="volume-field"
+                        sx={{
+                            '& .MuiInputBase-root': { height: '24px' }
+                        }}
+                        inputProps={{ step: "1" }}
+
+                    />
+                </RateBox>
             </Box>
         );
     };
+
     const handleLiveToggle = (isLive) => {
         setIsLive(isLive);
         if (isLive) {
@@ -478,6 +560,17 @@ export const UpdateManualOdds = () => {
         }
     };
 
+    const calculateCustomVolumes = (backVolume, settings) => {
+        return {
+            b2Volume: backVolume - (2 * parseFloat(settings.bRateVolume)),
+            b1Volume: backVolume - parseFloat(settings.bRateVolume),
+            backVolume: backVolume,
+            layVolume: backVolume,
+            l1Volume: backVolume + parseFloat(settings.lRateVolume),
+            l2Volume: backVolume + (2 * parseFloat(settings.lRateVolume))
+        };
+    };
+
     const getActiveColumns = (showRate) => {
         switch (parseInt(showRate)) {
             case 1:
@@ -491,6 +584,11 @@ export const UpdateManualOdds = () => {
         }
     };
 
+    const generateRandomVolume = (length) => {
+        const min = Math.pow(10, length - 1);
+        const max = Math.pow(10, length) - 1;
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    };
     const fetchMarketData = async () => {
         setIsLoading(true);
         try {
@@ -526,6 +624,40 @@ export const UpdateManualOdds = () => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        let intervalId;
+        if (settings.volumeType === 'auto') {
+            intervalId = setInterval(() => {
+                setRunners(prev => prev.map(runner => {
+                    const activeColumns = getActiveColumns(settings.showRate);
+                    const newVolumes = {};
+
+                    activeColumns.forEach(field => {
+                        if (field === 'back' || field === 'lay') {
+                            const volume = generateRandomVolume(settings.volumeLength);
+                            if (field === 'back') {
+                                newVolumes.back = { ...runner.back, volume };
+                            } else {
+                                newVolumes.lay = { ...runner.lay, volume };
+                            }
+                        } else {
+                            newVolumes[`${field}Volume`] = generateRandomVolume(settings.volumeLength);
+                        }
+                    });
+
+                    return {
+                        ...runner,
+                        ...newVolumes
+                    };
+                }));
+            }, 1000);
+        }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [settings.volumeType, settings.volumeLength]);
 
     useEffect(() => {
         fetchMarketData();
@@ -872,7 +1004,7 @@ export const UpdateManualOdds = () => {
                                                             isActive={activeColumns.includes('b1')}
                                                         />
                                                     </TableCell>
-                                                    <TableCell align="center">
+                                                    <StyledTableCell align="center" type="back">
                                                         <RateCell
                                                             runner={runner}
                                                             field="back"
@@ -880,8 +1012,8 @@ export const UpdateManualOdds = () => {
                                                             volume={runner.back.volume}
                                                             isActive={activeColumns.includes('back')}
                                                         />
-                                                    </TableCell>
-                                                    <TableCell align="center">
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" type="lay">
                                                         <RateCell
                                                             runner={runner}
                                                             field="lay"
@@ -889,7 +1021,7 @@ export const UpdateManualOdds = () => {
                                                             volume={runner.lay.volume}
                                                             isActive={activeColumns.includes('lay')}
                                                         />
-                                                    </TableCell>
+                                                    </StyledTableCell>
                                                     <TableCell align="center">
                                                         <RateCell
                                                             runner={runner}
