@@ -8,10 +8,9 @@ import { styled } from '@mui/material/styles';
 import { isEmpty } from 'lodash';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { Container, Button } from 'reactstrap';
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, SUCCESS } from "../../components/Common/Const";
+import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
@@ -88,6 +87,7 @@ export const UpdateManualOdds = () => {
     const [hasShortcutChanges, setHasShortcutChanges] = useState(false);
     const [runners, setRunners] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
+    const [ballStatus, setBallStatus] = useState(null);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -120,7 +120,7 @@ export const UpdateManualOdds = () => {
         main: '',
         point: ''
     });
-
+    console.log({ ballStatus })
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const rates = calculateRunnerRates({
@@ -704,7 +704,11 @@ export const UpdateManualOdds = () => {
             console.log("Emitting MARKET_RUNNER_CONNECT with:", rateSourceRefID);
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
             setIsSocketConnected(true);
-
+            const handleBallStatus = (data) => {
+                if (data) {
+                    setBallStatus(data?.ballStatus);
+                }
+            }
             // Handler for market runner messages
             const handleMarketRunnerData = (message) => {
                 if (!isLive || !message?.[0]?.runners) return;
@@ -750,13 +754,14 @@ export const UpdateManualOdds = () => {
             }
 
             // Set up socket event listeners
-            console.log("Setting up socket listener for:", MARKET_RUNNER_DATA);
             socket.on(MARKET_RUNNER_DATA, handleMarketRunnerData);
+            socket.on(UPDATE_BALL_STATUS, handleBallStatus);
 
             // Cleanup function
             return () => {
                 console.log("Cleaning up socket listener");
                 socket.off(MARKET_RUNNER_DATA, handleMarketRunnerData);
+                socket.off(UPDATE_BALL_STATUS, handleBallStatus);
             };
         }
     }, [rateSourceRefID, socket, isLive, settings]);
