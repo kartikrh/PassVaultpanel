@@ -101,6 +101,14 @@ export const UpdateManualOdds = () => {
         lRateDifferent: 0.01,
         volumeLength: 3,
         volumeType: CUSTOM_STATUS,
+        betAllow: false,
+        active: false,
+        rateDifferent: 5,
+        bRateVolume: 300,
+        lRateVolume: 300,
+        margin: 10,
+        delay: 10,
+        lineRatio: 10,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -587,18 +595,18 @@ export const UpdateManualOdds = () => {
                     market: response.result.market || [],
                 });
                 const marketData = response.result.market?.[0]
-                console.log(response.result.market)
                 const settingDataToUpdate = {
                     ...settings,
-                    betAllow: marketData?.isAllow || false,
-                    active: marketData?.isActive || false,
-                    rateDifferent: marketData?.rateDiff || 0.01,
-                    bRateVolume: marketData?.defaultBackSize || 300,
-                    lRateVolume: marketData?.defaultLaySize || 300
+                    betAllow: marketData?.isAllow || settings.betAllow,
+                    active: marketData?.isActive || settings.active,
+                    rateDifferent: marketData?.rateDiff || settings.rateDifferent,
+                    bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
+                    lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
+                    margin: marketData?.margin || settings.margin,
+                    delay: marketData?.delay || settings.delay,
+                    lineRatio: marketData?.lineRatio || settings.lineRatiow
                 }
-                console.log({ settingDataToUpdate })
                 setSettings(settingDataToUpdate)
-                // Set rateSourceRefID for socket
                 if (marketData?.rateSourceRefID) {
                     setRateSourceRefID([response.result.market[0].rateSourceRefID]);
                 }
@@ -714,7 +722,7 @@ export const UpdateManualOdds = () => {
                             const newRates = calculateRunnerRates({
                                 back: { price: socketRunner.backPrice }
                             }, settings);
-
+                            console.log({ prevRunner })
                             return {
                                 ...prevRunner,
                                 back: {
@@ -729,7 +737,11 @@ export const UpdateManualOdds = () => {
                                 b2: newRates.b2,
                                 b1: newRates.b1,
                                 l1: newRates.l1,
-                                l2: newRates.l2
+                                l2: newRates.l2,
+                                b1Volume: socketRunner.backSize,
+                                b2Volume: socketRunner.backSize,
+                                l1Volume: socketRunner.laySize,
+                                l2Volume: socketRunner.laySize,
                             };
                         }
                         return prevRunner;
@@ -828,13 +840,23 @@ export const UpdateManualOdds = () => {
                                         label="Live"
                                     />
                                 </Box>
-                                <Box width="33.33%">
+                                <Box width="15%">
                                     <TextField
                                         label="Rate Range"
                                         size="small"
                                         fullWidth
                                         value={settings.rateRange}
                                         onChange={(e) => handleSettingChange('rateRange', e.target.value)}
+                                    />
+                                </Box>
+                                <Box width="15%">
+                                    <TextField
+                                        label="Ball Start After"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.ballStartAfter}
+                                        onChange={(e) => handleSettingChange('ballStartAfter', e.target.value)}
                                     />
                                 </Box>
                             </Box>
@@ -890,12 +912,35 @@ export const UpdateManualOdds = () => {
                                 </Box>
                                 <Box width="20%">
                                     <TextField
-                                        label="Ball Start After"
+                                        label="Margin"
                                         type="number"
                                         size="small"
                                         fullWidth
-                                        value={settings.ballStartAfter}
-                                        onChange={(e) => handleSettingChange('ballStartAfter', e.target.value)}
+                                        value={settings.margin}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('margin', e.target.value)}
+                                    />
+                                </Box>
+                                <Box width="20%">
+                                    <TextField
+                                        label="Delay"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.delay}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('delay', e.target.value)}
+                                    />
+                                </Box>
+                                <Box width="20%">
+                                    <TextField
+                                        label="Line Ratio"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.lineRatio}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('lineRatio', e.target.value)}
                                     />
                                 </Box>
                             </Box>
