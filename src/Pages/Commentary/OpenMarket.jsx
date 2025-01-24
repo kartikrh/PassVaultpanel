@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, WARNING } from "../../components/Common/Const";
+import { ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -38,6 +38,7 @@ export const OpenMarket = () => {
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
     const [isScorecardShow, setIsScorecardShow] = useState(undefined);
     const [isKeyPressed, setIsKeyPressed] = useState(undefined);
+    const [ballStatus, setBallStatus] = useState(null);
     const selectedCategoriesData = selectedCategories.map(category => { })
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
@@ -1269,6 +1270,11 @@ export const OpenMarket = () => {
                     );
                   }
                 });
+                socket.on(UPDATE_BALL_STATUS, (data) => {
+                    if(data){ 
+                      setBallStatus(data?.ballStatus);
+                    }
+                });
             } else {
                 setIsSocketConnected(false)
                 fetchConfigAll();
@@ -1363,6 +1369,11 @@ export const OpenMarket = () => {
                                         <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ `} <strong>{`${commentaryInfo.en}`}</strong>{`/ Ref: `} <strong>{`${commentaryInfo.eid}`}</strong> {`[ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
                                     </Col>
                                     }
+                                    {ballStatus === "ballstart" && <Col className="p-0 d-flex align-items-center" xs={2} md={1} lg={1}>
+                                        <span className="ball-start">
+                                            <span className='text-bold mx-2'>Ball Start</span>
+                                        </span>
+                                    </Col>}
                                     <Col className="p-0" xs={2} md={1} lg={1}>
                                         <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
                                     </Col>
