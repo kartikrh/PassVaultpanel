@@ -25,7 +25,7 @@ export const ManualOddsMarket = () => {
         isConnectedMarket: false,
         eventRefId: '',
         inningsId: "",
-        rateDiff: '',
+        rateDiff: '0.01',
         rateSourceRefID: ""
     });
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId")
@@ -341,7 +341,7 @@ export const ManualOddsMarket = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="mb-3">
+                                                    {formData.isConnectedMarket && <div className="mb-3">
                                                         <label className="form-label">Market RefID:</label>
                                                         <input
                                                             type="text"
@@ -349,7 +349,7 @@ export const ManualOddsMarket = () => {
                                                             value={formData.rateSourceRefID}
                                                             onChange={(e) => setFormData({ ...formData, rateSourceRefID: e.target.value })}
                                                         />
-                                                    </div>
+                                                    </div>}
 
                                                     <div className="mb-3">
                                                         <label className="form-label">Rate Difference:</label>

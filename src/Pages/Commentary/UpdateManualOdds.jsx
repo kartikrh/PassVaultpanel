@@ -731,6 +731,7 @@ export const UpdateManualOdds = () => {
                 if (marketData?.rateSourceRefID) {
                     setRateSourceRefID([response.result.market[0].rateSourceRefID]);
                 }
+                setMarketStatus(marketData?.status)
 
                 // Initialize runners
                 if (marketData?.runners) {
