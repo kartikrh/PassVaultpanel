@@ -65,3 +65,16 @@
         @include card-border-variant($value);
     }
 }
+
+body[data-theme="dark"] {
+    .card{
+        background-color: $dark-boxed-body-bg;
+    }
+    .card-body{
+        color: $dark-table-td-color;
+    }
+    .card-header{
+        background-color: $dark-boxed-body-bg;
+        color: $dark-table-td-color;
+    }
+}

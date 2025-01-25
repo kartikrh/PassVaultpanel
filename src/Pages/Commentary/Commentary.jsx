@@ -230,82 +230,82 @@ export const CommentaryScreen = ({
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
                 </Row>
-                <Row className={isLoading ? "disable-button" : ""} style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}>
+                <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => handleRuns(0, 1)}>
                         <img className="button-icon" src="icons/0.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => handleRuns(1, 1)}>
                         <img className="button-icon" src="icons/1.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => handleRuns(2, 1)}>
                         <img className="button-icon" src="icons/2.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={onUndoClick}
                     >
                         <img className="button-icon" src="icons/undo.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => handleRuns(3, 1)}>
                         <img className="button-icon" src="icons/3.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => handleRuns(4, 1, true)}>
                         <img className="button-icon" src="icons/4.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => handleRuns(6, 1, true)}>
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => setActionPopup(true)}>
                         <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => updateExtras(BALL_WIDE)}>
                         <img className="button-icon-lg" src="icons/wide-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => updateExtras(NO_BALL)}>
                         <img className="button-icon-lg" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
                         all Start
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                     >
                         <img className="button-icon" src="icons/r.png" alt="Icon" />
                         emark
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => updateExtras(BALL_BYE)}>
                         <img className="button-icon-lg" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={() => updateExtras(BALL_LEG_BYE)}>
                         <img className="button-icon-lg" src="icons/leg-by.png" alt="Icon" />
                     </Col>
                     <Col role="button" className="color-out score-button" xs={6} md={6} lg={6}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
+                        
                         onClick={onWicketClick}>
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>

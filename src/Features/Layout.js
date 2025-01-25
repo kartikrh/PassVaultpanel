@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const theme = localStorage.getItem('panelTheme') || 'light';
+document.body.setAttribute('data-theme', theme);
 
 const initialState = {
     layoutType: 'vertical',
@@ -27,6 +28,7 @@ const layoutSlice = createSlice({
         },
         changeSidebarTheme: (state, action) => {
             state.panelTheme = action.payload;
+            document.body.setAttribute('data-theme', action.payload)
             localStorage.setItem('panelTheme', action.payload);
         },
         changeSidebarType: (state, action) => {

@@ -4,6 +4,31 @@
 // custom-variables
 //
 
+
+// sample variables for the dark
+// Light mode variables
+$light-body-bg: #ffffff;
+$light-boxed-body-bg: #f4f4f4;
+$light-footer-bg: #eaeaea;
+
+// Dark mode variables
+$dark-body-bg: #1a2942;
+$dark-body-color: #0bb197;
+$dark-boxed-body-bg: #1a2942;
+$dark-footer-bg: #1a2942;
+
+$dark-table-th-color: #0bc4b4;
+$dark-table-td-color: #159c86;
+$dark-table-td-hover-bg: #ffffff;
+
+// Shared variables
+$boxed-layout-width: 1200px;
+$box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+$sidebar-width: 300px;
+$sidebar-collapsed-width: 80px;
+
+// sample variables
+
 // Vertical Sidebar - Default Light
 $sidebar-bg: #ffffff;
 $sidebar-menu-item-color: #74788d;
@@ -16,12 +41,14 @@ $sidebar-collapsed-width:  70px;
 $sidebar-width-sm:  160px;
 
 // Vertical Sidebar - Dark
-$sidebar-dark-bg: #1b2c3f;
-$sidebar-dark-menu-item-color: #8590a5;
-$sidebar-dark-menu-sub-item-color: #8590a5;
-$sidebar-dark-menu-item-icon-color: #8590a5;
+$sidebar-dark-bg: #1a2942;
+$sidebar-dark-menu-item-color: #0bb197;
+$sidebar-dark-menu-sub-item-color: #0bb197;
+$sidebar-dark-menu-item-icon-color: #0bb197;
 $sidebar-dark-menu-item-hover-color: #d7e4ec;
-$sidebar-dark-menu-item-active-color: #d7e4ec;
+$sidebar-dark-menu-item-hover-bg: #fff;
+$sidebar-dark-menu-item-active-color: #ffffff;
+$sidebar-dark-menu-item-active-bg: #ffffff;
 
 // Topbar - Deafult Light
 $header-height: 70px;
@@ -29,8 +56,9 @@ $header-bg: #ffffff;
 $header-item-color: #636e75;
 
 // Topbar - Dark
-$header-dark-bg: #252b3b;
+$header-dark-bg: #021739;
 $header-dark-item-color: #e9ecef;
+$vertical-menu-dark-bg: #091c3c;
 
 // Topbar Search
 $topbar-search-bg: #f1f5f7;

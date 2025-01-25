@@ -140,10 +140,10 @@ const Sidebar = (props) => {
 
   return (
     <React.Fragment>
-      <div className="vertical-menu" style={{background: theme === "dark" && "#091c3c", color: theme === "dark" && "#0bb197"}}>
+      <div className="vertical-menu">
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
-            <ul className="metismenu list-unstyled" id="side-menu-item" style={{color: theme === "dark" && "#0bb197"}}>
+            <ul className="metismenu list-unstyled" id="side-menu-item">
               {/* No use of sidebarData, it is jusst Backup */}
               {(newTabList || sidebarData)
                 .slice() // Create a shallow copy
@@ -151,19 +151,15 @@ const Sidebar = (props) => {
                 .map((item, key) => (
                   <React.Fragment key={key}>
                     {item.isMainMenu && item.subItem?.length === 0 ? (
-                      <li key={key} style={{color: theme === "dark" && "#0bb197"}}>
-                        <Link to={item.url ? item.url : "/#"} onClick={tToggle} style={{ color: theme === "dark" && "#0bb197" }}>
-                          <i
-                            className={item.icon}
-                            style={{ color: theme === "dark" && "#0bb197", marginRight: "5px" }}
-                          ></i>
+                      <li key={key}>
+                        <Link to={item.url ? item.url : "/#"} onClick={tToggle}>
+                          <i className={item.icon}></i>
                           <span>{props.t(item.label)}</span>
                         </Link>
                       </li>
                     ) : (
-                      <li key={key} style={{ color: theme === "dark" && "#0bb197", marginRight: "5px" }}>
+                      <li key={key}>
                         <Link
-                        style={{ color: theme === "dark" && "#0bb197" }}
                           to={item.url ? item.url : "/#"}
                           className={
                             item.issubMenubadge || item.isHasArrow
@@ -172,7 +168,7 @@ const Sidebar = (props) => {
                           }
                         >
                           <i
-                            className={item.icon} style={{ color: theme === "dark" && "#0bb197", marginRight: "5px" }}
+                            className={item.icon}
                           ></i>
                           {item.issubMenubadge && (
                             <span
@@ -187,7 +183,7 @@ const Sidebar = (props) => {
                           <span>{props.t(item.label)}</span>
                         </Link>
                         {item.subItem && item.subItem.length > 0 && (
-                          <ul className="sub-menu" style={{ color: theme === "dark" && "#0bb197" }}>
+                          <ul className="sub-menu" >
                             {item.subItem
                               .slice() // Create a shallow copy
                               .sort(
@@ -196,8 +192,8 @@ const Sidebar = (props) => {
                                   (subB.displayOrder || 0)
                               )
                               .map((subItem, subKey) => (
-                                <li key={subKey} style={{ color: theme === "dark" && "#0bb197" }}>
-                                  <Link to={subItem.link} onClick={tToggle} style={{ color: theme === "dark" && "#0bb197" }}>
+                                <li key={subKey} >
+                                  <Link to={subItem.link} onClick={tToggle} >
                                     {props.t(subItem.sublabel)}
                                   </Link>
                                 </li>

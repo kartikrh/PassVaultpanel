@@ -100,16 +100,18 @@ const Layout = props => {
     }
   }, [topbarTheme, dispatch]);
 
+  console.log("data-theme", document.body.getAttribute("data-theme"))
+
   return (
     <React.Fragment>
-      <div id="layout-wrapper" style={{background: theme === "dark" && "#1a294", color: theme === "dark" && "#0bb197"}}>
+      <div id="layout-wrapper">
         <Header toggleMenuCallback={toggleMenuCallback} />
         <Sidebar
           theme={panelTheme}
           type={leftSideBarType}
           isMobile={isMobile}
         />
-        <div className="main-content" style={{minHeight: "100vh", background: theme === "dark" && "#1a2942", color: theme === "dark" && "#0bb197"}}>{props.children}</div>
+        <div className="main-content" >{props.children}</div>
         <Footer />
       </div>
       {showRightSidebar ? <RightSidebar /> : null}

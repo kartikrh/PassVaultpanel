@@ -1,0 +1,9 @@
+body[data-theme="dark"]{
+    .modal-content{
+        background-color: $dark-boxed-body-bg !important;
+        color: $dark-body-color !important;
+    }
+    .modal-header, .modal-body, .modal-title{
+        color: $dark-body-color !important;
+    }
+}

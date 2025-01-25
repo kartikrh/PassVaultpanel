@@ -6,7 +6,7 @@ const Footer = () => {
   const theme = useSelector((state) => state.layout.panelTheme);
   return (
     <React.Fragment>
-      <footer className="footer" style={{background: theme === "dark" && "#1a2942", color: theme === "dark" && "#0bb197"}}>
+      <footer className="footer">
         <Container fluid={true}>
           <Row>
             <Col sm={6}>{/* {new Date().getFullYear()} © Upzet. */}</Col>

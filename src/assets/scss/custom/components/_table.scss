@@ -40,3 +40,56 @@
         vertical-align: middle !important;
     }
 }
+
+
+body[data-theme="dark"] {
+    .table {
+        background-color: $dark-boxed-body-bg; // Define variable for dark mode background
+        th {
+            background-color: $dark-boxed-body-bg; // Define variable for dark mode background
+            color: $dark-table-th-color; // Define variable for dark mode
+            font-weight: $font-weight-bold;
+        }
+        td {
+            color: $dark-table-td-color; // Define variable for dark mode
+        }
+        tr:hover {
+            background-color: $dark-table-td-hover-bg; // Define variable for dark mode hover background
+        }
+
+
+        // .table-light {
+        //     color: $dark-body-color; // Define variable for dark mode text color
+        //     border-color: $dark-table-border-color; // Define variable for border color
+        //     background-color: $dark-table-head-bg; // Define variable for dark mode head background
+        // }
+    }
+
+    // .table-bordered {
+    //     border: $table-border-width solid $dark-table-border-color; // Dark mode border color
+    // }
+
+    // .table-dark > :not(:last-child) > :last-child > * {
+    //     border-bottom-color: $dark-table-dark-border-color; // Dark mode bottom border color
+    // }
+
+    // .table-nowrap {
+    //     th,
+    //     td {
+    //         color: $dark-table-text-color; // Dark mode table text color
+    //         white-space: nowrap;
+    //     }
+    // }
+
+    // .table > :not(:first-child) {
+    //     border-top: 0;
+    // }
+
+    // .table-centered {
+    //     td,
+    //     th {
+    //         vertical-align: middle !important;
+    //         color: $dark-table-th-color; // Dark mode text color for centered tables
+    //     }
+    // }
+}
