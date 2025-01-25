@@ -179,8 +179,40 @@ export const UpdateManualOdds = () => {
         }));
     };
 
-    const handleStatusChange = (newStatus) => {
-        setMarketStatus(newStatus);
+    // For status change and API call
+    const handleStatusChange = async (newStatus) => {
+        try {
+            setIsLoading(true);
+            // First update the status
+            setMarketStatus(newStatus);
+
+            // Immediately prepare and send data with new status
+            const marketData = {
+                eventMarket: [{
+                    ...prepareMarketData().eventMarket[0],
+                    status: parseInt(newStatus)
+                }]
+            };
+
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+
+            if (response?.success) {
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+                await fetchMarketData();
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSettingChange = (key, value, isShortcut = false) => {
@@ -259,27 +291,94 @@ export const UpdateManualOdds = () => {
         setOriginalShortcutValues(settings.shortcutValues);
         setHasShortcutChanges(false);
     };
-    const calculateRunnerRates = (runner, settings) => {
-        // Ensure we have numeric values, default to 0 if undefined/null/NaN
+
+
+    const calculateRunnerRates = (runner, settings, options = {}) => {
+        // Extract options with defaults
+        const {
+            forceCalculateLay = true,     // Whether to force recalculation of lay prices
+            isSocketData = false,         // Whether data is coming from socket
+            manualEdit = false,          // Whether this is a manual edit
+            editedField = null           // Which field was manually edited
+        } = options;
+
+        // Ensure numeric values with fallbacks
         const back = parseFloat(runner?.back?.price) || 0;
+        const existingLay = parseFloat(runner?.lay?.price) || 0;
+        const existingL1 = parseFloat(runner?.l1) || 0;
+        const existingL2 = parseFloat(runner?.l2) || 0;
+
+        // Get rate differences from settings
         const bRateDiff = parseFloat(settings?.bRateDifferent) || 0;
         const lRateDiff = parseFloat(settings?.lRateDifferent) || 0;
         const rateDiff = parseFloat(settings?.rateDifferent) || 0;
 
-        // Calculate and ensure all values are numbers
+        // Always calculate back-related rates
         const b2 = Number((back - (2 * bRateDiff)).toFixed(2));
         const b1 = Number((back - bRateDiff).toFixed(2));
-        const lay = Number((back + rateDiff).toFixed(2));
-        const l1 = Number((back + rateDiff + lRateDiff).toFixed(2));
-        const l2 = Number((back + rateDiff + (2 * lRateDiff)).toFixed(2));
 
+        // Initialize lay-related rates
+        let lay, l1, l2;
+
+        // Determine how to handle lay prices
+        if (isSocketData || (manualEdit && editedField === 'back')) {
+            // For socket data or back price edits, always calculate lay prices based on formula
+            lay = Number((back + rateDiff).toFixed(2));
+            l1 = Number((lay + lRateDiff).toFixed(2));
+            l2 = Number((l1 + lRateDiff).toFixed(2));
+        } else if (manualEdit) {
+            switch (editedField) {
+                case 'lay':
+                    // If lay was manually edited, calculate L1 and L2 based on new lay
+                    lay = Number(parseFloat(runner.lay.price).toFixed(2));
+                    l1 = Number((lay + lRateDiff).toFixed(2));
+                    l2 = Number((l1 + lRateDiff).toFixed(2));
+                    break;
+                case 'l1':
+                    // If L1 was manually edited, keep lay and calculate L2
+                    lay = existingLay;
+                    l1 = Number(parseFloat(runner.l1).toFixed(2));
+                    l2 = Number((l1 + lRateDiff).toFixed(2));
+                    break;
+                case 'l2':
+                    // If L2 was manually edited, keep lay and L1
+                    lay = existingLay;
+                    l1 = existingL1;
+                    l2 = Number(parseFloat(runner.l2).toFixed(2));
+                    break;
+                default:
+                    // For other edits, maintain existing lay prices if not forcing recalculation
+                    if (forceCalculateLay) {
+                        lay = Number((back + rateDiff).toFixed(2));
+                        l1 = Number((lay + lRateDiff).toFixed(2));
+                        l2 = Number((l1 + lRateDiff).toFixed(2));
+                    } else {
+                        lay = existingLay;
+                        l1 = existingL1;
+                        l2 = existingL2;
+                    }
+            }
+        } else {
+            // Default behavior - calculate based on forceCalculateLay
+            if (forceCalculateLay) {
+                lay = Number((back + rateDiff).toFixed(2));
+                l1 = Number((lay + lRateDiff).toFixed(2));
+                l2 = Number((l1 + lRateDiff).toFixed(2));
+            } else {
+                lay = existingLay;
+                l1 = existingL1;
+                l2 = existingL2;
+            }
+        }
+
+        // Ensure all rates are valid numbers
         return {
-            b2,
-            b1,
-            back,
-            lay,
-            l1,
-            l2
+            b2: Math.max(0, b2),
+            b1: Math.max(0, b1),
+            back: Math.max(0, back),
+            lay: Math.max(0, lay),
+            l1: Math.max(0, l1),
+            l2: Math.max(0, l2)
         };
     };
 
@@ -766,7 +865,6 @@ export const UpdateManualOdds = () => {
                     setBallStatus(data?.ballStatus);
                 }
             }
-            // Handler for market runner messages
             const handleMarketRunnerData = (message) => {
                 if (!isLive || !message?.[0]?.runners) return;
 
@@ -779,11 +877,11 @@ export const UpdateManualOdds = () => {
                         );
 
                         if (socketRunner) {
-                            // Calculate all rates based on new socket data
+                            // Always force calculate lay rates for socket data
                             const newRates = calculateRunnerRates({
                                 back: { price: socketRunner.backPrice }
-                            }, settings);
-                            console.log({ prevRunner })
+                            }, settings, true);
+
                             return {
                                 ...prevRunner,
                                 back: {
@@ -791,24 +889,19 @@ export const UpdateManualOdds = () => {
                                     volume: socketRunner.backSize
                                 },
                                 lay: {
-                                    price: socketRunner.layPrice,
+                                    price: newRates.lay,  // Use calculated lay price
                                     volume: socketRunner.laySize
                                 },
-                                // Update all calculated rates
                                 b2: newRates.b2,
                                 b1: newRates.b1,
                                 l1: newRates.l1,
-                                l2: newRates.l2,
-                                b1Volume: socketRunner.backSize,
-                                b2Volume: socketRunner.backSize,
-                                l1Volume: socketRunner.laySize,
-                                l2Volume: socketRunner.laySize,
+                                l2: newRates.l2
                             };
                         }
                         return prevRunner;
                     });
                 });
-            }
+            };
 
             // Set up socket event listeners
             socket.on(MARKET_RUNNER_DATA, handleMarketRunnerData);
