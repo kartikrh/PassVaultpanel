@@ -214,7 +214,7 @@ const RightSidebar = props => {
                       id="leftsidebarThemelight"
                       name="leftsidebarTheme"
                       value={leftSideBarThemeTypes.LIGHT}
-                      checked={props?.leftSideBarTheme === leftSideBarThemeTypes.LIGHT}
+                      checked={props?.panelTheme === leftSideBarThemeTypes.LIGHT}
                       onChange={e => {
                         if (e.target.checked) {
                           props?.changeSidebarTheme(e.target.value);
@@ -227,7 +227,7 @@ const RightSidebar = props => {
                       id="leftsidebarThemedark"
                       name="leftsidebarTheme"
                       value={leftSideBarThemeTypes.DARK}
-                      checked={props?.leftSideBarTheme === leftSideBarThemeTypes.DARK}
+                      checked={props?.panelTheme === leftSideBarThemeTypes.DARK}
                       onChange={e => {
                         if (e.target.checked) {
                           props?.changeSidebarTheme(e.target.value);
@@ -284,7 +284,7 @@ RightSidebar.propTypes = {
   changeTopbarTheme: PropTypes.func,
   layoutType: PropTypes.any,
   layoutWidth: PropTypes.any,
-  leftSideBarTheme: PropTypes.any,
+  panelTheme: PropTypes.any,
   leftSideBarType: PropTypes.any,
   showRightSidebarAction: PropTypes.func,
   topbarTheme: PropTypes.any,

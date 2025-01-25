@@ -27,7 +27,7 @@ import { changeSidebarTheme } from "../../Features/Layout";
 
 const Header = (props) => {
   const [search, setsearch] = useState(false);
-  const theme = useSelector((state) => state.layout.leftSideBarTheme);
+  const theme = useSelector((state) => state.layout.panelTheme);
   const dispatch = useDispatch();
 
   function toggleFullscreen() {
@@ -69,7 +69,7 @@ const Header = (props) => {
 
   return (
     <React.Fragment>
-      <header id="page-topbar" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#1a2942" : "#fff"}}>
+      <header id="page-topbar" style={{background: theme === "dark" && "#021739", color: theme === "dark" && "#0bb197"}}>
         <div className="navbar-header">
           <div className="d-flex">
             <div className="navbar-brand-box text-center">
@@ -78,7 +78,7 @@ const Header = (props) => {
                   <img src={logoSm} alt="logo-sm-dark" height="22" />
                 </span>
                 <span className="logo-lg text-black" style={{fontSize: "medium"}}>
-                  <img src={logoDark} alt="logo-dark" height="24" /> <strong style={{color: theme === 'dark' && "#6e7388"}}>Panel</strong>
+                  <img src={logoDark} alt="logo-dark" height="24" /> <strong style={{color: theme === 'dark' && "#0bb197"}}>Panel</strong>
                 </span>
               </Link>
 

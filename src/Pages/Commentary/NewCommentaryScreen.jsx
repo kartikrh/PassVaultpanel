@@ -5,17 +5,13 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
-import { useSelector } from "react-redux"
-import { BorderColor } from "@mui/icons-material"
 
-export const CommentaryScreen = ({
+export const NewCommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined)
-
-    const theme = useSelector((state) => state.layout.panelTheme);
 
     const OffsymbolStatus = () => {
         return (
@@ -138,13 +134,104 @@ export const CommentaryScreen = ({
 
     return <React.Fragment>
         <Row className='scoring-row'>
-            <Col xs={12} md={6} lg={6}>
-                <Row>
-                    <Col className="team-name team-1" xs={6} md={6} lg={6}>
-                        {teamDetails?.[BATTING_TEAM].teamName}
+            <Col xs={12} md={6} lg={8}>
+                <Row gap={2}>
+                    <Col className="team-name team-1 border rounded" xs={6} md={6} lg={6}>
+                        {/* {teamDetails?.[BATTING_TEAM].teamName} */}
+                        <div className="current-score-header d-flex justify-content-between px-0">
+                            <span className="current-team-name fs-5">{teamDetails?.[BATTING_TEAM]?.teamName}&nbsp;</span>
+                            <span className="current-team-score fs-6">
+                                {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/{teamDetails?.[BATTING_TEAM]?.teamWicket || 0}
+                                &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0})
+                                &nbsp;</span>
+                        </div>
+                        {onPitchPlayers[ON_STRIKE]?.batterOrder > onPitchPlayers[NON_STRIKE]?.batterOrder ? (
+                            <>
+                                <div className="non-striker-end">
+                                    <div className="d-flex justify-content-between">
+                                        <>
+                                            {/* <span>
+                                                {onPitchPlayers[NON_STRIKE]?.playerimage ?
+                                                    <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                                    : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
+                                            </span> */}
+                                            <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
+                                            <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button ">C</button>
+                                        </>
+                                        <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
+                                        <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                    </div>
+                                </div>
+                                <div className="striker-end">
+                                    {/* <span>
+                                        {onPitchPlayers[ON_STRIKE]?.playerimage ?
+                                            <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                            : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
+                                    </span> */}
+                                    <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
+                                    <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button ">C</button>
+                                    <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
+                                    <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="striker-end d-flex justify-content-between align-items-center">
+                                    <div className="d-flex align-items-center fs-6">
+                                        {/* <span>
+                                            {onPitchPlayers[ON_STRIKE]?.playerimage ?
+                                                <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                                : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
+                                        </span> */}
+                                        <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
+                                        <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button">C</button>
+                                    </div>
+                                    <div className="d-flex align-items-center fs-6">
+                                        <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
+                                        <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                    </div>
+                                </div>
+                                <div className="non-striker-end d-flex justify-content-between align-items-center">
+                                    <div className="d-flex align-items-center fs-6">
+                                        {/* <span>
+                                            {onPitchPlayers[NON_STRIKE]?.playerimage ?
+                                                <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
+                                                : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
+                                        </span> */}
+                                        <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
+                                        <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button  ">C</button>
+                                    </div>
+                                    <div className="d-flex align-items-center fs-6">
+                                        <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
+                                        <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </Col>
-                    <Col className="team-name team-2" xs={6} md={6} lg={6}>
-                        {teamDetails?.[BOWLING_TEAM]?.teamName}
+                    <Col className="team-name border rounded" xs={6} md={6} lg={6}>
+                        {/* {teamDetails?.[BOWLING_TEAM]?.teamName} */}
+                        <div className="current-score-header d-flex justify-content-between px-0">
+                            <span className="current-team-name fs-5 ">{teamDetails?.[BOWLING_TEAM]?.teamName}&nbsp;</span>
+                            <span className="current-team-score fs-6">
+                                {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
+                                &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
+                                &nbsp;</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div className="d-flex align-items-center fs-6">
+                            {/* <span>
+                                {onPitchPlayers[CURRENT_BOWLER]?.playerimage ?
+                                    <img src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} alt='player image' width={30} />
+                                    : onPitchPlayers[CURRENT_BOWLER]?.playerName.split('')[0]}
+                            </span> */}
+                            {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
+                            <button onClick={changeBowler} className=" change-button">C</button>
+                            </div>
+                            {/* <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
+                                -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span> */}
+                            <span className="d-flex align-items-center fs-6">{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}/({onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0})</span>
+                        </div>
                     </Col>
                 </Row>
                 <Row>
@@ -164,57 +251,7 @@ export const CommentaryScreen = ({
                     </Col>
                 </Row>
                 <Row>
-                    {onPitchPlayers[ON_STRIKE]?.batterOrder > onPitchPlayers[NON_STRIKE]?.batterOrder ? (
-                        <>
-                            <Col className="non-striker-end" xs={12} md={6} lg={6}>
-                                <span>
-                                    {onPitchPlayers[NON_STRIKE]?.playerimage ?
-                                        <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
-                                </span>
-                                <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
-                                <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
-                                <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
-                                <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right">C</button>
-                            </Col>
-                            <Col className="striker-end" xs={12} md={6} lg={6}>
-                                <span >
-                                    {onPitchPlayers[ON_STRIKE]?.playerimage ?
-                                        <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
-                                </span>
-                                <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
-                                <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
-                                <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
-                                <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
-                            </Col>
-                        </>
-                    ) : (
-                        <>
-                            <Col className="striker-end" xs={12} md={6} lg={6}>
-                                <span >
-                                    {onPitchPlayers[ON_STRIKE]?.playerimage ?
-                                        <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
-                                </span>
-                                <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
-                                <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
-                                <span>({onPitchPlayers[ON_STRIKE]?.batBall || 0}) &nbsp;</span>
-                                <button onClick={() => { changePlayer(ON_STRIKE) }} className="change-button text-right">C</button>
-                            </Col>
-                            <Col className="non-striker-end" xs={12} md={6} lg={6}>
-                                <span >
-                                    {onPitchPlayers[NON_STRIKE]?.playerimage ?
-                                        <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
-                                </span>
-                                <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
-                                <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
-                                <span>({onPitchPlayers[NON_STRIKE]?.batBall || 0}) &nbsp;</span>
-                                <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right ">C</button>
-                            </Col>
-                        </>
-                    )}
+
                 </Row>
 
                 <Row className="Bowler-header">
@@ -227,85 +264,69 @@ export const CommentaryScreen = ({
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                         <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
-                        <button onClick={changeBowler} className=" text-right change-button">C</button>
+                        <button onClick={changeBowler} className="  change-button">C</button>
                     </Col>
                 </Row>
-                <Row className={isLoading ? "disable-button" : ""} style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}>
+                <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => handleRuns(0, 1)}>
                         <img className="button-icon" src="icons/0.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => handleRuns(1, 1)}>
                         <img className="button-icon" src="icons/1.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => handleRuns(2, 1)}>
                         <img className="button-icon" src="icons/2.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={onUndoClick}
                     >
                         <img className="button-icon" src="icons/undo.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => handleRuns(3, 1)}>
                         <img className="button-icon" src="icons/3.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => handleRuns(4, 1, true)}>
                         <img className="button-icon" src="icons/4.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => handleRuns(6, 1, true)}>
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => setActionPopup(true)}>
                         <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => updateExtras(BALL_WIDE)}>
                         <img className="button-icon-lg" src="icons/wide-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => updateExtras(NO_BALL)}>
                         <img className="button-icon-lg" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
                         all Start
                     </Col>
-                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
-                    >
+                    <Col role="button" className=" score-button" xs={3} md={3} lg={3}>
                         <img className="button-icon" src="icons/r.png" alt="Icon" />
                         emark
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => updateExtras(BALL_BYE)}>
                         <img className="button-icon-lg" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={() => updateExtras(BALL_LEG_BYE)}>
                         <img className="button-icon-lg" src="icons/leg-by.png" alt="Icon" />
                     </Col>
                     <Col role="button" className="color-out score-button" xs={6} md={6} lg={6}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         onClick={onWicketClick}>
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>
@@ -325,7 +346,7 @@ export const CommentaryScreen = ({
                     />
                 </div>
             </Col>
-            <Col className="over-render" xs={12} md={6} lg={6}>
+            <Col className="over-render" xs={12} md={6} lg={4}>
                 <Row>
                     <div className="team-name overs-header">
                         {(teamDetails?.[BATTING_TEAM]?.teamMaxOver || teamDetails?.[BATTING_TEAM]?.teamTrialRuns) ?

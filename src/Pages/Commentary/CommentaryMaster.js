@@ -17,6 +17,7 @@ import NetworkStatus from '../../components/Common/Reusables/NetworkStatus';
 import { isEmpty } from 'lodash';
 import Switch from "react-switch";
 import createSocket from '../../Features/socket';
+// import { NewCommentaryScreen } from './NewCommentaryScreen';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -194,6 +195,7 @@ function CommentaryMaster() {
     const handleLoadCommentaryClick = () => {
         dispatch(loadCommentaryFeature({ commentaryId }))
     };
+    const theme = useSelector((state) => state.layout.panelTheme);
 
     // const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
     return (
@@ -201,8 +203,8 @@ function CommentaryMaster() {
             <div className="page-content">
                 <Container fluid={true}>
                     <Row>
-                        <Card>
-                            <CardBody>
+                        <Card style={{padding: '0px'}}>
+                            <CardBody  style={{backgroundColor: theme === 'dark' && '#1a2942'}}>
                                 {(
                                     (isCommentaryBallLoading && currentScreen !== 3)
                                     || isDataLoading) && <SpinnerModel />}
@@ -256,6 +258,13 @@ function CommentaryMaster() {
                                             next={() => { setCurrentScreen(getScreenNumber(COMMENTARY_MAIN_SCREEN)) }}
                                         />}
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                                        // <NewCommentaryScreen
+                                        //     data={{ commentaryData }}
+                                        //     onInningsChange={handleInningsChange}
+                                        //     isDataLoading={isDataLoading}
+                                        //     statusPopup={statusPopup}
+                                        //     saveUserInfo={saveUserInfo}
+                                        // />}
                                         <Commentary
                                             data={{ commentaryData }}
                                             onInningsChange={handleInningsChange}
