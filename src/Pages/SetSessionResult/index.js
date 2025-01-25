@@ -328,7 +328,6 @@ const Index = () => {
       title: "Result",
       key: "isResult",
       render: (text, record) => (
-      <div className="d-flex align-items-center gap-2">
       <Tooltip title={"Active/Inactive Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isResult ? "primary" : "danger"}`}
@@ -342,6 +341,14 @@ const Index = () => {
           <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Cancel",
+      key: "cancel",
+      render: (text, record) => (
+      <>
       {(!record?.isResult && record?.status == 5) &&
       <Tooltip title={"Cancel Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
@@ -352,10 +359,10 @@ const Index = () => {
             handleCancel(record);
           }}
         >
-          C
+          Cancel
         </Button>
       </Tooltip>}
-      </div>
+      </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
