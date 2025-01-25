@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react'
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR, BATTING_STATUS, BOWLING_STATUS, WARNING } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
@@ -322,20 +322,21 @@ const PlayerSelection = forwardRef((props, ref) => {
     setCommentaryTeamsPlayersDetails(updatedStrikerPlayerDetails);
     setIsOpen(false);
   }
+  const theme = useSelector((state) => state.layout.panelTheme);
 
   return (
     <React.Fragment>
       <div /* className="page-content" */>
         <Container >
-          <Card className='shadow-none mb-0'>
-            <CardHeader>
-              <h2>
+          <Card className='shadow-none mb-0' style={{backgroundColor: theme === 'dark' && '#1a2942'}}>
+            <CardHeader style={{padding : theme === 'dark' && '0px'}}>
+              <h2 style={{backgroundColor: theme === 'dark' && '#1a2942', color: theme === 'dark' && '#0bb197', margin : theme === 'dark' && '0px'}}>
                 Player Selection
               </h2>
             </CardHeader>
-            <CardBody>
+            <CardBody style={{padding : theme === 'dark' && '16px 0px'}}>
               <CardTitle className="h4">
-                <h4>
+                <h4 style={{color: theme === 'dark' && '#0bb197'}}>
                   Please Select {battingteam?.teamName} Opening Batter
                 </h4>
               </CardTitle>
@@ -365,7 +366,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                 </Col>
               </Row>
               <CardTitle className="h4">
-                <h4>
+                <h4 style={{color: theme === 'dark' && '#0bb197'}}>
                   Please Select {bowlingteam?.teamName} Opening Bowler
                 </h4>
               </CardTitle>

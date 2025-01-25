@@ -14,7 +14,7 @@ import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
 const Sidebar = (props) => {
   const ref = useRef();
   const newTabList = useSelector((state) => state.auth.tabList);
-  const theme = useSelector((state) => state.layout.leftSideBarTheme);
+  const theme = useSelector((state) => state.layout.panelTheme);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -140,10 +140,10 @@ const Sidebar = (props) => {
 
   return (
     <React.Fragment>
-      <div className="vertical-menu" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#1a2942" : "#f8f9fa"}}>
+      <div className="vertical-menu" style={{background: theme === "dark" && "#091c3c", color: theme === "dark" && "#0bb197"}}>
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">
-            <ul className="metismenu list-unstyled" id="side-menu-item">
+            <ul className="metismenu list-unstyled" id="side-menu-item" style={{color: theme === "dark" && "#0bb197"}}>
               {/* No use of sidebarData, it is jusst Backup */}
               {(newTabList || sidebarData)
                 .slice() // Create a shallow copy
@@ -151,18 +151,19 @@ const Sidebar = (props) => {
                 .map((item, key) => (
                   <React.Fragment key={key}>
                     {item.isMainMenu && item.subItem?.length === 0 ? (
-                      <li key={key}>
-                        <Link to={item.url ? item.url : "/#"} onClick={tToggle}>
+                      <li key={key} style={{color: theme === "dark" && "#0bb197"}}>
+                        <Link to={item.url ? item.url : "/#"} onClick={tToggle} style={{ color: theme === "dark" && "#0bb197" }}>
                           <i
                             className={item.icon}
-                            style={{ marginRight: "5px" }}
+                            style={{ color: theme === "dark" && "#0bb197", marginRight: "5px" }}
                           ></i>
                           <span>{props.t(item.label)}</span>
                         </Link>
                       </li>
                     ) : (
-                      <li key={key}>
+                      <li key={key} style={{ color: theme === "dark" && "#0bb197", marginRight: "5px" }}>
                         <Link
+                        style={{ color: theme === "dark" && "#0bb197" }}
                           to={item.url ? item.url : "/#"}
                           className={
                             item.issubMenubadge || item.isHasArrow
@@ -171,8 +172,7 @@ const Sidebar = (props) => {
                           }
                         >
                           <i
-                            className={item.icon}
-                            style={{ marginRight: "5px" }}
+                            className={item.icon} style={{ color: theme === "dark" && "#0bb197", marginRight: "5px" }}
                           ></i>
                           {item.issubMenubadge && (
                             <span
@@ -187,7 +187,7 @@ const Sidebar = (props) => {
                           <span>{props.t(item.label)}</span>
                         </Link>
                         {item.subItem && item.subItem.length > 0 && (
-                          <ul className="sub-menu">
+                          <ul className="sub-menu" style={{ color: theme === "dark" && "#0bb197" }}>
                             {item.subItem
                               .slice() // Create a shallow copy
                               .sort(
@@ -196,8 +196,8 @@ const Sidebar = (props) => {
                                   (subB.displayOrder || 0)
                               )
                               .map((subItem, subKey) => (
-                                <li key={subKey}>
-                                  <Link to={subItem.link} onClick={tToggle}>
+                                <li key={subKey} style={{ color: theme === "dark" && "#0bb197" }}>
+                                  <Link to={subItem.link} onClick={tToggle} style={{ color: theme === "dark" && "#0bb197" }}>
                                     {props.t(subItem.sublabel)}
                                   </Link>
                                 </li>

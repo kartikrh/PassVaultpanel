@@ -119,7 +119,7 @@ const Index = forwardRef(
     ref
   ) => {
     document.title = `${tableElement?.title}`;
-    const theme = useSelector((state) => state.layout.leftSideBarTheme);
+    const theme = useSelector((state) => state.layout.panelTheme);
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
@@ -151,7 +151,7 @@ const Index = forwardRef(
         [index]: !prev[index],
       }));
     };
-    
+
     const OffsymbolStatus = () => {
       return (
         <div
@@ -916,7 +916,7 @@ const Index = forwardRef(
         <Col lg={12}>
           <Card>
             {(tableElement?.title !== "Auto Events" && tableElement?.title !== "Manual Events") && (
-              <CardHeader style={{background: theme === "light" ? "#f8f9fa" : "#1a2942"}}>
+              <CardHeader style={{background: theme === "light" ? "#f8f9fa" : "#1a2942" }}>
                 <form>
                   <Row className="g-2">
                     <Col className="col-sm-auto">
@@ -2269,7 +2269,7 @@ const Index = forwardRef(
                       <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
-                            <th style={{ background: theme === "light" ? "#f8f9fa" : "#1a2942", ...column.style}} className={column.className}>
+                            <th style={{ background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === 'dark' && '#00e2bf', ...column.style }} className={column.className}>
                               <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
@@ -2334,7 +2334,7 @@ const Index = forwardRef(
                           <React.Fragment key={index}>
                             <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
                               {columns.map((column) => (
-                                <td key={column.key} style={column.style}>
+                                <td key={column.key} style={{ color: theme === 'dark' && '#169480 ', ...column.style }}>
                                   {column.render
                                     ? column.render(
                                       record[column.dataIndex],
