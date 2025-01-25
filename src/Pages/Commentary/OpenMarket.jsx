@@ -49,7 +49,7 @@ export const OpenMarket = () => {
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
     const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
-    const scoreboardUrl = `${scoreCardUrl}/scoreboard2?id=${commentaryInfo?.eid}&color=000`;
+    const scoreboardUrl = `${scoreCardUrl}/scoreboard?id=${commentaryInfo?.eid}&color=000`;
     // console.log({ originalMarketData, categorisedData });
     // console.log({ isKeyPressed })
 
