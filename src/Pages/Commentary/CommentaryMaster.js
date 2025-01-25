@@ -204,7 +204,7 @@ function CommentaryMaster() {
                 <Container fluid={true}>
                     <Row>
                         <Card style={{padding: '0px'}}>
-                            <CardBody  style={{backgroundColor: theme === 'dark' && '#1a2942'}}>
+                            <CardBody>
                                 {(
                                     (isCommentaryBallLoading && currentScreen !== 3)
                                     || isDataLoading) && <SpinnerModel />}

@@ -328,15 +328,15 @@ const PlayerSelection = forwardRef((props, ref) => {
     <React.Fragment>
       <div /* className="page-content" */>
         <Container >
-          <Card className='shadow-none mb-0' style={{backgroundColor: theme === 'dark' && '#1a2942'}}>
-            <CardHeader style={{padding : theme === 'dark' && '0px'}}>
-              <h2 style={{backgroundColor: theme === 'dark' && '#1a2942', color: theme === 'dark' && '#0bb197', margin : theme === 'dark' && '0px'}}>
+          <Card className='shadow-none mb-0'>
+            <CardHeader>
+              <h2>
                 Player Selection
               </h2>
             </CardHeader>
-            <CardBody style={{padding : theme === 'dark' && '16px 0px'}}>
+            <CardBody>
               <CardTitle className="h4">
-                <h4 style={{color: theme === 'dark' && '#0bb197'}}>
+                <h4>
                   Please Select {battingteam?.teamName} Opening Batter
                 </h4>
               </CardTitle>
@@ -366,7 +366,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                 </Col>
               </Row>
               <CardTitle className="h4">
-                <h4 style={{color: theme === 'dark' && '#0bb197'}}>
+                <h4>
                   Please Select {bowlingteam?.teamName} Opening Bowler
                 </h4>
               </CardTitle>

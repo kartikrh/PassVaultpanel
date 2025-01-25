@@ -69,7 +69,7 @@ const Header = (props) => {
 
   return (
     <React.Fragment>
-      <header id="page-topbar" style={{background: theme === "dark" && "#021739", color: theme === "dark" && "#0bb197"}}>
+      <header id="page-topbar">
         <div className="navbar-header">
           <div className="d-flex">
             <div className="navbar-brand-box text-center">
@@ -78,7 +78,7 @@ const Header = (props) => {
                   <img src={logoSm} alt="logo-sm-dark" height="22" />
                 </span>
                 <span className="logo-lg text-black" style={{fontSize: "medium"}}>
-                  <img src={logoDark} alt="logo-dark" height="24" /> <strong style={{color: theme === 'dark' && "#0bb197"}}>Panel</strong>
+                  <img src={logoDark} alt="logo-dark" height="24" /> <strong className="panel-name">Panel</strong>
                 </span>
               </Link>
 

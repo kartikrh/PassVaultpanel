@@ -104,12 +104,12 @@ const Index = ({ data, next, save }) => {
     <React.Fragment>
       <div className="mt-5">
         <Container>
-          <Card className="shadow-none" style={{backgroundColor: theme === 'dark' ? '#1a2942' : '#fff'}}>
+          <Card className="shadow-none" >
             <div>
-              <h4 className={{ fontWeight: 700 }} style={{color: theme === 'dark' && '#0bb197'}}>Toss Selection</h4>
+              <h4 className={{ fontWeight: 700 }} >Toss Selection</h4>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
-                <h5 style={{color: theme === 'dark' && '#0bb197'}}>Toss Won by?</h5>
+                <h5>Toss Won by?</h5>
                 <Row>
                   {currentInningTeams?.map((val, index) => (
                     <Col
@@ -133,7 +133,7 @@ const Index = ({ data, next, save }) => {
               </div>
               {values?.tossWonBy !== null && (
                 <div className="mt-2">
-                  <h5 style={{color: theme === 'dark' && '#0bb197'}}>Choose To?</h5>
+                  <h5 >Choose To?</h5>
                   <Row>
                     <Col
                       // xl="12"

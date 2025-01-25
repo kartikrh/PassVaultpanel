@@ -107,7 +107,6 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                 <div
                     key={`partnership-${index}`}
                     className={`mb-3 ${cardType}-card`}
-                    style={{backgroundColor: theme === 'dark' && '#1a2942',color: theme === 'dark' && '#0bb197', BorderColor: theme === 'dark' && 'gray'}}
                 >
                     <div className={`${cardType}-card-header`}>
                         {partnershipPosition}{ordinalSuffix} Partnership
@@ -185,12 +184,10 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 borderBottom: '1px solid #eee'
                             }
                         }}
-                        style={{backgroundColor: theme === 'dark' && '#1a2942',color: theme === 'dark' && '#0bb197', BorderColor: theme === 'dark' && 'gray'}}
                     >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             sx={{ px: 2 }}
-                            style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
                                 <Typography fontWeight="bold" sx={{
@@ -199,8 +196,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                     {team.teamName}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif",
-                                    color: theme === 'dark' && '#0bb197' 
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
                                     Innings {innings}
                                 </Typography>

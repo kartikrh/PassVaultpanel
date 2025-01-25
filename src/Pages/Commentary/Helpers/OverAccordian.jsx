@@ -403,7 +403,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             sx={{ px: 2 }}
-                            style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
                                 <Typography fontWeight="bold" sx={{
@@ -412,14 +411,13 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                     {team.teamName}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif",
-                                    color: theme === 'dark' && '#0bb197'
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
                                     Innings {innings}
                                 </Typography>
                             </Box>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ p: 0 }} style={{backgroundColor: theme === 'dark' && '#1a2942', BorderColor: theme === 'dark' && 'gray'}}>
+                        <AccordionDetails sx={{ p: 0 }}>
                             {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey))}
                         </AccordionDetails>
                     </Accordion>

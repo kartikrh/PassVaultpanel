@@ -71,10 +71,10 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler,
     }
     return (
         <Modal backdrop="static" keyboard={false} className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable >
-            <ModalHeader toggle={!overPopUpForBowler ? toggle : null} style={{backgroundColor: theme === 'dark' && '#1a2942', color: theme === 'dark' && '#0bb197'}}>
+            <ModalHeader toggle={!overPopUpForBowler ? toggle : null} >
                 Select Player
             </ModalHeader>
-            <ModalBody style={{backgroundColor: theme === 'dark' && '#1a2942', color: theme === 'dark' && '#0bb197', border: theme === 'dark' && 'none'}}>
+            <ModalBody>
                 <Table responsive>
                     <thead>
                         <Input
