@@ -202,7 +202,6 @@ export const UpdateManualOdds = () => {
                     title: "Success",
                     type: SUCCESS
                 }));
-                await fetchMarketData();
             }
         } catch (error) {
             dispatch(updateToastData({
@@ -399,7 +398,7 @@ export const UpdateManualOdds = () => {
             eventMarket: [{
                 eventMarketId: eventData.market.eventMarketId,
                 marketName: eventData.market.marketName,
-                margin: eventData.market.margin,
+                margin: settings.margin,
                 status: parseInt(marketStatus),
                 isActive: settings.active,
                 isAllow: settings.betAllow,
@@ -409,9 +408,9 @@ export const UpdateManualOdds = () => {
                 predefinedValue: eventData.market.predefinedValue,
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
-                    line: runner.line,
-                    overRate: runner.overRate,
-                    underRate: runner.underRate,
+                    line: runner.line || 0,
+                    overRate: runner.back.price,
+                    underRate: runner.lay.price,
                     backPrice: runner.back.price,
                     layPrice: runner.lay.price,
                     backSize: runner.back.volume,
@@ -435,7 +434,6 @@ export const UpdateManualOdds = () => {
                     title: "Success",
                     type: SUCCESS
                 }));
-                await fetchMarketData();
             }
         } catch (error) {
             dispatch(updateToastData({
@@ -822,7 +820,6 @@ export const UpdateManualOdds = () => {
                             title: "Success",
                             type: SUCCESS
                         }));
-                        await fetchMarketData();
                     }
                 } catch (error) {
                     dispatch(updateToastData({
@@ -838,7 +835,7 @@ export const UpdateManualOdds = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus]);
+    }, [selectedRunnerDetails, marketStatus, runners]);
 
     useEffect(() => {
         fetchMarketData();
