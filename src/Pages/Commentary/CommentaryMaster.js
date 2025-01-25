@@ -173,7 +173,7 @@ function CommentaryMaster() {
     }, [commentaryData, isBetAllow]);
 
     const openIframePopup = () => {
-        const url = `${scoreCardUrl}/scoreboard2?id=${commentaryData?.commentaryDetails?.eid}&color=000`
+        const url = `${scoreCardUrl}/scoreboard?id=${commentaryData?.commentaryDetails?.eid}&color=000`
         window.open(url, '_blank', 'width=600,height=400');
     };
 
