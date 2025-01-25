@@ -120,7 +120,7 @@ export const UpdateManualOdds = () => {
         main: '',
         point: ''
     });
-    console.log({ ballStatus })
+
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const rates = calculateRunnerRates({
@@ -146,10 +146,23 @@ export const UpdateManualOdds = () => {
                 l2: rates.l2
             };
         });
-        setRunners(formattedRunners);
-        // Auto-select first runner on initialization
-        if (formattedRunners.length > 0) {
-            handleRunnerSelection(formattedRunners[0].runnerId);
+
+        // Find runner with minimum lay price
+        const minLayRunner = getRunnerWithMinimumLay(formattedRunners);
+
+        // Set the runners with the minimum lay price runner selected
+        setRunners(formattedRunners.map(runner => ({
+            ...runner,
+            isSelected: runner.runnerId === minLayRunner?.runnerId
+        })));
+
+        // Set the selected runner
+        if (minLayRunner) {
+            setSelectedRunner(minLayRunner.runnerId);
+            setSelectedRunnerDetails(prev => ({
+                ...prev,
+                runnerId: minLayRunner.runnerId
+            }));
         }
     };
 
@@ -270,6 +283,17 @@ export const UpdateManualOdds = () => {
         };
     };
 
+    // Function to find runner with minimum lay price
+    const getRunnerWithMinimumLay = (runnersData) => {
+        if (!runnersData?.length) return null;
+        return runnersData.reduce((minRunner, currentRunner) => {
+            return (currentRunner.lay?.price || Infinity) < (minRunner.lay?.price || Infinity)
+                ? currentRunner
+                : minRunner;
+        }, runnersData[0]);
+    };
+
+
     // Prepare data for saving
     const prepareMarketData = () => {
         const marketData = {
@@ -278,8 +302,8 @@ export const UpdateManualOdds = () => {
                 marketName: eventData.market.marketName,
                 margin: eventData.market.margin,
                 status: parseInt(marketStatus),
-                isActive: marketStatus === "1",
-                isAllow: true,
+                isActive: settings.active,
+                isAllow: settings.betAllow,
                 isSendData: true,
                 lineRatio: eventData.market.lineRatio,
                 rateDiff: settings.rateDifferent,
@@ -675,8 +699,41 @@ export const UpdateManualOdds = () => {
 
                 // Handle status toggle and save
                 const newStatus = marketStatus === "1" ? "3" : "1";
-                setMarketStatus(newStatus);
-                await handleSave();
+                await new Promise(resolve => {
+                    setMarketStatus(newStatus);
+                    resolve();
+                });
+
+                // Prepare market data with the new status
+                const marketData = {
+                    eventMarket: [{
+                        ...prepareMarketData().eventMarket[0],
+                        status: parseInt(newStatus),
+                        isActive: newStatus === "1"
+                    }]
+                };
+
+                // Save with the updated status
+                setIsLoading(true);
+                try {
+                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                    if (response?.success) {
+                        dispatch(updateToastData({
+                            data: "Market updated successfully",
+                            title: "Success",
+                            type: SUCCESS
+                        }));
+                        await fetchMarketData();
+                    }
+                } catch (error) {
+                    dispatch(updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR
+                    }));
+                } finally {
+                    setIsLoading(false);
+                }
             }
         };
 
@@ -783,7 +840,7 @@ export const UpdateManualOdds = () => {
                                 <Box width="66.67%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
-                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventRefId}]`}</Typography>
+                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.rateSourceRefID}]`}</Typography>
                                             <Typography variant="body2">
                                                 {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
                                             </Typography>
@@ -1178,7 +1235,6 @@ export const UpdateManualOdds = () => {
                                                 <RadioGroup
                                                     row
                                                     value={marketStatus}
-                                                    onChange={(e) => handleStatusChange(e.target.value)}
                                                 >
                                                     <FormControlLabel value={OPEN_VALUE} control={<Radio />} label="Open" />
                                                     <FormControlLabel value={SUSPEND_VALUE} control={<Radio />} label="Suspend" />
