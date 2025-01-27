@@ -60,7 +60,7 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
   return (
     <>
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-      <ModalHeader toggle={toggle}>Cancel Market</ModalHeader>
+      <ModalHeader toggle={toggle}>Cancel Market {data?.marketName}</ModalHeader>
       <ModalBody>
         {data && (
           <table className="table">
@@ -112,6 +112,7 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
       closeModelVisible={closeModelVisable}
       setCloseModelVisable={setCloseModelVisable}
       handleClose={handleClose}
+      data={data}
     />
     </>
   );
