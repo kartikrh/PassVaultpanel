@@ -66,9 +66,10 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
   return (
     <>
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-      <ModalHeader toggle={toggle}>Close Market</ModalHeader>
+      <ModalHeader toggle={toggle}>Close Market {data?.marketName}</ModalHeader>
       <ModalBody>
         {data && (
+          <>
           <table className="table">
             <thead>
               <tr>
@@ -76,8 +77,6 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
                 <th>Id</th>
                 <th>Event Name</th>
                 <th>Competition</th>
-                <th>Event</th>
-                <th>Market</th>
               </tr>
             </thead>
             <tbody>
@@ -90,11 +89,24 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
                 <td>{data.eventMarketId}</td>
                 <td>{data.eventTypeName}</td>
                 <td>{data.competitionName}</td>
-                <td>{data.eventName}</td>
-                <td>{data.marketName}</td>
               </tr>
             </tbody>
           </table>
+          <div className="d-flex">
+                <div style={{ marginRight: "20px" }}>
+                  <span style={{ marginRight: "10px", fontWeight: "700" }}>
+                    Event:
+                  </span>
+                  <span>{data.eventName}</span>
+                </div>
+                <div>
+                  <span style={{ marginRight: "10px", fontWeight: "700" }}>
+                    Market:
+                  </span>
+                  <span>{data.marketName}</span>
+                </div>
+          </div>
+        </>
         )}
       </ModalBody>
       <ModalFooter>
@@ -107,6 +119,7 @@ const CloseModal = ({ isOpen, toggle, data, fetchData }) => {
       closeModelVisible={closeModelVisable}
       setCloseModelVisable={setCloseModelVisable}
       handleClose={handleClose}
+      data={data}
     />
     </>
   );

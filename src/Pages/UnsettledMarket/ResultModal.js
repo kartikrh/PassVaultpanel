@@ -91,7 +91,7 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-      <ModalHeader toggle={toggle}>Set Result Market</ModalHeader>
+      <ModalHeader toggle={toggle}>Set Result Market {data?.marketName}</ModalHeader>
       <ModalBody>
         {data && (
           <table className="table">

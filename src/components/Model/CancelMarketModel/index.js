@@ -6,6 +6,7 @@ const Index = ({
   setCloseModelVisable,
   handleClose,
   singleCheck,
+  data,
 }) => {
   const [modal_close, setModal_close] = useState(true);
   function tog_close() {
@@ -26,7 +27,7 @@ const Index = ({
           setCloseModelVisable(false);
         }}
       >
-        Cancel
+        Cancel {data?.marketName ? data.marketName : "" }
         {/* TODO, do we need to add teh screen name also like delete tabs or delete Penelty run */}
       </ModalHeader>
       <div className="tablelist-form">
@@ -36,7 +37,7 @@ const Index = ({
             id="modal-id"
           >
             <span className="mt-4 mb-4">
-              Are you sure you want to cancel this market?
+              Are you sure you want to cancel {data?.marketName ? data.marketName : "this"} market?
             </span>
             <div className="hstack gap-2 justify-content-center">
               <button
