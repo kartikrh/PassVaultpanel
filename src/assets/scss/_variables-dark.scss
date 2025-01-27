@@ -29,7 +29,7 @@ $header-bg: #272d3e;
 $header-item-color: #919bae;
 
 // Topbar - Dark
-$header-dark-bg: #212734;
+$header-dark-bg: #101f47;
 $header-dark-item-color: #e9ecef;
 
 // Topbar Search
@@ -480,6 +480,7 @@ $position-values: (
 // Settings for the `<body>` element.
 
 $body-bg:                   #1d222e;
+$body-bg-dark:              #1a2942;
 $body-color:                $gray-400;
 $body-text-align:           null;
 

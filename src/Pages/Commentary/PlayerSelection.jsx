@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react'
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Container, Row } from 'reactstrap'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateToastData } from '../../Features/toasterSlice'
 import { ERROR, BATTING_STATUS, BOWLING_STATUS, WARNING } from '../../components/Common/Const'
 import CardComponent from './CardComponent'
@@ -322,6 +322,7 @@ const PlayerSelection = forwardRef((props, ref) => {
     setCommentaryTeamsPlayersDetails(updatedStrikerPlayerDetails);
     setIsOpen(false);
   }
+  const theme = useSelector((state) => state.layout.panelTheme);
 
   return (
     <React.Fragment>

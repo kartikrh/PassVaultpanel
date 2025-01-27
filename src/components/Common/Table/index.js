@@ -119,7 +119,7 @@ const Index = forwardRef(
     ref
   ) => {
     document.title = `${tableElement?.title}`;
-    const theme = useSelector((state) => state.layout.leftSideBarTheme);
+    const theme = useSelector((state) => state.layout.panelTheme);
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
@@ -151,7 +151,7 @@ const Index = forwardRef(
         [index]: !prev[index],
       }));
     };
-    
+
     const OffsymbolStatus = () => {
       return (
         <div
@@ -914,9 +914,9 @@ const Index = forwardRef(
     return (
       <Row>
         <Col lg={12}>
-          <Card>
+          <Card className='card'>
             {(tableElement?.title !== "Auto Events" && tableElement?.title !== "Manual Events") && (
-              <CardHeader style={{background: theme === "light" ? "#f8f9fa" : "#1a2942"}}>
+              <CardHeader>
                 <form>
                   <Row className="g-2">
                     <Col className="col-sm-auto">
@@ -1997,7 +1997,7 @@ const Index = forwardRef(
               </CardHeader>
             )}
 
-            <CardBody style={{background: theme === "light" ? "#f8f9fa" : "#1a2942"}}>
+            <CardBody>
               <div id="customerList">
                 {breadCrumbs && (
                   <ReusableBreadcrumbs
@@ -2269,7 +2269,7 @@ const Index = forwardRef(
                       <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
-                            <th style={{ background: theme === "light" ? "#f8f9fa" : "#1a2942", ...column.style}} className={column.className}>
+                            <th style={column.style} className={column.className}>
                               <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
@@ -2329,7 +2329,7 @@ const Index = forwardRef(
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="list form-check-all" style={{ border: theme === 'dark' && "none" }}>
+                      <tbody className="list form-check-all">
                         {data.map((record, index) => (
                           <React.Fragment key={index}>
                             <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>

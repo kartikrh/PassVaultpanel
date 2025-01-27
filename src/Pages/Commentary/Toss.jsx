@@ -7,7 +7,7 @@ import {
   Row,
 } from "reactstrap";
 import CardComponent from "./CardComponent";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
 import { CONNECT_COMMENTARY, ERROR } from "../../components/Common/Const";
 import createSocket from "../../Features/socket";
@@ -15,6 +15,7 @@ import { isEmpty } from "lodash";
 
 const Index = ({ data, next, save }) => {
   document.title = "Toss";
+  const theme = useSelector((state) => state.layout.panelTheme);
   const [commentaryDetails, setCommentaryDetails] = useState({});
   const [commentaryTeams, setCommentaryTeams] = useState([]);
   const [winnerTeam, setWinnerTeam] = useState({});
@@ -103,9 +104,9 @@ const Index = ({ data, next, save }) => {
     <React.Fragment>
       <div className="mt-5">
         <Container>
-          <Card className="shadow-none">
+          <Card className="shadow-none" >
             <div>
-              <h4 className={{ fontWeight: 700 }}>Toss Selection</h4>
+              <h4 className={{ fontWeight: 700 }} >Toss Selection</h4>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
                 <h5>Toss Won by?</h5>
@@ -132,7 +133,7 @@ const Index = ({ data, next, save }) => {
               </div>
               {values?.tossWonBy !== null && (
                 <div className="mt-2">
-                  <h5>Choose To?</h5>
+                  <h5 >Choose To?</h5>
                   <Row>
                     <Col
                       // xl="12"

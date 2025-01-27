@@ -1,9 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const theme = localStorage.getItem('panelTheme') || 'light';
+document.body.setAttribute('data-theme', theme);
+
 const initialState = {
     layoutType: 'vertical',
     layoutWidth: 'fluid',
-    leftSideBarTheme: 'light',
+    panelTheme: theme,
     leftSideBarType: 'default',
     topbarTheme: 'light',
     showRightSidebar: false,
@@ -24,7 +27,9 @@ const layoutSlice = createSlice({
             state.layoutWidth = action.payload;
         },
         changeSidebarTheme: (state, action) => {
-            state.leftSideBarTheme = action.payload;
+            state.panelTheme = action.payload;
+            document.body.setAttribute('data-theme', action.payload)
+            localStorage.setItem('panelTheme', action.payload);
         },
         changeSidebarType: (state, action) => {
             const { sidebarType, isMobile } = action.payload;

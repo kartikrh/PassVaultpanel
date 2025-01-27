@@ -27,15 +27,15 @@ const Layout = props => {
     leftSideBarType,
     topbarTheme,
     showRightSidebar,
-    leftSideBarTheme,
+    panelTheme,
   } = useSelector(state => ({
     leftSideBarType: state?.Layout?.leftSideBarType,
     layoutWidth: state?.Layout?.layoutWidth,
     topbarTheme: state?.Layout?.topbarTheme,
     showRightSidebar: state?.Layout?.showRightSidebar,
-    leftSideBarTheme: state?.Layout?.leftSideBarTheme,
+    panelTheme: state?.Layout?.panelTheme,
   }));
-  const theme = useSelector((state) => state.layout.leftSideBarTheme);
+  const theme = useSelector((state) => state.layout.panelTheme);
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -77,10 +77,10 @@ const Layout = props => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (leftSideBarTheme) {
-      // dispatch(changeSidebarTheme(leftSideBarTheme));
+    if (panelTheme) {
+      // dispatch(changeSidebarTheme(panelTheme));
     }
-  }, [leftSideBarTheme, dispatch]);
+  }, [panelTheme, dispatch]);
 
   useEffect(() => {
     if (layoutWidth) {
@@ -100,16 +100,18 @@ const Layout = props => {
     }
   }, [topbarTheme, dispatch]);
 
+  console.log("data-theme", document.body.getAttribute("data-theme"))
+
   return (
     <React.Fragment>
-      <div id="layout-wrapper" style={{background: theme === "light" ? "#f8f9fa" : "#1a2942", color: theme === "light" ? "#535a71" : "#535a71"}}>
+      <div id="layout-wrapper">
         <Header toggleMenuCallback={toggleMenuCallback} />
         <Sidebar
-          theme={leftSideBarTheme}
+          theme={panelTheme}
           type={leftSideBarType}
           isMobile={isMobile}
         />
-        <div className="main-content">{props.children}</div>
+        <div className="main-content" >{props.children}</div>
         <Footer />
       </div>
       {showRightSidebar ? <RightSidebar /> : null}
@@ -124,7 +126,7 @@ Layout.propTypes = {
   changeTopbarTheme: PropTypes.func,
   children: PropTypes.object,
   layoutWidth: PropTypes.any,
-  leftSideBarTheme: PropTypes.any,
+  panelTheme: PropTypes.any,
   leftSideBarType: PropTypes.any,
   location: PropTypes.object,
   showRightSidebar: PropTypes.any,

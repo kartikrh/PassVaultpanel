@@ -26,8 +26,17 @@ body[data-layout-size="boxed"] {
             max-width: calc(#{$boxed-layout-width} - #{$sidebar-collapsed-width});
         }
     }
-}
 
+}
+body[data-theme="dark"] {
+    background-color: $dark-boxed-body-bg;
+    #layout-wrapper {
+      background-color: $dark-body-bg;
+    }
+    .footer {
+      background-color: $dark-footer-bg;
+    }
+  }
 
 // Horizontal Boxed Layout
 

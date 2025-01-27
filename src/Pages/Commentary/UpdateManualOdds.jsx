@@ -109,6 +109,7 @@ export const UpdateManualOdds = () => {
         margin: 10,
         delay: 10,
         lineRatio: 10,
+        bfRateDiff: -0.01,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -120,7 +121,7 @@ export const UpdateManualOdds = () => {
         main: '',
         point: ''
     });
-    console.log({ ballStatus })
+
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const rates = calculateRunnerRates({
@@ -146,10 +147,23 @@ export const UpdateManualOdds = () => {
                 l2: rates.l2
             };
         });
-        setRunners(formattedRunners);
-        // Auto-select first runner on initialization
-        if (formattedRunners.length > 0) {
-            handleRunnerSelection(formattedRunners[0].runnerId);
+
+        // Replace getRunnerWithMinimumLay with getRunnerWithMinimumBack
+        const minBackRunner = getRunnerWithMinimumBack(formattedRunners);
+
+        // Set the runners with the minimum back price runner selected
+        setRunners(formattedRunners.map(runner => ({
+            ...runner,
+            isSelected: runner.runnerId === minBackRunner?.runnerId
+        })));
+
+        // Set the selected runner
+        if (minBackRunner) {
+            setSelectedRunner(minBackRunner.runnerId);
+            setSelectedRunnerDetails(prev => ({
+                ...prev,
+                runnerId: minBackRunner.runnerId
+            }));
         }
     };
 
@@ -165,12 +179,56 @@ export const UpdateManualOdds = () => {
             runnerId
         }));
     };
+    const getRunnerWithMinimumBack = (runnersData) => {
+        if (!runnersData?.length) return null;
+        return runnersData.reduce((minRunner, currentRunner) => {
+            const currentBackPrice = parseFloat(currentRunner.back?.price || currentRunner.backPrice || Infinity);
+            const minBackPrice = parseFloat(minRunner.back?.price || minRunner.backPrice || Infinity);
+            return currentBackPrice < minBackPrice ? currentRunner : minRunner;
+        }, runnersData[0]);
+    };
+    // For status change and API call
+    const handleStatusChange = async (newStatus) => {
+        try {
+            setIsLoading(true);
+            // First update the status
+            setMarketStatus(newStatus);
 
-    const handleStatusChange = (newStatus) => {
-        setMarketStatus(newStatus);
+            // Immediately prepare and send data with new status
+            const marketData = {
+                eventMarket: [{
+                    ...prepareMarketData().eventMarket[0],
+                    status: parseInt(newStatus)
+                }]
+            };
+
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+
+            if (response?.success) {
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSettingChange = (key, value, isShortcut = false) => {
+        if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
+            const numValue = parseFloat(value);
+            if (numValue < 0.01) {
+                value = '0.01';
+            }
+        }
         if (isShortcut) {
             const newValue = settings.shortcutValues[value];
             if (newValue) {
@@ -246,29 +304,107 @@ export const UpdateManualOdds = () => {
         setOriginalShortcutValues(settings.shortcutValues);
         setHasShortcutChanges(false);
     };
-    const calculateRunnerRates = (runner, settings) => {
-        // Ensure we have numeric values, default to 0 if undefined/null/NaN
+
+
+    const calculateRunnerRates = (runner, settings, options = {}) => {
+        // Extract options with defaults
+        const {
+            forceCalculateLay = true,     // Whether to force recalculation of lay prices
+            isSocketData = false,         // Whether data is coming from socket
+            manualEdit = false,          // Whether this is a manual edit
+            editedField = null           // Which field was manually edited
+        } = options;
+
+        // Ensure numeric values with fallbacks
         const back = parseFloat(runner?.back?.price) || 0;
+        const existingLay = parseFloat(runner?.lay?.price) || 0;
+        const existingL1 = parseFloat(runner?.l1) || 0;
+        const existingL2 = parseFloat(runner?.l2) || 0;
+
+        // Get rate differences from settings
         const bRateDiff = parseFloat(settings?.bRateDifferent) || 0;
         const lRateDiff = parseFloat(settings?.lRateDifferent) || 0;
         const rateDiff = parseFloat(settings?.rateDifferent) || 0;
 
-        // Calculate and ensure all values are numbers
+        // Always calculate back-related rates
         const b2 = Number((back - (2 * bRateDiff)).toFixed(2));
         const b1 = Number((back - bRateDiff).toFixed(2));
-        const lay = Number((back + rateDiff).toFixed(2));
-        const l1 = Number((back + rateDiff + lRateDiff).toFixed(2));
-        const l2 = Number((back + rateDiff + (2 * lRateDiff)).toFixed(2));
 
+        // Initialize lay-related rates
+        let lay, l1, l2;
+
+        // Determine how to handle lay prices
+        if (isSocketData || (manualEdit && editedField === 'back')) {
+            // For socket data or back price edits, always calculate lay prices based on formula
+            lay = Number((back + rateDiff).toFixed(2));
+            l1 = Number((lay + lRateDiff).toFixed(2));
+            l2 = Number((l1 + lRateDiff).toFixed(2));
+        } else if (manualEdit) {
+            switch (editedField) {
+                case 'lay':
+                    // If lay was manually edited, calculate L1 and L2 based on new lay
+                    lay = Number(parseFloat(runner.lay.price).toFixed(2));
+                    l1 = Number((lay + lRateDiff).toFixed(2));
+                    l2 = Number((l1 + lRateDiff).toFixed(2));
+                    break;
+                case 'l1':
+                    // If L1 was manually edited, keep lay and calculate L2
+                    lay = existingLay;
+                    l1 = Number(parseFloat(runner.l1).toFixed(2));
+                    l2 = Number((l1 + lRateDiff).toFixed(2));
+                    break;
+                case 'l2':
+                    // If L2 was manually edited, keep lay and L1
+                    lay = existingLay;
+                    l1 = existingL1;
+                    l2 = Number(parseFloat(runner.l2).toFixed(2));
+                    break;
+                default:
+                    // For other edits, maintain existing lay prices if not forcing recalculation
+                    if (forceCalculateLay) {
+                        lay = Number((back + rateDiff).toFixed(2));
+                        l1 = Number((lay + lRateDiff).toFixed(2));
+                        l2 = Number((l1 + lRateDiff).toFixed(2));
+                    } else {
+                        lay = existingLay;
+                        l1 = existingL1;
+                        l2 = existingL2;
+                    }
+            }
+        } else {
+            // Default behavior - calculate based on forceCalculateLay
+            if (forceCalculateLay) {
+                lay = Number((back + rateDiff).toFixed(2));
+                l1 = Number((lay + lRateDiff).toFixed(2));
+                l2 = Number((l1 + lRateDiff).toFixed(2));
+            } else {
+                lay = existingLay;
+                l1 = existingL1;
+                l2 = existingL2;
+            }
+        }
+
+        // Ensure all rates are valid numbers
         return {
-            b2,
-            b1,
-            back,
-            lay,
-            l1,
-            l2
+            b2: Math.max(0, b2),
+            b1: Math.max(0, b1),
+            back: Math.max(0, back),
+            lay: Math.max(0, lay),
+            l1: Math.max(0, l1),
+            l2: Math.max(0, l2)
         };
     };
+
+    // Function to find runner with minimum lay price
+    const getRunnerWithMinimumLay = (runnersData) => {
+        if (!runnersData?.length) return null;
+        return runnersData.reduce((minRunner, currentRunner) => {
+            return (currentRunner.lay?.price || Infinity) < (minRunner.lay?.price || Infinity)
+                ? currentRunner
+                : minRunner;
+        }, runnersData[0]);
+    };
+
 
     // Prepare data for saving
     const prepareMarketData = () => {
@@ -276,19 +412,19 @@ export const UpdateManualOdds = () => {
             eventMarket: [{
                 eventMarketId: eventData.market.eventMarketId,
                 marketName: eventData.market.marketName,
-                margin: eventData.market.margin,
+                margin: settings.margin,
                 status: parseInt(marketStatus),
-                isActive: marketStatus === "1",
-                isAllow: true,
+                isActive: settings.active,
+                isAllow: settings.betAllow,
                 isSendData: true,
                 lineRatio: eventData.market.lineRatio,
                 rateDiff: settings.rateDifferent,
                 predefinedValue: eventData.market.predefinedValue,
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
-                    line: runner.line,
-                    overRate: runner.overRate,
-                    underRate: runner.underRate,
+                    line: runner.line || 0,
+                    overRate: runner.back.price,
+                    underRate: runner.lay.price,
                     backPrice: runner.back.price,
                     layPrice: runner.lay.price,
                     backSize: runner.back.volume,
@@ -312,7 +448,6 @@ export const UpdateManualOdds = () => {
                     title: "Success",
                     type: SUCCESS
                 }));
-                await fetchMarketData();
             }
         } catch (error) {
             dispatch(updateToastData({
@@ -610,6 +745,7 @@ export const UpdateManualOdds = () => {
                 if (marketData?.rateSourceRefID) {
                     setRateSourceRefID([response.result.market[0].rateSourceRefID]);
                 }
+                setMarketStatus(marketData?.status)
 
                 // Initialize runners
                 if (marketData?.runners) {
@@ -675,14 +811,46 @@ export const UpdateManualOdds = () => {
 
                 // Handle status toggle and save
                 const newStatus = marketStatus === "1" ? "3" : "1";
-                setMarketStatus(newStatus);
-                await handleSave();
+                await new Promise(resolve => {
+                    setMarketStatus(newStatus);
+                    resolve();
+                });
+
+                // Prepare market data with the new status
+                const marketData = {
+                    eventMarket: [{
+                        ...prepareMarketData().eventMarket[0],
+                        status: parseInt(newStatus),
+                        isActive: newStatus === "1"
+                    }]
+                };
+
+                // Save with the updated status
+                setIsLoading(true);
+                try {
+                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                    if (response?.success) {
+                        dispatch(updateToastData({
+                            data: "Market updated successfully",
+                            title: "Success",
+                            type: SUCCESS
+                        }));
+                    }
+                } catch (error) {
+                    dispatch(updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR
+                    }));
+                } finally {
+                    setIsLoading(false);
+                }
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus]);
+    }, [selectedRunnerDetails, marketStatus, runners]);
 
     useEffect(() => {
         fetchMarketData();
@@ -709,49 +877,120 @@ export const UpdateManualOdds = () => {
                     setBallStatus(data?.ballStatus);
                 }
             }
-            // Handler for market runner messages
             const handleMarketRunnerData = (message) => {
-                if (!isLive || !message?.[0]?.runners) return;
+                if (!isLive || !message?.[0]?.runners || message[0].runners.length !== 2) return;
 
                 const socketRunners = message[0].runners;
 
-                setRunners(prevRunners => {
-                    return prevRunners.map(prevRunner => {
-                        const socketRunner = socketRunners.find(
-                            r => r.selectionId === prevRunner.selectionId
-                        );
+                // First log the original socket values
+                const selectedSocketRunner = socketRunners.find(r => r.selectionId === runners.find(r => r.isSelected)?.selectionId);
+                const nonSelectedSocketRunner = socketRunners.find(r => r.selectionId === runners.find(r => !r.isSelected)?.selectionId);
 
-                        if (socketRunner) {
-                            // Calculate all rates based on new socket data
+                console.log({
+                    SelectedBackPrice: selectedSocketRunner?.backPrice,
+                    SelectedLayPrice: selectedSocketRunner?.layPrice,
+                    nonSelectedBackPrice: nonSelectedSocketRunner?.backPrice,
+                    nonSelectedLayPrice: nonSelectedSocketRunner?.layPrice
+                });
+
+                // First, adjust prices with BF Rate Diff
+                const adjustedRunners = socketRunners.map(runner => ({
+                    ...runner,
+                    backPrice: parseFloat((runner.backPrice + parseFloat(settings.bfRateDiff)).toFixed(2))
+                }));
+
+                // Find runner with minimum back price
+                const minBackRunner = adjustedRunners.reduce((min, curr) =>
+                    curr.backPrice < min.backPrice ? curr : min
+                    , adjustedRunners[0]);
+
+                setRunners(prevRunners => {
+                    // Calculate new values for logging
+                    const newSelectedBackPrice = minBackRunner.backPrice;
+                    const newSelectedLayPrice = parseFloat((newSelectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                    const newNonSelectedBackPrice = parseFloat((1 / (1 - (1 / newSelectedLayPrice))).toFixed(2));
+                    const newNonSelectedLayPrice = parseFloat((1 / (1 - (1 / newSelectedBackPrice))).toFixed(2));
+
+                    console.log({
+                        newSelectedBackPrice,
+                        newSelectedLayPrice,
+                        newNonSelectedBackPrice,
+                        newNonSelectedLayPrice
+                    });
+
+                    const updatedRunners = prevRunners.map(prevRunner => {
+                        const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
+                        if (!socketRunner) return prevRunner;
+
+                        const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+
+                        if (isSelected) {
+                            // Selected runner calculations
+                            const backPrice = parseFloat(socketRunner.backPrice);
+                            const layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                            // Calculate rates using existing calculateRunnerRates function
                             const newRates = calculateRunnerRates({
-                                back: { price: socketRunner.backPrice }
-                            }, settings);
-                            console.log({ prevRunner })
+                                back: { price: backPrice }
+                            }, settings, {
+                                forceCalculateLay: true,
+                                isSocketData: true
+                            });
+
                             return {
                                 ...prevRunner,
+                                isSelected: true,
                                 back: {
-                                    price: socketRunner.backPrice,
+                                    price: backPrice,
                                     volume: socketRunner.backSize
                                 },
                                 lay: {
-                                    price: socketRunner.layPrice,
+                                    price: layPrice,
                                     volume: socketRunner.laySize
                                 },
-                                // Update all calculated rates
                                 b2: newRates.b2,
                                 b1: newRates.b1,
                                 l1: newRates.l1,
-                                l2: newRates.l2,
-                                b1Volume: socketRunner.backSize,
-                                b2Volume: socketRunner.backSize,
-                                l1Volume: socketRunner.laySize,
-                                l2Volume: socketRunner.laySize,
+                                l2: newRates.l2
+                            };
+                        } else {
+                            // Unselected runner calculations
+                            const selectedLayPrice = minBackRunner.backPrice + parseFloat(settings.rateDifferent);
+                            const selectedBackPrice = minBackRunner.backPrice;
+
+                            const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                            const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                            // Calculate rates for unselected runner
+                            const newRates = calculateRunnerRates({
+                                back: { price: backPrice }
+                            }, settings, {
+                                forceCalculateLay: true,
+                                isSocketData: true
+                            });
+
+                            return {
+                                ...prevRunner,
+                                isSelected: false,
+                                back: {
+                                    price: backPrice,
+                                    volume: socketRunner.backSize
+                                },
+                                lay: {
+                                    price: layPrice,
+                                    volume: socketRunner.laySize
+                                },
+                                b2: newRates.b2,
+                                b1: newRates.b1,
+                                l1: newRates.l1,
+                                l2: newRates.l2
                             };
                         }
-                        return prevRunner;
                     });
+
+                    return updatedRunners;
                 });
-            }
+            };
 
             // Set up socket event listeners
             socket.on(MARKET_RUNNER_DATA, handleMarketRunnerData);
@@ -783,7 +1022,7 @@ export const UpdateManualOdds = () => {
                                 <Box width="66.67%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
-                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventRefId}]`}</Typography>
+                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.rateSourceRefID}]`}</Typography>
                                             <Typography variant="body2">
                                                 {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
                                             </Typography>
@@ -963,6 +1202,17 @@ export const UpdateManualOdds = () => {
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <TextField
+                                        label="BF Rate Diff"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.bfRateDiff}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('bfRateDiff', e.target.value)}
+                                    />
                                 </Box>
                                 <Box width="16.67%">
                                     <TextField
@@ -1178,7 +1428,6 @@ export const UpdateManualOdds = () => {
                                                 <RadioGroup
                                                     row
                                                     value={marketStatus}
-                                                    onChange={(e) => handleStatusChange(e.target.value)}
                                                 >
                                                     <FormControlLabel value={OPEN_VALUE} control={<Radio />} label="Open" />
                                                     <FormControlLabel value={SUSPEND_VALUE} control={<Radio />} label="Suspend" />

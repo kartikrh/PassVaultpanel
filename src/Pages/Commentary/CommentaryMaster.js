@@ -17,6 +17,7 @@ import NetworkStatus from '../../components/Common/Reusables/NetworkStatus';
 import { isEmpty } from 'lodash';
 import Switch from "react-switch";
 import createSocket from '../../Features/socket';
+// import { NewCommentaryScreen } from './NewCommentaryScreen';
 
 const ALL_SCREENS = {
     1: COMMENTARY_TOSS_SCREEN,
@@ -172,7 +173,7 @@ function CommentaryMaster() {
     }, [commentaryData, isBetAllow]);
 
     const openIframePopup = () => {
-        const url = `${scoreCardUrl}/scoreboard2?id=${commentaryData?.commentaryDetails?.eid}&color=000`
+        const url = `${scoreCardUrl}/scoreboard?id=${commentaryData?.commentaryDetails?.eid}&color=000`
         window.open(url, '_blank', 'width=600,height=400');
     };
 
@@ -194,6 +195,7 @@ function CommentaryMaster() {
     const handleLoadCommentaryClick = () => {
         dispatch(loadCommentaryFeature({ commentaryId }))
     };
+    const theme = useSelector((state) => state.layout.panelTheme);
 
     // const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
     return (
@@ -201,7 +203,7 @@ function CommentaryMaster() {
             <div className="page-content">
                 <Container fluid={true}>
                     <Row>
-                        <Card>
+                        <Card style={{padding: '0px'}}>
                             <CardBody>
                                 {(
                                     (isCommentaryBallLoading && currentScreen !== 3)
@@ -256,6 +258,13 @@ function CommentaryMaster() {
                                             next={() => { setCurrentScreen(getScreenNumber(COMMENTARY_MAIN_SCREEN)) }}
                                         />}
                                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                                        // <NewCommentaryScreen
+                                        //     data={{ commentaryData }}
+                                        //     onInningsChange={handleInningsChange}
+                                        //     isDataLoading={isDataLoading}
+                                        //     statusPopup={statusPopup}
+                                        //     saveUserInfo={saveUserInfo}
+                                        // />}
                                         <Commentary
                                             data={{ commentaryData }}
                                             onInningsChange={handleInningsChange}

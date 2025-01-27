@@ -304,3 +304,10 @@ body[data-layout="horizontal"] {
         }
     }
 }
+
+body[data-theme="dark"]{
+    .navbar-header{
+        background-color: $header-dark-bg;
+        color: white !important;
+    }
+}

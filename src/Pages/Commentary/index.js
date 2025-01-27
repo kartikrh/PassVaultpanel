@@ -26,7 +26,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
-  convertDateUTCToLocal,
+  convertDateUTCToLocalWithoutSec,
   convertDateLocalToUTC,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -902,7 +902,7 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {convertDateUTCToLocalWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",

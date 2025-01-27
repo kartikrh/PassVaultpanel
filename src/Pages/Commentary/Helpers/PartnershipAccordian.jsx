@@ -10,8 +10,10 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
+import { useSelector } from 'react-redux';
 
 const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistory, playersList, currentOver }) => {
+    const theme = useSelector((state) => state.layout.panelTheme);
     // const processedHistory = React.useMemo(() => {
     //     if (!overHistory?.length) return [];
 
@@ -194,7 +196,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                     {team.teamName}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif",
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
                                     Innings {innings}
                                 </Typography>

@@ -4,8 +4,10 @@ import ball from '../../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../../src/assets/images/cricket-icons/game.png';
+import { useSelector } from 'react-redux';
 
 const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler, overPopUpForBowler }) => {
+      const theme = useSelector((state) => state.layout.panelTheme);
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
             a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
@@ -68,8 +70,8 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler,
         }
     }
     return (
-        <Modal backdrop="static" keyboard={false} className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable>
-            <ModalHeader toggle={!overPopUpForBowler ? toggle : null}>
+        <Modal backdrop="static" keyboard={false} className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} scrollable >
+            <ModalHeader toggle={!overPopUpForBowler ? toggle : null} >
                 Select Player
             </ModalHeader>
             <ModalBody>
