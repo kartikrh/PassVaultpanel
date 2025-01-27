@@ -10,7 +10,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { Container, Button } from 'reactstrap';
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
+import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, OPEN_MARKET_CONNECT, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
@@ -88,6 +88,7 @@ export const UpdateManualOdds = () => {
     const [runners, setRunners] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [ballStatus, setBallStatus] = useState(null);
+    const [autoBs, setAutoBs] = useState(false);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -871,11 +872,48 @@ export const UpdateManualOdds = () => {
         if (rateSourceRefID.length > 0 && socket) {
             console.log("Emitting MARKET_RUNNER_CONNECT with:", rateSourceRefID);
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+            socket.emit(OPEN_MARKET_CONNECT, { commentaryId: +commentaryId });
             setIsSocketConnected(true);
             const handleBallStatusFromSocket = (data) => {
                 if (data?.ballStatus) {
-                    // Pass the socket status to the handler
-                    handleBallStatusToggle(data.ballStatus);
+                    // First update the UI state
+                    setBallStatus(data.ballStatus);
+
+                    // If autoBs is true, handle the market status change
+                    if (autoBs) {
+                        const nextMarketStatus = data.ballStatus === BALL_START_STATUS ? SUSPEND_VALUE : OPEN_VALUE;
+
+                        // Update market status and make API call
+                        const marketData = {
+                            eventMarket: [{
+                                ...prepareMarketData().eventMarket[0],
+                                status: parseInt(nextMarketStatus)
+                            }]
+                        };
+
+                        setIsLoading(true);
+                        axiosInstance.post('/admin/eventMarket/upManualMarket', marketData)
+                            .then(response => {
+                                if (response?.success) {
+                                    setMarketStatus(nextMarketStatus);
+                                    dispatch(updateToastData({
+                                        data: "Market updated successfully",
+                                        title: "Success",
+                                        type: SUCCESS
+                                    }));
+                                }
+                            })
+                            .catch(error => {
+                                dispatch(updateToastData({
+                                    data: error?.message,
+                                    title: error?.title,
+                                    type: ERROR
+                                }));
+                            })
+                            .finally(() => {
+                                setIsLoading(false);
+                            });
+                    }
                 }
             }
 
@@ -1005,7 +1043,7 @@ export const UpdateManualOdds = () => {
                 socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
             };
         }
-    }, [rateSourceRefID, socket, isLive, settings]);
+    }, [rateSourceRefID, socket, isLive, settings, autoBs]);
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
@@ -1056,42 +1094,6 @@ export const UpdateManualOdds = () => {
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
             if (response?.success) {
                 setSettings(prev => ({ ...prev, active: newValue }));
-                dispatch(updateToastData({
-                    data: "Market updated successfully",
-                    title: "Success",
-                    type: SUCCESS
-                }));
-            }
-        } catch (error) {
-            dispatch(updateToastData({
-                data: error?.message,
-                title: error?.title,
-                type: ERROR
-            }));
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleBallStatusToggle = async (ballStatusFromSocket = null) => {
-        // Use either the socket status or toggle the current status
-        const currentStatus = ballStatusFromSocket || ballStatus;
-        const nextStatus = currentStatus === BALL_START_STATUS ? SCORING_STATUS : BALL_START_STATUS;
-        const nextMarketStatus = currentStatus === BALL_START_STATUS ? OPEN_VALUE : SUSPEND_VALUE;
-
-        const marketData = {
-            eventMarket: [{
-                ...prepareMarketData().eventMarket[0],
-                status: parseInt(nextMarketStatus)
-            }]
-        };
-
-        setIsLoading(true);
-        try {
-            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
-            if (response?.success) {
-                setMarketStatus(nextMarketStatus);
-                setBallStatus(nextStatus);
                 dispatch(updateToastData({
                     data: "Market updated successfully",
                     title: "Success",
@@ -1170,12 +1172,17 @@ export const UpdateManualOdds = () => {
                                     <FormControlLabel
                                         control={
                                             <Switch
-                                                checked={ballStatus === BALL_START_STATUS}
-                                                onChange={(e) => handleBallStatusToggle()}
+                                                checked={autoBs}
+                                                onChange={(e) => setAutoBs(!autoBs)}
                                             />
                                         }
-                                        label="Ball Start"
+                                        label="Auto BS"
                                     />
+                                    {ballStatus === BALL_START_STATUS &&
+                                        <span className="ball-start">
+                                            <span className='text-bold mx-2'>Ball Start</span>
+                                        </span>
+                                    }
                                 </Box>
                                 <Box width="15%">
                                     <TextField
