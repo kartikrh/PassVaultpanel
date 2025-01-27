@@ -5,6 +5,9 @@ export const TOSS_SELECTION = {
     1: "Bat",
     2: "Bowl"
 }
+
+export const BALL_START_STATUS = "ballstart"
+export const SCORING_STATUS = "scoring"
 // Ball Type
 export const BALL_TYPE_OVER_COMPLETE = 0;
 export const BALL_TYPE_REGULAR = 1;
