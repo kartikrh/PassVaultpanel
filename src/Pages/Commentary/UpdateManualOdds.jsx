@@ -109,6 +109,7 @@ export const UpdateManualOdds = () => {
         margin: 10,
         delay: 10,
         lineRatio: 10,
+        bfRateDiff: -0.01,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -147,21 +148,21 @@ export const UpdateManualOdds = () => {
             };
         });
 
-        // Find runner with minimum lay price
-        const minLayRunner = getRunnerWithMinimumLay(formattedRunners);
+        // Replace getRunnerWithMinimumLay with getRunnerWithMinimumBack
+        const minBackRunner = getRunnerWithMinimumBack(formattedRunners);
 
-        // Set the runners with the minimum lay price runner selected
+        // Set the runners with the minimum back price runner selected
         setRunners(formattedRunners.map(runner => ({
             ...runner,
-            isSelected: runner.runnerId === minLayRunner?.runnerId
+            isSelected: runner.runnerId === minBackRunner?.runnerId
         })));
 
         // Set the selected runner
-        if (minLayRunner) {
-            setSelectedRunner(minLayRunner.runnerId);
+        if (minBackRunner) {
+            setSelectedRunner(minBackRunner.runnerId);
             setSelectedRunnerDetails(prev => ({
                 ...prev,
-                runnerId: minLayRunner.runnerId
+                runnerId: minBackRunner.runnerId
             }));
         }
     };
@@ -178,7 +179,14 @@ export const UpdateManualOdds = () => {
             runnerId
         }));
     };
-
+    const getRunnerWithMinimumBack = (runnersData) => {
+        if (!runnersData?.length) return null;
+        return runnersData.reduce((minRunner, currentRunner) => {
+            const currentBackPrice = parseFloat(currentRunner.back?.price || currentRunner.backPrice || Infinity);
+            const minBackPrice = parseFloat(minRunner.back?.price || minRunner.backPrice || Infinity);
+            return currentBackPrice < minBackPrice ? currentRunner : minRunner;
+        }, runnersData[0]);
+    };
     // For status change and API call
     const handleStatusChange = async (newStatus) => {
         try {
@@ -215,6 +223,12 @@ export const UpdateManualOdds = () => {
     };
 
     const handleSettingChange = (key, value, isShortcut = false) => {
+        if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
+            const numValue = parseFloat(value);
+            if (numValue < 0.01) {
+                value = '0.01';
+            }
+        }
         if (isShortcut) {
             const newValue = settings.shortcutValues[value];
             if (newValue) {
@@ -864,30 +878,106 @@ export const UpdateManualOdds = () => {
                 }
             }
             const handleMarketRunnerData = (message) => {
-                if (!isLive || !message?.[0]?.runners) return;
+                if (!isLive || !message?.[0]?.runners || message[0].runners.length !== 2) return;
 
                 const socketRunners = message[0].runners;
 
-                setRunners(prevRunners => {
-                    return prevRunners.map(prevRunner => {
-                        const socketRunner = socketRunners.find(
-                            r => r.selectionId === prevRunner.selectionId
-                        );
+                // First log the original socket values
+                const selectedSocketRunner = socketRunners.find(r => r.selectionId === runners.find(r => r.isSelected)?.selectionId);
+                const nonSelectedSocketRunner = socketRunners.find(r => r.selectionId === runners.find(r => !r.isSelected)?.selectionId);
 
-                        if (socketRunner) {
-                            // Always force calculate lay rates for socket data
+                console.log({
+                    SelectedBackPrice: selectedSocketRunner?.backPrice,
+                    SelectedLayPrice: selectedSocketRunner?.layPrice,
+                    nonSelectedBackPrice: nonSelectedSocketRunner?.backPrice,
+                    nonSelectedLayPrice: nonSelectedSocketRunner?.layPrice
+                });
+
+                // First, adjust prices with BF Rate Diff
+                const adjustedRunners = socketRunners.map(runner => ({
+                    ...runner,
+                    backPrice: parseFloat((runner.backPrice + parseFloat(settings.bfRateDiff)).toFixed(2))
+                }));
+
+                // Find runner with minimum back price
+                const minBackRunner = adjustedRunners.reduce((min, curr) =>
+                    curr.backPrice < min.backPrice ? curr : min
+                    , adjustedRunners[0]);
+
+                setRunners(prevRunners => {
+                    // Calculate new values for logging
+                    const newSelectedBackPrice = minBackRunner.backPrice;
+                    const newSelectedLayPrice = parseFloat((newSelectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                    const newNonSelectedBackPrice = parseFloat((1 / (1 - (1 / newSelectedLayPrice))).toFixed(2));
+                    const newNonSelectedLayPrice = parseFloat((1 / (1 - (1 / newSelectedBackPrice))).toFixed(2));
+
+                    console.log({
+                        newSelectedBackPrice,
+                        newSelectedLayPrice,
+                        newNonSelectedBackPrice,
+                        newNonSelectedLayPrice
+                    });
+
+                    const updatedRunners = prevRunners.map(prevRunner => {
+                        const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
+                        if (!socketRunner) return prevRunner;
+
+                        const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+
+                        if (isSelected) {
+                            // Selected runner calculations
+                            const backPrice = parseFloat(socketRunner.backPrice);
+                            const layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                            // Calculate rates using existing calculateRunnerRates function
                             const newRates = calculateRunnerRates({
-                                back: { price: socketRunner.backPrice }
-                            }, settings, true);
+                                back: { price: backPrice }
+                            }, settings, {
+                                forceCalculateLay: true,
+                                isSocketData: true
+                            });
 
                             return {
                                 ...prevRunner,
+                                isSelected: true,
                                 back: {
-                                    price: socketRunner.backPrice,
+                                    price: backPrice,
                                     volume: socketRunner.backSize
                                 },
                                 lay: {
-                                    price: newRates.lay,  // Use calculated lay price
+                                    price: layPrice,
+                                    volume: socketRunner.laySize
+                                },
+                                b2: newRates.b2,
+                                b1: newRates.b1,
+                                l1: newRates.l1,
+                                l2: newRates.l2
+                            };
+                        } else {
+                            // Unselected runner calculations
+                            const selectedLayPrice = minBackRunner.backPrice + parseFloat(settings.rateDifferent);
+                            const selectedBackPrice = minBackRunner.backPrice;
+
+                            const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                            const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                            // Calculate rates for unselected runner
+                            const newRates = calculateRunnerRates({
+                                back: { price: backPrice }
+                            }, settings, {
+                                forceCalculateLay: true,
+                                isSocketData: true
+                            });
+
+                            return {
+                                ...prevRunner,
+                                isSelected: false,
+                                back: {
+                                    price: backPrice,
+                                    volume: socketRunner.backSize
+                                },
+                                lay: {
+                                    price: layPrice,
                                     volume: socketRunner.laySize
                                 },
                                 b2: newRates.b2,
@@ -896,8 +986,9 @@ export const UpdateManualOdds = () => {
                                 l2: newRates.l2
                             };
                         }
-                        return prevRunner;
                     });
+
+                    return updatedRunners;
                 });
             };
 
@@ -1111,6 +1202,17 @@ export const UpdateManualOdds = () => {
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <TextField
+                                        label="BF Rate Diff"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.bfRateDiff}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('bfRateDiff', e.target.value)}
+                                    />
                                 </Box>
                                 <Box width="16.67%">
                                     <TextField
