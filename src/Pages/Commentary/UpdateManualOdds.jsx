@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import { RiRefreshLine } from 'react-icons/ri';
-import { AUTO_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SUSPEND_VALUE } from './CommentartConst.js';
+import { AUTO_STATUS, BALL_START_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SCORING_STATUS, SUSPEND_VALUE } from './CommentartConst.js';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -872,11 +872,13 @@ export const UpdateManualOdds = () => {
             console.log("Emitting MARKET_RUNNER_CONNECT with:", rateSourceRefID);
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
             setIsSocketConnected(true);
-            const handleBallStatus = (data) => {
-                if (data) {
-                    setBallStatus(data?.ballStatus);
+            const handleBallStatusFromSocket = (data) => {
+                if (data?.ballStatus) {
+                    // Pass the socket status to the handler
+                    handleBallStatusToggle(data.ballStatus);
                 }
             }
+
             const handleMarketRunnerData = (message) => {
                 if (!isLive || !message?.[0]?.runners || message[0].runners.length !== 2) return;
 
@@ -994,13 +996,13 @@ export const UpdateManualOdds = () => {
 
             // Set up socket event listeners
             socket.on(MARKET_RUNNER_DATA, handleMarketRunnerData);
-            socket.on(UPDATE_BALL_STATUS, handleBallStatus);
+            socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
 
             // Cleanup function
             return () => {
                 console.log("Cleaning up socket listener");
                 socket.off(MARKET_RUNNER_DATA, handleMarketRunnerData);
-                socket.off(UPDATE_BALL_STATUS, handleBallStatus);
+                socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
             };
         }
     }, [rateSourceRefID, socket, isLive, settings]);
@@ -1010,6 +1012,102 @@ export const UpdateManualOdds = () => {
             handleRunnerSelection(runners[0].runnerId);
         }
     }, [runners]);
+
+    const handleBetAllowToggle = async (newValue) => {
+        const marketData = {
+            eventMarket: [{
+                ...prepareMarketData().eventMarket[0],
+                isAllow: newValue
+            }]
+        };
+
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            if (response?.success) {
+                setSettings(prev => ({ ...prev, betAllow: newValue }));
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleActiveToggle = async (newValue) => {
+        const marketData = {
+            eventMarket: [{
+                ...prepareMarketData().eventMarket[0],
+                isActive: newValue
+            }]
+        };
+
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            if (response?.success) {
+                setSettings(prev => ({ ...prev, active: newValue }));
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleBallStatusToggle = async (ballStatusFromSocket = null) => {
+        // Use either the socket status or toggle the current status
+        const currentStatus = ballStatusFromSocket || ballStatus;
+        const nextStatus = currentStatus === BALL_START_STATUS ? SCORING_STATUS : BALL_START_STATUS;
+        const nextMarketStatus = currentStatus === BALL_START_STATUS ? OPEN_VALUE : SUSPEND_VALUE;
+
+        const marketData = {
+            eventMarket: [{
+                ...prepareMarketData().eventMarket[0],
+                status: parseInt(nextMarketStatus)
+            }]
+        };
+
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            if (response?.success) {
+                setMarketStatus(nextMarketStatus);
+                setBallStatus(nextStatus);
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <Box className="page-content">
@@ -1022,7 +1120,7 @@ export const UpdateManualOdds = () => {
                                 <Box width="66.67%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
-                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.rateSourceRefID}]`}</Typography>
+                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
                                             <Typography variant="body2">
                                                 {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
                                             </Typography>
@@ -1053,28 +1151,30 @@ export const UpdateManualOdds = () => {
                                         control={
                                             <Switch
                                                 checked={settings.betAllow}
-                                                onChange={(e) => setSettings(prev => ({ ...prev, betAllow: e.target.checked }))}
+                                                onChange={(e) => handleBetAllowToggle(e.target.checked)}
                                             />
                                         }
                                         label="Bet Allowed"
                                     />
+
                                     <FormControlLabel
                                         control={
                                             <Switch
                                                 checked={settings.active}
-                                                onChange={(e) => setSettings(prev => ({ ...prev, active: e.target.checked }))}
+                                                onChange={(e) => handleActiveToggle(e.target.checked)}
                                             />
                                         }
                                         label="Active"
                                     />
+
                                     <FormControlLabel
                                         control={
                                             <Switch
-                                                checked={isLive}
-                                                onChange={(e) => setIsLive(e.target.checked)}
+                                                checked={ballStatus === BALL_START_STATUS}
+                                                onChange={(e) => handleBallStatusToggle()}
                                             />
                                         }
-                                        label="Live"
+                                        label="Ball Start"
                                     />
                                 </Box>
                                 <Box width="15%">
