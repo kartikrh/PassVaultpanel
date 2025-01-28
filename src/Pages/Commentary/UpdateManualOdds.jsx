@@ -10,7 +10,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { Container, Button } from 'reactstrap';
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, OPEN_MARKET_CONNECT, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
+import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, COMMENTARY_STATUS_CONNECT, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
@@ -959,7 +959,7 @@ export const UpdateManualOdds = () => {
         if (rateSourceRefID.length > 0 && socket) {
             console.log("Emitting MARKET_RUNNER_CONNECT with:", rateSourceRefID);
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
-            socket.emit(OPEN_MARKET_CONNECT, { commentaryId: +commentaryId });
+            socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
             setIsSocketConnected(true);
             const handleBallStatusFromSocket = (data) => {
                 if (data?.ballStatus) {
