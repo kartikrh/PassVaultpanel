@@ -107,7 +107,7 @@ export const CONTENT_IMAGE_TYPE = {
   BLOCKS: "Blocks"
 }
 export const OPEN_MARKET_CONNECT = "connectEventMarket";
-export const COMMENTARY_STATUS_CONNECT = "connectEventMarket";
+export const COMMENTARY_STATUS_CONNECT = "conCommentary";
 export const OPEN_MARKET_DATA = "updateMarketData";
 export const UNDO_CALLED = "undoCalled";
 export const MARKET_RUNNER_CONNECT = "marketRunnerConnection";
