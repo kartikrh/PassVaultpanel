@@ -190,21 +190,36 @@ export const UpdateManualOdds = () => {
     };
     // For status change and API call
     const handleStatusChange = async (newStatus) => {
+        // Add confirmation for market close
+        if (newStatus === CLOSE_VALUE.toString()) {
+            const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
+            if (!confirmed) return;
+        }
+
         try {
             setIsLoading(true);
-            // First update the status
             setMarketStatus(newStatus);
 
-            // Immediately prepare and send data with new status
-            const marketData = {
+            // Get latest state for market data
+            const currentMarketData = {
                 eventMarket: [{
                     ...prepareMarketData().eventMarket[0],
                     status: parseInt(newStatus)
                 }]
             };
 
-            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            // Set all prices to 0 if market is not open
+            if (newStatus !== OPEN_VALUE.toString()) {
+                currentMarketData.eventMarket[0].runner = currentMarketData.eventMarket[0].runner.map(runner => ({
+                    ...runner,
+                    backPrice: 0,
+                    layPrice: 0,
+                    overRate: 0,
+                    underRate: 0
+                }));
+            }
 
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
             if (response?.success) {
                 dispatch(updateToastData({
                     data: "Market updated successfully",
@@ -763,6 +778,13 @@ export const UpdateManualOdds = () => {
             setIsLoading(false);
         }
     };
+    const handleMarketClose = () => {
+        const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
+        if (confirmed) {
+            handleStatusChange(CLOSE_VALUE.toString());
+        }
+    };
+
 
     useEffect(() => {
         let intervalId;
@@ -800,36 +822,88 @@ export const UpdateManualOdds = () => {
 
     useEffect(() => {
         const handleKeyDown = async (e) => {
+            // Handle Shift+Enter - only save data without status change
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+
+                // Get latest state
+                const currentMarketData = prepareMarketData();
+
+                setIsLoading(true);
+                try {
+                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
+                    if (response?.success) {
+                        dispatch(updateToastData({
+                            data: "Market updated successfully",
+                            title: "Success",
+                            type: SUCCESS
+                        }));
+                    }
+                } catch (error) {
+                    dispatch(updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR
+                    }));
+                } finally {
+                    setIsLoading(false);
+                }
+                return;
+            }
+
             if (e.key === 'Enter') {
+                e.preventDefault();
+
+                // Update price if main/point values exist
                 if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
-                    // Calculate and update prices for selected runner
                     const main = parseFloat(selectedRunnerDetails.main) || 0;
                     const point = parseFloat(selectedRunnerDetails.point) || 0;
                     const calculatedPrice = main + (point / 100);
 
-                    handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
+                    await new Promise(resolve => {
+                        handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
+                        resolve();
+                    });
                 }
 
-                // Handle status toggle and save
-                const newStatus = marketStatus === "1" ? "3" : "1";
+                // Handle status toggle
+                let newStatus;
+                if (marketStatus === OPEN_VALUE.toString()) {
+                    newStatus = SUSPEND_VALUE.toString();
+                } else if ([SUSPEND_VALUE.toString(), INACTIVE_VALUE.toString()].includes(marketStatus)) {
+                    newStatus = OPEN_VALUE.toString();
+                } else {
+                    return;
+                }
+
+                // Get latest state after potential price updates
                 await new Promise(resolve => {
                     setMarketStatus(newStatus);
                     resolve();
                 });
 
-                // Prepare market data with the new status
-                const marketData = {
+                const currentMarketData = {
                     eventMarket: [{
                         ...prepareMarketData().eventMarket[0],
                         status: parseInt(newStatus),
-                        isActive: newStatus === "1"
+                        isActive: newStatus === OPEN_VALUE.toString()
                     }]
                 };
 
-                // Save with the updated status
+                // Set prices to 0 if not open
+                if (newStatus !== OPEN_VALUE.toString()) {
+                    currentMarketData.eventMarket[0].runner = currentMarketData.eventMarket[0].runner.map(runner => ({
+                        ...runner,
+                        backPrice: 0,
+                        layPrice: 0,
+                        overRate: 0,
+                        underRate: 0
+                    }));
+                }
+
                 setIsLoading(true);
                 try {
-                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
                     if (response?.success) {
                         dispatch(updateToastData({
                             data: "Market updated successfully",
@@ -851,7 +925,7 @@ export const UpdateManualOdds = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus, runners]);
+    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData]);
 
     useEffect(() => {
         fetchMarketData();
@@ -982,11 +1056,11 @@ export const UpdateManualOdds = () => {
                                 isSelected: true,
                                 back: {
                                     price: backPrice,
-                                    volume: socketRunner.backSize
+                                    // volume: socketRunner.backSize
                                 },
                                 lay: {
                                     price: layPrice,
-                                    volume: socketRunner.laySize
+                                    // volume: socketRunner.laySize
                                 },
                                 b2: newRates.b2,
                                 b1: newRates.b1,
@@ -1143,7 +1217,14 @@ export const UpdateManualOdds = () => {
                                         <RadioGroup
                                             row
                                             value={marketStatus}
-                                            onChange={(e) => handleStatusChange(e.target.value)}
+                                            onChange={(e) => {
+                                                const newValue = e.target.value;
+                                                if (newValue === CLOSE_VALUE.toString()) {
+                                                    handleMarketClose();  // Use the new handler for close
+                                                } else {
+                                                    handleStatusChange(newValue);  // Use existing handler for other statuses
+                                                }
+                                            }}
                                         >
                                             <FormControlLabel value={INACTIVE_VALUE.toString()} control={<Radio />} label="Inactive" />
                                             <FormControlLabel value={CLOSE_VALUE.toString()} control={<Radio />} label="Close" />
@@ -1168,7 +1249,15 @@ export const UpdateManualOdds = () => {
                                         }
                                         label="Active"
                                     />
-
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={isLive}
+                                                onChange={(e) => setIsLive(!isLive)}
+                                            />
+                                        }
+                                        label="Live"
+                                    />
                                     <FormControlLabel
                                         control={
                                             <Switch
