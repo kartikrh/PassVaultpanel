@@ -532,12 +532,14 @@ const Commentary = (props) => {
             if (+runs === 4) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballFour"] = 1
+                batter["batFour"] = (batter.batFour || 0) + 1
                 updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
                 updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) + 1
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
             } else if (+runs === 6) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballSix"] = 1
+                batter["batSix"] = (batter.batSix || 0) + 1
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
                 updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
