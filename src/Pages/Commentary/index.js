@@ -976,7 +976,13 @@ const Index = () => {
       ),
       key: "eventName",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: {
+        width: "10%", 
+        position: "sticky",
+        left: 0,
+        zIndex: 10
+      },
     },
     {
       title: "Competition",
