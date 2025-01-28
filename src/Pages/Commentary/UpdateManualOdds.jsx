@@ -101,7 +101,7 @@ export const UpdateManualOdds = () => {
         bRateDifferent: 0.01,
         lRateDifferent: 0.01,
         volumeLength: 3,
-        volumeType: CUSTOM_STATUS,
+        volumeType: AUTO_STATUS,
         betAllow: false,
         active: false,
         rateDifferent: 5,
@@ -253,6 +253,20 @@ export const UpdateManualOdds = () => {
         } else {
             // Ensure value is numeric for rate-related settings
             const numericValue = value === '' ? '0' : value;
+
+            if (key === 'volumeType' && value === CUSTOM_STATUS) {
+                // When switching to custom volume, update all runners with the current B/L rate volumes
+                setRunners(prev => prev.map(runner => ({
+                    ...runner,
+                    back: { ...runner.back, volume: settings.bRateVolume },
+                    lay: { ...runner.lay, volume: settings.lRateVolume },
+                    b2Volume: settings.bRateVolume,
+                    b1Volume: settings.bRateVolume,
+                    l1Volume: settings.lRateVolume,
+                    l2Volume: settings.lRateVolume
+                })));
+            }
+
             setSettings(prev => ({ ...prev, [key]: numericValue }));
 
             // Trigger recalculation when rate differences or volumes change
@@ -853,7 +867,6 @@ export const UpdateManualOdds = () => {
 
             if (e.key === 'Enter') {
                 e.preventDefault();
-
                 // Update price if main/point values exist
                 if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
                     const main = parseFloat(selectedRunnerDetails.main) || 0;
@@ -868,10 +881,10 @@ export const UpdateManualOdds = () => {
 
                 // Handle status toggle
                 let newStatus;
-                if (marketStatus === OPEN_VALUE.toString()) {
-                    newStatus = SUSPEND_VALUE.toString();
-                } else if ([SUSPEND_VALUE.toString(), INACTIVE_VALUE.toString()].includes(marketStatus)) {
-                    newStatus = OPEN_VALUE.toString();
+                if (+marketStatus === +OPEN_VALUE) {
+                    newStatus = SUSPEND_VALUE;
+                } else if (+marketStatus === +INACTIVE_VALUE || +marketStatus === +SUSPEND_VALUE) {
+                    newStatus = OPEN_VALUE;
                 } else {
                     return;
                 }
@@ -1056,11 +1069,11 @@ export const UpdateManualOdds = () => {
                                 isSelected: true,
                                 back: {
                                     price: backPrice,
-                                    // volume: socketRunner.backSize
+                                    volume: prevRunner.back.volume
                                 },
                                 lay: {
                                     price: layPrice,
-                                    // volume: socketRunner.laySize
+                                    volume: prevRunner.lay.volume
                                 },
                                 b2: newRates.b2,
                                 b1: newRates.b1,
@@ -1088,11 +1101,11 @@ export const UpdateManualOdds = () => {
                                 isSelected: false,
                                 back: {
                                     price: backPrice,
-                                    volume: socketRunner.backSize
+                                    volume: prevRunner.back.volume
                                 },
                                 lay: {
                                     price: layPrice,
-                                    volume: socketRunner.laySize
+                                    volume: prevRunner.lay.volume
                                 },
                                 b2: newRates.b2,
                                 b1: newRates.b1,
