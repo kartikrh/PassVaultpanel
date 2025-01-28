@@ -3,6 +3,13 @@
     color:white;
     /* cursor: pointer; */
 }
+.hover .sticky-column {
+  background-color: #ffff;
+}
+.hover:hover .sticky-column {
+  background-color: gray;
+  color:white;
+}
 .hover1:hover{
     color: black;
     /* cursor: pointer; */
@@ -60,4 +67,8 @@ thead th {
   display: block;
 }
 
-  
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
