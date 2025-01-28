@@ -687,7 +687,7 @@ export const UpdateManualOdds = () => {
                         size="small"
                         value={isActive ? (price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') : '-'}
                         onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
-                        disabled={!isActive}
+                        disabled={!isActive || marketStatus === CLOSE_VALUE.toString()}
                         sx={{
                             '& .MuiInputBase-root': { height: '40px' }
                         }}
@@ -701,7 +701,7 @@ export const UpdateManualOdds = () => {
                         size="small"
                         value={isActive ? (volume || '') : '-'}
                         onChange={(e) => handleCellEdit(runner.runnerId, field, 'volume', e.target.value)}
-                        disabled={!isActive}
+                        disabled={!isActive || marketStatus === CLOSE_VALUE.toString()}
                         className="volume-field"
                         sx={{
                             '& .MuiInputBase-root': { height: '24px' }
@@ -1204,7 +1204,14 @@ export const UpdateManualOdds = () => {
                                     )}
                                 </Box>
                                 <Box width="33.33%" sx={{ textAlign: 'right' }}>
-                                    <Button color="primary" className="me-2" onClick={handleSave}>Save</Button>
+                                    <Button
+                                        color="primary"
+                                        className="me-2"
+                                        onClick={handleSave}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    >
+                                        Save
+                                    </Button>
                                     <Button color="danger" onClick={() => navigate("/commentary")}>Exit</Button>
                                 </Box>
                             </Box>
@@ -1220,14 +1227,23 @@ export const UpdateManualOdds = () => {
                                             onChange={(e) => {
                                                 const newValue = e.target.value;
                                                 if (newValue === CLOSE_VALUE.toString()) {
-                                                    handleMarketClose();  // Use the new handler for close
+                                                    handleMarketClose();
                                                 } else {
-                                                    handleStatusChange(newValue);  // Use existing handler for other statuses
+                                                    handleStatusChange(newValue);
                                                 }
                                             }}
+                                            disabled={marketStatus === CLOSE_VALUE.toString()}
                                         >
-                                            <FormControlLabel value={INACTIVE_VALUE.toString()} control={<Radio />} label="Inactive" />
-                                            <FormControlLabel value={CLOSE_VALUE.toString()} control={<Radio />} label="Close" />
+                                            <FormControlLabel
+                                                value={INACTIVE_VALUE.toString()}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Inactive"
+                                            />
+                                            <FormControlLabel
+                                                value={CLOSE_VALUE.toString()}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Close"
+                                            />
                                         </RadioGroup>
                                     </FormControl>
                                     <FormControlLabel
@@ -1235,16 +1251,17 @@ export const UpdateManualOdds = () => {
                                             <Switch
                                                 checked={settings.betAllow}
                                                 onChange={(e) => handleBetAllowToggle(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Bet Allowed"
                                     />
-
                                     <FormControlLabel
                                         control={
                                             <Switch
                                                 checked={settings.active}
                                                 onChange={(e) => handleActiveToggle(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Active"
@@ -1254,6 +1271,7 @@ export const UpdateManualOdds = () => {
                                             <Switch
                                                 checked={isLive}
                                                 onChange={(e) => setIsLive(!isLive)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Live"
@@ -1263,6 +1281,7 @@ export const UpdateManualOdds = () => {
                                             <Switch
                                                 checked={autoBs}
                                                 onChange={(e) => setAutoBs(!autoBs)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Auto BS"
@@ -1280,6 +1299,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.rateRange}
                                         onChange={(e) => handleSettingChange('rateRange', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="15%">
@@ -1290,6 +1310,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.ballStartAfter}
                                         onChange={(e) => handleSettingChange('ballStartAfter', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                             </Box>
@@ -1303,7 +1324,8 @@ export const UpdateManualOdds = () => {
                                         size="small"
                                         fullWidth
                                         value={settings.showRate}
-                                        onChange={(e) => handleShowRateChange(e.target.value)}  // Changed this line
+                                        onChange={(e) => handleShowRateChange(e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                         inputProps={{
                                             min: 1,
                                             max: 3
@@ -1319,6 +1341,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.rateDifferent}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('rateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1330,6 +1353,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.bRateDifferent}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('bRateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1341,6 +1365,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.lRateDifferent}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('lRateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1352,6 +1377,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.margin}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('margin', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1363,6 +1389,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.delay}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('delay', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1374,9 +1401,11 @@ export const UpdateManualOdds = () => {
                                         value={settings.lineRatio}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('lineRatio', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                             </Box>
+
                             {/* Volume Controls */}
                             <Box display="flex" gap={2} sx={{ mt: 3 }}>
                                 <Box width="50%">
@@ -1385,15 +1414,16 @@ export const UpdateManualOdds = () => {
                                             row
                                             value={settings.volumeType}
                                             onChange={(e) => handleSettingChange('volumeType', e.target.value)}
+                                            disabled={marketStatus === CLOSE_VALUE.toString()}
                                         >
                                             <FormControlLabel
                                                 value={AUTO_STATUS}
-                                                control={<Radio />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Auto Volume"
                                             />
                                             <FormControlLabel
                                                 value={CUSTOM_STATUS}
-                                                control={<Radio />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Cust.Volume"
                                             />
                                         </RadioGroup>
@@ -1408,6 +1438,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.bfRateDiff}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('bfRateDiff', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="16.67%">
@@ -1418,7 +1449,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.bRateVolume}
                                         onChange={(e) => handleSettingChange('bRateVolume', e.target.value)}
-                                        disabled={settings.volumeType === AUTO_STATUS}
+                                        disabled={settings.volumeType === AUTO_STATUS || marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="16.67%">
@@ -1429,7 +1460,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.lRateVolume}
                                         onChange={(e) => handleSettingChange('lRateVolume', e.target.value)}
-                                        disabled={settings.volumeType === AUTO_STATUS}
+                                        disabled={settings.volumeType === AUTO_STATUS || marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="16.67%">
@@ -1440,10 +1471,12 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.volumeLength}
                                         onChange={(e) => handleSettingChange('volumeLength', e.target.value)}
-                                        disabled={settings.volumeType === CUSTOM_STATUS}
+                                        disabled={settings.volumeType === CUSTOM_STATUS || marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                             </Box>
+
+                            {/* Shortcuts Section */}
                             <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
                                 <Box display="flex" flexWrap="wrap" gap={1} sx={{ flex: 1 }}>
                                     {Object.entries(settings.shortcutValues).map(([key, value]) => (
@@ -1455,24 +1488,25 @@ export const UpdateManualOdds = () => {
                                                     size="small"
                                                     value={value}
                                                     onChange={(e) => handleSettingChange(key, e.target.value, true)}
+                                                    disabled={marketStatus === CLOSE_VALUE.toString()}
                                                     sx={{ '& .MuiInputBase-input': { py: 0.5 } }}
                                                 />
                                             </KeyBox>
                                         </Box>
                                     ))}
                                 </Box>
-                                <Box width="8%">  {/* Same width as shortcut cards */}
+                                <Box width="8%">
                                     <Button
                                         color="primary"
-                                        disabled={!hasShortcutChanges}
+                                        disabled={!hasShortcutChanges || marketStatus === CLOSE_VALUE.toString()}
                                         onClick={handleSync}
                                         sx={{
-                                            height: '100%',  // Match height of KeyBox
-                                            width: '100%',   // Take full width of container
+                                            height: '100%',
+                                            width: '100%',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            padding: theme => theme.spacing(1),  // Match KeyBox padding
+                                            padding: theme => theme.spacing(1),
                                         }}
                                     >
                                         <RiRefreshLine className="me-1" size={16} />
@@ -1480,6 +1514,8 @@ export const UpdateManualOdds = () => {
                                     </Button>
                                 </Box>
                             </Box>
+
+                            {/* Table Section */}
                             <TableContainer>
                                 <Table size="small">
                                     <TableHead>
@@ -1504,79 +1540,53 @@ export const UpdateManualOdds = () => {
                                                                 size="small"
                                                                 checked={runner.isSelected}
                                                                 onChange={() => handleRunnerSelection(runner.runnerId)}
+                                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                                             />
                                                             <Typography>{runner.runner}</Typography>
                                                         </Box>
                                                     </TableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="b2"
-                                                            price={runner.b2}
-                                                            volume={runner.b2Volume}
-                                                            isActive={activeColumns.includes('b2')}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="b1"
-                                                            price={runner.b1}
-                                                            volume={runner.b1Volume}
-                                                            isActive={activeColumns.includes('b1')}
-                                                        />
-                                                    </TableCell>
-                                                    <StyledTableCell align="center" type="back">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="back"
-                                                            price={runner.back.price}
-                                                            volume={runner.back.volume}
-                                                            isActive={activeColumns.includes('back')}
-                                                        />
-                                                    </StyledTableCell>
-                                                    <StyledTableCell align="center" type="lay">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="lay"
-                                                            price={runner.lay.price}
-                                                            volume={runner.lay.volume}
-                                                            isActive={activeColumns.includes('lay')}
-                                                        />
-                                                    </StyledTableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="l1"
-                                                            price={runner.l1}
-                                                            volume={runner.l1Volume}
-                                                            isActive={activeColumns.includes('l1')}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="l2"
-                                                            price={runner.l2}
-                                                            volume={runner.l2Volume}
-                                                            isActive={activeColumns.includes('l2')}
-                                                        />
-                                                    </TableCell>
+                                                    {['b2', 'b1', 'back', 'lay', 'l1', 'l2'].map(field => {
+                                                        const isBackType = ['b2', 'b1', 'back'].includes(field);
+                                                        const isLayType = ['lay', 'l1', 'l2'].includes(field);
+                                                        const type = isBackType ? 'back' : isLayType ? 'lay' : '';
+
+                                                        const price = field === 'back' ? runner.back.price :
+                                                            field === 'lay' ? runner.lay.price :
+                                                                runner[field];
+
+                                                        const volume = field === 'back' ? runner.back.volume :
+                                                            field === 'lay' ? runner.lay.volume :
+                                                                runner[`${field}Volume`];
+
+                                                        return (
+                                                            <StyledTableCell key={field} align="center" type={type}>
+                                                                <RateCell
+                                                                    runner={runner}
+                                                                    field={field}
+                                                                    price={price}
+                                                                    volume={volume}
+                                                                    isActive={activeColumns.includes(field) && marketStatus !== CLOSE_VALUE.toString()}
+                                                                />
+                                                            </StyledTableCell>
+                                                        );
+                                                    })}
                                                 </StyledTableRow>
                                             );
                                         })}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+
+                            {/* Selected Runner Details Section */}
                             {selectedRunner && (
-                                // Updated Selected Runner Details section
-                                <Paper elevation={1} sx={{ mt: 3, p: 0 }}>  {/* Removed padding */}
+                                <Paper elevation={1} sx={{ mt: 3, p: 0 }}>
                                     <Box display="flex" gap={2} sx={{ p: 2 }}>
                                         <Box width="25%">
                                             <FormControl fullWidth size="small">
                                                 <Select
                                                     value={selectedRunnerDetails.runnerId || ''}
                                                     onChange={(e) => handleSelectedRunnerChange(e.target.value)}
+                                                    disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 >
                                                     {runners.map(runner => (
                                                         <MenuItem key={runner.runnerId} value={runner.runnerId}>
@@ -1597,7 +1607,7 @@ export const UpdateManualOdds = () => {
                                                     ...prev,
                                                     main: Math.max(0, parseInt(e.target.value) || 0)
                                                 }))}
-                                                disabled={isLive}
+                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
                                                     min: 0,
                                                     step: 1
@@ -1615,7 +1625,7 @@ export const UpdateManualOdds = () => {
                                                     ...prev,
                                                     point: e.target.value
                                                 }))}
-                                                disabled={isLive}
+                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{ step: 1 }}
                                             />
                                         </Box>
@@ -1624,9 +1634,18 @@ export const UpdateManualOdds = () => {
                                                 <RadioGroup
                                                     row
                                                     value={marketStatus}
+                                                    disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 >
-                                                    <FormControlLabel value={OPEN_VALUE} control={<Radio />} label="Open" />
-                                                    <FormControlLabel value={SUSPEND_VALUE} control={<Radio />} label="Suspend" />
+                                                    <FormControlLabel
+                                                        value={OPEN_VALUE}
+                                                        control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                        label="Open"
+                                                    />
+                                                    <FormControlLabel
+                                                        value={SUSPEND_VALUE}
+                                                        control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                        label="Suspend"
+                                                    />
                                                 </RadioGroup>
                                             </FormControl>
                                         </Box>
