@@ -101,7 +101,7 @@ export const UpdateManualOdds = () => {
         bRateDifferent: 0.01,
         lRateDifferent: 0.01,
         volumeLength: 3,
-        volumeType: CUSTOM_STATUS,
+        volumeType: AUTO_STATUS,
         betAllow: false,
         active: false,
         rateDifferent: 5,
@@ -1056,11 +1056,11 @@ export const UpdateManualOdds = () => {
                                 isSelected: true,
                                 back: {
                                     price: backPrice,
-                                    // volume: socketRunner.backSize
+                                    volume: prevRunner.back.volume
                                 },
                                 lay: {
                                     price: layPrice,
-                                    // volume: socketRunner.laySize
+                                    volume: prevRunner.lay.volume
                                 },
                                 b2: newRates.b2,
                                 b1: newRates.b1,
@@ -1088,11 +1088,11 @@ export const UpdateManualOdds = () => {
                                 isSelected: false,
                                 back: {
                                     price: backPrice,
-                                    volume: socketRunner.backSize
+                                    volume: prevRunner.back.volume
                                 },
                                 lay: {
                                     price: layPrice,
-                                    volume: socketRunner.laySize
+                                    volume: prevRunner.lay.volume
                                 },
                                 b2: newRates.b2,
                                 b1: newRates.b1,
