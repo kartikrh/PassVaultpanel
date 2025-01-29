@@ -2269,7 +2269,7 @@ const Index = forwardRef(
                       <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
-                            <th style={column.style} className={column.className}>
+                            <th style={{...column.style, zIndex: column?.sticky && 100, left: column?.sticky && 0}} className={column.className}>
                               <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
