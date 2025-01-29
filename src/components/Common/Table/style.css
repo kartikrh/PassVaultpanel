@@ -5,6 +5,9 @@
 }
 .hover .sticky-column {
   background-color: #ffff;
+  position: sticky;
+  left: 0;
+  z-index: 10;
 }
 .hover:hover .sticky-column {
   background-color: gray;
