@@ -63,6 +63,8 @@ function MarketLogs() {
         return "setAndFinalizeResult";
       case 7:
         return "setResultAndIsResultFalse";
+      case 8:
+        return "allMarketClose";
       default:
         return "-";
     }
