@@ -24,7 +24,8 @@ const RateBox = styled(Box)(({ theme, type }) => ({
             'inherit',
     width: '100%',
     position: 'relative',
-    paddingLeft: '30px',  // Add space for the saved status label
+    display: 'flex',
+    flexDirection: 'column',
     '& .MuiInputBase-root': {
         backgroundColor: 'transparent'
     },
@@ -37,7 +38,19 @@ const RateBox = styled(Box)(({ theme, type }) => ({
         height: '40px'
     },
     '& .volume-field': {
-        height: '24px'
+        height: '24px',
+        '& .MuiInputBase-input': {
+            fontSize: '0.85rem',
+            color: 'rgba(0, 0, 0, 0.6)'
+        }
+    },
+    '& .live-label': {
+        padding: '2px 4px',
+        fontSize: '0.75rem',
+        backgroundColor: theme.palette.grey[100],
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        textAlign: 'center',
+        color: theme.palette.text.secondary
     }
 }));
 
@@ -75,29 +88,13 @@ const StyledTableCell = styled(TableCell)(({ theme, type }) => ({
     padding: '8px 4px' // Reduce padding
 }));
 
-const SavedStatusLabel = styled(Box)(({ theme }) => ({
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '30px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    writingMode: 'vertical-rl',
-    transform: 'rotate(180deg)',
-    backgroundColor: theme.palette.grey[100],
-    borderRight: `1px solid ${theme.palette.divider}`,
-    fontSize: '0.75rem',
-    color: theme.palette.text.secondary
-}));
 
 export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const socket = createSocket();
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
-    const [isSocketConnected, setIsSocketConnected] = useState(false);
+    // const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [isLive, setIsLive] = useState(true);
     const [rateSourceRefID, setRateSourceRefID] = useState([]);
     const [marketStatus, setMarketStatus] = useState("2"); // Default to inactive
@@ -106,6 +103,7 @@ export const UpdateManualOdds = () => {
     const [savedPrices, setSavedPrices] = useState({});
     const [hasShortcutChanges, setHasShortcutChanges] = useState(false);
     const [runners, setRunners] = useState([]);
+    const [originalRunner, setOriginalRunner] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [ballStatus, setBallStatus] = useState(null);
     const [abOpen, setAbOpen] = useState(false);
@@ -115,7 +113,6 @@ export const UpdateManualOdds = () => {
         teams: [],
         market: {},
     });
-    console.log({ abOpen, abSuspend })
     const [settings, setSettings] = useState({
         rateRange: 10,
         ballStartAfter: 1,
@@ -145,7 +142,6 @@ export const UpdateManualOdds = () => {
         point: ''
     });
 
-    console.log({ savedPrices })
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const rates = calculateRunnerRates({
@@ -714,25 +710,32 @@ export const UpdateManualOdds = () => {
     };
 
     const RateCell = ({ runner, field, price, volume, isActive, savedPrice }) => {
+        if (!isActive) {
+            return (<Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <RateBox type={field.startsWith('b') ? 'back' : 'lay'} className="large">-</RateBox>
+                <RateBox type={field.startsWith('b') ? 'back' : 'lay'} className="small">-</RateBox>
+            </Box>)
+        }
+
         const isBackType = ['b2', 'b1', 'back'].includes(field);
         const isLayType = ['lay', 'l1', 'l2'].includes(field);
         const type = isBackType ? 'back' : isLayType ? 'lay' : '';
-        const showSavedStatus = ['back', 'lay'].includes(field) && savedPrice !== undefined;
-
+        const showSavedAndLive = ['back', 'lay'].includes(field) && savedPrice !== undefined;
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <RateBox type={type}>
-                    {showSavedStatus && (
-                        <SavedStatusLabel>
-                            {Number(savedPrice || 0)?.toFixed(2)}
-                        </SavedStatusLabel>
+                    {showSavedAndLive && (
+                        <Typography className="live-label">
+                            {(price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') || 'Live: 0.00'}
+                        </Typography>
                     )}
                     <TextField
                         type="number"
                         fullWidth
                         size="small"
-                        value={isActive ? (price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') : '-'}
-                        onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
+                        value={isActive ? savedPrice : '-'}
+                        // onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
+                        onChange={(e) => handleSavedRunnerChange(runner.runnerId, field, e.target.value)}
                         disabled={!isActive || marketStatus === CLOSE_VALUE.toString()}
                         sx={{
                             '& .MuiInputBase-root': { height: '40px' }
@@ -904,7 +907,14 @@ export const UpdateManualOdds = () => {
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
     };
-
+    const handleSavedRunnerChange = (runnerId, key, value) => {
+        setSavedPrices((prevValue) => {
+            return {
+                ...prevValue,
+                [runnerId]: { ...prevValue[runnerId], [key]: value }
+            }
+        })
+    }
     useEffect(() => {
         const handleKeyDown = async (e) => {
             // Handle Shift+Enter - only save data without status change
@@ -968,7 +978,6 @@ export const UpdateManualOdds = () => {
                 });
 
                 const pmdata = prepareMarketData(newStatus)
-                console.log({ pmdata })
                 const currentMarketData = {
                     eventMarket: [{
                         ...pmdata.eventMarket[0],
@@ -976,7 +985,6 @@ export const UpdateManualOdds = () => {
                         isActive: settings.active
                     }]
                 };
-                console.log({ currentMarketData, newStatus })
                 setIsLoading(true);
                 try {
                     const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
@@ -1219,7 +1227,7 @@ export const UpdateManualOdds = () => {
                 socket.off(MARKET_RUNNER_DATA, marketRunnerListener);
             }
         };
-    }, [isLive, socket, rateSourceRefID, settings.bfRateDiff]);
+    }, [isLive, socket, rateSourceRefID, settings]);
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
@@ -1635,12 +1643,12 @@ export const UpdateManualOdds = () => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Selections</TableCell>
-                                            <TableCell align="center">B2</TableCell>
-                                            <TableCell align="center">B1</TableCell>
+                                            <TableCell align="center"></TableCell>
+                                            <TableCell align="center"></TableCell>
                                             <TableCell align="center">Back</TableCell>
                                             <TableCell align="center">Lay</TableCell>
-                                            <TableCell align="center">L1</TableCell>
-                                            <TableCell align="center">L2</TableCell>
+                                            <TableCell align="center"></TableCell>
+                                            <TableCell align="center"></TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -1676,7 +1684,7 @@ export const UpdateManualOdds = () => {
                                                         const savedPrice = field === 'back' ? savedPrices[runner.runnerId]?.back :
                                                             field === 'lay' ? savedPrices[runner.runnerId]?.lay :
                                                                 undefined;
-
+                                                        const isActiveColumn = activeColumns.includes(field) && marketStatus !== CLOSE_VALUE.toString()
                                                         return (
                                                             <StyledTableCell key={field} align="center" type={type}>
                                                                 <RateCell
@@ -1684,7 +1692,7 @@ export const UpdateManualOdds = () => {
                                                                     field={field}
                                                                     price={price}
                                                                     volume={volume}
-                                                                    isActive={activeColumns.includes(field) && marketStatus !== CLOSE_VALUE.toString()}
+                                                                    isActive={isActiveColumn}
                                                                     savedPrice={savedPrice}
                                                                 />
                                                             </StyledTableCell>
