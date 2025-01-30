@@ -108,7 +108,8 @@ export const UpdateManualOdds = () => {
     const [runners, setRunners] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [ballStatus, setBallStatus] = useState(null);
-    const [autoBs, setAutoBs] = useState(false);
+    const [abOpen, setAbOpen] = useState(false);
+    const [abSuspend, setAbSuspend] = useState(false);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -801,7 +802,8 @@ export const UpdateManualOdds = () => {
                         active: false
                     }));
                     setIsLive(false);
-                    setAutoBs(false);
+                    setAbOpen(false);
+                    setAbSuspend(false);
                 } else {
                     const settingDataToUpdate = {
                         ...settings,
@@ -1020,13 +1022,17 @@ export const UpdateManualOdds = () => {
                 if (data?.ballStatus) {
                     setBallStatus(data.ballStatus);
 
-                    if (autoBs) {
+                    // Determine if we should auto save based on status and AB settings
+                    const shouldAutoSave = (data.ballStatus === BALL_START_STATUS && abSuspend) ||
+                        (data.ballStatus !== BALL_START_STATUS && abOpen);
+
+                    if (shouldAutoSave) {
                         const nextMarketStatus = data.ballStatus === BALL_START_STATUS ? SUSPEND_VALUE : OPEN_VALUE;
 
                         const currentRunners = [...runners];
                         const marketData = {
                             eventMarket: [{
-                                ...prepareMarketData(nextMarketStatus).eventMarket[0],
+                                ...prepareMarketData().eventMarket[0],
                                 status: parseInt(nextMarketStatus),
                                 runner: currentRunners.map(runner => ({
                                     ...runner,
@@ -1041,9 +1047,9 @@ export const UpdateManualOdds = () => {
                         setIsLoading(true);
                         try {
                             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
-                            handleSavedRunnerUpdate(marketData)
                             if (response?.success) {
                                 setMarketStatus(nextMarketStatus);
+                                handleSavedRunnerUpdate(marketData);
                                 dispatch(updateToastData({
                                     data: "Market updated successfully",
                                     title: "Success",
@@ -1366,12 +1372,22 @@ export const UpdateManualOdds = () => {
                                     <FormControlLabel
                                         control={
                                             <Switch
-                                                checked={autoBs}
-                                                onChange={(e) => setAutoBs(!autoBs)}
+                                                checked={abOpen}
+                                                onChange={(e) => setAbOpen(e.target.checked)}
                                                 disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
-                                        label="Auto BS"
+                                        label="AB Open"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={abSuspend}
+                                                onChange={(e) => setAbSuspend(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                        }
+                                        label="AB Suspend"
                                     />
                                     {ballStatus === BALL_START_STATUS &&
                                         <span className="ball-start">
