@@ -44,13 +44,22 @@ const RateBox = styled(Box)(({ theme, type }) => ({
             color: 'rgba(0, 0, 0, 0.6)'
         }
     },
-    '& .live-label': {
+    '& .live-label-calculated': {
         padding: '2px 4px',
         fontSize: '0.75rem',
         backgroundColor: theme.palette.grey[100],
         borderBottom: `1px solid ${theme.palette.divider}`,
         textAlign: 'center',
-        color: theme.palette.text.secondary
+        color: theme.palette.text.primary, // Making it bold color
+        fontWeight: 'bold'
+    },
+    '& .live-label-original': {
+        padding: '2px 4px',
+        fontSize: '0.75rem',
+        backgroundColor: theme.palette.grey[100],
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        textAlign: 'center',
+        color: theme.palette.text.disabled // Making it light color
     }
 }));
 
@@ -170,12 +179,13 @@ export const UpdateManualOdds = () => {
 
         // Replace getRunnerWithMinimumLay with getRunnerWithMinimumBack
         const minBackRunner = getRunnerWithMinimumBack(formattedRunners);
-
-        // Set the runners with the minimum back price runner selected
-        setRunners(formattedRunners.map(runner => ({
+        const runnerDataToSave = formattedRunners.map(runner => ({
             ...runner,
             isSelected: runner.runnerId === minBackRunner?.runnerId
-        })));
+        }))
+        // Set the runners with the minimum back price runner selected
+        setRunners(runnerDataToSave);
+        setOriginalRunner(runnerDataToSave);
 
         // Set the selected runner
         if (minBackRunner) {
@@ -725,9 +735,21 @@ export const UpdateManualOdds = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <RateBox type={type}>
                     {showSavedAndLive && (
-                        <Typography className="live-label">
-                            {(price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') || 'Live: 0.00'}
-                        </Typography>
+                        <Box sx={{ display: 'flex', width: '100%' }}>
+
+                            <Typography className="live-label-original" sx={{ width: '50%' }}>
+                                {(() => {
+                                    const origRunner = originalRunner.find(r => r.runnerId === runner.runnerId);
+                                    console.log({ originalRunner });
+
+                                    const origPrice = field === 'back' ? origRunner?.back?.price : origRunner?.lay?.price;
+                                    return (origPrice !== null ? Number(origPrice).toFixed(2).replace(/\.?0+$/, '') : '0') || 'Orig: 0.00';
+                                })()}
+                            </Typography>
+                            <Typography className="live-label-calculated" sx={{ width: '50%', borderRight: '1px solid rgba(0, 0, 0, 0.12)' }}>
+                                {(price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') || 'Live: 0.00'}
+                            </Typography>
+                        </Box>
                     )}
                     <TextField
                         type="number"
@@ -894,14 +916,19 @@ export const UpdateManualOdds = () => {
     }, [settings.volumeType, settings.volumeLength]);
 
     const handleSavedRunnerUpdate = (marketData) => {
+        const getNonZeroSavedData = (currenetValue, runnerId, key) => {
+            if (+currenetValue === 0) {
+                return savedPrices?.[runnerId]?.[key] || 0
+            } else return currenetValue
+        }
         const newSavedPrices = {};
         // Extract runners from the passed marketData
         const currentRunners = marketData.eventMarket[0].runner;
 
         currentRunners.forEach(runner => {
             newSavedPrices[runner.runnerId] = {
-                back: runner.backPrice,
-                lay: runner.layPrice
+                back: getNonZeroSavedData(runner.backPrice, runner.runnerId, "back"),
+                lay: getNonZeroSavedData(runner.layPrice, runner.runnerId, "lay")
             };
         });
         setSavedPrices(newSavedPrices);
@@ -1126,6 +1153,32 @@ export const UpdateManualOdds = () => {
                 const minBackRunner = adjustedRunners.reduce((min, curr) =>
                     curr.backPrice < min.backPrice ? curr : min
                     , adjustedRunners[0]);
+
+                setOriginalRunner(prevRunners => {
+                    return prevRunners.map(prevRunner => {
+                        const socketRunner = socketRunners.find(r => r.selectionId === prevRunner.selectionId);
+                        if (!socketRunner) return prevRunner;
+
+                        const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+
+                        return {
+                            ...prevRunner,
+                            isSelected,
+                            back: {
+                                price: parseFloat(socketRunner.backPrice),
+                                volume: prevRunner.back.volume
+                            },
+                            lay: {
+                                price: parseFloat(socketRunner.layPrice),
+                                volume: prevRunner.lay.volume
+                            },
+                            b2: parseFloat(socketRunner.backPrice),
+                            b1: parseFloat(socketRunner.backPrice),
+                            l1: parseFloat(socketRunner.layPrice),
+                            l2: parseFloat(socketRunner.layPrice)
+                        };
+                    });
+                });
 
                 setRunners(prevRunners => {
                     // Calculate new values for logging
