@@ -697,7 +697,7 @@ export const OpenMarket = () => {
             return null
         }).filter(x => x)
 
-        updatedDatalist = _.orderBy(updatedDatalist, ['marketId'], ['asc']);
+        updatedDatalist = _.orderBy(updatedDatalist, ['marketName'], ['asc']);
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
 
@@ -792,7 +792,7 @@ export const OpenMarket = () => {
                     setHasUnsavedChanges(false);
                 }, 3000);
 
-                const sortedData = _.orderBy(finalDataToSet, ['marketId'], ['asc']);
+                const sortedData = _.orderBy(finalDataToSet, ['marketName'], ['asc']);
                 updateOriginalValues(sortedData)
                 return sortedData;
             });
