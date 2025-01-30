@@ -108,12 +108,14 @@ export const UpdateManualOdds = () => {
     const [runners, setRunners] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [ballStatus, setBallStatus] = useState(null);
-    const [autoBs, setAutoBs] = useState(false);
+    const [abOpen, setAbOpen] = useState(false);
+    const [abSuspend, setAbSuspend] = useState(false);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
         market: {},
     });
+    console.log({ abOpen, abSuspend })
     const [settings, setSettings] = useState({
         rateRange: 10,
         ballStartAfter: 1,
@@ -801,7 +803,8 @@ export const UpdateManualOdds = () => {
                         active: false
                     }));
                     setIsLive(false);
-                    setAutoBs(false);
+                    setAbOpen(false);
+                    setAbSuspend(false);
                 } else {
                     const settingDataToUpdate = {
                         ...settings,
@@ -1009,67 +1012,81 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
-    // COMMENTARY_STATUS_CONNECT socket logic
     useEffect(() => {
         if (socket && commentaryId) {
-            // Connect commentary status only once
+            console.log("Connecting COMMENTARY_STATUS_CONNECT");
             socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
-
-            // Set up ball status listener
-            const handleBallStatusFromSocket = async (data) => {
-                if (data?.ballStatus) {
-                    setBallStatus(data.ballStatus);
-
-                    if (autoBs) {
-                        const nextMarketStatus = data.ballStatus === BALL_START_STATUS ? SUSPEND_VALUE : OPEN_VALUE;
-
-                        const currentRunners = [...runners];
-                        const marketData = {
-                            eventMarket: [{
-                                ...prepareMarketData(nextMarketStatus).eventMarket[0],
-                                status: parseInt(nextMarketStatus),
-                                runner: currentRunners.map(runner => ({
-                                    ...runner,
-                                    backPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
-                                    layPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price,
-                                    overRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
-                                    underRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price
-                                }))
-                            }]
-                        };
-
-                        setIsLoading(true);
-                        try {
-                            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
-                            handleSavedRunnerUpdate(marketData)
-                            if (response?.success) {
-                                setMarketStatus(nextMarketStatus);
-                                dispatch(updateToastData({
-                                    data: "Market updated successfully",
-                                    title: "Success",
-                                    type: SUCCESS
-                                }));
-                            }
-                        } catch (error) {
-                            dispatch(updateToastData({
-                                data: error?.message,
-                                title: error?.title,
-                                type: ERROR
-                            }));
-                        } finally {
-                            setIsLoading(false);
-                        }
-                    }
-                }
-            };
-
-            socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
-
-            return () => {
-                socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
-            };
         }
     }, [socket, commentaryId]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleBallStatusFromSocket = async (data) => {
+            if (data?.ballStatus) {
+                setBallStatus(data.ballStatus);
+
+                let shouldAutoSave = false;
+                let nextMarketStatus = marketStatus;
+
+                if (data.ballStatus === BALL_START_STATUS && abSuspend) {
+                    shouldAutoSave = true;
+                    nextMarketStatus = SUSPEND_VALUE;
+                } else if (data.ballStatus === SCORING_STATUS && abOpen) {
+                    shouldAutoSave = true;
+                    nextMarketStatus = OPEN_VALUE;
+                }
+
+                if (shouldAutoSave) {
+                    const currentRunners = [...runners];
+                    const marketData = {
+                        eventMarket: [{
+                            ...prepareMarketData().eventMarket[0],
+                            status: parseInt(nextMarketStatus),
+                            runner: currentRunners.map(runner => ({
+                                ...runner,
+                                backPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
+                                layPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price,
+                                overRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
+                                underRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price
+                            }))
+                        }]
+                    };
+
+                    setIsLoading(true);
+                    try {
+                        const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                        if (response?.success) {
+                            setMarketStatus(nextMarketStatus);
+                            handleSavedRunnerUpdate(marketData);
+
+                            dispatch(updateToastData({
+                                data: "Market updated successfully",
+                                title: "Success",
+                                type: SUCCESS
+                            }));
+                        }
+                    } catch (error) {
+                        dispatch(updateToastData({
+                            data: error?.message,
+                            title: error?.title,
+                            type: ERROR
+                        }));
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            }
+        };
+
+        console.log("Setting up ball status handler with current AB states:", { abOpen, abSuspend });
+        socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
+
+        return () => {
+            console.log("Cleaning up ball status handler");
+            socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
+        };
+    }, [socket, abOpen, abSuspend, runners, marketStatus]);
 
     // MARKET_RUNNER_CONNECT socket logic
     useEffect(() => {
@@ -1366,12 +1383,22 @@ export const UpdateManualOdds = () => {
                                     <FormControlLabel
                                         control={
                                             <Switch
-                                                checked={autoBs}
-                                                onChange={(e) => setAutoBs(!autoBs)}
+                                                checked={abOpen}
+                                                onChange={(e) => setAbOpen(e.target.checked)}
                                                 disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
-                                        label="Auto BS"
+                                        label="AB Open"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={abSuspend}
+                                                onChange={(e) => setAbSuspend(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                        }
+                                        label="AB Suspend"
                                     />
                                     {ballStatus === BALL_START_STATUS &&
                                         <span className="ball-start">
