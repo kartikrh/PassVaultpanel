@@ -20,7 +20,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
             {singleRunnerMarkets.length > 0 && (
                 <ListingElement
                     columns={getVisibleColumns(true)}
-                    dataSource={singleRunnerMarkets.map(market => {
+                    dataSource={singleRunnerMarkets.sort((a, b) => a?.marketName.localeCompare(b?.marketName)).map(market => {
                         const firstRunner = market?.runner && market.runner?.length > 0 ? market.runner[0] : undefined;
                         return {
                             ...market,
@@ -46,7 +46,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
             )}
             {multiRunnerMarkets.length > 0 && (
                 <div className='overflow-scroll'>
-                    {multiRunnerMarkets.map(market => (
+                    {multiRunnerMarkets.sort((a, b) => a?.marketName.localeCompare(b?.marketName)).map(market => (
                         <MultiRunnerMarket
                             key={market.marketId}
                             market={market}
