@@ -242,7 +242,7 @@ export const UpdateManualOdds = () => {
 
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
             if (response?.success) {
-                handleSavedRunnerUpdate()
+                handleSavedRunnerUpdate(currentMarketData)
                 dispatch(updateToastData({
                     data: "Market updated successfully",
                     title: "Success",
@@ -496,7 +496,7 @@ export const UpdateManualOdds = () => {
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
 
             if (response?.success) {
-                handleSavedRunnerUpdate()
+                handleSavedRunnerUpdate(marketData)
                 dispatch(updateToastData({
                     data: "Market updated successfully",
                     title: "Success",
@@ -887,16 +887,21 @@ export const UpdateManualOdds = () => {
         };
     }, [settings.volumeType, settings.volumeLength]);
 
-    const handleSavedRunnerUpdate = () => {
+    const handleSavedRunnerUpdate = (marketData) => {
         const newSavedPrices = {};
-        runners.forEach(runner => {
+        // Extract runners from the passed marketData
+        const currentRunners = marketData.eventMarket[0].runner;
+
+        currentRunners.forEach(runner => {
             newSavedPrices[runner.runnerId] = {
-                back: runner.back.price,
-                lay: runner.lay.price
+                back: runner.backPrice,
+                lay: runner.layPrice
             };
         });
         setSavedPrices(newSavedPrices);
-    }
+        return newSavedPrices;
+    };
+
     useEffect(() => {
         const handleKeyDown = async (e) => {
             // Handle Shift+Enter - only save data without status change
@@ -910,7 +915,7 @@ export const UpdateManualOdds = () => {
                 try {
                     const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
                     if (response?.success) {
-                        handleSavedRunnerUpdate()
+                        handleSavedRunnerUpdate(currentMarketData)
                         dispatch(updateToastData({
                             data: "Market updated successfully",
                             title: "Success",
@@ -973,7 +978,7 @@ export const UpdateManualOdds = () => {
                 try {
                     const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
                     if (response?.success) {
-                        handleSavedRunnerUpdate()
+                        handleSavedRunnerUpdate(currentMarketData)
                         dispatch(updateToastData({
                             data: "Market updated successfully",
                             title: "Success",
@@ -1036,7 +1041,7 @@ export const UpdateManualOdds = () => {
                         setIsLoading(true);
                         try {
                             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
-                            handleSavedRunnerUpdate()
+                            handleSavedRunnerUpdate(marketData)
                             if (response?.success) {
                                 setMarketStatus(nextMarketStatus);
                                 dispatch(updateToastData({
@@ -1217,7 +1222,7 @@ export const UpdateManualOdds = () => {
         try {
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
             if (response?.success) {
-                handleSavedRunnerUpdate()
+                handleSavedRunnerUpdate(marketData)
                 setSettings(prev => ({ ...prev, betAllow: newValue }));
                 dispatch(updateToastData({
                     data: "Market updated successfully",
@@ -1248,7 +1253,7 @@ export const UpdateManualOdds = () => {
         try {
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
             if (response?.success) {
-                handleSavedRunnerUpdate()
+                handleSavedRunnerUpdate(marketData)
                 setSettings(prev => ({ ...prev, active: newValue }));
                 dispatch(updateToastData({
                     data: "Market updated successfully",
