@@ -4,11 +4,13 @@ import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from "../Commentary/functions";
 import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
+import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
 import {
   ERROR,
+  PERMISSION_DELETE,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
@@ -37,6 +39,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
+  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -212,6 +215,36 @@ const Index = () => {
         );
       });
   };
+
+  const handleDelete = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/deleteCommHist`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setDeleteModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleReset = (value) => {
     fetchData(value);
     fetchEventTypeData();
@@ -629,6 +662,7 @@ const Index = () => {
             columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
+            deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
@@ -637,6 +671,17 @@ const Index = () => {
             competitions={competitions}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
+          />
+          <DeleteTabModel
+            deleteModelVisable={deleteModelVisable}
+            setDeleteModelVisable={setDeleteModelVisable}
+            handleDelete={handleDelete}
+            singleCheck={checekedList}
           />
         </Container>
       </div>
