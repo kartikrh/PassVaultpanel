@@ -115,6 +115,7 @@ export const UpdateManualOdds = () => {
         teams: [],
         market: {},
     });
+    console.log({ abOpen, abSuspend })
     const [settings, setSettings] = useState({
         rateRange: 10,
         ballStartAfter: 1,
@@ -1011,71 +1012,81 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
-    // COMMENTARY_STATUS_CONNECT socket logic
     useEffect(() => {
         if (socket && commentaryId) {
-            // Connect commentary status only once
+            console.log("Connecting COMMENTARY_STATUS_CONNECT");
             socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
-
-            // Set up ball status listener
-            const handleBallStatusFromSocket = async (data) => {
-                if (data?.ballStatus) {
-                    setBallStatus(data.ballStatus);
-
-                    // Determine if we should auto save based on status and AB settings
-                    const shouldAutoSave = (data.ballStatus === BALL_START_STATUS && abSuspend) ||
-                        (data.ballStatus !== BALL_START_STATUS && abOpen);
-
-                    if (shouldAutoSave) {
-                        const nextMarketStatus = data.ballStatus === BALL_START_STATUS ? SUSPEND_VALUE : OPEN_VALUE;
-
-                        const currentRunners = [...runners];
-                        const marketData = {
-                            eventMarket: [{
-                                ...prepareMarketData().eventMarket[0],
-                                status: parseInt(nextMarketStatus),
-                                runner: currentRunners.map(runner => ({
-                                    ...runner,
-                                    backPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
-                                    layPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price,
-                                    overRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
-                                    underRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price
-                                }))
-                            }]
-                        };
-
-                        setIsLoading(true);
-                        try {
-                            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
-                            if (response?.success) {
-                                setMarketStatus(nextMarketStatus);
-                                handleSavedRunnerUpdate(marketData);
-                                dispatch(updateToastData({
-                                    data: "Market updated successfully",
-                                    title: "Success",
-                                    type: SUCCESS
-                                }));
-                            }
-                        } catch (error) {
-                            dispatch(updateToastData({
-                                data: error?.message,
-                                title: error?.title,
-                                type: ERROR
-                            }));
-                        } finally {
-                            setIsLoading(false);
-                        }
-                    }
-                }
-            };
-
-            socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
-
-            return () => {
-                socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
-            };
         }
     }, [socket, commentaryId]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleBallStatusFromSocket = async (data) => {
+            if (data?.ballStatus) {
+                setBallStatus(data.ballStatus);
+
+                let shouldAutoSave = false;
+                let nextMarketStatus = marketStatus;
+
+                if (data.ballStatus === BALL_START_STATUS && abSuspend) {
+                    shouldAutoSave = true;
+                    nextMarketStatus = SUSPEND_VALUE;
+                } else if (data.ballStatus === SCORING_STATUS && abOpen) {
+                    shouldAutoSave = true;
+                    nextMarketStatus = OPEN_VALUE;
+                }
+
+                if (shouldAutoSave) {
+                    const currentRunners = [...runners];
+                    const marketData = {
+                        eventMarket: [{
+                            ...prepareMarketData().eventMarket[0],
+                            status: parseInt(nextMarketStatus),
+                            runner: currentRunners.map(runner => ({
+                                ...runner,
+                                backPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
+                                layPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price,
+                                overRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
+                                underRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price
+                            }))
+                        }]
+                    };
+
+                    setIsLoading(true);
+                    try {
+                        const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                        if (response?.success) {
+                            setMarketStatus(nextMarketStatus);
+                            handleSavedRunnerUpdate(marketData);
+
+                            dispatch(updateToastData({
+                                data: "Market updated successfully",
+                                title: "Success",
+                                type: SUCCESS
+                            }));
+                        }
+                    } catch (error) {
+                        dispatch(updateToastData({
+                            data: error?.message,
+                            title: error?.title,
+                            type: ERROR
+                        }));
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            }
+        };
+
+        console.log("Setting up ball status handler with current AB states:", { abOpen, abSuspend });
+        socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
+
+        return () => {
+            console.log("Cleaning up ball status handler");
+            socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
+        };
+    }, [socket, abOpen, abSuspend, runners, marketStatus]);
 
     // MARKET_RUNNER_CONNECT socket logic
     useEffect(() => {
