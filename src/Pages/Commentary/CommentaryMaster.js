@@ -134,11 +134,8 @@ function CommentaryMaster() {
       }
     };
 
-    console.log("year", year)
-
     // Create the formatted date string
     const formattedDate = `${day} ${month} ${year}`;
-    console.log("formattedDate", formattedDate)
 
     // Return as an object
     return {
@@ -251,7 +248,6 @@ function CommentaryMaster() {
     await axiosInstance
       .post("/admin/commentary/detailsById", { commentaryId })
       .then(async (response) => {
-        console.log("reponse", response)
         commentaryDataToUpdate = response?.result;
         setCurrentScreen(
           commentaryDataToUpdate?.commentaryDetails?.commentaryStatus || 1
@@ -323,7 +319,6 @@ function CommentaryMaster() {
   };
 
   const renderDate = (date) => {
-    console.log(date)
     const [datee, month, year] = date.split(" ");
     return (
       <div>
