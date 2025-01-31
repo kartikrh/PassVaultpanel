@@ -2196,12 +2196,12 @@ const Commentary = (props) => {
             isWheelShow={isWheelShow}
             showWicketModal={showWicketModal}
             // wicket control
-            toggle={() => {
-                setExtrasType(undefined)
-            }}
-            onSubmit={handleWicket}
-            bowlingTeam={players[BOWLING_TEAM]}
-            bowlingTeamDetails={teams[BOWLING_TEAM]}
+            // toggle={() => {
+            //     setExtrasType(undefined)
+            // }}
+            // onSubmit={handleWicket}
+            // bowlingTeam={players[BOWLING_TEAM]}
+            // bowlingTeamDetails={teams[BOWLING_TEAM]}
             extraType={extrasType}
             {...(showWicketModal && {
                 isOpen: showWicketModal,
