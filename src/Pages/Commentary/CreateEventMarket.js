@@ -1202,7 +1202,7 @@ export const CreateEventMarket = () => {
                     isActive: market.isActive !== undefined ? market.isActive : true,
                     index: market.index || 0,
                     over: market.over || 0,
-                    rateDiff: market.rateDiff || null,
+                    rateDiff: market.rateDiff || 0,
                     beforeSuspendMin: market.beforeSuspendMin,
                     beforeCloseMin: market.beforeCloseMin,
                     isPredefineRunnerValue: market.isPredefineRunnerValue,

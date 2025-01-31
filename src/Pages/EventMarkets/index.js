@@ -625,7 +625,7 @@ const Index = () => {
                 handleClose(record);
               }}
             >
-              C
+              Close
             </Button>{" "}
           </Tooltip>
         </>

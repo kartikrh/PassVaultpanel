@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SWITCH_BOWLER, TIMED_OUT, WICKET } from "./CommentartConst.js"
+import { BALL_BYE, BALL_LEG_BYE, BALL_START_STATUS, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SCORING_STATUS, SWITCH_BOWLER, TIMED_OUT, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -401,7 +401,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        setBallStatus("scoring");
+        setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
         const syncTeam = isEmpty(_teams) ? teams : _teams
@@ -533,12 +533,14 @@ const Commentary = (props) => {
             if (+runs === 4) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballFour"] = 1
+                batter["batFour"] = (batter.batFour || 0) + 1
                 updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
                 updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) + 1
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
             } else if (+runs === 6) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballSix"] = 1
+                batter["batSix"] = (batter.batSix || 0) + 1
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
                 updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) + 1
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
@@ -1872,11 +1874,11 @@ const Commentary = (props) => {
     }, [updateRunsFromWicket])
 
     useEffect(() => {
-            if (!isEmpty(commentaryDetails) && ballStatus) {
-                if (socket) {
-                  socket.emit(COMMENTARY_UPDATE, {ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId });
-                }
+        if (!isEmpty(commentaryDetails) && ballStatus) {
+            if (socket) {
+                socket.emit(COMMENTARY_UPDATE, { ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId });
             }
+        }
     }, [commentaryDetails, ballStatus]);
 
     useEffect(() => {
@@ -2171,7 +2173,7 @@ const Commentary = (props) => {
                 setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
             }}
             updateDisplayStatus={(displayStatus) => {
-                setBallStatus("ballstart");
+                setBallStatus(BALL_START_STATUS);
                 dispatch(updateCommentaryDisplayStatus({
                     "commentaryId": commentaryDetails.commentaryId,
                     "displayStatus": displayStatus,
@@ -2272,12 +2274,12 @@ const Commentary = (props) => {
                     setOverPopUpForBowler(undefined)
                     setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
                 }}
-                overPopUpForBowler = {overPopUpForBowler}
+                overPopUpForBowler={overPopUpForBowler}
                 isBowler={(isChangeBowler.isChange || isBowlerrChange) ? true : false}
                 playerList={changePlayerList}
                 selectPlayer={(newPlayerId) => {
-                    if (isSwapPlayer) { setOverPopUpForBowler(undefined);setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
-                    else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined);setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
+                    if (isSwapPlayer) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
+                    else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
                     else {
                         setOverPopUpForBowler(undefined)
                         setIsBowlerrChange(undefined)

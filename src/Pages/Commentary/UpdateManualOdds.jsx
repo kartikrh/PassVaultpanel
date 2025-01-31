@@ -10,12 +10,12 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { Container, Button } from 'reactstrap';
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
+import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, COMMENTARY_STATUS_CONNECT, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import { RiRefreshLine } from 'react-icons/ri';
-import { AUTO_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SUSPEND_VALUE } from './CommentartConst.js';
+import { AUTO_STATUS, BALL_START_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SCORING_STATUS, SUSPEND_VALUE } from './CommentartConst.js';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -23,6 +23,8 @@ const RateBox = styled(Box)(({ theme, type }) => ({
         type === 'lay' ? 'rgba(255, 182, 193, 0.2)' :
             'inherit',
     width: '100%',
+    position: 'relative',
+    paddingLeft: '30px',  // Add space for the saved status label
     '& .MuiInputBase-root': {
         backgroundColor: 'transparent'
     },
@@ -73,6 +75,23 @@ const StyledTableCell = styled(TableCell)(({ theme, type }) => ({
     padding: '8px 4px' // Reduce padding
 }));
 
+const SavedStatusLabel = styled(Box)(({ theme }) => ({
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: '30px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    writingMode: 'vertical-rl',
+    transform: 'rotate(180deg)',
+    backgroundColor: theme.palette.grey[100],
+    borderRight: `1px solid ${theme.palette.divider}`,
+    fontSize: '0.75rem',
+    color: theme.palette.text.secondary
+}));
+
 export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -84,15 +103,19 @@ export const UpdateManualOdds = () => {
     const [marketStatus, setMarketStatus] = useState("2"); // Default to inactive
     const [isLoading, setIsLoading] = useState(false);
     const [originalShortcutValues, setOriginalShortcutValues] = useState({});
+    const [savedPrices, setSavedPrices] = useState({});
     const [hasShortcutChanges, setHasShortcutChanges] = useState(false);
     const [runners, setRunners] = useState([]);
     const [selectedRunner, setSelectedRunner] = useState(null);
     const [ballStatus, setBallStatus] = useState(null);
+    const [abOpen, setAbOpen] = useState(false);
+    const [abSuspend, setAbSuspend] = useState(false);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
         market: {},
     });
+    console.log({ abOpen, abSuspend })
     const [settings, setSettings] = useState({
         rateRange: 10,
         ballStartAfter: 1,
@@ -100,7 +123,7 @@ export const UpdateManualOdds = () => {
         bRateDifferent: 0.01,
         lRateDifferent: 0.01,
         volumeLength: 3,
-        volumeType: CUSTOM_STATUS,
+        volumeType: AUTO_STATUS,
         betAllow: false,
         active: false,
         rateDifferent: 5,
@@ -109,6 +132,7 @@ export const UpdateManualOdds = () => {
         margin: 10,
         delay: 10,
         lineRatio: 10,
+        bfRateDiff: -0.01,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
@@ -121,6 +145,7 @@ export const UpdateManualOdds = () => {
         point: ''
     });
 
+    console.log({ savedPrices })
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const rates = calculateRunnerRates({
@@ -147,21 +172,21 @@ export const UpdateManualOdds = () => {
             };
         });
 
-        // Find runner with minimum lay price
-        const minLayRunner = getRunnerWithMinimumLay(formattedRunners);
+        // Replace getRunnerWithMinimumLay with getRunnerWithMinimumBack
+        const minBackRunner = getRunnerWithMinimumBack(formattedRunners);
 
-        // Set the runners with the minimum lay price runner selected
+        // Set the runners with the minimum back price runner selected
         setRunners(formattedRunners.map(runner => ({
             ...runner,
-            isSelected: runner.runnerId === minLayRunner?.runnerId
+            isSelected: runner.runnerId === minBackRunner?.runnerId
         })));
 
         // Set the selected runner
-        if (minLayRunner) {
-            setSelectedRunner(minLayRunner.runnerId);
+        if (minBackRunner) {
+            setSelectedRunner(minBackRunner.runnerId);
             setSelectedRunnerDetails(prev => ({
                 ...prev,
-                runnerId: minLayRunner.runnerId
+                runnerId: minBackRunner.runnerId
             }));
         }
     };
@@ -178,25 +203,48 @@ export const UpdateManualOdds = () => {
             runnerId
         }));
     };
-
+    const getRunnerWithMinimumBack = (runnersData) => {
+        if (!runnersData?.length) return null;
+        return runnersData.reduce((minRunner, currentRunner) => {
+            const currentBackPrice = parseFloat(currentRunner.back?.price || currentRunner.backPrice || Infinity);
+            const minBackPrice = parseFloat(minRunner.back?.price || minRunner.backPrice || Infinity);
+            return currentBackPrice < minBackPrice ? currentRunner : minRunner;
+        }, runnersData[0]);
+    };
     // For status change and API call
     const handleStatusChange = async (newStatus) => {
+        // Add confirmation for market close
+        if (newStatus === CLOSE_VALUE.toString()) {
+            const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
+            if (!confirmed) return;
+        }
+
         try {
             setIsLoading(true);
-            // First update the status
             setMarketStatus(newStatus);
 
-            // Immediately prepare and send data with new status
-            const marketData = {
+            // Get latest state for market data
+            const currentMarketData = {
                 eventMarket: [{
-                    ...prepareMarketData().eventMarket[0],
+                    ...prepareMarketData(newStatus).eventMarket[0],
                     status: parseInt(newStatus)
                 }]
             };
 
-            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            // Set all prices to 0 if market is not open
+            if (+(newStatus || 0) !== +OPEN_VALUE) {
+                currentMarketData.eventMarket[0].runner = currentMarketData.eventMarket[0].runner.map(runner => ({
+                    ...runner,
+                    backPrice: 0,
+                    layPrice: 0,
+                    overRate: 0,
+                    underRate: 0
+                }));
+            }
 
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
             if (response?.success) {
+                handleSavedRunnerUpdate(currentMarketData)
                 dispatch(updateToastData({
                     data: "Market updated successfully",
                     title: "Success",
@@ -215,6 +263,12 @@ export const UpdateManualOdds = () => {
     };
 
     const handleSettingChange = (key, value, isShortcut = false) => {
+        if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
+            const numValue = parseFloat(value);
+            if (numValue < 0.01) {
+                value = '0.01';
+            }
+        }
         if (isShortcut) {
             const newValue = settings.shortcutValues[value];
             if (newValue) {
@@ -223,6 +277,20 @@ export const UpdateManualOdds = () => {
         } else {
             // Ensure value is numeric for rate-related settings
             const numericValue = value === '' ? '0' : value;
+
+            if (key === 'volumeType' && value === CUSTOM_STATUS) {
+                // When switching to custom volume, update all runners with the current B/L rate volumes
+                setRunners(prev => prev.map(runner => ({
+                    ...runner,
+                    back: { ...runner.back, volume: settings.bRateVolume },
+                    lay: { ...runner.lay, volume: settings.lRateVolume },
+                    b2Volume: settings.bRateVolume,
+                    b1Volume: settings.bRateVolume,
+                    l1Volume: settings.lRateVolume,
+                    l2Volume: settings.lRateVolume
+                })));
+            }
+
             setSettings(prev => ({ ...prev, [key]: numericValue }));
 
             // Trigger recalculation when rate differences or volumes change
@@ -393,7 +461,8 @@ export const UpdateManualOdds = () => {
 
 
     // Prepare data for saving
-    const prepareMarketData = () => {
+    const prepareMarketData = (optionalStatus) => {
+        const isOpen = +(optionalStatus || marketStatus || 0) === +OPEN_VALUE;
         const marketData = {
             eventMarket: [{
                 eventMarketId: eventData.market.eventMarketId,
@@ -409,10 +478,10 @@ export const UpdateManualOdds = () => {
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
                     line: runner.line || 0,
-                    overRate: runner.back.price,
-                    underRate: runner.lay.price,
-                    backPrice: runner.back.price,
-                    layPrice: runner.lay.price,
+                    overRate: isOpen ? runner.back.price : 0,
+                    underRate: isOpen ? runner.lay.price : 0,
+                    backPrice: isOpen ? runner.back.price : 0,
+                    layPrice: isOpen ? runner.lay.price : 0,
                     backSize: runner.back.volume,
                     laySize: runner.lay.volume
                 }))
@@ -429,6 +498,7 @@ export const UpdateManualOdds = () => {
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
 
             if (response?.success) {
+                handleSavedRunnerUpdate(marketData)
                 dispatch(updateToastData({
                     data: "Market updated successfully",
                     title: "Success",
@@ -643,21 +713,27 @@ export const UpdateManualOdds = () => {
         handleRunnerSelection(newRunnerId); // This will select the runner in the table
     };
 
-    const RateCell = ({ runner, field, price, volume, isActive }) => {
+    const RateCell = ({ runner, field, price, volume, isActive, savedPrice }) => {
         const isBackType = ['b2', 'b1', 'back'].includes(field);
         const isLayType = ['lay', 'l1', 'l2'].includes(field);
         const type = isBackType ? 'back' : isLayType ? 'lay' : '';
+        const showSavedStatus = ['back', 'lay'].includes(field) && savedPrice !== undefined;
 
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <RateBox type={type}>
+                    {showSavedStatus && (
+                        <SavedStatusLabel>
+                            {Number(savedPrice || 0)?.toFixed(2)}
+                        </SavedStatusLabel>
+                    )}
                     <TextField
                         type="number"
                         fullWidth
                         size="small"
                         value={isActive ? (price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') : '-'}
                         onChange={(e) => handleCellEdit(runner.runnerId, field, 'price', e.target.value)}
-                        disabled={!isActive}
+                        disabled={!isActive || marketStatus === CLOSE_VALUE.toString()}
                         sx={{
                             '& .MuiInputBase-root': { height: '40px' }
                         }}
@@ -671,7 +747,7 @@ export const UpdateManualOdds = () => {
                         size="small"
                         value={isActive ? (volume || '') : '-'}
                         onChange={(e) => handleCellEdit(runner.runnerId, field, 'volume', e.target.value)}
-                        disabled={!isActive}
+                        disabled={!isActive || marketStatus === CLOSE_VALUE.toString()}
                         className="volume-field"
                         sx={{
                             '& .MuiInputBase-root': { height: '24px' }
@@ -715,27 +791,51 @@ export const UpdateManualOdds = () => {
                     teams: response.result.teams || [],
                     market: response.result.market?.[0] || {},
                 });
-                const marketData = response.result.market?.[0]
-                const settingDataToUpdate = {
-                    ...settings,
-                    betAllow: marketData?.isAllow || settings.betAllow,
-                    active: marketData?.isActive || settings.active,
-                    rateDifferent: marketData?.rateDiff || settings.rateDifferent,
-                    bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
-                    lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
-                    margin: marketData?.margin || settings.margin,
-                    delay: marketData?.delay || settings.delay,
-                    lineRatio: marketData?.lineRatio || settings.lineRatiow
+                const marketData = response.result.market?.[0];
+                const currentMarketStatus = marketData?.status?.toString();
+                setMarketStatus(currentMarketStatus);
+
+                // Disable all interactions if market is closed
+                if (currentMarketStatus === CLOSE_VALUE.toString()) {
+                    setSettings(prev => ({
+                        ...prev,
+                        betAllow: false,
+                        active: false
+                    }));
+                    setIsLive(false);
+                    setAbOpen(false);
+                    setAbSuspend(false);
+                } else {
+                    const settingDataToUpdate = {
+                        ...settings,
+                        betAllow: marketData?.isAllow || settings.betAllow,
+                        active: marketData?.isActive || settings.active,
+                        rateDifferent: marketData?.rateDiff || settings.rateDifferent,
+                        bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
+                        lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
+                        margin: marketData?.margin || settings.margin,
+                        delay: marketData?.delay || settings.delay,
+                        lineRatio: marketData?.lineRatio || settings.lineRatio
+                    };
+                    setSettings(settingDataToUpdate);
                 }
-                setSettings(settingDataToUpdate)
+
                 if (marketData?.rateSourceRefID) {
                     setRateSourceRefID([response.result.market[0].rateSourceRefID]);
                 }
-                setMarketStatus(marketData?.status)
 
-                // Initialize runners
+                // Initialize runners with proper status handling
                 if (marketData?.runners) {
                     initializeRunners(response.result.market[0].runners);
+                    // Then set saved prices from the initial data
+                    const initialSavedPrices = {};
+                    response.result.market[0].runners.forEach(runner => {
+                        initialSavedPrices[runner.runnerId] = {
+                            back: runner.backPrice,
+                            lay: runner.layPrice
+                        };
+                    });
+                    setSavedPrices(initialSavedPrices);
                 }
             }
         } catch (error) {
@@ -748,6 +848,13 @@ export const UpdateManualOdds = () => {
             setIsLoading(false);
         }
     };
+    const handleMarketClose = () => {
+        const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
+        if (confirmed) {
+            handleStatusChange(CLOSE_VALUE.toString());
+        }
+    };
+
 
     useEffect(() => {
         let intervalId;
@@ -783,39 +890,98 @@ export const UpdateManualOdds = () => {
         };
     }, [settings.volumeType, settings.volumeLength]);
 
+    const handleSavedRunnerUpdate = (marketData) => {
+        const newSavedPrices = {};
+        // Extract runners from the passed marketData
+        const currentRunners = marketData.eventMarket[0].runner;
+
+        currentRunners.forEach(runner => {
+            newSavedPrices[runner.runnerId] = {
+                back: runner.backPrice,
+                lay: runner.layPrice
+            };
+        });
+        setSavedPrices(newSavedPrices);
+        return newSavedPrices;
+    };
+
     useEffect(() => {
         const handleKeyDown = async (e) => {
+            // Handle Shift+Enter - only save data without status change
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+
+                // Get latest state
+                const currentMarketData = prepareMarketData();
+
+                setIsLoading(true);
+                try {
+                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
+                    if (response?.success) {
+                        handleSavedRunnerUpdate(currentMarketData)
+                        dispatch(updateToastData({
+                            data: "Market updated successfully",
+                            title: "Success",
+                            type: SUCCESS
+                        }));
+                    }
+                } catch (error) {
+                    dispatch(updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR
+                    }));
+                } finally {
+                    setIsLoading(false);
+                }
+                return;
+            }
+
             if (e.key === 'Enter') {
+                e.preventDefault();
+                // Update price if main/point values exist
                 if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
-                    // Calculate and update prices for selected runner
                     const main = parseFloat(selectedRunnerDetails.main) || 0;
                     const point = parseFloat(selectedRunnerDetails.point) || 0;
                     const calculatedPrice = main + (point / 100);
 
-                    handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
+                    await new Promise(resolve => {
+                        handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
+                        resolve();
+                    });
                 }
 
-                // Handle status toggle and save
-                const newStatus = marketStatus === "1" ? "3" : "1";
+                // Handle status toggle
+                let newStatus;
+                if (+marketStatus === +OPEN_VALUE) {
+                    newStatus = SUSPEND_VALUE;
+                } else if (+marketStatus === +INACTIVE_VALUE || +marketStatus === +SUSPEND_VALUE) {
+                    newStatus = OPEN_VALUE;
+                } else {
+                    return;
+                }
+
+                // Get latest state after potential price updates
                 await new Promise(resolve => {
                     setMarketStatus(newStatus);
                     resolve();
                 });
 
-                // Prepare market data with the new status
-                const marketData = {
+                const pmdata = prepareMarketData(newStatus)
+                console.log({ pmdata })
+                const currentMarketData = {
                     eventMarket: [{
-                        ...prepareMarketData().eventMarket[0],
+                        ...pmdata.eventMarket[0],
                         status: parseInt(newStatus),
-                        isActive: newStatus === "1"
+                        isActive: settings.active
                     }]
                 };
-
-                // Save with the updated status
+                console.log({ currentMarketData, newStatus })
                 setIsLoading(true);
                 try {
-                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
                     if (response?.success) {
+                        handleSavedRunnerUpdate(currentMarketData)
                         dispatch(updateToastData({
                             data: "Market updated successfully",
                             title: "Success",
@@ -836,7 +1002,7 @@ export const UpdateManualOdds = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus, runners]);
+    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData, settings]);
 
     useEffect(() => {
         fetchMarketData();
@@ -846,49 +1012,188 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
+    useEffect(() => {
+        if (socket && commentaryId) {
+            console.log("Connecting COMMENTARY_STATUS_CONNECT");
+            socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
+        }
+    }, [socket, commentaryId]);
 
     useEffect(() => {
-        console.log("Socket Effect triggered with:", {
-            hasRateSourceRefID: rateSourceRefID.length > 0,
-            hasSocket: !!socket,
-            isLive
-        });
+        if (!socket) return;
 
-        if (rateSourceRefID.length > 0 && socket) {
-            console.log("Emitting MARKET_RUNNER_CONNECT with:", rateSourceRefID);
-            socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
-            setIsSocketConnected(true);
-            const handleBallStatus = (data) => {
-                if (data) {
-                    setBallStatus(data?.ballStatus);
+        const handleBallStatusFromSocket = async (data) => {
+            if (data?.ballStatus) {
+                setBallStatus(data.ballStatus);
+
+                let shouldAutoSave = false;
+                let nextMarketStatus = marketStatus;
+
+                if (data.ballStatus === BALL_START_STATUS && abSuspend) {
+                    shouldAutoSave = true;
+                    nextMarketStatus = SUSPEND_VALUE;
+                } else if (data.ballStatus === SCORING_STATUS && abOpen) {
+                    shouldAutoSave = true;
+                    nextMarketStatus = OPEN_VALUE;
+                }
+
+                if (shouldAutoSave) {
+                    const currentRunners = [...runners];
+                    const marketData = {
+                        eventMarket: [{
+                            ...prepareMarketData().eventMarket[0],
+                            status: parseInt(nextMarketStatus),
+                            runner: currentRunners.map(runner => ({
+                                ...runner,
+                                backPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
+                                layPrice: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price,
+                                overRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.back.price,
+                                underRate: nextMarketStatus !== OPEN_VALUE ? 0 : runner.lay.price
+                            }))
+                        }]
+                    };
+
+                    setIsLoading(true);
+                    try {
+                        const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                        if (response?.success) {
+                            setMarketStatus(nextMarketStatus);
+                            handleSavedRunnerUpdate(marketData);
+
+                            dispatch(updateToastData({
+                                data: "Market updated successfully",
+                                title: "Success",
+                                type: SUCCESS
+                            }));
+                        }
+                    } catch (error) {
+                        dispatch(updateToastData({
+                            data: error?.message,
+                            title: error?.title,
+                            type: ERROR
+                        }));
+                    } finally {
+                        setIsLoading(false);
+                    }
                 }
             }
-            const handleMarketRunnerData = (message) => {
-                if (!isLive || !message?.[0]?.runners) return;
+        };
+
+        console.log("Setting up ball status handler with current AB states:", { abOpen, abSuspend });
+        socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
+
+        return () => {
+            console.log("Cleaning up ball status handler");
+            socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
+        };
+    }, [socket, abOpen, abSuspend, runners, marketStatus]);
+
+    // MARKET_RUNNER_CONNECT socket logic
+    useEffect(() => {
+        if (!socket || !rateSourceRefID.length) return;
+
+        let marketRunnerListener = null;
+
+        if (isLive) {
+            console.log("Connecting to MARKET_RUNNER_CONNECT");
+            socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+
+            marketRunnerListener = (message) => {
+                if (!message?.[0]?.runners || message[0].runners.length !== 2) return;
 
                 const socketRunners = message[0].runners;
+                console.log("Received market runner data:", {
+                    SelectedBackPrice: socketRunners[0]?.backPrice,
+                    SelectedLayPrice: socketRunners[0]?.layPrice,
+                    nonSelectedBackPrice: socketRunners[1]?.backPrice,
+                    nonSelectedLayPrice: socketRunners[1]?.layPrice
+                });
+
+                // Your existing market runner data handling logic...
+                const adjustedRunners = socketRunners.map(runner => ({
+                    ...runner,
+                    backPrice: parseFloat((runner.backPrice + parseFloat(settings.bfRateDiff)).toFixed(2))
+                }));
+
+                const minBackRunner = adjustedRunners.reduce((min, curr) =>
+                    curr.backPrice < min.backPrice ? curr : min
+                    , adjustedRunners[0]);
 
                 setRunners(prevRunners => {
-                    return prevRunners.map(prevRunner => {
-                        const socketRunner = socketRunners.find(
-                            r => r.selectionId === prevRunner.selectionId
-                        );
+                    // Calculate new values for logging
+                    const newSelectedBackPrice = minBackRunner.backPrice;
+                    const newSelectedLayPrice = parseFloat((newSelectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                    const newNonSelectedBackPrice = parseFloat((1 / (1 - (1 / newSelectedLayPrice))).toFixed(2));
+                    const newNonSelectedLayPrice = parseFloat((1 / (1 - (1 / newSelectedBackPrice))).toFixed(2));
 
-                        if (socketRunner) {
-                            // Always force calculate lay rates for socket data
+                    console.log({
+                        newSelectedBackPrice,
+                        newSelectedLayPrice,
+                        newNonSelectedBackPrice,
+                        newNonSelectedLayPrice
+                    });
+
+                    const updatedRunners = prevRunners.map(prevRunner => {
+                        const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
+                        if (!socketRunner) return prevRunner;
+
+                        const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+
+                        if (isSelected) {
+                            // Selected runner calculations
+                            const backPrice = parseFloat(socketRunner.backPrice);
+                            const layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                            // Calculate rates using existing calculateRunnerRates function
                             const newRates = calculateRunnerRates({
-                                back: { price: socketRunner.backPrice }
-                            }, settings, true);
+                                back: { price: backPrice }
+                            }, settings, {
+                                forceCalculateLay: true,
+                                isSocketData: true
+                            });
 
                             return {
                                 ...prevRunner,
+                                isSelected: true,
                                 back: {
-                                    price: socketRunner.backPrice,
-                                    volume: socketRunner.backSize
+                                    price: backPrice,
+                                    volume: prevRunner.back.volume
                                 },
                                 lay: {
-                                    price: newRates.lay,  // Use calculated lay price
-                                    volume: socketRunner.laySize
+                                    price: layPrice,
+                                    volume: prevRunner.lay.volume
+                                },
+                                b2: newRates.b2,
+                                b1: newRates.b1,
+                                l1: newRates.l1,
+                                l2: newRates.l2
+                            };
+                        } else {
+                            // Unselected runner calculations
+                            const selectedLayPrice = minBackRunner.backPrice + parseFloat(settings.rateDifferent);
+                            const selectedBackPrice = minBackRunner.backPrice;
+
+                            const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                            const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                            // Calculate rates for unselected runner
+                            const newRates = calculateRunnerRates({
+                                back: { price: backPrice }
+                            }, settings, {
+                                forceCalculateLay: true,
+                                isSocketData: true
+                            });
+
+                            return {
+                                ...prevRunner,
+                                isSelected: false,
+                                back: {
+                                    price: backPrice,
+                                    volume: prevRunner.back.volume
+                                },
+                                lay: {
+                                    price: layPrice,
+                                    volume: prevRunner.lay.volume
                                 },
                                 b2: newRates.b2,
                                 b1: newRates.b1,
@@ -896,29 +1201,93 @@ export const UpdateManualOdds = () => {
                                 l2: newRates.l2
                             };
                         }
-                        return prevRunner;
                     });
+
+                    return updatedRunners;
                 });
             };
 
-            // Set up socket event listeners
-            socket.on(MARKET_RUNNER_DATA, handleMarketRunnerData);
-            socket.on(UPDATE_BALL_STATUS, handleBallStatus);
-
-            // Cleanup function
-            return () => {
-                console.log("Cleaning up socket listener");
-                socket.off(MARKET_RUNNER_DATA, handleMarketRunnerData);
-                socket.off(UPDATE_BALL_STATUS, handleBallStatus);
-            };
+            socket.on(MARKET_RUNNER_DATA, marketRunnerListener);
+        } else {
+            console.log("Disconnecting from MARKET_RUNNER_CONNECT");
+            socket.emit(MARKET_RUNNER_CONNECT, []); // Disconnect by sending empty array
         }
-    }, [rateSourceRefID, socket, isLive, settings]);
+
+        return () => {
+            if (marketRunnerListener) {
+                console.log("Cleaning up MARKET_RUNNER_DATA listener");
+                socket.off(MARKET_RUNNER_DATA, marketRunnerListener);
+            }
+        };
+    }, [isLive, socket, rateSourceRefID, settings.bfRateDiff]);
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
             handleRunnerSelection(runners[0].runnerId);
         }
     }, [runners]);
+
+    const handleBetAllowToggle = async (newValue) => {
+        const marketData = {
+            eventMarket: [{
+                ...prepareMarketData().eventMarket[0],
+                isAllow: newValue
+            }]
+        };
+
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            if (response?.success) {
+                handleSavedRunnerUpdate(marketData)
+                setSettings(prev => ({ ...prev, betAllow: newValue }));
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleActiveToggle = async (newValue) => {
+        const marketData = {
+            eventMarket: [{
+                ...prepareMarketData().eventMarket[0],
+                isActive: newValue
+            }]
+        };
+
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+            if (response?.success) {
+                handleSavedRunnerUpdate(marketData)
+                setSettings(prev => ({ ...prev, active: newValue }));
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <Box className="page-content">
@@ -931,7 +1300,7 @@ export const UpdateManualOdds = () => {
                                 <Box width="66.67%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
-                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.rateSourceRefID}]`}</Typography>
+                                            <Typography variant="h6">{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
                                             <Typography variant="body2">
                                                 {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
                                             </Typography>
@@ -939,7 +1308,14 @@ export const UpdateManualOdds = () => {
                                     )}
                                 </Box>
                                 <Box width="33.33%" sx={{ textAlign: 'right' }}>
-                                    <Button color="primary" className="me-2" onClick={handleSave}>Save</Button>
+                                    <Button
+                                        color="primary"
+                                        className="me-2"
+                                        onClick={handleSave}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    >
+                                        Save
+                                    </Button>
                                     <Button color="danger" onClick={() => navigate("/commentary")}>Exit</Button>
                                 </Box>
                             </Box>
@@ -952,17 +1328,34 @@ export const UpdateManualOdds = () => {
                                         <RadioGroup
                                             row
                                             value={marketStatus}
-                                            onChange={(e) => handleStatusChange(e.target.value)}
+                                            onChange={(e) => {
+                                                const newValue = e.target.value;
+                                                if (newValue === CLOSE_VALUE.toString()) {
+                                                    handleMarketClose();
+                                                } else {
+                                                    handleStatusChange(newValue);
+                                                }
+                                            }}
+                                            disabled={marketStatus === CLOSE_VALUE.toString()}
                                         >
-                                            <FormControlLabel value={INACTIVE_VALUE.toString()} control={<Radio />} label="Inactive" />
-                                            <FormControlLabel value={CLOSE_VALUE.toString()} control={<Radio />} label="Close" />
+                                            <FormControlLabel
+                                                value={INACTIVE_VALUE.toString()}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Inactive"
+                                            />
+                                            <FormControlLabel
+                                                value={CLOSE_VALUE.toString()}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Close"
+                                            />
                                         </RadioGroup>
                                     </FormControl>
                                     <FormControlLabel
                                         control={
                                             <Switch
                                                 checked={settings.betAllow}
-                                                onChange={(e) => setSettings(prev => ({ ...prev, betAllow: e.target.checked }))}
+                                                onChange={(e) => handleBetAllowToggle(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Bet Allowed"
@@ -971,7 +1364,8 @@ export const UpdateManualOdds = () => {
                                         control={
                                             <Switch
                                                 checked={settings.active}
-                                                onChange={(e) => setSettings(prev => ({ ...prev, active: e.target.checked }))}
+                                                onChange={(e) => handleActiveToggle(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Active"
@@ -980,11 +1374,37 @@ export const UpdateManualOdds = () => {
                                         control={
                                             <Switch
                                                 checked={isLive}
-                                                onChange={(e) => setIsLive(e.target.checked)}
+                                                onChange={(e) => setIsLive(!isLive)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         }
                                         label="Live"
                                     />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={abOpen}
+                                                onChange={(e) => setAbOpen(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                        }
+                                        label="AB Open"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={abSuspend}
+                                                onChange={(e) => setAbSuspend(e.target.checked)}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                        }
+                                        label="AB Suspend"
+                                    />
+                                    {ballStatus === BALL_START_STATUS &&
+                                        <span className="ball-start">
+                                            <span className='text-bold mx-2'>Ball Start</span>
+                                        </span>
+                                    }
                                 </Box>
                                 <Box width="15%">
                                     <TextField
@@ -993,6 +1413,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.rateRange}
                                         onChange={(e) => handleSettingChange('rateRange', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="15%">
@@ -1003,6 +1424,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.ballStartAfter}
                                         onChange={(e) => handleSettingChange('ballStartAfter', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                             </Box>
@@ -1016,7 +1438,8 @@ export const UpdateManualOdds = () => {
                                         size="small"
                                         fullWidth
                                         value={settings.showRate}
-                                        onChange={(e) => handleShowRateChange(e.target.value)}  // Changed this line
+                                        onChange={(e) => handleShowRateChange(e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                         inputProps={{
                                             min: 1,
                                             max: 3
@@ -1032,6 +1455,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.rateDifferent}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('rateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1043,6 +1467,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.bRateDifferent}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('bRateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1054,6 +1479,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.lRateDifferent}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('lRateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1065,6 +1491,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.margin}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('margin', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1076,6 +1503,7 @@ export const UpdateManualOdds = () => {
                                         value={settings.delay}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('delay', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -1087,9 +1515,11 @@ export const UpdateManualOdds = () => {
                                         value={settings.lineRatio}
                                         inputProps={{ step: "0.01" }}
                                         onChange={(e) => handleSettingChange('lineRatio', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                             </Box>
+
                             {/* Volume Controls */}
                             <Box display="flex" gap={2} sx={{ mt: 3 }}>
                                 <Box width="50%">
@@ -1098,19 +1528,32 @@ export const UpdateManualOdds = () => {
                                             row
                                             value={settings.volumeType}
                                             onChange={(e) => handleSettingChange('volumeType', e.target.value)}
+                                            disabled={marketStatus === CLOSE_VALUE.toString()}
                                         >
                                             <FormControlLabel
                                                 value={AUTO_STATUS}
-                                                control={<Radio />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Auto Volume"
                                             />
                                             <FormControlLabel
                                                 value={CUSTOM_STATUS}
-                                                control={<Radio />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Cust.Volume"
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <TextField
+                                        label="BF Rate Diff"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.bfRateDiff}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('bfRateDiff', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
                                 </Box>
                                 <Box width="16.67%">
                                     <TextField
@@ -1120,7 +1563,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.bRateVolume}
                                         onChange={(e) => handleSettingChange('bRateVolume', e.target.value)}
-                                        disabled={settings.volumeType === AUTO_STATUS}
+                                        disabled={settings.volumeType === AUTO_STATUS || marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="16.67%">
@@ -1131,7 +1574,7 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.lRateVolume}
                                         onChange={(e) => handleSettingChange('lRateVolume', e.target.value)}
-                                        disabled={settings.volumeType === AUTO_STATUS}
+                                        disabled={settings.volumeType === AUTO_STATUS || marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="16.67%">
@@ -1142,10 +1585,12 @@ export const UpdateManualOdds = () => {
                                         fullWidth
                                         value={settings.volumeLength}
                                         onChange={(e) => handleSettingChange('volumeLength', e.target.value)}
-                                        disabled={settings.volumeType === CUSTOM_STATUS}
+                                        disabled={settings.volumeType === CUSTOM_STATUS || marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                             </Box>
+
+                            {/* Shortcuts Section */}
                             <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
                                 <Box display="flex" flexWrap="wrap" gap={1} sx={{ flex: 1 }}>
                                     {Object.entries(settings.shortcutValues).map(([key, value]) => (
@@ -1157,24 +1602,25 @@ export const UpdateManualOdds = () => {
                                                     size="small"
                                                     value={value}
                                                     onChange={(e) => handleSettingChange(key, e.target.value, true)}
+                                                    disabled={marketStatus === CLOSE_VALUE.toString()}
                                                     sx={{ '& .MuiInputBase-input': { py: 0.5 } }}
                                                 />
                                             </KeyBox>
                                         </Box>
                                     ))}
                                 </Box>
-                                <Box width="8%">  {/* Same width as shortcut cards */}
+                                <Box width="8%">
                                     <Button
                                         color="primary"
-                                        disabled={!hasShortcutChanges}
+                                        disabled={!hasShortcutChanges || marketStatus === CLOSE_VALUE.toString()}
                                         onClick={handleSync}
                                         sx={{
-                                            height: '100%',  // Match height of KeyBox
-                                            width: '100%',   // Take full width of container
+                                            height: '100%',
+                                            width: '100%',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            padding: theme => theme.spacing(1),  // Match KeyBox padding
+                                            padding: theme => theme.spacing(1),
                                         }}
                                     >
                                         <RiRefreshLine className="me-1" size={16} />
@@ -1182,6 +1628,8 @@ export const UpdateManualOdds = () => {
                                     </Button>
                                 </Box>
                             </Box>
+
+                            {/* Table Section */}
                             <TableContainer>
                                 <Table size="small">
                                     <TableHead>
@@ -1206,79 +1654,59 @@ export const UpdateManualOdds = () => {
                                                                 size="small"
                                                                 checked={runner.isSelected}
                                                                 onChange={() => handleRunnerSelection(runner.runnerId)}
+                                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                                             />
                                                             <Typography>{runner.runner}</Typography>
                                                         </Box>
                                                     </TableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="b2"
-                                                            price={runner.b2}
-                                                            volume={runner.b2Volume}
-                                                            isActive={activeColumns.includes('b2')}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="b1"
-                                                            price={runner.b1}
-                                                            volume={runner.b1Volume}
-                                                            isActive={activeColumns.includes('b1')}
-                                                        />
-                                                    </TableCell>
-                                                    <StyledTableCell align="center" type="back">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="back"
-                                                            price={runner.back.price}
-                                                            volume={runner.back.volume}
-                                                            isActive={activeColumns.includes('back')}
-                                                        />
-                                                    </StyledTableCell>
-                                                    <StyledTableCell align="center" type="lay">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="lay"
-                                                            price={runner.lay.price}
-                                                            volume={runner.lay.volume}
-                                                            isActive={activeColumns.includes('lay')}
-                                                        />
-                                                    </StyledTableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="l1"
-                                                            price={runner.l1}
-                                                            volume={runner.l1Volume}
-                                                            isActive={activeColumns.includes('l1')}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <RateCell
-                                                            runner={runner}
-                                                            field="l2"
-                                                            price={runner.l2}
-                                                            volume={runner.l2Volume}
-                                                            isActive={activeColumns.includes('l2')}
-                                                        />
-                                                    </TableCell>
+                                                    {['b2', 'b1', 'back', 'lay', 'l1', 'l2'].map(field => {
+                                                        const isBackType = ['b2', 'b1', 'back'].includes(field);
+                                                        const isLayType = ['lay', 'l1', 'l2'].includes(field);
+                                                        const type = isBackType ? 'back' : isLayType ? 'lay' : '';
+
+                                                        const price = field === 'back' ? runner.back.price :
+                                                            field === 'lay' ? runner.lay.price :
+                                                                runner[field];
+
+                                                        const volume = field === 'back' ? runner.back.volume :
+                                                            field === 'lay' ? runner.lay.volume :
+                                                                runner[`${field}Volume`];
+
+                                                        // Get saved price for back and lay fields
+                                                        const savedPrice = field === 'back' ? savedPrices[runner.runnerId]?.back :
+                                                            field === 'lay' ? savedPrices[runner.runnerId]?.lay :
+                                                                undefined;
+
+                                                        return (
+                                                            <StyledTableCell key={field} align="center" type={type}>
+                                                                <RateCell
+                                                                    runner={runner}
+                                                                    field={field}
+                                                                    price={price}
+                                                                    volume={volume}
+                                                                    isActive={activeColumns.includes(field) && marketStatus !== CLOSE_VALUE.toString()}
+                                                                    savedPrice={savedPrice}
+                                                                />
+                                                            </StyledTableCell>
+                                                        );
+                                                    })}
                                                 </StyledTableRow>
                                             );
                                         })}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+
+                            {/* Selected Runner Details Section */}
                             {selectedRunner && (
-                                // Updated Selected Runner Details section
-                                <Paper elevation={1} sx={{ mt: 3, p: 0 }}>  {/* Removed padding */}
+                                <Paper elevation={1} sx={{ mt: 3, p: 0 }}>
                                     <Box display="flex" gap={2} sx={{ p: 2 }}>
                                         <Box width="25%">
                                             <FormControl fullWidth size="small">
                                                 <Select
                                                     value={selectedRunnerDetails.runnerId || ''}
                                                     onChange={(e) => handleSelectedRunnerChange(e.target.value)}
+                                                    disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 >
                                                     {runners.map(runner => (
                                                         <MenuItem key={runner.runnerId} value={runner.runnerId}>
@@ -1299,7 +1727,7 @@ export const UpdateManualOdds = () => {
                                                     ...prev,
                                                     main: Math.max(0, parseInt(e.target.value) || 0)
                                                 }))}
-                                                disabled={isLive}
+                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
                                                     min: 0,
                                                     step: 1
@@ -1317,7 +1745,7 @@ export const UpdateManualOdds = () => {
                                                     ...prev,
                                                     point: e.target.value
                                                 }))}
-                                                disabled={isLive}
+                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{ step: 1 }}
                                             />
                                         </Box>
@@ -1326,9 +1754,18 @@ export const UpdateManualOdds = () => {
                                                 <RadioGroup
                                                     row
                                                     value={marketStatus}
+                                                    disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 >
-                                                    <FormControlLabel value={OPEN_VALUE} control={<Radio />} label="Open" />
-                                                    <FormControlLabel value={SUSPEND_VALUE} control={<Radio />} label="Suspend" />
+                                                    <FormControlLabel
+                                                        value={OPEN_VALUE}
+                                                        control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                        label="Open"
+                                                    />
+                                                    <FormControlLabel
+                                                        value={SUSPEND_VALUE}
+                                                        control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                        label="Suspend"
+                                                    />
                                                 </RadioGroup>
                                             </FormControl>
                                         </Box>

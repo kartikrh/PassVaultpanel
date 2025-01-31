@@ -38,9 +38,10 @@ const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-        <ModalHeader toggle={toggle}>Set Market Result</ModalHeader>
+        <ModalHeader toggle={toggle}>Set Market Result {data?.marketName}</ModalHeader>
         <ModalBody>
           {data && (
+            <>
             <table className="table">
               <thead>
                 <tr>
@@ -48,8 +49,6 @@ const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
                   <th>Id</th>
                   <th>Event Name</th>
                   <th>Competition</th>
-                  <th>Event</th>
-                  <th>Market</th>
                   <th>Result</th>
                 </tr>
               </thead>
@@ -63,12 +62,25 @@ const SetResultModal = ({ isOpen, toggle, data, fetchData }) => {
                   <td>{data.eventMarketId}</td>
                   <td>{data.eventTypeName}</td>
                   <td>{data.competitionName}</td>
-                  <td>{data.eventName}</td>
-                  <td>{data.marketName}</td>
                   <td className="text-center">{data.resultRunner}</td>
                 </tr>
               </tbody>
             </table>
+        <div className="d-flex mb-3">
+          <div style={{ marginRight: "20px" }}>
+            <span style={{ marginRight: "10px", fontWeight: "700" }}>
+              Event:
+            </span>
+            <span>{data.eventName}</span>
+          </div>
+          <div>
+            <span style={{ marginRight: "10px", fontWeight: "700" }}>
+              Market:
+            </span>
+            <span>{data.marketName}</span>
+          </div>
+        </div>
+            </>
           )}
         </ModalBody>
         <ModalFooter>

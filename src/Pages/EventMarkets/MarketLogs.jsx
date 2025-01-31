@@ -59,24 +59,18 @@ function MarketLogs() {
         return "closeMarket";
       case 5:
         return "closeMarketOnTossWin";
+      case 6:
+        return "setAndFinalizeResult";
+      case 7:
+        return "setResultAndIsResultFalse";
+      case 8:
+        return "allMarketClose";
       default:
         return "-";
     }
   }
 
   const columns = [
-    {
-      title: "Date",
-      dataIndex: "createdDate",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
-        </span>
-      ),
-      key: "createdDate",
-      style: { width: "5%" },
-      sort: true,
-    },
     {
       title: "Id",
       dataIndex: "logId",
@@ -91,13 +85,31 @@ function MarketLogs() {
       style: { width: "5%" },
     },
     {
-      title: "Action",
+      title: "Action Type",
       dataIndex: "actionType",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>{mapActionType(text)}</span>
       ),
       key: "actionType",
       style: { width: "5%" },
+    },
+    {
+      title: "Result",
+      dataIndex: "result",
+      key: "result",
+      style: { width: "5%" },
+    },
+    {
+      title: "Date",
+      dataIndex: "createdDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {convertDateUTCToLocal(text, "index")}
+        </span>
+      ),
+      key: "createdDate",
+      style: { width: "5%" },
+      sort: true,
     },
     {
       title: "Action Value",

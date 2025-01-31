@@ -2269,7 +2269,7 @@ const Index = forwardRef(
                       <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
-                            <th style={column.style} className={column.className}>
+                            <th style={{...column.style, zIndex: column?.sticky && 100, left: column?.sticky && 0}} className={column.className}>
                               <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
@@ -2334,7 +2334,7 @@ const Index = forwardRef(
                           <React.Fragment key={index}>
                             <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
                               {columns.map((column) => (
-                                <td key={column.key} style={column.style}>
+                                <td key={column.key} style={column.style} className={column?.sticky && "sticky-column"}>
                                   {column.render
                                     ? column.render(
                                       record[column.dataIndex],
