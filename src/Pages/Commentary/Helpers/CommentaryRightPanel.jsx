@@ -3,7 +3,7 @@ import OversAccordion from "./OverAccordian";
 import { useEffect } from "react";
 import PartnershipAccordian from "./PartnershipAccordian";
 
-const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver }) => {
+const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver, refId }) => {
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
     // const renderPartnerships = () => {
     //     return partnerships.map((partnership, index) => {
@@ -67,7 +67,8 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
 
     return (
         <div className="commentary-right-panel">
-            <div className="partnership-tab-navigation mb-3">
+            <div className="partnership-tab-navigation mb-1">
+                <div className="d-flex justify-content-between align-items-center mt-1">
                 <button
                     className={`tab-button ${activeTab === 'overs' ? 'active' : ''}`}
                     onClick={() => setActiveTab('overs')}
@@ -80,9 +81,11 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                 >
                     Partnerships
                 </button>
+                </div>
+                <p className="d-flex align-items-center text-secondary m-0">refId: {refId}</p>
             </div>
 
-            <div className="tab-content">
+            <div className="tab-content mt-1">
                 {activeTab === 'overs' ? (
                     <OversAccordion
                         overBalls={overBalls}

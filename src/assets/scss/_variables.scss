@@ -10,16 +10,19 @@
 $light-body-bg: #ffffff;
 $light-boxed-body-bg: #f4f4f4;
 $light-footer-bg: #eaeaea;
+$light-font-color: #74788d;
 
 // Dark mode variables
 $dark-body-bg: #1a2942;
-$dark-body-color: #0bb197;
+$dark-body-color: #fff;
+$dark-font-color: #fff;
+// $dark-body-color: #0bb197;
 $dark-boxed-body-bg: #1a2942;
 $dark-footer-bg: #1a2942;
 
-$dark-table-th-color: #0bc4b4;
-$dark-table-td-color: #159c86;
-$dark-table-td-hover-bg: #ffffff;
+$dark-table-th-color: #fff;
+$dark-table-td-color: #e9e8e8;
+$dark-table-td-hover-bg: #202936;
 
 // Shared variables
 $boxed-layout-width: 1200px;
@@ -42,12 +45,12 @@ $sidebar-width-sm:  160px;
 
 // Vertical Sidebar - Dark
 $sidebar-dark-bg: #1a2942;
-$sidebar-dark-menu-item-color: #0bb197;
-$sidebar-dark-menu-sub-item-color: #0bb197;
-$sidebar-dark-menu-item-icon-color: #0bb197;
-$sidebar-dark-menu-item-hover-color: #d7e4ec;
+$sidebar-dark-menu-item-color: #fff;
+$sidebar-dark-menu-sub-item-color: #fff;
+$sidebar-dark-menu-item-icon-color: #fff;
+$sidebar-dark-menu-item-hover-color: #0bb197;
 $sidebar-dark-menu-item-hover-bg: #fff;
-$sidebar-dark-menu-item-active-color: #ffffff;
+$sidebar-dark-menu-item-active-color: #0bb197;
 $sidebar-dark-menu-item-active-bg: #ffffff;
 
 // Topbar - Deafult Light
