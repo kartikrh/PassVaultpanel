@@ -943,45 +943,87 @@ export const UpdateManualOdds = () => {
         })
     }
     useEffect(() => {
-        const handleKeyDown = async (e) => {
-            // Handle Shift+Enter - only save data without status change
-            if (e.key === 'Enter' && e.shiftKey) {
-                e.preventDefault();
-
-                // Get latest state
-                const currentMarketData = prepareMarketData();
-
-                setIsLoading(true);
-                try {
-                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
-                    if (response?.success) {
-                        handleSavedRunnerUpdate(currentMarketData)
-                        dispatch(updateToastData({
-                            data: "Market updated successfully",
-                            title: "Success",
-                            type: SUCCESS
-                        }));
-                    }
-                } catch (error) {
-                    dispatch(updateToastData({
-                        data: error?.message,
-                        title: error?.title,
-                        type: ERROR
-                    }));
-                } finally {
-                    setIsLoading(false);
-                }
-                return;
+        const prepareRunnerData = (runner, event, useNewStatus = false, newStatus = marketStatus) => {
+            const isOpenStatus = +(useNewStatus ? newStatus : marketStatus) === +OPEN_VALUE;
+            if (!isOpenStatus) {
+                return {
+                    ...runner,
+                    backPrice: 0,
+                    layPrice: 0,
+                    overRate: 0,
+                    underRate: 0,
+                    backSize: runner.back.volume,
+                    laySize: runner.lay.volume,
+                    runnerId: runner.runnerId,
+                    line: runner.line || 0
+                };
             }
 
+            const useSavedPrices = !isLive || (event && event.shiftKey);
+            return {
+                ...runner,
+                backPrice: useSavedPrices ? (savedPrices[runner.runnerId]?.back || 0) : runner.back.price,
+                layPrice: useSavedPrices ? (savedPrices[runner.runnerId]?.lay || 0) : runner.lay.price,
+                overRate: useSavedPrices ? (savedPrices[runner.runnerId]?.back || 0) : runner.back.price,
+                underRate: useSavedPrices ? (savedPrices[runner.runnerId]?.lay || 0) : runner.lay.price,
+                backSize: runner.back.volume,
+                laySize: runner.lay.volume,
+                runnerId: runner.runnerId,
+                line: runner.line || 0
+            };
+        };
+
+        const updateMarket = async (event, customStatus = null) => {
+            const baseMarketData = prepareMarketData(customStatus);
+            const currentMarketData = {
+                eventMarket: [{
+                    ...baseMarketData.eventMarket[0],
+                    ...(customStatus && {
+                        status: parseInt(customStatus),
+                        isActive: settings.active
+                    }),
+                    runner: runners.map(runner =>
+                        prepareRunnerData(runner, event, !!customStatus, customStatus)
+                    )
+                }]
+            };
+
+            setIsLoading(true);
+            try {
+                const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
+                if (response?.success) {
+                    handleSavedRunnerUpdate(currentMarketData);
+                    dispatch(updateToastData({
+                        data: "Market updated successfully",
+                        title: "Success",
+                        type: SUCCESS
+                    }));
+                }
+            } catch (error) {
+                dispatch(updateToastData({
+                    data: error?.message,
+                    title: error?.title,
+                    type: ERROR
+                }));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        const handleKeyDown = async (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                // Update price if main/point values exist
-                if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
-                    const main = parseFloat(selectedRunnerDetails.main) || 0;
-                    const point = parseFloat(selectedRunnerDetails.point) || 0;
-                    const calculatedPrice = main + (point / 100);
 
+                // Handle Shift+Enter case
+                if (e.shiftKey) {
+                    await updateMarket(e);
+                    return;
+                }
+
+                // Update price from main/point if exists
+                if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
+                    const calculatedPrice = (parseFloat(selectedRunnerDetails.main) || 0) +
+                        ((parseFloat(selectedRunnerDetails.point) || 0) / 100);
                     await new Promise(resolve => {
                         handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
                         resolve();
@@ -998,46 +1040,17 @@ export const UpdateManualOdds = () => {
                     return;
                 }
 
-                // Get latest state after potential price updates
                 await new Promise(resolve => {
                     setMarketStatus(newStatus);
                     resolve();
                 });
-
-                const pmdata = prepareMarketData(newStatus)
-                const currentMarketData = {
-                    eventMarket: [{
-                        ...pmdata.eventMarket[0],
-                        status: parseInt(newStatus),
-                        isActive: settings.active
-                    }]
-                };
-                setIsLoading(true);
-                try {
-                    const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
-                    if (response?.success) {
-                        handleSavedRunnerUpdate(currentMarketData)
-                        dispatch(updateToastData({
-                            data: "Market updated successfully",
-                            title: "Success",
-                            type: SUCCESS
-                        }));
-                    }
-                } catch (error) {
-                    dispatch(updateToastData({
-                        data: error?.message,
-                        title: error?.title,
-                        type: ERROR
-                    }));
-                } finally {
-                    setIsLoading(false);
-                }
+                await updateMarket(e, newStatus);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData, settings]);
+    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData, settings, savedPrices, isLive]);
 
     useEffect(() => {
         fetchMarketData();
