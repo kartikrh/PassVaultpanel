@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import { Button, Div, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import Select from "react-select";
 import { useDispatch } from 'react-redux';
 import { updateToastData } from '../../../Features/toasterSlice';
@@ -7,8 +7,7 @@ import { ERROR } from '../../../components/Common/Const';
 import { BOLD, CATCH, CURRENT_BOWLER, EXTRAS_WICKET_TYPE, HIT_BALL_TWICE, HIT_WICKET, LBW, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, TIMED_OUT, WICKET_TYPE_LIST } from '../CommentartConst';
 import CardComponent from '../CardComponent';
 
-const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit, extraType }) => {
-    
+const WicketControls = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit, extraType }) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [wicketData, setWicketData] = useState({
         wicketType: null,
@@ -273,17 +272,14 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     };
 
     return (
-        <Modal backdrop="static" size="lg" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} keyboard={false} scrollable>
-            <ModalHeader toggle={toggle}>
-                <div className="wicket-modal-header">Wicket</div>
-            </ModalHeader>
-            <ModalBody className="wicket-modal-body">
+        <div>
+            {/* <>
                 {currentStep === 1 ? (
                     <>
-                        {extraType && <Row className="mb-3">Ball Type: {extraType}</Row>}
-                        <Row className="mb-3">
+                        {extraType && <div className="mb-3">Ball Type: {extraType}</div>}
+                        <div className="mb-3">
                             {!extraType && showFields.runs && (
-                                <Col xs={6} md={6} lg={4}>
+                                <div >
                                     Runs
                                     <input
                                         className="form-control"
@@ -294,10 +290,10 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                                         max={99}
                                         step={1}
                                     />
-                                </Col>
+                                </div>
                             )}
                             {showFields.fielder1 && (
-                                <Col xs={6} md={6} lg={4}>
+                                <div >
                                     Fielder 1
                                     <Select
                                         classNamePrefix="select2-selection"
@@ -305,10 +301,10 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                                         options={bowlingPlayerList}
                                         onChange={(option) => handleChange("fielder1", option?.value)}
                                     />
-                                </Col>
+                                </div>
                             )}
                             {showFields.fielder2 && (
-                                <Col xs={6} md={6} lg={4}>
+                                <div >
                                     Fielder 2
                                     <Select
                                         classNamePrefix="select2-selection"
@@ -316,50 +312,50 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                                         options={bowlingPlayerList}
                                         onChange={(option) => handleChange("fielder2", option?.value)}
                                     />
-                                </Col>
+                                </div>
                             )}
-                        </Row>
+                        </div>
                         {showFields.batterId && (
                             <div className="mb-4">
                                 <div className="wicket-section-header mb-2">Select Batsman:</div>
-                                <Row>
-                                    <Col xs={6}>
+                                <div>
+                                    <div xs={6}>
                                         <CardComponent
                                             title={onPitchPlayers?.[ON_STRIKE]?.playerName}
                                             selectIcon="bx bxs-check-circle"
-                                            onClickColor="#099680"
-                                            bgColor="#55c6b4"
+                                            onClickDivor="#099680"
+                                            bgDivor="#55c6b4"
                                             check={onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId === wicketData.batterId}
                                             onClick={() => handleChange("batterId", onPitchPlayers?.[ON_STRIKE]?.commentaryPlayerId)}
                                         />
-                                    </Col>
-                                    <Col xs={6}>
+                                    </div>
+                                    <div xs={6}>
                                         <CardComponent
                                             title={onPitchPlayers?.[NON_STRIKE]?.playerName}
                                             selectIcon="bx bxs-check-circle"
-                                            onClickColor="#099680"
-                                            bgColor="#55c6b4"
+                                            onClickDivor="#099680"
+                                            bgDivor="#55c6b4"
                                             check={onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId === wicketData.batterId}
                                             onClick={() => handleChange("batterId", onPitchPlayers?.[NON_STRIKE]?.commentaryPlayerId)}
                                         />
-                                    </Col>
-                                </Row>
+                                    </div>
+                                </div>
                             </div>
                         )}
-                        <Row>
+                        <div>
                             {(extraType ? EXTRAS_WICKET_TYPE : WICKET_TYPE_LIST).map((wicketType, index) => (
-                                <Col key={index} xs={4} md={4} lg={3}>
-                                    {/* <CardComponent
+                                <div key={index} xs={4} md={4} lg={3}>
+                                    <CardComponent
                                         title={wicketType.label}
                                         selectIcon="bx bxs-check-circle"
-                                        onClickColor="#099680"
-                                        bgColor="#55c6b4"
+                                        onClickDivor="#099680"
+                                        bgDivor="#55c6b4"
                                         check={wicketType.value === wicketData.wicketType}
                                         onClick={() => handleChange("wicketType", wicketType.value)}
-                                    /> */}
-                                </Col>
+                                    />
+                                </div>
                             ))}
-                        </Row>
+                        </div>
                     </>
                 ) : (
                     <div className="wicket-modal-summary">
@@ -367,8 +363,8 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                         {renderPlayerCard(onPitchPlayers[CURRENT_BOWLER], 'bowler')}
                     </div>
                 )}
-            </ModalBody>
-            <ModalFooter className="wicket-modal-footer">
+            </>
+            <div className="wicket-modal-footer">
                 {currentStep === 1 ? (
                     <div>
                       <Button color="success" className="wicket-modal-next-btn" onClick={handleNext}>
@@ -389,9 +385,15 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                         </div>
                     </div>
                 )}
-            </ModalFooter>
-        </Modal>
+            </div> */}
+            <div className='col-12'>
+                <div className='col'><button>dsfgd</button></div>
+                <div className='col'><button>dsfgd</button></div>
+                <div className='col'><button>dsfgd</button></div>
+                <div className='col'><button>dsfgd</button></div>
+            </div>
+        </div>
     );
 };
 
-export default WicketModal;
+export default WicketControls;

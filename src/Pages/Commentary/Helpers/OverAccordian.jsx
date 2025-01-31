@@ -201,9 +201,10 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             const previousValue = ballArray[index - 1]
             const nextValue = ballArray[index + 1]
             const isWicket = +element?.isWicket !== 0
-            const isBoundary = +element?.isBoundary !== 0
+            const isBoundary = +element?.value === 6 || +element?.value === 4
+            // const isBoundary = +element?.isBoundary !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
-            const ballColor = isWicket ? "bg-danger" : ballTypeAdd ? "bg-warning" : isBoundary ? "bg-success" : "ball-white"
+            const ballColor = isWicket ? "wicket-overball" : ballTypeAdd ? "extra-overball" : isBoundary ? "boundary-overball" : "regular-overball"
             const ballFontColor = isWicket ? "text-white" : ballTypeAdd ? "text-white" : isBoundary ? "text-white" : "text-muted"
             const ballValue = ballTypeAdd ?
                 element.value > 0 ?
@@ -224,7 +225,8 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             } else {
                 displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
             }
-            return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}>
+            return <div key={`ball ${index}`} className={`d-flex justify-content-center align-items-center ${ballColor}`}>
+            {/* return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}> */}
                 {displayValue}
             </div>
         })
@@ -302,7 +304,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         </RunsInfo>
                     </div>
                     <BallsContainer>
-                        <Box display="flex" flexWrap="wrap" gap={0.5} >
+                        <Box display="flex" flexWrap="wrap" gap={1} >
                             <React.Fragment >
                                 {generateBallfromArray(balls)}
                             </React.Fragment>
@@ -310,7 +312,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                 </OverContainer>
                 : <OverContainer>
-                    {console.log("bowler dsad", bowler)}
                     <PlayerInfo>
                         {bowler?.playerimage ?
                             <Avatar
@@ -337,7 +338,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         </Box>
                     </PlayerInfo>
                     <BallsContainer>
-                        <Box display="flex" flexWrap="wrap" gap={0.5}>
+                        <Box display="flex" flexWrap="wrap" gap={1}>
                             <React.Fragment >
                                 {generateBallfromArray(balls)}
                             </React.Fragment>
@@ -406,12 +407,12 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         >
                             <Box display="flex" alignItems="center" gap={1}>
                                 <Typography fontWeight="bold" sx={{
-                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                    fontFamily: "", color: '#505d69'
                                 }}>
-                                    {team.teamName}
+                                    {team.teamName} -
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif"
+                                <Typography fontWeight="bold"  sx={{
+                                    fontFamily: "", color:'#505d69'
                                 }}>
                                     Innings {innings}
                                 </Typography>

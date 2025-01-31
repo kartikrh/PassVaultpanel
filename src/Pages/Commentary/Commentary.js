@@ -29,6 +29,7 @@ import axiosInstance from "../../Features/axios.js"
 import CricketFieldModal from "./CommentaryModels/CricketFieldModal.jsx"
 import { updateToastData } from "../../Features/toasterSlice.js"
 import createSocket from "../../Features/socket.js"
+import NewCommentaryScreen from "./NewCommentaryScreen.jsx"
 
 const Commentary = (props) => {
     const dispatch = useDispatch();
@@ -2148,7 +2149,9 @@ const Commentary = (props) => {
     };
 
     return <>
-        <CommentaryScreen
+        {/* <CommentaryScreen */}
+        <NewCommentaryScreen
+            refId={props.refId}
             commentaryId={commentaryDetails?.commentaryId}
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
@@ -2191,7 +2194,77 @@ const Commentary = (props) => {
                 || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
             handleWheelShowToggle={handleWheelShowToggle}
             isWheelShow={isWheelShow}
+            showWicketModal={showWicketModal}
+            // wicket control
+            toggle={() => {
+                setExtrasType(undefined)
+            }}
+            onSubmit={handleWicket}
+            bowlingTeam={players[BOWLING_TEAM]}
+            bowlingTeamDetails={teams[BOWLING_TEAM]}
+            extraType={extrasType}
+            {...(showWicketModal && {
+                isOpen: showWicketModal,
+                toggle: () => {
+                    setShowWicketModal(undefined);
+                    setExtrasType(undefined);
+                },
+                onSubmit: handleWicket,
+                bowlingTeam: players[BOWLING_TEAM],
+                bowlingTeamDetails: teams[BOWLING_TEAM],
+            })}
+            {...(extrasType && {
+                extrasTypeIsOpen: extrasType,
+                extrasTypeToggle: () => {
+                    setExtrasType(undefined)
+                },
+                updateExtrasExtrasType: onExtrasChange
+            })}
         />
+        {/* <CommentaryScreen
+            commentaryId={commentaryDetails?.commentaryId}
+            teamDetails={teams}
+            onPitchPlayers={onPitchPlayers}
+            updateRuns={updateRuns}
+            changePlayer={(type) => {
+                setIsSwapPlayer(true)
+                changePlayer(type)
+            }}
+            changeOver={() => { setShowChangeOverModal(true) }}
+            updateExtras={(extraType) => {
+                setExtrasType(extraType)
+            }}
+            onWicketClick={() => { setShowWicketModal(true) }}
+            changeStrike={changeOnStrikePlayer}
+            endInnings={() => setShowInningsChangePopup(true)}
+            onUndoClick={handleUndoClick}
+            isLoading={isCommentaryBallLoading}
+            changeBowler={() => {
+                setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
+            }}
+            updateDisplayStatus={(displayStatus) => {
+                setBallStatus("ballstart");
+                dispatch(updateCommentaryDisplayStatus({
+                    "commentaryId": commentaryDetails.commentaryId,
+                    "displayStatus": displayStatus,
+                    "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+                }))
+            }}
+            handleRetiredHurt={() => setShowRretiredHurt(true)}
+            overBalls={overBallByBallDisplay}
+            overHistory={overHistory}
+            currentOver={currentOver}
+            players={players}
+            showPaneltyRuns={setIsPaneltyPopup}
+            target={target}
+            partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}
+            anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
+                || superOverModal || showRretiredHurt || isPaneltyPopup
+                || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
+                || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
+            handleWheelShowToggle={handleWheelShowToggle}
+            isWheelShow={isWheelShow}
+        /> */}
         {!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
@@ -2214,11 +2287,11 @@ const Commentary = (props) => {
                     }
                 }}
             />}
-        {extrasType && < ExtrasModal
+        {/* {extrasType && < ExtrasModal
             isOpen={true}
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
-            updateExtras={onExtrasChange} />}
+            updateExtras={onExtrasChange} />} */}
         {(showChangeOverModal && !changePlayerList) && <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined) }}
@@ -2239,7 +2312,7 @@ const Commentary = (props) => {
             toggle={() => { setShowInningsChangePopup(undefined) }}
             onNoClick={() => { setShowInningsChangePopup(undefined) }}
             onYesClick={onInningsChange} />}
-        {showWicketModal &&
+        {/* {showWicketModal &&
             <WicketModal
                 isOpen={showWicketModal}
                 toggle={() => {
@@ -2251,7 +2324,7 @@ const Commentary = (props) => {
                 bowlingTeamDetails={teams[BOWLING_TEAM]}
                 onPitchPlayers={onPitchPlayers}
                 extraType={extrasType}
-            />}
+            />} */}
         {showUpdateInnings && <UpdateInningsModal
             isOpen={showUpdateInnings}
             toggle={() => { setShowUpdateInnings(undefined) }}
