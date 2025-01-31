@@ -197,18 +197,25 @@ export const UpdateManualOdds = () => {
         }
     };
 
-    // Handle runner selection
     const handleRunnerSelection = (runnerId) => {
         setRunners(prev => prev.map(runner => ({
             ...runner,
             isSelected: runner.runnerId === runnerId
         })));
         setSelectedRunner(runnerId);
+
+        const savedPrice = savedPrices[runnerId]?.back || 0;
+        const mainPart = Math.floor(savedPrice);
+        const pointPart = Math.round((savedPrice - mainPart) * 100);
+
         setSelectedRunnerDetails(prev => ({
             ...prev,
-            runnerId
+            runnerId,
+            main: mainPart.toString(),
+            point: pointPart.toString().padStart(2, '0')
         }));
     };
+
     const getRunnerWithMinimumBack = (runnersData) => {
         if (!runnersData?.length) return null;
         return runnersData.reduce((minRunner, currentRunner) => {
@@ -712,11 +719,17 @@ export const UpdateManualOdds = () => {
     };
 
     const handleSelectedRunnerChange = (newRunnerId) => {
+        const savedPrice = savedPrices[newRunnerId]?.back || 0;
+        const mainPart = Math.floor(savedPrice);
+        const pointPart = Math.round((savedPrice - mainPart) * 100);
+
         setSelectedRunnerDetails(prev => ({
             ...prev,
-            runnerId: newRunnerId
+            runnerId: newRunnerId,
+            main: mainPart.toString(),
+            point: pointPart.toString().padStart(2, '0')
         }));
-        handleRunnerSelection(newRunnerId); // This will select the runner in the table
+        handleRunnerSelection(newRunnerId);
     };
 
     const RateCell = ({ runner, field, price, volume, isActive, savedPrice }) => {
@@ -762,7 +775,7 @@ export const UpdateManualOdds = () => {
                         sx={{
                             '& .MuiInputBase-root': { height: '40px' }
                         }}
-                        inputProps={{ step: "0.1" }}
+                        inputProps={{ step: "0.01" }}
                     />
                 </RateBox>
                 <RateBox type={type}>
@@ -989,7 +1002,22 @@ export const UpdateManualOdds = () => {
 
             return newSavedPrices;
         });
-    }
+    };
+
+    useEffect(() => {
+        if (!selectedRunner || isLive) return;
+
+        const savedPrice = savedPrices[selectedRunner]?.back || 0;
+        const mainPart = Math.floor(savedPrice);
+        const pointPart = Math.round((savedPrice - mainPart) * 100);
+
+        setSelectedRunnerDetails(prev => ({
+            ...prev,
+            main: mainPart.toString(),
+            point: pointPart.toString().padStart(2, '0')
+        }));
+    }, [savedPrices, selectedRunner, isLive]);
+
 
     useEffect(() => {
         const prepareRunnerData = (runner, event, useNewStatus = false, newStatus = marketStatus) => {
@@ -1846,10 +1874,19 @@ export const UpdateManualOdds = () => {
                                                 type="number"
                                                 label="Main"
                                                 value={selectedRunnerDetails.main}
-                                                onChange={(e) => setSelectedRunnerDetails(prev => ({
-                                                    ...prev,
-                                                    main: Math.max(0, parseInt(e.target.value) || 0)
-                                                }))}
+                                                onChange={(e) => {
+                                                    const mainValue = Math.max(0, parseInt(e.target.value) || 0);
+                                                    const pointValue = parseInt(selectedRunnerDetails.point) || 0;
+                                                    const combinedValue = mainValue + (pointValue / 100);
+
+                                                    setSelectedRunnerDetails(prev => ({
+                                                        ...prev,
+                                                        main: mainValue.toString()
+                                                    }));
+
+                                                    // Immediately update saved prices
+                                                    handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
+                                                }}
                                                 disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
                                                     min: 0,
@@ -1864,12 +1901,25 @@ export const UpdateManualOdds = () => {
                                                 type="number"
                                                 label="Point"
                                                 value={selectedRunnerDetails.point}
-                                                onChange={(e) => setSelectedRunnerDetails(prev => ({
-                                                    ...prev,
-                                                    point: e.target.value
-                                                }))}
+                                                onChange={(e) => {
+                                                    const pointValue = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
+                                                    const mainValue = parseInt(selectedRunnerDetails.main) || 0;
+                                                    const combinedValue = mainValue + (pointValue / 100);
+
+                                                    setSelectedRunnerDetails(prev => ({
+                                                        ...prev,
+                                                        point: pointValue.toString().padStart(2, '0')
+                                                    }));
+
+                                                    // Immediately update saved prices
+                                                    handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
+                                                }}
                                                 disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
-                                                inputProps={{ step: 1 }}
+                                                inputProps={{
+                                                    step: 1,
+                                                    min: 0,
+                                                    max: 99
+                                                }}
                                             />
                                         </Box>
                                         <Box width="25%">
