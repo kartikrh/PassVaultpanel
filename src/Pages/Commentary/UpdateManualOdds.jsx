@@ -934,14 +934,63 @@ export const UpdateManualOdds = () => {
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
     };
-    const handleSavedRunnerChange = (runnerId, key, value) => {
-        setSavedPrices((prevValue) => {
-            return {
+
+    const handleSavedRunnerChange = (runnerId, field, value) => {
+        const runner = runners.find(r => r.runnerId === runnerId);
+        const isSelectedRunner = runner.isSelected;
+        const otherRunner = runners.find(r => r.runnerId !== runnerId);
+        const numericValue = parseFloat(value) || 0;
+
+        setSavedPrices(prevValue => {
+            const newSavedPrices = {
                 ...prevValue,
-                [runnerId]: { ...prevValue[runnerId], [key]: value }
+                [runnerId]: { ...prevValue[runnerId], [field]: numericValue }
+            };
+
+            // Calculate new prices based on the changed field
+            if (isSelectedRunner) {
+                if (field === 'back') {
+                    // When selected runner's back price changes
+                    const newLayPrice = parseFloat((numericValue + parseFloat(settings.rateDifferent)).toFixed(2));
+                    const newNonSelectedBack = parseFloat((1 / (1 - (1 / newLayPrice))).toFixed(2));
+                    const newNonSelectedLay = parseFloat((1 / (1 - (1 / numericValue))).toFixed(2));
+
+                    newSavedPrices[runnerId] = {
+                        ...newSavedPrices[runnerId],
+                        lay: newLayPrice
+                    };
+                    newSavedPrices[otherRunner.runnerId] = {
+                        back: newNonSelectedBack,
+                        lay: newNonSelectedLay
+                    };
+                } else if (field === 'lay') {
+                    // When selected runner's lay price changes
+                    const newNonSelectedBack = parseFloat((1 / (1 - (1 / numericValue))).toFixed(2));
+                    const currentSelectedBack = prevValue[runnerId]?.back || 0;
+                    const newNonSelectedLay = parseFloat((1 / (1 - (1 / currentSelectedBack))).toFixed(2));
+
+                    newSavedPrices[otherRunner.runnerId] = {
+                        back: newNonSelectedBack,
+                        lay: newNonSelectedLay
+                    };
+                }
+            } else {
+                if (field === 'back') {
+                    // When non-selected runner's back price changes
+                    const newNonSelectedLay = parseFloat((1 / (1 - (1 / numericValue))).toFixed(2));
+                    newSavedPrices[runnerId] = {
+                        ...newSavedPrices[runnerId],
+                        lay: newNonSelectedLay
+                    };
+                }
+                // When non-selected runner's lay price changes, only update that specific value
+                // No additional calculations needed
             }
-        })
+
+            return newSavedPrices;
+        });
     }
+
     useEffect(() => {
         const prepareRunnerData = (runner, event, useNewStatus = false, newStatus = marketStatus) => {
             const isOpenStatus = +(useNewStatus ? newStatus : marketStatus) === +OPEN_VALUE;
