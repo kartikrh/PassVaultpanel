@@ -49,6 +49,59 @@
   color: $light-font-color !important
 }
 
+.score-card {
+  background-color: $light-boxed-body-bg !important;
+  color: $light-font-color !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.score-card .box-card {
+  background-color: #ffff !important
+}
+.box-top-left {
+  top: -10px;
+  left: -10px;
+  width: 20px;
+  height: 25px;
+  border-radius: 50%;
+}
+.box-top-right {
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 25px;
+  border-radius: 50%;
+}
+.box-bottom-right {
+  bottom: -10px;
+  right: -10px;
+  width: 20px;
+  height: 25px;
+  border-radius: 50%;
+}
+.box-bottom-left {
+  bottom: -10px;
+  left: -10px;
+  width: 20px;
+  height: 25px;
+  border-radius: 50%;
+}
+.box-left-semicircle {
+  top: 50%;
+  left: -10px;
+  width: 20px;
+  height: 22px;
+  border-radius: 16px;
+  transform: translateY(-50%);
+}
+.box-right-semicircle {
+  top: 50%;
+  right: -10px;
+  width: 20px;
+  height: 22px;
+  border-radius: 16px;
+  transform: translateY(-50%);
+}
+
 .card-title {
   color: $light-font-color !important
 }
@@ -68,6 +121,14 @@ body[data-theme="dark"] {
     padding: 1rem !important;
     background-color: $header-dark-bg !important;
     color: $dark-font-color !important
+  }
+  
+  .score-card {
+    background-color: $header-dark-bg !important;
+    color: $dark-font-color !important
+  }
+  .score-card .box-card {
+    background-color: #1a2942 !important
   }
 
   .card-title {

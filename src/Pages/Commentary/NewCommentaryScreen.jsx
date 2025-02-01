@@ -47,15 +47,27 @@ import Select from "react-select";
 import CardComponent from "./CardComponent";
 import SelectPlayerControls from "./CommentryRightControls/SelectPlayerControls";
 
+// const CenteredBadge = styled.div`
+//   position: absolute;
+//   background: ${(props) => props.bgColor || "blue"};
+//   padding: 2px 26px;
+//   top: -6px;
+//   right: 50%;
+//   font-size: 10px;
+//   transform: translateX(50%);
+//   border-radius: 0px 0px 60px 60px;
+// `;
+
 const CenteredBadge = styled.div`
   position: absolute;
   background: ${(props) => props.bgColor || "blue"};
-  padding: 2px 26px;
-  top: -6px;
+  padding: 2px 30px 5px;
+  top: -8px;
   right: 50%;
-  font-size: 10px;
+  font-size: 12px;
   transform: translateX(50%);
-  border-radius: 0px 0px 60px 60px;
+  border-radius: 0px 0px 55% 55% / 0px 0px 30px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const ActionButton = styled.button`
@@ -138,10 +150,10 @@ const NewCommentaryScreen = ({
   isSelectPlayerModalOpen,
   selectPlayerModalProps,
 }) => {
-  console.log("retiredHurttoggle", retiredHurttoggle);
+  // console.log("retiredHurttoggle", retiredHurttoggle);
 
   const [changePlayerType, setChangePlayerType] = useState(false);
-  console.log("change", changePlayerType)
+  // console.log("change", changePlayerType)
   const [trackingBall, setTrackingBall] = useState(true);
   const [loading, setLoading] = useState(false);
   const [actionPopup, setActionPopup] = useState(undefined);
@@ -718,7 +730,7 @@ const NewCommentaryScreen = ({
 
   // retired hut
   const onSubmitClick = (newPlayerId) => {
-    console.log("newPlayerId", newPlayerId)
+    // console.log("newPlayerId", newPlayerId)
     const oldPlayer = onPitchplayers[changePlayerType];
     let toSend = {
       ...onPitchplayers,
@@ -728,7 +740,7 @@ const NewCommentaryScreen = ({
     };
     toSend[PLAYER_LIST] = allBattingPlayers.map((player) => {
       let updatedPlayer = player;
-      console.log("updatedPlayer", updatedPlayer)
+      // console.log("updatedPlayer", updatedPlayer)
       if (player?.commentaryPlayerId === newPlayerId) {
         updatedPlayer = {
           ...player,
@@ -743,7 +755,7 @@ const NewCommentaryScreen = ({
       return updatedPlayer;
     });
     setChangePlayerType(null);
-    console.log("sdafsd",{ toSend });
+    // console.log("sdafsd",{ toSend });
     retiredHurtonsubmit(toSend);
   };
   // retired hut
@@ -753,8 +765,18 @@ const NewCommentaryScreen = ({
       {/* Score Section */}
       <Row>
         <Col xs={12} md={7} lg={7}>
-          <div className="d-md-flex gap-1 my-1">
-            <div className="col-12 col-md-6 bg-dark text-white rounded p-2 position-relative">
+          <div className="d-md-flex gap-3 my-1 mb-3">
+            <div className="position-relative w-100 max-w-md p-4 rounded score-card">
+              {/* Corner cuts */}
+              <div className="position-absolute box-card box-top-left"></div>
+              <div className="position-absolute box-card box-top-right"></div>
+              <div className="position-absolute box-card box-bottom-right"></div>
+              <div className="position-absolute box-card box-bottom-left"></div>
+
+              {/* Side semicircle cuts */}
+              <div className="position-absolute box-card box-left-semicircle"></div>
+              <div className="position-absolute box-card box-right-semicircle"></div>
+
               <CenteredBadge
                 bgColor={teamDetails?.[BATTING_TEAM].backgroundColor}
               >
@@ -786,6 +808,170 @@ const NewCommentaryScreen = ({
               </div>
 
               {/* Players List */}
+              <div>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <div className="d-flex align-items-center">
+                    <span
+                      className={`fw-medium`}
+                      onClick={() => {
+                        changeStrike(
+                          onPitchPlayers[ON_STRIKE].commentaryPlayerId
+                        );
+                      }}
+                    >
+                      {onPitchPlayers[ON_STRIKE]?.playerName}
+                    </span>
+                    <span className="ms-1 text-info fs-6">*</span>
+                    <button
+                      onClick={() => {
+                        changePlayer(ON_STRIKE);
+                      }}
+                      className="tab-button active text-right rounded-circle mx-2"
+                      // style={{
+                      //   backgroundColor: teamDetails?.[BATTING_TEAM].backgroundColor,
+                      //   color: "#ffffff",
+                      // }}
+                    >
+                      C
+                    </button>
+                  </div>
+                  <div className={``}>
+                    {onPitchPlayers[ON_STRIKE]?.batRun || 0} (
+                    {onPitchPlayers[ON_STRIKE]?.batBall || 0})
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between align-items-center mb-2 text-secondary">
+                  <div className="d-flex align-items-center">
+                    <span
+                      className={`fw-medium`}
+                      onClick={() => {
+                        changeStrike(
+                          onPitchPlayers[NON_STRIKE].commentaryPlayerId
+                        );
+                      }}
+                    >
+                      {onPitchPlayers[NON_STRIKE]?.playerName}
+                    </span>
+                    <button
+                      onClick={() => {
+                        changePlayer(NON_STRIKE);
+                      }}
+                      className="tab-button active text-right rounded-circle mx-2"
+                      style={{
+                        backgroundColor: teamDetails?.[BATTING_TEAM].backgroundColor,
+                        color: "#ffffff",
+                      }}
+                    >
+                      C
+                    </button>
+                  </div>
+                  <div className={``}>
+                    {onPitchPlayers[NON_STRIKE]?.batRun || 0} (
+                    {onPitchPlayers[NON_STRIKE]?.batBall || 0})
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="position-relative w-100 max-w-md p-4 rounded score-card">
+              {/* Corner cuts */}
+              <div className="position-absolute box-card box-top-left"></div>
+              <div className="position-absolute box-card box-top-right"></div>
+              <div className="position-absolute box-card box-bottom-right"></div>
+              <div className="position-absolute box-card box-bottom-left"></div>
+
+              {/* Side semicircle cuts */}
+              <div className="position-absolute box-card box-left-semicircle"></div>
+              <div className="position-absolute box-card box-right-semicircle"></div>
+
+              <CenteredBadge
+                bgColor={teamDetails?.[BOWLING_TEAM].backgroundColor}
+              >
+                BOWLING
+              </CenteredBadge>
+              {/* Header */}
+              <div className="d-flex justify-content-between align-items-center mb-2 p">
+                <div
+                  className="fs-5 fw-medium"
+                  style={{
+                    color: teamDetails?.[BOWLING_TEAM]?.teamColor || "white",
+                  }}
+                >
+                  {teamDetails?.[BOWLING_TEAM]?.teamName}
+                </div>
+                <div className="d-flex align-items-center">
+                  <div
+                    className="ms-3"
+                    style={{
+                      color: teamDetails?.[BOWLING_TEAM]?.teamColor || "white",
+                    }}
+                  >
+                    {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/
+                    {teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
+                    &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0}) &nbsp;
+                  </div>
+                </div>
+              </div>
+
+              {/* Players List */}
+              <div>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <div className="d-flex align-items-center">
+                    <span className={`fw-medium`}>
+                      {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
+                    </span>
+                    <button
+                      onClick={() => {
+                        changePlayer(CURRENT_BOWLER);
+                      }}
+                      className="tab-button active text-right rounded-circle"
+                    >
+                      C
+                    </button>
+                  </div>
+                  <div className={``}>
+                    <span>
+                      {Number(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver) || 0}-
+                      {onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}-
+                      {onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-
+                      {onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* <div className="d-md-flex gap-1 my-1">
+            <div className="col-12 col-md-6 bg-dark text-white rounded p-2 position-relative">
+              <CenteredBadge
+                bgColor={teamDetails?.[BATTING_TEAM].backgroundColor}
+              >
+                BATTING
+              </CenteredBadge>
+
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <div
+                  className="fs-5 fw-medium"
+                  style={{
+                    color: teamDetails?.[BATTING_TEAM]?.teamColor || "white",
+                  }}
+                >
+                  {teamDetails?.[BATTING_TEAM].teamName}
+                </div>
+                <div className="d-flex align-items-center">
+                  <div
+                    className="ms-3"
+                    style={{
+                      color: teamDetails?.[BATTING_TEAM]?.teamColor || "white",
+                    }}
+                  >
+                    {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/
+                    {teamDetails?.[BATTING_TEAM]?.teamWicket || 0}
+                    &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0}) &nbsp;
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-2 text-white">
                   <div className="d-flex align-items-center">
@@ -848,7 +1034,6 @@ const NewCommentaryScreen = ({
               >
                 BOWLING
               </CenteredBadge>
-              {/* Header */}
               <div className="d-flex justify-content-between align-items-center mb-2 p">
                 <div
                   className="fs-5 fw-medium"
@@ -872,7 +1057,6 @@ const NewCommentaryScreen = ({
                 </div>
               </div>
 
-              {/* Players List */}
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="d-flex align-items-center">
@@ -899,7 +1083,7 @@ const NewCommentaryScreen = ({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Control Center */}
           <div className="control-card bg-secondary text-white mb-4">
