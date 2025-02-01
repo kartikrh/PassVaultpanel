@@ -46,6 +46,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import Select from "react-select";
 import CardComponent from "./CardComponent";
 import SelectPlayerControls from "./CommentryRightControls/SelectPlayerControls";
+import { generateBallLabelFromBall } from "./functions";
 
 // const CenteredBadge = styled.div`
 //   position: absolute;
@@ -60,14 +61,48 @@ import SelectPlayerControls from "./CommentryRightControls/SelectPlayerControls"
 
 const CenteredBadge = styled.div`
   position: absolute;
-  background: ${(props) => props.bgColor || "blue"};
-  padding: 2px 30px 5px;
-  top: -8px;
+  background: linear-gradient(180deg, #3E119E -60.91%, #35127D 221.1%);
+  color: #ffffff;
+  padding: 6px 30px 6px;
+  top: -15px;
   right: 50%;
   font-size: 12px;
   transform: translateX(50%);
   border-radius: 0px 0px 55% 55% / 0px 0px 30px 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+`;
+
+const Background = styled.div`
+  position: absolute;
+  top: -15px;
+  right: 33%;
+  width: 115px;
+  height: 15px;
+  background: linear-gradient(180deg, #3E119E -60.91%, #35127D 221.1%);
+`;
+
+const CenteredBadgeBowler = styled.div`
+  position: absolute;
+  background: #00B400;
+  color: #ffffff;
+  padding: 6px 30px 6px;
+  top: -15px;
+  right: 50%;
+  font-size: 12px;
+  transform: translateX(50%);
+  border-radius: 0px 0px 55% 55% / 0px 0px 30px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+`;
+
+const BackgroundBowler = styled.div`
+  position: absolute;
+  top: -15px;
+  right: 32%;
+  width: 120px;
+  height: 15px;
+  background: #00B400;
 `;
 
 const ActionButton = styled.button`
@@ -124,11 +159,16 @@ const NewCommentaryScreen = ({
   players,
   currentOver,
   showWicketModal,
+  showChangeOverModal,
   bowlingTeam,
   bowlingTeamDetails,
   toggle,
   isOpen,
   onSubmit,
+  onNoClick,
+  onYesClick,
+  battingTeam,
+  bowlerName,
   extraType,
   extrasTypeIsOpen,
   updateExtrasExtrasType,
@@ -150,10 +190,8 @@ const NewCommentaryScreen = ({
   isSelectPlayerModalOpen,
   selectPlayerModalProps,
 }) => {
-  // console.log("retiredHurttoggle", retiredHurttoggle);
 
   const [changePlayerType, setChangePlayerType] = useState(false);
-  // console.log("change", changePlayerType)
   const [trackingBall, setTrackingBall] = useState(true);
   const [loading, setLoading] = useState(false);
   const [actionPopup, setActionPopup] = useState(undefined);
@@ -353,8 +391,6 @@ const NewCommentaryScreen = ({
       window.removeEventListener("keydown", handleKeyPress);
     };
   }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
-
-  // console.log("wicketData", wicketData);
 
   const handleChange = (field, value) => {
     const newWicketData = { ...wicketData, [field]: value };
@@ -687,11 +723,6 @@ const NewCommentaryScreen = ({
     }
   }, [isOpen]);
 
-  // console.log("currentStep", currentStep);
-  // console.log("extraType", extraType);
-  // console.log("showFields", showFields);
-  // console.log("wicketData", wicketData);
-
   const allFalse = Object.values(showFields).every((value) => value === false);
 
   // extra component
@@ -730,7 +761,6 @@ const NewCommentaryScreen = ({
 
   // retired hut
   const onSubmitClick = (newPlayerId) => {
-    // console.log("newPlayerId", newPlayerId)
     const oldPlayer = onPitchplayers[changePlayerType];
     let toSend = {
       ...onPitchplayers,
@@ -740,7 +770,6 @@ const NewCommentaryScreen = ({
     };
     toSend[PLAYER_LIST] = allBattingPlayers.map((player) => {
       let updatedPlayer = player;
-      // console.log("updatedPlayer", updatedPlayer)
       if (player?.commentaryPlayerId === newPlayerId) {
         updatedPlayer = {
           ...player,
@@ -755,11 +784,62 @@ const NewCommentaryScreen = ({
       return updatedPlayer;
     });
     setChangePlayerType(null);
-    // console.log("sdafsd",{ toSend });
     retiredHurtonsubmit(toSend);
   };
   // retired hut
 
+  const generateBallfromArray = (ballArray = []) => {
+          return ballArray?.map((element, index) => {
+              const previousValue = ballArray[index - 1]
+              const nextValue = ballArray[index + 1]
+              const isWicket = +element?.isWicket !== 0
+              const isBoundary = +element?.value === 6 || +element?.value === 4
+              // const isBoundary = +element?.isBoundary !== 0
+              const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
+              const ballColor = isWicket ? "wicket-overball" : ballTypeAdd ? "extra-overball" : isBoundary ? "boundary-overball" : "regular-overball"
+              const ballFontColor = isWicket ? "text-white" : ballTypeAdd ? "text-white" : isBoundary ? "text-white" : "text-muted"
+              const ballValue = ballTypeAdd ?
+                  element.value > 0 ?
+                      element.value : ""
+                  : element.value
+              if (previousValue && previousValue.isWicket && previousValue?.overCount === element?.overCount) {
+                  return null;
+              }
+              let displayValue
+              if (isWicket && nextValue && nextValue?.overCount === element?.overCount) {
+                  const nextIsWicket = +nextValue?.isWicket !== 0
+                  const nextBallTypeAdd = generateBallLabelFromBall(nextValue?.type, nextIsWicket)
+                  const nextBallValue = nextBallTypeAdd ?
+                      nextValue.value > 0 ?
+                          nextValue.value : ""
+                      : nextValue.value
+                  displayValue = `${nextBallValue} ${(nextBallTypeAdd && nextBallValue) ? "|" : ""}${nextBallTypeAdd || ""}W`
+              } else {
+                  displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
+              }
+              return <div key={`ball ${index}`} className={`d-flex justify-content-center align-items-center ${ballColor}`}>
+              {/* return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}> */}
+                  {displayValue}
+              </div>
+          })
+      }
+  
+  const nextOverNumber = Math.ceil(currentOver?.over || 0) + 1;
+  
+  const overKey = `${currentOver?.currentInnings}_##_${battingTeam?.teamId}_##_${nextOverNumber}`;
+  const currentOverBalls = overBalls[overKey] || [];
+  
+  const stats = {
+    runs: battingTeam?.teamScore || 0,
+    overs: Math.ceil(battingTeam?.teamOver || 0),
+    wickets: battingTeam?.teamWicket || 0,
+    extras: (battingTeam?.teamWideRuns || 0) +
+          (battingTeam?.teamByRuns || 0) +
+          (battingTeam?.teamLegByRuns || 0) +
+          (battingTeam?.teamNoBallRuns || 0) +
+          (battingTeam?.teamPenaltyRuns || 0)
+  };
+  
   return (
     <div className="container-fluid text-white py-4">
       {/* Score Section */}
@@ -777,6 +857,7 @@ const NewCommentaryScreen = ({
               <div className="position-absolute box-card box-left-semicircle"></div>
               <div className="position-absolute box-card box-right-semicircle"></div>
 
+              <Background bgColor={teamDetails?.[BATTING_TEAM].backgroundColor} />
               <CenteredBadge
                 bgColor={teamDetails?.[BATTING_TEAM].backgroundColor}
               >
@@ -884,11 +965,12 @@ const NewCommentaryScreen = ({
               <div className="position-absolute box-card box-left-semicircle"></div>
               <div className="position-absolute box-card box-right-semicircle"></div>
 
-              <CenteredBadge
+              <BackgroundBowler bgColor={teamDetails?.[BOWLING_TEAM].backgroundColor} />
+              <CenteredBadgeBowler
                 bgColor={teamDetails?.[BOWLING_TEAM].backgroundColor}
               >
                 BOWLING
-              </CenteredBadge>
+              </CenteredBadgeBowler>
               {/* Header */}
               <div className="d-flex justify-content-between align-items-center mb-2 p">
                 <div
@@ -1089,8 +1171,8 @@ const NewCommentaryScreen = ({
           <div className="control-card bg-secondary text-white mb-4">
             <div className="control-card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="card-title">Control Centre</h5>
-                <div className="d-flex align-items-center py-2">
+                <h5 className="card-title">{showChangeOverModal ? "Over Complete" : "Control Centre"}</h5>
+                {!showChangeOverModal && <div className="d-flex align-items-center py-2">
                   <span>Tracking a Ball</span>
                   <Switch
                     width={70}
@@ -1103,12 +1185,12 @@ const NewCommentaryScreen = ({
                     }}
                     checked={isWheelShow}
                   />
-                </div>
+                </div>}
               </div>
 
               {/* Number Pad */}
               <div className="d-flex justify-content-center m-0 p-0 w-100 g-1">
-                {actionPopup || showWicketModal || extrasTypeIsOpen ? (
+                {actionPopup || showWicketModal || extrasTypeIsOpen || showChangeOverModal ? (
                   <div
                     className={`row row-cols-2 g-2 col-12${
                       isLoading ? "disable-button" : ""
@@ -1377,7 +1459,6 @@ const NewCommentaryScreen = ({
                     ) : showWicketModal ? (
                       <>
                         {currentStep === 1 ? (
-                          <>
                             <>
                               {(extraType
                                 ? EXTRAS_WICKET_TYPE
@@ -1411,7 +1492,6 @@ const NewCommentaryScreen = ({
                                 </button>
                               </div>
                             </>
-                          </>
                         ) : !allFalse ? (
                           <div className="col-12 mb-2">
                             <div className="d-flex gap-2">
@@ -1625,6 +1705,94 @@ const NewCommentaryScreen = ({
                           </div>
                         )}
                       </>
+                    ) : showChangeOverModal ? (
+                      <>
+                      <div className="col-10">
+                                      <div className="d-flex align-items-center justify-content-cneter gap-4">
+                                          <div className="over-stat text-center p-3">
+                                              <div className="over-modal-stat-value">{stats.runs}</div>
+                                              <div className="over-modal-stat-label">Runs</div>
+                                          </div>
+                                          <div className="over-stat text-center p-3">
+                                              <div className="over-modal-stat-value">{stats.overs}</div>
+                                              <div className="over-modal-stat-label">Overs</div>
+                                          </div>
+                                          <div className="over-stat text-center p-3">
+                                              <div className="over-modal-stat-value">{stats.wickets}</div>
+                                              <div className="over-modal-stat-label">Wickets</div>
+                                          </div>
+                                          <div className="over-stat text-center p-3">
+                                              <div className="over-modal-stat-value">{stats.extras}</div>
+                                              <div className="over-modal-stat-label">Extras</div>
+                                          </div>
+                                      </div>
+                      
+                                      <div className="over-modal-player-stats" style={{ "border": "none" }}>
+                                          <div className="over-modal-player-row over-modal-header-row" style={{ "border": "none" }}>
+                                              <div className="over-modal-player-name">Batter</div>
+                                              <div className="over-modal-player-stat">R</div>
+                                              <div className="over-modal-player-stat">B</div>
+                                              <div className="over-modal-player-stat">4s</div>
+                                              <div className="over-modal-player-stat">6s</div>
+                                          </div>
+                                          <div className="over-modal-player-row" style={{ "border": "none" }}>
+                                              <div className="over-modal-player-name">
+                                                  <strong>
+                                                      {onPitchPlayers[ON_STRIKE]?.playerName + "*" || '-'}
+                                                  </strong>
+                                              </div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batRun || 0}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batBall || 0}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batFour || 0}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[ON_STRIKE]?.batSix || 0}</div>
+                                          </div>
+                                          <div className="over-modal-player-row">
+                                              <div className="over-modal-player-name">{onPitchPlayers[NON_STRIKE]?.playerName || '-'}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batRun || 0}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batBall || 0}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batFour || 0}</div>
+                                              <div className="over-modal-player-stat">{onPitchPlayers[NON_STRIKE]?.batSix || 0}</div>
+                                          </div>
+                                      </div>
+                      
+                                      <div className="over-modal-info">
+                                          <div className="over-modal-over-text">
+                                              End of over {Math.ceil(battingTeam?.teamOver || 0)} by {bowlerName}
+                                          </div>
+                                          <div className="over-modal-balls-container">
+                                              {generateBallfromArray(currentOverBalls)}
+                                              <span className="over-modal-total">= {currentOver?.totalRun}</span>
+                                          </div>
+                                      </div>
+                                      <div className="d-flex align-items-center gap-4">
+                                      <div onClick={onYesClick}>
+                                        <button className="score-control-confirm-ball-btns">
+                                          START NEXT OVER
+                                        </button>
+                                      </div>
+                                      <div onClick={onNoClick}>
+                                        <button className="score-control-conformation-close-btn">
+                                          CONTINUE THIS OVER
+                                        </button>
+                                      </div>
+                                      </div>
+                      
+                                      {/* <div className="over-modal-actions">
+                                          <Button
+                                              className="over-modal-start-btn"
+                                              onClick={onYesClick}
+                                          >
+                                              START NEXT OVER
+                                          </Button>
+                                          <Button
+                                              className="over-modal-continue-btn"
+                                              onClick={onNoClick}
+                                          >
+                                              CONTINUE THIS OVER
+                                          </Button>
+                                      </div> */}
+                                  </div>
+                      </>
                     ) : (
                       <>
                         <div className="col" onClick={onUndoClick}>
@@ -1689,7 +1857,7 @@ const NewCommentaryScreen = ({
                   <>
                     <div
                       className={`row row-cols-2 g-2 col-6 ${
-                        isLoading || actionPopup || showWicketModal
+                        isLoading || actionPopup || showWicketModal || showChangeOverModal
                           ? "disable-button"
                           : ""
                       }`}

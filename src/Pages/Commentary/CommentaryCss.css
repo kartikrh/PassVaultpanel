@@ -599,6 +599,11 @@
   padding: 1rem 0;
 }
 
+.over-stat {
+  background: #6c757d;
+  border-radius: 20px;
+}
+
 /* Stats Grid */
 .over-modal-stats-grid {
   display: grid;

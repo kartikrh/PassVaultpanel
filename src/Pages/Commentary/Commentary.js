@@ -2195,6 +2195,7 @@ const Commentary = (props) => {
             handleWheelShowToggle={handleWheelShowToggle}
             isWheelShow={isWheelShow}
             showWicketModal={showWicketModal}
+            showChangeOverModal={showChangeOverModal && !changePlayerList}
             // wicket control
             // toggle={() => {
             //     setExtrasType(undefined)
@@ -2244,6 +2245,22 @@ const Commentary = (props) => {
                 inningsChangetoggle:() => { setShowInningsChangePopup(undefined) },
                 inningsChangeNoClick:() => { setShowInningsChangePopup(undefined) },
                 inningsChangeYesClick:() => onInningsChange()
+            })}
+
+            {...((showChangeOverModal && !changePlayerList) && {
+                isOpen:{showChangeOverModal},
+                toggle:() => { setShowChangeOverModal(undefined) },
+                onNoClick:() => { setShowChangeOverModal(undefined) },
+                onYesClick:() => {
+                    setIsBowlerrChange(true)
+                    setShowChangeOverModal(undefined);
+                    setChangeOverOnPopupClick(true)
+                },
+                overBalls:overBallByBallDisplay,
+                currentOver:currentOver,
+                battingTeam:teams?.[BATTING_TEAM] || {},
+                bowlerName:getPlayerNameById(players, currentOver?.bowlerId, false),
+                onPitchPlayers:onPitchPlayers,
             })}
 
             isSelectPlayerModalOpen={!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
@@ -2344,7 +2361,7 @@ const Commentary = (props) => {
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
             updateExtras={onExtrasChange} />} */}
-        {(showChangeOverModal && !changePlayerList) && <ChangeOverModal
+        {/* {(showChangeOverModal && !changePlayerList) && <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined) }}
             onNoClick={() => { setShowChangeOverModal(undefined) }}
@@ -2358,7 +2375,7 @@ const Commentary = (props) => {
             battingTeam={teams?.[BATTING_TEAM] || {}}
             bowlerName={getPlayerNameById(players, currentOver?.bowlerId, false)}
             onPitchPlayers={onPitchPlayers}
-        />}
+        />} */}
         {/* {inningsChangePopup && <ChangeInningsModal
             isOpen={inningsChangePopup}
             toggle={() => { setShowInningsChangePopup(undefined) }}
