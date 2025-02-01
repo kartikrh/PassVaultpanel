@@ -151,10 +151,28 @@ export const UpdateManualOdds = () => {
         point: ''
     });
 
+    const handlePriceCalculations = (backPrice, isSelected) => {
+        backPrice = parseFloat(backPrice || 0);
+        let layPrice;
+
+        if (backPrice === 0 || !backPrice) {
+            // When back is 0/null, only set lay to 1.01
+            layPrice = 1.01;
+            // Keep back as 0
+            backPrice = 0;
+        } else {
+            layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+        }
+
+        return { backPrice, layPrice };
+    };
+
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
+            const { backPrice, layPrice } = handlePriceCalculations(runner.backPrice, true);
+
             const rates = calculateRunnerRates({
-                back: { price: runner.backPrice || 0 }
+                back: { price: backPrice }
             }, settings);
 
             return {
@@ -163,11 +181,11 @@ export const UpdateManualOdds = () => {
                 isSelected: false,
                 autoVolume: true,
                 back: {
-                    price: runner.backPrice || 0,
+                    price: backPrice,
                     volume: runner.backSize || 0
                 },
                 lay: {
-                    price: runner.layPrice || 0,
+                    price: layPrice,
                     volume: runner.laySize || 0
                 },
                 b2: rates.b2,
@@ -177,17 +195,61 @@ export const UpdateManualOdds = () => {
             };
         });
 
-        // Replace getRunnerWithMinimumLay with getRunnerWithMinimumBack
+        // Find runner with minimum back price (excluding zero)
         const minBackRunner = getRunnerWithMinimumBack(formattedRunners);
-        const runnerDataToSave = formattedRunners.map(runner => ({
-            ...runner,
-            isSelected: runner.runnerId === minBackRunner?.runnerId
-        }))
-        // Set the runners with the minimum back price runner selected
+
+        const runnerDataToSave = formattedRunners.map(runner => {
+            const isSelected = runner.runnerId === minBackRunner?.runnerId;
+
+            if (isSelected) {
+                return {
+                    ...runner,
+                    isSelected: true
+                };
+            } else {
+                let backPrice, layPrice;
+
+                if (minBackRunner.back.price === 0 || !minBackRunner.back.price) {
+                    // If selected runner's back is 0/null
+                    layPrice = 1.01;
+                    // Calculate back price for non-selected runner based on lay 1.01
+                    backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
+                } else {
+                    // Normal calculation when selected runner has valid back price
+                    const selectedBackPrice = minBackRunner.back.price;
+                    const selectedLayPrice = minBackRunner.lay.price;
+                    backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                    layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+                }
+
+                const newRates = calculateRunnerRates({
+                    back: { price: backPrice }
+                }, settings, {
+                    forceCalculateLay: true
+                });
+
+                return {
+                    ...runner,
+                    isSelected: false,
+                    back: {
+                        price: backPrice,
+                        volume: runner.back.volume
+                    },
+                    lay: {
+                        price: layPrice,
+                        volume: runner.lay.volume
+                    },
+                    b2: newRates.b2,
+                    b1: newRates.b1,
+                    l1: newRates.l1,
+                    l2: newRates.l2
+                };
+            }
+        });
+
         setRunners(runnerDataToSave);
         setOriginalRunner(runnerDataToSave);
 
-        // Set the selected runner
         if (minBackRunner) {
             setSelectedRunner(minBackRunner.runnerId);
             setSelectedRunnerDetails(prev => ({
@@ -196,7 +258,6 @@ export const UpdateManualOdds = () => {
             }));
         }
     };
-
     const handleRunnerSelection = (runnerId) => {
         setRunners(prev => prev.map(runner => ({
             ...runner,
