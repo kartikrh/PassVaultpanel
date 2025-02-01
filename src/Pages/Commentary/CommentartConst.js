@@ -40,9 +40,11 @@ export const RETIRED_OUT_LABEL = "Retired Out";
 export const TIMED_OUT = 8;
 export const TIMED_OUT_LABEL = "Timed Out";
 export const HIT_BALL_TWICE = 9;
-export const HIT_BALL_TWICE_LABEL = "Hit Ball Twice";
+export const HIT_BALL_TWICE_LABEL = "Hit B. Twice";
+// export const HIT_BALL_TWICE_LABEL = "Hit Ball Twice";
 export const OBSTRACT_THE_FIELDING = 10;
-export const OBSTRACT_THE_FIELDING_LABEL = "Obstract the Fielding";
+export const OBSTRACT_THE_FIELDING_LABEL = "Obst. Field";
+// export const OBSTRACT_THE_FIELDING_LABEL = "Obstract the Fielding";
 
 export const ON_STRIKE = "ON_STRIKE"
 export const NON_STRIKE = "NON_STRIKE"

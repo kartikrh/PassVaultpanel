@@ -2220,7 +2220,59 @@ const Commentary = (props) => {
                 },
                 updateExtrasExtrasType: onExtrasChange
             })}
+            // RetiredHurt
+            // revertModal
+            // {...(completeMatchModal && {
+            //     revertModalisOpen:completeMatchModal,
+            //     revertModaltoggle:() => { setCompleteMatchModal(undefined) },
+            //     revertModalonNoClick:() => { setCompleteMatchModal(undefined) },
+            //     revertModalonYesClick:() => completeMatch()
+            // })}
+            // RetiredHurt
+            {...(showRretiredHurt && {
+                retiredHurtisOpen: showRretiredHurt,
+                retiredHurttoggle:() => setShowRretiredHurt(false),
+                retiredHurtonsubmit:{onRetiredHurtClick},
+                onPitchplayers:{onPitchPlayers},
+                retiredHurtplayerList: players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true)),
+                allBattingPlayers: players[BATTING_TEAM]
+            })}
+
+            // change Innings
+            {...(inningsChangePopup && {
+                inningsChangeisOpen:inningsChangePopup,
+                inningsChangetoggle:() => { setShowInningsChangePopup(undefined) },
+                inningsChangeNoClick:() => { setShowInningsChangePopup(undefined) },
+                inningsChangeYesClick:() => onInningsChange()
+            })}
+
+            isSelectPlayerModalOpen={!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+                winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList}
+            selectPlayerModalProps={{
+                isOpen: !!changePlayerList,
+                toggle: isWicketChange ? false : () => {
+                    setChangePlayerList(undefined);
+                    setIsSwapPlayer(undefined);
+                    setOverPopUpForBowler(undefined);
+                    setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null });
+                },
+                overPopUpForBowler,
+                isBowler: isChangeBowler.isChange || isBowlerrChange,
+                playerList: changePlayerList,
+                selectPlayer: (newPlayerId) => {
+                    setOverPopUpForBowler(undefined);
+                    setIsBowlerrChange(undefined);
+                    if (isSwapPlayer) {
+                        swapPlayer(newPlayerId);
+                    } else if (isChangeBowler.isChange) {
+                        onBowlerChange(newPlayerId);
+                    } else {
+                        onPlayerChange(newPlayerId);
+                    }
+                }
+            }}
         />
+        
         {/* <CommentaryScreen
             commentaryId={commentaryDetails?.commentaryId}
             teamDetails={teams}
@@ -2307,11 +2359,11 @@ const Commentary = (props) => {
             bowlerName={getPlayerNameById(players, currentOver?.bowlerId, false)}
             onPitchPlayers={onPitchPlayers}
         />}
-        {inningsChangePopup && <ChangeInningsModal
+        {/* {inningsChangePopup && <ChangeInningsModal
             isOpen={inningsChangePopup}
             toggle={() => { setShowInningsChangePopup(undefined) }}
             onNoClick={() => { setShowInningsChangePopup(undefined) }}
-            onYesClick={onInningsChange} />}
+            onYesClick={onInningsChange} />} */}
         {/* {showWicketModal &&
             <WicketModal
                 isOpen={showWicketModal}
@@ -2390,13 +2442,13 @@ const Commentary = (props) => {
                 setIsPaneltyPopup(null)
             }}
         />}
-        {showRretiredHurt && <RetiredHurtModal
+        {/* {showRretiredHurt && <RetiredHurtModal
             toggle={() => setShowRretiredHurt(false)}
             onsubmit={onRetiredHurtClick}
             onPitchplayers={onPitchPlayers}
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
             allBattingPlayers={players[BATTING_TEAM]}
-        />}
+        />} */}
         {superOverModal ?
             <SuperOverModal
                 toggle={() => {
