@@ -697,7 +697,15 @@ export const OpenMarket = () => {
             return null
         }).filter(x => x)
 
-        updatedDatalist = _.orderBy(updatedDatalist, ['marketName'], ['asc']);
+        // updatedDatalist = _.orderBy(updatedDatalist, ['marketName'], ['asc']);
+        updatedDatalist = _.orderBy(updatedDatalist, [
+            item => {
+                // Check if the marketName contains a numeric value
+                const match = item.marketName.match(/(\d+)/);
+                return match ? parseInt(match[1], 10) : 0;  // Return 1 if there's a number, 0 if not
+            },
+            item => item.marketName  // Then sort alphabetically by marketName
+        ], ['asc', 'asc']);
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
 
@@ -792,8 +800,16 @@ export const OpenMarket = () => {
                     setHasUnsavedChanges(false);
                 }, 3000);
 
-                const sortedData = _.orderBy(finalDataToSet, ['marketName'], ['asc']);
-                updateOriginalValues(sortedData)
+                // const sortedData = _.orderBy(finalDataToSet, ['marketName'], ['asc']);
+                const sortedData = _.orderBy(finalDataToSet, [
+                    item => {
+                        // Check if the marketName contains a numeric value
+                        const match = item.marketName.match(/(\d+)/);
+                        return match ? parseInt(match[1], 10) : 0;  // Return 1 if there's a number, 0 if not
+                    },
+                    item => item.marketName  // Then sort alphabetically by marketName
+                ], ['asc', 'asc']);
+                updateOriginalValues(sortedData);
                 return sortedData;
             });
             setIsDataFromApiOrSocket(true);
