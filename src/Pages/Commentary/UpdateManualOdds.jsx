@@ -1088,6 +1088,24 @@ export const UpdateManualOdds = () => {
         };
 
         const handleKeyDown = async (e) => {
+            if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
+                e.preventDefault();
+
+                // If there's selected runner details, update price from main/point
+                if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
+                    const calculatedPrice = (parseFloat(selectedRunnerDetails.main) || 0) +
+                        ((parseFloat(selectedRunnerDetails.point) || 0) / 100);
+                    await new Promise(resolve => {
+                        handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
+                        resolve();
+                    });
+                }
+
+                // Save without changing status
+                await updateMarket(e);
+                return;
+            }
+
             if (e.key === 'Enter') {
                 e.preventDefault();
 
@@ -1234,16 +1252,18 @@ export const UpdateManualOdds = () => {
                     nonSelectedLayPrice: socketRunners[1]?.layPrice
                 });
 
-                // Your existing market runner data handling logic...
+                // Adjust runners with bfRateDiff
                 const adjustedRunners = socketRunners.map(runner => ({
                     ...runner,
                     backPrice: parseFloat((runner.backPrice + parseFloat(settings.bfRateDiff)).toFixed(2))
                 }));
 
+                // Find runner with minimum back price
                 const minBackRunner = adjustedRunners.reduce((min, curr) =>
                     curr.backPrice < min.backPrice ? curr : min
                     , adjustedRunners[0]);
 
+                // Update original runners
                 setOriginalRunner(prevRunners => {
                     return prevRunners.map(prevRunner => {
                         const socketRunner = socketRunners.find(r => r.selectionId === prevRunner.selectionId);
@@ -1270,6 +1290,7 @@ export const UpdateManualOdds = () => {
                     });
                 });
 
+                // Update current runners
                 setRunners(prevRunners => {
                     // Calculate new values for logging
                     const newSelectedBackPrice = minBackRunner.backPrice;
@@ -1292,8 +1313,16 @@ export const UpdateManualOdds = () => {
 
                         if (isSelected) {
                             // Selected runner calculations
-                            const backPrice = parseFloat(socketRunner.backPrice);
-                            const layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                            let backPrice = parseFloat(socketRunner.backPrice || 0);
+                            let layPrice;
+
+                            // Handle zero/null back price case
+                            if (backPrice === 0 || !backPrice) {
+                                layPrice = 1.01;
+                                backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
+                            } else {
+                                layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                            }
 
                             // Calculate rates using existing calculateRunnerRates function
                             const newRates = calculateRunnerRates({
@@ -1321,8 +1350,16 @@ export const UpdateManualOdds = () => {
                             };
                         } else {
                             // Unselected runner calculations
-                            const selectedLayPrice = minBackRunner.backPrice + parseFloat(settings.rateDifferent);
-                            const selectedBackPrice = minBackRunner.backPrice;
+                            let selectedBackPrice = minBackRunner.backPrice || 0;
+                            let selectedLayPrice;
+
+                            // Handle zero/null back price case
+                            if (selectedBackPrice === 0 || !selectedBackPrice) {
+                                selectedLayPrice = 1.01;
+                                selectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                            } else {
+                                selectedLayPrice = selectedBackPrice + parseFloat(settings.rateDifferent);
+                            }
 
                             const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
                             const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
@@ -1371,7 +1408,6 @@ export const UpdateManualOdds = () => {
             }
         };
     }, [isLive, socket, rateSourceRefID, settings]);
-
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
             handleRunnerSelection(runners[0].runnerId);
