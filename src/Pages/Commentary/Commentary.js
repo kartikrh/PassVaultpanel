@@ -1639,6 +1639,7 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
     }
     const onRetiredHurtClick = (retiredHurtData) => {
+        // console.log("retiredHurtData", retiredHurtData)
         const updateBall = {
             "commentaryBallByBallId": "0",
             "ballIsCount": false,
@@ -2148,6 +2149,8 @@ const Commentary = (props) => {
             });
     };
 
+    console.log("showWicketModal", showWicketModal)
+
     return <>
         {/* <CommentaryScreen */}
         <NewCommentaryScreen
@@ -2233,8 +2236,8 @@ const Commentary = (props) => {
             {...(showRretiredHurt && {
                 retiredHurtisOpen: showRretiredHurt,
                 retiredHurttoggle:() => setShowRretiredHurt(false),
-                retiredHurtonsubmit:{onRetiredHurtClick},
-                onPitchplayers:{onPitchPlayers},
+                retiredHurtonsubmit:onRetiredHurtClick,
+                onPitchplayers:onPitchPlayers,
                 retiredHurtplayerList: players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true)),
                 allBattingPlayers: players[BATTING_TEAM]
             })}
@@ -2246,6 +2249,17 @@ const Commentary = (props) => {
                 inningsChangeNoClick:() => { setShowInningsChangePopup(undefined) },
                 inningsChangeYesClick:() => onInningsChange()
             })}
+
+            // PenaltyModal
+            {...(isPaneltyPopup && {
+                PenaltyToggle : () => { setIsPaneltyPopup(null)},
+                PenaltyIsOpen : true,
+                PenaltySelectedPenalty:(selectedPenalty) => {
+                    updatePanelty(selectedPenalty)
+                    setIsPaneltyPopup(null)
+                }
+            })}
+
 
             {...((showChangeOverModal && !changePlayerList) && {
                 isOpen:{showChangeOverModal},
@@ -2356,7 +2370,7 @@ const Commentary = (props) => {
                     }
                 }}
             />}
-        {/* {extrasType && < ExtrasModal
+        {/* {extrasType && <ExtrasModal
             isOpen={true}
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
@@ -2451,14 +2465,14 @@ const Commentary = (props) => {
             toggle={() => { setUndoErrorModal(null) }}
             undoError={undoErrorModal}
         />}
-        {isPaneltyPopup && <PenaltyModal
+        {/* {isPaneltyPopup && <PenaltyModal
             toggle={() => { setIsPaneltyPopup(null) }}
             isOpen={true}
             selectedPenalty={(selectedPenalty) => {
                 updatePanelty(selectedPenalty)
                 setIsPaneltyPopup(null)
             }}
-        />}
+        />} */}
         {/* {showRretiredHurt && <RetiredHurtModal
             toggle={() => setShowRretiredHurt(false)}
             onsubmit={onRetiredHurtClick}
