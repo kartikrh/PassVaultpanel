@@ -1076,7 +1076,7 @@ export const CreateEventMarket = () => {
         );
     };
 
-    const renderMarketCategory = (categoryId, markets, sectionKey) => console.log("markets", markets) || (
+    const renderMarketCategory = (categoryId, markets, sectionKey) => (
         <Card key={categoryId}>
             <CardHeader>
                 {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
