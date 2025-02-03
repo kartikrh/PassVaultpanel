@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 import "./CommentaryCss.css";
 import Switch from "react-switch";
 
@@ -160,6 +160,7 @@ const NewCommentaryScreen = ({
   currentOver,
   showWicketModal,
   showChangeOverModal,
+  showPlayerModal,
   bowlingTeam,
   bowlingTeamDetails,
   toggle,
@@ -169,6 +170,10 @@ const NewCommentaryScreen = ({
   onYesClick,
   battingTeam,
   bowlerName,
+  overPopUpForBowler,
+  isBowler,
+  playerList,
+  selectPlayer,
   extraType,
   extrasTypeIsOpen,
   updateExtrasExtrasType,
@@ -1190,7 +1195,7 @@ const NewCommentaryScreen = ({
 
               {/* Number Pad */}
               <div className="d-flex justify-content-center m-0 p-0 w-100 g-1">
-                {actionPopup || showWicketModal || extrasTypeIsOpen || showChangeOverModal ? (
+                {actionPopup || showWicketModal || extrasTypeIsOpen || showChangeOverModal || showPlayerModal ? (
                   <div
                     className={`row row-cols-2 g-2 col-12${
                       isLoading ? "disable-button" : ""
@@ -1793,6 +1798,14 @@ const NewCommentaryScreen = ({
                                       </div> */}
                                   </div>
                       </>
+                    ) : showPlayerModal ? (
+                      <SelectPlayerControls
+                        isOpen={isOpen}
+                        toggle={toggle}
+                        playerList={playerList}
+                        selectPlayer={selectPlayer}
+                        isBowler={isBowler}
+                      />
                     ) : (
                       <>
                         <div className="col" onClick={onUndoClick}>
@@ -1857,7 +1870,7 @@ const NewCommentaryScreen = ({
                   <>
                     <div
                       className={`row row-cols-2 g-2 col-6 ${
-                        isLoading || actionPopup || showWicketModal || showChangeOverModal
+                        isLoading || actionPopup || showWicketModal || showChangeOverModal || showPlayerModal
                           ? "disable-button"
                           : ""
                       }`}

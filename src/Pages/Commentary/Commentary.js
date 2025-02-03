@@ -2203,6 +2203,7 @@ const Commentary = (props) => {
             // onSubmit={handleWicket}
             // bowlingTeam={players[BOWLING_TEAM]}
             // bowlingTeamDetails={teams[BOWLING_TEAM]}
+            //Wicket Modal
             extraType={extrasType}
             {...(showWicketModal && {
                 isOpen: showWicketModal,
@@ -2262,6 +2263,32 @@ const Commentary = (props) => {
                 bowlerName:getPlayerNameById(players, currentOver?.bowlerId, false),
                 onPitchPlayers:onPitchPlayers,
             })}
+            //Select Player Modal
+            {...!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+                winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList &&
+                {
+                    isOpen:changePlayerList ? true : false,
+                    showPlayerModal: true,
+                    toggle:isWicketChange ? false : () => {
+                        setChangePlayerList(undefined)
+                        setIsSwapPlayer(undefined)
+                        setOverPopUpForBowler(undefined)
+                        setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
+                    },
+                    overPopUpForBowler:overPopUpForBowler,
+                    isBowler:(isChangeBowler.isChange || isBowlerrChange) ? true : false,
+                    playerList:changePlayerList,
+                    selectPlayer:(newPlayerId) => {
+                        if (isSwapPlayer) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
+                        else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
+                        else {
+                            setOverPopUpForBowler(undefined)
+                            setIsBowlerrChange(undefined)
+                            onPlayerChange(newPlayerId)
+                        }
+                    }
+                }
+            } 
 
             isSelectPlayerModalOpen={!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
                 winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList}
@@ -2334,7 +2361,7 @@ const Commentary = (props) => {
             handleWheelShowToggle={handleWheelShowToggle}
             isWheelShow={isWheelShow}
         /> */}
-        {!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+        {/* {!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={isWicketChange ? false : () => {
@@ -2355,7 +2382,7 @@ const Commentary = (props) => {
                         onPlayerChange(newPlayerId)
                     }
                 }}
-            />}
+            />} */}
         {/* {extrasType && < ExtrasModal
             isOpen={true}
             toggle={() => { setExtrasType(undefined) }}
