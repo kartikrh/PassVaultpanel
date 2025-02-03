@@ -317,6 +317,13 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        type: TEXT,
+        name: "notIncludedOver",
+        label: "Not Include Over",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         name: "isAutoCancel",
         label: "Auto Cancel",
         type: SWITCH,
