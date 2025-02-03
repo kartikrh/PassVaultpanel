@@ -1219,13 +1219,13 @@
   margin-top: 1rem;
 }
 
-.shot-types-container {
+/* .shot-types-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
   padding: 20px;
-}
+} */
 
 .market-template-list {
   max-height: 450px;
@@ -1239,11 +1239,11 @@
 }
 
 .cricket-field-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 400px;
-  height: 400px;
+  /* position: absolute; */
+  /* top: 0; */
+  /* left: 0; */
+  width: 100%;
+  /* height: 100%; */
 }
 
 .cricket-field-svg {

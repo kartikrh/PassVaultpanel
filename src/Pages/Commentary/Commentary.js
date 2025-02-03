@@ -2149,8 +2149,6 @@ const Commentary = (props) => {
             });
     };
 
-    console.log("showWicketModal", showWicketModal)
-
     return <>
         {/* <CommentaryScreen */}
         <NewCommentaryScreen
@@ -2333,13 +2331,13 @@ const Commentary = (props) => {
             {...(showCricketFieldModal && {
                 cricketFieldData: cricketFieldData,
                 shotTypes: propsData?.commentaryData?.shotTypes ,
-                    isShotType : isShotType,
-                    handleShotTypeToggle : handleShotTypeToggle,
-                    cricketFieldIsOpen : showCricketFieldModal,
-                    cricketFieldToggle : () => {
-                        setShowCricketFieldModal(undefined);
-                        setIsWheelShowComplete(true);
-                    }
+                isShotType : isShotType,
+                handleShotTypeToggle : handleShotTypeToggle,
+                cricketFieldIsOpen : true,
+                cricketFieldToggle : () => {
+                    setShowCricketFieldModal(undefined);
+                    setIsWheelShowComplete(true);
+                }
             })}
         />
         
@@ -2533,6 +2531,7 @@ const Commentary = (props) => {
             />
             : null}
         {retryModel && <RetryModel errorMsg={retryModel} />}
+        {/* {console.log("showCricketFieldModal", showCricketFieldModal)} */}
         {/* {showCricketFieldModal && (
             <CricketFieldModal
                 cricketFieldData={cricketFieldData}

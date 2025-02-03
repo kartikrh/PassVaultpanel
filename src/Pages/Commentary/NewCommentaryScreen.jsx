@@ -207,7 +207,8 @@ const NewCommentaryScreen = ({
   cricketFieldIsOpen,
   cricketFieldToggle
 }) => {
-  // console.log("retiredHurtonsubmit",typeof retiredHurtonsubmit)
+  console.log("cricketFieldIsOpen",cricketFieldIsOpen)
+
   const [changePlayerType, setChangePlayerType] = useState(false);
   const [trackingBall, setTrackingBall] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -904,19 +905,19 @@ const NewCommentaryScreen = ({
   };
 
   const check = () => {
-    console.log("actionPopup", actionPopup)
     showWicketModal && toggle()
     (retiredHurtisOpen && !changePlayerType) && retiredHurttoggle()
     extrasTypeIsOpen && extrasTypeToggle()
     actionPopup &&  setActionPopup(false)
     showRunsPopup && setShowRunsPopup(false)
+    cricketFieldIsOpen && cricketFieldToggle()
   }
 
-  console.log("cricketFieldIsOpen", cricketFieldIsOpen)
-  console.log("showChangeOverModal", showChangeOverModal)
-  console.log("showPlayerModal", showPlayerModal)
-  console.log("extrasTypeIsOpen", extrasTypeIsOpen)
-  console.log("showWicketModal", showWicketModal)
+  // console.log("cricketFieldIsOpen", cricketFieldIsOpen)
+  // console.log("showChangeOverModal", showChangeOverModal)
+  // console.log("showPlayerModal", showPlayerModal)
+  // console.log("extrasTypeIsOpen", extrasTypeIsOpen)
+  // console.log("showWicketModal", showWicketModal)
 
   return ( 
     <div className="container-fluid text-white py-4">
@@ -1115,7 +1116,7 @@ const NewCommentaryScreen = ({
                   {(actionPopup ||
                 showWicketModal ||
                 extrasTypeIsOpen ||
-                showChangeOverModal) && 
+                showChangeOverModal || cricketFieldIsOpen) && 
                   <button className="control-center-back-btn me-2" onClick={check}>
                     <img
                       role="button"
@@ -1149,7 +1150,7 @@ const NewCommentaryScreen = ({
 
               {/* Number Pad */}
               <div className="d-flex justify-content-center m-0 p-0 w-100 g-1">
-                {actionPopup || showWicketModal || extrasTypeIsOpen || showChangeOverModal || showPlayerModal ? (
+                {actionPopup || showWicketModal || extrasTypeIsOpen || showChangeOverModal || showPlayerModal || cricketFieldIsOpen ? (
                   <div
                     className={`row row-cols-2 g-2 col-12 ${
                       isLoading ? "disable-button" : ""
@@ -1460,7 +1461,7 @@ const NewCommentaryScreen = ({
                                   {showFields.fielder2 && (
                                     <div>
                                       <Select
-                                        classNamePrefix="select2-selection"
+                                        classNamePrefix="score-dropdown-select2-selection"
                                         value={bowlingPlayerList.find(
                                           (p) => p.value === wicketData.fielder2
                                         )}
@@ -1806,17 +1807,15 @@ const NewCommentaryScreen = ({
                       />
                       </div>
                     ) : cricketFieldIsOpen ? (
-                    // <div className="col-12"> 
-                    // {console.log("dfsg")}
-                    //   <CricketFieldControls
-                    //     cricketFieldData={cricketFieldData}
-                    //     shotTypes={shotTypes}
-                    //     isShotType={isShotType}
-                    //     handleShotTypeToggle={handleShotTypeToggle}
-                    //     toggle={cricketFieldToggle}
-                    //   />
-                    // </div>
-                    <div>dgdfg</div>
+                    <div className="col-12"> 
+                      <CricketFieldControls
+                        cricketFieldData={cricketFieldData}
+                        shotTypes={shotTypes}
+                        isShotType={isShotType}
+                        handleShotTypeToggle={handleShotTypeToggle}
+                        toggle={cricketFieldToggle}
+                      />
+                    </div>
                     )
                     
                     :(
