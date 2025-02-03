@@ -49,6 +49,7 @@ import SelectPlayerControls from "./CommentryRightControls/SelectPlayerControls"
 import { generateBallLabelFromBall } from "./functions";
 import RunsControls from "./CommentryRightControls/RunsControls";
 import { PenaltyControls } from "./CommentryRightControls/PenaltyControls";
+import CricketFieldControls from "./CommentryRightControls/CricketFieldControls";
 
 // const CenteredBadge = styled.div`
 //   position: absolute;
@@ -199,6 +200,12 @@ const NewCommentaryScreen = ({
   PenaltyToggle,
   PenaltyIsOpen,
   PenaltySelectedPenalty,
+  cricketFieldData,
+  shotTypes,
+  isShotType,
+  handleShotTypeToggle,
+  cricketFieldIsOpen,
+  cricketFieldToggle
 }) => {
   // console.log("retiredHurtonsubmit",typeof retiredHurtonsubmit)
   const [changePlayerType, setChangePlayerType] = useState(false);
@@ -896,9 +903,22 @@ const NewCommentaryScreen = ({
       (battingTeam?.teamPenaltyRuns || 0),
   };
 
-  console.log("showWicketModal ds", showWicketModal);
+  const check = () => {
+    console.log("actionPopup", actionPopup)
+    showWicketModal && toggle()
+    (retiredHurtisOpen && !changePlayerType) && retiredHurttoggle()
+    extrasTypeIsOpen && extrasTypeToggle()
+    actionPopup &&  setActionPopup(false)
+    showRunsPopup && setShowRunsPopup(false)
+  }
 
-  return (
+  console.log("cricketFieldIsOpen", cricketFieldIsOpen)
+  console.log("showChangeOverModal", showChangeOverModal)
+  console.log("showPlayerModal", showPlayerModal)
+  console.log("extrasTypeIsOpen", extrasTypeIsOpen)
+  console.log("showWicketModal", showWicketModal)
+
+  return ( 
     <div className="container-fluid text-white py-4">
       {/* Score Section */}
       <Row>
@@ -1096,7 +1116,7 @@ const NewCommentaryScreen = ({
                 showWicketModal ||
                 extrasTypeIsOpen ||
                 showChangeOverModal) && 
-                  <button className="control-center-back-btn me-2">
+                  <button className="control-center-back-btn me-2" onClick={check}>
                     <img
                       role="button"
                       className="back-icon"
@@ -1129,21 +1149,15 @@ const NewCommentaryScreen = ({
 
               {/* Number Pad */}
               <div className="d-flex justify-content-center m-0 p-0 w-100 g-1">
-<<<<<<< HEAD
-                {actionPopup ||
-                showWicketModal ||
-                extrasTypeIsOpen ||
-                showChangeOverModal ? (
-=======
                 {actionPopup || showWicketModal || extrasTypeIsOpen || showChangeOverModal || showPlayerModal ? (
->>>>>>> ffa2de04795e5879788347410c40eeebbe81a0dd
                   <div
-                    className={`row row-cols-2 g-2 col-12${
+                    className={`row row-cols-2 g-2 col-12 ${
                       isLoading ? "disable-button" : ""
                     }`}
                   >
+                    {console.log("fdsgfd")}
                     {actionPopup ? (
-                      <div className="col-8 row row-cols-2">
+                      <div className="col-12 row row-cols-2">
                         {inningsChangeisOpen ? (
                           <div className="col-8 d-flex flex-column m-0 p-0">
                             <div>
@@ -1236,14 +1250,14 @@ const NewCommentaryScreen = ({
                                     {onPitchPlayers?.[NON_STRIKE]?.playerName}
                                   </button>
                                 </div>
-                                <div
+                                {/* <div
                                   className="col-6"
                                   onClick={() => retiredHurttoggle()}
                                 >
                                   <button className="score-control-conformation-close-btn">
                                     Close
                                   </button>
-                                </div>
+                                </div> */}
                               </div>
                             )}
                             {changePlayerType && (
@@ -1259,10 +1273,12 @@ const NewCommentaryScreen = ({
                             )}
                           </div>
                         ) : showRunsPopup ? (
+                          <div className="col-8">
                           <RunsControls
                             toggle={() => setShowRunsPopup(false)}
                             onSubmitClick={(runs) => handleRuns(runs, 1)}
                           />
+                          </div>
                         ) : PenaltyIsOpen ? (
                           <PenaltyControls
                             toggle={PenaltyToggle}
@@ -1270,7 +1286,7 @@ const NewCommentaryScreen = ({
                             selectedPenalty={PenaltySelectedPenalty}
                           />
                         ) : (
-                          <div className="col-12 row row-cols-2 ">
+                          <div className="col-8 row row-cols-2">
                             <div
                               className="col my-1"
                               onClick={() => {
@@ -1355,21 +1371,21 @@ const NewCommentaryScreen = ({
                                 R. to Toss
                               </button>
                             </div>
-                            <div className="col-12 my-1">
+                            {/* <div className="col-12 my-1">
                               <button
                                 onClick={() => setActionPopup(false)}
                                 className="score-control-close-btn"
                               >
                                 Close
                               </button>
-                            </div>
+                            </div> */}
                           </div>
                         )}
                       </div>
                     ) : showWicketModal ? (
-                      <div className="col-8 row row-cols-2 ">
+                      <div className="col-12 row row-cols-2 ">
                         {currentStep === 1 ? (
-                          <>
+                          <div className="col-8  row row-cols-2">
                             {(extraType
                               ? EXTRAS_WICKET_TYPE
                               : WICKET_TYPE_LIST
@@ -1391,20 +1407,14 @@ const NewCommentaryScreen = ({
                                 </button>
                               </div>
                             ))}
-                            <div className="col my-2" onClick={handleNext}>
+                            <div className="col-12 my-2 mt-5" onClick={handleNext}>
                               <button className="score-control-confirm-ball-btns">
                                 Next
                               </button>
                             </div>
-                            <div className="col my-2" onClick={toggle}>
-                              <button className="score-control-conformation-close-btn">
-                                Close
-                              </button>
-                            </div>
-                          </>
+                          </div>
                         ) : !allFalse ? (
                           <div className="col-12 mb-2">
-                            {console.log("showWicketModal 2")}
                             <div className="d-flex gap-2">
                               <div className="col-6">
                                 <div className="col-6">
@@ -1412,16 +1422,11 @@ const NewCommentaryScreen = ({
                                     {getWicketTypeLabel()}
                                   </button>
                                 </div>
-                                {/* {extraType && (
-                                  <div className="mb-3">
-                                    Ball Type: {extraType}
-                                  </div>
-                                )} */}
                                 <div className="my-4 col-12">
                                   {!extraType && showFields.runs && (
                                     <div>
                                       <input
-                                        className="form-control"
+                                        className="runs-input"
                                         type="number"
                                         value={wicketData.runs}
                                         onChange={(e) =>
@@ -1473,35 +1478,14 @@ const NewCommentaryScreen = ({
                                 </div>
                               </div>
                               <div className="col-6">
-                                <div className="col-6">
-                                  <div className="">Select Batsman</div>
-                                </div>
                                 {showFields.batterId && (
                                   <div className="my-4">
+                                    <div className="col-6">
+                                      <div className="">Select Batsman</div>
+                                    </div>
                                     <div className="wicket-section-header mb-2"></div>
                                     <div className="">
                                       <div className="col-12">
-                                        {/* <CardComponent
-                                        title={
-                                          onPitchPlayers?.[ON_STRIKE]
-                                            ?.playerName
-                                        }
-                                        selectIcon="bx bxs-check-circle"
-                                        onClickColor="#099680"
-                                        bgColor="#55c6b4"
-                                        check={
-                                          onPitchPlayers?.[ON_STRIKE]
-                                            ?.commentaryPlayerId ===
-                                          wicketData.batterId
-                                        }
-                                        onClick={() =>
-                                          handleChange(
-                                            "batterId",
-                                            onPitchPlayers?.[ON_STRIKE]
-                                              ?.commentaryPlayerId
-                                          )
-                                        }
-                                      /> */}
                                         <div
                                           className="col my-4"
                                           onClick={() =>
@@ -1581,15 +1565,10 @@ const NewCommentaryScreen = ({
                                 )}
                               </div>
                             </div>
-                            <div className="col d-flex justify-content-center gap-4 px-3 col-6">
-                              <div className="col-6" onClick={handleWicketNext}>
+                            <div className="col d-flex justify-content-center gap-4 col-6">
+                              <div className="col-12" onClick={handleWicketNext}>
                                 <button className="score-control-confirm-ball-btns">
-                                  Confirm
-                                </button>
-                              </div>
-                              <div className="col-6" onClick={toggle}>
-                                <button className="score-control-conformation-close-btn">
-                                  Close
+                                  Update
                                 </button>
                               </div>
                             </div>
@@ -1602,23 +1581,23 @@ const NewCommentaryScreen = ({
                               "bowler"
                             )}
                             <div className="col d-flex justify-content-center gap-4 px-3">
-                              <div className="col-6" onClick={handleSubmit}>
+                              <div className="col-12" onClick={handleSubmit}>
                                 <button className="score-control-confirm-ball-btns">
-                                  Confirm
+                                  Update
                                 </button>
                               </div>
-                              <div className="col-6" onClick={toggle}>
+                              {/* <div className="col-6" onClick={toggle}>
                                 <button className="score-control-conformation-close-btn">
                                   Close
                                 </button>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         )}
                       </div>
                     ) : extrasTypeIsOpen ? (
                       <div className="col-6">
-                        <div className="col-8">
+                        <div className="col-6">
                           <button className="score-control-ball-types-btns active">
                             {extraType?.type || extraType}
                           </button>
@@ -1627,7 +1606,7 @@ const NewCommentaryScreen = ({
                           <>
                             {
                               <input
-                                className="form-control"
+                                className="runs-input"
                                 type="number"
                                 value={run}
                                 id={"runs"}
@@ -1658,7 +1637,7 @@ const NewCommentaryScreen = ({
                             )}
                           </>
                         </div>
-                        <div className="col mb-4">
+                        <div className="col mb-2 mt-5">
                           <button
                             onClick={() => extraTypehandleSubmit(WICKET)}
                             className="score-control-wicket-ball-btns"
@@ -1666,20 +1645,20 @@ const NewCommentaryScreen = ({
                             Wicket
                           </button>
                         </div>
-                        <div className="col d-flex justify-content-center gap-4 px-3">
+                        <div className="col d-flex justify-content-center gap-4">
                           <div
-                            className="col-6"
+                            className="col-12"
                             onClick={() => extraTypehandleSubmit(EXTRAS)}
                           >
                             <button className="score-control-confirm-ball-btns">
-                              Confirm
+                              Update
                             </button>
                           </div>
-                          <div className="col-6" onClick={extrasTypeToggle}>
+                          {/* <div className="col-6" onClick={extrasTypeToggle}>
                             <button className="score-control-conformation-close-btn">
                               Close
                             </button>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     ) : showChangeOverModal ? (
@@ -1817,6 +1796,7 @@ const NewCommentaryScreen = ({
                         </div>
                       </>
                     ) : showPlayerModal ? (
+                      <div className="col-12">
                       <SelectPlayerControls
                         isOpen={isOpen}
                         toggle={toggle}
@@ -1824,7 +1804,22 @@ const NewCommentaryScreen = ({
                         selectPlayer={selectPlayer}
                         isBowler={isBowler}
                       />
-                    ) : (
+                      </div>
+                    ) : cricketFieldIsOpen ? (
+                    // <div className="col-12"> 
+                    // {console.log("dfsg")}
+                    //   <CricketFieldControls
+                    //     cricketFieldData={cricketFieldData}
+                    //     shotTypes={shotTypes}
+                    //     isShotType={isShotType}
+                    //     handleShotTypeToggle={handleShotTypeToggle}
+                    //     toggle={cricketFieldToggle}
+                    //   />
+                    // </div>
+                    <div>dgdfg</div>
+                    )
+                    
+                    :(
                       <>
                         <div className="col" onClick={onUndoClick}>
                           <button className="score-control-ball-types-btns">
@@ -1888,15 +1883,8 @@ const NewCommentaryScreen = ({
                   <>
                     <div
                       className={`row row-cols-2 g-2 col-6 ${
-<<<<<<< HEAD
-                        isLoading ||
-                        actionPopup ||
-                        showWicketModal ||
-                        showChangeOverModal
-=======
                         isLoading || actionPopup || showWicketModal || showChangeOverModal || showPlayerModal
->>>>>>> ffa2de04795e5879788347410c40eeebbe81a0dd
-                          ? "disable-button"
+                          ? " disable-button"
                           : ""
                       }`}
                       style={{ width: "50%" }}
@@ -2029,6 +2017,7 @@ const NewCommentaryScreen = ({
             </div>
           </div>
         </Col>
+        
         <Col xs={12} md={5} lg={5}>
           {/* Overs Details */}
           <div className="col">

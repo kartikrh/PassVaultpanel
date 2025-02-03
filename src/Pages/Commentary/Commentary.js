@@ -2329,6 +2329,18 @@ const Commentary = (props) => {
                     }
                 }
             }}
+            // wheel
+            {...(showCricketFieldModal && {
+                cricketFieldData: cricketFieldData,
+                shotTypes: propsData?.commentaryData?.shotTypes ,
+                    isShotType : isShotType,
+                    handleShotTypeToggle : handleShotTypeToggle,
+                    cricketFieldIsOpen : showCricketFieldModal,
+                    cricketFieldToggle : () => {
+                        setShowCricketFieldModal(undefined);
+                        setIsWheelShowComplete(true);
+                    }
+            })}
         />
         
         {/* <CommentaryScreen
@@ -2521,7 +2533,7 @@ const Commentary = (props) => {
             />
             : null}
         {retryModel && <RetryModel errorMsg={retryModel} />}
-        {showCricketFieldModal && (
+        {/* {showCricketFieldModal && (
             <CricketFieldModal
                 cricketFieldData={cricketFieldData}
                 shotTypes={propsData?.commentaryData?.shotTypes}
@@ -2533,7 +2545,7 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }}
             />
-        )}
+        )} */}
     </>
 }
 

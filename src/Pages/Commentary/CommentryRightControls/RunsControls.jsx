@@ -15,12 +15,12 @@ const RunsControls = ({ toggle, onSubmitClick }) => {
   }, []);
   return (
     // <div backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
-    <div className="col">
+    <div className="col-12 min-vh-40">
       <div toggle={toggle}> Runs</div>
       <div>
         Please Enter Runs:
         <input
-          className="form-control"
+          className="runs-input"
           type="number"
           value={runs}
           id={"runs"}
@@ -30,15 +30,15 @@ const RunsControls = ({ toggle, onSubmitClick }) => {
           step={1}
         />
       </div>
-      <div className="col d-flex justify-content-center gap-4 px-3 my-4">
-        <div className="col-6" onClick={() => {onSubmitClick(+runs); toggle()}}>
+      <div className="col d-flex justify-content-center gap-4 my-4">
+        <div className="col-12" onClick={() => {onSubmitClick(+runs); toggle()}}>
           <button className="score-control-confirm-ball-btns">Submit</button>
         </div>
-        <div className="col-6" onClick={toggle}>
+        {/* <div className="col-6" onClick={toggle}>
           <button className="score-control-conformation-close-btn">
             Close
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

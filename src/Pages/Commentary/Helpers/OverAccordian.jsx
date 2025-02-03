@@ -263,7 +263,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 <OverContainer>
                     <div className="d-flex justify-content-between w-100 px-0">
                         <PlayerInfo>
-                            {console.log("bowler", bowler)}
                             {bowler?.playerimage ?
                                 <Avatar
                                     src={bowler?.playerimage}
