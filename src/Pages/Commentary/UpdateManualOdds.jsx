@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     Paper, Radio, RadioGroup, FormControlLabel, FormControl,
     Switch, TextField, Table, TableBody, TableCell, TableContainer,
@@ -150,6 +150,7 @@ export const UpdateManualOdds = () => {
         main: '',
         point: ''
     });
+    const settingsRef = useRef(settings);
 
     const handlePriceCalculations = (backPrice, isSelected) => {
         backPrice = parseFloat(backPrice || 0);
@@ -1064,6 +1065,9 @@ export const UpdateManualOdds = () => {
             return newSavedPrices;
         });
     };
+    useEffect(() => {
+        settingsRef.current = settings;
+    }, [settings]);
 
     useEffect(() => {
         if (!selectedRunner || isLive) return;
@@ -1292,7 +1296,6 @@ export const UpdateManualOdds = () => {
         };
     }, [socket, abOpen, abSuspend, runners, marketStatus]);
 
-    // MARKET_RUNNER_CONNECT socket logic
     useEffect(() => {
         if (!socket || !rateSourceRefID.length) return;
 
@@ -1306,6 +1309,8 @@ export const UpdateManualOdds = () => {
                 if (!message?.[0]?.runners || message[0].runners.length !== 2) return;
 
                 const socketRunners = message[0].runners;
+                const currentSettings = settingsRef.current;
+
                 console.log("Received market runner data:", {
                     SelectedBackPrice: socketRunners[0]?.backPrice,
                     SelectedLayPrice: socketRunners[0]?.layPrice,
@@ -1316,7 +1321,7 @@ export const UpdateManualOdds = () => {
                 // Adjust runners with bfRateDiff
                 const adjustedRunners = socketRunners.map(runner => ({
                     ...runner,
-                    backPrice: parseFloat((runner.backPrice + parseFloat(settings.bfRateDiff)).toFixed(2))
+                    backPrice: parseFloat((runner.backPrice + parseFloat(currentSettings.bfRateDiff)).toFixed(2))
                 }));
 
                 // Find runner with minimum back price
@@ -1355,7 +1360,7 @@ export const UpdateManualOdds = () => {
                 setRunners(prevRunners => {
                     // Calculate new values for logging
                     const newSelectedBackPrice = minBackRunner.backPrice;
-                    const newSelectedLayPrice = parseFloat((newSelectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                    const newSelectedLayPrice = parseFloat((newSelectedBackPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
                     const newNonSelectedBackPrice = parseFloat((1 / (1 - (1 / newSelectedLayPrice))).toFixed(2));
                     const newNonSelectedLayPrice = parseFloat((1 / (1 - (1 / newSelectedBackPrice))).toFixed(2));
 
@@ -1382,13 +1387,13 @@ export const UpdateManualOdds = () => {
                                 layPrice = 1.01;
                                 backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
                             } else {
-                                layPrice = parseFloat((backPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                                layPrice = parseFloat((backPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
                             }
 
                             // Calculate rates using existing calculateRunnerRates function
                             const newRates = calculateRunnerRates({
                                 back: { price: backPrice }
-                            }, settings, {
+                            }, currentSettings, {
                                 forceCalculateLay: true,
                                 isSocketData: true
                             });
@@ -1419,7 +1424,7 @@ export const UpdateManualOdds = () => {
                                 selectedLayPrice = 1.01;
                                 selectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
                             } else {
-                                selectedLayPrice = selectedBackPrice + parseFloat(settings.rateDifferent);
+                                selectedLayPrice = selectedBackPrice + parseFloat(currentSettings.rateDifferent);
                             }
 
                             const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
@@ -1428,7 +1433,7 @@ export const UpdateManualOdds = () => {
                             // Calculate rates for unselected runner
                             const newRates = calculateRunnerRates({
                                 back: { price: backPrice }
-                            }, settings, {
+                            }, currentSettings, {
                                 forceCalculateLay: true,
                                 isSocketData: true
                             });
@@ -1468,7 +1473,8 @@ export const UpdateManualOdds = () => {
                 socket.off(MARKET_RUNNER_DATA, marketRunnerListener);
             }
         };
-    }, [isLive, socket, rateSourceRefID, settings]);
+    }, [isLive, socket, rateSourceRefID]);
+
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
             handleRunnerSelection(runners[0].runnerId);
