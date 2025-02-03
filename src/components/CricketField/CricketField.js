@@ -213,7 +213,7 @@ const CricketField = ({ runs, boundary, line, setLine }) => {
   };
 
   return (
-    <div className="cricket-field">
+    <div className="">
       <img
         src="/images/cricket_field.png"
         alt="Cricket Field"
