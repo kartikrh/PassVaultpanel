@@ -128,7 +128,10 @@ const SelectPlayerControls = ({
         </div>
         <div className=" row row-cols-2 g-2 col-12">
           {sortedPlayers?.map((value) => (
-            
+          //   onClick={() => {
+          //     setIsBowlerChange(false)
+          //     selectPlayer(value.commentaryPlayerId)
+          // }}
             <div
               key={value.commentaryPlayerId}
               className="col-6"
