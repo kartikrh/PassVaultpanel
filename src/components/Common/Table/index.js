@@ -65,6 +65,9 @@ const Index = forwardRef(
       singleCheck,
       setImportExportModelVisable,
       handlePlayerHistoryModalPopUp,
+      marketTypes,
+      categories,
+      setSelectedMarketType,
       eventTypes,
       selectedTableElementsLogs,
       competitionList,
@@ -794,6 +797,14 @@ const Index = forwardRef(
           value: 0,
           label: "Send Data Type"
         },
+        marketTypeName: {
+          value: 0,
+          label: "Market Type"
+        },
+        categoryName: {
+          value: 0,
+          label: "Category"
+        },
       });
       if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
         setDateRange(() => getDateRange(5));
@@ -874,6 +885,14 @@ const Index = forwardRef(
         sendDataType: {
           value: 0,
           label: "Send Data Type"
+        },
+        marketTypeName: {
+          value: 0,
+          label: "Market Type"
+        },
+        categoryName: {
+          value: 0,
+          label: "Category"
         },
       });
       if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
@@ -1436,6 +1455,60 @@ const Index = forwardRef(
                               options={matchType?.map((item) => ({
                                 label: item?.matchType,
                                 value: item?.matchTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                         {tableElement?.marketTypeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.marketTypeName}
+                              placeholder="Market Type"
+                              onChange={(e) => {
+                                handleTableActions("marketTypeId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  marketTypeName: e,
+                                  categoryName: { value: 0, label: "Category" },
+                                });
+                                setSelectedMarketType(e?.value)
+                              }}
+                              options={marketTypes?.map((item) => ({
+                                label: item?.marketTypeName,
+                                value: item?.marketTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.categorySelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.categoryName}
+                              placeholder="Category"
+                              onChange={(e) => {
+                                handleTableActions("marketTypeCategoryId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  categoryName: e,
+                                });
+                              }}
+                              options={categories?.map((item) => ({
+                                label: item?.categoryName,
+                                value: item?.marketTypeCategoryId,
                               }))}
                               classNamePrefix="select2-selection"
                             />

@@ -25,6 +25,9 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [matchType, setMatchType] = useState(undefined)
+  const [mtAndCategories, setMtAndCategories] = useState(null);
+  const [selectedMarketType, setSelectedMarketType] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [cloneValues, setCloneValues] = useState({
     marketTemplateId: "",
@@ -63,6 +66,16 @@ const Index = () => {
     .post("/admin/marketTemplate/matchTypeList", {})
     .then((response) => {
       setMatchType(response?.result)
+    })
+    .catch((error) => {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
+  }
+  const fetchMarketCategoriesList = async () =>{
+    await axiosInstance
+    .post("/admin/marketTemplate/mtAndCategories", {})
+    .then((response) => {
+      setMtAndCategories(response?.result);
     })
     .catch((error) => {
       dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -358,6 +371,20 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Market Type Name",
+      dataIndex: "marketTypeName",
+      key: "marketTypeName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Category Name",
+      dataIndex: "categoryName",
+      key: "categoryName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
@@ -488,6 +515,8 @@ const Index = () => {
     title: "Events",
     isActive: true,
     matchTypeSelect: true,
+    marketTypeSelect: true,
+    categorySelect: true,
     resetButton: true,
     reloadButton: true,
     clone: true,
@@ -499,12 +528,21 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData({ isActive: true });
-    fetchMatchTypeList()
+    fetchMatchTypeList();
+    fetchMarketCategoriesList();
   }, []);
+
+  useEffect(() => {
+    if(mtAndCategories && selectedMarketType) {
+      const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
+      setCategories(categoriesData || []);
+    }
+  },[mtAndCategories, selectedMarketType])
 
   const handleReload = (value) => {
     fetchData({ isActive: true });
     fetchMatchTypeList();
+    fetchMarketCategoriesList();
   };
   return (
     <React.Fragment>
@@ -526,6 +564,9 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addMarketTemplate"}
+            marketTypes={mtAndCategories?.marketTypes || []}
+            categories={categories}
+            setSelectedMarketType={setSelectedMarketType}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
