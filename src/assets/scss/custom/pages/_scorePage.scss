@@ -205,10 +205,15 @@ body[data-theme="dark"] {
   /* Lighter background on hover */
 }
 
+.css-6duc10-MuiAvatar-root{
+  border-radius: 4px !important;
+  background-color: #d8d8d8 !important;
+}
+
 .score-header-exit-btn {
   color: #fff !important;
   background-color: #E51717 !important;
-  padding: 6px 8px 12px;
+  padding: 6px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -597,7 +602,7 @@ body[data-theme="dark"] {
   width: 100% !important;
   border-radius: 200px !important;
 }
-.form-control {
+.runs-input {
   border: 0.5px solid #999999 !important;
   background-color: #F5F5F5 !important;
   color: #999999 !important;
@@ -871,7 +876,7 @@ body[data-theme="dark"] {
     background-color: #1A1D23 !important;
     color: #999999 !important;
   }
-  .form-control {
+  .runs-input {
     box-shadow:
       -0.89px -0.89px 1.79px 0px #0C0E1080 inset,
       0.89px 0.89px 1.79px 0px #282C364D inset;
