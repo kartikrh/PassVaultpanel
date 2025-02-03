@@ -1054,7 +1054,7 @@ export const CreateEventMarket = () => {
                                 ))}
                             </tr>
                             {market.runners && market.runners.length > 1 &&
-                                market.runners.slice(1).map((runner, runnerIndex) => (
+                                market.runners.slice(1)?.sort((a, b) => a.order - b.order).map((runner, runnerIndex) => (
                                     <tr key={`additional-runner-${runnerIndex}`}>
                                         <td colSpan={columns.length - runnerColumns.length}></td>
                                         {runnerColumns.map((column, runnerColIndex) => (
@@ -1076,7 +1076,7 @@ export const CreateEventMarket = () => {
         );
     };
 
-    const renderMarketCategory = (categoryId, markets, sectionKey) => (
+    const renderMarketCategory = (categoryId, markets, sectionKey) => console.log("markets", markets) || (
         <Card key={categoryId}>
             <CardHeader>
                 {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
