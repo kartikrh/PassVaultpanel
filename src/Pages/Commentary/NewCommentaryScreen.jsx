@@ -55,6 +55,7 @@ import ExtrasControl from "./CommentryRightControls/ExtrasControl";
 import ChangeInningsControls from "./CommentryRightControls/ChangeInningsControls";
 import RevertControls from "./CommentryRightControls/RevertControls";
 import RetiredHurtControls from "./CommentryRightControls/RetiredHurtControls";
+import ChangeOverControls from "./CommentryRightControls/ChangeOverControls";
 
 const CenteredBadge = styled.div`
   position: absolute;
@@ -180,8 +181,10 @@ const NewCommentaryScreen = ({
   const [actionPopup, setActionPopup] = useState(undefined);
   const [showRevertModal, setShowRevertModal] = useState(false);
   const [showRunsPopup, setShowRunsPopup] = useState(false);
+  const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
+  const [run, setRun] = useState(defaultValue);
+  const [isBoundary, setIsBoundary] = useState(undefined);
   const dispatch = useDispatch();
-  const [bowlingPlayerList, setBowlingPlayerList] = useState([]);
 
   const matchData = {
     maxOvers: 20,
@@ -341,12 +344,6 @@ const NewCommentaryScreen = ({
     };
   }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
 
-  // extra component
-
-  const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
-  const [run, setRun] = useState(defaultValue);
-  const [isBoundary, setIsBoundary] = useState(undefined);
-
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
     return () => {
@@ -361,82 +358,6 @@ const NewCommentaryScreen = ({
       }, 150);
     }
   }, [extrasTypeIsOpen]);
-
-  // extra component
-
-  // retired hut
- 
-  // retired hut
-
-  const generateBallfromArray = (ballArray = []) => {
-    return ballArray?.map((element, index) => {
-      const previousValue = ballArray[index - 1];
-      const nextValue = ballArray[index + 1];
-      const isWicket = +element?.isWicket !== 0;
-      const isBoundary = +element?.value === 6 || +element?.value === 4;
-      // const isBoundary = +element?.isBoundary !== 0
-      const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket);
-      const ballColor = isWicket
-        ? "wicket-overball"
-        : ballTypeAdd
-        ? "extra-overball"
-        : isBoundary
-        ? "boundary-overball"
-        : "regular-overball";
-      const ballFontColor = isWicket
-        ? "text-white"
-        : ballTypeAdd
-        ? "text-white"
-        : isBoundary
-        ? "text-white"
-        : "text-muted";
-      const ballValue = ballTypeAdd
-        ? element.value > 0
-          ? element.value
-          : ""
-        : element.value;
-      if (
-        previousValue &&
-        previousValue.isWicket &&
-        previousValue?.overCount === element?.overCount
-      ) {
-        return null;
-      }
-      let displayValue;
-      if (
-        isWicket &&
-        nextValue &&
-        nextValue?.overCount === element?.overCount
-      ) {
-        const nextIsWicket = +nextValue?.isWicket !== 0;
-        const nextBallTypeAdd = generateBallLabelFromBall(
-          nextValue?.type,
-          nextIsWicket
-        );
-        const nextBallValue = nextBallTypeAdd
-          ? nextValue.value > 0
-            ? nextValue.value
-            : ""
-          : nextValue.value;
-        displayValue = `${nextBallValue} ${
-          nextBallTypeAdd && nextBallValue ? "|" : ""
-        }${nextBallTypeAdd || ""}W`;
-      } else {
-        displayValue = `${ballValue} ${ballTypeAdd && ballValue ? "| " : ""} ${
-          ballTypeAdd || ""
-        }`;
-      }
-      return (
-        <div
-          key={`ball ${index}`}
-          className={`d-flex justify-content-center align-items-center ${ballColor}`}
-        >
-          {/* return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}> */}
-          {displayValue}
-        </div>
-      );
-    });
-  };
 
   const nextOverNumber = Math.ceil(currentOver?.over || 0) + 1;
 
@@ -464,6 +385,127 @@ const NewCommentaryScreen = ({
     showRunsPopup && setShowRunsPopup(false);
     cricketFieldIsOpen && cricketFieldToggle();
   };
+
+  const ButtonColumn = ({
+    label,
+    onClick,
+    className = "score-control-ball-types-btns",
+  }) => (
+    <div className="col" onClick={onClick}>
+      <button className={className}>{label}</button>
+    </div>
+  );
+  const RunButton = ({ label, onClick, className }) => (
+    <div className="col">
+      <button onClick={onClick} className={className}>
+        {label}
+      </button>
+    </div>
+  );
+
+  // For handling action popups (Change innings, revert, retired hurt, etc.)
+  const renderActionPopups = () => {
+    if (inningsChangeisOpen) {
+      return (
+        <ChangeInningsControls
+          isOpen={inningsChangeisOpen}
+          toggle={inningsChangetoggle}
+          onNoClick={inningsChangeNoClick}
+          onYesClick={inningsChangeYesClick}
+        />
+      );
+    }
+    if (showRevertModal) {
+      return (
+        <RevertControls
+          isOpen={showRevertModal}
+          toggle={() => setShowRevertModal(false)}
+          onYesClick={() => {
+            handleRevertToToss();
+            setShowRevertModal(false);
+          }}
+          onNoClick={() => setShowRevertModal(false)}
+        />
+      );
+    }
+    if (retiredHurtisOpen) {
+      return (
+        <RetiredHurtControls
+          toggle={() => {
+            setChangePlayerType(null);
+            setActionPopup(false);
+          }}
+          onsubmit={retiredHurtonsubmit}
+          onPitchPlayers={onPitchPlayers}
+          playerList={retiredHurtplayerList}
+          allBattingPlayers={allBattingPlayers}
+        />
+      );
+    }
+    if (showRunsPopup) {
+      return (
+        <RunsControls
+          toggle={() => setShowRunsPopup(false)}
+          onSubmitClick={(runs) => handleRuns(runs, 1)}
+        />
+      );
+    }
+    if (PenaltyIsOpen) {
+      return (
+        <PenaltyControls
+          toggle={PenaltyToggle}
+          isOpen={PenaltyIsOpen}
+          selectedPenalty={PenaltySelectedPenalty}
+        />
+      );
+    }
+
+    return <div className="col-8 row row-cols-2">{renderActionButtons()}</div>;
+  };
+
+  // Render action buttons for normal flow
+  const renderActionButtons = () => (
+    <>
+      <ActionButton label="5" onClick={() => setShowRunsPopup(true)} />
+      <ActionButton label="Penalty" onClick={() => showPaneltyRuns(true)} />
+      <ActionButton label="NB B" onClick={() => updateExtras(NO_BALL_BYE)} />
+      <ActionButton
+        label="NB LB"
+        onClick={() => updateExtras(NO_BALL_LEG_BYE)}
+      />
+      <ActionButton label="End Over" onClick={changeOver} />
+      <ActionButton label="End inn." onClick={endInnings} />
+      <ActionButton label="R. Hurt" onClick={handleRetiredHurt} />
+      <ActionButton
+        label="R. to Toss"
+        onClick={() => setShowRevertModal(true)}
+      />
+    </>
+  );
+
+  // A reusable ActionButton component
+  const ActionButton = ({ label, onClick }) => (
+    <div className="col my-1" onClick={onClick}>
+      <button className="score-control-action-btns">{label}</button>
+    </div>
+  );
+
+  // Render default controls (Undo, Remark, Bye, etc.)
+  const renderDefaultControls = () => (
+    <>
+      <ActionButton label="Undo" onClick={onUndoClick} />
+      <ActionButton label="Remark" />
+      <ActionButton label="Bye" onClick={() => updateExtras(BALL_BYE)} />
+      <ActionButton
+        label="Leg bye"
+        onClick={() => updateExtras(BALL_LEG_BYE)}
+      />
+      <ActionButton label="No Ball" onClick={() => updateExtras(NO_BALL)} />
+      <ActionButton label="Wide" onClick={() => updateExtras(BALL_WIDE)} />
+      <ActionButton label="Action" onClick={() => setActionPopup(true)} />
+      <ActionButton label="Wicket" onClick={onWicketClick} />
+    </>
+  );
 
   return (
     <div className="container-fluid text-white py-4">
@@ -714,141 +756,7 @@ const NewCommentaryScreen = ({
                   >
                     {actionPopup ? (
                       <div className="col-12 row row-cols-2">
-                        {inningsChangeisOpen ? (
-                          <ChangeInningsControls
-                            isOpen={inningsChangeisOpen}
-                            toggle={inningsChangetoggle}
-                            onNoClick={inningsChangeNoClick}
-                            onYesClick={inningsChangeYesClick}
-                          />
-                        ) : showRevertModal ? (
-                          <RevertControls
-                            isOpen={showRevertModal}
-                            toggle={() => setShowRevertModal(false)}
-                            onYesClick={() => {
-                              handleRevertToToss();
-                              setShowRevertModal(false);
-                            }}
-                            onNoClick={() => setShowRevertModal(false)}
-                          />
-                        ) : retiredHurtisOpen ? (
-                            <RetiredHurtControls
-                            toggle={() => {
-                              setChangePlayerType(null);
-                              setActionPopup(false);
-                            }}
-                              onsubmit={retiredHurtonsubmit}
-                              onPitchPlayers={onPitchPlayers}
-                              playerList={retiredHurtplayerList}
-                              allBattingPlayers={allBattingPlayers}
-                            />
-                        ) : showRunsPopup ? (
-                            <RunsControls
-                              toggle={() => setShowRunsPopup(false)}
-                              onSubmitClick={(runs) => handleRuns(runs, 1)}
-                            />
-                        ) : PenaltyIsOpen ? (
-                          <PenaltyControls
-                            toggle={PenaltyToggle}
-                            isOpen={PenaltyIsOpen}
-                            selectedPenalty={PenaltySelectedPenalty}
-                          />
-                        ) : (
-                          <div className="col-8 row row-cols-2">
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                setShowRunsPopup(true);
-                                // setActionPopup(false);
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                5
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                showPaneltyRuns(true);
-                                // setActionPopup(false);
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                Penalty
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                updateExtras(NO_BALL_BYE);
-                                setActionPopup(false);
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                NB B
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                updateExtras(NO_BALL_LEG_BYE);
-                                setActionPopup(false);
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                NB LB
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                changeOver();
-                                setActionPopup(false);
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                End Over
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                endInnings();
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                End inn.
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => {
-                                // setActionPopup(false);
-                                handleRetiredHurt();
-                              }}
-                            >
-                              <button className="score-control-action-btns">
-                                R. Hurt
-                              </button>
-                            </div>
-                            <div
-                              className="col my-1"
-                              onClick={() => setShowRevertModal(true)}
-                            >
-                              <button className="score-control-action-btns">
-                                R. to Toss
-                              </button>
-                            </div>
-                            {/* <div className="col-12 my-1">
-                              <button
-                                onClick={() => setActionPopup(false)}
-                                className="score-control-close-btn"
-                              >
-                                Close
-                              </button>
-                            </div> */}
-                          </div>
-                        )}
+                        {renderActionPopups()}
                       </div>
                     ) : showWicketModal ? (
                       <WicketControls
@@ -868,217 +776,34 @@ const NewCommentaryScreen = ({
                         updateExtras={updateExtrasExtrasType}
                       />
                     ) : showChangeOverModal ? (
-                      <>
-                        <div className="col-10">
-                          <div className="d-flex align-items-center justify-content-cneter gap-4">
-                            <div className="over-stat text-center p-3">
-                              <div className="over-modal-stat-value">
-                                {stats.runs}
-                              </div>
-                              <div className="over-modal-stat-label">Runs</div>
-                            </div>
-                            <div className="over-stat text-center p-3">
-                              <div className="over-modal-stat-value">
-                                {stats.overs}
-                              </div>
-                              <div className="over-modal-stat-label">Overs</div>
-                            </div>
-                            <div className="over-stat text-center p-3">
-                              <div className="over-modal-stat-value">
-                                {stats.wickets}
-                              </div>
-                              <div className="over-modal-stat-label">
-                                Wickets
-                              </div>
-                            </div>
-                            <div className="over-stat text-center p-3">
-                              <div className="over-modal-stat-value">
-                                {stats.extras}
-                              </div>
-                              <div className="over-modal-stat-label">
-                                Extras
-                              </div>
-                            </div>
-                          </div>
-
-                          <div
-                            className="over-modal-player-stats"
-                            style={{ border: "none" }}
-                          >
-                            <div
-                              className="over-modal-player-row over-modal-header-row"
-                              style={{ border: "none" }}
-                            >
-                              <div className="over-modal-player-name">
-                                Batter
-                              </div>
-                              <div className="over-modal-player-stat">R</div>
-                              <div className="over-modal-player-stat">B</div>
-                              <div className="over-modal-player-stat">4s</div>
-                              <div className="over-modal-player-stat">6s</div>
-                            </div>
-                            <div
-                              className="over-modal-player-row"
-                              style={{ border: "none" }}
-                            >
-                              <div className="over-modal-player-name">
-                                <strong>
-                                  {onPitchPlayers[ON_STRIKE]?.playerName +
-                                    "*" || "-"}
-                                </strong>
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[ON_STRIKE]?.batRun || 0}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[ON_STRIKE]?.batBall || 0}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[ON_STRIKE]?.batFour || 0}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[ON_STRIKE]?.batSix || 0}
-                              </div>
-                            </div>
-                            <div className="over-modal-player-row">
-                              <div className="over-modal-player-name">
-                                {onPitchPlayers[NON_STRIKE]?.playerName || "-"}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[NON_STRIKE]?.batRun || 0}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[NON_STRIKE]?.batBall || 0}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[NON_STRIKE]?.batFour || 0}
-                              </div>
-                              <div className="over-modal-player-stat">
-                                {onPitchPlayers[NON_STRIKE]?.batSix || 0}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="over-modal-info">
-                            <div className="over-modal-over-text">
-                              End of over{" "}
-                              {Math.ceil(battingTeam?.teamOver || 0)} by{" "}
-                              {bowlerName}
-                            </div>
-                            <div className="over-modal-balls-container">
-                              {generateBallfromArray(currentOverBalls)}
-                              <span className="over-modal-total">
-                                = {currentOver?.totalRun}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="d-flex align-items-center gap-4">
-                            <div onClick={onYesClick}>
-                              <button className="score-control-confirm-ball-btns">
-                                START NEXT OVER
-                              </button>
-                            </div>
-                            <div onClick={onNoClick}>
-                              <button className="score-control-conformation-close-btn">
-                                CONTINUE THIS OVER
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* <div className="over-modal-actions">
-                                          <Button
-                                              className="over-modal-start-btn"
-                                              onClick={onYesClick}
-                                          >
-                                              START NEXT OVER
-                                          </Button>
-                                          <Button
-                                              className="over-modal-continue-btn"
-                                              onClick={onNoClick}
-                                          >
-                                              CONTINUE THIS OVER
-                                          </Button>
-                                      </div> */}
-                        </div>
-                      </>
+                      <ChangeOverControls
+                        stats={stats}
+                        battingTeam={battingTeam}
+                        bowlerName={bowlerName}
+                        currentOver={currentOver}
+                        currentOverBalls={currentOverBalls}
+                        onYesClick={onYesClick}
+                        onNoClick={onNoClick}
+                        onPitchPlayers={onPitchPlayers}
+                      />
                     ) : showPlayerModal ? (
-                      <div className="col-12">
-                        <SelectPlayerControls
-                          isOpen={isOpen}
-                          toggle={toggle}
-                          playerList={playerList}
-                          selectPlayer={selectPlayer}
-                          isBowler={isBowler}
-                        />
-                      </div>
+                      <SelectPlayerControls
+                        isOpen={isOpen}
+                        toggle={toggle}
+                        playerList={playerList}
+                        selectPlayer={selectPlayer}
+                        isBowler={isBowler}
+                      />
                     ) : cricketFieldIsOpen ? (
-                      <div className="col-12">
-                        <CricketFieldControls
-                          cricketFieldData={cricketFieldData}
-                          shotTypes={shotTypes}
-                          isShotType={isShotType}
-                          handleShotTypeToggle={handleShotTypeToggle}
-                          toggle={cricketFieldToggle}
-                        />
-                      </div>
+                      <CricketFieldControls
+                        cricketFieldData={cricketFieldData}
+                        shotTypes={shotTypes}
+                        isShotType={isShotType}
+                        handleShotTypeToggle={handleShotTypeToggle}
+                        toggle={cricketFieldToggle}
+                      />
                     ) : (
-                      <>
-                        <div className="col" onClick={onUndoClick}>
-                          <button className="score-control-ball-types-btns">
-                            Undo
-                          </button>
-                        </div>
-                        <div className="col">
-                          <button className="score-control-ball-types-btns">
-                            Remark
-                          </button>
-                        </div>
-                        <div
-                          className="col"
-                          onClick={() => updateExtras(BALL_BYE)}
-                        >
-                          <button className="score-control-ball-types-btns">
-                            Bye
-                          </button>
-                        </div>
-                        <div
-                          className="col"
-                          onClick={() => updateExtras(BALL_LEG_BYE)}
-                        >
-                          <button className="score-control-ball-types-btns">
-                            Leg bye
-                          </button>
-                        </div>
-                        <div
-                          className="col"
-                          onClick={() => updateExtras(NO_BALL)}
-                        >
-                          <button className="score-control-ball-types-btns">
-                            No Ball
-                          </button>
-                        </div>
-                        <div className="col">
-                          <button
-                            onClick={() => updateExtras(BALL_WIDE)}
-                            className="score-control-ball-types-btns"
-                          >
-                            Wide
-                          </button>
-                        </div>
-                        <div onClick={() => setActionPopup(true)}>
-                          <button className="score-control-action-ball-btns">
-                            Action
-                          </button>
-                        </div>
-                        <div className="col">
-                          <button
-                            onClick={onWicketClick}
-                            className="score-control-wicket-ball-btns"
-                          >
-                            Wicket
-                          </button>
-                        </div>
-                      </>
+                      renderDefaultControls()
                     )}
                   </div>
                 ) : (
@@ -1095,54 +820,14 @@ const NewCommentaryScreen = ({
                       }`}
                       style={{ width: "50%" }}
                     >
-                      <div className="col">
-                        <button
-                          onClick={() => handleRuns(6, 1)}
+                      {["6", "0", "4", "1", "2", "3"].map((runs) => (
+                        <RunButton
+                          key={runs}
+                          label={runs}
+                          onClick={() => handleRuns(Number(runs), 1)}
                           className="score-control-ball-btn"
-                        >
-                          6
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button
-                          onClick={() => handleRuns(0, 1)}
-                          className="score-control-ball-btn"
-                        >
-                          0
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button
-                          onClick={() => handleRuns(4, 1)}
-                          className="score-control-ball-btn"
-                        >
-                          4
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button
-                          onClick={() => handleRuns(1, 1)}
-                          className="score-control-ball-btn"
-                        >
-                          1
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button
-                          onClick={() => handleRuns(2, 1)}
-                          className="score-control-ball-btn"
-                        >
-                          2
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button
-                          onClick={() => handleRuns(3, 1)}
-                          className="score-control-ball-btn"
-                        >
-                          3
-                        </button>
-                      </div>
+                        />
+                      ))}
                       <div className="col-12">
                         <button
                           onClick={() =>
@@ -1150,72 +835,40 @@ const NewCommentaryScreen = ({
                           }
                           className="score-control-ball-types-btns"
                         >
-                          {/* <img
-                        className="button-icon"
-                        src="icons/b.png"
-                        alt="Icon"
-                      /> */}
                           Ball Start
                         </button>
                       </div>
                     </div>
                     <div className="vertical-line my-2"></div>
                     <div className="row row-cols-2 g-2 col-6">
-                      <div className="col" onClick={onUndoClick}>
-                        <button className="score-control-ball-types-btns">
-                          Undo
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button className="score-control-ball-types-btns">
-                          Remark
-                        </button>
-                      </div>
-                      <div
-                        className="col"
+                      <ButtonColumn label="Undo" onClick={onUndoClick} />
+                      <ButtonColumn label="Remark" onClick={() => {}} />
+                      <ButtonColumn
+                        label="Bye"
                         onClick={() => updateExtras(BALL_BYE)}
-                      >
-                        <button className="score-control-ball-types-btns">
-                          Bye
-                        </button>
-                      </div>
-                      <div
-                        className="col"
+                      />
+                      <ButtonColumn
+                        label="Leg bye"
                         onClick={() => updateExtras(BALL_LEG_BYE)}
-                      >
-                        <button className="score-control-ball-types-btns">
-                          Leg bye
-                        </button>
-                      </div>
-                      <div
-                        className="col"
+                      />
+                      <ButtonColumn
+                        label="No Ball"
                         onClick={() => updateExtras(NO_BALL)}
-                      >
-                        <button className="score-control-ball-types-btns">
-                          No Ball
-                        </button>
-                      </div>
-                      <div className="col">
-                        <button
-                          onClick={() => updateExtras(BALL_WIDE)}
-                          className="score-control-ball-types-btns"
-                        >
-                          Wide
-                        </button>
-                      </div>
+                      />
+                      <ButtonColumn
+                        label="Wide"
+                        onClick={() => updateExtras(BALL_WIDE)}
+                      />
                       <div onClick={() => setActionPopup(true)}>
                         <button className="score-control-action-ball-btns">
                           Action
                         </button>
                       </div>
-                      <div className="col">
-                        <button
-                          onClick={onWicketClick}
-                          className="score-control-wicket-ball-btns"
-                        >
-                          Wicket
-                        </button>
-                      </div>
+                      <ButtonColumn
+                        label="Wicket"
+                        onClick={onWicketClick}
+                        className="score-control-wicket-ball-btns"
+                      />
                     </div>
                   </>
                 )}

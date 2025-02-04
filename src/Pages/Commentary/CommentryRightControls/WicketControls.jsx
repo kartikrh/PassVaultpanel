@@ -432,7 +432,7 @@ const handleWicketNext = () => {
               </div>
             )
           )}
-          <div className="col-12 my-2 mt-5" onClick={handleNext}>
+          <div className="col-12 my-2" onClick={handleNext}>
             <button className="score-control-confirm-ball-btns">Next</button>
           </div>
         </div>
