@@ -119,7 +119,7 @@ const SelectPlayerControls = ({
         <div className="col-6">
           <input
             id="playerNameInput"
-            className="form-control mb-3"
+            className="runs-input mb-3"
             type="text"
             placeholder="Player Name"
             value={search}
