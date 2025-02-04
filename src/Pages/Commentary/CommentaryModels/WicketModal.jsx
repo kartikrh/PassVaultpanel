@@ -351,14 +351,14 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                         <Row>
                             {(extraType ? EXTRAS_WICKET_TYPE : WICKET_TYPE_LIST).map((wicketType, index) => (
                                 <Col key={index} xs={4} md={4} lg={3}>
-                                    {/* <CardComponent
+                                    <CardComponent
                                         title={wicketType.label}
                                         selectIcon="bx bxs-check-circle"
                                         onClickColor="#099680"
                                         bgColor="#55c6b4"
                                         check={wicketType.value === wicketData.wicketType}
                                         onClick={() => handleChange("wicketType", wicketType.value)}
-                                    /> */}
+                                    />
                                 </Col>
                             ))}
                         </Row>
