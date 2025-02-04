@@ -381,9 +381,7 @@ const WicketControls = ({
     return wicketTypeObj?.label || "";
   };
   const allFalse = Object.values(showFields).every((value) => value === false);
-  console.log("allFalse", !allFalse)
-  console.log("showFields", showFields)
-  console.log("wicketData", wicketData)
+
 const handleWicketNext = () => {
     const fieldsToCheck = { ...showFields };
     if (wicketData.wicketType === RUN_OUT) {
