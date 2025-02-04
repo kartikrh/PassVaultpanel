@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import "../CommentaryCss.css";
-import CricketField from "../../../components/CricketField/CricketField";
+import CricketFieldNew from "../../../components/CricketField/CricketFieldNew";
 import axiosInstance from "../../../Features/axios";
 import Switch from "react-switch";
 import { useDispatch } from "react-redux";
@@ -134,7 +134,7 @@ const CricketFieldControls = ({
       </div> */}
       <div className="col-12 d-flex">
       <div className="col-6">
-          <CricketField
+          <CricketFieldNew
             runs={cricketFieldData?.run}
             boundary={cricketFieldData?.isBoundary}
             line={line}
@@ -157,7 +157,7 @@ const CricketFieldControls = ({
             </div>
           )}
           {/* : (
-            <CricketField
+            <CricketFieldNew
               runs={cricketFieldData?.run}
               boundary={cricketFieldData?.isBoundary}
               line={line}
