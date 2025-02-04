@@ -328,7 +328,7 @@ const WicketControls = ({
       return (
         <>
           {/* <h3>Batsman Details</h3> */}
-          <div className="wicket-modal-player-stats">
+          <div className="wicket-modal-player-stats mb-4">
             <div className="wicket-modal-player-row wicket-modal-header-row">
               <div className="wicket-modal-player-name">Batter</div>
               <div className="wicket-modal-player-stat">R</div>
@@ -572,7 +572,7 @@ const handleWicketNext = () => {
           </div>
           <div className="col d-flex justify-content-center gap-4 col-6">
             <div className="col-12" onClick={handleWicketNext}>
-              <button className="score-control-confirm-ball-btns">
+              <button className="score-control-confirm-ball-btns mt-4">
                 Update
               </button>
             </div>
@@ -582,10 +582,10 @@ const handleWicketNext = () => {
         <div className="col-12">
           {renderPlayerCard(getOutBatsman(), "batsman")}
           {renderPlayerCard(onPitchPlayers[CURRENT_BOWLER], "bowler")}
-          <div className="col d-flex justify-content-center gap-4 px-3">
-            <div className="col-12" onClick={handleSubmit}>
+          <div className="col d-flex gap-4 mt-4">
+            <div className="col-3" onClick={handleSubmit}>
               <button className="score-control-confirm-ball-btns">
-                Update
+                Confirm
               </button>
             </div>
             {/* <div className="col-6" onClick={toggle}>
