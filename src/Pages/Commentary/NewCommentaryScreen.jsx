@@ -587,7 +587,7 @@ const NewCommentaryScreen = ({
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="d-flex align-items-center">
-                    <div className="player-image me-2"><img height={25} src={onPitchPlayers[ON_STRIKE].playerimage} className="overflow-hidden"/></div>
+                    <div className="player-image me-2"><img height={25} src={onPitchPlayers[ON_STRIKE]?.playerimage} className="overflow-hidden"/></div>
                     <span
                       className={`fw-medium`}
                       onClick={() => {
@@ -619,7 +619,7 @@ const NewCommentaryScreen = ({
                 </div>
                 <div className="d-flex justify-content-between align-items-center mb-2 text-secondary">
                   <div className="d-flex align-items-center">
-                  <div className="player-image me-2"><img height={25} src={onPitchPlayers[NON_STRIKE].playerimage} className="overflow-hidden"/></div>
+                  <div className="player-image me-2"><img height={25} src={onPitchPlayers[NON_STRIKE]?.playerimage} className="overflow-hidden"/></div>
                     <span
                       className={`fw-medium`}
                       onClick={() => {
@@ -699,7 +699,7 @@ const NewCommentaryScreen = ({
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="d-flex align-items-center">
-                  <div className="player-image me-2"><img height={25} src={onPitchPlayers[CURRENT_BOWLER].playerimage} className="overflow-hidden"/></div>
+                  <div className="player-image me-2"><img height={25} src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} className="overflow-hidden"/></div>
                     <span className={`fw-medium`}>
                       {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                     </span>
