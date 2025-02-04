@@ -8,6 +8,7 @@ import { BOLD, CATCH, CURRENT_BOWLER, EXTRAS_WICKET_TYPE, HIT_BALL_TWICE, HIT_WI
 import CardComponent from '../CardComponent';
 
 const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit, extraType }) => {
+    
     const [currentStep, setCurrentStep] = useState(1);
     const [wicketData, setWicketData] = useState({
         wicketType: null,
@@ -270,6 +271,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
         }
 
     };
+    console.log("wicketData", wicketData)
 
     return (
         <Modal backdrop="static" size="lg" className="wicket-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} keyboard={false} scrollable>
@@ -283,6 +285,7 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                         <Row className="mb-3">
                             {!extraType && showFields.runs && (
                                 <Col xs={6} md={6} lg={4}>
+                                    {console.log("!extraType")}
                                     Runs
                                     <input
                                         className="form-control"

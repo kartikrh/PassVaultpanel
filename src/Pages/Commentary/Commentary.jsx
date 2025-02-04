@@ -13,7 +13,8 @@ export const CommentaryScreen = ({
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
-    const [actionPopup, setActionPopup] = useState(undefined)
+    const [actionPopup, setActionPopup] = useState(undefined);
+    const [showRevertModal, setShowRevertModal] = useState(false);
 
     const theme = useSelector((state) => state.layout.panelTheme);
 
@@ -135,7 +136,7 @@ export const CommentaryScreen = ({
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
-
+    
     return <React.Fragment>
         <Row className='scoring-row'>
             <Col xs={12} md={6} lg={6}>
@@ -178,7 +179,7 @@ export const CommentaryScreen = ({
                                 <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right">C</button>
                             </Col>
                             <Col className="striker-end" xs={12} md={6} lg={6}>
-                                <span >
+                                <span>
                                     {onPitchPlayers[ON_STRIKE]?.playerimage ?
                                         <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
                                         : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
