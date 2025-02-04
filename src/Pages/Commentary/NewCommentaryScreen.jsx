@@ -56,6 +56,7 @@ import ChangeInningsControls from "./CommentryRightControls/ChangeInningsControl
 import RevertControls from "./CommentryRightControls/RevertControls";
 import RetiredHurtControls from "./CommentryRightControls/RetiredHurtControls";
 import ChangeOverControls from "./CommentryRightControls/ChangeOverControls";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 const CenteredBadge = styled.div`
   position: absolute;
@@ -734,7 +735,8 @@ const NewCommentaryScreen = ({
                       className="control-center-back-btn me-2"
                       onClick={check}
                     >
-                      <img
+                      <IoChevronBackOutline />
+                      {/* <img
                         role="button"
                         className="back-icon"
                         // onClick={() => setStatusPopup(true)}
@@ -742,7 +744,7 @@ const NewCommentaryScreen = ({
                         alt="Icon"
                         style={{ color: "black" }}
                         // height="10px"
-                      />
+                      /> */}
                     </button>
                   )}
                   {showChangeOverModal ? "Over Complete" : cricketFieldIsOpen ? `Ball : ${cricketFieldData?.overCount} ${cricketFieldData?.bowler} to ${cricketFieldData?.batter}` : "Control Centre"}
