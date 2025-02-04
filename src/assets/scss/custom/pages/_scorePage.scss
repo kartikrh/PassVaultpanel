@@ -42,6 +42,10 @@
     }
   }
 }
+.player-image{
+  background-color: #d8d8d8 !important;
+  border-radius: 2px;
+}
 
 .control-card {
   padding: 1rem !important;
@@ -52,7 +56,6 @@
 .score-card {
   background-color: $light-boxed-body-bg !important;
   color: $light-font-color !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .score-card .box-card {
@@ -124,6 +127,10 @@
 // }
 
 body[data-theme="dark"] {
+  .player-image{
+    background-color: #1d2f4d !important;
+    border-radius: 2px;
+  }
   .control-card {
     padding: 1rem !important;
     background-color: $header-dark-bg !important;
