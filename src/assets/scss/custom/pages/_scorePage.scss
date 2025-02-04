@@ -60,33 +60,33 @@
 }
 
 .box-top-left {
-  top: -10px;
+  top: -15px;
   left: -10px;
-  width: 20px;
+  width: 22px;
   height: 25px;
   border-radius: 50%;
 }
 
 .box-top-right {
-  top: -10px;
+  top: -15px;
   right: -10px;
-  width: 20px;
+  width: 22px;
   height: 25px;
   border-radius: 50%;
 }
 
 .box-bottom-right {
-  bottom: -10px;
+  bottom: -15px;
   right: -10px;
-  width: 20px;
+  width: 22px;
   height: 25px;
   border-radius: 50%;
 }
 
 .box-bottom-left {
-  bottom: -10px;
+  bottom: -15px;
   left: -10px;
-  width: 20px;
+  width: 22px;
   height: 25px;
   border-radius: 50%;
 }
@@ -94,8 +94,8 @@
 .box-left-semicircle {
   top: 50%;
   left: -10px;
-  width: 20px;
-  height: 22px;
+  width: 22px;
+  height: 25px;
   border-radius: 16px;
   transform: translateY(-50%);
 }
@@ -103,8 +103,8 @@
 .box-right-semicircle {
   top: 50%;
   right: -10px;
-  width: 20px;
-  height: 22px;
+  width: 22px;
+  height: 25px;
   border-radius: 16px;
   transform: translateY(-50%);
 }
@@ -589,6 +589,18 @@ body[data-theme="dark"] {
       0px 5.72px 5.72px 0px #574CD2 inset,
       0px -5.72px 5.72px 0px #281694 inset;
   }
+}
+
+.score-player-change-btn{
+  color: #FFFFFF;
+  border: none !important;
+  padding: 0px 5px !important;
+  border-radius: 100%;
+  background: linear-gradient(180deg, #3E119E -19.7%, #35127D 125.76%);
+  box-shadow: 
+    0px 1px 5px 0px #180C40,
+    0px 5.72px 5.72px 0px #574CD2 inset,
+    0px -5.72px 5.72px 0px #281694 inset;
 }
 
 .wicket-modal-player-row, .wicket-modal-header-row {

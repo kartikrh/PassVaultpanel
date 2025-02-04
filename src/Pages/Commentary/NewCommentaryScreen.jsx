@@ -59,48 +59,72 @@ import ChangeOverControls from "./CommentryRightControls/ChangeOverControls";
 
 const CenteredBadge = styled.div`
   position: absolute;
-  background: linear-gradient(180deg, #3e119e -60.91%, #35127d 221.1%);
+  background: linear-gradient(180deg, #3E119E -19.7%, #35127D 125.76%);
+  box-shadow: 
+  0px 1px 5px 0px #180C40,
+  0px 5.72px 5.72px 0px #574CD2 inset,
+  0px -5.72px 5.72px 0px #281694 inset;
   color: #ffffff;
-  padding: 6px 30px 6px;
-  top: -15px;
+  padding: 6px 34px 6px;
+  top: -12px;
   right: 50%;
   font-size: 12px;
   transform: translateX(50%);
   border-radius: 0px 0px 55% 55% / 0px 0px 30px 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 5;
+
+  body[data-theme="dark"] & {
+    box-shadow: 
+      0px 1px 5px 0px #180C40,
+      0px 5.72px 5.72px 0px #574CD2 inset,
+      0px -5.72px 5.72px 0px #281694 inset;
+  }
 `;
 
 const Background = styled.div`
   position: absolute;
-  top: -15px;
-  right: 33%;
-  width: 115px;
-  height: 15px;
-  background: linear-gradient(180deg, #3e119e -60.91%, #35127d 221.1%);
+  top: -12px;
+  right: 32%;
+  width: 120px;
+  height: 12px;
+  background: linear-gradient(180deg, #3E119E -19.7%, #35127D 125.76%);
+  box-shadow: 
+    0px 1px 5px 0px #180C40,
+    0px 5.72px 5.72px 0px #574CD2 inset,
+    0px -5.72px 5.72px 0px #281694 inset;
 `;
 
 const CenteredBadgeBowler = styled.div`
   position: absolute;
-  background: #00b400;
+  // background: #00b400;
   color: #ffffff;
-  padding: 6px 30px 6px;
-  top: -15px;
+  padding: 6px 31px 6px;
+  top: -12px;
   right: 50%;
   font-size: 12px;
   transform: translateX(50%);
   border-radius: 0px 0px 55% 55% / 0px 0px 30px 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 5;
+  background: linear-gradient(180deg, #119E11 -19.7%, #127D12 125.76%);
+  box-shadow: 
+    0px 1px 5px 0px #0C400C,
+    0px 5.72px 5.72px 0px #4CD24C inset,
+    0px -5.72px 5.72px 0px #169416 inset;
+    
 `;
 
 const BackgroundBowler = styled.div`
   position: absolute;
-  top: -15px;
+  top: -12px;
   right: 32%;
   width: 120px;
-  height: 15px;
-  background: #00b400;
+  height: 12px;
+  background: linear-gradient(180deg, #119E11 -19.7%, #127D12 125.76%);
+  box-shadow: 
+    0px 1px 5px 0px #0C400C,
+    0px 5.72px 5.72px 0px #4CD24C inset,
+    0px -5.72px 5.72px 0px #169416 inset;
 `;
 
 const NewCommentaryScreen = ({
@@ -513,7 +537,7 @@ const NewCommentaryScreen = ({
       <Row>
         <Col xs={12} md={7} lg={7}>
           <div className="d-md-flex gap-3 my-1 mb-3">
-            <div className="position-relative w-100 max-w-md p-4 rounded score-card">
+            <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card">
               {/* Corner cuts */}
               <div className="position-absolute box-card box-top-left"></div>
               <div className="position-absolute box-card box-top-right"></div>
@@ -576,7 +600,7 @@ const NewCommentaryScreen = ({
                       onClick={() => {
                         changePlayer(ON_STRIKE);
                       }}
-                      className="tab-button active text-right rounded-circle mx-2"
+                      className="score-player-change-btn mx-2"
                       // style={{
                       //   backgroundColor: teamDetails?.[BATTING_TEAM].backgroundColor,
                       //   color: "#ffffff",
@@ -606,7 +630,7 @@ const NewCommentaryScreen = ({
                       onClick={() => {
                         changePlayer(NON_STRIKE);
                       }}
-                      className="tab-button active text-right rounded-circle mx-2"
+                      className="score-player-change-btn mx-2"
                       style={{
                         backgroundColor:
                           teamDetails?.[BATTING_TEAM].backgroundColor,
@@ -624,7 +648,7 @@ const NewCommentaryScreen = ({
               </div>
             </div>
 
-            <div className="position-relative w-100 max-w-md p-4 rounded score-card">
+            <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card">
               {/* Corner cuts */}
               <div className="position-absolute box-card box-top-left"></div>
               <div className="position-absolute box-card box-top-right"></div>
@@ -678,7 +702,7 @@ const NewCommentaryScreen = ({
                       onClick={() => {
                         changePlayer(CURRENT_BOWLER);
                       }}
-                      className="tab-button active text-right rounded-circle"
+                      className="score-player-change-btn"
                     >
                       C
                     </button>
