@@ -679,9 +679,9 @@ const NewCommentaryScreen = ({
                       />
                     </button>
                   )}
-                  {showChangeOverModal ? "Over Complete" : "Control Centre"}
+                  {showChangeOverModal ? "Over Complete" : cricketFieldIsOpen ? `Ball : ${cricketFieldData?.overCount} ${cricketFieldData?.bowler} to ${cricketFieldData?.batter}` : "Control Centre"}
                 </h5>
-                {!showChangeOverModal && (
+                {(!showChangeOverModal && !cricketFieldIsOpen) ? (
                   <div className="d-flex align-items-center py-2">
                     <span>Tracking a Ball</span>
                     <Switch
@@ -696,7 +696,22 @@ const NewCommentaryScreen = ({
                       checked={isWheelShow}
                     />
                   </div>
-                )}
+                ) : cricketFieldIsOpen ? (
+                  <div className="d-flex align-items-center PY-2">
+                  <span>Tracking a selection shot type</span>
+                  <Switch
+                    width={70}
+                    uncheckedIcon={<OffsymbolStatus />}
+                    checkedIcon={<OnSymbolStatus />}
+                    className="pe-0 mx-2"
+                    onColor="#02a499"
+                    onChange={() => {
+                      handleShotTypeToggle(!isShotType);
+                    }}
+                    checked={isShotType}
+                  />
+                </div>
+                ) : null}
               </div>
 
               {/* Number Pad */}
