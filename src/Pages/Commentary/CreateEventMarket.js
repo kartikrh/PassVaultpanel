@@ -256,6 +256,8 @@ export const CreateEventMarket = () => {
                 processPlayerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 29) {
                 processPlayerBoundaryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 26) {
+                processFancyLDOMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.maxOversInFirstInings, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 30) {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
@@ -676,6 +678,21 @@ export const CreateEventMarket = () => {
         });
     };
 
+    const processFancyLDOMarkets = (market, teams, maxOvers, processedMarketsObj) => {
+        const startOver = 1;
+        teams.forEach(team => {
+            for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
+                const specialMarketName = `ONLY ${currentOver} OVER - ${team.shortName}`;
+                const specialMarket = {
+                    ...market,
+                    over: currentOver.toString(),
+                    marketName: specialMarketName,
+                    teamId: team.teamId
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
+        });
+    };
     const processPartnershipBoundariesMarkets = (market, teams, processedMarketsObj) => {
         const maxWickets = market?.afterWicketAutoSuspend - 2;  // Subtract 2 to not include the suspend wicket
 
@@ -1107,7 +1124,7 @@ export const CreateEventMarket = () => {
     //     // Compare by playerType order
     //     const typeComparison = typeOrder.indexOf(a.playerType) - typeOrder.indexOf(b.playerType);
     //     if (typeComparison !== 0) return typeComparison;
-      
+
     //     // Compare by playerName alphabetically
     //     return a.playerName?.localeCompare(b.playerName);
     //   });
