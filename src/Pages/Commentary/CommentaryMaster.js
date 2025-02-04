@@ -91,6 +91,7 @@ function CommentaryMaster() {
   const [statusPopup, setStatusPopup] = useState(undefined);
   const [statusList, setStatusList] = useState([]);
   const [isBetAllow, setIsBetAllow] = useState(false);
+  const [isNewUi, setIsNewUi] = useState(false);
   const { isCommentaryDataUpdated, isCommentaryBallLoading } = useSelector(
     (state) => state.tabsData.commentary
   );
@@ -340,13 +341,10 @@ function CommentaryMaster() {
               <CardBody>
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
                   isDataLoading) && <SpinnerModel />}
+              {isNewUi ? (
                 <Row className="mb-3">
                   <Col className="pt-2" xs={12}>
                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
-                      // <>
-                      //     <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
-                      //     <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
-                      // </>
                       <div className="d-flex flex-wrap justify-content-between">
                         <div className="d-flex flex-wrap align-items-center gap-2">
                           <span
@@ -382,22 +380,39 @@ function CommentaryMaster() {
                           </div>
                         </div>
                         <div className="d-flex flex-wrap align-items-center gap-2">
-                          {ALL_SCREENS[currentScreen] ===
-                            COMMENTARY_MAIN_SCREEN && (
+                          {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
                             <>
                               <NetworkStatus />
+                              <div className="d-flex align-items-center py-2">
+                                  <span>Bet Allow</span>
+                                  <Switch
+                                    width={70}
+                                    uncheckedIcon={<OffsymbolStatus />}
+                                    checkedIcon={<OnSymbolStatus />}
+                                    className="pe-0 mx-2"
+                                    onColor="#02a499"
+                                    onChange={() => {
+                                      setIsBetAllow(!isBetAllow);
+                                    }}
+                                    checked={isBetAllow}
+                                  />
+                                </div>
+                                <button
+                                  className="score-header-navigation-btns"
+                                  onClick={() => {
+                                    setIsNewUi(!isNewUi);
+                                  }}
+                                >
+                                  Old Ui
+                              </button>
                               <button 
                                 className="score-header-navigation-btns"
-                                // style={{color: "#00B400"}}
-                                // className="load-commentary-btn border text-black rounded bg-white px-2 py-1"
                                 onClick={handleLoadCommentaryClick}
                               >
                                 Load Commentary
                               </button>
                               <button 
                                 className="score-header-navigation-btns"
-                                // style={{color: "#00B400"}}
-                                // className="mx-1 text-right load-commentary-btn text-black border rounded bg-white px-2 py-1"
                                 onClick={openIframePopup}
                               >
                                 Scorecard
@@ -422,56 +437,45 @@ function CommentaryMaster() {
                       </div>
                     )}
                   </Col>
-                  {/* <Col className="pt-2" xs={12} md={6} lg={6}>
-                    <div className="d-flex align-items-center justify-content-end">
-                      {(ALL_SCREENS[currentScreen] ===
-                        COMMENTARY_PLAYER_SELECTION_SCREEN ||
-                        ALL_SCREENS[currentScreen] ===
-                          COMMENTARY_MAIN_SCREEN) && (
-                        <div className="d-flex align-items-center py-2">
-                          <span>Bet Allow</span>
-                          <Switch
-                            width={70}
-                            uncheckedIcon={<OffsymbolStatus />}
-                            checkedIcon={<OnSymbolStatus />}
-                            className="pe-0 mx-2"
-                            onColor="#02a499"
-                            onChange={() => {
-                              setIsBetAllow(!isBetAllow);
-                            }}
-                            checked={isBetAllow}
-                          />
-                        </div>
-                      )}
-                      <Button
-                        color="danger"
-                        className=" mx-1 text-right"
-                        onClick={handleBackClick}
-                      >
-                        Exit
-                      </Button>
-                    </div>
-                    {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
-                      <>
-                        <NetworkStatus />
-                        <Button
-                          color="primary"
-                          className="mx-1 text-right"
-                          onClick={handleLoadCommentaryClick}
-                        >
-                          Load Commentary
-                        </Button>
-                        <Button
-                          color="primary"
-                          className="mx-1 text-right"
-                          onClick={openIframePopup}
-                        >
-                          Scorecard
-                        </Button>
-                      </>
-                    )}
-                  </Col> */}
                 </Row>
+                ) : (
+                  <Row className='mb-3'>
+                      <Col className="pt-2" xs={12} md={6} lg={6} >
+                        {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                          <>
+                            <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
+                            <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
+                          </>}
+                      </Col>
+                      <Col className="pt-2" xs={12} md={6} lg={6}>
+                        <div className='d-flex align-items-center justify-content-end'>
+                          {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) &&
+                            <div className="d-flex align-items-center py-2">
+                              <span>Bet Allow</span>
+                                <Switch
+                                  width={70}
+                                  uncheckedIcon={<OffsymbolStatus />}
+                                  checkedIcon={<OnSymbolStatus />}
+                                  className="pe-0 mx-2"
+                                  onColor="#02a499"
+                                  onChange={() => {
+                                    setIsBetAllow(!isBetAllow);
+                                  }}
+                                  checked={isBetAllow}
+                                />
+                            </div>}
+                            <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
+                        </div>
+                          {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                            <>
+                              <NetworkStatus />
+                              <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
+                              <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
+                              <Button color="primary" className="mx-1 text-right" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
+                            </>}
+                      </Col>
+                  </Row>
+                )}
                 <Row>
                   {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN && (
                     <Toss
@@ -484,8 +488,7 @@ function CommentaryMaster() {
                       }}
                     />
                   )}
-                  {ALL_SCREENS[currentScreen] ===
-                    COMMENTARY_PLAYER_SELECTION_SCREEN && (
+                  {ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && (
                     <PlayerSelection
                       data={commentaryData}
                       save={handleSaveClick}
@@ -503,12 +506,13 @@ function CommentaryMaster() {
                   )}
                   {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
                     <Commentary
-                      refId = {commentaryData.commentaryDetails.eid}
+                      refId={commentaryData.commentaryDetails.eid}
                       data={{ commentaryData }}
                       onInningsChange={handleInningsChange}
                       isDataLoading={isDataLoading}
                       statusPopup={statusPopup}
                       saveUserInfo={saveUserInfo}
+                      isNewUi={isNewUi}
                     />
                   )}
                   {/* <Col xs={12} md={6} lg={6}>

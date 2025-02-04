@@ -2150,7 +2150,7 @@ const Commentary = (props) => {
     };
 
     return <>
-        {/* <CommentaryScreen */}
+       {props?.isNewUi ?
         <NewCommentaryScreen
             refId={props.refId}
             commentaryId={commentaryDetails?.commentaryId}
@@ -2340,8 +2340,7 @@ const Commentary = (props) => {
                 }
             })}
         />
-        
-        {/* <CommentaryScreen
+        : <CommentaryScreen
             commentaryId={commentaryDetails?.commentaryId}
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
@@ -2384,8 +2383,8 @@ const Commentary = (props) => {
                 || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
             handleWheelShowToggle={handleWheelShowToggle}
             isWheelShow={isWheelShow}
-        /> */}
-        {/* {!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+        />}
+        {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
                 toggle={isWicketChange ? false : () => {
@@ -2407,12 +2406,12 @@ const Commentary = (props) => {
                     }
                 }}
             />}
-        {/* {extrasType && < ExtrasModal
+        {(!props?.isNewUi && extrasType) && < ExtrasModal
             isOpen={true}
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
-            updateExtras={onExtrasChange} />} */}
-        {/* {(showChangeOverModal && !changePlayerList) && <ChangeOverModal
+            updateExtras={onExtrasChange} />}
+        {(!props?.isNewUi && showChangeOverModal && !changePlayerList) && <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined) }}
             onNoClick={() => { setShowChangeOverModal(undefined) }}
@@ -2426,13 +2425,13 @@ const Commentary = (props) => {
             battingTeam={teams?.[BATTING_TEAM] || {}}
             bowlerName={getPlayerNameById(players, currentOver?.bowlerId, false)}
             onPitchPlayers={onPitchPlayers}
-        />} */}
-        {/* {inningsChangePopup && <ChangeInningsModal
+        />}
+        {(!props?.isNewUi && inningsChangePopup) && <ChangeInningsModal
             isOpen={inningsChangePopup}
             toggle={() => { setShowInningsChangePopup(undefined) }}
             onNoClick={() => { setShowInningsChangePopup(undefined) }}
-            onYesClick={onInningsChange} />} */}
-        {/* {showWicketModal &&
+            onYesClick={onInningsChange} />}
+        {(!props?.isNewUi && showWicketModal) &&
             <WicketModal
                 isOpen={showWicketModal}
                 toggle={() => {
@@ -2444,7 +2443,7 @@ const Commentary = (props) => {
                 bowlingTeamDetails={teams[BOWLING_TEAM]}
                 onPitchPlayers={onPitchPlayers}
                 extraType={extrasType}
-            />} */}
+            />}
         {showUpdateInnings && <UpdateInningsModal
             isOpen={showUpdateInnings}
             toggle={() => { setShowUpdateInnings(undefined) }}
@@ -2502,21 +2501,21 @@ const Commentary = (props) => {
             toggle={() => { setUndoErrorModal(null) }}
             undoError={undoErrorModal}
         />}
-        {/* {isPaneltyPopup && <PenaltyModal
+        {(!props?.isNewUi && isPaneltyPopup) && <PenaltyModal
             toggle={() => { setIsPaneltyPopup(null) }}
             isOpen={true}
             selectedPenalty={(selectedPenalty) => {
                 updatePanelty(selectedPenalty)
                 setIsPaneltyPopup(null)
             }}
-        />} */}
-        {/* {showRretiredHurt && <RetiredHurtModal
+        />}
+        {(!props?.isNewUi && showRretiredHurt) && <RetiredHurtModal
             toggle={() => setShowRretiredHurt(false)}
             onsubmit={onRetiredHurtClick}
             onPitchplayers={onPitchPlayers}
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
             allBattingPlayers={players[BATTING_TEAM]}
-        />} */}
+        />}
         {superOverModal ?
             <SuperOverModal
                 toggle={() => {
@@ -2531,8 +2530,7 @@ const Commentary = (props) => {
             />
             : null}
         {retryModel && <RetryModel errorMsg={retryModel} />}
-        {/* {console.log("showCricketFieldModal", showCricketFieldModal)} */}
-        {/* {showCricketFieldModal && (
+        {(!props?.isNewUi && showCricketFieldModal) && (
             <CricketFieldModal
                 cricketFieldData={cricketFieldData}
                 shotTypes={propsData?.commentaryData?.shotTypes}
@@ -2544,7 +2542,7 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }}
             />
-        )} */}
+        )}
     </>
 }
 

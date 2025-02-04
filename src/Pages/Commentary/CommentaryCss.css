@@ -1239,7 +1239,15 @@
 }
 
 .cricket-field-img {
-  /* position: absolute; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 400px;
+}
+
+.cricket-field-img-new {
+ /* position: absolute; */
   /* top: 0; */
   /* left: 0; */
   width: 100%;
