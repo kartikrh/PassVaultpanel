@@ -38,33 +38,6 @@ import { isEmpty } from "lodash";
 import Switch from "react-switch";
 import createSocket from "../../Features/socket";
 import logoDark from "../../assets/images/logo-dark.png";
-import styled from "styled-components";
-
-const StyledExitButton = styled.button`
-  background-color: rgb(240, 47, 70);
-  color: white;
-  border-radius: 50px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  padding: 6px 14px;
-  cursor: pointer;
-`;
-const StyledBoardsButton = styled.button`
-  color: #0ac074;
-  border-radius: 50px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  padding: 6px 14px;
-  cursor: pointer;
-`;
 
 const ALL_SCREENS = {
   1: COMMENTARY_TOSS_SCREEN,
