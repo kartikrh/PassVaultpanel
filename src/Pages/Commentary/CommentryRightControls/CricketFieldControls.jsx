@@ -111,7 +111,7 @@ const CricketFieldControls = ({
     //   size="lg"
     // >
     <div className="col-12">
-      <div className="col">
+      {/* <div className="col">
         <span>
           Ball : {cricketFieldData?.overCount} {cricketFieldData?.bowler} to{" "}
           {cricketFieldData?.batter}
@@ -131,7 +131,7 @@ const CricketFieldControls = ({
           }}
           checked={isShotType}
         />
-      </div>
+      </div> */}
       <div className="col-12 d-flex">
       <div className="col-6">
           <CricketField
