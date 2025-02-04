@@ -567,7 +567,27 @@ export const CreateEventMarket = () => {
                     marketRunners.push(team1Runner, team2Runner);
                 });
             }
-        } else if (market.marketTypeCategoryId === 26 || market.marketTypeCategoryId === 28) {
+        }
+        else if (market.marketTypeCategoryId === 28) {
+            marketRunners = market.runners?.map(runner => ({
+                marketTemplateRunnerId: runner.marketTemplateRunnerId,
+                marketTemplateId: runner.marketTemplateId,
+                runner: runner.runner,
+                line: runner.line,
+                overRate: runner.overRate,
+                underRate: runner.underRate,
+                lastUpdate: new Date().toISOString(),
+                selectionId: runner.selectionId,
+                order: runner.order,
+                backPrice: runner.backPrice,
+                layPrice: runner.layPrice,
+                backSize: runner.backSize,
+                laySize: runner.laySize,
+                predefinedValue: runner.predefinedValue,
+                runnerId: runner.runnerId || "0"
+            })) || [];
+        }
+        else if (market.marketTypeCategoryId === 26) {
             // Handle LDO and Lottery markets
             marketRunners = market.runners?.map(runner => ({
                 ...runner,  // Spread the original runner properties
@@ -804,7 +824,7 @@ export const CreateEventMarket = () => {
         });
     };
     const processLotteryMarkets = (market, teams, processedMarketsObj, matchType) => {
-        const maxOvers = market.maxOvers || matchType?.oversPerInings || 20;
+        const maxOvers = market.maxOvers || matchType?.oversPerInings || 5;
         const startOver = market.startOver || 1;
 
         teams.forEach(team => {
@@ -818,20 +838,8 @@ export const CreateEventMarket = () => {
                     over: currentOver.toString(),
                     marketName: marketName,
                     teamId: team.teamId,
-                    // Create a deep copy of runners to prevent shared references
-                    runners: market.runners?.map(runner => ({
-                        ...runner,
-                        runnerId: runner.runnerId || "0",
-                        // Maintain individual runner values
-                        backSize: market?.isPredefineRunnerValue ? runner?.backSize : market?.defaultBackSize,
-                        laySize: market?.isPredefineRunnerValue ? runner?.laySize : market?.defaultLaySize,
-                        // Initialize other values as null to prevent shared state
-                        line: null,
-                        overRate: null,
-                        underRate: null,
-                        backPrice: null,
-                        layPrice: null
-                    })) || []
+                    // Keep original runners array - the deep copy will happen in processMarketAndRunners
+                    runners: market.runners
                 };
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             }
