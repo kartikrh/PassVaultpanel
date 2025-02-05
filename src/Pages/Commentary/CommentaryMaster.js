@@ -307,10 +307,10 @@ function CommentaryMaster() {
   // const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="commentary-content">
         <Container fluid={true}>
           <Row>
-            <Card style={{ padding: "0px" }}>
+            <Card className="commentary-body" style={{ padding: "0px" }}>
               <CardBody>
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
                   isDataLoading) && <SpinnerModel />}

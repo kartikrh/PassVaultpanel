@@ -570,7 +570,9 @@ body[data-sidebar-size="small"] {
         }
     }
 }
-
+.MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
+    background-color: $light-score-card-bg !important;
+}
 
 body[data-theme="dark"]{
     .vertical-menu{
@@ -778,9 +780,12 @@ body[data-theme="dark"]{
     }.decision-Button {
         color: $dark-body-color !important;
     }
-    .MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .tab-content, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
-        background-color: $dark-boxed-body-bg !important;
+    .MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
+        background-color: $dark-score-card-bg !important;
         color: $dark-body-color !important;
+    }
+    .MuiBox-root, .css-sccedh{
+        border: none
     }
     .MuiTypography-root, .MuiTypography-body1, .css-1i9gr79-MuiTypography-root, .MuiTypography-root, .MuiTypography-body2, .css-199q83o-MuiTypography-root{
         color: $dark-body-color !important;
