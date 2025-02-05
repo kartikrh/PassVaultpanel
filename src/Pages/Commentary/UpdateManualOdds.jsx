@@ -117,6 +117,7 @@ export const UpdateManualOdds = () => {
     const [ballStatus, setBallStatus] = useState(null);
     const [abOpen, setAbOpen] = useState(false);
     const [abSuspend, setAbSuspend] = useState(false);
+    const [tempRateDiff, setTempRateDiff] = useState(null);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -408,8 +409,20 @@ export const UpdateManualOdds = () => {
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
         const value = settings.shortcutValues[key];
-        if (value) {
-            handleSettingChange('rateDifferent', value);
+        if (value && !isLive) {
+            setTempRateDiff(parseFloat(value));
+            // Recalculate prices using tempRateDiff
+            setRunners(prev => prev.map(runner => {
+                const newRates = calculateRunnerRates(runner, {
+                    ...settings,
+                    rateDifferent: value
+                });
+                return {
+                    ...runner,
+                    ...newRates
+                };
+            }));
+            return;
         }
         switch (key) {
             case 'S':
@@ -427,73 +440,61 @@ export const UpdateManualOdds = () => {
             default:
                 break;
         }
-    }, [settings.shortcutValues]);
+    }, [settings.shortcutValues, isLive]);
 
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
         setHasShortcutChanges(false);
     };
 
-
     const calculateRunnerRates = (runner, settings, options = {}) => {
-        // Extract options with defaults
         const {
-            forceCalculateLay = true,     // Whether to force recalculation of lay prices
-            isSocketData = false,         // Whether data is coming from socket
-            manualEdit = false,          // Whether this is a manual edit
-            editedField = null           // Which field was manually edited
+            forceCalculateLay = true,
+            isSocketData = false,
+            manualEdit = false,
+            editedField = null
         } = options;
 
-        // Ensure numeric values with fallbacks
         const back = parseFloat(runner?.back?.price) || 0;
         const existingLay = parseFloat(runner?.lay?.price) || 0;
         const existingL1 = parseFloat(runner?.l1) || 0;
         const existingL2 = parseFloat(runner?.l2) || 0;
 
-        // Get rate differences from settings
         const bRateDiff = parseFloat(settings?.bRateDifferent) || 0;
         const lRateDiff = parseFloat(settings?.lRateDifferent) || 0;
-        const rateDiff = parseFloat(settings?.rateDifferent) || 0;
+        const rateDiff = tempRateDiff || parseFloat(settings?.rateDifferent) || 0;
 
-        // Always calculate back-related rates
         const b2 = Number((back - (2 * bRateDiff)).toFixed(2));
         const b1 = Number((back - bRateDiff).toFixed(2));
 
-        // Initialize lay-related rates
         let lay, l1, l2;
 
-        // Determine how to handle lay prices
         if (isSocketData || (manualEdit && editedField === 'back')) {
-            // For socket data or back price edits, always calculate lay prices based on formula
-            lay = Number((back + rateDiff).toFixed(2));
-            l1 = Number((lay + lRateDiff).toFixed(2));
-            l2 = Number((l1 + lRateDiff).toFixed(2));
+            lay = back > 0 ? Number((back + rateDiff).toFixed(2)) : 0;
+            l1 = lay > 0 ? Number((lay + lRateDiff).toFixed(2)) : 0;
+            l2 = l1 > 0 ? Number((l1 + lRateDiff).toFixed(2)) : 0;
         } else if (manualEdit) {
             switch (editedField) {
                 case 'lay':
-                    // If lay was manually edited, calculate L1 and L2 based on new lay
                     lay = Number(parseFloat(runner.lay.price).toFixed(2));
-                    l1 = Number((lay + lRateDiff).toFixed(2));
-                    l2 = Number((l1 + lRateDiff).toFixed(2));
+                    l1 = lay > 0 ? Number((lay + lRateDiff).toFixed(2)) : 0;
+                    l2 = l1 > 0 ? Number((l1 + lRateDiff).toFixed(2)) : 0;
                     break;
                 case 'l1':
-                    // If L1 was manually edited, keep lay and calculate L2
                     lay = existingLay;
                     l1 = Number(parseFloat(runner.l1).toFixed(2));
-                    l2 = Number((l1 + lRateDiff).toFixed(2));
+                    l2 = l1 > 0 ? Number((l1 + lRateDiff).toFixed(2)) : 0;
                     break;
                 case 'l2':
-                    // If L2 was manually edited, keep lay and L1
                     lay = existingLay;
                     l1 = existingL1;
                     l2 = Number(parseFloat(runner.l2).toFixed(2));
                     break;
                 default:
-                    // For other edits, maintain existing lay prices if not forcing recalculation
                     if (forceCalculateLay) {
-                        lay = Number((back + rateDiff).toFixed(2));
-                        l1 = Number((lay + lRateDiff).toFixed(2));
-                        l2 = Number((l1 + lRateDiff).toFixed(2));
+                        lay = back > 0 ? Number((back + rateDiff).toFixed(2)) : 0;
+                        l1 = lay > 0 ? Number((lay + lRateDiff).toFixed(2)) : 0;
+                        l2 = l1 > 0 ? Number((l1 + lRateDiff).toFixed(2)) : 0;
                     } else {
                         lay = existingLay;
                         l1 = existingL1;
@@ -501,19 +502,26 @@ export const UpdateManualOdds = () => {
                     }
             }
         } else {
-            // Default behavior - calculate based on forceCalculateLay
             if (forceCalculateLay) {
-                lay = Number((back + rateDiff).toFixed(2));
-                l1 = Number((lay + lRateDiff).toFixed(2));
-                l2 = Number((l1 + lRateDiff).toFixed(2));
+                lay = back > 0 ? Number((back + rateDiff).toFixed(2)) : 0;
+                l1 = lay > 0 ? Number((lay + lRateDiff).toFixed(2)) : 0;
+                l2 = l1 > 0 ? Number((l1 + lRateDiff).toFixed(2)) : 0;
             } else {
                 lay = existingLay;
                 l1 = existingL1;
                 l2 = existingL2;
             }
         }
-
-        // Ensure all rates are valid numbers
+        if (back === 0) {
+            return {
+                b2: 0,
+                b1: 0,
+                back: 0,
+                lay: 1.01,
+                l1: 0,
+                l2: 0
+            };
+        }
         return {
             b2: Math.max(0, b2),
             b1: Math.max(0, b1),
@@ -811,18 +819,15 @@ export const UpdateManualOdds = () => {
                 <RateBox type={type}>
                     {showSavedAndLive && (
                         <Box sx={{ display: 'flex', width: '100%' }}>
-
-                            <Typography className="live-label-original" sx={{ width: '50%' }}>
+                            <Typography className="live-label-original">
                                 {(() => {
                                     const origRunner = originalRunner.find(r => r.runnerId === runner.runnerId);
-                                    console.log({ originalRunner });
-
                                     const origPrice = field === 'back' ? origRunner?.back?.price : origRunner?.lay?.price;
-                                    return (origPrice !== null ? Number(origPrice).toFixed(2).replace(/\.?0+$/, '') : '0') || 'Orig: 0.00';
+                                    return (origPrice && origPrice > 0) ? Number(origPrice).toFixed(2).replace(/\.?0+$/, '') : '';
                                 })()}
                             </Typography>
-                            <Typography className="live-label-calculated" sx={{ width: '50%', borderRight: '1px solid rgba(0, 0, 0, 0.12)' }}>
-                                {(price !== null ? Number(price).toFixed(2).replace(/\.?0+$/, '') : '0') || 'Live: 0.00'}
+                            <Typography className="live-label-calculated">
+                                {(price && price > 0) ? Number(price).toFixed(2).replace(/\.?0+$/, '') : ''}
                             </Typography>
                         </Box>
                     )}
@@ -1073,16 +1078,25 @@ export const UpdateManualOdds = () => {
         if (!selectedRunner || isLive) return;
 
         const savedPrice = savedPrices[selectedRunner]?.back || 0;
-        const mainPart = Math.floor(savedPrice);
-        const pointPart = Math.round((savedPrice - mainPart) * 100);
 
-        setSelectedRunnerDetails(prev => ({
-            ...prev,
-            main: mainPart.toString(),
-            point: pointPart.toString().padStart(2, '0')
-        }));
+        // If saved price is 0, set to 1.25
+        if (savedPrice === 0) {
+            setSelectedRunnerDetails(prev => ({
+                ...prev,
+                main: "1",
+                point: "25"
+            }));
+            handleSavedRunnerChange(selectedRunner, 'back', "1.25");
+        } else {
+            const mainPart = Math.floor(savedPrice);
+            const pointPart = Math.round((savedPrice - mainPart) * 100);
+            setSelectedRunnerDetails(prev => ({
+                ...prev,
+                main: mainPart.toString(),
+                point: pointPart.toString().padStart(2, '0')
+            }));
+        }
     }, [savedPrices, selectedRunner, isLive]);
-
 
     useEffect(() => {
         const prepareRunnerData = (runner, event, useNewStatus = false, newStatus = marketStatus) => {
@@ -1173,7 +1187,7 @@ export const UpdateManualOdds = () => {
 
             if (e.key === 'Enter') {
                 e.preventDefault();
-
+                if (e.shiftKey && +marketStatus !== +OPEN_VALUE) return;
                 // Handle Shift+Enter case
                 if (e.shiftKey) {
                     await updateMarket(e);
@@ -1384,7 +1398,7 @@ export const UpdateManualOdds = () => {
 
                             // Handle zero/null back price case
                             if (backPrice === 0 || !backPrice) {
-                                layPrice = 1.01;
+                                layPrice = 1 + parseFloat(currentSettings.rateDifferent);
                                 backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
                             } else {
                                 layPrice = parseFloat((backPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
@@ -1421,12 +1435,37 @@ export const UpdateManualOdds = () => {
 
                             // Handle zero/null back price case
                             if (selectedBackPrice === 0 || !selectedBackPrice) {
-                                selectedLayPrice = 1.01;
-                                selectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                            } else {
-                                selectedLayPrice = selectedBackPrice + parseFloat(currentSettings.rateDifferent);
+                                selectedLayPrice = 1 + parseFloat(currentSettings.rateDifferent);
+                                selectedBackPrice = 0;
+                                const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                                const layPrice = 0; // Set to 0 when selected back is 0
+
+                                const newRates = calculateRunnerRates({
+                                    back: { price: backPrice }
+                                }, currentSettings, {
+                                    forceCalculateLay: true,
+                                    isSocketData: true
+                                });
+
+                                return {
+                                    ...prevRunner,
+                                    isSelected: false,
+                                    back: {
+                                        price: backPrice,
+                                        volume: prevRunner.back.volume
+                                    },
+                                    lay: {
+                                        price: layPrice,
+                                        volume: prevRunner.lay.volume
+                                    },
+                                    b2: newRates.b2,
+                                    b1: newRates.b1,
+                                    l1: newRates.l1,
+                                    l2: newRates.l2
+                                };
                             }
 
+                            selectedLayPrice = selectedBackPrice + parseFloat(currentSettings.rateDifferent);
                             const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
                             const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
 
@@ -1437,7 +1476,13 @@ export const UpdateManualOdds = () => {
                                 forceCalculateLay: true,
                                 isSocketData: true
                             });
-
+                            console.log({
+                                selectedBackPrice,
+                                selectedLayPrice,
+                                backPrice,
+                                layPrice,
+                                rateDiff: currentSettings.rateDifferent
+                            });
                             return {
                                 ...prevRunner,
                                 isSelected: false,
@@ -1990,7 +2035,7 @@ export const UpdateManualOdds = () => {
                                                     // Immediately update saved prices
                                                     handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
                                                 }}
-                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
                                                     min: 0,
                                                     step: 1
@@ -2017,7 +2062,7 @@ export const UpdateManualOdds = () => {
                                                     // Immediately update saved prices
                                                     handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
                                                 }}
-                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
                                                     step: 1,
                                                     min: 0,

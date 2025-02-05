@@ -20,14 +20,11 @@ import Switch from "react-switch";
 import axiosInstance from "../../../Features/axios";
 import { ERROR } from "../Const";
 import { updateToastData } from "../../../Features/toasterSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
-import { RSelect } from "../Reusables/FormElements";
-import { DatePicker, Space, Tooltip } from "antd";
-import moment from "moment";
+import { Tooltip } from "antd";
 import { convertDateUTCToLocal, getDateRange } from "../Reusables/reusableMethods";
 import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
-const { RangePicker } = DatePicker;
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
@@ -65,6 +62,9 @@ const Index = forwardRef(
       singleCheck,
       setImportExportModelVisable,
       handlePlayerHistoryModalPopUp,
+      marketTypes,
+      categories,
+      setSelectedMarketType,
       eventTypes,
       selectedTableElementsLogs,
       competitionList,
@@ -119,7 +119,6 @@ const Index = forwardRef(
     ref
   ) => {
     document.title = `${tableElement?.title}`;
-    const theme = useSelector((state) => state.layout.panelTheme);
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
@@ -794,6 +793,14 @@ const Index = forwardRef(
           value: 0,
           label: "Send Data Type"
         },
+        marketTypeName: {
+          value: 0,
+          label: "Market Type"
+        },
+        categoryName: {
+          value: 0,
+          label: "Category"
+        },
       });
       if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
         setDateRange(() => getDateRange(5));
@@ -874,6 +881,14 @@ const Index = forwardRef(
         sendDataType: {
           value: 0,
           label: "Send Data Type"
+        },
+        marketTypeName: {
+          value: 0,
+          label: "Market Type"
+        },
+        categoryName: {
+          value: 0,
+          label: "Category"
         },
       });
       if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
@@ -1436,6 +1451,60 @@ const Index = forwardRef(
                               options={matchType?.map((item) => ({
                                 label: item?.matchType,
                                 value: item?.matchTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                         {tableElement?.marketTypeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.marketTypeName}
+                              placeholder="Market Type"
+                              onChange={(e) => {
+                                handleTableActions("marketTypeId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  marketTypeName: e,
+                                  categoryName: { value: 0, label: "Category" },
+                                });
+                                setSelectedMarketType(e?.value)
+                              }}
+                              options={marketTypes?.map((item) => ({
+                                label: item?.marketTypeName,
+                                value: item?.marketTypeId,
+                              }))}
+                              classNamePrefix="select2-selection"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.categorySelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.categoryName}
+                              placeholder="Category"
+                              onChange={(e) => {
+                                handleTableActions("marketTypeCategoryId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  categoryName: e,
+                                });
+                              }}
+                              options={categories?.map((item) => ({
+                                label: item?.categoryName,
+                                value: item?.marketTypeCategoryId,
                               }))}
                               classNamePrefix="select2-selection"
                             />

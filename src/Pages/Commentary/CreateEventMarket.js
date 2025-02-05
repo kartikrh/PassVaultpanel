@@ -256,10 +256,14 @@ export const CreateEventMarket = () => {
                 processPlayerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 29) {
                 processPlayerBoundaryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 26) {
+                processFancyLDOMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.maxOversInFirstInings, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 30) {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-            } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
+            } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 28) {
+                processLotteryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj, matchType);
             } else if (template.marketTypeCategoryId === 31) {
                 processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 32) {
@@ -563,6 +567,47 @@ export const CreateEventMarket = () => {
                     marketRunners.push(team1Runner, team2Runner);
                 });
             }
+        }
+        else if (market.marketTypeCategoryId === 28) {
+            marketRunners = market.runners?.map(runner => ({
+                marketTemplateRunnerId: runner.marketTemplateRunnerId,
+                marketTemplateId: runner.marketTemplateId,
+                runner: runner.runner,
+                line: runner.line,
+                overRate: runner.overRate,
+                underRate: runner.underRate,
+                lastUpdate: new Date().toISOString(),
+                selectionId: runner.selectionId,
+                order: runner.order,
+                backPrice: runner.backPrice,
+                layPrice: runner.layPrice,
+                backSize: runner.backSize,
+                laySize: runner.laySize,
+                predefinedValue: runner.predefinedValue,
+                runnerId: runner.runnerId || "0"
+            })) || [];
+        }
+        else if (market.marketTypeCategoryId === 26) {
+            // Handle LDO and Lottery markets
+            marketRunners = market.runners?.map(runner => ({
+                ...runner,  // Spread the original runner properties
+                runnerId: runner.runnerId || "0",
+                // Make sure each property is explicitly copied
+                marketTemplateRunnerId: runner.marketTemplateRunnerId,
+                marketTemplateId: market.marketTemplateId,
+                runner: runner.runner,
+                line: runner.line,
+                overRate: runner.overRate,
+                underRate: runner.underRate,
+                lastUpdate: new Date().toISOString(),
+                selectionId: runner.selectionId,
+                order: runner.order,
+                backPrice: runner.backPrice,
+                layPrice: runner.layPrice,
+                backSize: market?.isPredefineRunnerValue ? runner?.backSize : market?.defaultBackSize,
+                laySize: market?.isPredefineRunnerValue ? runner?.laySize : market?.defaultLaySize,
+                predefinedValue: runner.predefinedValue
+            })) || [];
         } else {
             // Default runner handling for other market types
             if (!market.runners || market.runners.length === 0) {
@@ -675,7 +720,25 @@ export const CreateEventMarket = () => {
             });
         });
     };
+    const processFancyLDOMarkets = (market, teams, maxOvers, processedMarketsObj) => {
+        const startOver = 1;
+        teams.forEach(team => {
+            for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
+                // Use templateName instead of hardcoded string
+                const marketName = market.templateName
+                    .replace("{x}", currentOver)
+                    .replace("{team}", team.shortName);
 
+                const specialMarket = {
+                    ...market,
+                    over: currentOver.toString(),
+                    marketName: marketName,
+                    teamId: team.teamId,
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
+        });
+    };
     const processPartnershipBoundariesMarkets = (market, teams, processedMarketsObj) => {
         const maxWickets = market?.afterWicketAutoSuspend - 2;  // Subtract 2 to not include the suspend wicket
 
@@ -758,6 +821,28 @@ export const CreateEventMarket = () => {
                 teamId: team.teamId
             };
             processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+        });
+    };
+    const processLotteryMarkets = (market, teams, processedMarketsObj, matchType) => {
+        const maxOvers = market.maxOvers || matchType?.oversPerInings || 5;
+        const startOver = market.startOver || 1;
+
+        teams.forEach(team => {
+            for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
+                const marketName = market.templateName
+                    .replace("{x}", currentOver)
+                    .replace("{team}", team.shortName);
+
+                const specialMarket = {
+                    ...market,
+                    over: currentOver.toString(),
+                    marketName: marketName,
+                    teamId: team.teamId,
+                    // Keep original runners array - the deep copy will happen in processMarketAndRunners
+                    runners: market.runners
+                };
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            }
         });
     };
     const generateMarketFromTemplate = (template, teams, commentary) => {
@@ -1054,7 +1139,7 @@ export const CreateEventMarket = () => {
                                 ))}
                             </tr>
                             {market.runners && market.runners.length > 1 &&
-                                market.runners.slice(1).map((runner, runnerIndex) => (
+                                market.runners.slice(1)?.sort((a, b) => a.order - b.order).map((runner, runnerIndex) => (
                                     <tr key={`additional-runner-${runnerIndex}`}>
                                         <td colSpan={columns.length - runnerColumns.length}></td>
                                         {runnerColumns.map((column, runnerColIndex) => (
@@ -1107,7 +1192,7 @@ export const CreateEventMarket = () => {
     //     // Compare by playerType order
     //     const typeComparison = typeOrder.indexOf(a.playerType) - typeOrder.indexOf(b.playerType);
     //     if (typeComparison !== 0) return typeComparison;
-      
+
     //     // Compare by playerName alphabetically
     //     return a.playerName?.localeCompare(b.playerName);
     //   });

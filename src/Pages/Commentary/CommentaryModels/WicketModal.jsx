@@ -8,6 +8,7 @@ import { BOLD, CATCH, CURRENT_BOWLER, EXTRAS_WICKET_TYPE, HIT_BALL_TWICE, HIT_WI
 import CardComponent from '../CardComponent';
 
 const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, isOpen, onSubmit, extraType }) => {
+    
     const [currentStep, setCurrentStep] = useState(1);
     const [wicketData, setWicketData] = useState({
         wicketType: null,

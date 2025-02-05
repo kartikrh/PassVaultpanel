@@ -5,17 +5,13 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
-import { useSelector } from "react-redux"
-import { BorderColor } from "@mui/icons-material"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
-    const [actionPopup, setActionPopup] = useState(undefined)
-
-    const theme = useSelector((state) => state.layout.panelTheme);
+    const [actionPopup, setActionPopup] = useState(undefined);
 
     const OffsymbolStatus = () => {
         return (
@@ -135,7 +131,7 @@ export const CommentaryScreen = ({
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
-
+    
     return <React.Fragment>
         <Row className='scoring-row'>
             <Col xs={12} md={6} lg={6}>
@@ -178,7 +174,7 @@ export const CommentaryScreen = ({
                                 <button onClick={() => { changePlayer(NON_STRIKE) }} className="change-button text-right">C</button>
                             </Col>
                             <Col className="striker-end" xs={12} md={6} lg={6}>
-                                <span >
+                                <span>
                                     {onPitchPlayers[ON_STRIKE]?.playerimage ?
                                         <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
                                         : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
@@ -195,7 +191,7 @@ export const CommentaryScreen = ({
                                 <span >
                                     {onPitchPlayers[ON_STRIKE]?.playerimage ?
                                         <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
+                                        : onPitchPlayers[ON_STRIKE]?.playerName?.split('')[0]}
                                 </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
                                 <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
@@ -206,7 +202,7 @@ export const CommentaryScreen = ({
                                 <span >
                                     {onPitchPlayers[NON_STRIKE]?.playerimage ?
                                         <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
+                                        : onPitchPlayers[NON_STRIKE]?.playerName?.split('')[0]}
                                 </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
                                 <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
@@ -232,80 +228,80 @@ export const CommentaryScreen = ({
                 </Row>
                 <Row className={isLoading ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => handleRuns(0, 1)}>
                         <img className="button-icon" src="icons/0.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => handleRuns(1, 1)}>
                         <img className="button-icon" src="icons/1.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => handleRuns(2, 1)}>
                         <img className="button-icon" src="icons/2.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={onUndoClick}
                     >
                         <img className="button-icon" src="icons/undo.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => handleRuns(3, 1)}>
                         <img className="button-icon" src="icons/3.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => handleRuns(4, 1, true)}>
                         <img className="button-icon" src="icons/4.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => handleRuns(6, 1, true)}>
                         <img className="button-icon" src="icons/6.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => setActionPopup(true)}>
                         <img className="button-icon" src="icons/action.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => updateExtras(BALL_WIDE)}>
                         <img className="button-icon-lg" src="icons/wide-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => updateExtras(NO_BALL)}>
                         <img className="button-icon-lg" src="icons/no-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)}>
                         <img className="button-icon" src="icons/b.png" alt="Icon" />
                         all Start
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                     >
                         <img className="button-icon" src="icons/r.png" alt="Icon" />
                         emark
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => updateExtras(BALL_BYE)}>
                         <img className="button-icon-lg" src="icons/bye-ball.png" alt="Icon" />
                     </Col>
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
-                        
+
                         onClick={() => updateExtras(BALL_LEG_BYE)}>
                         <img className="button-icon-lg" src="icons/leg-by.png" alt="Icon" />
                     </Col>
                     <Col role="button" className="color-out score-button" xs={6} md={6} lg={6}
-                        
+
                         onClick={onWicketClick}>
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>
