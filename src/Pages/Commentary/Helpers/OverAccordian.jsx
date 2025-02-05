@@ -387,6 +387,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
                 return (
                     <Accordion
+                        className='right-panel-over-accordian'
                         key={key}
                         expanded={expanded === key}
                         onChange={handleChange(key)}

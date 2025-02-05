@@ -210,7 +210,6 @@ const NewCommentaryScreen = ({
   const [showRevertModal, setShowRevertModal] = useState(false);
   const [showRunsPopup, setShowRunsPopup] = useState(false);
   const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
-  const [run, setRun] = useState(defaultValue);
   const [isBoundary, setIsBoundary] = useState(undefined);
   const dispatch = useDispatch();
 
@@ -286,66 +285,68 @@ const NewCommentaryScreen = ({
   };
 
   const handleKeyPress = (event) => {
-    const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
-    switch (key) {
-      case "0":
-        handleRuns(0, 1);
-        break;
-      case "1":
-        handleRuns(1, 1);
-        break;
-      case "2":
-        handleRuns(2, 1);
-        break;
-      case "-":
-        onUndoClick();
-        break;
-      case "3":
-        handleRuns(3, 1);
-        break;
-      case "4":
-        handleRuns(4, 1, true);
-        break;
-      case "6":
-        handleRuns(6, 1, true);
-        break;
-      // case '/':
-      //     updateExtras(BALL_WIDE)
-      //     break;
-      // case '*':
-      //     updateExtras(NO_BALL);
-      //     break;
-      case "+":
-        updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
-        break;
-      // case '-':
-      //     setStatusPopup(true)
-      //     break;
-      // case 'a':
-      //     updateExtras(BALL_BYE)
-      //     break;
-      // case 's':
-      //     updateExtras(NO_BALL_BYE);
-      //     break;
-      // case 'c':
-      //     console.log("Actions")
-      //     break;
-      // case '.':
-      //     onWicketClick();
-      //     break;
-      default:
-        break;
-    }
-  };
+          const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
+          switch (key) {
+              case '0':
+                  handleRuns(0, 1);
+                  break;
+              case '1':
+                  handleRuns(1, 1);
+                  break;
+              case '2':
+                  handleRuns(2, 1);
+                  break;
+              case '-':
+                  onUndoClick();
+                  break;
+              case '3':
+                  handleRuns(3, 1);
+                  break;
+              case '4':
+                  handleRuns(4, 1, true);
+                  break;
+              case '6':
+                  handleRuns(6, 1, true);
+                  break;
+              // case '/':
+              //     updateExtras(BALL_WIDE)
+              //     break;
+              // case '*':
+              //     updateExtras(NO_BALL);
+              //     break;
+              case '+':
+                  updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS);
+                  break;
+              // case '-':
+              //     setStatusPopup(true)
+              //     break;
+              // case 'a':
+              //     updateExtras(BALL_BYE)
+              //     break;
+              // case 's':
+              //     updateExtras(NO_BALL_BYE);
+              //     break;
+              // case 'c':
+              //     console.log("Actions")
+              //     break;
+              // case '.':
+              //     onWicketClick();
+              //     break;
+              default:
+                  break;
+          }
+      }
   const handleRuns = (run, ball, isBoundary = false) => {
-    updateRuns({
-      run: run,
-      ball: ball,
-      batter: onPitchPlayers[ON_STRIKE],
-      bowler: onPitchPlayers[CURRENT_BOWLER],
-      isBoundary,
-    });
-  };
+      updateRuns(
+          {
+              run: run,
+              ball: ball,
+              batter: onPitchPlayers[ON_STRIKE],
+              bowler: onPitchPlayers[CURRENT_BOWLER],
+              isBoundary
+          }
+      )
+  }
 
   let filteredPartnerships = partnerships
     ?.filter((obj) => obj.batter1Id !== null && obj.batter2Id !== null) // Filter out entries with null batter IDs
@@ -360,7 +361,7 @@ const NewCommentaryScreen = ({
         )
     )
     .reverse();
-
+    
   useEffect(() => {
     if (anyPopup || actionPopup)
       window.removeEventListener("keydown", handleKeyPress);
@@ -372,12 +373,6 @@ const NewCommentaryScreen = ({
     };
   }, [onPitchPlayers, onUndoClick, anyPopup, actionPopup]);
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [run]);
   useEffect(() => {
     if (extrasTypeIsOpen) {
       setTimeout(() => {
@@ -406,12 +401,15 @@ const NewCommentaryScreen = ({
 
   const check = () => {
     showWicketModal &&
-      toggle()(retiredHurtisOpen && !changePlayerType) &&
-      retiredHurttoggle();
+      toggle()
+    retiredHurtisOpen && retiredHurttoggle();
+    inningsChangeisOpen && inningsChangetoggle()
     extrasTypeIsOpen && extrasTypeToggle();
     actionPopup && setActionPopup(false);
+    showChangeOverModal && setActionPopup(false);
     showRunsPopup && setShowRunsPopup(false);
     cricketFieldIsOpen && cricketFieldToggle();
+    showRevertModal && setShowRevertModal(false)
   };
 
   const isButtonDisabled = isLoading || actionPopup || showWicketModal || showChangeOverModal || showPlayerModal;
@@ -438,7 +436,7 @@ const NewCommentaryScreen = ({
     if (inningsChangeisOpen) {
       return (
         <ChangeInningsControls
-          isOpen={inningsChangeisOpen}
+          isOpen={true}
           toggle={inningsChangetoggle}
           onNoClick={inningsChangeNoClick}
           onYesClick={inningsChangeYesClick}
@@ -498,14 +496,14 @@ const NewCommentaryScreen = ({
     <>
       <ActionButton label="5" onClick={() => setShowRunsPopup(true)} />
       <ActionButton label="Penalty" onClick={() => showPaneltyRuns(true)} />
-      <ActionButton label="NB B" onClick={() => updateExtras(NO_BALL_BYE)} />
+      <ActionButton label="NB B" onClick={() => {updateExtras(NO_BALL_BYE); setActionPopup(false)}} />
       <ActionButton
         label="NB LB"
-        onClick={() => updateExtras(NO_BALL_LEG_BYE)}
+        onClick={() => {updateExtras(NO_BALL_LEG_BYE); setActionPopup(false)}}
       />
-      <ActionButton label="End Over" onClick={changeOver} />
-      <ActionButton label="End inn." onClick={endInnings} />
-      <ActionButton label="R. Hurt" onClick={handleRetiredHurt} />
+      <ActionButton label="End Over" onClick={() => {changeOver(); setActionPopup(false)}} />
+      <ActionButton label="End inn." onClick={() => {endInnings()}} />
+      <ActionButton label="R. Hurt" onClick={() => {handleRetiredHurt()}} />
       <ActionButton
         label="R. to Toss"
         onClick={() => setShowRevertModal(true)}
@@ -737,7 +735,6 @@ const NewCommentaryScreen = ({
                   {(actionPopup ||
                     showWicketModal ||
                     extrasTypeIsOpen ||
-                    showChangeOverModal ||
                     cricketFieldIsOpen) && (
                     <button
                       className="control-center-back-btn me-2"
