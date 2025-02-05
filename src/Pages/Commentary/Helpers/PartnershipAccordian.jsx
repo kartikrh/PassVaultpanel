@@ -8,12 +8,9 @@ import {
     Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { styled } from '@mui/material/styles';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
 
 const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistory, playersList, currentOver }) => {
-    const theme = useSelector((state) => state.layout.panelTheme);
     // const processedHistory = React.useMemo(() => {
     //     if (!overHistory?.length) return [];
 

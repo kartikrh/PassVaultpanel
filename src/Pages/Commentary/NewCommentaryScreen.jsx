@@ -86,14 +86,15 @@ const CenteredBadge = styled.div`
 const Background = styled.div`
   position: absolute;
   top: -12px;
-  right: 32%;
-  width: 120px;
+  right: 50%;
+  width: 123px;
   height: 12px;
   background: linear-gradient(180deg, #3E119E -19.7%, #35127D 125.76%);
   box-shadow: 
     0px 1px 5px 0px #180C40,
     0px 5.72px 5.72px 0px #574CD2 inset,
     0px -5.72px 5.72px 0px #281694 inset;
+  transform: translateX(50%);
 `;
 
 const CenteredBadgeBowler = styled.div`
@@ -119,14 +120,15 @@ const CenteredBadgeBowler = styled.div`
 const BackgroundBowler = styled.div`
   position: absolute;
   top: -12px;
-  right: 32%;
-  width: 120px;
+  right: 50%;
+  width: 123px;
   height: 12px;
   background: linear-gradient(180deg, #119E11 -19.7%, #127D12 125.76%);
   box-shadow: 
     0px 1px 5px 0px #0C400C,
     0px 5.72px 5.72px 0px #4CD24C inset,
     0px -5.72px 5.72px 0px #169416 inset;
+    transform: translateX(50%);
 `;
 
 const NewCommentaryScreen = ({
@@ -410,10 +412,12 @@ const NewCommentaryScreen = ({
     showRevertModal && setShowRevertModal(false)
   };
 
+  const isButtonDisabled = isLoading || actionPopup || showWicketModal || showChangeOverModal || showPlayerModal;
+
   const ButtonColumn = ({
     label,
     onClick,
-    className = "score-control-ball-types-btns",
+    className=`score-control-ball-types-btns ${isButtonDisabled ? " disable-button" : ""}`,
   }) => (
     <div className="col" onClick={onClick}>
       <button className={className}>{label}</button>
@@ -852,11 +856,7 @@ const NewCommentaryScreen = ({
                   <>
                     <div
                       className={`row row-cols-2 g-2 col-6 ${
-                        isLoading ||
-                        actionPopup ||
-                        showWicketModal ||
-                        showChangeOverModal ||
-                        showPlayerModal
+                        isButtonDisabled
                           ? " disable-button"
                           : ""
                       }`}
@@ -901,15 +901,15 @@ const NewCommentaryScreen = ({
                         label="Wide"
                         onClick={() => updateExtras(BALL_WIDE)}
                       />
-                      <div onClick={() => setActionPopup(true)}>
-                        <button className="score-control-action-ball-btns">
-                          Action
-                        </button>
-                      </div>
+                      <ButtonColumn 
+                        label="Action"
+                        onClick={() => setActionPopup(true)}
+                        className={`score-control-action-ball-btns ${isButtonDisabled ? " disable-button" : ""}`}
+                      />
                       <ButtonColumn
                         label="Wicket"
                         onClick={onWicketClick}
-                        className="score-control-wicket-ball-btns"
+                        className={`score-control-wicket-ball-btns ${isButtonDisabled ? " disable-button" : ""}`}
                       />
                     </div>
                   </>
