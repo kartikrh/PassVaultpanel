@@ -24,7 +24,7 @@ const RevertControls = ({ isOpen, toggle, onYesClick, onNoClick }) => {
           related data.
         </div>
       </div>
-      <div className="d-flex gap-2 mt-auto">
+      <div className="d-flex gap-2 mt-4">
         <div
           className="col-6"
           onClick={onYesClick}

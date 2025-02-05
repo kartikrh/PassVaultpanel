@@ -574,6 +574,11 @@ body[data-sidebar-size="small"] {
     background-color: $light-score-card-bg !important;
 }
 
+.MuiButtonBase-root, .MuiAccordionSummary-root, .Mui-expanded .MuiAccordionSummary-gutters, .css-1dfengi{
+    background-color: $light-score-card-bg !important;
+}
+
+
 body[data-theme="dark"]{
     .vertical-menu{
         background-color: $vertical-menu-dark-bg;
@@ -792,6 +797,9 @@ body[data-theme="dark"]{
     }
     .score-num-btn{
         color: green
+    }
+    .MuiButtonBase-root, .MuiAccordionSummary-root, .Mui-expanded .MuiAccordionSummary-gutters, .css-1dfengi{
+        background-color: $dark-score-card-bg !important;
     }
     // .partnership-tab-navigation{
     //     color: $dark-font-color !important;
