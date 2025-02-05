@@ -71,7 +71,7 @@ export const PenaltyControls = ({ toggle, isOpen, selectedPenalty }) => {
           <thead>
             <Input
               id="penaltyRun"
-              className="form-control mb-3"
+              className="runs-input mb-3"
               type="text"
               placeholder="Penalty Run Name"
               value={search}
