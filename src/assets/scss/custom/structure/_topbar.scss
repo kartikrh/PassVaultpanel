@@ -105,6 +105,10 @@
     padding: calc(#{$header-height} + #{$grid-gutter-width}) calc(#{$grid-gutter-width} / 2) $footer-height
         calc(#{$grid-gutter-width} / 2);
 }
+.commentary-content {
+    padding: calc(#{$header-height} + 0px) calc(0px / 2) 0px
+        calc(0px / 2);
+}
 
 .header-item {
     height: $header-height;
