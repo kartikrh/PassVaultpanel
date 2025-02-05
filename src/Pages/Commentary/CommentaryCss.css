@@ -6,6 +6,10 @@
   filter: brightness(80%);
 }
 
+.card-css {
+  padding: 0.625rem 1.25rem !important;
+}
+
 .score-button {
   height: 5rem;
   display: flex;

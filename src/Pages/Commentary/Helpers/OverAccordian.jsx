@@ -11,7 +11,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
-import { useSelector } from 'react-redux';
 
 // Styled components remain the same
 const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -85,7 +84,6 @@ const RunsInfo = styled(Box)(({ theme }) => ({
 
 
 const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver }) => {
-    const theme = useSelector((state) => state.layout.panelTheme);
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
     const processedHistory = React.useMemo(() => {

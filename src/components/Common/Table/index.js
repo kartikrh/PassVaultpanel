@@ -20,14 +20,11 @@ import Switch from "react-switch";
 import axiosInstance from "../../../Features/axios";
 import { ERROR } from "../Const";
 import { updateToastData } from "../../../Features/toasterSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
-import { RSelect } from "../Reusables/FormElements";
-import { DatePicker, Space, Tooltip } from "antd";
-import moment from "moment";
+import { Tooltip } from "antd";
 import { convertDateUTCToLocal, getDateRange } from "../Reusables/reusableMethods";
 import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
-const { RangePicker } = DatePicker;
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
@@ -122,7 +119,6 @@ const Index = forwardRef(
     ref
   ) => {
     document.title = `${tableElement?.title}`;
-    const theme = useSelector((state) => state.layout.panelTheme);
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
