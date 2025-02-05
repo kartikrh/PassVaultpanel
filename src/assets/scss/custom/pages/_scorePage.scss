@@ -69,6 +69,7 @@
 .score-card {
   background-color: $light-score-card-bg !important;
   color: $light-font-color !important;
+  box-shadow: 1px 1px 3px 0px rgba(178, 178, 178, 0.8980392157), -1px -1px 2px 0px rgba(255, 255, 255, 0.8980392157), 1px -1px 2px 0px rgba(178, 178, 178, 0.2), -1px 1px 2px 0px rgba(178, 178, 178, 0.2), -1px -1px 2px 0px rgba(178, 178, 178, 0.5019607843) inset, 1px 1px 2px 0px rgba(255, 255, 255, 0.3019607843) inset;
 }
 
 .score-card .box-card {
@@ -158,7 +159,8 @@ body[data-theme="dark"] {
 
   .score-card {
     background-color: $dark-score-card-bg !important;
-    color: $dark-font-color !important
+    color: $dark-font-color !important;
+    box-shadow: none;
   }
   
   .score-card .box-card {
@@ -235,6 +237,9 @@ body[data-theme="dark"] {
     -1px 1px 2px 0px #B2B2B233,
     -1px -1px 2px 0px #B2B2B280 inset,
     1px 1px 2px 0px #FFFFFF4D inset;
+    &:hover{
+      background: #E0E0E0 !important;
+    }
 }
 
 .score-header-navigation-btns:hover {
@@ -291,9 +296,14 @@ body[data-theme="dark"] {
     -1px -1px 2px 0px #B2B2B280 inset,
     1px 1px 2px 0px #FFFFFF4D inset;
 
-  &:hover {
+    &:hover,
+    &:active,
+    &.active {
     background-color: #1A1D23;
     color: #fff !important;
+    box-shadow:
+      0.89px 3.57px 3.57px 0px #B2B2B280 inset,
+      0px 3.57px 3.57px 0px #FFFFFF4D inset;
     // box-shadow:
     //   3px 3px 8px 0px #0C0E10E5,
     //   -3px -3px 6px 0px #282C36E5,
@@ -406,6 +416,9 @@ body[data-theme="dark"] {
   &.active {
     background-color: #00B400;
     color: #F5F5F5 !important;
+    box-shadow:
+      0.89px 3.57px 3.57px 0px #B2B2B280 inset,
+      0px 3.57px 3.57px 0px #FFFFFF4D inset;
   }
 }
 
@@ -437,6 +450,9 @@ body[data-theme="dark"] {
   &.active {
     background-color: #00B400;
     color: #F5F5F5 !important;
+    box-shadow:
+      0.89px 3.57px 3.57px 0px #B2B2B280 inset,
+      0px 3.57px 3.57px 0px #FFFFFF4D inset;
   }
 }
 
@@ -860,6 +876,9 @@ body[data-theme="dark"] {
       //   1px 1px 2px 0px #FFFFFF4D inset;
       background-color: #FFFFFF;
       color: #1A1D23 !important;
+      box-shadow:
+        0.89px 3.57px 3.57px 0px #0000001F inset,
+        0px 3.57px 3.57px 0px #00000040 inset;
     }
   }
 
@@ -888,6 +907,9 @@ body[data-theme="dark"] {
       -3px 3px 6px 0px #0C0E1033,
       -1px -1px 2px 0px #0C0E1080 inset,
       1px 1px 2px 0px #282C364D inset;
+      &:hover{
+        background: #E0E0E0 !important;
+      }
   }
 
   .score-control-ball-types-btns {
@@ -947,12 +969,8 @@ body[data-theme="dark"] {
       background-color: #009900 !important;
       color: #1A1D23 !important;
       box-shadow:
-        2.68px 2.68px 7.15px 0px #0C0E10E5,
-        -2.68px -2.68px 5.36px 0px #282C36E5,
-        2.68px -2.68px 5.36px 0px #0C0E1033,
-        -2.68px 2.68px 5.36px 0px #0C0E1033,
-        -0.89px -0.89px 1.79px 0px #0C0E1080 inset,
-        0.89px 0.89px 1.79px 0px #282C364D inset;
+        0.89px 3.57px 3.57px 0px #0000001F inset,
+        0px 3.57px 3.57px 0px #00000040 inset;
     }
   }
 
@@ -995,7 +1013,9 @@ body[data-theme="dark"] {
     &.active {
       background-color: #009900 !important;
       color: #1A1D23 !important;
-
+      box-shadow:
+        0.89px 3.57px 3.57px 0px #0000001F inset,
+        0px 3.57px 3.57px 0px #00000040 inset;
     }
 
   }

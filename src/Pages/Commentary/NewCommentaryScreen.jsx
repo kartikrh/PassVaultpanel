@@ -402,6 +402,7 @@ const NewCommentaryScreen = ({
   const check = () => {
     showWicketModal &&
       toggle()
+      PenaltyIsOpen && PenaltyToggle();
     retiredHurtisOpen && retiredHurttoggle();
     inningsChangeisOpen && inningsChangetoggle()
     extrasTypeIsOpen && extrasTypeToggle();
@@ -438,8 +439,8 @@ const NewCommentaryScreen = ({
         <ChangeInningsControls
           isOpen={true}
           toggle={inningsChangetoggle}
-          onNoClick={inningsChangeNoClick}
-          onYesClick={inningsChangeYesClick}
+          onNoClick={() => {inningsChangeNoClick(); setActionPopup(false)}}
+          onYesClick={() => {inningsChangeYesClick(); setActionPopup(false)}}
         />
       );
     }
@@ -451,6 +452,7 @@ const NewCommentaryScreen = ({
           onYesClick={() => {
             handleRevertToToss();
             setShowRevertModal(false);
+            setActionPopup(false)
           }}
           onNoClick={() => setShowRevertModal(false)}
         />
@@ -473,7 +475,7 @@ const NewCommentaryScreen = ({
     if (showRunsPopup) {
       return (
         <RunsControls
-          toggle={() => setShowRunsPopup(false)}
+          toggle={() => {setShowRunsPopup(false); setActionPopup(false)}}
           onSubmitClick={(runs) => handleRuns(runs, 1)}
         />
       );
@@ -481,7 +483,7 @@ const NewCommentaryScreen = ({
     if (PenaltyIsOpen) {
       return (
         <PenaltyControls
-          toggle={PenaltyToggle}
+          toggle={() => {PenaltyToggle(); setActionPopup(false)}}
           isOpen={PenaltyIsOpen}
           selectedPenalty={PenaltySelectedPenalty}
         />
@@ -654,7 +656,7 @@ const NewCommentaryScreen = ({
               </div>
             </div>
 
-            <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card">
+            <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card mt-4 mt-md-0">
               {/* Corner cuts */}
               <div className="position-absolute box-card box-top-left"></div>
               <div className="position-absolute box-card box-top-right"></div>
