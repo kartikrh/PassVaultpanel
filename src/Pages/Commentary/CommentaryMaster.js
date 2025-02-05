@@ -310,13 +310,13 @@ function CommentaryMaster() {
       <div className="page-content">
         <Container fluid={true}>
           <Row>
-            <Card style={{ padding: "0px" }}>
-              <CardBody>
+            <Card className="p-0">
+              <CardBody className="card-css">
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
                   isDataLoading) && <SpinnerModel />}
               {isNewUi ? (
                 <Row className="mb-3">
-                  <Col className="pt-2" xs={12}>
+                  <Col className="p-0" xs={12}>
                     {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
                       <div className="d-flex flex-wrap justify-content-between">
                         <div className="d-flex flex-wrap align-items-center gap-2">
@@ -413,14 +413,14 @@ function CommentaryMaster() {
                 </Row>
                 ) : (
                   <Row className='mb-3'>
-                      <Col className="pt-2" xs={12} md={6} lg={6} >
+                      <Col className="p-0" xs={12} md={6} lg={6}>
                         {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
                           <>
                             <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
                             <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
                           </>}
                       </Col>
-                      <Col className="pt-2" xs={12} md={6} lg={6}>
+                      <Col className="p-0" xs={12} md={6} lg={6}>
                         <div className='d-flex align-items-center justify-content-end'>
                           {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) &&
                             <div className="d-flex align-items-center py-2">

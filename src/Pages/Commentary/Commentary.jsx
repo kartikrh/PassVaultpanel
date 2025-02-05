@@ -5,8 +5,6 @@ import { BALL_BYE, BALL_LEG_BYE, BALL_WIDE, BATTING_TEAM, BOWLER_CHANGE_DISPLAY_
 import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
-import { useSelector } from "react-redux"
-import { BorderColor } from "@mui/icons-material"
 
 export const CommentaryScreen = ({
     teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
@@ -14,9 +12,6 @@ export const CommentaryScreen = ({
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
-    const [showRevertModal, setShowRevertModal] = useState(false);
-
-    const theme = useSelector((state) => state.layout.panelTheme);
 
     const OffsymbolStatus = () => {
         return (
