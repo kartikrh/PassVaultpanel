@@ -69,6 +69,7 @@
 .score-card {
   background-color: $light-score-card-bg !important;
   color: $light-font-color !important;
+  box-shadow: 1px 1px 3px 0px rgba(178, 178, 178, 0.8980392157), -1px -1px 2px 0px rgba(255, 255, 255, 0.8980392157), 1px -1px 2px 0px rgba(178, 178, 178, 0.2), -1px 1px 2px 0px rgba(178, 178, 178, 0.2), -1px -1px 2px 0px rgba(178, 178, 178, 0.5019607843) inset, 1px 1px 2px 0px rgba(255, 255, 255, 0.3019607843) inset;
 }
 
 .score-card .box-card {
@@ -158,7 +159,8 @@ body[data-theme="dark"] {
 
   .score-card {
     background-color: $dark-score-card-bg !important;
-    color: $dark-font-color !important
+    color: $dark-font-color !important;
+    box-shadow: none;
   }
   
   .score-card .box-card {

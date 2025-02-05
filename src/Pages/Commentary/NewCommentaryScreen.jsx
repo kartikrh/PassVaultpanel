@@ -656,7 +656,7 @@ const NewCommentaryScreen = ({
               </div>
             </div>
 
-            <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card">
+            <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card mt-4 mt-md-0">
               {/* Corner cuts */}
               <div className="position-absolute box-card box-top-left"></div>
               <div className="position-absolute box-card box-top-right"></div>
