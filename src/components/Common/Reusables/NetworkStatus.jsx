@@ -78,9 +78,9 @@ const NetworkStatus = () => {
                 <FaWifi size={18} />
                 {/* <FaWifi color={getColor()} size={18} /> */}
                 {/* <div className='mx-2'> */}
-                    <span className='mx-2' style={{fontSize: '12px'}}>Latency:<span>{latency !== null ? `${latency}ms` : 'N/A'}</span></span>
+                    <span className='mx-2' style={{fontSize: '12px'}}>Latency:<span className='latency-speed'>{latency !== null ? ` ${latency}ms` : ' N/A'}</span></span>
                     <br />
-                    <span style={{fontSize: '12px'}}>Speed:<span>{networkStatus !== 'unknown' ? networkStatus : 'N/A'}</span></span>
+                    <span style={{fontSize: '12px'}}>Speed: <span className='latency-speed'>{networkStatus !== 'unknown' ? networkStatus : 'N/A'}</span></span>
                 {/* </div> */}
             </div>
         </div>
