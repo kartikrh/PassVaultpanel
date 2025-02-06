@@ -328,14 +328,14 @@ const PlayerSelection = forwardRef((props, ref) => {
     <React.Fragment>
       <div /* className="page-content" */>
         <Container >
-          <Card className='shadow-none mb-0'>
-            <CardHeader>
+          <Card className='shadow-none toss-card mb-0'>
+            <CardHeader className="toss-card-header">
               <h2>
                 Player Selection
               </h2>
             </CardHeader>
             <CardBody>
-              <CardTitle className="h4">
+              <CardTitle className="h4 toss-card-title">
                 <h4>
                   Please Select {battingteam?.teamName} Opening Batter
                 </h4>
@@ -365,7 +365,7 @@ const PlayerSelection = forwardRef((props, ref) => {
                   />
                 </Col>
               </Row>
-              <CardTitle className="h4">
+              <CardTitle className="h4 toss-card-title">
                 <h4>
                   Please Select {bowlingteam?.teamName} Opening Bowler
                 </h4>
