@@ -130,7 +130,7 @@ const AddPhotoLibrary = () => {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Photo Library</h3>
+                            <h3 className="modal-header-title">Photo Library</h3>
                         </Col>
                         <Card>
                             <CardBody>

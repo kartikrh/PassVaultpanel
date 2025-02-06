@@ -28,7 +28,7 @@ const UiBadge = () => {
                                     <div className="">
                                         <h1>Example heading <span className="badge bg-light">New</span></h1>
                                         <h2>Example heading <span className="badge bg-light">New</span></h2>
-                                        <h3>Example heading <span className="badge bg-light">New</span></h3>
+                                        <h3 className="modal-header-title">Example heading <span className="badge bg-light">New</span></h3>
                                         <h4>Example heading <span className="badge bg-light">New</span></h4>
                                         <h5>Example heading <span className="badge bg-light">New</span></h5>
                                         <h6 className="mb-0">Example heading <span className="badge bg-light">New</span></h6>
