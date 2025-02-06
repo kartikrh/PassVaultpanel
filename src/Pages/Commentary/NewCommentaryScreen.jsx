@@ -564,7 +564,7 @@ const NewCommentaryScreen = ({
               </CenteredBadge>
 
               {/* Header */}
-              <div className="d-flex justify-content-between align-items-center mb-2 fs-5">
+              <div className="d-flex justify-content-between align-items-center mb-2 scorecard-team-details">
                 <div
                   className="fw-medium"
                   style={{
@@ -676,9 +676,9 @@ const NewCommentaryScreen = ({
                 BOWLING
               </CenteredBadgeBowler>
               {/* Header */}
-              <div className="d-flex justify-content-between align-items-center mb-2 fs-5">
+              <div className="d-flex justify-content-between align-items-center mb-2 scorecard-team-details">
                 <div
-                  className="fs-5 fw-medium"
+                  className="fw-medium"
                   style={{
                     color: teamDetails?.[BOWLING_TEAM]?.teamColor || "white",
                   }}
