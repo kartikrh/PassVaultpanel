@@ -1075,7 +1075,7 @@ export const UpdateManualOdds = () => {
     }, [settings]);
 
     useEffect(() => {
-        if (!selectedRunner || isLive) return;
+        if (!selectedRunner) return;
 
         const savedPrice = savedPrices[selectedRunner]?.back || 0;
 
