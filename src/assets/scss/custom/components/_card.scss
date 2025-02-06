@@ -1,6 +1,10 @@
 //
 // _card.scss
 //
+.toss-card, .toss-card-header{
+    background-color: $light-score-card-bg !important;
+    color: $light-font-color !important;
+}
 
 .card {
     margin-bottom: $grid-gutter-width;
@@ -67,6 +71,18 @@
 }
 
 body[data-theme="dark"] {
+    .toss-card, .toss-card-header{
+        h2{
+            color: $dark-font-color !important;
+        }
+        background-color: $dark-score-card-bg !important;
+        color: $dark-font-color !important;
+    }
+    .toss-card-title {
+        h4 {
+            color: $dark-font-color !important;
+        }
+      }
     .card{
         background-color: $dark-boxed-body-bg;
     }

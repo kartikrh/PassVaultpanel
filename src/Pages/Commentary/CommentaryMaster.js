@@ -307,9 +307,9 @@ function CommentaryMaster() {
   // const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
   return (
     <React.Fragment>
-      <div className="commentary-content">
+      <div className="commentary-content ">
         <Container fluid={true}>
-          <Row>
+          <Row className="min-vh-100">
             <Card className="p-0 commentary-body">
               <CardBody className="card-css">
                 {((isCommentaryBallLoading && currentScreen !== 3) ||

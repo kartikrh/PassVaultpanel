@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Button,
   Card,
+  CardHeader,
   Col,
   Container,
   Row,
@@ -104,12 +105,15 @@ const Index = ({ data, next, save }) => {
     <React.Fragment>
       <div className="mt-5">
         <Container>
-          <Card className="shadow-none" >
-            <div>
-              <h4 className={{ fontWeight: 700 }} >Toss Selection</h4>
+          <Card className="shadow-none toss-card p-4">
+            <CardHeader className="toss-card-header p-0">
+              <h2 >Toss Selection</h2>
+            </CardHeader>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
-                <h5>Toss Won by?</h5>
+                <div className="toss-card-title">
+                  <h4>Toss Won by?</h4>
+                </div>
                 <Row>
                   {currentInningTeams?.map((val, index) => (
                     <Col
@@ -170,7 +174,6 @@ const Index = ({ data, next, save }) => {
                   </Row>
                 </div>
               )}
-            </div>
           </Card>
           {values?.choseTo != null && (
             <div className="d-flex align-items-center justify-content-end">
