@@ -990,6 +990,7 @@
 .first-card-player-section {
   display: flex;
   /* flex: 1; */
+  align-items: center;
   text-align: center;
   padding: 0.5rem;
 }
@@ -999,21 +1000,23 @@
   justify-content: center;
   /* flex: 1; */
   text-align: center;
+  align-items: center;
   padding: 1rem 0.5rem;
 }
 
 .first-player-image {
+  background-color: #d8d8d8 !important;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
-  margin-bottom: 0.5rem;
+  border-radius: 4px;
   object-fit: cover;
 }
 
 .remaining-player-image {
   width: 30px;
   height: 30px;
-  border-radius: 50%;
+  background-color: #d8d8d8 !important;
+  border-radius: 4px;
   object-fit: cover;
 }
 

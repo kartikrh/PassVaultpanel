@@ -11,11 +11,16 @@ $light-body-bg: #ffffff;
 $light-boxed-body-bg: #f4f4f4;
 $light-footer-bg: #eaeaea;
 $light-font-color: #74788d;
+$light-score-body-bg: #D9D9D9;
+$light-score-card-bg: #E6E6E6;
 
 // Dark mode variables
+$dark-score-body-bg: #1A1D22;
+$dark-score-card-bg: #20232A;
 $dark-body-bg: #1a2942;
 $dark-body-color: #fff;
 $dark-font-color: #fff;
+
 // $dark-body-color: #0bb197;
 $dark-boxed-body-bg: #1a2942;
 $dark-footer-bg: #1a2942;
@@ -65,6 +70,9 @@ $vertical-menu-dark-bg: #091c3c;
 
 // Topbar Search
 $topbar-search-bg: #f1f5f7;
+$toggle-active-color: #0bb197;
+$toggle-dark-color: #1A1D22;
+$toggle-light-color: #F5F5F5;
 
 // Footer
 $footer-height: 60px;

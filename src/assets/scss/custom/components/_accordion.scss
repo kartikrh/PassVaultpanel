@@ -25,6 +25,10 @@
     }
 }
 
+.MuiCollapse-wrapperInner, .MuiCollapse-vertical, .css-9vd5ud{
+    background-color: $light-score-card-bg;
+}
+
 .custom-accordion-arrow{
     .card{
         border: 1px solid $border-color;
@@ -59,5 +63,11 @@
                 }
             }
         }
+    }
+}
+
+body[data-theme="dark"] {
+    .MuiCollapse-wrapperInner, .MuiCollapse-vertical, .css-9vd5ud{
+        background-color: $dark-score-card-bg !important;
     }
 }

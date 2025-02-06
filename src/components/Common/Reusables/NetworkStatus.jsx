@@ -74,12 +74,13 @@ const NetworkStatus = () => {
 
     return (
         <div>
-            <div className='d-flex align-items-center'>
-                <FaWifi color={getColor()} size={18} />
+            <div className='d-flex align-items-center latency-btn'>
+                <FaWifi size={18} />
+                {/* <FaWifi color={getColor()} size={18} /> */}
                 {/* <div className='mx-2'> */}
-                    <span className='mx-2' style={{fontSize: '12px'}}>Latency: <span style={{color: "#00BD35"}}>{latency !== null ? `${latency} ms` : 'N/A'}</span></span>
+                    <span className='mx-2' style={{fontSize: '12px'}}>Latency:<span className='latency-speed'>{latency !== null ? ` ${latency}ms` : ' N/A'}</span></span>
                     <br />
-                    <span style={{fontSize: '12px'}}>Speed: <span style={{color: "#00BD35"}}>{networkStatus !== 'unknown' ? networkStatus : 'N/A'}</span></span>
+                    <span style={{fontSize: '12px'}}>Speed: <span className='latency-speed'>{networkStatus !== 'unknown' ? networkStatus : 'N/A'}</span></span>
                 {/* </div> */}
             </div>
         </div>
