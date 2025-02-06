@@ -177,6 +177,16 @@ export const getStatusColor = (status) => {
             return "";
     }
 };
+export const getStatusFontColor = (status) => {
+    const theme = document.body.getAttribute("data-theme");
+    
+    // Check if the theme is 'dark' and status is one of the specified values
+    if (theme === 'dark' && [2, 3, 4, 5, 6].includes(status)) {
+        return "#000000"; // light gray (inactive)
+    }
+    
+    return ""; // Default return value
+};
 
 export const getStatusColor1 = (status) => {
     switch (status) {

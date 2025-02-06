@@ -118,7 +118,7 @@ function AddRegisteredUsers() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Registered Users</h3>
+              <h3 className="modal-header-title">Registered Users</h3>
             </Col>
             <Card>
               <CardBody>

@@ -149,7 +149,7 @@ function AddNotification() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Notification</h3>
+              <h3 className="modal-header-title">Notification</h3>
             </Col>
             <Card>
               <CardBody>

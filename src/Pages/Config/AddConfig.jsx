@@ -102,7 +102,7 @@ const AddConfig = () => {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Config </h3>
+              <h3 className="modal-header-title">Config </h3>
             </Col>
             {/* {isLoading && <SpinnerModel />} */}
             <Card>

@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from "react-select/creatable";
 import { isEmpty, isEqual } from "lodash";
+import Switch from "react-switch";
 import {
   isValueEmpty,
   sanitizeFormData,
@@ -313,7 +314,7 @@ const FormBuilder = forwardRef(
               <React.Fragment key={key}>
                 {field.type === DIVIDER && (
                   <>
-                    <h5>{field.sectionLabel}</h5>
+                    <h5 className="modal-header-title">{field.sectionLabel}</h5>
                     <div className="dropdown-divider"></div>
                   </>
                 )}
@@ -607,8 +608,8 @@ const FormBuilder = forwardRef(
                       />
                     )}
                     {field.type === SWITCH && (
-                      <div className="form-check form-switch form-switch-lg mb-3">
-                        <input
+                      <div className="">
+                        {/* <input
                           className="form-check-input"
                           style={field?.customStyle}
                           type="checkbox"
@@ -620,6 +621,19 @@ const FormBuilder = forwardRef(
                             handleChange(field, !formData[field.name]);
                           }}
                           value={formData[field.name]}
+                        /> */}
+                        <Switch
+                          id="customSwitchsizelg"
+                          // width={70}
+                          uncheckedIcon={""}
+                                    checkedIcon={""}
+                          disabled={disabledFields?.[field.name]}
+                          // className="form-check-input"
+                          onColor="#02a499"
+                          onChange={(e) => {
+                            handleChange(field, !formData[field.name]);
+                          }}
+                          checked={formData[field.name]}
                         />
                       </div>
                     )}
