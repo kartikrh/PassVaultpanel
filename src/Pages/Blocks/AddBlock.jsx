@@ -92,7 +92,7 @@ const AddBlock = () => {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Block </h3>
+              <h3 className="modal-header-title">Block </h3>
             </Col>
             {/* {isLoading && <SpinnerModel />} */}
             <Card>

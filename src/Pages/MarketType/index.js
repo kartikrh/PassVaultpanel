@@ -53,7 +53,7 @@ const Index = () => {
               <Table
                 className="table"
                 responsive
-                striped
+                // striped
                 hover
                 bordered
                 style={{ border: "1px black" }}
@@ -73,7 +73,7 @@ const Index = () => {
                         <td>
                           {/* <Card> */}
                             {/* <CardBody> */}
-                              <div className="py-2 text-dark">
+                              <div className="py-2 text-dark modal-header-title">
                                 {record.marketTypeName}
                               </div>
                               {record.marketTypeCategories &&

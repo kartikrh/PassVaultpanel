@@ -115,7 +115,7 @@ function AddAPIEndpoint() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>API Endpoints</h3>
+              <h3 className="modal-header-title">API Endpoints</h3>
             </Col>
             <Card>
               <CardBody>

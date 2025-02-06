@@ -136,7 +136,7 @@ function AddUsers() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Users </h3>
+              <h3 className="modal-header-title">Users </h3>
             </Col>
             {isLoading && <SpinnerModel />}
             <Card>

@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 import { Tooltip } from "antd";
 import { convertDateUTCToLocal, getDateRange } from "../Reusables/reusableMethods";
-import { getStatusColor } from "../../../Pages/Commentary/CommentartConst";
+import { getStatusColor, getStatusFontColor } from "../../../Pages/Commentary/CommentartConst";
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
@@ -2401,9 +2401,9 @@ const Index = forwardRef(
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
                           <React.Fragment key={index}>
-                            <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
+                            <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
                               {columns.map((column) => (
-                                <td key={column.key} style={column.style} className={column?.sticky && "sticky-column"}>
+                                <td key={column.key} style={{ color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), ...column.style }} className={column?.sticky && "sticky-column"}>
                                   {column.render
                                     ? column.render(
                                       record[column.dataIndex],

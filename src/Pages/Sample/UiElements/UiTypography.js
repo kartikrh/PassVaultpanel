@@ -24,7 +24,7 @@ const UiTypography = () => {
 
                                     <h1>h1. Bootstrap heading <small className="text-muted font-size-14">Semibold 2.19rem (35px)</small></h1>
                                     <h2>h2. Bootstrap heading <small className="text-muted font-size-14">Semibold 1.75rem (28px)</small></h2>
-                                    <h3>h3. Bootstrap heading <small className="text-muted font-size-14">Semibold 1.53rem (24.5px)</small></h3>
+                                    <h3 className="modal-header-title">h3. Bootstrap heading <small className="text-muted font-size-14">Semibold 1.53rem (24.5px)</small></h3>
                                     <h4>h4. Bootstrap heading <small className="text-muted font-size-14">Semibold 1.31rem (21px)</small></h4>
                                     <h5>h5. Bootstrap heading <small className="text-muted font-size-14">Semibold 1.09rem (17.5px)</small></h5>
                                     <h6 className="mb-0">h6. Bootstrap heading <small className="text-muted font-size-14">Semibold .875rem (14px)</small></h6>
