@@ -564,9 +564,9 @@ const NewCommentaryScreen = ({
               </CenteredBadge>
 
               {/* Header */}
-              <div className="d-flex justify-content-between align-items-center mb-2">
+              <div className="d-flex justify-content-between align-items-center mb-2 fs-5">
                 <div
-                  className="fs-5 fw-medium"
+                  className="fw-medium"
                   style={{
                     color: teamDetails?.[BATTING_TEAM]?.teamColor || "white",
                   }}
@@ -582,7 +582,7 @@ const NewCommentaryScreen = ({
                   >
                     {teamDetails?.[BATTING_TEAM]?.teamScore || 0}/
                     {teamDetails?.[BATTING_TEAM]?.teamWicket || 0}
-                    &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0}) &nbsp;
+                    &nbsp;({teamDetails?.[BATTING_TEAM]?.teamOver || 0})
                   </div>
                 </div>
               </div>
@@ -593,7 +593,7 @@ const NewCommentaryScreen = ({
                   <div className="d-flex align-items-center">
                     <div className="player-image me-2"><img height={25} src={onPitchPlayers[ON_STRIKE]?.playerimage} className="overflow-hidden"/></div>
                     <span
-                      className={`fw-medium`}
+                      className={`fw-medium scorecard-striker-player-name`}
                       onClick={() => {
                         changeStrike(
                           onPitchPlayers[ON_STRIKE].commentaryPlayerId
@@ -616,7 +616,7 @@ const NewCommentaryScreen = ({
                       C
                     </button>
                   </div>
-                  <div className={``}>
+                  <div className={`scorecard-striker-player-name`}>
                     {onPitchPlayers[ON_STRIKE]?.batRun || 0} (
                     {onPitchPlayers[ON_STRIKE]?.batBall || 0})
                   </div>
@@ -625,7 +625,7 @@ const NewCommentaryScreen = ({
                   <div className="d-flex align-items-center">
                   <div className="player-image me-2"><img height={25} src={onPitchPlayers[NON_STRIKE]?.playerimage} className="overflow-hidden"/></div>
                     <span
-                      className={`fw-medium`}
+                      className={`fw-small scorecard-nonstriker-player-name`}
                       onClick={() => {
                         changeStrike(
                           onPitchPlayers[NON_STRIKE].commentaryPlayerId
@@ -648,7 +648,7 @@ const NewCommentaryScreen = ({
                       C
                     </button>
                   </div>
-                  <div className={``}>
+                  <div className={`scorecard-nonstriker-player-name`}>
                     {onPitchPlayers[NON_STRIKE]?.batRun || 0} (
                     {onPitchPlayers[NON_STRIKE]?.batBall || 0})
                   </div>
@@ -676,7 +676,7 @@ const NewCommentaryScreen = ({
                 BOWLING
               </CenteredBadgeBowler>
               {/* Header */}
-              <div className="d-flex justify-content-between align-items-center mb-2 p">
+              <div className="d-flex justify-content-between align-items-center mb-2 fs-5">
                 <div
                   className="fs-5 fw-medium"
                   style={{
@@ -694,7 +694,7 @@ const NewCommentaryScreen = ({
                   >
                     {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/
                     {teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
-                    &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0}) &nbsp;
+                    &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                   </div>
                 </div>
               </div>
@@ -704,7 +704,7 @@ const NewCommentaryScreen = ({
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="d-flex align-items-center">
                   <div className="player-image me-2"><img height={25} src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} className="overflow-hidden"/></div>
-                    <span className={`fw-medium`}>
+                    <span className={`fw-medium scorecard-striker-player-name`}>
                       {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                     </span>
                     <button
@@ -716,7 +716,7 @@ const NewCommentaryScreen = ({
                       C
                     </button>
                   </div>
-                  <div className={``}>
+                  <div className={`scorecard-striker-player-name`}>
                     <span>
                       {Number(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver) || 0}-
                       {onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}-

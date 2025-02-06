@@ -783,7 +783,12 @@ body[data-theme="dark"]{
         color: $dark-body-color !important;
         border: 0.5px solid gray !important;
     }.decision-Button {
-        color: $dark-body-color !important;
+        // background-color: $gray-800 !important;
+        color: $dark-font-color !important;
+        border: none !important;
+    }
+    .btn-light{
+        background-color: $gray-800 !important;
     }
     .MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
         background-color: $dark-score-card-bg !important;

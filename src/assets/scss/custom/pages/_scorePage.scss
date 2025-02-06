@@ -77,6 +77,24 @@
   // background-color: #ffff !important
 }
 
+// .score-card {
+//   background-color: $light-score-card-bg !important;
+//   color: $light-font-color !important;
+//   box-shadow: 
+//     1px 1px 3px 0px rgba(178, 178, 178, 0.9), 
+//     -1px -1px 2px 0px rgba(255, 255, 255, 0.9), 
+//     1px -1px 2px 0px rgba(178, 178, 178, 0.2), 
+//     -1px 1px 2px 0px rgba(178, 178, 178, 0.2), 
+//     -1px -1px 2px 0px rgba(178, 178, 178, 0.5) inset, 
+//     1px 1px 2px 0px rgba(255, 255, 255, 0.3) inset;
+// }
+
+// // Make sure .box-card has NO shadow
+// .score-card .box-card {
+//   background-color: $light-score-body-bg !important;
+//   box-shadow: none !important; // This prevents it from inheriting shadows
+// }
+
 .box-top-left {
   top: -15px;
   left: -10px;
@@ -181,20 +199,25 @@ body[data-theme="dark"] {
 }
 
 .score-header-date-btn {
-  // width: 168px;
-  // height: 48px;
   padding: 6px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   // gap: 10px;
-  background: #F5F5F5;
-
+  background: #D9D9D9;
+  border: 0.5px solid #CCCCCC;
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+}
+
+.latency-btn{
+  background: #D9D9D9;
+  border: 0.5px solid #CCCCCC;
+  padding: 6px;
+  border-radius: 4px;
 }
 
 .score-header-navigation-btns {
@@ -203,18 +226,29 @@ body[data-theme="dark"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #F5F5F5;
+  background: #D1D1D1;
   border: none;
   border-radius: 40px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  box-shadow:
-    1px 1px 3px 0px #B2B2B2E5,
-    -1px -1px 2px 0px #FFFFFFE5,
-    1px -1px 2px 0px #B2B2B233,
-    -1px 1px 2px 0px #B2B2B233,
-    -1px -1px 2px 0px #B2B2B280 inset,
+  box-shadow: 
+    1px 1px 3px 0px #B2B2B2E5, 
+    -1px -1px 2px 0px #FFFFFFE5, 
+    1px -1px 2px 0px #B2B2B233, 
+    -1px 1px 2px 0px #B2B2B233, 
+    -1px -1px 2px 0px #B2B2B280 inset, 
     1px 1px 2px 0px #FFFFFF4D inset;
+}
+
+.scorecard-striker-player-name{
+  color: #000000 !important;
+  font-size: small;
+  // color: $dark-font-color;
+}
+.scorecard-nonstriker-player-name{
+  color: #8a8a8a!important;
+  font-size: smaller;
+  // color: $dark-font-color;
 }
 
 .back-icon {
@@ -321,6 +355,7 @@ body[data-theme="dark"] {
   height: 100%;
   // color: linear-gradient(180deg, #FFCD4C -60.91%, #0000001F 221.1%) !important;
   color: #FFCD4C !important;
+  background-clip: text;
   padding: 6px 12px;
   display: flex;
   align-items: center;
@@ -342,7 +377,14 @@ body[data-theme="dark"] {
     -1px 1px 2px 0px #B2B2B233,
     -1px -1px 2px 0px #B2B2B280 inset,
     1px 1px 2px 0px #FFFFFF4D inset;
-
+    // &::before {
+    //   content: "FD";
+    //   background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+    //   -webkit-background-clip: text;
+    //   background-clip: text;
+    //   color: transparent;
+    //   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    // }
   &:hover,
   &:active,
   &.active {
