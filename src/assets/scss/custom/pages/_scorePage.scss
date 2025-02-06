@@ -160,7 +160,9 @@ body[data-theme="dark"] {
   .score-card {
     background-color: $dark-score-card-bg !important;
     color: $dark-font-color !important;
-    box-shadow: none;
+    backdrop-filter: blur(80px);
+    box-shadow: 0px 4px 32px 0px rgba(0, 0, 0, 0.5),
+              -1px -4px 8px 0px rgba(0, 0, 0, 0.25) inset;
   }
   
   .score-card .box-card {
