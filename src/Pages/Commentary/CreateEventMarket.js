@@ -262,7 +262,7 @@ export const CreateEventMarket = () => {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
                 processMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-            } else if (template.marketTypeCategoryId === 28) {
+            } else if (template.marketTypeCategoryId === 28 || template.marketTypeCategoryId === 35) {
                 processLotteryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj, matchType);
             } else if (template.marketTypeCategoryId === 31) {
                 processFallOfWicketMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
