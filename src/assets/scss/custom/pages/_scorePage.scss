@@ -1104,6 +1104,19 @@ body[data-theme="dark"] {
       -2.68px 2.68px 5.36px 0px #0C0E1033,
       -0.89px -0.89px 1.79px 0px #0C0E1080 inset,
       0.89px 0.89px 1.79px 0px #282C364D inset;
+      &:hover,
+      &:active,
+      &.active{
+        background-color: #FFFFFF !important;
+        color: #00DB00 !important;
+        box-shadow:
+          3px 3px 8px 0px #191d21e5,
+          -3px -3px 6px 0px #3d4353e5,
+          3px -3px 6px 0px #2d353d33,
+          -3px 3px 6px 0px #4d596533,
+          -1px -1px 2px 0px #0C0E1080 inset,
+          1px 1px 2px 0px #282C364D inset;
+      }
   }
 
   .score-control-conformation-close-btn {
