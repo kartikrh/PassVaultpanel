@@ -84,7 +84,6 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                 partnership.teamId == teamId
             );
         });
-        console.log("filteredPartnerships", filteredPartnerships)
 
         if (!filteredPartnerships.length) {
             console.log("No partnerships found for the given key.");
@@ -169,9 +168,9 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                 const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                     ? teamDetails.BATTING_TEAM
                     : teamDetails.BOWLING_TEAM;
-
                 return (
                     <Accordion
+                        defaultExpanded={team.teamStatus == 1}
                         key={key}
                         expanded={expanded === key}
                         onChange={handleChange(key)}

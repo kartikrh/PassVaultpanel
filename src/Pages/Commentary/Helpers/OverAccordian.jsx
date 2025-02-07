@@ -376,7 +376,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
         return b.localeCompare(a);
     });
-
     return (
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
@@ -384,9 +383,10 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                     ? teamDetails.BATTING_TEAM
                     : teamDetails.BOWLING_TEAM;
-
+                    console.log("team", team)
                 return (
                     <Accordion
+                        defaultExpanded={team.teamStatus == 1}
                         className='right-panel-over-accordian'
                         key={key}
                         expanded={expanded === key}
@@ -400,7 +400,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         }}
                     >
                         <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
+                            expandIcon={<ExpandMoreIcon style={{color: "unset"}}/>}
                             sx={{ px: 2 }}
                         >
                             <Box display="flex" alignItems="center" gap={1}>

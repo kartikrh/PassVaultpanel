@@ -13,8 +13,8 @@ export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleC
     <div className="tablelist-form">
         <ModalBody>
             {singleCheck.length===1?<div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg">Clone New Match Type</h4>
-                <h6 className='text-left mt-4'>Match Type Name</h6>
+                <h4 className="form-label text-left text-lg modal-header-title">Clone New Match Type</h4>
+                <h6 className='text-left mt-4 modal-header-title'>Match Type Name</h6>
                 <input type="text" onChange={(e)=>{setCloneName(e.target.value)}} className="form-control" required />
             </div>:singleCheck.length>1?<h4 className="text-danger text-center p-4">Select Only One Match Type</h4>:<h4 className="text-danger text-center p-4">Select One MatchTyp To Clone</h4>}
             <div className="hstack gap-2 justify-content-end">
@@ -47,10 +47,10 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
     <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg">Clone New Commentary</h4>
-                <h6 className='text-left mt-4'>Event Name</h6>
+                <h4 className="form-label text-left text-lg modal-header-title">Clone New Commentary</h4>
+                <h6 className='text-left mt-4 modal-header-title'>Event Name</h6>
                 <input type="text" onChange={handleCloneValues} value={cloneValues?.eventName} name="eventName" className="form-control" required />
-                <h6 className='text-left mt-4'>Ref Id</h6>
+                <h6 className='text-left mt-4 modal-header-title'>Ref Id</h6>
                 <input type="text" onChange={handleCloneValues} value={cloneValues?.eventRefId} name="eventRefId" className="form-control" required />
             </div>
             <div className="hstack gap-2 justify-content-end">
@@ -114,10 +114,10 @@ export const MarketTemplateClone = ({cloneModelVisible, cloneValues, setCloneMod
     <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-              <h4 className="form-label text-left text-lg">Clone New Market Template</h4>
-              <h6 className='text-left mt-4'>Template Name</h6>
+              <h4 className="form-label text-left text-lg modal-header-title">Clone New Market Template</h4>
+              <h6 className='text-left mt-4 modal-header-title'>Template Name</h6>
               <input type="text" onChange={handleTemplateName} value={cloneValues?.templateName} name="templateName" className="form-control" required />
-              <h6 className='text-left mt-4'>Match Type</h6>
+              <h6 className='text-left mt-4 modal-header-title'>Match Type</h6>
               <Select
               classNamePrefix="select2-selection"
               placeholder="Match Type"
@@ -189,7 +189,7 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
   <div className="tablelist-form">
       <ModalBody>
         <div className="d-flex flex-column justify-content-center p-4">
-            <h4 className="form-label text-left text-lg">Multi Clone Market Template</h4>
+            <h4 className="form-label text-left text-lg modal-header-title">Multi Clone Market Template</h4>
             {cloneValues && cloneValues?.length > 0 ?
              <table className='my-3'>
               <thead>
