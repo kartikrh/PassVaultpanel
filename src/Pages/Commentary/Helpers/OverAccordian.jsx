@@ -117,11 +117,9 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
     // Get default expanded key from currentOver
     const defaultExpandedKey = React.useMemo(() => {
-        if (!currentOver) return null;
-        return `${currentOver.currentInnings}_${currentOver.teamId}`;
+        if (!currentOver) return '1_1';
+        return `${currentOver.currentInnings}_1`;
     }, [currentOver]);
-
-    const [expanded, setExpanded] = React.useState(defaultExpandedKey);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -376,6 +374,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
         return b.localeCompare(a);
     });
+    const [expanded, setExpanded] = React.useState(sortedKeys[0]);
     return (
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
@@ -383,13 +382,13 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                     ? teamDetails.BATTING_TEAM
                     : teamDetails.BOWLING_TEAM;
-                    console.log("team", team)
                 return (
                     <Accordion
-                        defaultExpanded={team.teamStatus == 1}
+                        // defaultExpanded
                         className='right-panel-over-accordian'
                         key={key}
-                        expanded={expanded === key}
+                        // disabled
+                        expanded={sortedKeys.length > 1 ? expanded === key : true}
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },
@@ -398,6 +397,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                 borderBottom: '1px solid #eee'
                             }
                         }}
+                        // defaultExpanded
                     >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon style={{color: "unset"}}/>}

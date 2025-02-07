@@ -46,7 +46,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
         return `${currentOver.currentInnings}_${currentOver.teamId}`;
     }, [currentOver]);
 
-    const [expanded, setExpanded] = React.useState(defaultExpandedKey);
+    
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -68,6 +68,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
 
         return b.localeCompare(a);
     });
+    const [expanded, setExpanded] = React.useState(sortedKeys[0]);
 
     const renderPartnerships = (key, partnershipsData) => {
         if (!key || !partnershipsData) {
@@ -170,9 +171,9 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                     : teamDetails.BOWLING_TEAM;
                 return (
                     <Accordion
-                        defaultExpanded={team.teamStatus == 1}
+                        // defaultExpanded
                         key={key}
-                        expanded={expanded === key}
+                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },
