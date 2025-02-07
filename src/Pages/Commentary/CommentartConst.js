@@ -182,7 +182,7 @@ export const getStatusFontColor = (status) => {
     
     // Check if the theme is 'dark' and status is one of the specified values
     if (theme === 'dark' && [2, 3, 4, 5, 6].includes(status)) {
-        return "#000000"; // light gray (inactive)
+        return "#000000";
     }
     
     return ""; // Default return value

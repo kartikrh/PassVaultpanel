@@ -1262,7 +1262,7 @@ const PlayerHistory = () => {
       <>
         <Card>
           <CardHeader className="d-flex align-items-center justify-content-between">
-            <h5 className="mb-0 font-size-16">Batting & Fielding</h5>
+            <h5 className="mb-0 font-size-16 modal-header-title">Batting & Fielding</h5>
             <div>
               <Button
                 color="warning"
@@ -1326,7 +1326,7 @@ const PlayerHistory = () => {
         </Card>
         <Card>
           <CardHeader className="d-flex align-items-center justify-content-between">
-            <h5 className="mb-0 font-size-16">Bowling</h5>
+            <h5 className="mb-0 font-size-16 modal-header-title">Bowling</h5>
             <div>
               <Button
                 color="warning"
@@ -1414,7 +1414,7 @@ const PlayerHistory = () => {
                           Image
                         </Avatar>
                       )}
-                      <h4 className="mb-0 font-size-18 mx-2">{`${playerDetails?.playerName} History`}</h4>
+                      <h4 className="mb-0 font-size-18 mx-2 modal-header-title">{`${playerDetails?.playerName} History`}</h4>
                     </Col>}
                   <Col className="float-right">
                     <Button

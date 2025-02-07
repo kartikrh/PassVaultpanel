@@ -1061,7 +1061,7 @@ const Index = forwardRef(
                                 label: item?.sendDataType,
                                 value: item?.isSendData,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1087,7 +1087,7 @@ const Index = forwardRef(
                                 label: item?.createdTypeName,
                                 value: item?.createdType,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1251,7 +1251,7 @@ const Index = forwardRef(
                                   value: item?.value,
                                 })
                               )}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1281,7 +1281,7 @@ const Index = forwardRef(
                                 label: item?.rateSourceType,
                                 value: item?.rateSourceRefId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1316,7 +1316,7 @@ const Index = forwardRef(
                                   value: item?.eventTypeId,
                                 })),
                               ]}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1345,7 +1345,7 @@ const Index = forwardRef(
                                 label: item?.competition,
                                 value: item?.competitionId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1372,7 +1372,7 @@ const Index = forwardRef(
                                 label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
                                 value: item?.eventId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1400,7 +1400,7 @@ const Index = forwardRef(
                                 label: item?.statusType,
                                 value: item?.statusId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1426,7 +1426,7 @@ const Index = forwardRef(
                                 label: item?.matchType,
                                 value: item?.matchTypeId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1452,7 +1452,7 @@ const Index = forwardRef(
                                 label: item?.matchType,
                                 value: item?.matchTypeId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1480,7 +1480,7 @@ const Index = forwardRef(
                                 label: item?.marketTypeName,
                                 value: item?.marketTypeId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1506,7 +1506,7 @@ const Index = forwardRef(
                                 label: item?.categoryName,
                                 value: item?.marketTypeCategoryId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1534,7 +1534,7 @@ const Index = forwardRef(
                                 label: item?.competition,
                                 value: item?.competitionId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1561,7 +1561,7 @@ const Index = forwardRef(
                                 label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
                                 value: item?.commentaryId,
                               }))}
-                              classNamePrefix="select2-selection"
+                              classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
@@ -1587,7 +1587,7 @@ const Index = forwardRef(
                               label: item?.teamName,
                               value: item?.teamId,
                             }))}
-                            classNamePrefix="select2-selection"
+                            classNamePrefix="filter-dropdown"
                           />
                         ) : null}
                         {tableElement?.commentaryStatus ? (
@@ -1613,7 +1613,7 @@ const Index = forwardRef(
                                 value: item?.value,
                               })
                             )}
-                            classNamePrefix="select2-selection"
+                            classNamePrefix="filter-dropdown"
                           />
                         ) : null}
                         {tableElement?.actionType ? (
@@ -1635,7 +1635,7 @@ const Index = forwardRef(
                                   });
                                 }}
                                 options={actionTypeOptions}
-                                classNamePrefix="select2-selection"
+                                classNamePrefix="filter-dropdown"
                               />
                             </div>
                             <button
@@ -2096,7 +2096,7 @@ const Index = forwardRef(
                         label: item?.competition,
                         value: item?.competitionId,
                       }))}
-                      classNamePrefix="select2-selection"
+                      classNamePrefix="filter-dropdown"
                     />
                   </div>
                 )}

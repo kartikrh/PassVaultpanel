@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import CustomInput from "../../components/Common/Reusables/CustomInput";
-import { getStatusColor, OPEN_MARKET_STATUS } from "./CommentartConst";
+import { getStatusColor, getStatusFontColor, OPEN_MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
 import { generateOverUnderLineType } from "./functions";
 import axiosInstance from "../../Features/axios";
@@ -129,9 +129,9 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                     </tr>
                 </thead>
                 <tbody className='whitespace-nowrap'>
-                    <tr style={{ backgroundColor: getStatusColor(localMarket.status) }}>
-                        <td>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
-                        <td>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
+                    <tr style={{ backgroundColor: getStatusColor(localMarket.status)}}>
+                        <td style={{color: getStatusFontColor(localMarket.status)}}>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
+                        <td style={{color: getStatusFontColor(localMarket.status)}}>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
                         <td>
                             <select
                                 className="form-control small-text-fields"
@@ -219,7 +219,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 <tbody className='whitespace-nowrap'>
                     {sortedRunners.map((runner, index) => (
                         <tr key={runner.runnerId} style={{ backgroundColor: getStatusColor(runner.status) }}>
-                            <td>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runnerName}`}</td>
+                            <td style={{color: getStatusFontColor(localMarket.status)}}>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runnerName}`}</td>
                             <td>
                                 <select
                                     className="form-control small-text-fields"
@@ -238,7 +238,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "line", newValue)}
                                 />
                             </td>
-                            <td>
+                            <td style={{color: getStatusFontColor(localMarket.status)}}>
                                 <span>{`${(+runner.line / +localMarket.over)?.toFixed(2)}`}</span>
                             </td>
                             <td>

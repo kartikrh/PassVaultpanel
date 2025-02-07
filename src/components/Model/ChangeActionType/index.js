@@ -32,7 +32,7 @@ export const ChangeActionTypeModel = ({
       <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-            <h4 className="form-label text-left text-lg">Change Action Type</h4>
+            <h4 className="form-label text-left text-lg modal-header-title">Change Action Type</h4>
             <div className="d-flex my-4">
               <div style={{ marginRight: "20px" }}>
                 <span style={{ marginRight: "10px", fontWeight: "700" }}>
@@ -48,7 +48,7 @@ export const ChangeActionTypeModel = ({
               </div>
             </div>
             <ReactSelect
-              classNamePrefix="select2-selection"
+              classNamePrefix="filter-dropdown"
               id="actionType"
               name="actionType"
               placeholder= "Action Type"

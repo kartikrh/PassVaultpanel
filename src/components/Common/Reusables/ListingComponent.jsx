@@ -1,7 +1,7 @@
 import React from "react";
 import "../Table/style.css"
 import { Card, CardBody, Col, Row } from "reactstrap";
-import { getStatusColor1 } from "../../../Pages/Commentary/CommentartConst";
+import { getStatusColor1, getStatusFontColor } from "../../../Pages/Commentary/CommentartConst";
 
 export const ListingElement = ({ columns, dataSource = [], tableElement, tableExtras, tableClassName, hideHeader = false }) => {
     document.title = `${tableElement?.title}`;
@@ -47,7 +47,7 @@ export const ListingElement = ({ columns, dataSource = [], tableElement, tableEx
                                             <tr key={index} style={{ backgroundColor: getStatusColor1(+record?.status) }}>
                                                 {columns.map((column, index) => (
                                                     <td key={index}
-                                                        style={column.style}
+                                                        style={{color : getStatusFontColor(+record?.status), ...column.style}}
                                                         className={column.columnClassName}>
                                                         {column.render
                                                             ? column.render(
