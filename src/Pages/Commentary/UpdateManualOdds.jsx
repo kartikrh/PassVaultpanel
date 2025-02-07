@@ -440,7 +440,7 @@ export const UpdateManualOdds = () => {
             default:
                 break;
         }
-    }, [settings.shortcutValues, isLive]);
+    }, [settings.shortcutValues, isLive, calculateRunnerRates]);
 
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
