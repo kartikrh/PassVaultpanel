@@ -249,7 +249,7 @@ const Index = ({
             <div className="row">
               <div className="col-6">
                 <div className="d-flex align-items-center justify-content-between mx-3 my-2">
-                  <h5>Unassign Templates</h5>
+                  <h5 className="modal-header-title">Unassign Templates</h5>
                   <Button
                     color={"primary"}
                     size="sm"
@@ -293,7 +293,7 @@ const Index = ({
 
               <div className="col-6">
                 <div className="d-flex align-items-center justify-content-between mx-3 my-2">
-                  <h5>Assign Templates</h5>
+                  <h5 className="modal-header-title">Assign Templates</h5>
                   <Button
                     color={"danger"}
                     size="sm"

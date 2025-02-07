@@ -134,7 +134,7 @@ const AddVideoLibrary = () => {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Video Library</h3>
+                            <h3 className="modal-header-title">Video Library</h3>
                         </Col>
                         <Card>
                             <CardBody>

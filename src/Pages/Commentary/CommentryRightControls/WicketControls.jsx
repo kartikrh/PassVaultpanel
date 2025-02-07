@@ -327,7 +327,7 @@ const WicketControls = ({
 
       return (
         <>
-          {/* <h3>Batsman Details</h3> */}
+          {/* <h3 className="modal-header-title">Batsman Details</h3> */}
           <div className="wicket-modal-player-stats mb-4">
             <div className="wicket-modal-player-row wicket-modal-header-row">
               <div className="wicket-modal-player-name">Batter</div>

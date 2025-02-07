@@ -255,7 +255,7 @@ function AddMarketTemaplate() {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3>Market Template </h3>
+              <h3 className="modal-header-title">Market Template </h3>
             </Col>
             <Card>
               <CardBody>

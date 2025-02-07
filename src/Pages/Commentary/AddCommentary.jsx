@@ -462,7 +462,7 @@ function AddCommentary() {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3>Commentary </h3>
+                            <h3 className="modal-header-title">Commentary </h3>
                         </Col>
                         {(isLoading || isApiLoading || isFetchApiLoading) && <SpinnerModel />}
                         <Card>

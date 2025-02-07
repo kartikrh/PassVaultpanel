@@ -14,4 +14,7 @@ body[data-theme="dark"]{
     .col-12.col-md-6.col-lg-6 {
         color: $dark-font-color !important;
       }
+    .wicket-modal-header{
+        color: $dark-font-color !important;
+    }
 }
