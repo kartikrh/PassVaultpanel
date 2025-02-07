@@ -1456,7 +1456,7 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
-                         {tableElement?.marketTypeSelect ? (
+                         {tableElement.title !== "Event Markets" && tableElement?.marketTypeSelect ? (
                           <div className="">
                             <Select
                               styles={{
@@ -1468,23 +1468,28 @@ const Index = forwardRef(
                               value={selectedTableElements?.marketTypeName}
                               placeholder="Market Type"
                               onChange={(e) => {
-                                handleTableActions("marketTypeId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  marketTypeName: e,
-                                  categoryName: { value: 0, label: "Category" },
-                                });
-                                setSelectedMarketType(e?.value)
+                                if (e?.value !== selectedTableElements?.marketTypeName?.value) {
+                                  handleTableActions("marketTypeId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    marketTypeName: e,
+                                    categoryName: { value: 0, label: "Category" },
+                                  });
+                                  setSelectedMarketType(e?.value)
+                                }
                               }}
-                              options={marketTypes?.map((item) => ({
-                                label: item?.marketTypeName,
-                                value: item?.marketTypeId,
-                              }))}
+                              options={[
+                                { label: "Select Market Type", value: 0 },
+                                ...marketTypes?.map((item) => ({
+                                  label: item?.marketTypeName,
+                                  value: item?.marketTypeId,
+                                })),
+                              ]}
                               classNamePrefix="filter-dropdown"
                             />
                           </div>
                         ) : null}
-                        {tableElement?.categorySelect ? (
+                        {tableElement.title !== "Event Markets" && tableElement?.categorySelect ? (
                           <div className="">
                             <Select
                               styles={{
@@ -1496,16 +1501,21 @@ const Index = forwardRef(
                               value={selectedTableElements?.categoryName}
                               placeholder="Category"
                               onChange={(e) => {
-                                handleTableActions("marketTypeCategoryId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  categoryName: e,
-                                });
+                                if (e?.value !== selectedTableElements?.categoryName?.value) {
+                                  handleTableActions("marketTypeCategoryId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    categoryName: e,
+                                  });
+                                }
                               }}
-                              options={categories?.map((item) => ({
-                                label: item?.categoryName,
-                                value: item?.marketTypeCategoryId,
-                              }))}
+                              options={[
+                                { label: "Select Category", value: 0 },
+                                ...categories?.map((item) => ({
+                                  label: item?.categoryName,
+                                  value: item?.marketTypeCategoryId,
+                                })),
+                              ]}
                               classNamePrefix="filter-dropdown"
                             />
                           </div>
@@ -1791,7 +1801,7 @@ const Index = forwardRef(
                   {tableElement?.dateRange ? (
                     <Row className="">
                       {/* <Col className="bg-white p-2 m-2"> */}
-                      <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                      <div className="d-flex flex-wrap align-items-center gap-2 p-2">
                         <div className="d-flex flex-column">
                           <input
                             className="form-control"
@@ -1871,7 +1881,7 @@ const Index = forwardRef(
                   {tableElement?.isDateRange ? (
                     <Row className="g-2">
                       {/* <Col className="bg-white p-2 m-2"> */}
-                      <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                      <div className="d-flex flex-wrap align-items-center gap-2 p-2">
                         <Button
                           color={`${isSearch ? "primary" : "danger"}`}
                           size="sm"
@@ -2014,9 +2024,75 @@ const Index = forwardRef(
                       {/* </Col> */}
                     </Row>
                   ) : null}
+                  {(tableElement.title === "Event Markets" || tableElement?.delayTextBox) ?
+                  <Row className="">
+                    <div className="d-flex flex-wrap align-items-center gap-2">
+                       {tableElement.title === "Event Markets" && tableElement?.marketTypeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.marketTypeName}
+                              placeholder="Market Type"
+                              onChange={(e) => {
+                                if (e?.value !== selectedTableElements?.marketTypeName?.value) {
+                                  handleTableActions("marketTypeId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    marketTypeName: e,
+                                    categoryName: { value: 0, label: "Category" },
+                                  });
+                                  setSelectedMarketType(e?.value)
+                                }
+                              }}
+                              options={[
+                                { label: "Select Market Type", value: 0 },
+                                ...marketTypes?.map((item) => ({
+                                  label: item?.marketTypeName,
+                                  value: item?.marketTypeId,
+                                })),
+                              ]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}                        
+                        {tableElement.title === "Event Markets" && tableElement?.categorySelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.categoryName}
+                              placeholder="Category"
+                              onChange={(e) => {
+                                if (e?.value !== selectedTableElements?.categoryName?.value) {
+                                  handleTableActions("marketTypeCategoryId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    categoryName: e,
+                                  });
+                                }
+                              }}
+                              options={[
+                                { label: "Select Category", value: 0 },
+                                ...categories?.map((item) => ({
+                                  label: item?.categoryName,
+                                  value: item?.marketTypeCategoryId,
+                                })),
+                              ]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                  ) : null}
                   {tableElement?.delayTextBox ? (
-                    <Row className="">
-                      <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                        <>
                         <div className="d-flex flex-column">
                           <input
                             className="form-control"
@@ -2059,9 +2135,10 @@ const Index = forwardRef(
                         >
                           Save
                         </button>
-                      </div>
-                    </Row>
+                        </>
                   ) : null}
+                   </div>
+                   </Row> : null}
                 </form>
               </CardHeader>
             )}
