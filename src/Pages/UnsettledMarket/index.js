@@ -65,6 +65,8 @@ const Index = () => {
       ...(latestValueFromTable || tableActions),
       status: 4,
       rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
+      marketTypeId: latestValueFromTable?.marketTypeId || 0,
+      marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
     };
     if (isSearch) {
       payload = {
@@ -404,6 +406,8 @@ const Index = () => {
     if(mtAndCategories && selectedMarketType) {
       const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
       setCategories(categoriesData || []);
+    } else if(!selectedMarketType) {
+      setCategories([]);
     }
   },[mtAndCategories, selectedMarketType])
 

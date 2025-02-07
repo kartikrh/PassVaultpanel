@@ -92,6 +92,8 @@ const Index = () => {
     let payload = {
       ...(latestValueFromTable || tableActions),
       rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
+      marketTypeId: latestValueFromTable?.marketTypeId || 0,
+      marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
     };
     if (commentaryId !== 0) {
       payload = {
@@ -201,6 +203,8 @@ const Index = () => {
       if(mtAndCategories && selectedMarketType) {
         const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
         setCategories(categoriesData || []);
+      } else if(!selectedMarketType) {
+        setCategories([]);
       }
   },[mtAndCategories, selectedMarketType])
 
