@@ -54,7 +54,7 @@ const Index = () => {
                 className="table"
                 responsive
                 // striped
-                hover
+                // hover
                 bordered
                 style={{ border: "1px black" }}
               >
@@ -81,8 +81,8 @@ const Index = () => {
                                 <Table
                                   className="table"
                                   responsive
-                                  striped
-                                  hover
+                                  // striped
+                                  // hover
                                   bordered
                                   style={{ border: "1px black" }}
                                 >

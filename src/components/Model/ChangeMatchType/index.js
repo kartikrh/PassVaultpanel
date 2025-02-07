@@ -39,7 +39,7 @@ setSelectedCommentaryVals(selectedCommentary)
     <div className="tablelist-form">
         <ModalBody>
             <div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg">Change Match Type</h4>
+                <h4 className="form-label text-left text-lg modal-header-title">Change Match Type</h4>
                 <div className="d-flex my-4">
                 <div style={{marginRight:"20px"}}>
                     <span style={{marginRight:"10px", fontWeight:"700"}}>Event Name:</span>
@@ -50,9 +50,9 @@ setSelectedCommentaryVals(selectedCommentary)
                     <span>{selectedCommentaryVals?.eventRefId}</span>
                 </div>
                 </div>
-                {/* <h6 className='text-left mt-4'>Match Type</h6> */}
+                {/* <h6 className='text-left mt-4 modal-header-title'>Match Type</h6> */}
                 <ReactSelect
-                      classNamePrefix="select2-selection"
+                      classNamePrefix="filter-dropdown"
                       id="matchType"
                       name="matchType"
                       defaultValue={{label: selectedCommentary?.matchType, value: selectedCommentary?.eventRefId}}

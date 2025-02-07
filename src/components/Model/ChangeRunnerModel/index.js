@@ -167,7 +167,7 @@ export const ChangeRunnerModel = ({
       <div className="tablelist-form">
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-            <h4 className="form-label text-left text-lg">Set Runner Values</h4>
+            <h4 className="form-label text-left text-lg modal-header-title">Set Runner Values</h4>
             <div className="d-flex my-4">
               <div style={{ marginRight: "20px" }}>
                 <span style={{ marginRight: "10px", fontWeight: "700" }}>

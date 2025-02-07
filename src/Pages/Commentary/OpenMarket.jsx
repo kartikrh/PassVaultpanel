@@ -1436,9 +1436,10 @@ export const OpenMarket = () => {
                                                 isMulti
                                                 name="categories"
                                                 options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
-                                                className="basic-multi-select"
-                                                classNamePrefix="select"
+                                                className="filter-categories"
+                                                classNamePrefix="filter-dropdown"
                                                 value={selectedCategories}
+                                                // menuIsOpen={true}
                                                 onChange={handleCategoryChange}
                                             />
                                         </Col>
