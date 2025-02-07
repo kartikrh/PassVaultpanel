@@ -44,6 +44,8 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/marketTemplate/all`, {
         ...(value || tableActions),
+        marketTypeId: value?.marketTypeId || 0,
+        marketTypeCategoryId: value?.marketTypeId !== selectedMarketType ? 0 : value?.marketTypeCategoryId || 0,
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.marketTemplateId - b?.marketTemplateId);
@@ -536,6 +538,8 @@ const Index = () => {
     if(mtAndCategories && selectedMarketType) {
       const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
       setCategories(categoriesData || []);
+    } else if(!selectedMarketType) {
+      setCategories([]);
     }
   },[mtAndCategories, selectedMarketType]);
 
