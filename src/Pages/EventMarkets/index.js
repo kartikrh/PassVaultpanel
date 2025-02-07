@@ -56,6 +56,9 @@ const Index = () => {
   const [closeModelVisable, setCloseModelVisable] = useState(false);
   const [closeSuspendTimeModelVisible, setCloseSuspendTimeModelVisible] = useState(false);
   const [closeSuspendTimeRecord, setCloseSuspendTimeRecord] = useState({});
+  const [mtAndCategories, setMtAndCategories] = useState(null);
+  const [selectedMarketType, setSelectedMarketType] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [delay, setDelay] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
   const [dateRange, setDateRange] = useState({
@@ -126,6 +129,17 @@ const Index = () => {
       });
   };
 
+  const fetchMarketCategoriesList = async () =>{
+    await axiosInstance
+    .post("/admin/marketTemplate/mtAndCategories", {})
+    .then((response) => {
+      setMtAndCategories(response?.result);
+    })
+    .catch((error) => {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
+  }
+
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/eventMarket/eventTypeList`, {
@@ -150,7 +164,7 @@ const Index = () => {
   };
   const fetchEventList = async (competitionId) => {
     await axiosInstance
-      .post(`/admin/eventMarket/eventListByCompetitionId`, {
+      .post(`/admin/eventMarket/commListByCompetitionId`, {
         competitionId: competitionId,
       })
       .then((response) => {
@@ -182,6 +196,13 @@ const Index = () => {
         setIsSearch(true)
       } */
     },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.eventId])
+
+  useEffect(() => {
+      if(mtAndCategories && selectedMarketType) {
+        const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
+        setCategories(categoriesData || []);
+      }
+  },[mtAndCategories, selectedMarketType])
 
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -535,6 +556,20 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
+      title: "Market Type",
+      dataIndex: "marketTypeName",
+      key: "marketTypeName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Category",
+      dataIndex: "categoryName",
+      key: "categoryName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
@@ -706,6 +741,8 @@ const Index = () => {
     isDateRange: true,
     isCloseAllMarket: true,
     isCloseMarket: true,
+    marketTypeSelect: true,
+    categorySelect: true
   };
 
   useEffect(() => {
@@ -713,10 +750,12 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+    fetchMarketCategoriesList();
   }, [isSearch, ratesource]);
 
   const handleReload = (value) => {
     fetchData();
+    fetchMarketCategoriesList();
   };
 
   useEffect(() => {
@@ -798,6 +837,9 @@ const Index = () => {
             setRatesource={setRatesource}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            marketTypes={mtAndCategories?.marketTypes || []}
+            categories={categories}
+            setSelectedMarketType={setSelectedMarketType}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

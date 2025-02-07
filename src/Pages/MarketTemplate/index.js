@@ -361,7 +361,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Template Name",
+      title: "Template",
       dataIndex: "templateName",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>{text}</span>
@@ -371,14 +371,14 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Market Type Name",
+      title: "Market Type",
       dataIndex: "marketTypeName",
       key: "marketTypeName",
       style: { width: "10%" },
       sort: true,
     },
     {
-      title: "Category Name",
+      title: "Category",
       dataIndex: "categoryName",
       key: "categoryName",
       style: { width: "10%" },
@@ -512,7 +512,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Events",
+    title: "Market Template",
     isActive: true,
     matchTypeSelect: true,
     marketTypeSelect: true,
@@ -537,7 +537,7 @@ const Index = () => {
       const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
       setCategories(categoriesData || []);
     }
-  },[mtAndCategories, selectedMarketType])
+  },[mtAndCategories, selectedMarketType]);
 
   const handleReload = (value) => {
     fetchData({ isActive: true });
