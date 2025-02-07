@@ -49,6 +49,7 @@ export const CreateEventMarket = () => {
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
+    const [showBackToTop, setShowBackToTop] = useState(false);
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
@@ -74,6 +75,21 @@ export const CreateEventMarket = () => {
             console.error("Error fetching market data:", error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleScroll = (e) => {
+        const scrollTop = e?.target?.scrollTop;
+        setShowBackToTop(scrollTop > 500); // Show button after scrolling 500px
+    };
+
+    const scrollToTop = () => {
+        const contentSection = document.querySelector('.content-section');
+        if (contentSection) {
+          contentSection.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
         }
     };
 
@@ -1772,8 +1788,9 @@ export const CreateEventMarket = () => {
                 <Container fluid={true}>
                     <Row>
                         <Card>
-                            <CardBody className="p-1">
+                            <CardBody className="p-1 card-container">
                                 {isLoading && <SpinnerModel />}
+                                <div className="header-sticky">
                                 <Row>
                                     <Col className="mt-3 mt-lg-3 mt-md-3" >
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
@@ -1799,7 +1816,15 @@ export const CreateEventMarket = () => {
                                         </Col>
                                     )}
                                 </Row>
-                                {renderMainSections()}
+                                </div>
+                                <div className="content-section" onScroll={handleScroll}>
+                                   {renderMainSections()}
+                                </div>
+                                {showBackToTop && (
+                                    <Button className="btn text-right my-2" onClick={scrollToTop}>
+                                       Back to top
+                                    </Button>
+                                )}
                             </CardBody>
                         </Card>
                     </Row>
