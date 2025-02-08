@@ -58,6 +58,7 @@ import RetiredHurtControls from "./CommentryRightControls/RetiredHurtControls";
 import ChangeOverControls from "./CommentryRightControls/ChangeOverControls";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { Avatar } from "@mui/material";
+import PlayerImage from "../../components/Common/Reusables/PlayerImage";
 
 const CenteredBadge = styled.div`
   position: absolute;
@@ -212,6 +213,7 @@ const NewCommentaryScreen = ({
   const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
   const [isBoundary, setIsBoundary] = useState(undefined);
   const dispatch = useDispatch();
+  console.log("teamDetails", teamDetails["BATTING_TEAM"].jersey)
 
   const matchData = {
     maxOvers: 20,
@@ -591,7 +593,14 @@ const NewCommentaryScreen = ({
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="d-flex align-items-center">
-                    <div className="player-image me-2"><img height={25} src={onPitchPlayers[ON_STRIKE]?.playerimage} className="overflow-hidden"/></div>
+                    <div className="player-image me-2">
+                      {/* <img height={25} src={onPitchPlayers[ON_STRIKE]?.playerimage} className="overflow-hidden"/> */}
+                        <PlayerImage
+                            // width="30px"
+                            playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
+                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                        />
+                      </div>
                     <span
                       className={`fw-medium scorecard-striker-player-name`}
                       onClick={() => {
@@ -623,7 +632,14 @@ const NewCommentaryScreen = ({
                 </div>
                 <div className="d-flex justify-content-between align-items-center mb-2 text-secondary">
                   <div className="d-flex align-items-center">
-                  <div className="player-image me-2"><img height={25} src={onPitchPlayers[NON_STRIKE]?.playerimage} className="overflow-hidden"/></div>
+                  <div className="player-image me-2">
+                    {/* <img height={25} src={onPitchPlayers[NON_STRIKE]?.playerimage} className="overflow-hidden"/> */}
+                        <PlayerImage
+                            // width="30px"
+                            playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
+                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                        />
+                    </div>
                     <span
                       className={`fw-small scorecard-nonstriker-player-name`}
                       onClick={() => {
@@ -703,7 +719,14 @@ const NewCommentaryScreen = ({
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="d-flex align-items-center">
-                  <div className="player-image me-2"><img height={25} src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} className="overflow-hidden"/></div>
+                  <div className="player-image me-2">
+                    {/* <img height={25} src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} className="overflow-hidden"/> */}
+                        <PlayerImage
+                            // width="30px"
+                            playerImage={onPitchPlayers[CURRENT_BOWLER]?.playerimage}
+                            jerseyImage={teamDetails["BOWLING_TEAM"].jersey}
+                        />
+                    </div>
                     <span className={`fw-medium scorecard-striker-player-name`}>
                       {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                     </span>
