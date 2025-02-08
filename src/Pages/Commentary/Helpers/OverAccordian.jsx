@@ -394,14 +394,13 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                 ? teamDetails.BOWLING_TEAM
                 : teamDetails.BATTING_TEAM
-                console.log("jersy", jersy)
                 return (
                     <Accordion
                         // defaultExpanded
                         className='right-panel-over-accordian'
                         key={key}
                         // disabled
-                        expanded={sortedKeys.length > 1 ? expanded === key : true}
+                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },
