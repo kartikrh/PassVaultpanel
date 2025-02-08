@@ -984,24 +984,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 20px;
+  padding: 8px 20px;
 }
 
 .first-card-player-section {
-  display: flex;
+  /* display: flex; */
   /* flex: 1; */
-  align-items: center;
+  /* align-items: center;
   text-align: center;
-  padding: 0.5rem;
+  padding: 0.5rem; */
 }
 
 .remaining-card-player-section {
-  display: flex;
-  justify-content: center;
+  /* display: flex;
+  justify-content: center; */
   /* flex: 1; */
-  text-align: center;
+  /* text-align: center;
   align-items: center;
-  padding: 1rem 0.5rem;
+  padding: 1rem 0.5rem; */
 }
 
 .first-player-image {

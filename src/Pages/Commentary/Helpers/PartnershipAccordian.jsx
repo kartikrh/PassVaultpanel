@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import _ from 'lodash';
+import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 
 const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistory, playersList, currentOver }) => {
     // const processedHistory = React.useMemo(() => {
@@ -70,7 +71,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
     });
     const [expanded, setExpanded] = React.useState(sortedKeys[0]);
 
-    const renderPartnerships = (key, partnershipsData) => {
+    const renderPartnerships = (key, partnershipsData, team) => {
         if (!key || !partnershipsData) {
             console.error("Invalid input: key or partnershipsData is missing.");
             return null;
@@ -110,13 +111,15 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                         {partnershipPosition}{ordinalSuffix} Partnership
                     </div>
                     <div className={`${cardType}-card-body`}>
-                        <div className={`${cardType}-card-player-section left-player`}>
-                            <img
-                                src={partnership.player1image}
-                                alt={partnership.batter1Name}
-                                className={`${cardType}-player-image`}
-                                onError={(e) => e.target.src = 'icons/default-player.png'}
-                            />
+                        <div className={`${cardType}-card-player-section left-player d-flex gap-2`}>
+                            <div className='d-flex justify-content-center align-items-center'>
+                                <PlayerImage
+                                    // width="30px"
+                                    playerImage={partnership.player1image}
+                                    jerseyImage={team.jersey}
+                                    width={cardType === 'first' ? "50px" : "30px"}
+                                />
+                            </div>
                             <div className="player-details">
                                 <div className={`${cardType}-player-name`}>
                                     {partnership.batter1Name}
@@ -140,13 +143,15 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 Extras: {partnership.extras || 0}
                             </div>
                         </div>
-                        <div className={`right-player ${cardType}-card-player-section`}>
-                            <img
-                                src={partnership.player2image}
-                                alt={partnership.batter2Name}
-                                className={`${cardType}-player-image`}
-                                onError={(e) => e.target.src = 'icons/default-player.png'}
-                            />
+                        <div className={`right-player ${cardType}-card-player-section d-flex gap-2`}>
+                            <div className='d-flex justify-content-center align-items-center'>
+                                <PlayerImage
+                                    // width="30px"
+                                    width={cardType === 'first' ? "50px" : "30px"}
+                                    playerImage={partnership.player2image}
+                                    jerseyImage={team.jersey}
+                                />
+                            </div>
                             <div>
                                 <div className={`${cardType}-player-name`}>
                                     {partnership.batter2Name}
@@ -188,20 +193,25 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                             sx={{ px: 2 }}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
-                                <Typography fontWeight="bold" sx={{
-                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                {/* <Typography fontWeight="bold" sx={{
+                                    fontFamily: "'Work Sans', sans-serif",
+                                }}>
+                                    {team.teamName}
+                                </Typography> */}
+                                <Typography variant="h6" color="text.secondary" sx={{
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
                                     {team.teamName}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{
+                                <Typography variant="h6"  color="text.secondary" sx={{
                                     fontFamily: "'Work Sans', sans-serif"
                                 }}>
-                                    Innings {innings}
+                                     - Innings {innings}
                                 </Typography>
                             </Box>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 0 }} >
-                            {renderPartnerships(key, partnerships)}
+                            {renderPartnerships(key, partnerships, team)}
                         </AccordionDetails>
                     </Accordion>
                 );
