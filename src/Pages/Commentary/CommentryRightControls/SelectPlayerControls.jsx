@@ -83,7 +83,7 @@ const SelectPlayerControls = ({
         <img
           src="icons/bater.png"
           alt="bat"
-          style={{ width: "30px", height: "30px" }}
+          style={{ width: "25px", height: "25px" }}
         />
       );
     } else if (playerType === "Wicketkeeper") {
@@ -91,7 +91,7 @@ const SelectPlayerControls = ({
         <img
           src={keeper}
           alt="keeper"
-          style={{ width: "30px", height: "30px" }}
+          style={{ width: "25px", height: "25px" }}
         />
       );
     } else if (playerType === "AllRounder") {
@@ -99,7 +99,7 @@ const SelectPlayerControls = ({
         <img
           src={allrounder}
           alt="allrounder"
-          style={{ width: "30px", height: "30px" }}
+          style={{ width: "25px", height: "25px" }}
         />
       );
     } else {
@@ -107,7 +107,7 @@ const SelectPlayerControls = ({
         <img
           src="icons/bowler.png"
           alt="ball"
-          style={{ width: "30px", height: "30px" }}
+          style={{ width: "25px", height: "25px" }}
         />
       );
     }

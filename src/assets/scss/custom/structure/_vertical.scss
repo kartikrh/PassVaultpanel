@@ -607,6 +607,9 @@ body[data-sidebar-size="small"] {
   .color-white {
     background-color: $light-body-bg !important;
   }
+  .modal-header-title{
+    color: #000000 !important
+}
 
 body[data-theme="dark"]{
     .vertical-menu{

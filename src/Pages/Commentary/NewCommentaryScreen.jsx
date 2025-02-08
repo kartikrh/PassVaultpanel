@@ -891,7 +891,7 @@ const NewCommentaryScreen = ({
                         <RunButton
                           key={runs}
                           label={runs}
-                          onClick={() => handleRuns(Number(runs), 1)}
+                          onClick={() => handleRuns(Number(runs), 1, Number(runs) === 4 || Number(runs) === 6 )}
                           className="score-control-ball-btn"
                         />
                       ))}

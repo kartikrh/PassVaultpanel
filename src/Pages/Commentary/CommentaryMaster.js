@@ -296,7 +296,7 @@ function CommentaryMaster() {
     const [datee, month, year] = date.split(" ");
     return (
       <div>
-        <span className="">{datee} </span>
+        <span className="event-date">{datee} </span>
         <span className="" style={{ color: "#FF0000" }}>
           {`${month} '${year}`}
         </span>
@@ -329,7 +329,6 @@ function CommentaryMaster() {
                           <div>
                             <div
                               className="score-header-event-type"
-                              style={{ color: "#999999", fontSize: "10px" }}
                             >{`${commentaryData.commentaryDetails.com}`}</div>
                             <div className="text-uppercase score-header-event-name"
                             >{`${commentaryData.commentaryDetails.en}`}</div>
