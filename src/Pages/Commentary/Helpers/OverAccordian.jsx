@@ -11,6 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
+import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 
 // Styled components remain the same
 const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -245,7 +246,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         };
     }, []);
 
-    const renderOver = (balls, overKey) => {
+    const renderOver = (balls, overKey, team) => {
         const [innings, teamId, overNum] = overKey.split('_##_');
         const overDetails = getOverDetails(overNum, innings, teamId);
 
@@ -260,6 +261,15 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     <div className="d-flex justify-content-between w-100 px-0">
                         <PlayerInfo>
                             {bowler?.playerimage ?
+                            //     <PlayerImage
+                            //         width="30px"
+                            //         playerImage={bowler?.playerimage}
+                            //         jerseyImage={team.jersey}
+                            // />:<Avatar
+                            //     src="/api/placeholder/48/48"
+                            //     alt={bowler?.playerName || 'Bowler'}
+                            //     sx={{ width: 32, height: 32 }}
+                            // />
                                 <Avatar
                                     src={bowler?.playerimage}
                                     alt={bowler?.playerName || 'Bowler'}
@@ -309,16 +319,15 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 : <OverContainer>
                     <PlayerInfo>
                         {bowler?.playerimage ?
-                            <Avatar
-                                src={bowler?.playerimage}
-                                alt={bowler?.playerName || 'Bowler'}
-                                sx={{ width: 30 }}
-                            />
-                            : <Avatar
-                                src="/api/placeholder/48/48"
-                                alt={bowler?.playerName || 'Bowler'}
-                                sx={{ width: 32, height: 32 }}
-                            />}
+                            <PlayerImage
+                            // width="30px"
+                            playerImage={bowler?.playerimage}
+                            jerseyImage={team.jersey}
+                        />:<Avatar
+                            src="/api/placeholder/48/48"
+                            alt={bowler?.playerName || 'Bowler'}
+                            sx={{ width: 32, height: 32 }}
+                        />}
                         <Box>
                             <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
                                 fontFamily: "'Work Sans', sans-serif", color: '#505d69'
@@ -382,6 +391,10 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                     ? teamDetails.BATTING_TEAM
                     : teamDetails.BOWLING_TEAM;
+                const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
+                ? teamDetails.BOWLING_TEAM
+                : teamDetails.BATTING_TEAM
+                console.log("jersy", jersy)
                 return (
                     <Accordion
                         // defaultExpanded
@@ -404,20 +417,20 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             sx={{ px: 2 }}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
-                                <Typography fontWeight="bold" sx={{
-                                    fontFamily: "", color: '#505d69'
+                                <Typography variant="h6" fontWeight="bold" color="text.secondary" sx={{
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
-                                    {team.teamName} -
+                                    {team.teamName}
                                 </Typography>
-                                <Typography fontWeight="bold"  sx={{
-                                    fontFamily: "", color:'#505d69'
+                                <Typography variant="h6" fontWeight="bold" color="text.secondary" sx={{
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
-                                    Innings {innings}
+                                    - Innings {innings}
                                 </Typography>
                             </Box>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 0 }}>
-                            {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey))}
+                            {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey, jersy))}
                         </AccordionDetails>
                     </Accordion>
                 );

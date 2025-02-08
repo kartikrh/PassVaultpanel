@@ -107,7 +107,7 @@ const Index = ({ data, next, save }) => {
         <Container>
           <Card className="shadow-none toss-card p-4">
             <CardHeader className="toss-card-header p-0">
-              <h2 >Toss Selection</h2>
+              <h2>Toss Selection</h2>
             </CardHeader>
               <div style={{ borderBottom: "solid gray 2px" }}></div>
               <div className="mt-5">
@@ -137,7 +137,8 @@ const Index = ({ data, next, save }) => {
               </div>
               {values?.tossWonBy !== null && (
                 <div className="mt-2">
-                  <h5 >Choose To?</h5>
+                  
+                  <h5 style={{color: "unset"}}>Choose To?</h5>
                   <Row>
                     <Col
                       // xl="12"
