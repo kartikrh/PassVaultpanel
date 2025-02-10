@@ -11,6 +11,7 @@ import { isEmpty } from 'lodash';
 import "../../components/Common/Reusables/CustomCss.css";
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import EventMarketModal from './CommentaryModels/CustomEventModal';
+import { FaArrowUp } from "react-icons/fa"
 import CustomInput from '../../components/Common/Reusables/CustomInput';
 
 const MARKET_STATUS = {
@@ -1866,9 +1867,11 @@ export const CreateEventMarket = () => {
                                    {renderMainSections()}
                                 </div>
                                 {showBackToTop && (
-                                    <Button className="btn text-right my-2" onClick={scrollToTop}>
-                                       Back to top
+                                     <>
+                                    <Button className="btn text-right my-2 sticky-btn" onClick={scrollToTop}>
+                                        <FaArrowUp />
                                     </Button>
+                                    </>
                                 )}
                             </CardBody>
                         </Card>
