@@ -109,6 +109,7 @@ export const CONTENT_IMAGE_TYPE = {
 export const OPEN_MARKET_CONNECT = "connectEventMarket";
 export const COMMENTARY_STATUS_CONNECT = "conCommentary";
 export const OPEN_MARKET_DATA = "updateMarketData";
+export const UPDATE_MARKET_DATA = "updateMarket";
 export const UNDO_CALLED = "undoCalled";
 export const MARKET_RUNNER_CONNECT = "marketRunnerConnection";
 export const MARKET_RUNNER_DATA = "marketRunners";

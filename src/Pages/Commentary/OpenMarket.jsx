@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { CONNECT_COMMENTARY, ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, WARNING } from "../../components/Common/Const";
+import { CONNECT_COMMENTARY, ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, UPDATE_MARKET_DATA, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -1267,6 +1267,24 @@ export const OpenMarket = () => {
         }
     }, [commentaryId]);
 
+    // useEffect(() => {
+    //     if (!isEmpty(teams)) {
+    //         if (socket) {
+    //             socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+    //             setIsSocketConnected(true)
+    //             socket.on(OPEN_MARKET_DATA, (socketData) => {
+    //                 formatSocketDataForState(socketData || [])
+    //             });
+    //         } else {
+    //             setIsSocketConnected(false)
+    //             fetchConfigAll();
+    //         }
+    //     }
+    //     return () => {
+    //         socket.off(OPEN_MARKET_DATA);
+    //     };
+    // }, [teams])
+
     useEffect(() => {
         if (!isEmpty(teams)) {
             if (socket) {
@@ -1275,6 +1293,26 @@ export const OpenMarket = () => {
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
                     formatSocketDataForState(socketData || [])
                 });
+                socket.on(UPDATE_MARKET_DATA, (marketData) => {
+                    if (marketData) {
+                        const formattedData = formatSocketDataForState([JSON.stringify(marketData)]);
+                        if (formattedData) {
+                            setData(prevData => {
+                                const updatedData = prevData.map(market => {
+                                    if (market.marketId === marketData.marketId) {
+                                        return {
+                                            ...market,
+                                            ...marketData,
+                                            runner: Array.isArray(marketData.runner) ? marketData.runner : [marketData.runner]
+                                        };
+                                    }
+                                    return market;
+                                });
+                                return updatedData;
+                            });
+                        }
+                    }
+                });
             } else {
                 setIsSocketConnected(false)
                 fetchConfigAll();
@@ -1282,27 +1320,28 @@ export const OpenMarket = () => {
         }
         return () => {
             socket.off(OPEN_MARKET_DATA);
+            socket.off(UPDATE_MARKET_DATA);
         };
     }, [teams])
 
     useEffect(() => {
-        if(commentaryId) {
+        if (commentaryId) {
             if (socket) {
                 socket.emit(CONNECT_COMMENTARY, { commentaryId });
                 socket.on(UNDO_CALLED, (data) => {
-                  if(data){ 
-                    dispatch(
-                      updateToastData({
-                        data: `${data?.message}`,
-                        title: "Undo Called",
-                        type: WARNING,
-                      })
-                    );
-                  }
+                    if (data) {
+                        dispatch(
+                            updateToastData({
+                                data: `${data?.message}`,
+                                title: "Undo Called",
+                                type: WARNING,
+                            })
+                        );
+                    }
                 });
                 socket.on(UPDATE_BALL_STATUS, (data) => {
-                    if(data){ 
-                      setBallStatus(data?.ballStatus);
+                    if (data) {
+                        setBallStatus(data?.ballStatus);
                     }
                 });
             }
