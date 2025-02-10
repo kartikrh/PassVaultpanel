@@ -210,6 +210,14 @@
   /* bottom: 10%; */
   cursor: pointer;
 }
+.sticky-btn {
+  /* height: 24px; */
+  position: fixed; 
+  right: 3%;
+  bottom: 10%;
+  cursor: pointer;
+  z-index: 99;
+}
 
 .player-header,
 .section-header {
@@ -1416,11 +1424,11 @@
 .content-section {
   overflow-y: auto;
   height: calc(100% - 170px);
-  &::-webkit-scrollbar {
+  /* &::-webkit-scrollbar {
     display: none;
   }
   -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none; 
+  /* scrollbar-width: none;   */
 }
 
 body[data-theme="dark"] {
