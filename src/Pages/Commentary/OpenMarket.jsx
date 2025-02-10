@@ -793,22 +793,30 @@ export const OpenMarket = () => {
                 // Filter based on statusListToInclude
                 const finalDataToSet = combinedData.filter(e => statusListToInclude.includes(e.status));
 
-                setTimeout(() => {
-                    setData((storedData) =>
-                        storedData.map(element => ({ ...element, isNewSocketData: false }))
-                    );
-                    setHasUnsavedChanges(false);
-                }, 3000);
+                // Handle isNewSocketData timeout
+                finalDataToSet.forEach(market => {
+                    if (market.isNewSocketData) {
+                        setTimeout(() => {
+                            setData(currentData =>
+                                currentData.map(item =>
+                                    item.marketId === market.marketId
+                                        ? { ...item, isNewSocketData: false }
+                                        : item
+                                )
+                            );
+                        }, 3000);
+                    }
+                });
 
-                // const sortedData = _.orderBy(finalDataToSet, ['marketName'], ['asc']);
+                // Sort the data
                 const sortedData = _.orderBy(finalDataToSet, [
                     item => {
-                        // Check if the marketName contains a numeric value
                         const match = item.marketName.match(/(\d+)/);
-                        return match ? parseInt(match[1], 10) : 0;  // Return 1 if there's a number, 0 if not
+                        return match ? parseInt(match[1], 10) : 0;
                     },
-                    item => item.marketName  // Then sort alphabetically by marketName
+                    item => item.marketName
                 ], ['asc', 'asc']);
+
                 updateOriginalValues(sortedData);
                 return sortedData;
             });
@@ -1259,6 +1267,65 @@ export const OpenMarket = () => {
         });
     };
 
+    // New method for handling market updates
+    const handleMarketUpdate = (marketData) => {
+        if (!marketData) return;
+
+        // Convert market data to array format if it's a single object
+        const marketDataArray = Array.isArray(marketData) ? marketData : [marketData];
+
+        setData(prevData => {
+            const updatedData = prevData.map(market => {
+                const updatedMarket = marketDataArray.find(m => m.marketId === market.marketId);
+                if (updatedMarket) {
+                    const formattedMarket = {
+                        ...market,
+                        ...updatedMarket,
+                        isNewSocketData: true,
+                        runner: Array.isArray(updatedMarket.runner)
+                            ? updatedMarket.runner
+                            : [updatedMarket.runner]
+                    };
+
+                    // Schedule removal of isNewSocketData flag
+                    setTimeout(() => {
+                        setData(currentData =>
+                            currentData.map(item =>
+                                item.marketId === market.marketId
+                                    ? { ...item, isNewSocketData: false }
+                                    : item
+                            )
+                        );
+                    }, 3000);
+
+                    return formattedMarket;
+                }
+                return market;
+            });
+
+            // Add any new markets that don't exist in current data
+            const newMarkets = marketDataArray
+                .filter(newMarket => !updatedData.some(market => market.marketId === newMarket.marketId))
+                .map(newMarket => ({
+                    ...newMarket,
+                    isNewSocketData: true,
+                    runner: Array.isArray(newMarket.runner) ? newMarket.runner : [newMarket.runner]
+                }));
+
+            const finalData = [...updatedData, ...newMarkets]
+                .filter(e => statusListToInclude.includes(e.status));
+
+            updateOriginalValues(finalData);
+
+            return _.orderBy(finalData, [
+                item => {
+                    const match = item.marketName.match(/(\d+)/);
+                    return match ? parseInt(match[1], 10) : 0;
+                },
+                'marketName'
+            ], ['asc', 'asc']);
+        });
+    };
 
     useEffect(() => {
         if (commentaryId !== "0") {
@@ -1295,22 +1362,7 @@ export const OpenMarket = () => {
                 });
                 socket.on(UPDATE_MARKET_DATA, (marketData) => {
                     if (marketData) {
-                        const formattedData = formatSocketDataForState([JSON.stringify(marketData)]);
-                        if (formattedData) {
-                            setData(prevData => {
-                                const updatedData = prevData.map(market => {
-                                    if (market.marketId === marketData.marketId) {
-                                        return {
-                                            ...market,
-                                            ...marketData,
-                                            runner: Array.isArray(marketData.runner) ? marketData.runner : [marketData.runner]
-                                        };
-                                    }
-                                    return market;
-                                });
-                                return updatedData;
-                            });
-                        }
+                        handleMarketUpdate(marketData);
                     }
                 });
             } else {
