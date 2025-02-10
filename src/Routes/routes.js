@@ -69,7 +69,8 @@ import SetSessionResult from "../Pages/SetSessionResult";
 import Vendor from "../Pages/Vendor";
 import DisplayStatus from "../Pages/DisplayStatus";
 import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
-import ClientSocket from "../Pages/ClientSocket"
+import ClientSocket from "../Pages/ClientSocket";
+import ThirdPartyApi from "../Pages/ThirdPartyApi";
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -228,6 +229,7 @@ const authProtectedRoutes = [
   { path: "/displaystatus", component: <DisplayStatus /> },
   { path: "/addDisplayStatus", component: <AddDisplayStatus /> },
   { path: "/clientSocket", component: <ClientSocket /> },
+  { path: "/thirdPartyApi", component: <ThirdPartyApi /> },
   { path: "/addClientSocket", component: <AddClientSocket /> },
   { path: "/banner", component: <Banner /> },
   { path: "/addBanner", component: <AddBanner /> },
