@@ -4,7 +4,7 @@ import "../CommentaryCss.css"
 import CardComponent from '../CardComponent';
 import { NON_STRIKE, ON_STRIKE, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER } from '../CommentartConst';
 import SelectPlayerModal from './SelectPlayerModal';
-const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBattingPlayers }) => {
+const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBattingPlayers, retiringHurtPartnership }) => {
     const [changePlayerType, setChangePlayerType] = useState(false);
 
     const onSubmitClick = (newPlayerId) => {
@@ -13,7 +13,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
             ...onPitchplayers,
             [RETIRED_HURT_BATTER]: { ...oldPlayer, "isPlay": null, "onStrike": null },
             [PREV_ON_STRIKE]: onPitchplayers[ON_STRIKE],
-            [PREV_NON_STRIKE]: onPitchplayers[NON_STRIKE]
+            [PREV_NON_STRIKE]: onPitchplayers[NON_STRIKE],
         }
         toSend[PLAYER_LIST] = allBattingPlayers.map(player => {
             let updatedPlayer = player
@@ -41,7 +41,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
             <ModalBody>
                 Please select a batter:
                 <Row>
-                    <Col xs={6} md={6} lg={6} onClick={() => setChangePlayerType(ON_STRIKE)}>
+                    <Col xs={6} md={6} lg={6} onClick={() => {setChangePlayerType(ON_STRIKE); retiringHurtPartnership()}}>
                         <CardComponent
                             title={onPitchplayers?.[ON_STRIKE]?.playerName}
                             selectIcon={"bx bxs-check-circle"}
@@ -49,7 +49,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
                             bgColor={"#55c6b4"}
                         />
                     </Col>
-                    <Col xs={6} md={6} lg={6} onClick={() => setChangePlayerType(NON_STRIKE)}>
+                    <Col xs={6} md={6} lg={6} onClick={() => {setChangePlayerType(NON_STRIKE); retiringHurtPartnership()}}>
                         <CardComponent
                             title={onPitchplayers?.[NON_STRIKE]?.playerName}
                             selectIcon={"bx bxs-check-circle"}

@@ -185,6 +185,7 @@ const NewCommentaryScreen = ({
   retiredHurtplayerList,
   allBattingPlayers,
   retiredHurtisOpen,
+  retiringHurtPartnership,
   // revertModalisOpen,
   // revertModaltoggle,
   // revertModalonNoClick,
@@ -213,7 +214,6 @@ const NewCommentaryScreen = ({
   const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
   const [isBoundary, setIsBoundary] = useState(undefined);
   const dispatch = useDispatch();
-  console.log("teamDetails", teamDetails["BATTING_TEAM"].jersey)
 
   const matchData = {
     maxOvers: 20,
@@ -467,6 +467,7 @@ const NewCommentaryScreen = ({
             setChangePlayerType(null);
             setActionPopup(false);
           }}
+          retiringHurtPartnership = {retiringHurtPartnership}
           onsubmit={retiredHurtonsubmit}
           onPitchPlayers={onPitchPlayers}
           playerList={retiredHurtplayerList}

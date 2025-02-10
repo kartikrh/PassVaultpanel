@@ -24,45 +24,43 @@ const RetiredHurtControls = ({
   onsubmit,
   playerList,
   onPitchPlayers,
+  retiringHurtPartnership,
   allBattingPlayers,
 }) => {
   const [changePlayerType, setChangePlayerType] = useState(false);
 
-   const onSubmitClick = (newPlayerId) => {
-      // console.log("newPlayerId", newPlayerId)
-      const oldPlayer = onPitchPlayers[changePlayerType];
-      let toSend = {
-        ...onPitchPlayers,
-        [RETIRED_HURT_BATTER]: { ...oldPlayer, isPlay: null, onStrike: null },
-        [PREV_ON_STRIKE]: onPitchPlayers[ON_STRIKE],
-        [PREV_NON_STRIKE]: onPitchPlayers[NON_STRIKE],
-      };
-      toSend[PLAYER_LIST] = allBattingPlayers.map((player) => {
-        let updatedPlayer = player;
-        if (player?.commentaryPlayerId === newPlayerId) {
-          updatedPlayer = {
-            ...player,
-            isPlay: true,
-            onStrike: changePlayerType === ON_STRIKE ? true : null,
-          };
-          toSend[changePlayerType] = updatedPlayer;
-        }
-        if (player?.commentaryPlayerId === oldPlayer?.commentaryPlayerId) {
-          updatedPlayer = toSend[RETIRED_HURT_BATTER];
-        }
-        return updatedPlayer;
-      });
-      setChangePlayerType(null);
-  
-      if (typeof onsubmit !== "function") {
-        console.error(
-          "onsubmit is not a function",
-          onsubmit
-        );
-        return;
-      }
-      onsubmit(toSend);
+  const onSubmitClick = (newPlayerId) => {
+    // console.log("newPlayerId", newPlayerId)
+    const oldPlayer = onPitchPlayers[changePlayerType];
+    let toSend = {
+      ...onPitchPlayers,
+      [RETIRED_HURT_BATTER]: { ...oldPlayer, isPlay: null, onStrike: null },
+      [PREV_ON_STRIKE]: onPitchPlayers[ON_STRIKE],
+      [PREV_NON_STRIKE]: onPitchPlayers[NON_STRIKE],
     };
+    toSend[PLAYER_LIST] = allBattingPlayers.map((player) => {
+      let updatedPlayer = player;
+      if (player?.commentaryPlayerId === newPlayerId) {
+        updatedPlayer = {
+          ...player,
+          isPlay: true,
+          onStrike: changePlayerType === ON_STRIKE ? true : null,
+        };
+        toSend[changePlayerType] = updatedPlayer;
+      }
+      if (player?.commentaryPlayerId === oldPlayer?.commentaryPlayerId) {
+        updatedPlayer = toSend[RETIRED_HURT_BATTER];
+      }
+      return updatedPlayer;
+    });
+    setChangePlayerType(null);
+
+    if (typeof onsubmit !== "function") {
+      console.error("onsubmit is not a function", onsubmit);
+      return;
+    }
+    onsubmit(toSend);
+  };
 
   return (
     <div className="col-12 d-flex flex-column m-0 p-0">
@@ -72,7 +70,7 @@ const RetiredHurtControls = ({
           <div>Please select a batter:</div>
           <div
             className="col my-4"
-            onClick={() => setChangePlayerType(ON_STRIKE)}
+            onClick={() => {setChangePlayerType(ON_STRIKE); retiringHurtPartnership()}}
           >
             <button
               className={`score-control-wicket-ball-btns ${
@@ -84,7 +82,7 @@ const RetiredHurtControls = ({
           </div>
           <div
             className="col my-4"
-            onClick={() => setChangePlayerType(NON_STRIKE)}
+            onClick={() => {setChangePlayerType(NON_STRIKE); retiringHurtPartnership()}}
           >
             <button
               className={`score-control-wicket-ball-btns ${
@@ -94,14 +92,6 @@ const RetiredHurtControls = ({
               {onPitchPlayers?.[NON_STRIKE]?.playerName}
             </button>
           </div>
-          {/* <div
-                                  className="col-6"
-                                  onClick={() => retiredHurttoggle()}
-                                >
-                                  <button className="score-control-conformation-close-btn">
-                                    Close
-                                  </button>
-                                </div> */}
         </div>
       )}
       {changePlayerType && (
