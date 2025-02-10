@@ -67,6 +67,7 @@ export const TAB_SET_SESSION_RESULT = "Session Result";
 export const TAB_VENDOR = "Vendors";
 export const TAB_DISPLAYSTATUS = "DisplayStatus";
 export const TAB_ClientSocket = "ClientSocket";
+export const TAB_THIRD_PARTY_API = "ThirdPartyApi";
 export const TAB_API = "API";
 export const TAB_API_ENDPOINTS = "API Endpoints";
 export const TAB_NOTIFICATION = "Notification";
