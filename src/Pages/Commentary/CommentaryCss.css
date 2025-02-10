@@ -191,9 +191,9 @@
   background-color: white;
 }
 
-.color-white {
+/* .color-white {
   background-color: white !important;
-}
+} */
 
 .ball-red {
   background-color: red;
@@ -209,6 +209,14 @@
   /* right: 3%; */
   /* bottom: 10%; */
   cursor: pointer;
+}
+.sticky-btn {
+  /* height: 24px; */
+  position: fixed; 
+  right: 3%;
+  bottom: 10%;
+  cursor: pointer;
+  z-index: 99;
 }
 
 .player-header,
@@ -549,7 +557,7 @@
 }
 
 .color-light-grey {
-  background-color: rgba(233, 233, 233, 0.594);
+  /* background-color: rgba(233, 233, 233, 0.594); */
 }
 
 .event-market-modal .modal-dialog {
@@ -984,24 +992,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 20px;
+  padding: 8px 20px;
 }
 
 .first-card-player-section {
-  display: flex;
+  /* display: flex; */
   /* flex: 1; */
-  align-items: center;
+  /* align-items: center;
   text-align: center;
-  padding: 0.5rem;
+  padding: 0.5rem; */
 }
 
 .remaining-card-player-section {
-  display: flex;
-  justify-content: center;
+  /* display: flex;
+  justify-content: center; */
   /* flex: 1; */
-  text-align: center;
+  /* text-align: center;
   align-items: center;
-  padding: 1rem 0.5rem;
+  padding: 1rem 0.5rem; */
 }
 
 .first-player-image {
@@ -1398,4 +1406,33 @@
 
 .badge-parent{
     position: relative;
+}
+
+.card-container {
+  position: relative;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+.header-sticky {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 2;
+}
+
+.content-section {
+  overflow-y: auto;
+  height: calc(100% - 170px);
+  /* &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;  /* IE and Edge */
+  /* scrollbar-width: none;   */
+}
+
+body[data-theme="dark"] {
+  .header-sticky {
+    background-color: #1a2942 !important;
+  }
 }

@@ -102,6 +102,7 @@
 }
 
 .page-content {
+    min-height: 800px;
     padding: calc(#{$header-height} + #{$grid-gutter-width}) calc(#{$grid-gutter-width} / 2) $footer-height
         calc(#{$grid-gutter-width} / 2);
 }

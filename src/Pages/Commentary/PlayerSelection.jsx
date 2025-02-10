@@ -11,7 +11,6 @@ import { clone } from 'lodash'
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection";
   const { data, next, previous, save } = props;
-  console.log(data);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 

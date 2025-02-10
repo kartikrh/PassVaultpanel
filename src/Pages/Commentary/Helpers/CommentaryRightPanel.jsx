@@ -82,7 +82,7 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                     Partnerships
                 </button>
                 </div>
-                <p className="d-flex align-items-center text-secondary m-0">refId: {refId}</p>
+                <p className="d-flex align-items-center m-0 modal-header-title">refId: {refId}</p>
             </div>
 
             <div className="tab-content mt-1">

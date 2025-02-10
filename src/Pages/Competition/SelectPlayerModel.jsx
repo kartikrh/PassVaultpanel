@@ -96,7 +96,7 @@ export const SelectPlayersModel = ({
       {isLoading && <SpinnerModel />}
         <ModalBody>
           <div className="d-flex flex-column justify-content-center p-4">
-            <h4 className="form-label text-left text-lg">
+            <h4 className="form-label text-left text-lg modal-header-title">
               Select Multi Players
             </h4>
             <div className="my-4">

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { CONNECT_COMMENTARY, ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, WARNING } from "../../components/Common/Const";
+import { CONNECT_COMMENTARY, ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, UPDATE_MARKET_DATA, WARNING } from "../../components/Common/Const";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -793,22 +793,30 @@ export const OpenMarket = () => {
                 // Filter based on statusListToInclude
                 const finalDataToSet = combinedData.filter(e => statusListToInclude.includes(e.status));
 
-                setTimeout(() => {
-                    setData((storedData) =>
-                        storedData.map(element => ({ ...element, isNewSocketData: false }))
-                    );
-                    setHasUnsavedChanges(false);
-                }, 3000);
+                // Handle isNewSocketData timeout
+                finalDataToSet.forEach(market => {
+                    if (market.isNewSocketData) {
+                        setTimeout(() => {
+                            setData(currentData =>
+                                currentData.map(item =>
+                                    item.marketId === market.marketId
+                                        ? { ...item, isNewSocketData: false }
+                                        : item
+                                )
+                            );
+                        }, 3000);
+                    }
+                });
 
-                // const sortedData = _.orderBy(finalDataToSet, ['marketName'], ['asc']);
+                // Sort the data
                 const sortedData = _.orderBy(finalDataToSet, [
                     item => {
-                        // Check if the marketName contains a numeric value
                         const match = item.marketName.match(/(\d+)/);
-                        return match ? parseInt(match[1], 10) : 0;  // Return 1 if there's a number, 0 if not
+                        return match ? parseInt(match[1], 10) : 0;
                     },
-                    item => item.marketName  // Then sort alphabetically by marketName
+                    item => item.marketName
                 ], ['asc', 'asc']);
+
                 updateOriginalValues(sortedData);
                 return sortedData;
             });
@@ -1259,6 +1267,65 @@ export const OpenMarket = () => {
         });
     };
 
+    // New method for handling market updates
+    const handleMarketUpdate = (marketData) => {
+        if (!marketData) return;
+
+        // Convert market data to array format if it's a single object
+        const marketDataArray = Array.isArray(marketData) ? marketData : [marketData];
+
+        setData(prevData => {
+            const updatedData = prevData.map(market => {
+                const updatedMarket = marketDataArray.find(m => m.marketId === market.marketId);
+                if (updatedMarket) {
+                    const formattedMarket = {
+                        ...market,
+                        ...updatedMarket,
+                        isNewSocketData: true,
+                        runner: Array.isArray(updatedMarket.runner)
+                            ? updatedMarket.runner
+                            : [updatedMarket.runner]
+                    };
+
+                    // Schedule removal of isNewSocketData flag
+                    setTimeout(() => {
+                        setData(currentData =>
+                            currentData.map(item =>
+                                item.marketId === market.marketId
+                                    ? { ...item, isNewSocketData: false }
+                                    : item
+                            )
+                        );
+                    }, 3000);
+
+                    return formattedMarket;
+                }
+                return market;
+            });
+
+            // Add any new markets that don't exist in current data
+            const newMarkets = marketDataArray
+                .filter(newMarket => !updatedData.some(market => market.marketId === newMarket.marketId))
+                .map(newMarket => ({
+                    ...newMarket,
+                    isNewSocketData: true,
+                    runner: Array.isArray(newMarket.runner) ? newMarket.runner : [newMarket.runner]
+                }));
+
+            const finalData = [...updatedData, ...newMarkets]
+                .filter(e => statusListToInclude.includes(e.status));
+
+            updateOriginalValues(finalData);
+
+            return _.orderBy(finalData, [
+                item => {
+                    const match = item.marketName.match(/(\d+)/);
+                    return match ? parseInt(match[1], 10) : 0;
+                },
+                'marketName'
+            ], ['asc', 'asc']);
+        });
+    };
 
     useEffect(() => {
         if (commentaryId !== "0") {
@@ -1266,6 +1333,24 @@ export const OpenMarket = () => {
             fetchCommentaryInfo(commentaryId)
         }
     }, [commentaryId]);
+
+    // useEffect(() => {
+    //     if (!isEmpty(teams)) {
+    //         if (socket) {
+    //             socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+    //             setIsSocketConnected(true)
+    //             socket.on(OPEN_MARKET_DATA, (socketData) => {
+    //                 formatSocketDataForState(socketData || [])
+    //             });
+    //         } else {
+    //             setIsSocketConnected(false)
+    //             fetchConfigAll();
+    //         }
+    //     }
+    //     return () => {
+    //         socket.off(OPEN_MARKET_DATA);
+    //     };
+    // }, [teams])
 
     useEffect(() => {
         if (!isEmpty(teams)) {
@@ -1275,6 +1360,11 @@ export const OpenMarket = () => {
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
                     formatSocketDataForState(socketData || [])
                 });
+                socket.on(UPDATE_MARKET_DATA, (marketData) => {
+                    if (marketData) {
+                        handleMarketUpdate(marketData);
+                    }
+                });
             } else {
                 setIsSocketConnected(false)
                 fetchConfigAll();
@@ -1282,27 +1372,28 @@ export const OpenMarket = () => {
         }
         return () => {
             socket.off(OPEN_MARKET_DATA);
+            socket.off(UPDATE_MARKET_DATA);
         };
     }, [teams])
 
     useEffect(() => {
-        if(commentaryId) {
+        if (commentaryId) {
             if (socket) {
                 socket.emit(CONNECT_COMMENTARY, { commentaryId });
                 socket.on(UNDO_CALLED, (data) => {
-                  if(data){ 
-                    dispatch(
-                      updateToastData({
-                        data: `${data?.message}`,
-                        title: "Undo Called",
-                        type: WARNING,
-                      })
-                    );
-                  }
+                    if (data) {
+                        dispatch(
+                            updateToastData({
+                                data: `${data?.message}`,
+                                title: "Undo Called",
+                                type: WARNING,
+                            })
+                        );
+                    }
                 });
                 socket.on(UPDATE_BALL_STATUS, (data) => {
-                    if(data){ 
-                      setBallStatus(data?.ballStatus);
+                    if (data) {
+                        setBallStatus(data?.ballStatus);
                     }
                 });
             }
@@ -1436,9 +1527,10 @@ export const OpenMarket = () => {
                                                 isMulti
                                                 name="categories"
                                                 options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
-                                                className="basic-multi-select"
-                                                classNamePrefix="select"
+                                                className="filter-categories"
+                                                classNamePrefix="filter-dropdown"
                                                 value={selectedCategories}
+                                                // menuIsOpen={true}
                                                 onChange={handleCategoryChange}
                                             />
                                         </Col>

@@ -65,9 +65,15 @@
         }
     }
 }
+.css-1fxc493-MuiPaper-root-MuiAccordion-root, .Mui-expanded{
+    margin: 0px !important;
+}
 
 body[data-theme="dark"] {
     .MuiCollapse-wrapperInner, .MuiCollapse-vertical, .css-9vd5ud{
         background-color: $dark-score-card-bg !important;
+    }
+    .css-1fxc493-MuiPaper-root-MuiAccordion-root, .MuiAccordionSummary-root{
+        border: none !important;
     }
 }

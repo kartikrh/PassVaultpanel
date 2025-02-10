@@ -578,6 +578,38 @@ body[data-sidebar-size="small"] {
     background-color: $light-score-card-bg !important;
 }
 
+.market-type-table {
+    &.table {
+      &.table-bordered {
+        &.table-striped {
+          tbody {
+            tr:nth-child(odd) {
+                background-color: #d4edda !important; // Light green
+              }
+    
+              tr:nth-child(even) {
+                background-color: #ffffff !important; // White
+              }
+            // tr{
+            //     // &:hover{
+            //     //     background-color: $dark-score-card-bg !important; // Light green
+            //     // }
+            // }
+            td{
+                color: $light-font-color !important
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .color-white {
+    background-color: $light-body-bg !important;
+  }
+  .modal-header-title{
+    color: #000000 !important
+}
 
 body[data-theme="dark"]{
     .vertical-menu{
@@ -586,7 +618,6 @@ body[data-theme="dark"]{
     }
     #sidebar-menu {
         padding: 10px 0 30px 0;
-    
         .mm-active {
             color: $sidebar-dark-menu-item-active-color !important;
             > .has-arrow {
@@ -605,7 +636,6 @@ body[data-theme="dark"]{
                 }
             }
         }
-    
         .has-arrow {
             &:after {
                 content: "\F0140";
@@ -758,7 +788,12 @@ body[data-theme="dark"]{
             }
         }
     }
-    .ri-menu-2-line, .ri-fullscreen-line, .mdi, .userName, .dropdown, .panel-name{
+    .ri-menu-2-line,
+    .ri-fullscreen-line,
+    .mdi,
+    .userName,
+    .dropdown,
+    .panel-name {
         color: $dark-body-color !important;
     }
     .over-modal-header-row{
@@ -770,12 +805,12 @@ body[data-theme="dark"]{
     }
     .over-modal-stat{
         background-color: $dark-boxed-body-bg !important;
-        
+
     }
     .over-modal-player-stats{
         color: $dark-body-color !important;
     }
-    .over-modal-stats-grid{
+    .over-modal-stats-grid {
         border: 1px solid $dark-font-color !important;
     }
     .score-button{
@@ -790,22 +825,40 @@ body[data-theme="dark"]{
     .btn-light{
         background-color: $gray-800 !important;
     }
-    .MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
+    .MuiBox-root,
+    .first-card-header,
+    .first-card-body,
+    .remaining-card-header,
+    .remaining-card-body,
+    .MuiAccordion-region,
+    .css-8atqhb,
+    .MuiAccordion-heading,
+    .css-cy7rkm-MuiAccordion-heading,
+    .css-1fxc493-MuiPaper-root-MuiAccordion-root {
         background-color: $dark-score-card-bg !important;
         color: $dark-body-color !important;
     }
     .MuiBox-root, .css-sccedh{
         border: none
     }
-    .MuiTypography-root, .MuiTypography-body1, .css-1i9gr79-MuiTypography-root, .MuiTypography-root, .MuiTypography-body2, .css-199q83o-MuiTypography-root{
+    .MuiTypography-root,
+    .MuiTypography-body1,
+    .css-1i9gr79-MuiTypography-root,
+    .MuiTypography-root,
+    .MuiTypography-body2,
+    .css-199q83o-MuiTypography-root {
         color: $dark-body-color !important;
     }
     .score-num-btn{
         color: green
     }
-    .MuiButtonBase-root, .MuiAccordionSummary-root, .Mui-expanded .MuiAccordionSummary-gutters, .css-1dfengi{
+    .MuiButtonBase-root,
+    .MuiAccordionSummary-root,
+    .Mui-expanded .MuiAccordionSummary-gutters,
+    .css-1dfengi {
         background-color: $dark-score-card-bg !important;
     }
+
     // .partnership-tab-navigation{
     //     color: $dark-font-color !important;
     // }
@@ -822,10 +875,101 @@ body[data-theme="dark"]{
     .bg-light{
         background-color: $dark-boxed-body-bg !important
     }
+
     .btn-close{
         color: $dark-font-color !important
     }
+
     .modal-header-title{
         color: $dark-font-color !important
     }
+
+    .btn,
+    .btn-light {
+        color: $dark-font-color !important;
+        border: none
+    }
+
+    .filter-dropdown {
+        &__value-container {
+            color: #FFFFFF !important; // Sets text color to white
+
+            &--has-value {
+                color: #FFFFFF !important; // Ensures color remains white when a value is selected
+            }
+        }
+    }
+
+    .filter-dropdown__multi-value__remove,
+    .css-v7duua {
+        color: $dark-body-bg !important;
+    }
+
+    .filter-dropdown {
+        &__single-value {
+            color: #FFFFFF !important; // Ensures the selected value text is white
+        }
+    }
+
+    .filter-dropdown {
+        &__menu {
+            background-color: #1A1D23 !important; // Example: Set menu background to white
+            color: #FFFFFF !important; // Example: Set text color to black
+        }
+    }
+
+    .filter-dropdown {
+        &__option {
+            &:hover {
+                background-color: #39424f !important;
+            }
+
+            &--is-focused {
+                background-color: #39424f !important;
+            }
+
+            &--is-selected {
+                background-color: #0056b3 !important; // Darker blue for selected option
+                color: #ffffff !important;
+            }
+        }
+    }
+
+    .clickable{
+        color: $dark-font-color !important;
+    }
+    .filter-dropdown__single-value, .css-1dimb5e-singleValue{
+        color: #505d69 !important;
+    }
+    .market-type-table {
+        &.table {
+          &.table-bordered {
+            &.table-striped {
+              tbody {
+                // tr{
+                //   background-color: $dark-score-card-bg !important; // White
+                // }
+                // tr:nth-child(odd) {
+                //     background-color: $dark-score-card-bg !important; // Light green
+                //   }
+        
+                //   tr:nth-child(even) {
+                //     background-color: #ffffff !important; // White
+                //   }
+                td{
+                    color: $dark-font-color !important
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .color-white {
+        background-color: $dark-body-bg !important;
+      }
+      .list-group-item{
+        background-color: unset !important;
+        color: unset !important;
+      }
 }

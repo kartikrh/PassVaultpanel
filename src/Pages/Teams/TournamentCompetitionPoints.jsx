@@ -174,7 +174,7 @@ const TournamentCompetitionPoints = () => {
                 <Row className="mt-3 mt-lg-3 mt-md-3 mb-3">
                   {teamDetails && (
                     <Col className="col-sm-auto">
-                      <h4 className="mb-0 font-size-18">
+                      <h4 className="mb-0 font-size-18 modal-header-title">
                         {teamDetails?.teamName} Competition Points [Ref:{" "}
                         {teamDetails.teamId}]
                       </h4>

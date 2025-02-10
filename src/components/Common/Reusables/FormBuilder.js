@@ -424,7 +424,7 @@ const FormBuilder = forwardRef(
                     )}
                     {field.type === SELECT && (
                       <Select
-                        classNamePrefix="select2-selection"
+                        classNamePrefix="filter-dropdown"
                         style={field?.customStyle}
                         id={field.name}
                         name={field.name}
@@ -470,7 +470,7 @@ const FormBuilder = forwardRef(
                         }
                         return (
                           <Select
-                            classNamePrefix="select2-selection"
+                            classNamePrefix="filter-dropdown"
                             style={field?.customStyle}
                             id={field.name}
                             name={field.name}

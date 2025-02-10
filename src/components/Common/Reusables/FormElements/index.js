@@ -29,7 +29,7 @@ export const RSelect = ({
           label: item[items.label],
           value: item[items.value],
         }))}
-        classNamePrefix="select2-selection"
+        classNamePrefix="filter-dropdown"
       />
     </div>
   );

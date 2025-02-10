@@ -44,6 +44,8 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/marketTemplate/all`, {
         ...(value || tableActions),
+        marketTypeId: value?.marketTypeId || 0,
+        marketTypeCategoryId: value?.marketTypeId !== selectedMarketType ? 0 : value?.marketTypeCategoryId || 0,
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.marketTemplateId - b?.marketTemplateId);
@@ -361,7 +363,7 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Template Name",
+      title: "Template",
       dataIndex: "templateName",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>{text}</span>
@@ -371,14 +373,14 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Market Type Name",
+      title: "Market Type",
       dataIndex: "marketTypeName",
       key: "marketTypeName",
       style: { width: "10%" },
       sort: true,
     },
     {
-      title: "Category Name",
+      title: "Category",
       dataIndex: "categoryName",
       key: "categoryName",
       style: { width: "10%" },
@@ -512,7 +514,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Events",
+    title: "Market Template",
     isActive: true,
     matchTypeSelect: true,
     marketTypeSelect: true,
@@ -536,8 +538,10 @@ const Index = () => {
     if(mtAndCategories && selectedMarketType) {
       const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
       setCategories(categoriesData || []);
+    } else if(!selectedMarketType) {
+      setCategories([]);
     }
-  },[mtAndCategories, selectedMarketType])
+  },[mtAndCategories, selectedMarketType]);
 
   const handleReload = (value) => {
     fetchData({ isActive: true });

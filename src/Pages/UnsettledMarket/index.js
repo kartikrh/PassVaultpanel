@@ -10,8 +10,9 @@ import { isEqual } from "lodash";
 import {
   TAB_EVENT_MARKETS,
   PERMISSION_VIEW,
+  ERROR,
 } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import CancelModal from "./CancelModal";
 import ResultModal from "./ResultModal";
@@ -19,6 +20,7 @@ import "./modal.css";
 import { Tooltip } from "antd";
 import CancelAllModel from "./CancelAllModel";
 import CancelSelectedModel from "./CancelSelectedModel";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
@@ -41,7 +43,10 @@ const Index = () => {
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   // const [cancelAllModelVisable, setCancelAllModelVisable] = useState(false);
   const [cancelModelVisable, setCancelModelVisable] = useState(false);
-  const [isSearch, setIsSearch] = useState(true);
+  const [mtAndCategories, setMtAndCategories] = useState(null);
+  const [selectedMarketType, setSelectedMarketType] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [isSearch, setIsSearch] = useState(false);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -51,6 +56,7 @@ const Index = () => {
     rateSourceType: "Ratesource"
   })
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
@@ -59,6 +65,8 @@ const Index = () => {
       ...(latestValueFromTable || tableActions),
       status: 4,
       rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
+      marketTypeId: latestValueFromTable?.marketTypeId || 0,
+      marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
     };
     if (isSearch) {
       payload = {
@@ -89,6 +97,17 @@ const Index = () => {
       });
   };
 
+  const fetchMarketCategoriesList = async () =>{
+    await axiosInstance
+    .post("/admin/marketTemplate/mtAndCategories", {})
+    .then((response) => {
+      setMtAndCategories(response?.result);
+    })
+    .catch((error) => {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
+  }
+
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/eventMarket/eventTypeList`, {
@@ -113,7 +132,7 @@ const Index = () => {
   };
   const fetchEventList = async () => {
     await axiosInstance
-      .post(`/admin/eventMarket/eventListByCompetitionId`, {
+      .post(`/admin/eventMarket/commListByCompetitionId`, {
         competitionId: competitionId,
       })
       .then((response) => {
@@ -277,6 +296,20 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Market Type",
+      dataIndex: "marketTypeName",
+      key: "marketTypeName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Category",
+      dataIndex: "categoryName",
+      key: "categoryName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
@@ -357,6 +390,8 @@ const Index = () => {
     isDateRange: true,
     // isCancelAllMarket: true,
     isCancelMarket: true,
+    marketTypeSelect: true,
+    categorySelect: true,
   };
 
   useEffect(() => {
@@ -364,10 +399,21 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+    fetchMarketCategoriesList();
   }, [isSearch, ratesource]);
+
+  useEffect(() => {
+    if(mtAndCategories && selectedMarketType) {
+      const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
+      setCategories(categoriesData || []);
+    } else if(!selectedMarketType) {
+      setCategories([]);
+    }
+  },[mtAndCategories, selectedMarketType])
 
   const handleReload = (value) => {
     fetchData();
+    fetchMarketCategoriesList();
   };
 
   useEffect(() => {
@@ -419,6 +465,9 @@ const Index = () => {
             setRatesource={setRatesource}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            marketTypes={mtAndCategories?.marketTypes || []}
+            categories={categories}
+            setSelectedMarketType={setSelectedMarketType}
           />
         </Container>
         <CancelModal
