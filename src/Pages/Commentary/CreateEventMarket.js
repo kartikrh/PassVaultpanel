@@ -1354,7 +1354,8 @@ export const CreateEventMarket = () => {
         };
 
         // Create sections for each team dynamically
-        marketData.teamAndPlayers.forEach(team => {
+        const teamPlayers = marketData?.teamAndPlayers?.sort((a,b)=>a?.teamStatus - b?.teamStatus);
+        teamPlayers.forEach(team => {
             sections[`team_${team.teamId}`] = {
                 title: `${team.teamName} Markets`,
                 data: {}
