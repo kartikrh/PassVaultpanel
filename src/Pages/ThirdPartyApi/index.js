@@ -86,12 +86,11 @@ const Index = () => {
     }
   };
 
-  const handleSocket = async (pType, record, cState) => {
+  const handleSocket = async (record) => {
     setIsLoading(true);
     await axiosInstance
       .post(`/signalr/connection`, {
         id: record.id,
-        [pType]: cState ? false : true,
       })
       .then((response) => {
         fetchData();
@@ -174,7 +173,7 @@ const Index = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handleSocket("isConnect", record, record.isConnect);
+            handleSocket(record);
           }}
         >
           {record.isConnect ? "Connected" : "Disconnected"}
