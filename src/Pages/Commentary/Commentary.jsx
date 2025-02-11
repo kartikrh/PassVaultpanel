@@ -153,8 +153,10 @@ export const CommentaryScreen = ({
                             &nbsp;</span>
                     </Col>
                     <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
-                        <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
-                        <span className="bowling-team-score">
+                        <span className="current-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
+                        {/* <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span> */}
+                        <span className="current-team-score">
+                        {/* <span className="bowling-team-score"> */}
                             {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
                             &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                             &nbsp;</span>

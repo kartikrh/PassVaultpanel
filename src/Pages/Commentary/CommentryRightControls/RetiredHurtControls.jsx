@@ -56,7 +56,6 @@ const RetiredHurtControls = ({
     setChangePlayerType(null);
 
     if (typeof onsubmit !== "function") {
-      console.error("onsubmit is not a function", onsubmit);
       return;
     }
     onsubmit(toSend);
