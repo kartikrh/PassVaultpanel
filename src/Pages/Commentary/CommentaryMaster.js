@@ -354,7 +354,7 @@ function CommentaryMaster() {
                         <div className="d-flex flex-wrap align-items-center gap-2">
                           {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
                             <>
-                              <NetworkStatus />
+                              <NetworkStatus newUi={true}/>
                               <div className="d-flex align-items-center py-2">
                                   <span>Bet Allow</span>
                                   <Switch
@@ -439,12 +439,12 @@ function CommentaryMaster() {
                             <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                         </div>
                           {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
-                            <>
-                              <NetworkStatus />
+                            <div className="d-flex align-items-center my-4 float-end">
+                              <NetworkStatus/>
                               <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
                               <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
                               <Button color="primary" className="mx-1 text-right" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
-                            </>}
+                            </div>}
                       </Col>
                   </Row>
                 )}
@@ -487,15 +487,15 @@ function CommentaryMaster() {
                       isNewUi={isNewUi}
                     />
                   )}
-                  {/* <Col xs={12} md={6} lg={6}>
+                  {!isNewUi && <Col xs={12} md={6} lg={6}>
                     <img
                       role="button"
-                      className="sticky-button"
+                      className="commentary-sticky-button"
                       onClick={() => setStatusPopup(true)}
-                      src="icons/commentary.png"
+                      src="icons/commentaryicon.png"
                       alt="Icon"
                     />
-                  </Col> */}
+                  </Col>}
                   {statusPopup && (
                     <ChangeStatusModal
                       statusList={statusList}

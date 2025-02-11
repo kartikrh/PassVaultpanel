@@ -3,7 +3,7 @@ import { FaWifi } from 'react-icons/fa';
 import { io } from 'socket.io-client';
 import { useSelector } from 'react-redux';
 
-const NetworkStatus = () => {
+const NetworkStatus = ({newUi = false}) => {
     const [networkStatus, setNetworkStatus] = useState('unknown');
     const [latency, setLatency] = useState(null);
     const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -74,7 +74,7 @@ const NetworkStatus = () => {
 
     return (
         <div>
-            <div className='d-flex align-items-center latency-btn'>
+            <div className={`d-flex align-items-center ${newUi && 'latency-btn'}`}>
                 <FaWifi size={18} />
                 {/* <FaWifi color={getColor()} size={18} /> */}
                 {/* <div className='mx-2'> */}

@@ -210,6 +210,13 @@
   /* bottom: 10%; */
   cursor: pointer;
 }
+.commentary-sticky-button {
+  height: 32px;
+  position: fixed;
+  right: 3%;
+  bottom: 10%;
+  cursor: pointer;
+}
 .sticky-btn {
   /* height: 24px; */
   position: fixed; 
@@ -1265,7 +1272,7 @@
  /* position: absolute; */
   /* top: 0; */
   /* left: 0; */
-  width: 100%;
+  width: 322px;
   /* height: 100%; */
 }
 
