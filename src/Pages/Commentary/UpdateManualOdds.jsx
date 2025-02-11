@@ -10,7 +10,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { Container, Button } from 'reactstrap';
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
-import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, COMMENTARY_STATUS_CONNECT, SUCCESS, UPDATE_BALL_STATUS } from "../../components/Common/Const";
+import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, COMMENTARY_STATUS_CONNECT, SUCCESS, UPDATE_BALL_STATUS, INNINGS_CONNECT, INNINGS_RUN_DATA } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
@@ -406,47 +406,6 @@ export const UpdateManualOdds = () => {
         }
     };
 
-    const handleKeyPress = useCallback((event) => {
-        const key = event.key.toUpperCase();
-        const value = settings.shortcutValues[key];
-        if (value && !isLive) {
-            setTempRateDiff(parseFloat(value));
-            // Recalculate prices using tempRateDiff
-            setRunners(prev => prev.map(runner => {
-                const newRates = calculateRunnerRates(runner, {
-                    ...settings,
-                    rateDifferent: value
-                });
-                return {
-                    ...runner,
-                    ...newRates
-                };
-            }));
-            return;
-        }
-        switch (key) {
-            case 'S':
-                handleStatusChange(SUSPEND_VALUE.toString)
-                break;
-            case 'D':
-                handleStatusChange(INACTIVE_VALUE.toString)
-                break;
-            case 'F':
-                handleStatusChange(CLOSE_VALUE.toString)
-                break;
-            case 'G':
-                handleStatusChange(OPEN_VALUE.toString)
-                break;
-            default:
-                break;
-        }
-    }, [settings.shortcutValues, isLive, calculateRunnerRates]);
-
-    const handleSync = () => {
-        setOriginalShortcutValues(settings.shortcutValues);
-        setHasShortcutChanges(false);
-    };
-
     const calculateRunnerRates = (runner, settings, options = {}) => {
         const {
             forceCalculateLay = true,
@@ -530,6 +489,47 @@ export const UpdateManualOdds = () => {
             l1: Math.max(0, l1),
             l2: Math.max(0, l2)
         };
+    };
+
+    const handleKeyPress = useCallback((event) => {
+        const key = event.key.toUpperCase();
+        const value = settings.shortcutValues[key];
+        if (value && !isLive) {
+            setTempRateDiff(parseFloat(value));
+            // Recalculate prices using tempRateDiff
+            setRunners(prev => prev.map(runner => {
+                const newRates = calculateRunnerRates(runner, {
+                    ...settings,
+                    rateDifferent: value
+                });
+                return {
+                    ...runner,
+                    ...newRates
+                };
+            }));
+            return;
+        }
+        switch (key) {
+            case 'S':
+                handleStatusChange(SUSPEND_VALUE.toString)
+                break;
+            case 'D':
+                handleStatusChange(INACTIVE_VALUE.toString)
+                break;
+            case 'F':
+                handleStatusChange(CLOSE_VALUE.toString)
+                break;
+            case 'G':
+                handleStatusChange(OPEN_VALUE.toString)
+                break;
+            default:
+                break;
+        }
+    }, [settings.shortcutValues, isLive, calculateRunnerRates]);
+
+    const handleSync = () => {
+        setOriginalShortcutValues(settings.shortcutValues);
+        setHasShortcutChanges(false);
     };
 
     // Function to find runner with minimum lay price
@@ -1519,6 +1519,22 @@ export const UpdateManualOdds = () => {
             }
         };
     }, [isLive, socket, rateSourceRefID]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        if (commentaryId) {
+            socket.emit(INNINGS_CONNECT, commentaryId);
+
+            socket.on(INNINGS_RUN_DATA, (data) => {
+              console.log("innings run data", data);
+            });
+        }
+
+        return () => {
+            socket.off(INNINGS_RUN_DATA);
+        };
+    }, [socket, commentaryId]);
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {

@@ -5,10 +5,11 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { isEmpty } from 'lodash';
 import axiosInstance from "../../Features/axios.js";
 import { updateToastData } from "../../Features/toasterSlice.js";
-import { ERROR, SUCCESS } from "../../components/Common/Const.js";
+import { ERROR, INNINGS_CONNECT, INNINGS_RUN_DATA, SUCCESS } from "../../components/Common/Const.js";
 import { useDispatch } from "react-redux";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from 'react-router-dom';
+import createSocket from '../../Features/socket.js';
 
 export const ManualOddsMarket = () => {
     const dispatch = useDispatch();
@@ -36,12 +37,58 @@ export const ManualOddsMarket = () => {
         commentaryDetails: null,
         tpMarkets: [] // Add this
     });
+    const socket = createSocket();
 
     const [isLoading, setIsLoading] = useState(false);
+
+    const fetchMarketData = async () => {
+        setIsLoading(true);
+        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId })
+            .then((response) => {
+                if (response?.result) {
+                    if (response.result.market) {
+                        handleDynamicNavigation("/updateManualOdds")
+                        return;
+                    }
+                    setEventData({
+                        comDetails: response.result.comDetails || null,
+                        teams: response.result.teams || [],
+                        commentaryDetails: response.result.commentaryDetails || null,
+                        tpMarkets: response.result.tpMarkets || [] // Add this
+                    });
+
+                    if (response.result.market) {
+                        setFormData(response.result.market);
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
 
     useEffect(() => {
         fetchMarketData();
     }, []);
+
+    useEffect(() => {
+            if (!socket) return;
+    
+            if (commentaryId) {
+                socket.emit(INNINGS_CONNECT, commentaryId);
+    
+                socket.on(INNINGS_RUN_DATA, (data) => {
+                  console.log("innings run data", data);
+                });
+            }
+    
+            return () => {
+                socket.off(INNINGS_RUN_DATA);
+            };
+    }, [socket, commentaryId]);
 
     useEffect(() => {
         if (eventData?.tpMarkets?.length > 0) {
@@ -86,34 +133,6 @@ export const ManualOddsMarket = () => {
         navigate(navigateTo);
     };
 
-    const fetchMarketData = async () => {
-        setIsLoading(true);
-        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId })
-            .then((response) => {
-                if (response?.result) {
-                    if (response.result.market) {
-                        handleDynamicNavigation("/updateManualOdds")
-                        return;
-                    }
-                    setEventData({
-                        comDetails: response.result.comDetails || null,
-                        teams: response.result.teams || [],
-                        commentaryDetails: response.result.commentaryDetails || null,
-                        tpMarkets: response.result.tpMarkets || [] // Add this
-                    });
-
-                    if (response.result.market) {
-                        setFormData(response.result.market);
-                    }
-                }
-            })
-            .catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    };
 
     const handleSave = async () => {
         setIsLoading(true); // Use the same loading state
