@@ -32,7 +32,6 @@ import createSocket from "../../Features/socket.js"
 import NewCommentaryScreen from "./NewCommentaryScreen.jsx"
 
 const Commentary = (props) => {
-    console.log("props", props)
     const dispatch = useDispatch();
     const [propsData, setPropsData] = useState(undefined)
     const [commentaryDetails, setCommentaryDetails] = useState(undefined)
@@ -802,8 +801,6 @@ const Commentary = (props) => {
     const handleMissingPlayerChange = (playerType, player) => {
         const order = props.data.commentaryData.commentaryPartnership[0].order
         // const order = props.data.commentaryData.commentaryTeams.filter((t) => t.teamBattingOrder === 1)
-        console.log("order", order)
-        console.log("currentPartnership", currentPartnership)
         const commentaryDetailsobj = props.data.commentaryData.commentaryDetails
         const onPitchPlayersobj = { ...onPitchPlayers, [playerType]: player }
         const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true } }

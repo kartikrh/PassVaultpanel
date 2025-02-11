@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import PartnershipAccordian from "./PartnershipAccordian";
 
 const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver, refId }) => {
+    console.log("refId", refId)
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
     // const renderPartnerships = () => {
     //     return partnerships.map((partnership, index) => {
