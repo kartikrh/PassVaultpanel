@@ -38,6 +38,8 @@ import { isEmpty } from "lodash";
 import Switch from "react-switch";
 import createSocket from "../../Features/socket";
 import logoDark from "../../assets/images/logo-dark.png";
+import TossScreen from "./CommentryRightControls/TossScreen";
+import PlayerSelectionScreen from "./CommentryRightControls/PlayerSelectionScreen";
 
 const ALL_SCREENS = {
   1: COMMENTARY_TOSS_SCREEN,
@@ -317,7 +319,7 @@ function CommentaryMaster() {
               {isNewUi ? (
                 <Row className="mb-3">
                   <Col className="p-0" xs={12}>
-                    {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
+                    {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
                       <div className="d-flex flex-wrap justify-content-between">
                         <div className="d-flex flex-wrap align-items-center gap-2">
                           <span
@@ -352,7 +354,7 @@ function CommentaryMaster() {
                           </div>
                         </div>
                         <div className="d-flex flex-wrap align-items-center gap-2">
-                          {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
+                          {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
                             <>
                               <NetworkStatus newUi={true}/>
                               <div className="d-flex align-items-center py-2">
@@ -390,7 +392,7 @@ function CommentaryMaster() {
                                 Scorecard
                               </button>
                             </>
-                          )}
+                          {/* )} */}
                           <button className="score-header-navigation-btns">
                             <img
                               role="button"
@@ -407,17 +409,18 @@ function CommentaryMaster() {
                           </button>
                         </div>
                       </div>
-                    )}
+                    {/* )} */}
                   </Col>
                 </Row>
                 ) : (
                   <Row className='mb-3'>
                       <Col className="p-0" xs={12} md={6} lg={6}>
-                        {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                        {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
                           <>
-                            <div className='match-details-breadcrumbs'>{`${commentaryData.commentaryDetails.ety}/ ${commentaryData.commentaryDetails.com}/ ${commentaryData.commentaryDetails.en}`}</div>
-                            <div>{`Ref: ${commentaryData.commentaryDetails.eid} [ ${commentaryData.commentaryDetails.ed + " " + commentaryData.commentaryDetails.et} ]`}</div>
-                          </>}
+                            <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
+                            <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                          </>
+                          {/* // } */}
                       </Col>
                       <Col className="p-0" xs={12} md={6} lg={6}>
                         <div className='d-flex align-items-center justify-content-end'>
@@ -438,19 +441,21 @@ function CommentaryMaster() {
                             </div>}
                             <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                         </div>
-                          {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN &&
+                          {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
                             <div className="d-flex align-items-center my-4 float-end">
                               <NetworkStatus/>
                               <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
                               <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
                               <Button color="primary" className="mx-1 text-right" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
-                            </div>}
+                            </div>
+                          {/* // } */}
                       </Col>
                   </Row>
                 )}
                 <Row>
                   {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN && (
-                    <Toss
+                    <>
+                    {!isNewUi ? <Toss
                       data={commentaryData}
                       save={handleSaveClick}
                       next={() => {
@@ -458,10 +463,20 @@ function CommentaryMaster() {
                           getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
                         );
                       }}
-                    />
+                    />: <TossScreen 
+                          data={commentaryData} 
+                          save={handleSaveClick} 
+                          next={() => {
+                            setCurrentScreen(
+                              getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
+                            );
+                          }}
+                        />}
+                    </>
                   )}
                   {ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && (
-                    <PlayerSelection
+                    <>
+                    {!isNewUi ? <PlayerSelection
                       data={commentaryData}
                       save={handleSaveClick}
                       previous={() => {
@@ -474,7 +489,21 @@ function CommentaryMaster() {
                           getScreenNumber(COMMENTARY_MAIN_SCREEN)
                         );
                       }}
-                    />
+                    /> : <PlayerSelectionScreen 
+                            data={commentaryData}
+                            save={handleSaveClick}
+                            previous={() => {
+                              setCurrentScreen(
+                                getScreenNumber(COMMENTARY_TOSS_SCREEN)
+                              );
+                            }}
+                            next={() => {
+                              setCurrentScreen(
+                                getScreenNumber(COMMENTARY_MAIN_SCREEN)
+                              );
+                            }}
+                          />}
+                    </>
                   )}
                   {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
                     <Commentary

@@ -322,7 +322,6 @@ const PlayerSelection = forwardRef((props, ref) => {
     setIsOpen(false);
   }
   const theme = useSelector((state) => state.layout.panelTheme);
-
   return (
     <React.Fragment>
       <div /* className="page-content" */>
@@ -393,7 +392,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             </Button>)}
           </Container>
         </Container>
-        <SelectPlayerModal isOpen={isOpen} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} isBowler={teamListStatus == 2 ? true : false}/>
+        {/* <SelectPlayerModal isOpen={isOpen} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} isBowler={teamListStatus == 2 ? true : false}/> */}
       </div>
     </React.Fragment>
   )
