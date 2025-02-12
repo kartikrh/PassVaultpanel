@@ -266,6 +266,35 @@ const Index = () => {
       });
   };
 
+  const handleActiveInactiveInningRun = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/eventMarket/upIsInningRun`, {
+        eventMarketId: record.eventMarketId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -645,6 +674,30 @@ const Index = () => {
             }}
           >
             <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Inning Run",
+      key: "isInningRun",
+      render: (text, record) => (
+        <Tooltip title={"Inactive Inning Run"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isInningRun ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled={!record.isInningRun}
+            onClick={() => {
+              handleActiveInactiveInningRun(
+                "isInningRun",
+                record,
+                record.isInningRun
+              );
+            }}
+          >
+            <i className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}></i>
           </Button>
         </Tooltip>
       ),
