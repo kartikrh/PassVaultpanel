@@ -165,6 +165,13 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Event Id",
       dataIndex: "eventRefId",
       key: "eventRefId",
