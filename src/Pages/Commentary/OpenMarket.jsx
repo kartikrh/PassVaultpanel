@@ -407,6 +407,61 @@ export const OpenMarket = () => {
                                     previousLine = nextNewLine;
                                 }
                             }
+                        } else if (updatedMarket.marketTypeCategoryId === 23 && updatedMarket.isInningRun === true) {
+                            // Update the current market first
+                            updatedMarket.runner = [{
+                                ...updatedMarket.runner[0],
+                                line: parseFloat(value),
+                                layPrice: Math.round(value),
+                                backPrice: (updatedMarket.marketTypeId === marketTypeObj?.Fancy ||
+                                    updatedMarket.marketTypeId === marketTypeObj?.LineMarket)
+                                    ? Math.round(value) + parseFloat(updatedMarket.rateDiff || 0)
+                                    : Math.round(value) + 1
+                            }];
+                            updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
+
+                            // Find all markets with marketTypeCategoryId 23 and isInningRun true
+                            const inningRunMarkets = updatedData.filter(market =>
+                                market.marketTypeCategoryId === 23 &&
+                                market.isInningRun === true
+                            );
+
+                            // Find the marketTypeCategoryId 36 market
+                            const totalEventRunMarket = updatedData.find(market =>
+                                market.marketTypeCategoryId === 36
+                            );
+
+                            if (totalEventRunMarket && inningRunMarkets.length <= 2) {
+                                // Calculate sum of lines for both innings
+                                const totalInningsLine = inningRunMarkets.reduce((sum, market) => {
+                                    if (market.marketId === updatedMarket.marketId) {
+                                        // Use the new value for the current market
+                                        return sum + parseFloat(value);
+                                    }
+                                    return sum + (market.runner[0]?.line || 0);
+                                }, 0);
+
+                                // Add predefinedValue from marketTypeCategoryId 36
+                                const newTotalLine = totalInningsLine + (totalEventRunMarket.predefinedValue || 0);
+
+                                // Update the total event run market
+                                const totalEventRunIndex = updatedData.findIndex(m => m.marketId === totalEventRunMarket.marketId);
+                                if (totalEventRunIndex !== -1) {
+                                    updatedData[totalEventRunIndex] = {
+                                        ...totalEventRunMarket,
+                                        runner: [{
+                                            ...totalEventRunMarket.runner[0],
+                                            line: newTotalLine,
+                                            layPrice: Math.round(newTotalLine),
+                                            backPrice: (totalEventRunMarket.marketTypeId === marketTypeObj?.Fancy ||
+                                                totalEventRunMarket.marketTypeId === marketTypeObj?.LineMarket)
+                                                ? Math.round(newTotalLine) + parseFloat(totalEventRunMarket.rateDiff || 0)
+                                                : Math.round(newTotalLine) + 1
+                                        }]
+                                    };
+                                    updatedData[totalEventRunIndex] = generateOverUnderLineType(updatedData[totalEventRunIndex], marketTypeObj);
+                                }
+                            }
                         } else {
                             updatedMarket.runner = updatedMarket.runner.map(runner => ({
                                 ...runner,
