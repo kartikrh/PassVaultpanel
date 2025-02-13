@@ -423,7 +423,7 @@ const NewCommentaryScreen = ({
     className=`score-control-ball-types-btns ${isButtonDisabled ? " disable-button" : ""}`,
   }) => (
     <div className="col" onClick={onClick}>
-      <button className={className}>{label}</button>
+      <button className={className} data-text={label}>{label}</button>
     </div>
   );
   const RunButton = ({ label, onClick, className }) => (
@@ -599,7 +599,7 @@ const NewCommentaryScreen = ({
                         <PlayerImage
                             // width="30px"
                             playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
-                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                            jerseyImage={ teamDetails && teamDetails[BATTING_TEAM].jersey}
                         />
                       </div>
                     <span
@@ -638,7 +638,7 @@ const NewCommentaryScreen = ({
                         <PlayerImage
                             // width="30px"
                             playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
-                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                            jerseyImage={teamDetails && teamDetails[BATTING_TEAM].jersey}
                         />
                     </div>
                     <span
@@ -725,7 +725,7 @@ const NewCommentaryScreen = ({
                         <PlayerImage
                             // width="30px"
                             playerImage={onPitchPlayers[CURRENT_BOWLER]?.playerimage}
-                            jerseyImage={teamDetails["BOWLING_TEAM"].jersey}
+                            jerseyImage={teamDetails && teamDetails[BOWLING_TEAM].jersey}
                         />
                     </div>
                     <span className={`fw-medium scorecard-striker-player-name`}>
@@ -901,6 +901,7 @@ const NewCommentaryScreen = ({
                           onClick={() =>
                             updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)
                           }
+                          data-text={'Ball Start'}
                           className="score-control-ball-types-btns"
                         >
                           Ball Start

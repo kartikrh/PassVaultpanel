@@ -972,4 +972,37 @@ body[data-theme="dark"]{
         background-color: unset !important;
         color: unset !important;
       }
+      @for $i from 1 through 1000 { // Adjust the range as needed
+        .ant-pagination-item-#{$i} {
+          color: $dark-font-color; // Default text color
+        //   background-color: #007bff; // Default background color
+        //   border-color: #0056b3; // Default border color
+      
+          &:hover {
+            color:#000000;
+            background-color: $dark-font-color;
+            // background-color: #0056b3;
+            // border-color: #003f7f;
+          }
+        }
+      
+        // Style for active pagination item (when a wicket is taken)
+        .ant-pagination-item-#{$i}.ant-pagination-item-active {
+            color:#000000;
+            background-color: $dark-font-color;
+      
+          &:hover {
+            color:#000000;
+            background-color: $dark-font-color;
+          }
+        }
+      }
+      
+      .ant-pagination-item-link{
+        color: $dark-font-color !important
+      }
+    .ant-pagination-item-ellipsis{
+        color: $dark-font-color !important
+    }
+      
 }

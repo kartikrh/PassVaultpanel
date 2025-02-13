@@ -383,7 +383,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
         return b.localeCompare(a);
     });
-    const [expanded, setExpanded] = React.useState(sortedKeys[0]);
+    const [expanded, setExpanded] = useState(sortedKeys[0] ? sortedKeys[0] : '1_1');
     return (
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
