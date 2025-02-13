@@ -13,6 +13,8 @@ export function mapCommentaryStatus(status) {
       return "InProgress";
     case 4:
       return "Completed";
+    case 5:
+      return "Innings Break";
     default:
       return "-";
   }

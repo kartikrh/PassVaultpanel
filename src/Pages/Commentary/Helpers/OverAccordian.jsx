@@ -383,14 +383,17 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
 
         return b.localeCompare(a);
     });
-    const [expanded, setExpanded] = useState(sortedKeys[0] ? sortedKeys[0] : '1_1');
+    const [expanded, setExpanded] = useState(sortedKeys[0]);
+    useEffect(() => {
+        setExpanded(sortedKeys[0])
+    }, [sortedKeys])
     return (
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
                 const [innings, teamId] = key.split('_');
                 const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
-                    ? teamDetails.BATTING_TEAM
-                    : teamDetails.BOWLING_TEAM;
+                ? teamDetails.BATTING_TEAM
+                : teamDetails.BOWLING_TEAM;
                 const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                 ? teamDetails.BOWLING_TEAM
                 : teamDetails.BATTING_TEAM
@@ -400,7 +403,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         className='right-panel-over-accordian'
                         key={key}
                         // disabled
-                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
+                        expanded={expanded === key }
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },
