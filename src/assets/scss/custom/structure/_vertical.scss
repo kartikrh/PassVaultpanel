@@ -943,9 +943,9 @@ body[data-theme="dark"]{
     }
     .market-type-table {
         &.table {
-          &.table-bordered {
+            &.table-bordered {
             &.table-striped {
-              tbody {
+                tbody {
                 // tr{
                 //   background-color: $dark-score-card-bg !important; // White
                 // }
@@ -959,48 +959,41 @@ body[data-theme="dark"]{
                 td{
                     color: $dark-font-color !important
                 }
-              }
+                }
             }
-          }
+            }
         }
-      }
+        }
 
-      .color-white {
+        .color-white {
         background-color: $dark-body-bg !important;
-      }
-      .list-group-item{
+        }
+        .list-group-item{
         background-color: unset !important;
         color: unset !important;
-      }
-      @for $i from 1 through 1000 { // Adjust the range as needed
+        }
+      @for $i from 1 through 1000 {
         .ant-pagination-item-#{$i} {
-          color: $dark-font-color; // Default text color
-        //   background-color: #007bff; // Default background color
-        //   border-color: #0056b3; // Default border color
-      
+          color: $dark-font-color;
           &:hover {
             color:#000000;
-            background-color: $dark-font-color;
-            // background-color: #0056b3;
-            // border-color: #003f7f;
+            background-color: $dark-font-color !important;
           }
         }
       
-        // Style for active pagination item (when a wicket is taken)
         .ant-pagination-item-#{$i}.ant-pagination-item-active {
             color:#000000;
             background-color: $dark-font-color;
-      
-          &:hover {
-            color:#000000;
-            background-color: $dark-font-color;
-          }
         }
       }
       
-      .ant-pagination-item-link{
-        color: $dark-font-color !important
+    .ant-pagination-item-link{
+    color: $dark-font-color !important;
+    &:hover {
+        color:#000000 !important;
+        background-color: $dark-font-color !important;
       }
+    }
     .ant-pagination-item-ellipsis{
         color: $dark-font-color !important
     }
