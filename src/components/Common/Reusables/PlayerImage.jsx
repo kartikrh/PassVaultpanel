@@ -12,7 +12,7 @@ export default function PlayerImage({ width = "30px", playerImage, playername, j
 
   return (
     <div className="relative" style={{ width: width, borderRadius: "5px", background: '#f3f4f6' }}>
-      {isValidLink(playerImage) && (
+      
         <img
           src={playerImage  ? playerImage: "images/default-player.avif"}
           alt="Player"
@@ -20,8 +20,7 @@ export default function PlayerImage({ width = "30px", playerImage, playername, j
           height={width}
           className="position-absolute rounded object-fit-cover z-2"
         />
-      )}
-      {isValidLink(jerseyImage) && <div className="absolute inset-0">
+      <div className="absolute inset-0">
         <img
           src={jerseyImage ? jerseyImage : 'images/default-jersy.png'}
           alt="Jersey"
@@ -30,7 +29,7 @@ export default function PlayerImage({ width = "30px", playerImage, playername, j
           style={{paddingTop: `${width == '30px' ? '1.5rem' : '2.5rem'}`}}
           className={`position-relative rounded object-fit-cover z-10`}
         />
-      </div>}
+      </div>
     </div>
   );
 }
