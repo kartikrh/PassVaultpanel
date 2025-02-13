@@ -257,7 +257,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         // const viewportWidth = window.innerWidth;
         return (<>
             {viewportWidth < 578 ?
-                <OverContainer>
+                <OverContainer className='accordian-container'>
                     <div className="d-flex justify-content-between w-100 px-0">
                         <PlayerInfo>
                             {bowler?.playerimage ?
@@ -288,7 +288,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                     {bowler?.playerName || 'Unknown Bowler'}
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                    fontFamily: "'Work Sans', sans-serif"
                                 }}>
                                     Over {Math.floor(parseFloat(overNum))}
                                 </Typography>
@@ -296,7 +296,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         </PlayerInfo>
                         <RunsInfo>
                             <Typography variant="subtitle2" sx={{
-                                fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                                fontFamily: "'Work Sans', sans-serif"
                             }}>
                                 {overDetails?.totalRun || 0} <b>Runs</b>
                                 {overDetails?.totalWicket > 0 && (
@@ -316,7 +316,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         </Box>
                     </BallsContainer>
                 </OverContainer>
-                : <OverContainer>
+                : <OverContainer className='accordian-container'>
                     <PlayerInfo>
                         {bowler?.playerimage ?
                             <PlayerImage
@@ -330,13 +330,13 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         />}
                         <Box>
                             <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
-                                fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-                            }}>
+                                fontFamily: "'Work Sans', sans-serif"
+                            }} className='accordian-text'>
                                 {bowler?.playerName || 'Unknown Bowler'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" sx={{
-                                fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-                            }}>
+                                fontFamily: "'Work Sans', sans-serif"
+                            }} className='accordian-text'>
                                 Over {Math.floor(parseFloat(overNum))}
                             </Typography>
                         </Box>
@@ -349,8 +349,8 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         </Box>
                     </BallsContainer>
                     <RunsInfo>
-                        <Typography variant="subtitle2" sx={{
-                            fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+                        <Typography variant="subtitle2" className='accordian-text' sx={{
+                            fontFamily: "'Work Sans', sans-serif"
                         }}>
                             {overDetails?.totalRun || 0} <b>Runs</b>
                             {overDetails?.totalWicket > 0 && (
@@ -384,9 +384,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         return b.localeCompare(a);
     });
     const [expanded, setExpanded] = useState(sortedKeys[0]);
-    useEffect(() => {
-        setExpanded(sortedKeys[0])
-    }, [sortedKeys])
     return (
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
@@ -403,7 +400,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         className='right-panel-over-accordian'
                         key={key}
                         // disabled
-                        expanded={expanded === key }
+                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },
@@ -415,18 +412,19 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         // defaultExpanded
                     >
                         <AccordionSummary
+                            className='right-panel-over-accordian-summary'
                             expandIcon={<ExpandMoreIcon style={{color: "unset"}}/>}
                             sx={{ px: 2 }}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
                                 <Typography variant="h6" fontWeight="bold" color="text.secondary" sx={{
                                     fontFamily: "'Work Sans', sans-serif"
-                                }}>
+                                }} className='accordian-text'>
                                     {team.teamName}
                                 </Typography>
                                 <Typography variant="h6" fontWeight="bold" color="text.secondary" sx={{
                                     fontFamily: "'Work Sans', sans-serif"
-                                }}>
+                                }} className='accordian-text'>
                                     - Innings {innings}
                                 </Typography>
                             </Box>

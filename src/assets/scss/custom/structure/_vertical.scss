@@ -570,13 +570,22 @@ body[data-sidebar-size="small"] {
         }
     }
 }
-.MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
+// .MuiBox-root,.first-card-header,.first-card-body,.remaining-card-header, .remaining-card-body, .MuiAccordion-region, .css-8atqhb, .MuiAccordion-heading, .css-cy7rkm-MuiAccordion-heading, .css-1fxc493-MuiPaper-root-MuiAccordion-root{
+//     background-color: $light-score-card-bg !important;
+// }
+.right-panel-over-accordian{
     background-color: $light-score-card-bg !important;
 }
+.right-panel-over-accordian-summary{
+    background-color: $light-score-card-bg !important;
+}
+// .first-card-body{
+//     background-color: $light-score-card-bg !important;
+// }
 
-.MuiButtonBase-root, .MuiAccordionSummary-root, .Mui-expanded .MuiAccordionSummary-gutters, .css-1dfengi{
-    background-color: $light-score-card-bg !important;
-}
+// .MuiButtonBase-root, .MuiAccordionSummary-root, .Mui-expanded .MuiAccordionSummary-gutters, .css-1dfengi{
+//     background-color: $light-score-card-bg !important;
+// }
 
 .market-type-table {
     &.table {
@@ -825,40 +834,52 @@ body[data-theme="dark"]{
     .btn-light{
         background-color: $gray-800 !important;
     }
-    .MuiBox-root,
-    .first-card-header,
-    .first-card-body,
-    .remaining-card-header,
-    .remaining-card-body,
-    .MuiAccordion-region,
-    .css-8atqhb,
-    .MuiAccordion-heading,
-    .css-cy7rkm-MuiAccordion-heading,
-    .css-1fxc493-MuiPaper-root-MuiAccordion-root {
+    .first-card-body{
         background-color: $dark-score-card-bg !important;
-        color: $dark-body-color !important;
     }
-    .MuiBox-root, .css-sccedh{
-        border: none
+    .first-card-header, .remaining-card-body, .remaining-card-header{
+        background-color: $dark-score-card-bg !important;
     }
-    .MuiTypography-root,
-    .MuiTypography-body1,
-    .css-1i9gr79-MuiTypography-root,
-    .MuiTypography-root,
-    .MuiTypography-body2,
-    .css-199q83o-MuiTypography-root {
-        color: $dark-body-color !important;
-    }
+    // .MuiBox-root,
+    // .first-card-header,
+    // .first-card-body,
+    // .remaining-card-header,
+    // .remaining-card-body,
+    // .MuiAccordion-region,
+    // .css-8atqhb,
+    // .MuiAccordion-heading,
+    // .css-cy7rkm-MuiAccordion-heading,
+    // .css-1fxc493-MuiPaper-root-MuiAccordion-root {
+    //     background-color: $dark-score-card-bg !important;
+    //     color: $dark-body-color !important;
+    // }
+    // .css-sccedh{
+    //     border: none
+    // }
+    // .MuiTypography-root,
+    // .MuiTypography-body1,
+    // .css-1i9gr79-MuiTypography-root,
+    // .MuiTypography-root,
+    // .MuiTypography-body2,
+    // .css-199q83o-MuiTypography-root {
+    //     color: $dark-body-color !important;
+    // }
     .score-num-btn{
         color: green
     }
-    .MuiButtonBase-root,
-    .MuiAccordionSummary-root,
-    .Mui-expanded .MuiAccordionSummary-gutters,
-    .css-1dfengi {
+    // .MuiButtonBase-root,
+    // .MuiAccordionSummary-root,
+    // .Mui-expanded .MuiAccordionSummary-gutters,
+    // .css-1dfengi {
+    //     background-color: $dark-score-card-bg !important;
+    // }
+    accordian-container{
         background-color: $dark-score-card-bg !important;
+        color: $dark-font-color !important
     }
-
+    .accordian-text{
+        color:$dark-font-color !important
+    }
     // .partnership-tab-navigation{
     //     color: $dark-font-color !important;
     // }
@@ -872,6 +893,15 @@ body[data-theme="dark"]{
     // -1px -1px 2px 0px rgba(12, 14, 16, 0.5) inset, /* Inner shadow (top-left) */
     // 1px 1px 2px 0px rgba(40, 44, 54, 0.3) inset;  /* Inner shadow (bottom-right) */
     // }
+
+    .right-panel-over-accordian{
+        background-color: $dark-score-card-bg !important;
+        color: $dark-font-color !important
+    } 
+    .right-panel-over-accordian-summary{
+        background-color: $dark-score-card-bg !important;
+        color: $dark-font-color !important;
+    }
     .bg-light{
         background-color: $dark-boxed-body-bg !important
     }

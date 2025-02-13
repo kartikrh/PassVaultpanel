@@ -187,8 +187,10 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 borderBottom: '1px solid #eee'
                             }
                         }}
+                        className='right-panel-over-accordian'
                     >
                         <AccordionSummary
+                        className='right-panel-over-accordian-summary'
                             expandIcon={<ExpandMoreIcon />}
                             sx={{ px: 2 }}
                         >
@@ -200,12 +202,12 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 </Typography> */}
                                 <Typography variant="h6" color="text.secondary" sx={{
                                     fontFamily: "'Work Sans', sans-serif"
-                                }}>
+                                }} className='accordian-text'>
                                     {team.teamName}
                                 </Typography>
                                 <Typography variant="h6"  color="text.secondary" sx={{
                                     fontFamily: "'Work Sans', sans-serif"
-                                }}>
+                                }} className='accordian-text'>
                                      - Innings {innings}
                                 </Typography>
                             </Box>
