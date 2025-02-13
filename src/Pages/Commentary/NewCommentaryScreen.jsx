@@ -40,7 +40,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel";
 import styled from "styled-components";
 import CommentaryAction from "./CommentaryModels/CommentaryAction";
-import RevertModal from "./CommentaryModels/RevertCommentary";
+// import RevertModal from "./CommentaryModels/RevertCommentary";
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
 import Select from "react-select";
@@ -213,6 +213,7 @@ const NewCommentaryScreen = ({
   const [showRunsPopup, setShowRunsPopup] = useState(false);
   const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
   const [isBoundary, setIsBoundary] = useState(undefined);
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
   const matchData = {
@@ -262,7 +263,7 @@ const NewCommentaryScreen = ({
       setLoading(true);
       const response = await axiosInstance.post(
         "/admin/commentary/revertCommentary",
-        { commentaryId }
+        { commentaryId, password }
       );
 
       dispatch(
@@ -457,6 +458,8 @@ const NewCommentaryScreen = ({
             setActionPopup(false)
           }}
           onNoClick={() => setShowRevertModal(false)}
+          password={password}
+          setPassword={setPassword}
         />
       );
     }

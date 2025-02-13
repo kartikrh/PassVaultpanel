@@ -21,12 +21,13 @@ const CommentaryAction = ({
     const [showRunsPopup, setShowRunsPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showRevertModal, setShowRevertModal] = useState(false);
+    const [password, setPassword] = useState('');
     const dispatch = useDispatch();
 
     const handleRevertToToss = async () => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post('/admin/commentary/revertCommentary', { commentaryId });
+            const response = await axiosInstance.post('/admin/commentary/revertCommentary', { commentaryId, password });
 
             dispatch(updateToastData({
                 data: response?.message || 'Successfully reverted to toss',
@@ -112,6 +113,8 @@ const CommentaryAction = ({
                     setShowRevertModal(false);
                 }}
                 onNoClick={() => setShowRevertModal(false)}
+                password={password}
+                setPassword={setPassword}
             />
         </>
     );
