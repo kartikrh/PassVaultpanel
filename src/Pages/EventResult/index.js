@@ -247,6 +247,13 @@ const Index = () => {
           style: { width: "2%" },
     },
     {
+      title: "Id",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
