@@ -45,7 +45,8 @@ const ALL_SCREENS = {
   1: COMMENTARY_TOSS_SCREEN,
   2: COMMENTARY_PLAYER_SELECTION_SCREEN,
   3: COMMENTARY_MAIN_SCREEN,
-  4: COMMENTARY_MAIN_SCREEN,
+  // 4: COMMENTARY_MAIN_SCREEN,
+  4: COMMENTARY_PLAYER_SELECTION_SCREEN,
 };
 
 const getScreenNumber = (screen) => {
@@ -60,6 +61,7 @@ function CommentaryMaster() {
   const pageName = TAB_COMMENTARY;
   const [commentaryData, setCommentaryData] = useState(undefined);
   const [currentScreen, setCurrentScreen] = useState(undefined);
+  console.log("currentScreen", currentScreen)
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [nextScreen, setNextScreen] = useState(undefined);
   const [nextData, setNextData] = useState(undefined);
