@@ -22,6 +22,9 @@ import CancelModal from "./CancelModal";
 
 const Index = () => {
   const pageName = TAB_SET_SESSION_RESULT;
+  const commentaryId = +sessionStorage.getItem('sessionResultId') || 0;
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('sessionResultDetails') || "{}");
+
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = TAB_SET_SESSION_RESULT;
@@ -33,7 +36,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
-  const [competitionId, setCompetitionId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(commentaryId ? commentaryDetails?.competitionId : null);
   const [isSearch, setIsSearch] = useState(false);
   const [mtAndCategories, setMtAndCategories] = useState(null);
   const [selectedMarketType, setSelectedMarketType] = useState(null);
@@ -52,6 +55,18 @@ const Index = () => {
     rateSourceRefId: 1,
     rateSourceType: "Ratesource"
   })
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null,
+    eventName: null,
+  });
+
+  useEffect(() => {
+    if (commentaryId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
+  }, [])
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
@@ -64,6 +79,12 @@ const Index = () => {
       marketTypeId: latestValueFromTable?.marketTypeId || 0,
       marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
     };
+    if(commentaryId !== 0) {
+      payload = {
+        ...(latestValueFromTable || tableActions),
+        commentaryId: commentaryId
+      };
+    }
     if (isSearch) {
       payload = {
         ...payload,
@@ -113,7 +134,7 @@ const Index = () => {
       })
       .catch((error) => {});
   };
-  const fetchCompetitionList = async () => {
+  const fetchCompetitionList = async (eventTypeId) => {
     await axiosInstance
       .post(`/admin/eventMarket/competitionListByEventTypeId`, {
         eventTypeId: eventTypeId,
@@ -124,7 +145,7 @@ const Index = () => {
       })
       .catch((error) => {});
   };
-  const fetchEventList = async () => {
+  const fetchEventList = async (competitionId) => {
     await axiosInstance
       .post(`/admin/eventMarket/commListByCompetitionId`, {
         competitionId: competitionId,
@@ -425,6 +446,31 @@ const Index = () => {
     fetchMarketCategoriesList();
   }, [isSearch, ratesource]);
 
+  useEffect(()=>{
+    if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.eventId){
+      setIsSearch(false)
+      fetchEventTypeData();
+      fetchCompetitionList(commentaryDetails?.eventTypeId);
+      fetchEventList(commentaryDetails?.competitionId);
+    } /* else {
+      setIsSearch(true)
+    } */
+  },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.eventId])
+
+  useEffect(() => {
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.eventId) {
+      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
+      const competition = competitionList.find(c => c.competitionId === commentaryDetails.competitionId)
+      const eventListData = eventList.find(c => c.eventId === commentaryDetails.eventId)
+  
+      setSelectedTableElements({
+        eventType: { value: event?.eventTypeId, label: event?.eventType },
+        competition: { value: competition?.competitionId, label: competition?.competition },
+        eventName: { value: eventListData?.eventId, label: eventListData?.eventName }
+      });
+    }
+  }, [commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.eventId, competitionList, eventTypes, eventList]);
+
   useEffect(() => {
       if(mtAndCategories && selectedMarketType) {
         const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
@@ -442,13 +488,13 @@ const Index = () => {
 
   useEffect(() => {
     if (eventTypeId) {
-      fetchCompetitionList();
+      fetchCompetitionList(eventTypeId);
     }
   }, [eventTypeId]);
 
   useEffect(() => {
     if (competitionId) {
-      fetchEventList();
+      fetchEventList(competitionId);
     } else {
       setEventList([]);
     }
@@ -482,6 +528,7 @@ const Index = () => {
             setRatesource={setRatesource}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            selectedTableElementsLogs={selectedTableElements}
             marketTypes={mtAndCategories?.marketTypes || []}
             categories={categories}
             setSelectedMarketType={setSelectedMarketType}
