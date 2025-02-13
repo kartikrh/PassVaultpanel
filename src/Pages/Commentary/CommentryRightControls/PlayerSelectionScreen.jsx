@@ -310,7 +310,6 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
   };
 
   const selectPlayer = (commentaryPlayerId) => {
-    console.log("commentaryPlayerId", commentaryPlayerId);
     const selectedPlayerIndex = commentaryTeamsPlayersDetails.findIndex(
       (i) =>
         i.commentaryPlayerId === commentaryPlayerId &&
@@ -427,7 +426,6 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
     setIsOpen(false);
   };
   const theme = useSelector((state) => state.layout.panelTheme);
-  console.log("props", props);
   return (
     <React.Fragment>
         <div className="col-6 control-card bg-secondary m-4">

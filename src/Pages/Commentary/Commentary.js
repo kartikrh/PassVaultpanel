@@ -271,7 +271,8 @@ const Commentary = (props) => {
                 { ...teams?.[BATTING_TEAM], isBattingComplete: true, teamStatus: 2 },
                 { ...teams?.[BOWLING_TEAM], teamStatus: 1, teamTrialRuns: trialRuns, teamLeadRuns: leadRuns }]
             commentaryUpdates = {
-                "commentaryStatus": 2,
+                // "commentaryStatus": 2,
+                "commentaryStatus": 4,
                 "displayStatus": "Batting for Current team Completed"
             }
             setRedirectOnScreenChange(true)
