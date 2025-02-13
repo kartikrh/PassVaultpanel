@@ -110,7 +110,8 @@ const CricketFieldControls = ({
     //   toggle={toggle}
     //   size="lg"
     // >
-    <div className="col-12">
+    <>
+    {/* <div className="col-12"> */}
       {/* <div className="col">
         <span>
           Ball : {cricketFieldData?.overCount} {cricketFieldData?.bowler} to{" "}
@@ -132,8 +133,8 @@ const CricketFieldControls = ({
           checked={isShotType}
         />
       </div> */}
-      <div className="col-12 d-flex">
-      <div className="col-6">
+      <div className="col-12 d-lg-flex">
+      <div className="col-12 col-lg-6">
           <CricketFieldNew
             runs={cricketFieldData?.run}
             boundary={cricketFieldData?.isBoundary}
@@ -141,7 +142,7 @@ const CricketFieldControls = ({
             setLine={setLine}
           />
         </div>
-        <div className="col-6 row row-cols-2">
+        <div className="col-12 col-lg-6 row row-cols-2">
           {isShotType && (
             <div className="col-12 d-flex flex-wrap">
               {shotTypes.map((shot) => (
@@ -165,9 +166,9 @@ const CricketFieldControls = ({
             />
           ) */}
         </div>
-        
       </div>
-    </div>
+    {/* </div> */}
+    </>
   );
 };
 
