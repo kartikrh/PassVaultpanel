@@ -139,6 +139,13 @@ function ScoringLogs() {
 
   const columns = [
     {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
