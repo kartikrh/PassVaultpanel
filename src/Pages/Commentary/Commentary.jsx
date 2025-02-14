@@ -8,11 +8,12 @@ import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 
 export const CommentaryScreen = ({
-    teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
+    refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
+    console.log("refId", refId)
 
     const OffsymbolStatus = () => {
         return (
@@ -354,6 +355,7 @@ export const CommentaryScreen = ({
                     </div>
                 </Row>
                 <CommentaryRightPanel
+                    refId={refId}
                     overBalls={overBalls}
                     partnerships={filteredPartnerships}
                     teamDetails={teamDetails}

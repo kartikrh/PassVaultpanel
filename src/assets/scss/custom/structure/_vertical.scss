@@ -621,6 +621,9 @@ body[data-sidebar-size="small"] {
 }
 
 body[data-theme="dark"]{
+    .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
+        color: $dark-font-color !important;
+    }
     .vertical-menu{
         background-color: $vertical-menu-dark-bg;
         // color: aqua;
@@ -904,10 +907,6 @@ body[data-theme="dark"]{
     }
     .bg-light{
         background-color: $dark-boxed-body-bg !important
-    }
-
-    .btn-close{
-        color: $dark-font-color !important
     }
 
     .modal-header-title{
