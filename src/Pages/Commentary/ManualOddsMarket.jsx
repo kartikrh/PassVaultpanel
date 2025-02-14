@@ -389,7 +389,7 @@ export const ManualOddsMarket = () => {
                                         <Card className="h-100">
                                             <CardBody>
                                                 <div className="d-flex justify-content-between align-items-center mb-3">
-                                                    <h5 className="mb-0">Runners</h5>
+                                                    <h5 className="mb-0 modal-header-title">Runners</h5>
                                                     <Button
                                                         color="primary"
                                                         size="sm"
