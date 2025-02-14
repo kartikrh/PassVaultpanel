@@ -17,6 +17,7 @@ import {
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
+  MODULE_PHOTO_LIBRARY,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
@@ -127,6 +128,32 @@ const Index = () => {
   //       );
   //     });
   // };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_PHOTO_LIBRARY]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
@@ -283,6 +310,7 @@ const Index = () => {
     title: "Photo Library",
     // isActive: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -312,6 +340,7 @@ const Index = () => {
             onAddNavigate={"/addPhotoLibrary"}
             handleReset={handleReset}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,

@@ -10,7 +10,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT_TYPES } from "../../components/Common/Const";
+import { ERROR, MODULE_EVENT_TYPES, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT_TYPES } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -77,6 +77,32 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_EVENT_TYPES]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -237,6 +263,7 @@ const Index = () => {
     isActive: true,
     dragDrop: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -265,6 +292,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             onAddNavigate={"/addEventType"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}

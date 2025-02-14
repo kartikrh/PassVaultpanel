@@ -7,7 +7,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_ClientSocket } from "../../components/Common/Const";
+import { ERROR, MODULE_CLIENT_SOCKETS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_ClientSocket } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -126,6 +126,32 @@ const Index = () => {
       })
       .catch((error) => {
         setChangeModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_CLIENT_SOCKETS]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
         dispatch(
           updateToastData({
             data: error?.message,
@@ -283,6 +309,7 @@ const Index = () => {
     isActive: true,
     actionType: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -312,6 +339,7 @@ const Index = () => {
             onAddNavigate={"/addClientSocket"}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             selectedClientSocket={selectedClientSocket}
             setSelectedClientSocket={setSelectedClientSocket}
             handleClientSocketChange={handleChange}

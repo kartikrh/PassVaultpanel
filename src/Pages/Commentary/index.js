@@ -15,6 +15,7 @@ import { CommentaryClone } from "../../components/Model/Clone";
 import { isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_COMMENTARY,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -710,6 +711,32 @@ const Index = () => {
         commentaryId: record?.commentaryId,
         [pType]: cState ? false : true,
       })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_COMMENTARY]})
       .then((response) => {
         fetchData();
         dispatch(
@@ -1630,6 +1657,7 @@ const Index = () => {
     competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
+    loadData: true,
     statusOptions: [
       {
         label: "All",
@@ -1693,6 +1721,7 @@ const Index = () => {
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             isAddPermission={checkPermission(

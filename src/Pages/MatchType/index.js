@@ -11,6 +11,7 @@ import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_MATCH_TYPES,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -69,6 +70,32 @@ const Index = () => {
       updateSingleCheck = [...checekedList, e.matchTypeId];
     }
     setCheckedList(updateSingleCheck);
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_MATCH_TYPES]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleClone = async () => {
@@ -261,6 +288,7 @@ const Index = () => {
     switch: false,
     clone: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -286,6 +314,7 @@ const Index = () => {
             tableElement={tableElement}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}

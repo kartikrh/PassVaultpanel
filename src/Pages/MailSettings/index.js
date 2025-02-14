@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_SEND_MAIL_CONFIG,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -302,6 +303,38 @@ const Index = () => {
     headerSelect: false,
     isActive: true,
     clone: false,
+    reloadButton: true,
+    loadData: true,
+  };
+
+  const handleReload = (value) => {
+    fetchData();
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_SEND_MAIL_CONFIG]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   //delete row
@@ -353,7 +386,9 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
+            handleReload={handleReload}
             reFetchData={fetchData}
+            loadDataModelFunction={handleLoadData}
             onAddNavigate={"/addMailSetting"}
             isAddPermission={checkPermission(
               permissionObj,
