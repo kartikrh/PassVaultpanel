@@ -39,7 +39,6 @@ export const OpenMarket = () => {
     const [isScorecardShow, setIsScorecardShow] = useState(undefined);
     const [isKeyPressed, setIsKeyPressed] = useState(undefined);
     const [ballStatus, setBallStatus] = useState(null);
-    const selectedCategoriesData = selectedCategories.map(category => { })
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -667,6 +666,7 @@ export const OpenMarket = () => {
     }
 
     const saveData = async ({ dataToSave, action }) => {
+        console.log('Saving data:', { action, marketCount: dataToSave.length });
         setIsLoading(true);
         try {
             const response = await axiosInstance.post(`/admin/eventMarket/updateMarketRateV1`, {
@@ -675,6 +675,7 @@ export const OpenMarket = () => {
             });
 
             if (response?.result) {
+                console.log('Save successful:', { action, updatedMarkets: response.result.marketList?.length });
                 dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
@@ -714,6 +715,7 @@ export const OpenMarket = () => {
             setIsKeyPressed(false)
             setIsLoading(false);
         } catch (error) {
+            console.error('Save failed:', error);
             setIsLoading(false);
             setIsKeyPressed(false)
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -765,12 +767,15 @@ export const OpenMarket = () => {
     }
 
     const formatSocketDataForState = (responseData) => {
+        console.log('Socket data received:', responseData);
         if (!isEmpty(responseData)) {
             const newMarketData = {};
 
             responseData.forEach(eventMarketString => {
+
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
+                    console.log('Processing socket market data:', eventMarket.marketId);
                     // Ensure the runner is always treated as an array
                     let runners = Array.isArray(eventMarket.runner) ? eventMarket.runner.map(runner => ({
                         runnerId: runner.runnerId,
@@ -816,6 +821,7 @@ export const OpenMarket = () => {
             });
 
             setData(prevData => {
+                console.log('Updating data from socket with new markets');
                 // Replace the existing market data with the new market data from the socket
                 const updatedData = prevData.map(market => {
                     const newMarket = newMarketData[market.marketId];
@@ -874,6 +880,7 @@ export const OpenMarket = () => {
 
                 updateOriginalValues(sortedData);
                 return sortedData;
+
             });
             setIsDataFromApiOrSocket(true);
         }
@@ -1280,14 +1287,17 @@ export const OpenMarket = () => {
             return; // Don't trigger shortcuts if focus is on input or select elements
         }
         const key = event.key.toLowerCase();
+        console.log('Key pressed:', key);
         switch (key) {
             case 'a':
+                console.log('Save all triggered by key press');
                 if (selectedCategories.length > 0 && hasUnsavedChanges) {
                     setIsKeyPressed(true)
                     updateRecords();
                 }
                 break;
             case 's':
+                console.log('Send all triggered by key press');
                 if (selectedCategories.length > 0 && !hasUnsavedChanges) {
                     setIsKeyPressed(true)
                     handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
@@ -1324,12 +1334,14 @@ export const OpenMarket = () => {
 
     // New method for handling market updates
     const handleMarketUpdate = (marketData) => {
+        console.log('Market update received:', marketData);
         if (!marketData) return;
 
         // Convert market data to array format if it's a single object
         const marketDataArray = Array.isArray(marketData) ? marketData : [marketData];
-
+        console.log('Processing market updates:', marketDataArray.length);
         setData(prevData => {
+            console.log('Updating data with market updates');
             const updatedData = prevData.map(market => {
                 const updatedMarket = marketDataArray.find(m => m.marketId === market.marketId);
                 if (updatedMarket) {
@@ -1410,22 +1422,27 @@ export const OpenMarket = () => {
     useEffect(() => {
         if (!isEmpty(teams)) {
             if (socket) {
+                console.log('Connecting to socket for market updates');
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
+                    console.log('Received OPEN_MARKET_DATA event');
                     formatSocketDataForState(socketData || [])
                 });
                 socket.on(UPDATE_MARKET_DATA, (marketData) => {
+                    console.log('Received UPDATE_MARKET_DATA event');
                     if (marketData) {
                         handleMarketUpdate(marketData);
                     }
                 });
             } else {
+                console.log('Socket not available, falling back to polling');
                 setIsSocketConnected(false)
                 fetchConfigAll();
             }
         }
         return () => {
+            console.log('Cleaning up socket listeners');
             socket.off(OPEN_MARKET_DATA);
             socket.off(UPDATE_MARKET_DATA);
         };
