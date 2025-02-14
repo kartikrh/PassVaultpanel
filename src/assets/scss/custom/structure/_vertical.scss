@@ -619,10 +619,19 @@ body[data-sidebar-size="small"] {
   .modal-header-title{
     color: #000000 !important
 }
+.ball-white {
+    background-color: white;
+  }
 
 body[data-theme="dark"]{
     .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
         color: $dark-font-color !important;
+    }
+    .ball-white {
+        background-color: $vertical-menu-dark-bg !important;
+      }
+      .MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.css-q7mezt {
+        color: $dark-font-color !important ; // Change to your desired color
     }
     .vertical-menu{
         background-color: $vertical-menu-dark-bg;
