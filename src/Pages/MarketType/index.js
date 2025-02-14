@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Container, Table, Card, CardBody } from "reactstrap";
+import { Container, Table, Card, CardBody, CardHeader, Button } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
   TAB_MARKET_TYPE,
   PERMISSION_VIEW,
+  MODULE_MARKET_TYPES,
+  SUCCESS,
+  ERROR,
 } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_MARKET_TYPE;
@@ -18,6 +22,7 @@ const Index = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -32,6 +37,32 @@ const Index = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_MARKET_TYPES]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   useEffect(() => {
@@ -49,6 +80,18 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           {(data && data.length > 0) &&
           <Card>
+            <CardHeader className="px-0 pt-0">
+              <Button
+                color="warning"
+                onClick={() => {
+                  handleLoadData();
+                }}
+                className="d-flex align-items-center gap-1"
+              >
+                <i className="ri-refresh-line"></i>
+                Load Data
+              </Button>
+            </CardHeader>
             <CardBody className="p-1 event-snap">
               <Table
                 className="table"
