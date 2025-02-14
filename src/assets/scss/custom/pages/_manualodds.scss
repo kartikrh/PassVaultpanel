@@ -1,0 +1,13 @@
+body[data-theme="dark"]{
+    .manual-card-body{
+        background-color: $dark-body-bg !important;
+        color: $dark-font-color !important;
+    }
+    .manual-card-text{
+        color: $dark-font-color !important;
+    }
+    .manual-card-textField{
+        color: $dark-font-color !important;
+        
+    }
+}
