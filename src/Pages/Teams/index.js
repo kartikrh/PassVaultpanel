@@ -8,7 +8,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TEAMS } from "../../components/Common/Const";
+import { ERROR, MODULE_TEAMS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_TEAMS } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -78,6 +78,32 @@ const Index = () => {
     sessionStorage.setItem('teamId', "" + details?.teamId);
     sessionStorage.setItem('teamDetails', "" + JSON.stringify(details));
     window.open(url.href, '_blank');
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_TEAMS]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleDelete = async (e) => {
@@ -256,6 +282,7 @@ const Index = () => {
     eventTypeSelect: true,
     resetButton: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -286,6 +313,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             eventTypes={eventTypes}
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}

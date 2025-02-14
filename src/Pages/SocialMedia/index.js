@@ -17,6 +17,7 @@ import {
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
+  MODULE_SOCIAL_MEDIA,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -76,6 +77,32 @@ const Index = () => {
         id: record.id,
         [pType]: cState ? false : true,
       })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_SOCIAL_MEDIA]})
       .then((response) => {
         fetchData();
         dispatch(
@@ -222,6 +249,7 @@ const Index = () => {
     title: "Social Media",
     isActive: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -250,6 +278,7 @@ const Index = () => {
             onAddNavigate={"/addSocialMedia"}
             handleReset={handleReset}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,

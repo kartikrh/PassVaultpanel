@@ -8,7 +8,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_MARKET_TEMPLATE } from "../../components/Common/Const";
+import { ERROR, MODULE_MARKET_TEMPLATE, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_MARKET_TEMPLATE } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { MarketTemplateClone, MarketTemplateMultiClone } from "../../components/Model/Clone";
@@ -234,6 +234,33 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_MARKET_TEMPLATE]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -521,6 +548,7 @@ const Index = () => {
     categorySelect: true,
     resetButton: true,
     reloadButton: true,
+    loadData: true,
     clone: true,
     multiClone: true,
   };
@@ -565,6 +593,7 @@ const Index = () => {
             matchType = {matchType}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addMarketTemplate"}

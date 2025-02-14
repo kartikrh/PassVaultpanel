@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_API,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -212,7 +213,34 @@ const Index = () => {
     headerSelect: false,
     isActive: true,
     reloadButton: true,
+    loadData: true,
     clone: false,
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_API]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   //delete row
@@ -269,6 +297,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             onAddNavigate={"/addApi"}
             isAddPermission={checkPermission(
               permissionObj,
