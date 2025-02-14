@@ -13,6 +13,7 @@ import axiosInstance from "../../Features/axios";
 import _, { isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_MENU_LIST,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -138,6 +139,32 @@ const Index = () => {
         );
         setIsLoading(false);
         fetchData();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_MENU_LIST]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
@@ -468,6 +495,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     isActive: true,
+    loadData: true,
     // displayTypes: [
     //   { label: "Admin", value: 1 },
     //   { label: "Agent", value: 2 },
@@ -524,6 +552,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,

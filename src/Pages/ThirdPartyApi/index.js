@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_THIRD_PARTY_API } from "../../components/Common/Const";
+import { ERROR, MODULE_THIRD_PARTY_APIS, PERMISSION_VIEW, SUCCESS, TAB_THIRD_PARTY_API } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -84,6 +84,32 @@ const Index = () => {
       default:
         return "Unknown";
     }
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_THIRD_PARTY_APIS]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const handleSocket = async (record) => {
@@ -208,6 +234,7 @@ const Index = () => {
     title: "Third Party Api",
     isActive: true,
     reloadButton: true,
+    loadData: true,
   };
 
   useEffect(() => {
@@ -234,6 +261,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
           />
         </Container>
       </div>

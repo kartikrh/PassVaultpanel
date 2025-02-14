@@ -17,6 +17,7 @@ import {
     PERMISSION_VIEW,
     SUCCESS,
     ERROR,
+    MODULE_VIDEO_LIBRARY,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
@@ -33,8 +34,7 @@ const Index = () => {
     const [dataIndexList, setDataIndexList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-    const [importExportModelVisable, setImportExportModelVisable] =
-        useState(false);
+    const [importExportModelVisable, setImportExportModelVisable] = useState(false);
     const [checekedList, setCheckedList] = useState([]);
 
     const navigate = useNavigate();
@@ -128,6 +128,32 @@ const Index = () => {
     //       );
     //     });
     // };
+
+    const handleLoadData = async () => {
+        setIsLoading(true);
+        await axiosInstance
+          .post(`/loadPanelData`, {module: [MODULE_VIDEO_LIBRARY]})
+          .then((response) => {
+            fetchData();
+            dispatch(
+              updateToastData({
+                data: response?.message,
+                title: response?.title,
+                type: SUCCESS,
+              })
+            );
+          })
+          .catch((error) => {
+            setIsLoading(false);
+            dispatch(
+              updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR,
+              })
+            );
+          });
+    };    
 
     const handleDelete = async (e) => {
         setIsLoading(true);
@@ -302,6 +328,7 @@ const Index = () => {
         title: "Video Library",
         // isActive: true,
         reloadButton: true,
+        loadData: true,
     };
 
     useEffect(() => {
@@ -332,6 +359,7 @@ const Index = () => {
                         onAddNavigate={"/addVideoLibrary"}
                         handleReset={handleReset}
                         handleReload={handleReload}
+                        loadDataModelFunction={handleLoadData}
                         reFetchData={fetchData}
                         isAddPermission={checkPermission(
                             permissionObj,
