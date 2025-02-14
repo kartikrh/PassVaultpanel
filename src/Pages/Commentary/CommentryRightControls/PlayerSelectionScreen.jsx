@@ -23,6 +23,7 @@ import {
 import { updateToastData } from "../../../Features/toasterSlice";
 import CardComponent from "../CardComponent";
 
+
 const PlayerSelectionScreen = forwardRef((props, ref) => {
   document.title = "Player Selection";
   const { data, next, previous, save } = props;
@@ -425,7 +426,32 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
     setCommentaryTeamsPlayersDetails(updatedStrikerPlayerDetails);
     setIsOpen(false);
   };
+
   const theme = useSelector((state) => state.layout.panelTheme);
+
+  const imageRender = (playerType) => {
+    if (playerType === "BatsMan") {
+        return <img src={'icons/bater.png'} alt="bat" style={{ width: "20px", height: "20px" }} className="me-2" />
+    } else if (playerType === "Wicketkeeper") {
+        return <img src={'icons/bowler.png'} alt="keeper" style={{ width: "20px", height: "20px" }} className="me-2" />
+    }
+    else if (playerType === "AllRounder") {
+        return <img src={'icons/bowler.png'} alt="allrounder" style={{ width: "20px", height: "20px" }} className="me-2" />
+    } else {
+        return <img src={'icons/bowler.png'} alt="ball" style={{ width: "20px", height: "20px" }} className="me-2" />
+    }
+  }
+
+  const generatePlayerOptions = (teamListStatus, isStriker = true) => {
+    return getTeamList(teamListStatus, isStriker).map((player) => ({
+      value: player.commentaryPlayerId,
+      label: player.playerName,
+      image: player.playerType, // Assuming player has an image URL
+    }));
+  };
+  
+  const strikerOptions = generatePlayerOptions(teamListStatus, true);
+  const nonStrikerOptions = generatePlayerOptions(teamListStatus, false);
   return (
     <React.Fragment>
         <div className="col-6 control-card bg-secondary m-4">
@@ -448,10 +474,13 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
                     onChange={(selectedOption) =>
                       selectPlayer(selectedOption.value)
                     }
-                    options={getTeamList(teamListStatus).map((player) => ({
-                      value: player.commentaryPlayerId,
-                      label: player.playerName,
-                    }))}
+                    options={strikerOptions}
+                    getOptionLabel={(e) => (
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {imageRender(e.image)}
+                        {e.label}
+                      </div>
+                    )}
                   />
                 </div>
                 <div
@@ -464,11 +493,12 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
                     onChange={(selectedOption) =>
                       selectPlayer(selectedOption.value)
                     }
-                    options={getTeamList(teamListStatus, false).map(
-                      (player) => ({
-                        value: player.commentaryPlayerId,
-                        label: player.playerName,
-                      })
+                    options={nonStrikerOptions}
+                    getOptionLabel={(e) => (
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {imageRender(e.image)}
+                        {e.label}
+                      </div>
                     )}
                   />
                 </div>
@@ -487,10 +517,13 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
                     onChange={(selectedOption) =>
                       selectPlayer(selectedOption.value)
                     }
-                    options={getTeamList(teamListStatus).map((player) => ({
-                      value: player.commentaryPlayerId,
-                      label: player.playerName,
-                    }))}
+                    options={strikerOptions}
+                    getOptionLabel={(e) => (
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {imageRender(e.image)}
+                        {e.label}
+                      </div>
+                    )}
                   />
                 </div>
               </div>

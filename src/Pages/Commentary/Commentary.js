@@ -2360,6 +2360,31 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }
             })}
+            // undo
+            {...(undoOverPopup && {
+                undoOverPopupIsOpen : true,
+                undoOverPopupToggle : () => {
+                    setUndoOverPopup(undefined)
+                },
+                onChangebowlerClick : () => {
+                    setUndoOverPopup(undefined)
+                    setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: SWITCH_BOWLER })
+                    changePlayer(CURRENT_BOWLER)
+                },
+                onLastOverClick : () => {
+                    setUndoOverPopup(undefined)
+                    updateAfterOverUndo()
+                }
+            })}
+            // undo innings
+            {...(undoInningsPopup && {
+                undoInningsPopupIsOpen : undoInningsPopup,
+                undoInningsPopupToggle : () => {
+                    setUndoInningsPopup(undefined)
+                },
+                onLastInnigsClick : () => { },
+                onPlayerSelectionClick : {onUndoPlayerSelection}
+            })}
         />
         : <CommentaryScreen
             refId={props.refId}
@@ -2472,7 +2497,7 @@ const Commentary = (props) => {
             onsubmit={handleInningsUpdate}
             currentInningTeams={propsData.commentaryData?.commentaryTeams?.filter(team => team.currentInnings === (commentaryDetails.currentInnings + 1))}
         />}
-        {undoInningsPopup && <UndoInnnigsModal isOpen={undoInningsPopup}
+        {(!props?.isNewUi && undoInningsPopup) && <UndoInnnigsModal isOpen={undoInningsPopup}
             toggle={() => { setUndoInningsPopup(undefined) }}
             onLastInnigsClick={() => { }}
             onPlayerSelectionClick={onUndoPlayerSelection}
@@ -2498,7 +2523,7 @@ const Commentary = (props) => {
                 changePlayer(CURRENT_BOWLER)
             }}
         />}
-        {undoOverPopup && <UndoOverModal
+        {(!props?.isNewUi && undoOverPopup) && <UndoOverModal
             isOpen={true}
             toggle={() => { setUndoOverPopup(undefined) }}
             onChangebowlerClick={() => {
