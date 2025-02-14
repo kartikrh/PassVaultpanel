@@ -87,6 +87,7 @@ const RunsInfo = styled(Box)(({ theme }) => ({
 const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver }) => {
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
+    const [expanded, setExpanded] = useState();
     const processedHistory = React.useMemo(() => {
         if (!overHistory?.length) return [];
 
@@ -121,6 +122,30 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         if (!currentOver) return '1_1';
         return `${currentOver.currentInnings}_1`;
     }, [currentOver]);
+
+    // Sort keys to put current batting team first
+    const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
+        const [inningsA, teamIdA] = a.split('_');
+        const [inningsB, teamIdB] = b.split('_');
+
+        if (currentOver) {
+            const isCurrentA = inningsA === currentOver.currentInnings.toString() &&
+                teamIdA === currentOver.teamId.toString();
+            const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
+                teamIdB === currentOver.teamId.toString();
+
+            if (isCurrentA) return 1;
+            if (isCurrentB) return -1;
+        }
+
+        return b.localeCompare(a);
+    });
+
+    useEffect(() => {
+        if (sortedKeys.length > 0 && !expanded) {
+            setExpanded(sortedKeys[0]);
+        }
+    }, [sortedKeys]);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -366,24 +391,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         );
     };
 
-    // Sort keys to put current batting team first
-    const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
-        const [inningsA, teamIdA] = a.split('_');
-        const [inningsB, teamIdB] = b.split('_');
-
-        if (currentOver) {
-            const isCurrentA = inningsA === currentOver.currentInnings.toString() &&
-                teamIdA === currentOver.teamId.toString();
-            const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
-                teamIdB === currentOver.teamId.toString();
-
-            if (isCurrentA) return 1;
-            if (isCurrentB) return -1;
-        }
-
-        return b.localeCompare(a);
-    });
-    const [expanded, setExpanded] = useState(sortedKeys[0]);
     return (
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
@@ -400,7 +407,8 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         className='right-panel-over-accordian'
                         key={key}
                         // disabled
-                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
+                        // expanded={sortedKeys.length > 1 ? expanded === key : expanded}
+                        expanded={expanded === key}
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },

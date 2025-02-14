@@ -53,3 +53,69 @@ a {
         margin-bottom: 0;
     }
 }
+
+body[data-theme="dark"] {
+// Target specifically by both class and aria-label
+    // Create a placeholder selector for shared styles
+%close-button-styles {
+    $button-size: 32px;
+    $color: #FFFFFF;
+    $hover-color: #475569;
+    
+    position: absolute !important;
+    top: 1.3rem !important;
+    right: 1rem !important;
+    width: $button-size !important;
+    height: $button-size !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    
+    &::before,
+    &::after {
+      content: '' !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      width: 16px !important;
+      height: 2px !important;
+      background-color: $color !important;
+      transition: background-color 0.2s ease !important;
+    }
+    
+    &::before {
+      transform: translate(-50%, -50%) rotate(45deg) !important;
+    }
+    
+    &::after {
+      transform: translate(-50%, -50%) rotate(-45deg) !important;
+    }
+    
+    &:hover {
+      &::before,
+      &::after {
+        background-color: $hover-color !important;
+      }
+    }
+    
+    &:focus {
+      outline: 2px solid $color !important;
+      outline-offset: 2px !important;
+    }
+    
+    &:active {
+      transform: scale(0.95) !important;
+    }
+  }
+  
+  // Apply styles to both selectors separately
+  button.btn-close[aria-label="Close"] {
+    @extend %close-button-styles;
+  }
+  
+  .modal-header .btn-close[aria-label="Close"] {
+    @extend %close-button-styles;
+  }
+}
