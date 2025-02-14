@@ -51,6 +51,14 @@ body[data-theme="dark"] {
             color: $dark-table-th-color; // Define variable for dark mode
             font-weight: $font-weight-bold;
         }
+        // tr {
+        //     border: 0.5px solid rgb(69, 69, 69) !important
+        // }
+        tr {
+            border-color: #444444 !important;
+            // border-style: solid;
+            // border-width: 0;
+        }
         td {
             color: $dark-table-td-color; // Define variable for dark mode
         }

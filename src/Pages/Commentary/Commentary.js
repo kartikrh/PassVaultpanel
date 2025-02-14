@@ -2362,6 +2362,7 @@ const Commentary = (props) => {
             })}
         />
         : <CommentaryScreen
+            refId={props.refId}
             commentaryId={commentaryDetails?.commentaryId}
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
