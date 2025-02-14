@@ -59,6 +59,8 @@ import ChangeOverControls from "./CommentryRightControls/ChangeOverControls";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { Avatar } from "@mui/material";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage";
+import UndoOverControls from "./CommentryRightControls/UndoOverControls";
+import UndoInnnigsControls from "./CommentryRightControls/UndoInnnigsControls";
 
 const CenteredBadge = styled.div`
   position: absolute;
@@ -205,6 +207,13 @@ const NewCommentaryScreen = ({
   handleShotTypeToggle,
   cricketFieldIsOpen,
   cricketFieldToggle,
+  onLastOverClick,
+  onChangebowlerClick,
+  undoOverPopupToggle,
+  undoOverPopupIsOpen,
+  undoInningsPopupIsOpen,
+  undoInningsPopupToggle,
+  onPlayerSelectionClick
 }) => {
   const [changePlayerType, setChangePlayerType] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -495,7 +504,6 @@ const NewCommentaryScreen = ({
         />
       );
     }
-
     return <div className="col-8 row row-cols-2">{renderActionButtons()}</div>;
   };
 
@@ -823,7 +831,7 @@ const NewCommentaryScreen = ({
                 extrasTypeIsOpen ||
                 showChangeOverModal ||
                 showPlayerModal ||
-                cricketFieldIsOpen ? (
+                cricketFieldIsOpen || undoOverPopupIsOpen || undoInningsPopupIsOpen ? (
                   <div
                     className={`row row-cols-2 g-2 col-12 ${
                       isLoading ? "disable-button" : ""
@@ -877,7 +885,20 @@ const NewCommentaryScreen = ({
                         handleShotTypeToggle={handleShotTypeToggle}
                         toggle={cricketFieldToggle}
                       />
-                    ) : (
+                    ) : undoOverPopupIsOpen ?(
+                      <UndoOverControls
+                      toggle={() => {undoOverPopupToggle()}}
+                      isOpen={undoOverPopupIsOpen}
+                      onChangebowlerClick = {onChangebowlerClick}
+                      onLastOverClick = {onLastOverClick}
+                    />
+                    ) : undoInningsPopupIsOpen ? (
+                      <UndoInnnigsControls
+                        isOpen={undoInningsPopupIsOpen}
+                        toggle={undoInningsPopupToggle}
+                        onPlayerSelectionClick={onPlayerSelectionClick}
+                      />
+                    ): (
                       renderDefaultControls()
                     )}
                   </div>
