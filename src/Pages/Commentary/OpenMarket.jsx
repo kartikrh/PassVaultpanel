@@ -225,6 +225,7 @@ export const OpenMarket = () => {
 
                 const currentLine = +(workingRecord.runner[0].line);
                 const originalLine = +(originalMarketData[workingRecord.marketId].line || 0);
+                if (!originalLine || +originalLine === 0) dispatch(updateToastData({ data: "Original Line not found", title: "Original Line error", type: ERROR }));
                 const calculatedLineDiff = currentLine - originalLine;
 
                 // Only add lineDiff if there's an actual difference
@@ -262,6 +263,7 @@ export const OpenMarket = () => {
 
             if (key === 'predefinedValue') {
                 const originalData = originalMarketData[updatedMarket.marketId];
+                if (!originalData || +originalData === 0) dispatch(updateToastData({ data: "Original Line not found Predefined", title: "Pre Original Line error ", type: ERROR }));
                 if (originalData && updatedMarket.runner?.length === 1) {
                     // Reset all lineDiffs to 0
                     updatedData = updatedData.map(market => ({
