@@ -70,18 +70,27 @@ export const OpenMarket = () => {
     }, [data, isDataFromApiOrSocket]);
 
     const updateOriginalValues = (dataToWorkWith) => {
+        console.log("Updating original values with:", dataToWorkWith);
         const newOriginalData = {};
         dataToWorkWith.forEach(market => {
-            if (market.runner && market.runner.length === 1) {
+            // Only store original values if they don't already exist
+            if (market.runner && market.runner.length === 1 && !originalMarketData[market.marketId]) {
                 newOriginalData[market.marketId] = {
-                    line: market.runner[0].line,
-                    predefinedValue: market.predefinedValue,
+                    line: parseFloat(market.runner[0].line) || 0,
+                    predefinedValue: parseFloat(market.predefinedValue) || 0,
                     playerScore: market.playerScore
                 };
+                console.log(`Setting original values for market ${market.marketId}:`, newOriginalData[market.marketId]);
             }
         });
-        setOriginalMarketData(newOriginalData);
-    }
+
+        if (Object.keys(newOriginalData).length > 0) {
+            setOriginalMarketData(prevOriginalData => ({
+                ...prevOriginalData,
+                ...newOriginalData
+            }));
+        }
+    };
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedLineRatio(lineRatio);
@@ -263,7 +272,6 @@ export const OpenMarket = () => {
 
             if (key === 'predefinedValue') {
                 const originalData = originalMarketData[updatedMarket.marketId];
-                if (!originalData || +originalData === 0) dispatch(updateToastData({ data: "Original Line not found Predefined", title: "Pre Original Line error ", type: ERROR }));
                 if (originalData && updatedMarket.runner?.length === 1) {
                     // Reset all lineDiffs to 0
                     updatedData = updatedData.map(market => ({
@@ -271,7 +279,7 @@ export const OpenMarket = () => {
                         lineDiff: 0
                     }));
 
-                    const predefinedDifference = value - (originalData.predefinedValue || 0);
+                    const predefinedDifference = parseFloat(value) - (originalData.predefinedValue || 0);
 
                     if (updatedMarket.marketTypeCategoryId === 31) {
                         updatedMarket.predefinedValue = value;
@@ -359,12 +367,12 @@ export const OpenMarket = () => {
                         }));
 
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
+                        // Do not update originalData, only update the current market's predefinedValue
                         updatedMarket.predefinedValue = (originalData.predefinedValue || 0) + lineDifference;
+                        // Set the lineDiff
+                        updatedMarket.lineDiff = lineDifference;
 
                         if (updatedMarket.marketTypeCategoryId === 31) {
-                            // Calculate lineDiff only for the changed market
-                            updatedMarket.lineDiff = lineDifference;
-
                             updatedMarket.runner = [{
                                 ...updatedMarket.runner[0],
                                 line: parseFloat(value),
@@ -770,9 +778,9 @@ export const OpenMarket = () => {
         console.log('Socket data received:', responseData);
         if (!isEmpty(responseData)) {
             const newMarketData = {};
+            const tempOriginalData = {};  // Storage for original values
 
             responseData.forEach(eventMarketString => {
-
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
                     console.log('Processing socket market data:', eventMarket.marketId);
@@ -801,6 +809,15 @@ export const OpenMarket = () => {
                         laySize: eventMarket.laySize
                     }];
 
+                    // Store original values for new markets only
+                    if (runners.length === 1 && !originalMarketData[eventMarket.marketId]) {
+                        tempOriginalData[eventMarket.marketId] = {
+                            line: parseFloat(runners[0].line) || 0,
+                            predefinedValue: parseFloat(eventMarket.predefinedValue) || 0,
+                            playerScore: eventMarket.playerScore
+                        };
+                    }
+
                     let updatedMarketData = {
                         ...eventMarket,
                         rateDiff: +(eventMarket.rateDiff || 0),  // Add this line
@@ -817,20 +834,16 @@ export const OpenMarket = () => {
 
                     // Ensure that the new data replaces old data in the market
                     newMarketData[eventMarket.marketId] = updatedMarketData;
-
-                    // Immediately update originalMarketData for new markets
-                    if (runners && runners.length === 1) {
-                        setOriginalMarketData(prev => ({
-                            ...prev,
-                            [eventMarket.marketId]: {
-                                line: runners[0]?.line || 0,
-                                predefinedValue: eventMarket.predefinedValue || 0,
-                                playerScore: eventMarket.playerScore
-                            }
-                        }));
-                    }
                 }
             });
+
+            // Update originalMarketData with new values before updating main data
+            if (Object.keys(tempOriginalData).length > 0) {
+                setOriginalMarketData(prevOriginalData => ({
+                    ...prevOriginalData,
+                    ...tempOriginalData
+                }));
+            }
 
             setData(prevData => {
                 console.log('Updating data from socket with new markets');
