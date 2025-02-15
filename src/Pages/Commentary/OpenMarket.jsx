@@ -1435,7 +1435,7 @@ export const OpenMarket = () => {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
         }
-    }, [commentaryId]);
+    }, []);
 
     // useEffect(() => {
     //     if (!isEmpty(teams)) {
@@ -1509,7 +1509,7 @@ export const OpenMarket = () => {
         return () => {
             socket.off(CONNECT_COMMENTARY);
         };
-    }, [commentaryId])
+    }, [])
 
     useEffect(() => {
         if (isAutoUpdate && !isSocketConnected) {
