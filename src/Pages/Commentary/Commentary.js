@@ -32,7 +32,6 @@ import createSocket from "../../Features/socket.js"
 import NewCommentaryScreen from "./NewCommentaryScreen.jsx"
 
 const Commentary = (props) => {
-    console.log("props", props)
     const dispatch = useDispatch();
     const [propsData, setPropsData] = useState(undefined)
     const [commentaryDetails, setCommentaryDetails] = useState(undefined)
@@ -272,7 +271,8 @@ const Commentary = (props) => {
                 { ...teams?.[BATTING_TEAM], isBattingComplete: true, teamStatus: 2 },
                 { ...teams?.[BOWLING_TEAM], teamStatus: 1, teamTrialRuns: trialRuns, teamLeadRuns: leadRuns }]
             commentaryUpdates = {
-                "commentaryStatus": 2,
+                // "commentaryStatus": 2,
+                "commentaryStatus": 5,
                 "displayStatus": "Batting for Current team Completed"
             }
             setRedirectOnScreenChange(true)
@@ -802,8 +802,6 @@ const Commentary = (props) => {
     const handleMissingPlayerChange = (playerType, player) => {
         const order = props.data.commentaryData.commentaryPartnership[0].order
         // const order = props.data.commentaryData.commentaryTeams.filter((t) => t.teamBattingOrder === 1)
-        console.log("order", order)
-        console.log("currentPartnership", currentPartnership)
         const commentaryDetailsobj = props.data.commentaryData.commentaryDetails
         const onPitchPlayersobj = { ...onPitchPlayers, [playerType]: player }
         const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true } }
@@ -2362,8 +2360,34 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }
             })}
+            // undo
+            {...(undoOverPopup && {
+                undoOverPopupIsOpen : true,
+                undoOverPopupToggle : () => {
+                    setUndoOverPopup(undefined)
+                },
+                onChangebowlerClick : () => {
+                    setUndoOverPopup(undefined)
+                    setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: SWITCH_BOWLER })
+                    changePlayer(CURRENT_BOWLER)
+                },
+                onLastOverClick : () => {
+                    setUndoOverPopup(undefined)
+                    updateAfterOverUndo()
+                }
+            })}
+            // undo innings
+            {...(undoInningsPopup && {
+                undoInningsPopupIsOpen : undoInningsPopup,
+                undoInningsPopupToggle : () => {
+                    setUndoInningsPopup(undefined)
+                },
+                onLastInnigsClick : () => { },
+                onPlayerSelectionClick : {onUndoPlayerSelection}
+            })}
         />
         : <CommentaryScreen
+            refId={props.refId}
             commentaryId={commentaryDetails?.commentaryId}
             teamDetails={teams}
             onPitchPlayers={onPitchPlayers}
@@ -2473,7 +2497,7 @@ const Commentary = (props) => {
             onsubmit={handleInningsUpdate}
             currentInningTeams={propsData.commentaryData?.commentaryTeams?.filter(team => team.currentInnings === (commentaryDetails.currentInnings + 1))}
         />}
-        {undoInningsPopup && <UndoInnnigsModal isOpen={undoInningsPopup}
+        {(!props?.isNewUi && undoInningsPopup) && <UndoInnnigsModal isOpen={undoInningsPopup}
             toggle={() => { setUndoInningsPopup(undefined) }}
             onLastInnigsClick={() => { }}
             onPlayerSelectionClick={onUndoPlayerSelection}
@@ -2499,7 +2523,7 @@ const Commentary = (props) => {
                 changePlayer(CURRENT_BOWLER)
             }}
         />}
-        {undoOverPopup && <UndoOverModal
+        {(!props?.isNewUi && undoOverPopup) && <UndoOverModal
             isOpen={true}
             toggle={() => { setUndoOverPopup(undefined) }}
             onChangebowlerClick={() => {

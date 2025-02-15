@@ -11,7 +11,7 @@ import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
 import { isEqual } from "lodash";
-import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_USERS } from "../../components/Common/Const";
+import { ERROR, MODULE_USERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_USERS } from "../../components/Common/Const";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { useDispatch, useSelector } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -83,6 +83,32 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_USERS]})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -303,6 +329,7 @@ const Index = () => {
     headerSelect: false,
     isActive: true,
     reloadButton: true,
+    loadData: true,
   };
 
   const handleReload = (value) => {
@@ -321,6 +348,7 @@ const Index = () => {
             tableElement={tableElement}
             reFetchData={fetchData}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}

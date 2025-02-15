@@ -8,11 +8,12 @@ import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 
 export const CommentaryScreen = ({
-    teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
+    refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
+    console.log("refId", refId)
 
     const OffsymbolStatus = () => {
         return (
@@ -153,8 +154,10 @@ export const CommentaryScreen = ({
                             &nbsp;</span>
                     </Col>
                     <Col className="bowling-team-score-header" xs={6} md={6} lg={6}>
-                        <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
-                        <span className="bowling-team-score">
+                        <span className="current-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
+                        {/* <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span> */}
+                        <span className="current-team-score">
+                        {/* <span className="bowling-team-score"> */}
                             {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
                             &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
@@ -352,6 +355,7 @@ export const CommentaryScreen = ({
                     </div>
                 </Row>
                 <CommentaryRightPanel
+                    refId={refId}
                     overBalls={overBalls}
                     partnerships={filteredPartnerships}
                     teamDetails={teamDetails}

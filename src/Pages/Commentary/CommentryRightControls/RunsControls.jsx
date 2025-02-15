@@ -16,7 +16,7 @@ const RunsControls = ({ toggle, onSubmitClick }) => {
   return (
     // <div backdrop="static" className="commentary-modal" zIndex={1000} isOpen={true} toggle={toggle} >
     <div className="col-8 min-vh-40">
-      <div toggle={toggle}> Runs</div>
+      <div> Runs</div>
       <div>
         Please Enter Runs:
         <input

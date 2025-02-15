@@ -322,7 +322,6 @@ const PlayerSelection = forwardRef((props, ref) => {
     setIsOpen(false);
   }
   const theme = useSelector((state) => state.layout.panelTheme);
-
   return (
     <React.Fragment>
       <div /* className="page-content" */>

@@ -153,6 +153,13 @@ const Index = () => {
   //table columns
   const columns = [
     {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Date",
       dataIndex: "requestStartTime",
       render: (text, record) => (

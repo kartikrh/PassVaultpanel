@@ -1,48 +1,42 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
-import { Button } from "reactstrap";
-import { Container } from "reactstrap";
-import DeleteTabModel from "../../components/Model/DeleteModel";
+import { Button, Container } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
-import { TAB_SUBSCRIBERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_SUBSCRIBERS, } from "../../components/Common/Const";
+import { ERROR, MODULE_THIRD_PARTY_APIS, PERMISSION_VIEW, SUCCESS, TAB_THIRD_PARTY_API } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import {ImportExportModel} from '../../components/Model/ImportExportModel'
-import SubDomainsModels from '../../components/Model/SubdomainsModel'
+import { Tooltip } from "antd";
+
 const Index = () => {
-  const pageName = TAB_SUBSCRIBERS
+  const pageName = TAB_THIRD_PARTY_API;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = TAB_SUBSCRIBERS;
+  document.title = "Third Party Api";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
+  const [checekedList, setCheckedList] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [checekedList, setCheckedList] = useState([]);
-  const [domainsModelVisable, setDomainsModelVisable] = useState(false);
-  const [subDomains, setSubDomains] = useState([])
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // fetch data
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`/admin/subscribeDomain/all`, {
+      .post(`/admin/thirdPartyApi/all`, {
         ...(latestValueFromTable || tableActions),
-        isApproved: latestValueFromTable?.isApproved !== undefined ? latestValueFromTable?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.subScribesDomainId - b?.subScribesDomainId);
+        const apiData = response?.result;
         let apiDataIdList = [];
         apiData.forEach(ele => {
-          apiDataIdList.push(ele?.subScribesDomainId)
+          apiDataIdList.push(ele?.id)
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
@@ -54,13 +48,12 @@ const Index = () => {
       });
   };
 
-  //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
-    if (checekedList.includes(e.subScribesDomainId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.subScribesDomainId);
+    if (checekedList.includes(e.id)) {
+      updateSingleCheck = checekedList.filter((item) => item !== e.id);
     } else {
-      updateSingleCheck = [...checekedList, e.subScribesDomainId];
+      updateSingleCheck = [...checekedList, e.id];
     }
     setCheckedList(updateSingleCheck)
   };
@@ -68,8 +61,8 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/subscribeDomain/isDomainApprove`, {
-        subScribesDomainId: record.subScribesDomainId,
+      .post(`/admin/thirdPartyApi/activeInactive`, {
+        id: record.id,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -82,10 +75,21 @@ const Index = () => {
       });
   };
 
+  const getType = (status) => {
+    switch (status) {
+      case 1:
+        return "Socket";
+      case 2:
+        return "API";
+      default:
+        return "Unknown";
+    }
+  };
+
   const handleLoadData = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_SUBSCRIBERS]})
+      .post(`/loadPanelData`, {module: [MODULE_THIRD_PARTY_APIS]})
       .then((response) => {
         fetchData();
         dispatch(
@@ -108,32 +112,22 @@ const Index = () => {
       });
   };
 
-  const handleDelete = async (e) => {
+  const handleSocket = async (record) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/subscribeDomain/delete`, {
-        subScribesDomainId: checekedList,
+      .post(`/signalr/connection`, {
+        id: record.id,
       })
       .then((response) => {
         fetchData();
-        setDeleteModelVisable(false);
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-        setCheckedList([]);
       })
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        setCheckedList([]);
       });
   };
 
-  const handleDomains = async (data) => {
-    setSubDomains(data)
-    setDomainsModelVisable(true)
-  };
-  const handleReset = (value) => {
-    fetchData(value)
-  }
   //table columns
   const columns = [
     {
@@ -146,11 +140,7 @@ const Index = () => {
             value="option1"
             checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), 
-                dataIndexList?.sort())
-                 ? []
-                 : dataIndexList
+              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
               )
             }}
           />
@@ -163,76 +153,87 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.subScribesDomainId)}
+            checked={checekedList.includes(record.id)}
             onChange={() => {
               handleSingleCheck(record);
             }}
           />
-          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
         </div>
-      ), // Use 'select' as a placeholder key for the checkbox column
+      ),
       key: "select",
       style: { width: "2%" },
     },
     {
-      title: "Site Name",
-      dataIndex: "siteName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "siteName",
-      sort: true,
+      title: "Provider",
+      dataIndex: "providerName",
+      key: "providerName",
       style: { width: "10%" },
+      sort: true,
     },
     {
-      title: "Site Domain",
-      dataIndex: "siteDomain",
-      key: "siteDomain",
+      title: "Url",
+      dataIndex: "url",
+      key: "url",
       style: { width: "20%" },
       sort: true,
     },
     {
-        title: "subDomain Count",
-        dataIndex: "subDomainCount",
-        key: "subDomainCount",
-        style: { width: "30%" },
-        sort: true,
-      },
-      {
-        title: "subDomains",
-        dataIndex: "subDomains",
-        key: "subDomains",
-        render: (text, record) => (
-          <span style={{ cursor: "pointer", }} onClick={()=>{handleDomains(text)}}>
-            <i className="fas fa-eye"></i>
-          </span>
-        ),
-        style: { width: "10%", textAlign:"center" },
-        sort: true,
-      },
-    {
-      title: "IsApproved",
-      key: "isApproved",
+      title: "Type",
+      dataIndex: "type",
       render: (text, record) => (
+        <span>
+          {getType(text)}
+        </span>
+      ),
+      key: "type",
+      sort: true,
+      style: { width: "10%"},
+    },
+    {
+      title: "Connect",
+      key: "isConnect",
+      render: (text, record) => (
+      <Tooltip title={"Connect/Disconnect Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
-          color={`${record.isApproved ? "primary" : "danger"}`}
+          color={`${record.isConnect ? "primary" : "danger"}`}
           size="sm"
           className="btn"
           onClick={() => {
-            handlePermissions("isApproved", record, record.isApproved);
+            handleSocket(record);
           }}
         >
-          <i className={`bx ${record.isApproved ? "bx-check" : "bx-block"}`}></i>
+          {record.isConnect ? "Connected" : "Disconnected"}
         </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%" },
+    },
+    {
+      title: "Active",
+      key: "isActive",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive Client Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
   ];
+
   //elements required
   const tableElement = {
-    title: "Subscribers",
-    // isActive: true,
-    isApproved: true,
+    title: "Third Party Api",
+    isActive: true,
+    reloadButton: true,
     loadData: true,
   };
 
@@ -243,38 +244,25 @@ const Index = () => {
     fetchData();
   }, []);
 
+  const handleReload = (value) => {
+    fetchData();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Subscribers" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Third Party Api" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addSubscriber"}
-            handleReset={handleReset}
-            loadDataModelFunction={handleLoadData}
             reFetchData={fetchData}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
-            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
           />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
-            singleCheck={checekedList}
-          />
-            <SubDomainsModels
-            domainsModelVisable={domainsModelVisable}
-            setDomainsModelVisable={setDomainsModelVisable}
-            subDomains = {subDomains}
-            handleDomains={handleDomains}
-            />
         </Container>
       </div>
     </React.Fragment>

@@ -15,6 +15,7 @@ import { CommentaryClone } from "../../components/Model/Clone";
 import { isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_COMMENTARY,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -400,6 +401,22 @@ const Index = () => {
     sessionStorage.removeItem("commentaryLogsId");
     sessionStorage.removeItem("commentaryLogsDetails");
   };
+  const handleSessionResultClick = (details) => {
+    const url = new URL(window.location.origin + "/setSessionResult");
+    sessionStorage.setItem('sessionResultId', "" + details?.commentaryId);
+    sessionStorage.setItem('sessionResultDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+    sessionStorage.removeItem("sessionResultId");
+    sessionStorage.removeItem("sessionResultDetails");
+  };
+  const handleMarketResultClick = (details) => {
+    const url = new URL(window.location.origin + "/setMarketResult");
+    sessionStorage.setItem('marketResultId', "" + details?.commentaryId);
+    sessionStorage.setItem('marketResultDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+    sessionStorage.removeItem("marketResultId");
+    sessionStorage.removeItem("marketResultDetails");
+  };
   const handleUndoLogsClick = (details) => {
     const url = new URL(window.location.origin + "/undoLogs");
     sessionStorage.setItem('undoLogsId', "" + details?.commentaryId);
@@ -694,6 +711,32 @@ const Index = () => {
         commentaryId: record?.commentaryId,
         [pType]: cState ? false : true,
       })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleLoadData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {module: [MODULE_COMMENTARY]})
       .then((response) => {
         fetchData();
         dispatch(
@@ -1492,6 +1535,43 @@ const Index = () => {
       sort: true,
       style: { width: "5%", textAlign: "center" },
     },
+    {
+      title: "Markets",
+      key: "marketResult",
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-2">
+          <Tooltip
+            title={"Session Result"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleSessionResultClick(record);
+              }}
+            >
+              S
+            </Button>
+          </Tooltip>
+          <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleMarketResultClick(record);
+              }}
+            >
+              M
+            </Button>
+          </Tooltip>
+        </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -1577,6 +1657,7 @@ const Index = () => {
     competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
+    loadData: true,
     statusOptions: [
       {
         label: "All",
@@ -1640,6 +1721,7 @@ const Index = () => {
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
+            loadDataModelFunction={handleLoadData}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             isAddPermission={checkPermission(

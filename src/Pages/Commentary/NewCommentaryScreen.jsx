@@ -40,7 +40,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel";
 import styled from "styled-components";
 import CommentaryAction from "./CommentaryModels/CommentaryAction";
-import RevertModal from "./CommentaryModels/RevertCommentary";
+// import RevertModal from "./CommentaryModels/RevertCommentary";
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
 import Select from "react-select";
@@ -59,6 +59,8 @@ import ChangeOverControls from "./CommentryRightControls/ChangeOverControls";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { Avatar } from "@mui/material";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage";
+import UndoOverControls from "./CommentryRightControls/UndoOverControls";
+import UndoInnnigsControls from "./CommentryRightControls/UndoInnnigsControls";
 
 const CenteredBadge = styled.div`
   position: absolute;
@@ -205,6 +207,13 @@ const NewCommentaryScreen = ({
   handleShotTypeToggle,
   cricketFieldIsOpen,
   cricketFieldToggle,
+  onLastOverClick,
+  onChangebowlerClick,
+  undoOverPopupToggle,
+  undoOverPopupIsOpen,
+  undoInningsPopupIsOpen,
+  undoInningsPopupToggle,
+  onPlayerSelectionClick
 }) => {
   const [changePlayerType, setChangePlayerType] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -213,6 +222,7 @@ const NewCommentaryScreen = ({
   const [showRunsPopup, setShowRunsPopup] = useState(false);
   const defaultValue = extraType === BALL_WIDE || extraType === NO_BALL ? 0 : 1;
   const [isBoundary, setIsBoundary] = useState(undefined);
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
   const matchData = {
@@ -262,7 +272,7 @@ const NewCommentaryScreen = ({
       setLoading(true);
       const response = await axiosInstance.post(
         "/admin/commentary/revertCommentary",
-        { commentaryId }
+        { commentaryId, password }
       );
 
       dispatch(
@@ -423,7 +433,7 @@ const NewCommentaryScreen = ({
     className=`score-control-ball-types-btns ${isButtonDisabled ? " disable-button" : ""}`,
   }) => (
     <div className="col" onClick={onClick}>
-      <button className={className}>{label}</button>
+      <button className={className} data-text={label}>{label}</button>
     </div>
   );
   const RunButton = ({ label, onClick, className }) => (
@@ -457,6 +467,8 @@ const NewCommentaryScreen = ({
             setActionPopup(false)
           }}
           onNoClick={() => setShowRevertModal(false)}
+          password={password}
+          setPassword={setPassword}
         />
       );
     }
@@ -492,7 +504,6 @@ const NewCommentaryScreen = ({
         />
       );
     }
-
     return <div className="col-8 row row-cols-2">{renderActionButtons()}</div>;
   };
 
@@ -599,7 +610,7 @@ const NewCommentaryScreen = ({
                         <PlayerImage
                             // width="30px"
                             playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
-                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                            jerseyImage={ teamDetails && teamDetails[BATTING_TEAM].jersey}
                         />
                       </div>
                     <span
@@ -638,7 +649,7 @@ const NewCommentaryScreen = ({
                         <PlayerImage
                             // width="30px"
                             playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
-                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                            jerseyImage={teamDetails && teamDetails[BATTING_TEAM].jersey}
                         />
                     </div>
                     <span
@@ -725,7 +736,7 @@ const NewCommentaryScreen = ({
                         <PlayerImage
                             // width="30px"
                             playerImage={onPitchPlayers[CURRENT_BOWLER]?.playerimage}
-                            jerseyImage={teamDetails["BOWLING_TEAM"].jersey}
+                            jerseyImage={teamDetails && teamDetails[BOWLING_TEAM].jersey}
                         />
                     </div>
                     <span className={`fw-medium scorecard-striker-player-name`}>
@@ -820,7 +831,7 @@ const NewCommentaryScreen = ({
                 extrasTypeIsOpen ||
                 showChangeOverModal ||
                 showPlayerModal ||
-                cricketFieldIsOpen ? (
+                cricketFieldIsOpen || undoOverPopupIsOpen || undoInningsPopupIsOpen ? (
                   <div
                     className={`row row-cols-2 g-2 col-12 ${
                       isLoading ? "disable-button" : ""
@@ -874,7 +885,20 @@ const NewCommentaryScreen = ({
                         handleShotTypeToggle={handleShotTypeToggle}
                         toggle={cricketFieldToggle}
                       />
-                    ) : (
+                    ) : undoOverPopupIsOpen ?(
+                      <UndoOverControls
+                      toggle={() => {undoOverPopupToggle()}}
+                      isOpen={undoOverPopupIsOpen}
+                      onChangebowlerClick = {onChangebowlerClick}
+                      onLastOverClick = {onLastOverClick}
+                    />
+                    ) : undoInningsPopupIsOpen ? (
+                      <UndoInnnigsControls
+                        isOpen={undoInningsPopupIsOpen}
+                        toggle={undoInningsPopupToggle}
+                        onPlayerSelectionClick={onPlayerSelectionClick}
+                      />
+                    ): (
                       renderDefaultControls()
                     )}
                   </div>
@@ -901,6 +925,7 @@ const NewCommentaryScreen = ({
                           onClick={() =>
                             updateDisplayStatus(BOWLER_CHANGE_DISPLAY_STATUS)
                           }
+                          data-text={'Ball Start'}
                           className="score-control-ball-types-btns"
                         >
                           Ball Start

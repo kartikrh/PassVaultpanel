@@ -55,6 +55,7 @@ const Index = forwardRef(
       cancelAllModelFunction,
       cancelModelFunction,
       loadPanelModelFunction,
+      loadDataModelFunction,
       loadClientModelFunction,
       loadSignalRToggleFunction,
       datePriceModelFunction,
@@ -1717,6 +1718,18 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
+                        {!tableElement?.isDateRange && tableElement?.loadData ? (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                loadDataModelFunction();
+                              }}
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <i className="ri-refresh-line"></i>
+                              Load Data
+                            </Button>
+                        ) : null}
                         {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
@@ -1963,6 +1976,18 @@ const Index = forwardRef(
                               {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                             </button>
                           </div>
+                        ) : null}
+                        {tableElement?.loadData ? (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                loadDataModelFunction();
+                              }}
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <i className="ri-refresh-line"></i>
+                              Load Data
+                            </Button>
                         ) : null}
                         {tableElement?.isCloseAllMarket && (
                           <Button
