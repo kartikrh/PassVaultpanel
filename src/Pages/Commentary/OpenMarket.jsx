@@ -817,6 +817,18 @@ export const OpenMarket = () => {
 
                     // Ensure that the new data replaces old data in the market
                     newMarketData[eventMarket.marketId] = updatedMarketData;
+
+                    // Immediately update originalMarketData for new markets
+                    if (runners && runners.length === 1) {
+                        setOriginalMarketData(prev => ({
+                            ...prev,
+                            [eventMarket.marketId]: {
+                                line: runners[0]?.line || 0,
+                                predefinedValue: eventMarket.predefinedValue || 0,
+                                playerScore: eventMarket.playerScore
+                            }
+                        }));
+                    }
                 }
             });
 
@@ -878,11 +890,10 @@ export const OpenMarket = () => {
                     item => item.marketName
                 ], ['asc', 'asc']);
 
-                updateOriginalValues(sortedData);
+                // Set the isDataFromApiOrSocket flag to true
+                setIsDataFromApiOrSocket(true);
                 return sortedData;
-
             });
-            setIsDataFromApiOrSocket(true);
         }
     };
 
