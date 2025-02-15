@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CONNECT_COMMENTARY, ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, UPDATE_MARKET_DATA, WARNING } from "../../components/Common/Const";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -49,9 +48,8 @@ export const OpenMarket = () => {
     const lineRatioForMarketCategoryId = 23
     const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
     const scoreboardUrl = `${scoreCardUrl}/scoreboard?id=${commentaryInfo?.eid}&color=000`;
-    // console.log({ originalMarketData, categorisedData });
-    // console.log({ isKeyPressed })
 
+    console.log("############################################", { originalMarketData }, "############################################")
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
             document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
