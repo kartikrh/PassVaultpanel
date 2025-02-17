@@ -437,7 +437,8 @@ export const UpdateManualOdds = () => {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
             O: '', P: ''
-        }
+        },
+        favRatio: 1,
     });
     const [selectedRunnerDetails, setSelectedRunnerDetails] = useState({
         runnerId: null,
@@ -851,6 +852,7 @@ export const UpdateManualOdds = () => {
                 lineRatio: eventData.market.lineRatio,
                 rateDiff: settings.rateDifferent,
                 predefinedValue: eventData.market.predefinedValue,
+                favRatio: settings?.favRatio,
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
                     line: runner.line || 0,
@@ -1213,7 +1215,8 @@ export const UpdateManualOdds = () => {
                         lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
                         margin: marketData?.margin || settings.margin,
                         delay: marketData?.delay || settings.delay,
-                        lineRatio: marketData?.lineRatio || settings.lineRatio
+                        lineRatio: marketData?.lineRatio || settings.lineRatio,
+                        favRatio: marketData?.favRatio || settings.favRatio,
                     };
                     setSettings(settingDataToUpdate);
                 }
@@ -2152,6 +2155,18 @@ export const UpdateManualOdds = () => {
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <StyledTextField
+                                        label="Fav Ratio"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.favRatio}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('favRatio', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
                                 </Box>
                                 <Box width="16.67%">
                                     <StyledTextField

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CONNECT_COMMENTARY, ERROR, OPEN_MARKET_CONNECT, OPEN_MARKET_DATA, SUCCESS, UNDO_CALLED, UPDATE_BALL_STATUS, UPDATE_MARKET_DATA, WARNING } from "../../components/Common/Const";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Button, Card, CardBody, Col, Container, Input, Row, } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -36,10 +35,9 @@ export const OpenMarket = () => {
     const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
-    const [isScorecardShow, setIsScorecardShow] = useState(undefined);
+    const [isScorecardShow, setIsScorecardShow] = useState(true);
     const [isKeyPressed, setIsKeyPressed] = useState(undefined);
     const [ballStatus, setBallStatus] = useState(null);
-    const selectedCategoriesData = selectedCategories.map(category => { })
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const navigate = useNavigate();
@@ -53,6 +51,7 @@ export const OpenMarket = () => {
     // console.log({ originalMarketData, categorisedData });
     // console.log({ isKeyPressed })
 
+    console.log("############################################", { originalMarketData }, "############################################")
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
             document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
@@ -667,6 +666,7 @@ export const OpenMarket = () => {
     }
 
     const saveData = async ({ dataToSave, action }) => {
+        console.log('Saving data:', { action, marketCount: dataToSave.length });
         setIsLoading(true);
         try {
             const response = await axiosInstance.post(`/admin/eventMarket/updateMarketRateV1`, {
@@ -675,6 +675,7 @@ export const OpenMarket = () => {
             });
 
             if (response?.result) {
+                console.log('Save successful:', { action, updatedMarkets: response.result.marketList?.length });
                 dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
@@ -714,6 +715,7 @@ export const OpenMarket = () => {
             setIsKeyPressed(false)
             setIsLoading(false);
         } catch (error) {
+            console.error('Save failed:', error);
             setIsLoading(false);
             setIsKeyPressed(false)
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -765,12 +767,27 @@ export const OpenMarket = () => {
     }
 
     const formatSocketDataForState = (responseData) => {
+        console.log('Socket data received:', responseData);
         if (!isEmpty(responseData)) {
             const newMarketData = {};
+            const newOriginalData = {}; // New object to store original values only for socket-received markets
 
             responseData.forEach(eventMarketString => {
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
+                    console.log('Processing socket market data:', eventMarket.marketId);
+
+                    // Store original values ONLY for socket-received markets
+                    if (eventMarket.runner && eventMarket.runner.length === 1) {
+                        newOriginalData[eventMarket.marketId] = {
+                            line: Array.isArray(eventMarket.runner) ?
+                                eventMarket.runner[0].line :
+                                eventMarket.runner.line,
+                            predefinedValue: eventMarket.predefinedValue,
+                            playerScore: eventMarket.playerScore
+                        };
+                    }
+
                     // Ensure the runner is always treated as an array
                     let runners = Array.isArray(eventMarket.runner) ? eventMarket.runner.map(runner => ({
                         runnerId: runner.runnerId,
@@ -816,6 +833,7 @@ export const OpenMarket = () => {
             });
 
             setData(prevData => {
+                console.log('Updating data from socket with new markets');
                 // Replace the existing market data with the new market data from the socket
                 const updatedData = prevData.map(market => {
                     const newMarket = newMarketData[market.marketId];
@@ -829,6 +847,7 @@ export const OpenMarket = () => {
                     }
                     return market;
                 });
+
                 // Add new markets that are in newMarketData but not in prevData
                 const newMarkets = Object.keys(newMarketData)
                     .filter(marketId => {
@@ -863,6 +882,12 @@ export const OpenMarket = () => {
                     }
                 });
 
+                // Update originalMarketData only for socket-received markets
+                setOriginalMarketData(prevOriginalData => ({
+                    ...prevOriginalData,
+                    ...newOriginalData
+                }));
+
                 // Sort the data
                 const sortedData = _.orderBy(finalDataToSet, [
                     item => {
@@ -872,7 +897,6 @@ export const OpenMarket = () => {
                     item => item.marketName
                 ], ['asc', 'asc']);
 
-                updateOriginalValues(sortedData);
                 return sortedData;
             });
             setIsDataFromApiOrSocket(true);
@@ -1151,46 +1175,6 @@ export const OpenMarket = () => {
             columnClassName: "p-1",
         },
         {
-            title: "L-Ratio",
-            dataIndex: "lineRatio",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="number"
-                    step={0.1}
-                    min={0}
-                    value={text === null ? "" : text}
-                    onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
-                />
-            ),
-            key: "underRate",
-            className: "py-0",
-            columnClassName: "p-1"
-        },
-        {
-            title: "Save",
-            render: (text, record) => (
-                <Button color="primary" className="small-button" onClick={() => updateRecords(record, "SAVE_ALL")}>Save</Button>
-            ),
-            key: "isSendData",
-            className: "py-0",
-            columnClassName: "p-1"
-        },
-        {
-            title: "R-Diff",
-            dataIndex: "rateDiff",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
-                />
-            ),
-            key: "rateDiff",
-            className: "py-0",
-            columnClassName: "p-1"
-        },
-        {
             title: "PR",
             dataIndex: "predefinedValue",
             render: (text, record) => {
@@ -1211,6 +1195,46 @@ export const OpenMarket = () => {
             className: "py-0",
             columnClassName: "p-1",
             hidden: true
+        },
+        {
+            title: "Save",
+            render: (text, record) => (
+                <Button color="primary" className="small-button" onClick={() => updateRecords(record, "SAVE_ALL")}>Save</Button>
+            ),
+            key: "isSendData",
+            className: "py-0",
+            columnClassName: "p-1"
+        },
+        {
+            title: "R-Diff",
+            dataIndex: "rateDiff",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control smaller-text-fields input-rdiff-field mx-2"
+                    value={text === null ? "" : text}
+                    onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
+                />
+            ),
+            key: "rateDiff",
+            className: "py-0",
+            columnClassName: "p-1"
+        },
+        {
+            title: "L-Ratio",
+            dataIndex: "lineRatio",
+            render: (text, record) => (
+                <Input
+                    className="form-control smaller-text-fields mx-2"
+                    type="number"
+                    step={0.1}
+                    min={0}
+                    value={text === null ? "" : text}
+                    onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
+                />
+            ),
+            key: "underRate",
+            className: "py-0",
+            columnClassName: "p-1"
         },
         {
             title: "Margin",
@@ -1280,14 +1304,17 @@ export const OpenMarket = () => {
             return; // Don't trigger shortcuts if focus is on input or select elements
         }
         const key = event.key.toLowerCase();
+        console.log('Key pressed:', key);
         switch (key) {
             case 'a':
+                console.log('Save all triggered by key press');
                 if (selectedCategories.length > 0 && hasUnsavedChanges) {
                     setIsKeyPressed(true)
                     updateRecords();
                 }
                 break;
             case 's':
+                console.log('Send all triggered by key press');
                 if (selectedCategories.length > 0 && !hasUnsavedChanges) {
                     setIsKeyPressed(true)
                     handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
@@ -1324,12 +1351,29 @@ export const OpenMarket = () => {
 
     // New method for handling market updates
     const handleMarketUpdate = (marketData) => {
+        console.log('Market update received:', marketData);
         if (!marketData) return;
 
         // Convert market data to array format if it's a single object
         const marketDataArray = Array.isArray(marketData) ? marketData : [marketData];
+        console.log('Processing market updates:', marketDataArray.length);
+
+        // Create new original data only for received markets
+        const newOriginalData = {};
+        marketDataArray.forEach(market => {
+            if (market.runner && market.runner.length === 1) {
+                newOriginalData[market.marketId] = {
+                    line: Array.isArray(market.runner) ?
+                        market.runner[0].line :
+                        market.runner.line,
+                    predefinedValue: market.predefinedValue,
+                    playerScore: market.playerScore
+                };
+            }
+        });
 
         setData(prevData => {
+            console.log('Updating data with market updates');
             const updatedData = prevData.map(market => {
                 const updatedMarket = marketDataArray.find(m => m.marketId === market.marketId);
                 if (updatedMarket) {
@@ -1370,7 +1414,11 @@ export const OpenMarket = () => {
             const finalData = [...updatedData, ...newMarkets]
                 .filter(e => statusListToInclude.includes(e.status));
 
-            updateOriginalValues(finalData);
+            // Update originalMarketData only for received markets
+            setOriginalMarketData(prevOriginalData => ({
+                ...prevOriginalData,
+                ...newOriginalData
+            }));
 
             return _.orderBy(finalData, [
                 item => {
@@ -1387,7 +1435,7 @@ export const OpenMarket = () => {
             fetchTableData(commentaryId);
             fetchCommentaryInfo(commentaryId)
         }
-    }, [commentaryId]);
+    }, []);
 
     // useEffect(() => {
     //     if (!isEmpty(teams)) {
@@ -1410,22 +1458,27 @@ export const OpenMarket = () => {
     useEffect(() => {
         if (!isEmpty(teams)) {
             if (socket) {
+                console.log('Connecting to socket for market updates');
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
+                    console.log('Received OPEN_MARKET_DATA event');
                     formatSocketDataForState(socketData || [])
                 });
                 socket.on(UPDATE_MARKET_DATA, (marketData) => {
+                    console.log('Received UPDATE_MARKET_DATA event');
                     if (marketData) {
                         handleMarketUpdate(marketData);
                     }
                 });
             } else {
+                console.log('Socket not available, falling back to polling');
                 setIsSocketConnected(false)
                 fetchConfigAll();
             }
         }
         return () => {
+            console.log('Cleaning up socket listeners');
             socket.off(OPEN_MARKET_DATA);
             socket.off(UPDATE_MARKET_DATA);
         };
@@ -1456,7 +1509,7 @@ export const OpenMarket = () => {
         return () => {
             socket.off(CONNECT_COMMENTARY);
         };
-    }, [commentaryId])
+    }, [])
 
     useEffect(() => {
         if (isAutoUpdate && !isSocketConnected) {
