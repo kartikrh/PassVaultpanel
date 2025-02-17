@@ -35,7 +35,7 @@ export const OpenMarket = () => {
     const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
-    const [isScorecardShow, setIsScorecardShow] = useState(undefined);
+    const [isScorecardShow, setIsScorecardShow] = useState(true);
     const [isKeyPressed, setIsKeyPressed] = useState(undefined);
     const [ballStatus, setBallStatus] = useState(null);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
@@ -1175,46 +1175,6 @@ export const OpenMarket = () => {
             columnClassName: "p-1",
         },
         {
-            title: "L-Ratio",
-            dataIndex: "lineRatio",
-            render: (text, record) => (
-                <Input
-                    className="form-control small-text-fields"
-                    type="number"
-                    step={0.1}
-                    min={0}
-                    value={text === null ? "" : text}
-                    onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
-                />
-            ),
-            key: "underRate",
-            className: "py-0",
-            columnClassName: "p-1"
-        },
-        {
-            title: "Save",
-            render: (text, record) => (
-                <Button color="primary" className="small-button" onClick={() => updateRecords(record, "SAVE_ALL")}>Save</Button>
-            ),
-            key: "isSendData",
-            className: "py-0",
-            columnClassName: "p-1"
-        },
-        {
-            title: "R-Diff",
-            dataIndex: "rateDiff",
-            render: (text, record) => (
-                <CustomInput
-                    className="form-control small-text-fields"
-                    value={text === null ? "" : text}
-                    onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
-                />
-            ),
-            key: "rateDiff",
-            className: "py-0",
-            columnClassName: "p-1"
-        },
-        {
             title: "PR",
             dataIndex: "predefinedValue",
             render: (text, record) => {
@@ -1235,6 +1195,46 @@ export const OpenMarket = () => {
             className: "py-0",
             columnClassName: "p-1",
             hidden: true
+        },
+        {
+            title: "Save",
+            render: (text, record) => (
+                <Button color="primary" className="small-button" onClick={() => updateRecords(record, "SAVE_ALL")}>Save</Button>
+            ),
+            key: "isSendData",
+            className: "py-0",
+            columnClassName: "p-1"
+        },
+        {
+            title: "R-Diff",
+            dataIndex: "rateDiff",
+            render: (text, record) => (
+                <CustomInput
+                    className="form-control smaller-text-fields input-rdiff-field mx-2"
+                    value={text === null ? "" : text}
+                    onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
+                />
+            ),
+            key: "rateDiff",
+            className: "py-0",
+            columnClassName: "p-1"
+        },
+        {
+            title: "L-Ratio",
+            dataIndex: "lineRatio",
+            render: (text, record) => (
+                <Input
+                    className="form-control smaller-text-fields mx-2"
+                    type="number"
+                    step={0.1}
+                    min={0}
+                    value={text === null ? "" : text}
+                    onChange={(e) => handleValueChange(record, "lineRatio", e.target.value)}
+                />
+            ),
+            key: "underRate",
+            className: "py-0",
+            columnClassName: "p-1"
         },
         {
             title: "Margin",
