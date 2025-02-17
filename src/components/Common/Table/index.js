@@ -921,7 +921,7 @@ const Index = forwardRef(
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
         handleSearchFilter();
       }
-    }, [searchTerm]);
+    }, [searchTerm, dataSource]);
     useEffect(() => {
       fetchData();
     }, [dataSource]);
