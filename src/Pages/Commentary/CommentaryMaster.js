@@ -313,7 +313,7 @@ function CommentaryMaster() {
       <div className="commentary-content ">
         <Container fluid={true}>
           <Row className="min-vh-100">
-            <Card className="p-0 commentary-body">
+            <Card className="p-0 commentary-body m-0">
               <CardBody className="card-css">
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
                   isDataLoading) && <SpinnerModel />}
@@ -457,7 +457,7 @@ function CommentaryMaster() {
                       </Col>
                   </Row>
                 )}
-                <Row>
+                <>
                   {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN && (
                     <>
                     {!isNewUi ? <Toss
@@ -540,7 +540,7 @@ function CommentaryMaster() {
                       }}
                     />
                   )}
-                </Row>
+                </>
               </CardBody>
             </Card>
           </Row>
