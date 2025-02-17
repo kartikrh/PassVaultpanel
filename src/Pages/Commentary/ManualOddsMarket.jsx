@@ -27,7 +27,8 @@ export const ManualOddsMarket = () => {
         eventRefId: '',
         inningsId: "",
         rateDiff: '0.01',
-        rateSourceRefID: ""
+        rateSourceRefID: "",
+        favRatio: "",
     });
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId")
     let navigate = useNavigate();
@@ -377,6 +378,15 @@ export const ManualOddsMarket = () => {
                                                             className="form-control"
                                                             value={formData.rateDiff}
                                                             onChange={(e) => setFormData({ ...formData, rateDiff: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Fav Ratio:</label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={formData.favRatio}
+                                                            onChange={(e) => setFormData({ ...formData, favRatio: e.target.value })}
                                                         />
                                                     </div>
                                                 </div>
