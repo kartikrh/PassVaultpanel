@@ -286,35 +286,35 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     <div className="d-flex justify-content-between w-100 px-0">
                         <PlayerInfo>
                             {bowler?.playerimage ?
-                            //     <PlayerImage
-                            //         width="30px"
-                            //         playerImage={bowler?.playerimage}
-                            //         jerseyImage={team.jersey}
-                            // />:<Avatar
-                            //     src="/api/placeholder/48/48"
-                            //     alt={bowler?.playerName || 'Bowler'}
-                            //     sx={{ width: 32, height: 32 }}
-                            // />
-                                <Avatar
-                                    src={bowler?.playerimage}
-                                    alt={bowler?.playerName || 'Bowler'}
-                                    sx={{ width: 32, height: 32 }}
-                                />
-                                : <Avatar
-                                    src="/api/placeholder/48/48"
-                                    alt={bowler?.playerName || 'Bowler'}
-                                    sx={{ width: 32, height: 32 }}
-                                />
+                                <PlayerImage
+                                    // width="30px"
+                                    playerImage={bowler?.playerimage}
+                                    jerseyImage={team.jersey}
+                            />:<Avatar
+                                src="/api/placeholder/48/48"
+                                alt={bowler?.playerName || 'Bowler'}
+                                sx={{ width: 32, height: 32 }}
+                            />
+                                // <Avatar
+                                //     src={bowler?.playerimage}
+                                //     alt={bowler?.playerName || 'Bowler'}
+                                //     sx={{ width: 32, height: 32 }}
+                                // />
+                                // : <Avatar
+                                //     src="/api/placeholder/48/48"
+                                //     alt={bowler?.playerName || 'Bowler'}
+                                //     sx={{ width: 32, height: 32 }}
+                                // />
                             }
                             <Box>
                                 <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
                                     fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-                                }}>
+                                }}className='accordian-text'>
                                     {bowler?.playerName || 'Unknown Bowler'}
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary" sx={{
                                     fontFamily: "'Work Sans', sans-serif"
-                                }}>
+                                }} className='accordian-text'>
                                     Over {Math.floor(parseFloat(overNum))}
                                 </Typography>
                             </Box>
@@ -322,7 +322,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         <RunsInfo>
                             <Typography variant="subtitle2" sx={{
                                 fontFamily: "'Work Sans', sans-serif"
-                            }}>
+                            }} className='accordian-text'>
                                 {overDetails?.totalRun || 0} <b>Runs</b>
                                 {overDetails?.totalWicket > 0 && (
                                     <>
@@ -354,16 +354,23 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             sx={{ width: 32, height: 32 }}
                         />}
                         <Box>
-                            <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
-                                fontFamily: "'Work Sans', sans-serif"
-                            }} className='accordian-text'>
+                            <Typography variant="subtitle2" fontWeight="bold" 
+                            sx={{
+                                "&[data-theme='dark']": {
+                                    color: "white",
+                                },
+                            }} 
+                                data-theme={document.body.getAttribute("data-theme")}
+                                noWrap className='accordian-text'
+                            >
                                 {bowler?.playerName || 'Unknown Bowler'}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{
-                                fontFamily: "'Work Sans', sans-serif"
-                            }} className='accordian-text'>
+                            <Typography variant="caption" color="text.secondary" className='accordian-text'>
                                 Over {Math.floor(parseFloat(overNum))}
                             </Typography>
+                            {/* sx={{
+                                fontFamily: "'Work Sans', sans-serif"
+                            }}  */}
                         </Box>
                     </PlayerInfo>
                     <BallsContainer>
@@ -374,9 +381,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         </Box>
                     </BallsContainer>
                     <RunsInfo>
-                        <Typography variant="subtitle2" className='accordian-text' sx={{
-                            fontFamily: "'Work Sans', sans-serif"
-                        }}>
+                        <Typography variant="subtitle2" className='accordian-text'>
                             {overDetails?.totalRun || 0} <b>Runs</b>
                             {overDetails?.totalWicket > 0 && (
                                 <>
@@ -425,14 +430,10 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             sx={{ px: 2 }}
                         >
                             <Box display="flex" alignItems="center" gap={1}>
-                                <Typography variant="h6" fontWeight="bold" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif"
-                                }} className='accordian-text'>
+                                <Typography variant="h6" fontWeight="bold" color="text.secondary" className='accordian-text'>
                                     {team.teamName}
                                 </Typography>
-                                <Typography variant="h6" fontWeight="bold" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif"
-                                }} className='accordian-text'>
+                                <Typography variant="h6" fontWeight="bold" color="text.secondary" className='accordian-text'>
                                     - Innings {innings}
                                 </Typography>
                             </Box>

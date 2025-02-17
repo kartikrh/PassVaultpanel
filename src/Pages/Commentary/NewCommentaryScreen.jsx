@@ -504,7 +504,7 @@ const NewCommentaryScreen = ({
         />
       );
     }
-    return <div className="col-8 row row-cols-2">{renderActionButtons()}</div>;
+    return <div className="col-12 col-md-8 row row-cols-2">{renderActionButtons()}</div>;
   };
 
   // Render action buttons for normal flow
@@ -552,10 +552,10 @@ const NewCommentaryScreen = ({
   );
 
   return (
-    <div className="container-fluid text-white py-4">
+    <div className="container-fluid text-white p-0">
       {/* Score Section */}
       <Row>
-        <Col xs={12} md={7} lg={7}>
+        <Col xs={12} md={12} lg={7}>
           <div className="d-md-flex gap-3 my-1 mb-3">
             <div className="position-relative w-100 max-w-md px-4 py-2 rounded score-card">
               {/* Corner cuts */}
@@ -833,12 +833,12 @@ const NewCommentaryScreen = ({
                 showPlayerModal ||
                 cricketFieldIsOpen || undoOverPopupIsOpen || undoInningsPopupIsOpen ? (
                   <div
-                    className={`row row-cols-2 g-2 col-12 ${
+                    className={` col-12 row g-2 ${
                       isLoading ? "disable-button" : ""
                     }`}
                   >
                     {actionPopup ? (
-                      <div className="col-12 row row-cols-2">
+                      <div className="col-12 row p-0 m-0 w-100">
                         {renderActionPopups()}
                       </div>
                     ) : showWicketModal ? (
@@ -970,7 +970,7 @@ const NewCommentaryScreen = ({
           </div>
         </Col>
 
-        <Col xs={12} md={5} lg={5}>
+        <Col xs={12} md={12} lg={5}>
           {/* Overs Details */}
           <div className="col">
             <div className="score-right-side-header px-auto">

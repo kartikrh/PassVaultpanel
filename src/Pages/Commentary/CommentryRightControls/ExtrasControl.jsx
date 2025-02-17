@@ -53,7 +53,7 @@ const ExtrasControl = ({ toggle, isOpen, extraType, updateExtras }) => {
       updateExtras(objToSend);
     };
   return (
-    <div className="col-6">
+    <div className="col-md-6">
       <div className="col-6">
         <button className="score-control-ball-types-btns active">
           {extraType?.type || extraType}
