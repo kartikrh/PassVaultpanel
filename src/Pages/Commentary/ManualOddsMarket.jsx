@@ -153,7 +153,8 @@ export const ManualOddsMarket = () => {
             commentaryId,
             marketTypeId: 5,
             marketTypeCategoryId: 8,
-            inningsId: formData.inningsId || "0"
+            inningsId: formData.inningsId || "0",
+            rateSourceRefID: formData?.rateSourceRefID || 0,
         };
         await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
             .then((response) => {

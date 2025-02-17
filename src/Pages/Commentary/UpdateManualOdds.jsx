@@ -852,7 +852,7 @@ export const UpdateManualOdds = () => {
                 lineRatio: eventData.market.lineRatio,
                 rateDiff: settings.rateDifferent,
                 predefinedValue: eventData.market.predefinedValue,
-                favRatio: eventData.market?.favRatio,
+                favRatio: settings?.favRatio,
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
                     line: runner.line || 0,
