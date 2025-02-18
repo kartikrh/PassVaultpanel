@@ -1543,6 +1543,8 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
+        {record.isPredictMarket &&
+        <>
           <Tooltip
             title={"Session Result"}
             color={"#e8e8ea"}
@@ -1571,6 +1573,8 @@ const Index = () => {
               M
             </Button>
           </Tooltip>
+        </>
+        }
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
