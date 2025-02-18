@@ -1573,8 +1573,7 @@ const Index = () => {
               M
             </Button>
           </Tooltip>
-        </>
-        }
+        </>}
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
