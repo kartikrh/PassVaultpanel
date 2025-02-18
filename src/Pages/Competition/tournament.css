@@ -1,5 +1,9 @@
 .css-1nmdiq5-menu{
-    z-index: 999 !important;
+    z-index: 99 !important;
+}
+
+.css-qr46ko{
+    max-height: 160px !important;
 }
 
 .padding-row {

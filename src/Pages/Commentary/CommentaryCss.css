@@ -267,6 +267,13 @@
   font-size: 12px !important;
 }
 
+.smaller-text-fields {
+  padding: 0 0.3rem !important;
+  width: 2.7rem !important;
+  line-height: 26px !important;
+  font-size: 12px !important;
+}
+
 .price-text-fields {
   padding: 0 0.3rem !important;
   min-width: 3.5rem !important;
@@ -394,6 +401,11 @@
 .input-line-field {
   background-color: #e2f9c2 !important;
   color: #294503 !important;
+}
+
+.input-rdiff-field {
+  background-color: gray !important;
+  color: #ffff !important;
 }
 
 .text-bold {
@@ -1179,7 +1191,7 @@
     /* justify-content: center; */
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    /* text-align: center; */
     padding: 0.5rem;
   }
 
@@ -1188,7 +1200,7 @@
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    /* text-align: center; */
   }
 
   .remaining-player-name {

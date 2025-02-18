@@ -313,7 +313,7 @@ function CommentaryMaster() {
       <div className="commentary-content ">
         <Container fluid={true}>
           <Row className="min-vh-100">
-            <Card className="p-0 commentary-body">
+            <Card className="p-0 commentary-body m-0">
               <CardBody className="card-css">
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
                   isDataLoading) && <SpinnerModel />}
@@ -415,16 +415,20 @@ function CommentaryMaster() {
                 </Row>
                 ) : (
                   <Row className='mb-3'>
-                      <Col className="p-0" xs={12} md={6} lg={6}>
+                      {/* <Col className="p-0" xs={12} md={6} lg={6}> */}
                         {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
-                          <>
+                          {/* <>
                             <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
                             <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
-                          </>
+                          </> */}
                           {/* // } */}
-                      </Col>
-                      <Col className="p-0" xs={12} md={6} lg={6}>
-                        <div className='d-flex align-items-center justify-content-end'>
+                      {/* </Col> */}
+                      <Col className="p-0 d-flex flex-wrap">
+                        <div className="col-12 col-md-6">
+                          <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
+                          <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                        </div>
+                        <div className='col-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0'>
                           {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) &&
                             <div className="d-flex align-items-center py-2">
                               <span>Bet Allow</span>
@@ -443,7 +447,7 @@ function CommentaryMaster() {
                             <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                         </div>
                           {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
-                            <div className="d-flex align-items-center my-4 float-end">
+                            <div className="d-flex flex-wrap align-items-center my-2 float-end my-md-4">
                               <NetworkStatus/>
                               <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
                               <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
@@ -453,7 +457,7 @@ function CommentaryMaster() {
                       </Col>
                   </Row>
                 )}
-                <Row>
+                <>
                   {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN && (
                     <>
                     {!isNewUi ? <Toss
@@ -536,7 +540,7 @@ function CommentaryMaster() {
                       }}
                     />
                   )}
-                </Row>
+                </>
               </CardBody>
             </Card>
           </Row>

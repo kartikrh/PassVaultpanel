@@ -1,6 +1,9 @@
 // 
 // _layouts.scss
 // 
+body {
+    padding-right: 0px !important;
+  }
 
 body[data-layout-size="boxed"] {
     background-color: $boxed-body-bg;

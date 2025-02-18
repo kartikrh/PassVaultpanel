@@ -136,7 +136,7 @@ export const CommentaryScreen = ({
     
     return <React.Fragment>
         <Row className='scoring-row'>
-            <Col xs={12} md={6} lg={6}>
+            <Col xs={12} md={12} lg={6}>
                 <Row>
                     <Col className="team-name team-1" xs={6} md={6} lg={6}>
                         {teamDetails?.[BATTING_TEAM].teamName}
@@ -240,7 +240,7 @@ export const CommentaryScreen = ({
                             {onPitchPlayers[CURRENT_BOWLER]?.playerimage ?
                                 // <img src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} alt='player image' width={30} />
                                 <PlayerImage
-                                    playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
+                                    playerImage={onPitchPlayers[CURRENT_BOWLER]?.playerimage}
                                     jerseyImage={teamDetails["BOWLING_TEAM"].jersey}
                                 />
                                 : onPitchPlayers[CURRENT_BOWLER]?.playerName.split('')[0]}
@@ -346,8 +346,8 @@ export const CommentaryScreen = ({
                     />
                 </div>
             </Col>
-            <Col className="over-render" xs={12} md={6} lg={6}>
-                <Row>
+            <Col className="over-render p-0 m-0 px-md-2" xs={12} md={12} lg={6}>
+                <Row className='px-2'>
                     <div className="team-name overs-header">
                         {(teamDetails?.[BATTING_TEAM]?.teamMaxOver || teamDetails?.[BATTING_TEAM]?.teamTrialRuns) ?
                             `DLS:-  ${teamDetails?.[BATTING_TEAM]?.teamMaxOver ? "Max Overs: " + teamDetails?.[BATTING_TEAM]?.teamMaxOver : ""} ${(target && +target !== 0) ? "Target: " + target : ""} `

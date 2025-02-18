@@ -27,7 +27,8 @@ export const ManualOddsMarket = () => {
         eventRefId: '',
         inningsId: "",
         rateDiff: '0.01',
-        rateSourceRefID: ""
+        rateSourceRefID: "",
+        favRatio: "",
     });
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId")
     let navigate = useNavigate();
@@ -152,7 +153,8 @@ export const ManualOddsMarket = () => {
             commentaryId,
             marketTypeId: 5,
             marketTypeCategoryId: 8,
-            inningsId: formData.inningsId || "0"
+            inningsId: formData.inningsId || "0",
+            rateSourceRefID: formData?.rateSourceRefID || 0,
         };
         await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
             .then((response) => {
@@ -379,6 +381,15 @@ export const ManualOddsMarket = () => {
                                                             onChange={(e) => setFormData({ ...formData, rateDiff: e.target.value })}
                                                         />
                                                     </div>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Fav Ratio:</label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={formData.favRatio}
+                                                            onChange={(e) => setFormData({ ...formData, favRatio: e.target.value })}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </CardBody>
                                         </Card>
@@ -389,7 +400,7 @@ export const ManualOddsMarket = () => {
                                         <Card className="h-100">
                                             <CardBody>
                                                 <div className="d-flex justify-content-between align-items-center mb-3">
-                                                    <h5 className="mb-0">Runners</h5>
+                                                    <h5 className="mb-0 modal-header-title">Runners</h5>
                                                     <Button
                                                         color="primary"
                                                         size="sm"
