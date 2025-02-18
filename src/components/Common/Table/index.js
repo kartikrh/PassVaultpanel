@@ -1052,11 +1052,13 @@ const Index = forwardRef(
                               value={selectedTableElements?.sendDataType}
                               placeholder="Send Data Type"
                               onChange={(e) => {
-                                handleTableActions("isSendData", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  sendDataType: e,
-                                });
+                                if (e?.value !== selectedTableElements?.sendDataType?.value){
+                                  handleTableActions("isSendData", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    sendDataType: e,
+                                  });
+                                }
                               }}
                               options={sendDataList?.map((item) => ({
                                 label: item?.sendDataType,
@@ -1078,11 +1080,13 @@ const Index = forwardRef(
                               value={selectedTableElements?.createdTypeName}
                               placeholder="Created Type"
                               onChange={(e) => {
-                                handleTableActions("createdType", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  createdTypeName: e,
-                                });
+                                if (e?.value !== selectedTableElements?.createdTypeName?.value){
+                                  handleTableActions("createdType", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    createdTypeName: e,
+                                  });
+                                }
                               }}
                               options={createdTypeList?.map((item) => ({
                                 label: item?.createdTypeName,
@@ -1240,11 +1244,13 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                handleTableActions("displayType", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  displayType: e,
-                                });
+                                if (e?.value !== selectedTableElements?.displayType?.value){
+                                  handleTableActions("displayType", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    displayType: e,
+                                  });
+                                }
                               }}
                               options={tableElement?.displayTypes?.map(
                                 (item) => ({
@@ -1268,15 +1274,17 @@ const Index = forwardRef(
                               value={selectedTableElements?.rateSourceType}
                               placeholder={ratesource?.rateSourceType}
                               onChange={(e) => {
-                                setSearchTerm("")
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  rateSourceType: e,
-                                });
-                                setRatesource({
-                                  rateSourceType: e?.label,
-                                  rateSourceRefId: e?.value,
-                                })
+                                if (e?.value !== selectedTableElements?.rateSourceType?.value){
+                                  setSearchTerm("")
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    rateSourceType: e,
+                                  });
+                                  setRatesource({
+                                    rateSourceType: e?.label,
+                                    rateSourceRefId: e?.value,
+                                  })
+                                }
                               }}
                               options={rateSourceList?.map((item) => ({
                                 label: item?.rateSourceType,
@@ -1299,16 +1307,18 @@ const Index = forwardRef(
                               isDisabled={selectedTableElementsLogs?.eventType}
                               placeholder="Event Type"
                               onChange={(e) => {
-                                handleTableActions("eventTypeId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  eventType: e,
-                                  competition: { value: 0, label: "Competition" },
-                                  eventName: { value: 0, label: "Event List" },
-                                  commentary: { value: 0, label: "Commentary" },
-                                });
-                                setEventTypeId(e?.value);
-                                setCompetitionId(null);
+                                if (e?.value !== selectedTableElements?.eventType?.value){
+                                  handleTableActions("eventTypeId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    eventType: e,
+                                    competition: { value: 0, label: "Competition" },
+                                    eventName: { value: 0, label: "Event List" },
+                                    commentary: { value: 0, label: "Commentary" },
+                                  });
+                                  setEventTypeId(e?.value);
+                                  setCompetitionId(null);
+                                }
                               }}
                               options={[
                                 { label: "Select Event Type", value: null },
@@ -1334,13 +1344,15 @@ const Index = forwardRef(
                               isDisabled={selectedTableElementsLogs?.competition}
                               placeholder="Competition List"
                               onChange={(e) => {
-                                setCompetitionId(e?.value);
-                                handleTableActions("competitionId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  competition: e,
-                                  eventName: { value: 0, label: "Event List" },
-                                });
+                                if (e?.value !== selectedTableElements?.competition?.value){
+                                  setCompetitionId(e?.value);
+                                  handleTableActions("competitionId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    competition: e,
+                                    eventName: { value: 0, label: "Event List" },
+                                  });
+                                }
                               }}
                               options={competitionList?.map((item) => ({
                                 label: item?.competition,
@@ -1363,11 +1375,13 @@ const Index = forwardRef(
                               isDisabled={selectedTableElementsLogs?.eventName}
                               placeholder="Event List"
                               onChange={(e) => {
-                                handleTableActions("eventId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  eventName: e,
-                                });
+                                if (e?.value !== selectedTableElements?.eventName?.value){
+                                  handleTableActions("eventId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    eventName: e,
+                                  });
+                                }
                               }}
                               options={eventList?.map((item) => ({
                                 label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
@@ -1391,11 +1405,13 @@ const Index = forwardRef(
                               // defaultValue={statusList?.find(item => item.statusId === 1)?.statusType}
                               placeholder="Status Type"
                               onChange={(e) => {
-                                handleTableActions("status", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  statusType: e,
-                                });
+                                if (e?.value !== selectedTableElements?.statusType?.value){
+                                  handleTableActions("status", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    statusType: e,
+                                  });
+                                }
                               }}
                               options={statusList?.map((item) => ({
                                 label: item?.statusType,
@@ -1414,14 +1430,16 @@ const Index = forwardRef(
                                   width: 180,
                                 }), // Adjust width as needed
                               }}
-                              value={selectedTableElements?.matchType}
+                              value={selectedTableElements?.videoType}
                               placeholder="Video Type"
                               onChange={(e) => {
-                                handleTableActions("matchTypeId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  matchType: e,
-                                });
+                                if (e?.value !== selectedTableElements?.videoType?.value){
+                                  handleTableActions("videoType", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    videoType: e,
+                                  });
+                                }
                               }}
                               options={matchType?.map((item) => ({
                                 label: item?.matchType,
@@ -1443,11 +1461,13 @@ const Index = forwardRef(
                               value={selectedTableElements?.matchType}
                               placeholder="Match Type"
                               onChange={(e) => {
-                                handleTableActions("matchTypeId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  matchType: e,
-                                });
+                                if (e?.value !== selectedTableElements?.matchType?.value){
+                                  handleTableActions("matchTypeId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    matchType: e,
+                                  });
+                                }
                               }}
                               options={matchType?.map((item) => ({
                                 label: item?.matchType,
@@ -1534,12 +1554,14 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
+                                if (e?.value !== selectedTableElements?.competition?.value){
                                 handleTableActions("competitionId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
                                   competition: e,
                                   commentary: { value: 0, label: "Commentary" },
                                 });
+                              }
                               }}
                               options={competitions?.map((item) => ({
                                 label: item?.competition,
@@ -1562,11 +1584,13 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                handleTableActions("commentaryId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  commentary: e,
-                                });
+                                if (e?.value !== selectedTableElements?.commentary?.value){
+                                  handleTableActions("commentaryId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    commentary: e,
+                                  });
+                                }
                               }}
                               options={commentary?.map((item) => ({
                                 label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
@@ -1588,11 +1612,13 @@ const Index = forwardRef(
                               }), // Adjust width as needed
                             }}
                             onChange={(e) => {
-                              handleTableActions("teamId", e);
-                              setSelectedTableElements({
-                                ...selectedTableElements,
-                                team: e,
-                              });
+                              if (e?.value !== selectedTableElements?.team?.value){
+                                handleTableActions("teamId", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  team: e,
+                                });
+                              }
                             }}
                             options={teams?.map((item) => ({
                               label: item?.teamName,
@@ -1612,11 +1638,13 @@ const Index = forwardRef(
                               }), // Adjust width as needed
                             }}
                             onChange={(e) => {
-                              handleTableActions("commentaryStatus", e);
-                              setSelectedTableElements({
-                                ...selectedTableElements,
-                                commentaryStatus: e,
-                              });
+                              if (e?.value !== selectedTableElements?.commentaryStatus?.value){
+                                handleTableActions("commentaryStatus", e);
+                                setSelectedTableElements({
+                                  ...selectedTableElements,
+                                  commentaryStatus: e,
+                                });
+                              }
                             }}
                             options={tableElement?.statusOptions?.map(
                               (item) => ({
@@ -2188,11 +2216,13 @@ const Index = forwardRef(
                       value={selectedTableElements?.tournamentType}
                       placeholder="Tournament List"
                       onChange={(e) => {
-                        handleTableActions("onTournamentisChanges", e);
-                        setSelectedTableElements({
-                          ...selectedTableElements,
-                          tournamentType: e,
-                        });
+                        if (e?.value !== selectedTableElements?.tournamentType?.value){
+                          handleTableActions("onTournamentisChanges", e);
+                          setSelectedTableElements({
+                            ...selectedTableElements,
+                            tournamentType: e,
+                          });
+                        }
                       }}
                       options={tournamentList?.map((item) => ({
                         label: item?.competition,
