@@ -21,6 +21,8 @@ function ScoringLogs() {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const [commentary, setCommentary] = useState([]);
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -45,6 +47,9 @@ function ScoringLogs() {
       ...(latestValueFromTable || tableActions),
       page: currentPage+1,
       limit: pageSize,
+      eventTypeId: latestValueFromTable?.eventTypeId || 0,
+      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      commentaryId: (latestValueFromTable?.eventTypeId !== eventTypeId || latestValueFromTable?.competitionId !== competitionId) ? 0 : latestValueFromTable?.commentaryId || 0,
     }
     if(commentaryId !== 0) {
       payload = {
@@ -84,6 +89,19 @@ function ScoringLogs() {
         fetchCommentaryData(latestValueFromTable?.competitionId);
       }
   };
+
+useEffect(() => {
+    if (commentaryId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
+}, [])
+
+useEffect(() => {
+  if(!eventTypeId) {
+      setCompetitions([]);
+      setCommentary([]);
+    }
+}, [eventTypeId]);
 
   useEffect(()=>{
     if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
@@ -290,6 +308,8 @@ function ScoringLogs() {
             setServerPageSize={setPageSize}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
           />
         </Container>
       </div>

@@ -83,7 +83,8 @@ const Index = () => {
   const [showAwardModel, setShowAwardModel] = useState(undefined);
   const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
-
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -98,6 +99,8 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction();
     let payload = {
       ...(latestValueFromTable || tableActions),
+      eventTypeId: latestValueFromTable?.eventTypeId || 0,
+      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
     };
     if (isSearch) {
       payload = {
@@ -1540,6 +1543,8 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
+        {record.isPredictMarket &&
+        <>
           <Tooltip
             title={"Session Result"}
             color={"#e8e8ea"}
@@ -1568,6 +1573,8 @@ const Index = () => {
               M
             </Button>
           </Tooltip>
+        </>
+        }
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1695,6 +1702,12 @@ const Index = () => {
     fetchEventTypeData();
   }, [])
 
+  useEffect(() => {
+      if(!eventTypeId) {
+        setCompetitions([]);
+      }
+  },[eventTypeId]);
+
   const handleReload = (value) => {
     fetchData();
     fetchEventTypeData();
@@ -1724,6 +1737,8 @@ const Index = () => {
             loadDataModelFunction={handleLoadData}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,

@@ -30,6 +30,8 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const [commentary, setCommentary] = useState([]);
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
   const [resModelVisible, setResModelVisible] = useState(false);
   const [resBodyData, setResBodyData] = useState(null);
   const [reqModelVisible, setReqModelVisible] = useState(false);
@@ -59,6 +61,9 @@ const Index = () => {
       ...(latestValueFromTable || tableActions),
       page: currentPage+1,
       limit: pageSize,
+      eventTypeId: latestValueFromTable?.eventTypeId || 0,
+      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      commentaryId: (latestValueFromTable?.eventTypeId !== eventTypeId || latestValueFromTable?.competitionId !== competitionId) ? 0 : latestValueFromTable?.commentaryId || 0,
     }
     if(commentaryId !== 0) {
       payload = {
@@ -98,6 +103,19 @@ const Index = () => {
       fetchCommentaryData(latestValueFromTable?.competitionId);
     }
   };
+
+  useEffect(() => {
+    if (commentaryId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
+  }, [])
+  
+  useEffect(() => {
+    if(!eventTypeId) {
+      setCompetitions([]);
+      setCommentary([]);
+    }
+  }, [eventTypeId]);
   
   useEffect(()=>{
     if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
@@ -358,6 +376,8 @@ const Index = () => {
             setServerPageSize={setPageSize}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

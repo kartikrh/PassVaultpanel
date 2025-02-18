@@ -67,6 +67,9 @@ const Index = () => {
       rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
       marketTypeId: latestValueFromTable?.marketTypeId || 0,
       marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
+      eventTypeId: latestValueFromTable?.eventTypeId || 0,
+      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      eventId: (latestValueFromTable?.competitionId !== competitionId || latestValueFromTable?.eventTypeId !== eventTypeId) ? 0 : latestValueFromTable?.eventId || 0,
     };
     if (isSearch) {
       payload = {
@@ -425,6 +428,9 @@ const Index = () => {
   useEffect(() => {
     if (eventTypeId) {
       fetchCompetitionList();
+    } else if(!eventTypeId) {
+      setCompetitionList([]);
+      setEventList([]);
     }
   }, [eventTypeId]);
 
