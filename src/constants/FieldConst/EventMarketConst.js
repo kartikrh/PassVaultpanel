@@ -310,6 +310,8 @@ export const EventMarketFields = [
       { label: "winCloseCancel", value: "2" },
       { label: "winMustClose", value: "3" },
       { label: "winMustCloseCancel", value: "4" },
+      { label: "dlsCloseMarket", value: "5"},
+      { label: "dlsCloseCancelMarket", value: "6"},
     ],
     type: SELECT,
     defaultValue: false,
