@@ -19,6 +19,8 @@ const Index = ({
   const [dltTemplate, setDltTemplate] = useState([]);
   const [saveTemplates, setSaveTemplates] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchUnassign, setSearchUnassign] = useState("");
+  const [searchAssign, setSearchAssign] = useState("");
 
   const dispatch = useDispatch();
 
@@ -217,6 +219,29 @@ const Index = ({
     setSaveTemplates([]);
   };
 
+  const filteredMarkets = unassignedMarket
+    .filter((template) =>
+      template.templateName.toLowerCase().includes(searchUnassign.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (a?.marketTypeCategoryId === b?.marketTypeCategoryId) {
+        return a?.templateName.localeCompare(b?.templateName);
+      }
+      return a?.marketTypeCategoryId - b?.marketTypeCategoryId;
+    });
+
+  // Filter templates based on the search input
+  const assignFilteredMarkets = assignedMarket
+    .filter((template) =>
+      template.templateName.toLowerCase().includes(searchAssign.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (a?.marketTypeCategoryId === b?.marketTypeCategoryId) {
+        return a?.templateName.localeCompare(b?.templateName);
+      }
+      return a?.marketTypeCategoryId - b?.marketTypeCategoryId;
+    });
+
   return (
     <Modal
       isOpen={marketTemplateModelVisible}
@@ -261,7 +286,40 @@ const Index = ({
                     <i className="bx bx-plus"></i>
                   </Button>
                 </div>
+                <div className="py-2">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search Min. 2 characters"
+                    value={searchUnassign}
+                    onChange={(e) => setSearchUnassign(e.target.value)}
+                  />
+                </div>
                 <ul className="list-group market-template-list">
+                  {filteredMarkets.length > 0 ? (
+                    filteredMarkets.map((template) => (
+                      <li
+                        key={template.marketTemplateId}
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        {template.templateName}
+                        <Button
+                          color={"primary"}
+                          size="sm"
+                          className="btn"
+                          onClick={() => {
+                            handleAssign(template);
+                          }}
+                        >
+                          <i className="bx bx-plus"></i>
+                        </Button>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="list-group-item text-center">No results found</li>
+                  )}
+                </ul>
+                {/* <ul className="list-group market-template-list">
                   {unassignedMarket.length > 0 &&
                     unassignedMarket
                       .sort((a, b) => {
@@ -288,7 +346,7 @@ const Index = ({
                           </Button>
                         </li>
                       ))}
-                </ul>
+                </ul> */}
               </div>
 
               <div className="col-6">
@@ -305,7 +363,40 @@ const Index = ({
                     <i className="bx bx-minus"></i>
                   </Button>
                 </div>
+                <div className="py-2">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search Min. 2 characters"
+                    value={searchAssign}
+                    onChange={(e) => setSearchAssign(e.target.value)}
+                  />
+                </div>
                 <ul className="list-group market-template-list">
+                  {assignFilteredMarkets.length > 0 ? (
+                    assignFilteredMarkets.map((template) => (
+                      <li
+                        key={template.id}
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        {template.templateName}
+                        <Button
+                          color={"danger"}
+                          size="sm"
+                          className="btn"
+                          onClick={() => {
+                            handleDelete(template);
+                          }}
+                        >
+                          <i className="bx bx-minus"></i>
+                        </Button>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="list-group-item text-center">No results found</li>
+                  )}
+                </ul>
+                {/* <ul className="list-group market-template-list">
                   {assignedMarket.length > 0 &&
                     assignedMarket
                       .sort((a, b) => {
@@ -332,7 +423,7 @@ const Index = ({
                           </Button>
                         </li>
                       ))}
-                </ul>
+                </ul> */}
               </div>
             </div>
             <div className="hstack gap-2 justify-content-end mt-4">
