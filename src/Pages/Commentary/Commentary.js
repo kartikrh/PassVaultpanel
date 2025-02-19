@@ -79,7 +79,7 @@ const Commentary = (props) => {
     const [isChangeBowler, setIsChangeBowler] = useState({})
     const [completeMatchModal, setCompleteMatchModal] = useState(undefined)
     const [overBallByBallDisplay, setOverBallByBallDisplay] = useState([])
-    const [selectMissingPlayer, setSelectMissingPlayer] = useState([])
+    const [selectMissingPlayer, setSelectMissingPlayer] = useState(undefined)
     const [showRretiredHurt, setShowRretiredHurt] = useState(false)
     const [target, setTarget] = useState(0)
     const [superOverModal, setSuperOverModal] = useState(0)
@@ -1085,7 +1085,7 @@ const Commentary = (props) => {
                 "displayStatus": "Batter Switched"
             }
         }
-        if (currentPartnership?.commentaryPartnershipId && +currentPartnership?.commentaryPartnershipId !== 0) {
+        if (currentPartnership?.commentaryPartnershipId && +currentPartnership?.commentaryPartnershipId != 0) {
             const updatedPartnership = {
                 ...currentPartnership,
                 batter1Name: updatedOnPitchPlayer?.[ON_STRIKE]?.playerName,
@@ -2069,8 +2069,9 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-                if (!currentPartnership.commentaryBallByBallId || (+currentPartnership.commentaryBallByBallId === 0))
+                if ((!currentPartnership?.commentaryBallByBallId || +currentPartnership?.commentaryBallByBallId === 0) && !isEmpty(currentPartnership)) {
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
+                }
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
@@ -2084,9 +2085,9 @@ const Commentary = (props) => {
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
             if (
-                (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId === 0)))
+                (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
                 &&
-                (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId !== 0)))) {
+                (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0)))) {
                 const newPartnership = {
                     ...commentaryDataToUpdate.commentaryPartnershipDetails,
                     "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId),
@@ -2108,9 +2109,9 @@ const Commentary = (props) => {
         }
     }, [commentaryDataToUpdate])
     useEffect(() => {
-        if (!onPitchPlayers[ON_STRIKE] || !onPitchPlayers[NON_STRIKE] || !onPitchPlayers[CURRENT_BOWLER]) {
+        if (!onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId) {
             setSelectMissingPlayer(true)
-        } else if (selectMissingPlayer) setSelectMissingPlayer(false)
+        } else if (onPitchPlayers[ON_STRIKE]?.playerId && onPitchPlayers[NON_STRIKE]?.playerId && onPitchPlayers[CURRENT_BOWLER]?.playerId) setSelectMissingPlayer(false)
     }, [onPitchPlayers])
     useEffect(() => {
         if (matchTypeDetails?.isAutoChangeStriker
@@ -2474,7 +2475,7 @@ const Commentary = (props) => {
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
             updateExtras={onExtrasChange} />}
-        {(!props?.isNewUi && showChangeOverModal && !changePlayerList) && <ChangeOverModal
+        {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined) }}
             onNoClick={() => { setShowChangeOverModal(undefined) }}
