@@ -1555,6 +1555,7 @@ const Index = forwardRef(
                               }}
                               onChange={(e) => {
                                 if (e?.value !== selectedTableElements?.competition?.value){
+                                setCompetitionId(e?.value);
                                 handleTableActions("competitionId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,

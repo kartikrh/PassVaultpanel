@@ -40,7 +40,8 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -57,6 +58,8 @@ const Index = () => {
       ...(latestValueFromTable || tableActions),
       startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
       endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+      eventTypeId: latestValueFromTable?.eventTypeId || 0,
+      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
     };
     await axiosInstance
       .post(`/admin/commentary/history`, payload)
@@ -580,6 +583,8 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
+        {record.isPredictMarket &&
+        <>
           <Tooltip
             title={"Session Result"}
             color={"#e8e8ea"}
@@ -608,6 +613,7 @@ const Index = () => {
               M
             </Button>
           </Tooltip>
+        </>}
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -700,6 +706,12 @@ const Index = () => {
     fetchEventTypeData();
   }, [])
 
+  useEffect(() => {
+    if(!eventTypeId) {
+      setCompetitions([]);
+    }
+  },[eventTypeId]);
+
   const handleReload = (value) => {
     fetchData();
     fetchEventTypeData();
@@ -722,6 +734,8 @@ const Index = () => {
             handleReset={handleReset}
             handleReload={handleReload}
             competitions={competitions}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
             setDateRange={setDateRange}
             dateRange={dateRange}
             isDeletePermission={checkPermission(
