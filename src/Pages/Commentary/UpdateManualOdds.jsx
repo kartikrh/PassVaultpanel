@@ -1826,13 +1826,11 @@ export const UpdateManualOdds = () => {
             console.log("Connecting to INNINGS_CONNECT for DirectLine data");
             socket.emit(INNINGS_CONNECT, commentaryId);
         } else {
-            // If we're using market runner data instead
             console.log("Connecting to MARKET_RUNNER_CONNECT");
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
         }
 
         return () => {
-            // Cleanup socket connection when preferences change
             if (directLineEnabled && !isLive) {
                 socket.off(INNINGS_RUN_DATA);
             } else {
@@ -1844,65 +1842,81 @@ export const UpdateManualOdds = () => {
     useEffect(() => {
         if (!socket) return;
 
-        const handleInningsData = (data) => {
-            console.log("Received innings data from socket:", data);
+        const handleInningsData = (marketData) => {
+            console.log("Received innings data from socket:", marketData);
 
-            if (directLineEnabled && !isLive && data) {
-                const {
-                    first_innings_score,
-                    second_innings_score,
-                    current_over,
-                    total_overs,
-                    target,
-                    projected_score
-                } = data;
+            if (directLineEnabled && !isLive && marketData && marketData.length > 0) {
+                // Find current batting team's market data
+                const sortedMarkets = [...marketData].sort((a, b) => b.inningsId - a.inningsId);
+                const currentInningsMarket = sortedMarkets[0];
 
-                // Calculate probability and odds
+                if (!currentInningsMarket || !currentInningsMarket.runner || !currentInningsMarket.runner[0]) {
+                    console.log("No valid market data found");
+                    return;
+                }
+
+                const inningsData = {
+                    first_innings_score: currentInningsMarket.predefinedValue,
+                    second_innings_score: currentInningsMarket.runner[0].backPrice,
+                    current_over: currentInningsMarket.over,
+                    total_overs: 20,
+                    target: currentInningsMarket.predefinedValue,
+                    projected_score: currentInningsMarket.runner[0].backPrice
+                };
+
+                console.log("Processed innings data:", inningsData);
+
+                // Calculate probability
                 const probability = predictWinProbability(
-                    target || first_innings_score,
-                    parseFloat(current_over),
-                    second_innings_score,
-                    projected_score,
+                    inningsData.target,
+                    parseFloat(inningsData.current_over),
+                    inningsData.second_innings_score,
+                    inningsData.projected_score,
                     10.0,
-                    parseFloat(total_overs)
+                    parseFloat(inningsData.total_overs)
                 );
 
-                const [oddsB, oddsA] = decimalOddsTwoOutcomes(probability, settings.margin / 100);
+                console.log("Calculated probability:", probability);
 
-                console.log("Calculated values:", {
-                    probability,
-                    oddsB,
-                    oddsA,
-                    inputData: {
-                        target: target || first_innings_score,
-                        currentOver: current_over,
-                        secondInningsScore: second_innings_score,
-                        projectedScore: projected_score,
-                        totalOvers: total_overs
-                    }
-                });
+                // Convert to odds with margin
+                let [oddsB, oddsA] = decimalOddsTwoOutcomes(probability, settings.margin / 100);
 
-                // Update original runners first
+                // Handle special case for odds < 1.01
+                if (oddsB < 1.01) {
+                    oddsB = 0;
+                    // When back is 0, lay should be 1.01
+                    oddsA = 1.01;
+                } else if (oddsA < 1.01) {
+                    oddsA = 0;
+                    oddsB = 1.01;
+                }
+
+                console.log("Calculated odds after adjustment:", { oddsB, oddsA });
+
+                // Update original runners
                 setOriginalRunner(prevRunners => {
                     const updatedOriginalRunners = prevRunners.map(prevRunner => {
                         const isSelected = prevRunner.isSelected;
-                        const socketPrice = isSelected ? oddsB : oddsA;
+                        const originalBackPrice = isSelected ? oddsB : oddsA;
+                        const originalLayPrice = originalBackPrice === 0 ? 1.01 :
+                            isSelected ? oddsA : oddsB;
 
                         console.log("Updating original runner:", {
                             runnerId: prevRunner.runnerId,
                             isSelected,
                             oldPrice: prevRunner.back.price,
-                            newPrice: socketPrice
+                            newBackPrice: originalBackPrice,
+                            newLayPrice: originalLayPrice
                         });
 
                         return {
                             ...prevRunner,
                             back: {
-                                price: socketPrice,
+                                price: originalBackPrice,
                                 volume: prevRunner.back.volume
                             },
                             lay: {
-                                price: socketPrice,
+                                price: originalLayPrice,
                                 volume: prevRunner.lay.volume
                             }
                         };
@@ -1912,12 +1926,41 @@ export const UpdateManualOdds = () => {
                     return updatedOriginalRunners;
                 });
 
-                // Then update current runners
+                // Update current runners
                 setRunners(prevRunners => {
                     const updatedRunners = prevRunners.map(runner => {
                         const isSelected = runner.isSelected;
-                        const backPrice = isSelected ? oddsB : oddsA;
+                        let backPrice = isSelected ? oddsB : oddsA;
 
+                        // If back price is 0, set lay to 1.01
+                        if (backPrice === 0) {
+                            const newRates = {
+                                b2: 0,
+                                b1: 0,
+                                back: 0,
+                                lay: 1.01,
+                                l1: 0,
+                                l2: 0
+                            };
+
+                            console.log("Updating runner with zero back price:", {
+                                runnerId: runner.runnerId,
+                                isSelected,
+                                newRates
+                            });
+
+                            return {
+                                ...runner,
+                                back: { ...runner.back, price: newRates.back },
+                                lay: { ...runner.lay, price: newRates.lay },
+                                b2: newRates.b2,
+                                b1: newRates.b1,
+                                l1: newRates.l1,
+                                l2: newRates.l2
+                            };
+                        }
+
+                        // Normal calculation for non-zero back prices
                         const newRates = calculateRunnerRates({
                             back: { price: backPrice }
                         }, settings, {
@@ -1955,7 +1998,6 @@ export const UpdateManualOdds = () => {
             }
         };
 
-        // Only attach listener, emit is handled in the connection effect
         if (directLineEnabled && !isLive) {
             socket.on(INNINGS_RUN_DATA, handleInningsData);
         }
@@ -1966,7 +2008,6 @@ export const UpdateManualOdds = () => {
             }
         };
     }, [socket, directLineEnabled, isLive, settings]);
-
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
