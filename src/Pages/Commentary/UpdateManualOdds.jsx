@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import { RiRefreshLine } from 'react-icons/ri';
 import { AUTO_STATUS, BALL_START_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SCORING_STATUS, SUSPEND_VALUE } from './CommentartConst.js';
+import { calculateExpectedFinalScore, decimalOddsTwoOutcomes, predictWinProbability } from '../../components/Helper/UpdateManualOddHelper.js';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -100,296 +101,296 @@ const StyledTableCell = styled(TableCell)(({ theme, type }) => ({
 const StyledTextField = styled(TextField)(({ theme }) => ({
     // Light Mode Styles (Default)
     '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#E0E3E7',
-        borderWidth: 1,
-      },
-      '&.Mui-error fieldset': {
-        borderColor: 'red',
-        borderWidth: 1,
-      },
-      '&.Mui-focused fieldset': {
-        borderLeftWidth: 4,
-        padding: '4px !important',
-      },
-      '& input': {
-        color: '#333',
-      },
-      '&.Mui-disabled': {
         '& fieldset': {
-          borderColor: '#E0E3E7',
+            borderColor: '#E0E3E7',
+            borderWidth: 1,
+        },
+        '&.Mui-error fieldset': {
+            borderColor: 'red',
+            borderWidth: 1,
+        },
+        '&.Mui-focused fieldset': {
+            borderLeftWidth: 4,
+            padding: '4px !important',
         },
         '& input': {
-          color: 'rgba(0, 0, 0, 0.38)',
+            color: '#333',
         },
-      },
-    },
-    '& .MuiInputLabel-root': {
-      color: '#555',
-      '&.Mui-disabled': {
-        color: 'rgba(0, 0, 0, 0.38)',
-      },
-    },
-  
-    // Dark Mode Styles
-    [theme.breakpoints.up(0)]: {
-      'body[data-theme="dark"] &': {
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: '#fff',
-          },
-          '&.Mui-error fieldset': {
-            borderColor: '#ff6b6b',
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: '#fff',
-            borderLeftWidth: 4,
-          },
-          '& input': {
-            color: '#fff',
-          },
-          // Dark Mode Disabled Styles
-          '&.Mui-disabled': {
+        '&.Mui-disabled': {
             '& fieldset': {
-              borderColor: 'rgba(255, 255, 255, 0.3)', // Dimmed border
+                borderColor: '#E0E3E7',
             },
             '& input': {
-              color: 'rgba(255, 255, 255, 0.38)', // Dimmed text
-              '-webkit-text-fill-color': 'rgba(255, 255, 255, 0.38)', // For Safari
-              cursor: 'not-allowed',
+                color: 'rgba(0, 0, 0, 0.38)',
             },
-          },
         },
-        '& .MuiInputLabel-root': {
-          color: '#fff',
-          // Dark Mode Disabled Label
-          '&.Mui-disabled': {
-            color: 'rgba(255, 255, 255, 0.38)', // Dimmed label
-          },
-        },
-      },
     },
-  }));
+    '& .MuiInputLabel-root': {
+        color: '#555',
+        '&.Mui-disabled': {
+            color: 'rgba(0, 0, 0, 0.38)',
+        },
+    },
+
+    // Dark Mode Styles
+    [theme.breakpoints.up(0)]: {
+        'body[data-theme="dark"] &': {
+            '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                    borderColor: '#fff',
+                },
+                '&.Mui-error fieldset': {
+                    borderColor: '#ff6b6b',
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: '#fff',
+                    borderLeftWidth: 4,
+                },
+                '& input': {
+                    color: '#fff',
+                },
+                // Dark Mode Disabled Styles
+                '&.Mui-disabled': {
+                    '& fieldset': {
+                        borderColor: 'rgba(255, 255, 255, 0.3)', // Dimmed border
+                    },
+                    '& input': {
+                        color: 'rgba(255, 255, 255, 0.38)', // Dimmed text
+                        '-webkit-text-fill-color': 'rgba(255, 255, 255, 0.38)', // For Safari
+                        cursor: 'not-allowed',
+                    },
+                },
+            },
+            '& .MuiInputLabel-root': {
+                color: '#fff',
+                // Dark Mode Disabled Label
+                '&.Mui-disabled': {
+                    color: 'rgba(255, 255, 255, 0.38)', // Dimmed label
+                },
+            },
+        },
+    },
+}));
 
 const StyledSelect = styled(Select)(({ theme }) => ({
-// Light Mode Styles (Default)
-'& .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#E0E3E7',
-    borderWidth: 1,
-},
-'&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#1976d2',
-    borderLeftWidth: 4,
-    padding: '4px !important',
-},
-'&.Mui-error .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'red',
-},
-'& .MuiSelect-select': {
-    color: '#333',
-},
-'& .MuiSvgIcon-root': { // Dropdown icon
-    color: '#555',
-},
-'&.Mui-disabled': {
+    // Light Mode Styles (Default)
     '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#E0E3E7',
-    },
-    '& .MuiSelect-select': {
-    color: 'rgba(0, 0, 0, 0.38)',
-    },
-    '& .MuiSvgIcon-root': {
-    color: 'rgba(0, 0, 0, 0.38)',
-    },
-},
-
-// Dark Mode Styles
-[theme.breakpoints.up(0)]: {
-    'body[data-theme="dark"] &': {
-    '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#fff',
+        borderColor: '#E0E3E7',
+        borderWidth: 1,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#fff',
+        borderColor: '#1976d2',
         borderLeftWidth: 4,
+        padding: '4px !important',
     },
     '&.Mui-error .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#ff6b6b',
+        borderColor: 'red',
     },
     '& .MuiSelect-select': {
-        color: '#fff',
+        color: '#333',
     },
-    '& .MuiSvgIcon-root': {
-        color: '#fff',
+    '& .MuiSvgIcon-root': { // Dropdown icon
+        color: '#555',
     },
-    // Dark Mode Disabled Styles
     '&.Mui-disabled': {
         '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.3)',
+            borderColor: '#E0E3E7',
         },
         '& .MuiSelect-select': {
-        color: 'rgba(255, 255, 255, 0.38)',
-        '-webkit-text-fill-color': 'rgba(255, 255, 255, 0.38)',
-        cursor: 'not-allowed',
+            color: 'rgba(0, 0, 0, 0.38)',
         },
         '& .MuiSvgIcon-root': {
-        color: 'rgba(255, 255, 255, 0.38)',
+            color: 'rgba(0, 0, 0, 0.38)',
         },
     },
-    },
-},
 
-// Menu Paper Props (Dropdown List Styles)
-'& .MuiPaper-root': {
-    'body[data-theme="dark"] &': {
-    backgroundColor: '#333',
-    '& .MuiMenuItem-root': {
-        color: '#fff',
-        '&:hover': {
-        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-        },
-        '&.Mui-selected': {
-        backgroundColor: 'rgba(255, 255, 255, 0.16)',
-        '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.24)',
-        },
+    // Dark Mode Styles
+    [theme.breakpoints.up(0)]: {
+        'body[data-theme="dark"] &': {
+            '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#fff',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#fff',
+                borderLeftWidth: 4,
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#ff6b6b',
+            },
+            '& .MuiSelect-select': {
+                color: '#fff',
+            },
+            '& .MuiSvgIcon-root': {
+                color: '#fff',
+            },
+            // Dark Mode Disabled Styles
+            '&.Mui-disabled': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                },
+                '& .MuiSelect-select': {
+                    color: 'rgba(255, 255, 255, 0.38)',
+                    '-webkit-text-fill-color': 'rgba(255, 255, 255, 0.38)',
+                    cursor: 'not-allowed',
+                },
+                '& .MuiSvgIcon-root': {
+                    color: 'rgba(255, 255, 255, 0.38)',
+                },
+            },
         },
     },
+
+    // Menu Paper Props (Dropdown List Styles)
+    '& .MuiPaper-root': {
+        'body[data-theme="dark"] &': {
+            backgroundColor: '#333',
+            '& .MuiMenuItem-root': {
+                color: '#fff',
+                '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                },
+                '&.Mui-selected': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                    '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.24)',
+                    },
+                },
+            },
+        },
     },
-},
 }));
 
 const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
-// Light Mode Styles (Default)
-'& .MuiFormControlLabel-label': {
-    color: '#333',
-    fontSize: '14px',
-},
-'&.Mui-disabled': {
+    // Light Mode Styles (Default)
     '& .MuiFormControlLabel-label': {
-    color: 'rgba(0, 0, 0, 0.38)',
-    },
-},
-// For Checkbox
-'& .MuiCheckbox-root': {
-    color: '#555',
-    '&.Mui-checked': {
-    color: '#1976d2',
-    },
-    '&.Mui-disabled': {
-    color: 'rgba(0, 0, 0, 0.38)',
-    },
-},
-// For Radio
-'& .MuiRadio-root': {
-    color: '#555',
-    '&.Mui-checked': {
-    color: '#1976d2',
-    },
-    '&.Mui-disabled': {
-    color: 'rgba(0, 0, 0, 0.38)',
-    },
-},
-
-// Dark Mode Styles
-[theme.breakpoints.up(0)]: {
-    'body[data-theme="dark"] &': {
-    '& .MuiFormControlLabel-label': {
-        color: '#fff',
+        color: '#333',
+        fontSize: '14px',
     },
     '&.Mui-disabled': {
         '& .MuiFormControlLabel-label': {
-        color: 'rgba(255, 255, 255, 0.38)',
-        '-webkit-text-fill-color': 'rgba(255, 255, 255, 0.38)',
+            color: 'rgba(0, 0, 0, 0.38)',
         },
     },
-    // Dark Mode Checkbox
+    // For Checkbox
     '& .MuiCheckbox-root': {
-        color: '#fff',
+        color: '#555',
         '&.Mui-checked': {
-        color: '#90caf9', // Lighter blue for dark mode
+            color: '#1976d2',
         },
         '&.Mui-disabled': {
-        color: 'rgba(255, 255, 255, 0.3)',
+            color: 'rgba(0, 0, 0, 0.38)',
         },
     },
-    // Dark Mode Radio
+    // For Radio
     '& .MuiRadio-root': {
-        color: '#fff',
+        color: '#555',
         '&.Mui-checked': {
-        color: '#90caf9', // Lighter blue for dark mode
+            color: '#1976d2',
         },
         '&.Mui-disabled': {
-        color: 'rgba(255, 255, 255, 0.3)',
+            color: 'rgba(0, 0, 0, 0.38)',
         },
     },
+
+    // Dark Mode Styles
+    [theme.breakpoints.up(0)]: {
+        'body[data-theme="dark"] &': {
+            '& .MuiFormControlLabel-label': {
+                color: '#fff',
+            },
+            '&.Mui-disabled': {
+                '& .MuiFormControlLabel-label': {
+                    color: 'rgba(255, 255, 255, 0.38)',
+                    '-webkit-text-fill-color': 'rgba(255, 255, 255, 0.38)',
+                },
+            },
+            // Dark Mode Checkbox
+            '& .MuiCheckbox-root': {
+                color: '#fff',
+                '&.Mui-checked': {
+                    color: '#90caf9', // Lighter blue for dark mode
+                },
+                '&.Mui-disabled': {
+                    color: 'rgba(255, 255, 255, 0.3)',
+                },
+            },
+            // Dark Mode Radio
+            '& .MuiRadio-root': {
+                color: '#fff',
+                '&.Mui-checked': {
+                    color: '#90caf9', // Lighter blue for dark mode
+                },
+                '&.Mui-disabled': {
+                    color: 'rgba(255, 255, 255, 0.3)',
+                },
+            },
+        },
     },
-},
 }));
 
 const StyledRadio = styled(Radio)(({ theme }) => ({
     // Light Mode Styles (Default)
     color: '#555',
     '&.Mui-checked': {
-      color: '#1976d2',
+        color: '#1976d2',
     },
     '&:hover': {
-      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+        backgroundColor: 'rgba(25, 118, 210, 0.04)',
     },
     '&.Mui-disabled': {
-      color: 'rgba(0, 0, 0, 0.38)',
-      '&.Mui-checked': {
         color: 'rgba(0, 0, 0, 0.38)',
-      },
-      '&:hover': {
-        backgroundColor: 'transparent',
-      },
-    },
-  
-    // Dark Mode Styles
-    [theme.breakpoints.up(0)]: {
-      'body[data-theme="dark"] &': {
-        color: '#fff',
         '&.Mui-checked': {
-          color: '#90caf9', // Lighter blue for dark mode
+            color: 'rgba(0, 0, 0, 0.38)',
         },
         '&:hover': {
-          backgroundColor: 'rgba(144, 202, 249, 0.08)', // Subtle hover effect
-        },
-        // Dark Mode Disabled State
-        '&.Mui-disabled': {
-          color: 'rgba(255, 255, 255, 0.3)',
-          '&.Mui-checked': {
-            color: 'rgba(255, 255, 255, 0.3)',
-          },
-          '&:hover': {
             backgroundColor: 'transparent',
-          },
         },
-        // Dark Mode Ripple Effect
-        '& .MuiTouchRipple-root': {
-          color: '#90caf9',
-        },
-      },
     },
-  }));
-  
-  // Optional: Create a styled RadioGroup if needed
-  const StyledRadioGroup = styled(RadioGroup)(({ theme }) => ({
-    // Light Mode Styles
-    '& .MuiFormControlLabel-root': {
-      marginBottom: '8px',
-    },
-  
+
     // Dark Mode Styles
     [theme.breakpoints.up(0)]: {
-      'body[data-theme="dark"] &': {
-        '& .MuiFormControlLabel-root': {
-          marginBottom: '8px',
+        'body[data-theme="dark"] &': {
+            color: '#fff',
+            '&.Mui-checked': {
+                color: '#90caf9', // Lighter blue for dark mode
+            },
+            '&:hover': {
+                backgroundColor: 'rgba(144, 202, 249, 0.08)', // Subtle hover effect
+            },
+            // Dark Mode Disabled State
+            '&.Mui-disabled': {
+                color: 'rgba(255, 255, 255, 0.3)',
+                '&.Mui-checked': {
+                    color: 'rgba(255, 255, 255, 0.3)',
+                },
+                '&:hover': {
+                    backgroundColor: 'transparent',
+                },
+            },
+            // Dark Mode Ripple Effect
+            '& .MuiTouchRipple-root': {
+                color: '#90caf9',
+            },
         },
-      },
     },
-  }));
+}));
+
+//   // Optional: Create a styled RadioGroup if needed
+//   const StyledRadioGroup = styled(RadioGroup)(({ theme }) => ({
+//     // Light Mode Styles
+//     '& .MuiFormControlLabel-root': {
+//       marginBottom: '8px',
+//     },
+
+//     // Dark Mode Styles
+//     [theme.breakpoints.up(0)]: {
+//       'body[data-theme="dark"] &': {
+//         '& .MuiFormControlLabel-root': {
+//           marginBottom: '8px',
+//         },
+//       },
+//     },
+//   }));
 
 export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
@@ -411,6 +412,7 @@ export const UpdateManualOdds = () => {
     const [abOpen, setAbOpen] = useState(false);
     const [abSuspend, setAbSuspend] = useState(false);
     const [tempRateDiff, setTempRateDiff] = useState(null);
+    const [directLineEnabled, setDirectLineEnabled] = useState(false);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -1530,6 +1532,7 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
+
     useEffect(() => {
         if (socket && commentaryId) {
             console.log("Connecting COMMENTARY_STATUS_CONNECT");
@@ -1817,20 +1820,153 @@ export const UpdateManualOdds = () => {
     }, [isLive, socket, rateSourceRefID]);
 
     useEffect(() => {
-        if (!socket) return;
+        if (!socket || !commentaryId) return;
 
-        if (commentaryId) {
+        if (directLineEnabled && !isLive) {
+            console.log("Connecting to INNINGS_CONNECT for DirectLine data");
             socket.emit(INNINGS_CONNECT, commentaryId);
-
-            socket.on(INNINGS_RUN_DATA, (data) => {
-              console.log("innings run data", data);
-            });
+        } else {
+            // If we're using market runner data instead
+            console.log("Connecting to MARKET_RUNNER_CONNECT");
+            socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
         }
 
         return () => {
-            socket.off(INNINGS_RUN_DATA);
+            // Cleanup socket connection when preferences change
+            if (directLineEnabled && !isLive) {
+                socket.off(INNINGS_RUN_DATA);
+            } else {
+                socket.off(MARKET_RUNNER_DATA);
+            }
         };
-    }, [socket, commentaryId]);
+    }, [socket, commentaryId, directLineEnabled, isLive]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleInningsData = (data) => {
+            console.log("Received innings data from socket:", data);
+
+            if (directLineEnabled && !isLive && data) {
+                const {
+                    first_innings_score,
+                    second_innings_score,
+                    current_over,
+                    total_overs,
+                    target,
+                    projected_score
+                } = data;
+
+                // Calculate probability and odds
+                const probability = predictWinProbability(
+                    target || first_innings_score,
+                    parseFloat(current_over),
+                    second_innings_score,
+                    projected_score,
+                    10.0,
+                    parseFloat(total_overs)
+                );
+
+                const [oddsB, oddsA] = decimalOddsTwoOutcomes(probability, settings.margin / 100);
+
+                console.log("Calculated values:", {
+                    probability,
+                    oddsB,
+                    oddsA,
+                    inputData: {
+                        target: target || first_innings_score,
+                        currentOver: current_over,
+                        secondInningsScore: second_innings_score,
+                        projectedScore: projected_score,
+                        totalOvers: total_overs
+                    }
+                });
+
+                // Update original runners first
+                setOriginalRunner(prevRunners => {
+                    const updatedOriginalRunners = prevRunners.map(prevRunner => {
+                        const isSelected = prevRunner.isSelected;
+                        const socketPrice = isSelected ? oddsB : oddsA;
+
+                        console.log("Updating original runner:", {
+                            runnerId: prevRunner.runnerId,
+                            isSelected,
+                            oldPrice: prevRunner.back.price,
+                            newPrice: socketPrice
+                        });
+
+                        return {
+                            ...prevRunner,
+                            back: {
+                                price: socketPrice,
+                                volume: prevRunner.back.volume
+                            },
+                            lay: {
+                                price: socketPrice,
+                                volume: prevRunner.lay.volume
+                            }
+                        };
+                    });
+
+                    console.log("Updated original runners:", updatedOriginalRunners);
+                    return updatedOriginalRunners;
+                });
+
+                // Then update current runners
+                setRunners(prevRunners => {
+                    const updatedRunners = prevRunners.map(runner => {
+                        const isSelected = runner.isSelected;
+                        const backPrice = isSelected ? oddsB : oddsA;
+
+                        const newRates = calculateRunnerRates({
+                            back: { price: backPrice }
+                        }, settings, {
+                            forceCalculateLay: true
+                        });
+
+                        console.log("Updating runner:", {
+                            runnerId: runner.runnerId,
+                            isSelected,
+                            oldPrices: {
+                                back: runner.back.price,
+                                lay: runner.lay.price,
+                                b2: runner.b2,
+                                b1: runner.b1,
+                                l1: runner.l1,
+                                l2: runner.l2
+                            },
+                            newPrices: newRates
+                        });
+
+                        return {
+                            ...runner,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            l1: newRates.l1,
+                            l2: newRates.l2
+                        };
+                    });
+
+                    console.log("Updated runners:", updatedRunners);
+                    return updatedRunners;
+                });
+            }
+        };
+
+        // Only attach listener, emit is handled in the connection effect
+        if (directLineEnabled && !isLive) {
+            socket.on(INNINGS_RUN_DATA, handleInningsData);
+        }
+
+        return () => {
+            if (directLineEnabled && !isLive) {
+                socket.off(INNINGS_RUN_DATA, handleInningsData);
+            }
+        };
+    }, [socket, directLineEnabled, isLive, settings]);
+
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
@@ -1992,6 +2128,16 @@ export const UpdateManualOdds = () => {
                                             />
                                         }
                                         label="Live"
+                                    />
+                                    <StyledFormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={directLineEnabled}
+                                                onChange={(e) => setDirectLineEnabled(e.target.checked)}
+                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                        }
+                                        label="Direct Line"
                                     />
                                     <StyledFormControlLabel
                                         control={
