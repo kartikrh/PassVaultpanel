@@ -51,7 +51,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler,
         const typeCompare = isBowlerChange ? playerTypeOrder[b.playerType] - playerTypeOrder[a.playerType] : playerTypeOrder[a.playerType] - playerTypeOrder[b.playerType];
         if (typeCompare !== 0) return typeCompare;
         // If playerType is the same, compare alphabetically by playerName
-        return a.playerName.localeCompare(b.playerName);
+        return a.playerName?.localeCompare(b.playerName);
     });
     sortedPlayers = sortedPlayers?.filter((player) => player.isInPlayingEleven)
 

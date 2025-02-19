@@ -932,7 +932,7 @@ const Index = forwardRef(
         <Col lg={12}>
           <Card className='card'>
             {(tableElement?.title !== "Auto Events" && tableElement?.title !== "Manual Events") && (
-              <CardHeader>
+              <CardHeader className="p-0 p-md-2">
                 <form>
                   <Row className="g-2">
                     <Col className="col-sm-auto">
@@ -1787,7 +1787,8 @@ const Index = forwardRef(
                         ) : null}
                       </div>
                     </Col>
-                    <Col className="col-sm-auto ms-auto">
+                  </Row>
+                    <Col className="col-sm-auto ms-auto my-2">
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         {isDeleteAllPermission && (
                           <Button
@@ -1839,7 +1840,6 @@ const Index = forwardRef(
                         )}
                       </div>
                     </Col>
-                  </Row>
                   {tableElement?.dateRange ? (
                     <Row className="">
                       {/* <Col className="bg-white p-2 m-2"> */}

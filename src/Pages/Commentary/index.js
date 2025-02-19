@@ -1210,7 +1210,7 @@ const Index = () => {
                 </Button>
               </Tooltip>} */}
             {record.isPredictMarket &&
-              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+              <Tooltip title={"Create Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
                   color={"primary"}
                   size="sm"
