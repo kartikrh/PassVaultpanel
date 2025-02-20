@@ -100,8 +100,6 @@ const Layout = props => {
     }
   }, [topbarTheme, dispatch]);
 
-  console.log("data-theme", document.body.getAttribute("data-theme"))
-
   return (
     <React.Fragment>
       <div id="layout-wrapper">

@@ -13,8 +13,7 @@ export const CommentaryScreen = ({
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
     players, currentOver }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
-    console.log("refId", refId)
-
+    
     const OffsymbolStatus = () => {
         return (
             <div

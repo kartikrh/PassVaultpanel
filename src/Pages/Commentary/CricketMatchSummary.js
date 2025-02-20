@@ -14,7 +14,7 @@ const CricketMatchSummary = ({ escapedHtml, isOpen, onClose }) => {
   const decodedHtml = decodeHtml(escapedHtml);
 
   const handleDownloadImage = () => {
-    console.log("fsg")
+    // console.log("fsg")
     if (contentRef.current) {
       toPng(contentRef.current)
         .then((dataUrl) => {

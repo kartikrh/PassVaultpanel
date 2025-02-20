@@ -207,7 +207,7 @@ export const CommentaryFeatures = () => {
                                                 handleValueChange={updatedData => setBallByBallData({ ...updatedData })}
                                                 deletedList={deleteBallByBall}
                                                 handleDeleteChange={(ballId) => {
-                                                    console.log(ballId)
+                                                    // console.log(ballId)
                                                     setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))
                                                 }}
                                             />
