@@ -468,8 +468,8 @@ export const UpdateManualOdds = () => {
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const { backPrice, layPrice } = handlePriceCalculations(runner.backPrice, true);
-
             const rates = calculateRunnerRates({
+                runner,
                 back: { price: backPrice }
             }, settings);
 
@@ -709,7 +709,7 @@ export const UpdateManualOdds = () => {
             manualEdit = false,
             editedField = null
         } = options;
-
+        console.log("____________________", { runner })
         const back = parseFloat(runner?.back?.price) || 0;
         const existingLay = parseFloat(runner?.lay?.price) || 0;
         const existingL1 = parseFloat(runner?.l1) || 0;
@@ -1184,6 +1184,7 @@ export const UpdateManualOdds = () => {
         try {
             const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
             if (response?.result) {
+
                 if (!response.result.market) {
                     navigate("/manualOddsMarket");
                     return;
@@ -1240,7 +1241,21 @@ export const UpdateManualOdds = () => {
                     });
                     setSavedPrices(initialSavedPrices);
                 }
+
+                if (socket && commentaryId) {
+                    console.log("Connecting COMMENTARY_STATUS_CONNECT");
+                    socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
+
+                    if (directLineEnabled && !isLive) {
+                        console.log("Connecting to INNINGS_CONNECT");
+                        socket.emit(INNINGS_CONNECT, commentaryId);
+                    } else {
+                        console.log("Connecting to MARKET_RUNNER_CONNECT");
+                        socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+                    }
+                }
             }
+
         } catch (error) {
             dispatch(updateToastData({
                 data: error?.message,
@@ -1532,13 +1547,12 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
-
-    useEffect(() => {
-        if (socket && commentaryId) {
-            console.log("Connecting COMMENTARY_STATUS_CONNECT");
-            socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
-        }
-    }, [socket, commentaryId]);
+    // useEffect(() => {
+    //     if (socket && commentaryId) {
+    //         console.log("Connecting COMMENTARY_STATUS_CONNECT");
+    //         socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
+    //     }
+    // }, [socket, commentaryId]);
 
     useEffect(() => {
         if (!socket) return;
@@ -1864,15 +1878,11 @@ export const UpdateManualOdds = () => {
                     projected_score: currentInningsMarket.runner[0].backPrice
                 };
 
-                console.log("Processed innings data:", inningsData);
-
                 // Calculate probability
                 const probability = predictWinProbability(
-                    inningsData.target,
-                    parseFloat(inningsData.current_over),
-                    inningsData.second_innings_score,
-                    inningsData.projected_score,
-                    10.0,
+                    sortedMarkets[0]?.runner?.[0]?.line,
+                    sortedMarkets[1]?.runner?.[0]?.line,
+                    settings.favRatio,
                     parseFloat(inningsData.total_overs)
                 );
 
@@ -1966,7 +1976,7 @@ export const UpdateManualOdds = () => {
                         }, settings, {
                             forceCalculateLay: true
                         });
-
+                        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$", newRates, runner)
                         console.log("Updating runner:", {
                             runnerId: runner.runnerId,
                             isSelected,
