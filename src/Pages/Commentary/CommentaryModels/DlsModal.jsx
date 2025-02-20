@@ -71,7 +71,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                     ...team,
                     teamMaxOver: maxOvers
                 }))
-                dataToSave["commentaryTeams"] = updatedTeam
+                dataToSave["comTeams"] = updatedTeam
             }
             else {
                 if (+(teams[BATTING_TEAM]?.teamOver || 0) < maxOvers) {
@@ -84,7 +84,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                             ...updatedTeamData[BOWLING_TEAM],
                             teamMaxOver: maxOvers
                         }
-                        dataToSave["commentaryTeams"] = Object.values(updatedTeamData)
+                        dataToSave["comTeams"] = Object.values(updatedTeamData)
                     } else {
                         if ((+(teams[BATTING_TEAM]?.teamScore || 0) < newTarget)) {
                             updatedTeamData[BATTING_TEAM] = {
@@ -96,7 +96,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                                 ...updatedTeamData[BOWLING_TEAM],
                                 teamMaxOver: maxOvers
                             }
-                            dataToSave["commentaryTeams"] = Object.values(updatedTeamData)
+                            dataToSave["comTeams"] = Object.values(updatedTeamData)
                         } else dispatch(updateToastData({ data: "New target should be more than current score.", title: "Wrong Data Error", type: ERROR }))
                     }
                 }
@@ -107,8 +107,18 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
     }
 
     const saveDataApi = async (dataToSave) => {
+        if(dataToSave) {
+        const payload = {
+            commentaryId: commentaryData.commentaryDetails?.commentaryId,
+            comTeams: dataToSave?.comTeams?.map(team => ({
+                commentaryTeamId: team?.commentaryTeamId,
+                teamId: team?.teamId,
+                teamMaxOver: team?.teamMaxOver,
+                teamTrialRuns: team?.teamTrialRuns,
+            }))
+        };
         setIsDataLoading(true)
-        await axiosInstance.post('/admin/commentary/saveDetails', { ...dataToSave, commentaryId: commentaryData.commentaryDetails?.commentaryId })
+        await axiosInstance.post('/admin/commentary/upDLSDetail', payload)
             .then(async (response) => {
                 setIsDataLoading(false)
                 toggle()
@@ -131,6 +141,7 @@ export const DlsModal = ({ commentaryDetails, toggle }) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)
             });
+        }
     }
 
     const handleMaxOver = (over) => {
