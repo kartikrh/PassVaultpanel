@@ -82,7 +82,7 @@ export const ManualOddsMarket = () => {
                 socket.emit(INNINGS_CONNECT, commentaryId);
     
                 socket.on(INNINGS_RUN_DATA, (data) => {
-                  console.log("innings run data", data);
+                //   console.log("innings run data", data);
                 });
             }
     

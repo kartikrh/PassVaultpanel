@@ -51,7 +51,7 @@ export const OpenMarket = () => {
     // console.log({ originalMarketData, categorisedData });
     // console.log({ isKeyPressed })
 
-    console.log("############################################", { originalMarketData }, "############################################")
+    // console.log("############################################", { originalMarketData }, "############################################")
     useEffect(() => {
         if (!isEmpty(commentaryInfo))
             document.title = `Open Market - ${commentaryInfo?.en} [${commentaryInfo?.eid}]`;
@@ -666,7 +666,7 @@ export const OpenMarket = () => {
     }
 
     const saveData = async ({ dataToSave, action }) => {
-        console.log('Saving data:', { action, marketCount: dataToSave.length });
+        // console.log('Saving data:', { action, marketCount: dataToSave.length });
         setIsLoading(true);
         try {
             const response = await axiosInstance.post(`/admin/eventMarket/updateMarketRateV1`, {
@@ -675,7 +675,7 @@ export const OpenMarket = () => {
             });
 
             if (response?.result) {
-                console.log('Save successful:', { action, updatedMarkets: response.result.marketList?.length });
+                // console.log('Save successful:', { action, updatedMarkets: response.result.marketList?.length });
                 dispatch(updateToastData({ data: "Market Updated Successfully", title: "Updated", type: SUCCESS }));
                 const updatedData = response.result.marketList || [];
 
@@ -767,7 +767,7 @@ export const OpenMarket = () => {
     }
 
     const formatSocketDataForState = (responseData) => {
-        console.log('Socket data received:', responseData);
+        // console.log('Socket data received:', responseData);
         if (!isEmpty(responseData)) {
             const newMarketData = {};
             const newOriginalData = {}; // New object to store original values only for socket-received markets
@@ -775,7 +775,7 @@ export const OpenMarket = () => {
             responseData.forEach(eventMarketString => {
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
-                    console.log('Processing socket market data:', eventMarket.marketId);
+                    // console.log('Processing socket market data:', eventMarket.marketId);
 
                     // Store original values ONLY for socket-received markets
                     if (eventMarket.runner && eventMarket.runner.length === 1) {
@@ -833,7 +833,7 @@ export const OpenMarket = () => {
             });
 
             setData(prevData => {
-                console.log('Updating data from socket with new markets');
+                // console.log('Updating data from socket with new markets');
                 // Replace the existing market data with the new market data from the socket
                 const updatedData = prevData.map(market => {
                     const newMarket = newMarketData[market.marketId];
@@ -1304,17 +1304,17 @@ export const OpenMarket = () => {
             return; // Don't trigger shortcuts if focus is on input or select elements
         }
         const key = event.key.toLowerCase();
-        console.log('Key pressed:', key);
+        // console.log('Key pressed:', key);
         switch (key) {
             case 'a':
-                console.log('Save all triggered by key press');
+                // console.log('Save all triggered by key press');
                 if (selectedCategories.length > 0 && hasUnsavedChanges) {
                     setIsKeyPressed(true)
                     updateRecords();
                 }
                 break;
             case 's':
-                console.log('Send all triggered by key press');
+                // console.log('Send all triggered by key press');
                 if (selectedCategories.length > 0 && !hasUnsavedChanges) {
                     setIsKeyPressed(true)
                     handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
@@ -1351,12 +1351,12 @@ export const OpenMarket = () => {
 
     // New method for handling market updates
     const handleMarketUpdate = (marketData) => {
-        console.log('Market update received:', marketData);
+        // console.log('Market update received:', marketData);
         if (!marketData) return;
 
         // Convert market data to array format if it's a single object
         const marketDataArray = Array.isArray(marketData) ? marketData : [marketData];
-        console.log('Processing market updates:', marketDataArray.length);
+        // console.log('Processing market updates:', marketDataArray.length);
 
         // Create new original data only for received markets
         const newOriginalData = {};
@@ -1373,7 +1373,7 @@ export const OpenMarket = () => {
         });
 
         setData(prevData => {
-            console.log('Updating data with market updates');
+            // console.log('Updating data with market updates');
             const updatedData = prevData.map(market => {
                 const updatedMarket = marketDataArray.find(m => m.marketId === market.marketId);
                 if (updatedMarket) {
@@ -1458,27 +1458,27 @@ export const OpenMarket = () => {
     useEffect(() => {
         if (!isEmpty(teams)) {
             if (socket) {
-                console.log('Connecting to socket for market updates');
+                // console.log('Connecting to socket for market updates');
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
-                    console.log('Received OPEN_MARKET_DATA event');
+                    // console.log('Received OPEN_MARKET_DATA event');
                     formatSocketDataForState(socketData || [])
                 });
                 socket.on(UPDATE_MARKET_DATA, (marketData) => {
-                    console.log('Received UPDATE_MARKET_DATA event');
+                    // console.log('Received UPDATE_MARKET_DATA event');
                     if (marketData) {
                         handleMarketUpdate(marketData);
                     }
                 });
             } else {
-                console.log('Socket not available, falling back to polling');
+                // console.log('Socket not available, falling back to polling');
                 setIsSocketConnected(false)
                 fetchConfigAll();
             }
         }
         return () => {
-            console.log('Cleaning up socket listeners');
+            // console.log('Cleaning up socket listeners');
             socket.off(OPEN_MARKET_DATA);
             socket.off(UPDATE_MARKET_DATA);
         };

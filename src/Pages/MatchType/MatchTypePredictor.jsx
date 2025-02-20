@@ -173,7 +173,7 @@ const MatchTypePredictor = () => {
           payload
         );
 
-        console.log("Save & Close successful:", response);
+        // console.log("Save & Close successful:", response);
         if(response?.result?.callPrediction?.predictioncallSuccess === false) {
           const predictionMessage = response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
