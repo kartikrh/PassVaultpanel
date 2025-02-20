@@ -21,7 +21,7 @@ export function mapCommentaryStatus(status) {
 }
 
 export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPlayers, currentBall, currentPartnership }) => {
-  console.log("currentPartnership.commentaryPartnershipId", currentPartnership.commentaryPartnershipId)
+  // console.log("currentPartnership.commentaryPartnershipId", currentPartnership.commentaryPartnershipId)
   return {
     "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
     "commentaryId": commentaryDetails.commentaryId,

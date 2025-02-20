@@ -143,7 +143,7 @@ export const CommentaryEventSnap = () => {
   };
   const formatDate = (isoDateString) => {
     try {
-      console.log('Input date:', isoDateString);
+      // console.log('Input date:', isoDateString);
 
       // Ensure the input date is properly formatted
       if (typeof isoDateString !== 'string' || !isoDateString.trim()) {

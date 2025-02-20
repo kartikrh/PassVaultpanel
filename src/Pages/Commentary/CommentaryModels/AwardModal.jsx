@@ -186,7 +186,7 @@ const AwardModal = ({ commentaryId, onClose }) => {
                 setIsApiLoading(false);
             });
 
-        console.log('Submission data:', submissionData);
+        // console.log('Submission data:', submissionData);
     };
 
     return (

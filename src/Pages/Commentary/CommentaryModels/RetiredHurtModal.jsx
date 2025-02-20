@@ -29,7 +29,7 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
             return updatedPlayer
         })
         setChangePlayerType(null)
-        console.log({ toSend });
+        // console.log({ toSend });
         onsubmit(toSend)
     }
 

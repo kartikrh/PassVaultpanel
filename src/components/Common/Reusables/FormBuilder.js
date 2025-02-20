@@ -84,7 +84,7 @@ const FormBuilder = forwardRef(
 
     const handleVideoChange = (field, event) => {
       const file = event.target.files[0];
-      console.log("file",file) // Get the selected video file
+      // console.log("file",file) // Get the selected video file
 
       // Update the form data state
       setFormData((prevFormData) => ({

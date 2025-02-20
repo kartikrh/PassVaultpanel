@@ -4,6 +4,18 @@ const RequestModal = ({ isOpen, toggle, data, fetchData }) => {
   const handleYesClick = () => {
     toggle();
   };
+  const handleCopyClick = () => {
+    if (data) {
+      const jsonData = JSON.stringify(data, null, 2); // Stringify with indentation
+      navigator.clipboard.writeText(jsonData)
+        .then(() => {
+          alert('Copied to clipboard');
+        })
+        .catch((err) => {
+          console.error('Failed to copy: ', err);
+        });
+    }
+  };
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-json-modal">
@@ -19,6 +31,7 @@ const RequestModal = ({ isOpen, toggle, data, fetchData }) => {
           <Button color="primary" onClick={handleYesClick}>
             Ok
           </Button>
+          <Button color="secondary" onClick={handleCopyClick}>Copy</Button>
         </ModalFooter>
       </Modal>
     </>

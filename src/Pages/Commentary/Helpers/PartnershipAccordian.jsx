@@ -88,7 +88,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
         });
 
         if (!filteredPartnerships.length) {
-            console.log("No partnerships found for the given key.");
+            // console.log("No partnerships found for the given key.");
             return null;
         }
 
