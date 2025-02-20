@@ -12,21 +12,21 @@ import { erf } from 'mathjs';
  */
 export const predictWinProbability = (
     teamAFinalScore,
-    teamBCurrentOvers,
-    teamBCurrentScore,
+    // teamBCurrentOvers,
+    // teamBCurrentScore,
     teamBExpectedFinalScore,
     stdDev = 10.0,
-    maxOvers = 10.0
+    // maxOvers = 10.0
 ) => {
-    // 1. If Team B has already exceeded the target, probability = 100%
-    if (teamBCurrentScore >= teamAFinalScore) {
-        return 1.0;
-    }
+    // // 1. If Team B has already exceeded the target, probability = 100%
+    // if (teamBCurrentScore >= teamAFinalScore) {
+    //     return 1.0;
+    // }
 
-    // 2. If innings are finished and Team B hasn't passed, probability = 0%
-    if (teamBCurrentOvers >= maxOvers) {
-        return 0.0;
-    }
+    // // 2. If innings are finished and Team B hasn't passed, probability = 0%
+    // if (teamBCurrentOvers >= maxOvers) {
+    //     return 0.0;
+    // }
 
     // 3. Model Team B's final score ~ Normal(µ, σ²)
     const mu = teamBExpectedFinalScore;
@@ -45,7 +45,6 @@ export const predictWinProbability = (
 
     // Clip to [0, 1] range
     probabilityBWins = Math.max(0.0, Math.min(probabilityBWins, 1.0));
-
     return probabilityBWins;
 };
 
