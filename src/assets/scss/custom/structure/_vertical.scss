@@ -953,24 +953,26 @@ body[data-theme="dark"]{
 
     .filter-dropdown {
         &__menu {
-            background-color: #1A1D23 !important; // Example: Set menu background to white
-            color: #FFFFFF !important; // Example: Set text color to black
+            background-color: $light-body-bg !important; // Example: Set menu background to white
+            color: $dark-score-body-bg !important; // Example: Set text color to black
         }
     }
 
     .filter-dropdown {
         &__option {
             &:hover {
-                background-color: #39424f !important;
+                background-color: $dark-body-bg !important;
+                color: $dark-font-color !important;
             }
 
             &--is-focused {
-                background-color: #39424f !important;
+                background-color: $dark-body-bg !important;
+                color: $dark-font-color !important;
             }
 
             &--is-selected {
-                background-color: #0056b3 !important; // Darker blue for selected option
-                color: #ffffff !important;
+                background-color: $dark-body-bg !important; // Darker blue for selected option
+                color: $dark-font-color !important;
             }
         }
     }
