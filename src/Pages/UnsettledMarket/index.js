@@ -69,7 +69,7 @@ const Index = () => {
       marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
       eventTypeId: latestValueFromTable?.eventTypeId || 0,
       competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
-      eventId: (latestValueFromTable?.competitionId !== competitionId || latestValueFromTable?.eventTypeId !== eventTypeId) ? 0 : latestValueFromTable?.eventId || 0,
+      commentaryId: (latestValueFromTable?.competitionId !== competitionId || latestValueFromTable?.eventTypeId !== eventTypeId) ? 0 : latestValueFromTable?.commentaryId || 0,
     };
     if (isSearch) {
       payload = {
@@ -80,7 +80,7 @@ const Index = () => {
     }
     if (latestValueFromTable?.eventTypeId === null) {
       payload.competitionId = null;
-      payload.eventId = null;
+      payload.commentaryId = null;
     }
     await axiosInstance
       .post(`/admin/eventMarket/all`, payload)

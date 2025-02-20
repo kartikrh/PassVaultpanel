@@ -612,7 +612,7 @@ const Index = forwardRef(
         if (
           propName == "eventTypeId" ||
           propName == "competitionId" ||
-          propName == "eventId"
+          propName == "commentaryId"
         ) {
           const first = Object.values(a);
           const second = Object.values(b);
@@ -1376,7 +1376,7 @@ const Index = forwardRef(
                               placeholder="Event List"
                               onChange={(e) => {
                                 if (e?.value !== selectedTableElements?.eventName?.value){
-                                  handleTableActions("eventId", e);
+                                  handleTableActions("commentaryId", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
                                     eventName: e,
@@ -1385,7 +1385,7 @@ const Index = forwardRef(
                               }}
                               options={eventList?.map((item) => ({
                                 label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
-                                value: item?.eventId,
+                                value: item?.commentaryId,
                               }))}
                               classNamePrefix="filter-dropdown"
                             />
