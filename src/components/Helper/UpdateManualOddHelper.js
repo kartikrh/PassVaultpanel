@@ -38,7 +38,7 @@ export const predictWinProbability = (
     // Calculate CDF using error function (erf)
     // Note: JavaScript's normal distribution CDF calculation using error function
     // CDF = 0.5 * (1 + erf(z / √2))
-    const cdfValue = 0.5 * (1 + erf(zValue / Math.sqrt(2)));
+    const cdfValue = 0.5 * (1 + erf(Number(zValue) / Math.sqrt(2)));
 
     // Calculate win probability
     let probabilityBWins = 1.0 - cdfValue;
