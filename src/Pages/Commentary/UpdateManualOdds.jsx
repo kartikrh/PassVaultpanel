@@ -1123,9 +1123,9 @@ export const UpdateManualOdds = () => {
                                     return (origPrice && origPrice > 0) ? Number(origPrice).toFixed(2).replace(/\.?0+$/, '') : '';
                                 })()}
                             </Typography>
-                            <Typography className="live-label-calculated">
+                            {!directLineEnabled && <Typography className="live-label-calculated">
                                 {(price && price > 0) ? Number(price).toFixed(2).replace(/\.?0+$/, '') : ''}
-                            </Typography>
+                            </Typography>}
                         </Box>
                     )}
                     <TextField
@@ -1545,6 +1545,24 @@ export const UpdateManualOdds = () => {
                 };
             }
 
+            // When directLine is enabled and not live, use original runner rates
+            if (!isLive && directLineEnabled) {
+                const originalRunnerData = originalRunner.find(or => or.runnerId === runner.runnerId);
+                if (originalRunnerData) {
+                    return {
+                        ...runner,
+                        backPrice: originalRunnerData.back.price,
+                        layPrice: originalRunnerData.lay.price,
+                        overRate: originalRunnerData.back.price,
+                        underRate: originalRunnerData.lay.price,
+                        backSize: runner.back.volume,
+                        laySize: runner.lay.volume,
+                        runnerId: runner.runnerId,
+                        line: runner.line || 0
+                    };
+                }
+            }
+
             const useSavedPrices = (!isLive && !directLineEnabled) || (event && event.shiftKey);
             return {
                 ...runner,
@@ -1654,7 +1672,7 @@ export const UpdateManualOdds = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData, settings, savedPrices, isLive]);
+    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData, settings, savedPrices, isLive, directLineEnabled, originalRunner]);
 
     useEffect(() => {
         fetchMarketData();
@@ -1970,120 +1988,180 @@ export const UpdateManualOdds = () => {
         };
     }, [socket, commentaryId, directLineEnabled, isLive]);
 
-    // Inside useEffect for INNINGS_RUN_DATA socket handler
     useEffect(() => {
         if (!socket) return;
 
+        const calculatePricesFromSelectedBack = (selectedBackPrice, settings) => {
+            if (selectedBackPrice === 0) {
+                return {
+                    selectedBack: 0,
+                    selectedLay: 1.01,
+                    nonSelectedBack: 1.01,
+                    nonSelectedLay: 0
+                };
+            }
+
+            // Calculate selected lay price first
+            const selectedLay = Number((selectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+            // Calculate non-selected prices using the formulas
+            const nonSelectedBack = Number((1 / (1 - (1 / selectedLay))).toFixed(2));
+            const nonSelectedLay = Number((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+            return {
+                selectedBack: selectedBackPrice,
+                selectedLay,
+                nonSelectedBack,
+                nonSelectedLay
+            };
+        };
+
+        const updateRunnerWithPrices = (runner, isSelected, prices, settings) => {
+            const { selectedBack, selectedLay, nonSelectedBack, nonSelectedLay } = prices;
+            const backPrice = isSelected ? selectedBack : nonSelectedBack;
+            const layPrice = isSelected ? selectedLay : nonSelectedLay;
+
+            // Special case for zero prices
+            if (backPrice === 0) {
+                return {
+                    ...runner,
+                    isSelected,
+                    back: { ...runner.back, price: 0 },
+                    lay: { ...runner.lay, price: 1.01 },
+                    b2: 0,
+                    b1: 0,
+                    l1: 0,
+                    l2: 0
+                };
+            }
+
+            const bRateDiff = parseFloat(settings.bRateDifferent);
+            const lRateDiff = parseFloat(settings.lRateDifferent);
+
+            return {
+                ...runner,
+                isSelected,
+                back: { ...runner.back, price: Number(backPrice.toFixed(2)) },
+                lay: { ...runner.lay, price: Number(layPrice.toFixed(2)) },
+                b2: Number((backPrice - (2 * bRateDiff)).toFixed(2)),
+                b1: Number((backPrice - bRateDiff).toFixed(2)),
+                l1: Number((layPrice + lRateDiff).toFixed(2)),
+                l2: Number((layPrice + (2 * lRateDiff)).toFixed(2))
+            };
+        };
+
         const handleInningsData = (marketData) => {
+            if (!directLineEnabled || isLive || !marketData?.length) return;
+
             console.log("Received innings data from socket:", marketData);
 
-            if (directLineEnabled && !isLive && marketData && marketData.length > 0) {
-                // Find current batting team's market data
-                const sortedMarkets = [...marketData].sort((a, b) => b.inningsId - a.inningsId);
-                const newIdSetting = [...marketData].sort((a, b) => b.teamId - a.teamId);
-                const currentInningsMarket = sortedMarkets[0];
+            const sortedMarkets = [...marketData].sort((a, b) => b.inningsId - a.inningsId);
+            const newIdSetting = [...marketData].sort((a, b) => b.teamId - a.teamId);
+            const currentInningsMarket = sortedMarkets[0];
 
-                if (!currentInningsMarket || !currentInningsMarket.runner || !currentInningsMarket.runner[0]) {
-                    console.log("No valid market data found");
-                    return;
-                }
-
-                const inningsData = {
-                    first_innings_score: currentInningsMarket.predefinedValue,
-                    second_innings_score: currentInningsMarket.runner[0].backPrice,
-                    current_over: currentInningsMarket.over,
-                    total_overs: 20,
-                    target: currentInningsMarket.predefinedValue,
-                    projected_score: currentInningsMarket.runner[0].backPrice
-                };
-
-                // Calculate probability
-                const probability = predictWinProbability(
-                    newIdSetting[0]?.runner?.[0]?.line,
-                    newIdSetting[1]?.runner?.[0]?.line,
-                    settings.favRatio,
-                    parseFloat(inningsData.total_overs)
-                );
-
-                console.log("Calculated probability:", probability);
-
-                // Convert to odds with margin
-                let [oddsB, oddsA] = decimalOddsTwoOutcomes(probability, settings.margin / 100);
-
-                // Handle special case for odds < 1.01
-                if (oddsB < 1.01) {
-                    oddsB = 0;
-                    oddsA = 1.01;
-                } else if (oddsA < 1.01) {
-                    oddsA = 0;
-                    oddsB = 1.01;
-                }
-
-                // Format odds to 2 decimal places
-                oddsB = Number(oddsB.toFixed(2));
-                oddsA = Number(oddsA.toFixed(2));
-
-                console.log("Calculated odds after adjustment:", { oddsB, oddsA });
-
-                // Update original runners
-                setOriginalRunner(prevRunners => {
-                    return prevRunners.map(prevRunner => {
-                        const isSelected = prevRunner.isSelected;
-                        const originalBackPrice = isSelected ? oddsB : oddsA;
-                        const originalLayPrice = originalBackPrice === 0 ? 1.01 :
-                            isSelected ? oddsA : oddsB;
-
-                        return {
-                            ...prevRunner,
-                            back: {
-                                price: Number(originalBackPrice.toFixed(2)),
-                                volume: prevRunner.back.volume
-                            },
-                            lay: {
-                                price: Number(originalLayPrice.toFixed(2)),
-                                volume: prevRunner.lay.volume
-                            }
-                        };
-                    });
-                });
-
-                // Update current runners using the same logic as originalRunner
-                setRunners(prevRunners => {
-                    return prevRunners.map(runner => {
-                        const isSelected = runner.isSelected;
-                        const backPrice = isSelected ? oddsB : oddsA;
-                        const layPrice = backPrice === 0 ? 1.01 :
-                            isSelected ? oddsA : oddsB;
-
-                        // If back price is 0, set specific values
-                        if (backPrice === 0) {
-                            return {
-                                ...runner,
-                                back: { ...runner.back, price: 0 },
-                                lay: { ...runner.lay, price: 1.01 },
-                                b2: 0,
-                                b1: 0,
-                                l1: 0,
-                                l2: 0
-                            };
-                        }
-
-                        // Calculate rates for non-zero back prices
-                        const bRateDiff = parseFloat(settings.bRateDifferent);
-                        const lRateDiff = parseFloat(settings.lRateDifferent);
-
-                        return {
-                            ...runner,
-                            back: { ...runner.back, price: Number(backPrice.toFixed(2)) },
-                            lay: { ...runner.lay, price: Number(layPrice.toFixed(2)) },
-                            b2: Number((backPrice - (2 * bRateDiff)).toFixed(2)),
-                            b1: Number((backPrice - bRateDiff).toFixed(2)),
-                            l1: Number((layPrice + lRateDiff).toFixed(2)),
-                            l2: Number((layPrice + (2 * lRateDiff)).toFixed(2))
-                        };
-                    });
-                });
+            if (!currentInningsMarket?.runner?.[0]) {
+                console.log("No valid market data found");
+                return;
             }
+
+            // Calculate probability and odds
+            const probability = predictWinProbability(
+                newIdSetting[1]?.runner?.[0]?.line,
+                newIdSetting[0]?.runner?.[0]?.line,
+                settings.favRatio,
+                20 // total overs
+            );
+
+            let [oddsB, oddsA] = decimalOddsTwoOutcomes(probability, settings.margin / 100);
+
+            // Handle special case for odds < 1.01
+            if (oddsB < 1.01) {
+                oddsB = 0;
+                oddsA = 1.01;
+            } else if (oddsA < 1.01) {
+                oddsA = 0;
+                oddsB = 1.01;
+            }
+
+            oddsB = Number(oddsB.toFixed(2));
+            oddsA = Number(oddsA.toFixed(2));
+
+            // Create odds mapping object using teamId
+            const oddsObj = {
+                [newIdSetting[0]?.teamId]: oddsB,
+                [newIdSetting[1]?.teamId]: oddsA
+            };
+
+            console.log("Odds by team:", oddsObj);
+
+            // Find the smallest non-zero back price
+            const nonZeroOdds = Object.entries(oddsObj)
+                .filter(([_, odds]) => odds > 0);
+
+            if (!nonZeroOdds.length) {
+                console.log("No valid odds found");
+                return;
+            }
+
+            const [selectedTeamId, selectedBackPrice] = nonZeroOdds.reduce(
+                (min, curr) => curr[1] < min[1] ? curr : min,
+                nonZeroOdds[0]
+            );
+
+            console.log("Selected team and price:", { selectedTeamId, selectedBackPrice });
+
+            // Calculate all prices based on the selected back price
+            const prices = calculatePricesFromSelectedBack(selectedBackPrice, settings);
+            console.log("Calculated prices:", prices);
+
+            // Update runners
+            const updateRunners = (prevRunners) => {
+                return prevRunners.map(runner => {
+                    // Convert teamId to string for comparison since it might come as number
+                    const isSelected = runner.teamId.toString() === selectedTeamId.toString();
+
+                    console.log(`Processing runner:`, {
+                        runnerId: runner.runnerId,
+                        teamId: runner.teamId,
+                        selectedTeamId,
+                        isSelected,
+                        currentPrices: {
+                            back: runner.back.price,
+                            lay: runner.lay.price
+                        }
+                    });
+
+                    const updatedRunner = updateRunnerWithPrices(runner, isSelected, prices, settings);
+
+                    console.log(`Updated prices for runner ${runner.runnerId}:`, {
+                        isSelected,
+                        back: updatedRunner.back.price,
+                        lay: updatedRunner.lay.price
+                    });
+
+                    return updatedRunner;
+                });
+            };
+
+            // Update both original and current runners
+            setOriginalRunner(prevRunners => updateRunners(prevRunners));
+            setRunners(prevRunners => {
+                const updatedRunners = updateRunners(prevRunners);
+
+                // Find selected runner and update details
+                const selectedRunner = updatedRunners.find(r => r.teamId.toString() === selectedTeamId.toString());
+                if (selectedRunner) {
+                    setSelectedRunner(selectedRunner.runnerId);
+                    setSelectedRunnerDetails(prev => ({
+                        ...prev,
+                        runnerId: selectedRunner.runnerId,
+                        main: Math.floor(selectedBackPrice).toString(),
+                        point: ((selectedBackPrice % 1) * 100).toFixed(0).padStart(2, '0')
+                    }));
+                }
+
+                return updatedRunners;
+            });
         };
 
         if (directLineEnabled && !isLive) {
