@@ -1,34 +1,38 @@
-import { erf } from 'mathjs';
-
 /**
  * Predicts the probability that Team B will win using a simple Normal distribution model.
  * @param {number} teamAFinalScore - The final score (target) set by Team A
- * @param {number} teamBCurrentOvers - Overs that Team B has already batted (e.g., 5.3 overs = 5.5)
- * @param {number} teamBCurrentScore - Team B's current runs at the time of prediction
  * @param {number} teamBExpectedFinalScore - Estimated final score for Team B (mean of Normal)
  * @param {number} stdDev - Standard deviation for Team B's final score (default: 10.0)
- * @param {number} maxOvers - Maximum overs in the innings (default: 10.0)
  * @returns {number} Probability (0.0 to 1.0) that Team B will reach or exceed Team A's score
  */
+
+// Custom approximation of the error function (erf)
+const customErf = (x) => {
+    // Coefficients for approximation
+    const a1 =  0.254829592;
+    const a2 = -0.284496736;
+    const a3 =  1.421413741;
+    const a4 = -1.453152027;
+    const a5 =  1.061405429;
+    const p  =  0.3275911;
+
+    // Save the sign of x
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x);
+
+    // Compute approximation
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+    return sign * y;
+};
+
 export const predictWinProbability = (
     teamAFinalScore,
-    // teamBCurrentOvers,
-    // teamBCurrentScore,
     teamBExpectedFinalScore,
-    stdDev = 10.0,
-    // maxOvers = 10.0
+    stdDev = 10.0
 ) => {
-    // // 1. If Team B has already exceeded the target, probability = 100%
-    // if (teamBCurrentScore >= teamAFinalScore) {
-    //     return 1.0;
-    // }
-
-    // // 2. If innings are finished and Team B hasn't passed, probability = 0%
-    // if (teamBCurrentOvers >= maxOvers) {
-    //     return 0.0;
-    // }
-
-    // 3. Model Team B's final score ~ Normal(µ, σ²)
+    // Model Team B's final score ~ Normal(µ, σ²)
     const mu = teamBExpectedFinalScore;
     const sigma = stdDev;
 
@@ -36,16 +40,13 @@ export const predictWinProbability = (
     const zValue = (teamAFinalScore - mu) / sigma;
 
     // Calculate CDF using error function (erf)
-    // Note: JavaScript's normal distribution CDF calculation using error function
-    // CDF = 0.5 * (1 + erf(z / √2))
-    const cdfValue = 0.5 * (1 + erf(Number(zValue) / Math.sqrt(2)));
+    const cdfValue = 0.5 * (1 + customErf(zValue / Math.sqrt(2)));
 
     // Calculate win probability
     let probabilityBWins = 1.0 - cdfValue;
 
     // Clip to [0, 1] range
-    probabilityBWins = Math.max(0.0, Math.min(probabilityBWins, 1.0));
-    return probabilityBWins;
+    return Math.max(0.0, Math.min(probabilityBWins, 1.0));
 };
 
 /**
@@ -62,7 +63,7 @@ export const decimalOddsTwoOutcomes = (pBFair, margin = 0.05) => {
     const pBInflated = pBFair * (1 + margin);
     const pAInflated = pAFair * (1 + margin);
 
-    // Calculate decimal odds (1.025 factor matches Python implementation)
+    // Calculate decimal odds
     const oddsB = 1.025 / pBInflated;
     const oddsA = 1.025 / pAInflated;
 
