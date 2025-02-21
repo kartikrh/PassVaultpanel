@@ -1,3 +1,4 @@
+// import {erf} from 'mathjs'
 /**
  * Predicts the probability that Team B will win using a simple Normal distribution model.
  * @param {number} teamAFinalScore - The final score (target) set by Team A
@@ -5,7 +6,6 @@
  * @param {number} stdDev - Standard deviation for Team B's final score (default: 10.0)
  * @returns {number} Probability (0.0 to 1.0) that Team B will reach or exceed Team A's score
  */
-
 // Custom approximation of the error function (erf)
 const customErf = (x) => {
     // Coefficients for approximation
@@ -40,8 +40,9 @@ export const predictWinProbability = (
     const zValue = (teamAFinalScore - mu) / sigma;
 
     // Calculate CDF using error function (erf)
-    const cdfValue = 0.5 * (1 + customErf(zValue / Math.sqrt(2)));
-
+    const cdfValue = (0.5 * (1 + customErf(zValue / Math.sqrt(2)))).toFixed(2);
+    // const cdfValueMathjs = (0.5 * (1 + erf(zValue / Math.sqrt(2)))).toFixed(2);
+    // console.log("cdfValue", cdfValue)
     // Calculate win probability
     let probabilityBWins = 1.0 - cdfValue;
 
