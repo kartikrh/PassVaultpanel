@@ -413,6 +413,7 @@ export const UpdateManualOdds = () => {
     const [abSuspend, setAbSuspend] = useState(false);
     const [tempRateDiff, setTempRateDiff] = useState(null);
     const [directLineEnabled, setDirectLineEnabled] = useState(false);
+    const [socketMarketData, setSocketMarketData] = useState([]);
     const [eventData, setEventData] = useState({
         comDetails: null,
         teams: [],
@@ -2054,9 +2055,37 @@ export const UpdateManualOdds = () => {
             if (!directLineEnabled || isLive || !marketData?.length) return;
 
             console.log("Received innings data from socket:", marketData);
+            console.log("previous marketData", socketMarketData);
 
-            const sortedMarkets = [...marketData].sort((a, b) => b.inningsId - a.inningsId);
-            const newIdSetting = [...marketData].sort((a, b) => b.teamId - a.teamId);
+            let updatedMarketData = [];
+
+            if (socketMarketData.length > 0) {
+                // Loop through the incoming marketData and check if each marketId already exists in socketMarketData
+                updatedMarketData = socketMarketData.map((existingMarket) => {
+                    const newMarket = marketData.find(m => m?.marketId == existingMarket?.marketId);
+                    if (newMarket) {
+                       // If the marketId exists in both the current and new data, we merge them (updating with the new data)
+                       return { ...existingMarket, ...newMarket };
+                    }
+                  return existingMarket;
+                });
+
+                // Now add any new markets from marketData that aren't in socketMarketData
+                marketData.forEach(newMarket => {
+                    const marketExists = socketMarketData.some(m => m?.marketId == newMarket?.marketId);
+                    if (!marketExists) {
+                      updatedMarketData.push(newMarket);
+                    }
+                });
+            } else {
+               updatedMarketData = marketData;
+            }
+            console.log("updatedMarketData", updatedMarketData);
+
+            setSocketMarketData(updatedMarketData);
+
+            const sortedMarkets = [...updatedMarketData].sort((a, b) => b.inningsId - a.inningsId);
+            const newIdSetting = [...updatedMarketData].sort((a, b) => b.teamId - a.teamId);
             const currentInningsMarket = sortedMarkets[0];
 
             if (!currentInningsMarket?.runner?.[0]) {
