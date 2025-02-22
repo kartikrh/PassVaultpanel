@@ -1184,7 +1184,9 @@ export const UpdateManualOdds = () => {
         try {
             const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
             if (response?.result) {
-
+                if(Number(response?.result.market[0].rateSourceRefID) == 0){
+                    setIsLive(false)
+                }
                 if (!response.result.market) {
                     navigate("/manualOddsMarket");
                     return;
@@ -1749,11 +1751,11 @@ export const UpdateManualOdds = () => {
             }
         };
 
-        console.log("Setting up ball status handler with current AB states:", { abOpen, abSuspend });
+        // console.log("Setting up ball status handler with current AB states:", { abOpen, abSuspend });
         socket.on(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
 
         return () => {
-            console.log("Cleaning up ball status handler");
+            // console.log("Cleaning up ball status handler");
             socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
         };
     }, [socket, abOpen, abSuspend, runners, marketStatus]);
@@ -2063,7 +2065,7 @@ export const UpdateManualOdds = () => {
                 console.log("No valid market data found");
                 return;
             }
-
+            console.log("settings.favRatio", settings.favRatio)
             // Calculate probability and odds
             const probability = predictWinProbability(
                 newIdSetting[1]?.runner?.[0]?.line,
@@ -2626,6 +2628,7 @@ export const UpdateManualOdds = () => {
                                             const activeColumns = getActiveColumns(settings.showRate);
                                             return (
                                                 <StyledTableRow key={runner.runnerId} selected={runner.isSelected}>
+                                                    {console.log("runner", runner)}
                                                     <TableCell>
                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                             <StyledRadio
