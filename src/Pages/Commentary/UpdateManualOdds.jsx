@@ -1200,7 +1200,9 @@ export const UpdateManualOdds = () => {
                 const marketData = response.result.market?.[0];
                 const currentMarketStatus = marketData?.status?.toString();
                 setMarketStatus(currentMarketStatus);
-
+                if (response.result.rsMarket) {
+                  setSocketMarketData([response.result.rsMarket]);
+                }
                 // Disable all interactions if market is closed
                 if (currentMarketStatus === CLOSE_VALUE.toString()) {
                     setSettings(prev => ({
