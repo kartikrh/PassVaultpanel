@@ -2167,7 +2167,7 @@ export const UpdateManualOdds = () => {
         const handleInningsData = (marketData) => {
             if (!directLineEnabled || isLive || !marketData?.length) return;
     
-            console.log("Received innings data from socket: *********", marketData);
+            console.log("Received innings data from socket:", marketData);
             console.log("previous marketData", socketMarketData);
     
             let updatedMarketData = [];
@@ -2208,7 +2208,7 @@ export const UpdateManualOdds = () => {
                 socket.off(INNINGS_RUN_DATA, handleInningsData);
             }
         };
-    }, [socket, directLineEnabled, isLive, settings]);
+    }, [socket, directLineEnabled, isLive, settings, socketMarketData]);
 
     useEffect(() => {
         if (!directLineEnabled || isLive || !socketMarketData?.length) return;
@@ -2496,7 +2496,7 @@ export const UpdateManualOdds = () => {
                                         size="small"
                                         fullWidth
                                         value={settings.margin}
-                                        inputProps={{ step: "0.01" }}
+                                        inputProps={{ step: "1.00" }}
                                         onChange={(e) => handleSettingChange('margin', e.target.value)}
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
@@ -2557,7 +2557,7 @@ export const UpdateManualOdds = () => {
                                         size="small"
                                         fullWidth
                                         value={settings.favRatio}
-                                        inputProps={{ step: "0.01" }}
+                                        inputProps={{ step: "1.00" }}
                                         onChange={(e) => handleSettingChange('favRatio', e.target.value)}
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
