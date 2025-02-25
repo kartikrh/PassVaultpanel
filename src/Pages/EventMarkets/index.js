@@ -34,7 +34,6 @@ const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
   const commentaryId = +sessionStorage.getItem('commentaryEventMarketId') || 0;
   const commentaryDetails = JSON.parse(sessionStorage.getItem('commentaryEventMarketDetails') || "{}");
-
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
@@ -88,20 +87,24 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    setEventTypeActive(tableActions?.isActive)
+    // Use latestValueFromTable if available; otherwise, fallback to tableActions
+    const dataSource = latestValueFromTable || tableActions;
+  
+    setEventTypeActive(dataSource?.isActive);
+
     let payload = {
-      ...(latestValueFromTable || tableActions),
-      rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
-      marketTypeId: latestValueFromTable?.marketTypeId || 0,
-      marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
-      commentaryId: (latestValueFromTable?.competitionId !== competitionId || latestValueFromTable?.eventTypeId !== eventTypeId) ? 0 : latestValueFromTable?.commentaryId || 0,
+      ...dataSource,
+      rateSourceRefId: dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
+      marketTypeId: dataSource?.marketTypeId || 0,
+      marketTypeCategoryId: dataSource?.marketTypeId !== selectedMarketType ? 0 : dataSource?.marketTypeCategoryId || 0,
+      eventTypeId: dataSource?.eventTypeId || 0,
+      competitionId: dataSource?.eventTypeId !== eventTypeId ? 0 : dataSource?.competitionId || 0,
+      commentaryId: (dataSource?.competitionId !== competitionId || dataSource?.eventTypeId !== eventTypeId) ? 0 : dataSource?.commentaryId || 0,
     };
     if (commentaryId !== 0) {
       payload = {
-        ...(latestValueFromTable || tableActions),
-        rateSourceRefId: latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
+        ...dataSource,
+        rateSourceRefId: dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
         commentaryId: commentaryId
       };
     }
@@ -112,7 +115,7 @@ const Index = () => {
         endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
-    if (latestValueFromTable?.eventTypeId === null) {
+    if (dataSource?.eventTypeId === null) {
       payload.competitionId = null;
       payload.commentaryId = null;
     }
@@ -120,10 +123,7 @@ const Index = () => {
       .post(`/admin/eventMarket/all`, payload)
       .then((response) => {
         const apiData = response?.result;
-        let apiDataIdList = [];
-        apiData.forEach((ele) => {
-          apiDataIdList.push(ele?.eventMarketId);
-        });
+        let apiDataIdList = apiData.map((ele) => ele?.eventMarketId);
         setData(apiData);
         setDataIndexList(apiDataIdList);
         setCheckedList([]);
