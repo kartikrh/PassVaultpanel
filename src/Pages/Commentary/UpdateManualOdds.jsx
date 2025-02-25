@@ -2073,11 +2073,11 @@ export const UpdateManualOdds = () => {
 
         // Handle special case for odds < 1.01
         if (oddsB < 1.01) {
-            oddsB = 0;
-            oddsA = 1.01;
-        } else if (oddsA < 1.01) {
             oddsA = 0;
-            oddsB = 1.01;
+            oddsB = 1.00;
+        } else if (oddsA < 1.01) {
+            oddsA = 1.00;
+            oddsB = 0;
         }
 
         oddsB = Number(oddsB.toFixed(2));
