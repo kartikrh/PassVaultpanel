@@ -109,7 +109,7 @@ const Index = () => {
                 </thead>
                 <tbody>
                   {data
-                    .sort((a, b) => a.marketTypeId - b.marketTypeId)
+                    .sort((a, b) => a.displayOrder - b.displayOrder)
                     .map((record) => (
                       <tr key={record.marketTypeId}>
                         <td>{record.marketTypeId}</td>
@@ -139,8 +139,8 @@ const Index = () => {
                                     {record.marketTypeCategories
                                       .sort(
                                         (a, b) =>
-                                          a.marketTypeCategoryId -
-                                          b.marketTypeCategoryId
+                                          a.displayOrder -
+                                          b.displayOrder
                                       )
                                       .map((category) => (
                                         <tr key={category.marketTypeCategoryId}>

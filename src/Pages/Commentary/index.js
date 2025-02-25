@@ -412,6 +412,14 @@ const Index = () => {
     sessionStorage.removeItem("sessionResultId");
     sessionStorage.removeItem("sessionResultDetails");
   };
+  const handleCloseMarketClick = (details) => {
+    const url = new URL(window.location.origin + "/unsettledMarket");
+    sessionStorage.setItem('closeMarketId', "" + details?.commentaryId);
+    sessionStorage.setItem('closeMarketDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+    sessionStorage.removeItem("closeMarketId");
+    sessionStorage.removeItem("closeMarketDetails");
+  };
   const handleMarketResultClick = (details) => {
     const url = new URL(window.location.origin + "/setMarketResult");
     sessionStorage.setItem('marketResultId', "" + details?.commentaryId);
@@ -1247,22 +1255,7 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip>
-            {record.isPredictMarket && <Tooltip
-              title={"Event Market"}
-              color={"#e8e8ea"}
-              overlayInnerStyle={{ color: "#000" }}
-            >
-              <Button
-                color={"danger"}
-                size="sm"
-                className="bstn"
-                onClick={() => {
-                  handleEventMarketClick(record)
-                }}
-              >
-                <i class="bx bxs-up-arrow-square"></i>
-              </Button>
-            </Tooltip>}
+            
 
           {record.isPredictMarket &&
           <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
@@ -1545,6 +1538,22 @@ const Index = () => {
         <div className="d-flex align-items-center gap-2">
         {record.isPredictMarket &&
         <>
+        {record.isPredictMarket && <Tooltip
+              title={"Event Market"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color={"danger"}
+                size="sm"
+                className="bstn"
+                onClick={() => {
+                  handleEventMarketClick(record)
+                }}
+              >
+                <i class="bx bxs-up-arrow-square"></i>
+              </Button>
+            </Tooltip>}
           <Tooltip
             title={"Session Result"}
             color={"#e8e8ea"}
@@ -1561,6 +1570,7 @@ const Index = () => {
               S
             </Button>
           </Tooltip>
+          
           <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
               color={"info"}
@@ -1571,6 +1581,23 @@ const Index = () => {
               }}
             >
               M
+            </Button>
+          </Tooltip>
+
+          <Tooltip
+            title={"Close Market"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"warning"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleCloseMarketClick(record);
+              }}
+            >
+              C
             </Button>
           </Tooltip>
         </>}

@@ -532,7 +532,7 @@ const Commentary = (props) => {
             return { ...actualPrevData, ...updatePartnership, isActive: freezePlayers ? false : true }
         })
         setSaveToDb(true)
-        // }
+        console.log("updatesRuns", currentPartnership)
     }
     const updateExtras = (type, runs, isBoundary = false) => {
         setCurrentBall({})
@@ -968,6 +968,7 @@ const Commentary = (props) => {
         setPlayerUpdateList([].concat(allPlayersToUpdate, playerUpdateList || []))
         if (playerToChange === CURRENT_BOWLER) setIsOverChange(true)
         if (isWicketChange) {
+            console.log("isWicketChange currentPartnership", currentPartnership)
             const currentBallDetails = { ...currentBall }
             currentBallDetails["nextBatStrikeId"] = updatedOnPitchPlayer[ON_STRIKE]?.commentaryPlayerId
             currentBallDetails["nextBatNonStrikeId"] = updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId
@@ -1870,6 +1871,7 @@ const Commentary = (props) => {
         }
     }
     const updateTempToMain = () => {
+        console.log("_currentPartnership", _currentPartnership)
         if (!isEmpty(_currentOver)) {
             setCurrentOver(_currentOver)
             _setCurrentOver()
@@ -1890,6 +1892,7 @@ const Commentary = (props) => {
             setTeams(_teams)
             _setTeams()
         }
+        console.log("update to main currentPartnership", currentPartnership)
     }
     useEffect(() => {
         if (superOverApiData) {
@@ -2090,11 +2093,11 @@ const Commentary = (props) => {
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
         //   console.log("commentaryDataToUpdate?.commentaryPartnershipDetails", commentaryDataToUpdate?.commentaryPartnershipDetails)
-          console.log("partnershipFromApi", partnershipFromApi)
-          console.log("currentPartnership ----> ", currentPartnership)
         //   console.log("currentPartnership?.commentaryPartnershipId", currentPartnership?.commentaryPartnershipId)
         //   console.log("+currentPartnership?.commentaryPartnershipId == 0", +currentPartnership?.commentaryPartnershipId)
         //   console.log("isEmpty(currentPartnership)", isEmpty(currentPartnership))
+        console.log("partnershipFromApi", partnershipFromApi)
+        console.log("currentPartnership ----> ", currentPartnership)
         //   console.log("!isEmpty(partnershipFromApi)", isEmpty(partnershipFromApi))
         //   console.log("(!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))", (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
           console.log("full condition", (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))&&(!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0))))
@@ -2394,6 +2397,7 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }
             })}
+            
             // undo
             {...(undoOverPopup && {
                 undoOverPopupIsOpen : true,
@@ -2418,6 +2422,24 @@ const Commentary = (props) => {
                 },
                 onLastInnigsClick : () => { },
                 onPlayerSelectionClick : {onUndoPlayerSelection}
+            })}
+
+            // complete Match Modal
+            {...(completeMatchModal && {
+                completeMatchisOpen: completeMatchModal,
+                completeMatchtoggle:() => { setCompleteMatchModal(undefined) },
+                completeMatchNoClick:() => { setCompleteMatchModal(undefined) },
+                completeMatchYesClick:() => completeMatch()
+            })}
+
+            // Winner
+            {...(winnerAnnouncement && {
+                winnerAnnouncementisOpen: winnerAnnouncement,
+                winnerAnnouncement : winnerAnnouncement,
+                onExitClick:() => {
+                    setWinnerAnnouncement(undefined)
+                    navigate("/commentary")
+                }
             })}
         />
         : <CommentaryScreen
@@ -2536,13 +2558,13 @@ const Commentary = (props) => {
             onLastInnigsClick={() => { }}
             onPlayerSelectionClick={onUndoPlayerSelection}
         />}
-        {completeMatchModal && <CompleteCurrentMatchModal
+        {(!props?.isNewUi && completeMatchModal) && <CompleteCurrentMatchModal
             isOpen={completeMatchModal}
             toggle={() => { setCompleteMatchModal(undefined) }}
             onNoClick={() => { setCompleteMatchModal(undefined) }}
             onYesClick={() => completeMatch()}
         />}
-        {winnerAnnouncement && <WinnerModal
+        {(!props?.isNewUi && winnerAnnouncement) && <WinnerModal
             isOpen={winnerAnnouncement ? true : false}
             winnerAnnouncement={winnerAnnouncement}
             onExitClick={() => {

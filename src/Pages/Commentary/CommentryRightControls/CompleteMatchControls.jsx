@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import "../CommentaryCss.css";
-const ChangeInningsControls = ({ isOpen, toggle, onYesClick, onNoClick }) => {
+const CompleteMatchControls = ({ isOpen, toggle, onYesClick, onNoClick }) => {
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && e.shiftKey) onNoClick();
     else if (e.key === "Enter") onYesClick();
@@ -15,8 +15,8 @@ const ChangeInningsControls = ({ isOpen, toggle, onYesClick, onNoClick }) => {
   return (
     <div className="col-8 d-flex flex-column m-0 p-0">
       <div>
-        <div>Change Innings</div>
-        <div>Do you want to end the current innings?</div>
+        <div>Complete Match</div>
+        <div>Do you want to complete this match?</div>
       </div>
       <div className="d-flex gap-2 mt-4">
         <div className="col-6" onClick={onYesClick}>
@@ -30,4 +30,4 @@ const ChangeInningsControls = ({ isOpen, toggle, onYesClick, onNoClick }) => {
   );
 };
 
-export default ChangeInningsControls;
+export default CompleteMatchControls;
