@@ -70,9 +70,23 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
     
     useEffect(() => {     
         if (Object.keys(categorisedData).length > 0) {
+          if(deactivatedMarkets.length > 0) {
+            const updatedDeactivatedMarkets = deactivatedMarkets.map((market) => {
+                const updatedValues = Object.values(categorisedData).flat();
+                const matchedData = updatedValues?.find(entry => entry.marketId == market.marketId);
+                if (matchedData) {
+                    return { ...market, ...matchedData };
+                }
+                return market;
+            });
+            setDeactivatedMarkets(updatedDeactivatedMarkets);
+          }
             const initialActiveMarkets = {};
             Object.entries(categorisedData).forEach(([category, markets]) => {
-                initialActiveMarkets[category] = [...markets];
+                const activeMarketsForCategory = markets.filter(market => 
+                    !deactivatedMarkets.some(deactivatedMarket => deactivatedMarket.marketId == market.marketId)
+                );
+                initialActiveMarkets[category] = [...activeMarketsForCategory];
             });
             setActiveMarkets(initialActiveMarkets);
         }
