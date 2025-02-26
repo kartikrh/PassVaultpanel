@@ -33,7 +33,7 @@ const getOrdinalSuffix = (n) => {
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    document.title = "commentaryMarkets";
+    // document.title = "Create Market";
     const [marketData, setMarketData] = useState({
         teamAndPlayers: [],
         marketTemplate: [],
@@ -56,7 +56,7 @@ export const CreateEventMarket = () => {
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
-            document.title = `MT ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
+            document.title = `Create Market - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
     }, [commentaryDetails])
 
     useEffect(() => {
@@ -1223,6 +1223,7 @@ export const CreateEventMarket = () => {
                 title: () => (
                     <input
                         type="checkbox"
+                        className='mx-2'
                         checked={selectedMarkets[sectionKey]?.every(Boolean)}
                         onChange={() => handleSelectAllInSection(sectionKey)}
                     />
@@ -1311,22 +1312,24 @@ export const CreateEventMarket = () => {
     };
 
     const renderMarketCategory = (categoryId, markets, sectionKey) => (
-        <AccordionItem key={categoryId} className="rounded-0">
-            <AccordionHeader targetId={categoryId} className="market-category-header">
+        <Accordion open={openCategory} toggle={toggleCategory} key={sectionKey}>
+        <AccordionItem className="rounded-0">
+            <AccordionHeader targetId={sectionKey} className="market-category-header">
                 {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
             </AccordionHeader>
-            <AccordionBody accordionId={categoryId} className="market-category-body">
+            <AccordionBody accordionId={sectionKey} className="market-category-body">
                {renderTable(markets, sectionKey)}
             </AccordionBody>
         </AccordionItem>
+        </Accordion>
     );
     const renderMarketType = (typeId, categories, teamId) => (
-        <Accordion open={openCategory} toggle={toggleCategory} key={typeId}>
+        <>
             {Object.entries(categories).map(([categoryId, markets]) => {
                 const sectionKey = `${teamId || 'oneTimeMarket'}_##_${typeId}_##_${categoryId}`;
                 return renderMarketCategory(categoryId, markets, sectionKey);
             })}
-        </Accordion>
+        </>
     );
 
     // const typeOrder = ["batsmen", "wicket-keeper", "allrounder", "bowler"];
@@ -1388,10 +1391,10 @@ export const CreateEventMarket = () => {
         });
 
         return (
-            <>
-        <Accordion open={openMarket} toggle={toggleMarket}>
+          <>
             {Object.entries(sections).map(([sectionKey, section]) => (
-                <AccordionItem key={sectionKey} className="rounded-0">
+              <Accordion open={openMarket} toggle={toggleMarket} key={sectionKey}>
+                <AccordionItem className="rounded-0">
                     <AccordionHeader targetId={sectionKey} className="market-category-header">{section.title}</AccordionHeader>
                     <AccordionBody accordionId={sectionKey} className="market-category-body p-2">
                         {Object.entries(section.data).map(([typeId, categories]) =>
@@ -1399,9 +1402,9 @@ export const CreateEventMarket = () => {
                         )}
                     </AccordionBody>
                 </AccordionItem>
+              </Accordion>
             ))}
-        </Accordion>
-            </>
+          </>
         );
     };
 

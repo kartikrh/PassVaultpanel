@@ -30,7 +30,8 @@ export const ManualOddsMarket = () => {
         rateSourceRefID: "",
         favRatio: "",
     });
-    const commentaryId = localStorage.getItem("updateManualOddsCommentaryId")
+    const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
+    const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
     let navigate = useNavigate();
     const [eventData, setEventData] = useState({
         comDetails: null,
@@ -41,6 +42,11 @@ export const ManualOddsMarket = () => {
     const socket = createSocket();
 
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (!isEmpty(commentaryDetails))
+            document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
+    }, [commentaryDetails])
 
     const fetchMarketData = async () => {
         setIsLoading(true);

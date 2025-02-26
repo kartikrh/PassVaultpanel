@@ -495,12 +495,13 @@ const Index = () => {
     const url = new URL(window.location.origin + "/updateCommentaryFeature");
     window.open(url.href, '_blank');
   };
-  const handleUpdateManualOddsClick = (id) => {
-    // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateManualOddsCommentaryId', "" + id);
-    const url = new URL(window.location.origin + "/manualOddsMarket");
-    window.open(url.href, '_blank');
-  };
+  // const handleUpdateManualOddsClick = (details) => {
+  //   // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
+  //   localStorage.setItem('updateManualOddsCommentaryId', "" + details?.commentaryId);
+  //   localStorage.setItem('updateManualOddsCommentaryDetails', "" + JSON.stringify(details));
+  //   const url = new URL(window.location.origin + "/manualOddsMarket");
+  //   window.open(url.href, '_blank');
+  // };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
@@ -1265,7 +1266,7 @@ const Index = () => {
     //           size="sm"
     //           className="btn"
     //           onClick={() => {
-    //             handleUpdateManualOddsClick(record.commentaryId);
+    //             handleUpdateManualOddsClick(record);
     //           }}
     //         >
     //           <i class='bx bx-arrow-to-right' ></i>
@@ -1497,7 +1498,7 @@ const Index = () => {
     //         size="sm"
     //         className="btn"
     //         onClick={() => {
-    //           handleUpdateManualOddsClick(record.commentaryId);
+    //           handleUpdateManualOddsClick(record);
     //         }}
     //       >
     //         <i class='bx bx-arrow-to-right' ></i>

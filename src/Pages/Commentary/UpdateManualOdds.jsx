@@ -397,6 +397,7 @@ export const UpdateManualOdds = () => {
     const navigate = useNavigate();
     const socket = createSocket();
     const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
+    const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
     // const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [isLive, setIsLive] = useState(true);
     const [rateSourceRefID, setRateSourceRefID] = useState([]);
@@ -449,6 +450,11 @@ export const UpdateManualOdds = () => {
         point: ''
     });
     const settingsRef = useRef(settings);
+
+    useEffect(() => {
+        if (!isEmpty(commentaryDetails))
+            document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
+    }, [commentaryDetails])
 
     const handlePriceCalculations = (backPrice, isSelected) => {
         backPrice = parseFloat(backPrice || 0);
