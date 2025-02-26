@@ -61,6 +61,8 @@ import { Avatar } from "@mui/material";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage";
 import UndoOverControls from "./CommentryRightControls/UndoOverControls";
 import UndoInnnigsControls from "./CommentryRightControls/UndoInnnigsControls";
+import CompleteMatchControls from "./CommentryRightControls/CompleteMatchControls";
+import WinnerControl from "./CommentryRightControls/WinnerControl";
 
 const CenteredBadge = styled.div`
   position: absolute;
@@ -213,7 +215,14 @@ const NewCommentaryScreen = ({
   undoOverPopupIsOpen,
   undoInningsPopupIsOpen,
   undoInningsPopupToggle,
-  onPlayerSelectionClick
+  onPlayerSelectionClick,
+  completeMatchisOpen,
+  completeMatchtoggle,
+  completeMatchNoClick,
+  completeMatchYesClick,
+  winnerAnnouncementisOpen,
+  winnerAnnouncement,
+  onExitClick
 }) => {
   const [changePlayerType, setChangePlayerType] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -828,9 +837,9 @@ const NewCommentaryScreen = ({
               <div className="d-flex justify-content-center m-0 p-0 w-100 g-1">
                 {actionPopup ||
                 showWicketModal ||
-                extrasTypeIsOpen ||
-                showChangeOverModal ||
-                showPlayerModal ||
+                extrasTypeIsOpen || winnerAnnouncementisOpen ||
+                showChangeOverModal || completeMatchisOpen ||
+                showPlayerModal || inningsChangeisOpen ||
                 cricketFieldIsOpen || undoOverPopupIsOpen || undoInningsPopupIsOpen ? (
                   <div
                     className={` col-12 row g-2 ${
@@ -898,9 +907,31 @@ const NewCommentaryScreen = ({
                         toggle={undoInningsPopupToggle}
                         onPlayerSelectionClick={onPlayerSelectionClick}
                       />
-                    ): (
+                    ) : inningsChangeisOpen ? (
+                      <ChangeInningsControls
+                        isOpen={true}
+                        toggle={inningsChangetoggle}
+                        onNoClick={() => {inningsChangeNoClick()}}
+                        onYesClick={() => {inningsChangeYesClick()}}
+                      />
+                    ) : completeMatchisOpen ? (
+                      <CompleteMatchControls
+                        isOpen={true}
+                        toggle={completeMatchtoggle}
+                        onNoClick={() => {completeMatchNoClick()}}
+                        onYesClick={() => {completeMatchYesClick()}}
+                      />
+                    ) : winnerAnnouncementisOpen ? (
+                      <WinnerControl
+                        isOpen={winnerAnnouncementisOpen}
+                        winnerAnnouncement={winnerAnnouncementisOpen}
+                        onExitClick={() => {
+                          onExitClick()
+                        }}
+                    />
+                    ) :
                       renderDefaultControls()
-                    )}
+                    }
                   </div>
                 ) : (
                   <>
