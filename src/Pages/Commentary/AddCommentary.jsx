@@ -46,6 +46,7 @@ function AddCommentary() {
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
+    const state = location.state || {};
     const [id, setId] = useState(location.state?.userId || "0");
     const [competitionId, setCompetitionId] = useState(0);
     const [isFormAValid, setIsFormAValid] = useState(false);
@@ -82,8 +83,10 @@ function AddCommentary() {
         if (isSaved) {
             dispatch(updateSavedState(undefined))
             if (currentSaveAction === SAVE) { }
-            else if (currentSaveAction === SAVE_AND_CLOSE)
-                navigate("/commentary")
+            else if (currentSaveAction === SAVE_AND_CLOSE){
+                let navLink = state === 'isPredict' ? '/CommentaryList' : "/commentary"
+                navigate(navLink)
+            }
             else if (currentSaveAction === SAVE_AND_NEW) {
                 setDisabledFields({})
                 setSavedFormState({})
@@ -425,6 +428,7 @@ function AddCommentary() {
                 "team2Captain": dataToSave2.team2Captain,
                 "team1Kipper": dataToSave2.team1Kipper,
                 "team2Kipper": dataToSave2.team2Kipper,
+                "isPredictMarket" : dataToSave1?.isPredictMarket || false,
                 "team1Players": dataToSave2.team1Players,
                 "team2Players": dataToSave2.team2Players,
                 "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
@@ -453,7 +457,8 @@ function AddCommentary() {
     }
 
     const handleBackClick = () => {
-        navigate("/commentary");
+        let navLink = state === 'isPredict' ? '/CommentaryList' : "/commentary"
+        navigate(navLink);
     };
 
     return (
@@ -462,7 +467,7 @@ function AddCommentary() {
                 <Container fluid={true}>
                     <Row>
                         <Col xs={12} md={8} lg={9}>
-                            <h3 className="modal-header-title">Commentary </h3>
+                            <h3 className="modal-header-title">{state === 'isPredict' ? 'Commentary List' : 'Commentary'}</h3>
                         </Col>
                         {(isLoading || isApiLoading || isFetchApiLoading) && <SpinnerModel />}
                         <Card>
@@ -529,7 +534,8 @@ function AddCommentary() {
                                         <TabPane tabId={1}>
                                             <FormBuilder
                                                 ref={finalizeRef1}
-                                                fields={MatchDetailFields}
+                                                // fields={MatchDetailFields}
+                                                fields={MatchDetailFields.filter(field => state === 'isPredict' ? field.name !== "isPredictMarket" : true)}
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
@@ -549,10 +555,12 @@ function AddCommentary() {
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
                                         {activeTab !== 1 && <li className="previous me-2" >
-                                            <Link to="#"
+                                            <Button
+                                                color="primary"
+                                                className="btn"
                                                 onClick={() => {
                                                     toggleTab(activeTab - 1);
-                                                }}>Previous</Link>
+                                                }}>Previous</Button>
                                         </li>}
                                         {activeTab !== 2 && <li className="next">
                                             <Button

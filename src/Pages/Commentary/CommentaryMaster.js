@@ -77,6 +77,7 @@ function CommentaryMaster() {
   const location = useLocation();
   // const commentaryId = location.state?.commentaryId || "0";
   const commentaryId = +localStorage.getItem("commentaryMasterId") || "0";
+  const commentaryList = localStorage.getItem("commentary");
   const scoreCardUrl =
     process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
   const socket = createSocket();
@@ -358,20 +359,23 @@ function CommentaryMaster() {
                           {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
                             <>
                               <NetworkStatus newUi={true}/>
-                              <div className="d-flex align-items-center py-2">
-                                  <span>Bet Allow</span>
-                                  <Switch
-                                    width={70}
-                                    uncheckedIcon={<OffsymbolStatus />}
-                                    checkedIcon={<OnSymbolStatus />}
-                                    className="pe-0 mx-2"
-                                    onColor="#02a499"
-                                    onChange={() => {
-                                      setIsBetAllow(!isBetAllow);
-                                    }}
-                                    checked={isBetAllow}
-                                  />
+                              {
+                                commentaryList === 'commentary' &&
+                                <div className="d-flex align-items-center py-2">
+                                    <span>Bet Allow</span>
+                                    <Switch
+                                      width={70}
+                                      uncheckedIcon={<OffsymbolStatus />}
+                                      checkedIcon={<OnSymbolStatus />}
+                                      className="pe-0 mx-2"
+                                      onColor="#02a499"
+                                      onChange={() => {
+                                        setIsBetAllow(!isBetAllow);
+                                      }}
+                                      checked={isBetAllow}
+                                    />
                                 </div>
+                              }
                                 <button
                                   className="score-header-navigation-btns"
                                   onClick={() => {
@@ -380,12 +384,14 @@ function CommentaryMaster() {
                                 >
                                   Old Ui
                               </button>
-                              <button 
-                                className="score-header-navigation-btns"
-                                onClick={handleLoadCommentaryClick}
-                              >
-                                Load Commentary
-                              </button>
+                              {commentaryList === 'commentary' && 
+                                <button 
+                                  className="score-header-navigation-btns"
+                                  onClick={handleLoadCommentaryClick}
+                                >
+                                  Load Commentary
+                                </button>
+                              }
                               <button 
                                 className="score-header-navigation-btns"
                                 onClick={openIframePopup}
@@ -429,7 +435,7 @@ function CommentaryMaster() {
                           <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
                         </div>
                         <div className='col-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0'>
-                          {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) &&
+                          {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) && commentaryList === 'commentary' &&
                             <div className="d-flex align-items-center py-2">
                               <span>Bet Allow</span>
                                 <Switch
@@ -443,13 +449,14 @@ function CommentaryMaster() {
                                   }}
                                   checked={isBetAllow}
                                 />
-                            </div>}
+                            </div>
+                            }
                             <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                         </div>
                           {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
                             <div className="d-flex flex-wrap align-items-center my-2 float-end my-md-4">
                               <NetworkStatus/>
-                              <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>
+                              {commentaryList === 'commentary' && <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
                               <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
                               <Button color="primary" className="mx-1 text-right" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
                             </div>
