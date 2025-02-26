@@ -558,13 +558,19 @@
 }
 
 .market-category-accordian {
-  margin-top: 0.75rem;
+  /* margin-top: 0.75rem; */
   background-color: beige;
 }
 
 .market-category-header > button {
   text-transform: capitalize;
-  padding: 0.2rem 1rem !important;
+  /* padding: 0.2rem 1rem !important; */
+  padding: 10px !important;
+  font-size: 15px;
+}
+
+.cell-padding {
+  padding: 0.125rem !important;
 }
 
 .market-category-body > div {

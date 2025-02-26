@@ -968,7 +968,7 @@ export const OpenMarket = () => {
             ),
             key: "teamName",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "Market",
@@ -983,7 +983,7 @@ export const OpenMarket = () => {
             ),
             key: "marketId",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "Status",
@@ -1003,7 +1003,7 @@ export const OpenMarket = () => {
             ),
             key: "status",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "Line",
@@ -1020,7 +1020,7 @@ export const OpenMarket = () => {
             ),
             key: "line",
             className: "py-0 input-line-field",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "",
@@ -1058,14 +1058,14 @@ export const OpenMarket = () => {
             },
             key: "lineVal",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "RR",
             render: (text, record) => (<span>{`${(+record.line / +record.over)?.toFixed(2)}`}</span>),
             key: "inningsId",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "R-No",
@@ -1087,7 +1087,7 @@ export const OpenMarket = () => {
             ),
             key: "layPrice",
             className: "py-0 input-no-field",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
 
         },
         {
@@ -1110,7 +1110,7 @@ export const OpenMarket = () => {
             ),
             key: "backPrice",
             className: "py-0 input-yes-field",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
 
         },
         {
@@ -1131,7 +1131,7 @@ export const OpenMarket = () => {
             ),
             key: "isActive",
             className: "py-0",
-            columnClassName: "p-1",
+            columnClassName: "cell-padding",
             style: { width: "2%", textAlign: "center" },
         },
         {
@@ -1152,7 +1152,7 @@ export const OpenMarket = () => {
             ),
             key: "isAllow",
             className: "py-0",
-            columnClassName: "p-1",
+            columnClassName: "cell-padding",
             style: { width: "2%", textAlign: "center" },
         },
         {
@@ -1172,7 +1172,7 @@ export const OpenMarket = () => {
             ),
             style: { width: "2%", textAlign: "center" },
             className: "py-0",
-            columnClassName: "p-1",
+            columnClassName: "cell-padding",
         },
         {
             title: "PR",
@@ -1193,7 +1193,7 @@ export const OpenMarket = () => {
             },
             key: "predefinedValue",
             className: "py-0",
-            columnClassName: "p-1",
+            columnClassName: "cell-padding",
             hidden: true
         },
         {
@@ -1203,7 +1203,7 @@ export const OpenMarket = () => {
             ),
             key: "isSendData",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "R-Diff",
@@ -1217,7 +1217,7 @@ export const OpenMarket = () => {
             ),
             key: "rateDiff",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "L-Ratio",
@@ -1234,7 +1234,7 @@ export const OpenMarket = () => {
             ),
             key: "underRate",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "Margin",
@@ -1248,7 +1248,7 @@ export const OpenMarket = () => {
             ),
             key: "margin",
             className: "py-0",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
         {
             title: "Under",
@@ -1262,7 +1262,7 @@ export const OpenMarket = () => {
             ),
             key: "underRate",
             className: "py-0 input-under-field",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
 
         },
         {
@@ -1277,7 +1277,7 @@ export const OpenMarket = () => {
             ),
             key: "overRate",
             className: "py-0 input-over-field",
-            columnClassName: "p-1"
+            columnClassName: "cell-padding"
         },
     ];
 
@@ -1587,8 +1587,8 @@ export const OpenMarket = () => {
             <div className="page-content">
                 <Container fluid={true}>
                     <Row>
-                        <Card>
-                            <CardBody>
+                        <Card className="px-2">
+                            <CardBody className="p-0">
                                 {isLoading && <SpinnerModel />}
                                 <Row>
                                     {!isEmpty(commentaryInfo) && <Col>
