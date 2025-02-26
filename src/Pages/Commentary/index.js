@@ -495,9 +495,10 @@ const Index = () => {
     const url = new URL(window.location.origin + "/updateCommentaryFeature");
     window.open(url.href, '_blank');
   };
-  const handleUpdateManualOddsClick = (id) => {
+  const handleUpdateManualOddsClick = (details) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateManualOddsCommentaryId', "" + id);
+    localStorage.setItem('updateManualOddsCommentaryId', "" + details?.commentaryId);
+    localStorage.setItem('updateManualOddsCommentaryDetails', "" + JSON.stringify(details));
     const url = new URL(window.location.origin + "/manualOddsMarket");
     window.open(url.href, '_blank');
   };
@@ -1265,7 +1266,7 @@ const Index = () => {
               size="sm"
               className="btn"
               onClick={() => {
-                handleUpdateManualOddsClick(record.commentaryId);
+                handleUpdateManualOddsClick(record);
               }}
             >
               <i class='bx bx-arrow-to-right' ></i>
@@ -1497,7 +1498,7 @@ const Index = () => {
     //         size="sm"
     //         className="btn"
     //         onClick={() => {
-    //           handleUpdateManualOddsClick(record.commentaryId);
+    //           handleUpdateManualOddsClick(record);
     //         }}
     //       >
     //         <i class='bx bx-arrow-to-right' ></i>
