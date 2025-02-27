@@ -549,16 +549,16 @@ const Commentary = (props) => {
             if (+runs === 4) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballFour"] = 1
-                batter["batFour"] = (batter.batFour || 0) + 1
+                batter["batFour"] = type === NO_BALL ? (batter.batFour || 0) + 1 : (batter.batFour || 0) 
                 updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
-                updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) + 1
+                updatePartnership["totalFour"] = type === NO_BALL ? (currentPartnership.totalFour || 0) + 1 : (currentPartnership.totalFour || 0)
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
             } else if (+runs === 6) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballSix"] = 1
-                batter["batSix"] = (batter.batSix || 0) + 1
+                batter["batSix"] = type === NO_BALL ? (batter.batSix || 0) + 1 : (batter.batSix || 0)
                 updateOver["totalSix"] = (currentOver.totalSix || 0) + 1
-                updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) + 1
+                updatePartnership["totalSix"] = type === NO_BALL ? (currentPartnership.totalSix || 0) + 1 : (currentPartnership.totalSix || 0)
                 updateBowler["bowlerSix"] = (bowler.bowlerSix || 0) + 1
             }
         }
@@ -591,7 +591,12 @@ const Commentary = (props) => {
             updateOver["totalNoBallRun"] = (currentOver.totalNoBallRun || 0) + valueOfNoBall
             updateBall["ballIsCount"] = false
             updateBall["ballRun"] = runs
+            updatePartnership["totalBalls"] = currentPartnership.totalBalls + 1
             updateBall["ballExtraRun"] = valueOfNoBall
+            updatePartnership["batter1Balls"] = currentPartnership.batter1Balls +
+                (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0);
+                updatePartnership["batter2Balls"] = currentPartnership.batter2Balls +
+                (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0);
             if (type === NO_BALL) {
                 updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
                 updateBall["ballType"] = BALL_TYPE_NO_BALL
@@ -1421,8 +1426,12 @@ const Commentary = (props) => {
                         updateOver["totalNoBallRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - noBallValue)
                         updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - totalRunToDelete)
                         updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - totalRunToDelete)
-                        updatePartnership["batter1Balls"] = updatePartnership.batter1Balls || 0;
-                        updatePartnership["batter2Balls"] = updatePartnership.batter2Balls || 0;
+                        updatePartnership["totalBalls"] = getNonNegativeValue(updatePartnership.totalBalls - 1)
+                        updatePartnership["batter1Balls"] = getNonNegativeValue(currentPartnership.batter1Balls -
+                            (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
+                        updatePartnership["batter2Balls"] = getNonNegativeValue(currentPartnership.batter2Balls -
+                            (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0));
+                        updatePartnership["totalFour"] = getNonNegativeValue(currentPartnership.totalFour || 0) - 1
                         // updatePartnership["extras"] = currentPartnership.extras - currentBall.ballExtraRun
                         if (type === BALL_TYPE_NO_BALL) {
                             updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - totalRunToDelete)
