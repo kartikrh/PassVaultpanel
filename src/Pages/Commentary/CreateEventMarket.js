@@ -51,8 +51,8 @@ export const CreateEventMarket = () => {
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
     const [showBackToTop, setShowBackToTop] = useState(false);
-    const [openMarket, setOpenMarket] = useState('');
-    const [openCategory, setOpenCategory] = useState('');
+    const [openMarket, setOpenMarket] = useState([]);
+    const [openCategory, setOpenCategory] = useState([]);
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
@@ -1304,11 +1304,15 @@ export const CreateEventMarket = () => {
     };
 
     const toggleMarket = (id) => {
-        setOpenMarket(openMarket === id ? '' : id);
+        setOpenMarket(prev =>
+            prev.includes(id) ? prev.filter(marketId => marketId !== id) : [...prev, id]
+        );
     };
 
     const toggleCategory = (id) => {
-        setOpenCategory(openCategory === id ? '' : id);
+        setOpenCategory(prev =>
+            prev.includes(id) ? prev.filter(categoryId => categoryId !== id) : [...prev, id]
+        );
     };
 
     const renderMarketCategory = (categoryId, markets, sectionKey) => (
