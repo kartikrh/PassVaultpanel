@@ -81,6 +81,7 @@ const Index = () => {
 
     let payload = {
       ...dataSource,
+      status: 4,
       rateSourceRefId: dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
       marketTypeId: dataSource?.marketTypeId || 0,
       marketTypeCategoryId: dataSource?.marketTypeId !== selectedMarketType ? 0 : dataSource?.marketTypeCategoryId || 0,

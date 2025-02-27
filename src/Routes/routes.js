@@ -15,6 +15,7 @@ import PenaltyRuns from "../Pages/PenaltyRuns";
 import Competition from "../Pages/Competition";
 import Events from "../Pages/Events";
 import Commentary from "../Pages/Commentary";
+import CommentaryList from "../Pages/CommentaryList";
 import CommentaryHistory from "../Pages/CommentaryHistory";
 import Users from "../Pages/Users";
 import ImportMarket from "../Pages/ImportMarket";
@@ -169,6 +170,7 @@ const authProtectedRoutes = [
   { path: "/addAward", component: <AddAward /> },
   { path: "/addCompetition", component: <AddCompetition /> },
   { path: "/commentary", component: <Commentary /> },
+  { path: "/commentaryList", component: <CommentaryList /> },
   { path: "/commentaryHistory", component: <CommentaryHistory /> },
   { path: "/addCommentary", component: <AddCommentary /> },
   { path: "/commentaryMaster", component: <CommentaryMaster /> },

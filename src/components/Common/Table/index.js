@@ -96,6 +96,7 @@ const Index = forwardRef(
       setServerCurrentPage,
       setServerPageSize,
       onAddNavigate,
+      isCommentaryList,
       changeOrderApiName,
       isAddPermission,
       isDeletePermission,
@@ -943,7 +944,10 @@ const Index = forwardRef(
                             color="success"
                             className="add-btn"
                             onClick={() => {
-                              navigate(onAddNavigate);
+                              const data = isCommentaryList ? { state: 'isPredict' } : {};
+
+                              navigate(onAddNavigate, data);
+                              // navigate(onAddNavigate);
                             }}
                             id="create-btn"
                           >
@@ -1383,10 +1387,12 @@ const Index = forwardRef(
                                   });
                                 }
                               }}
-                              options={eventList?.map((item) => ({
-                                label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
-                                value: item?.commentaryId,
-                              }))}
+                              options={eventList
+                                ?.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate)) // Sort in ascending order
+                                ?.map((item) => ({
+                                  label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
+                                  value: item?.commentaryId,
+                                }))}
                               classNamePrefix="filter-dropdown"
                             />
                           </div>

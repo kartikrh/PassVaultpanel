@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from "../../Features/axios";
-import { Button, Card, CardBody, CardHeader, Table, Input, Container, Row, Col } from 'reactstrap';
+import { Button, Card, CardBody, Table, Input, Container, Row, Col, Accordion, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import { useNavigate } from 'react-router-dom';
@@ -33,7 +33,7 @@ const getOrdinalSuffix = (n) => {
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    document.title = "commentaryMarkets";
+    // document.title = "Create Market";
     const [marketData, setMarketData] = useState({
         teamAndPlayers: [],
         marketTemplate: [],
@@ -51,10 +51,12 @@ export const CreateEventMarket = () => {
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const [openMarket, setOpenMarket] = useState('');
+    const [openCategory, setOpenCategory] = useState('');
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
-            document.title = `MT ${commentaryDetails?.eventRefId} ${commentaryDetails?.eventName}`;
+            document.title = `Create Market - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
     }, [commentaryDetails])
 
     useEffect(() => {
@@ -1221,6 +1223,7 @@ export const CreateEventMarket = () => {
                 title: () => (
                     <input
                         type="checkbox"
+                        className='mx-2'
                         checked={selectedMarkets[sectionKey]?.every(Boolean)}
                         onChange={() => handleSelectAllInSection(sectionKey)}
                     />
@@ -1300,28 +1303,33 @@ export const CreateEventMarket = () => {
         );
     };
 
+    const toggleMarket = (id) => {
+        setOpenMarket(openMarket === id ? '' : id);
+    };
+
+    const toggleCategory = (id) => {
+        setOpenCategory(openCategory === id ? '' : id);
+    };
+
     const renderMarketCategory = (categoryId, markets, sectionKey) => (
-        <Card key={categoryId}>
-            <CardHeader>
+        <Accordion open={openCategory} toggle={toggleCategory} key={sectionKey}>
+        <AccordionItem className="rounded-0">
+            <AccordionHeader targetId={sectionKey} className="market-category-header">
                 {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
-            </CardHeader>
-            <CardBody className="p-1">
-                {renderTable(markets, sectionKey)}
-            </CardBody>
-        </Card>
+            </AccordionHeader>
+            <AccordionBody accordionId={sectionKey} className="market-category-body">
+               {renderTable(markets, sectionKey)}
+            </AccordionBody>
+        </AccordionItem>
+        </Accordion>
     );
     const renderMarketType = (typeId, categories, teamId) => (
-        <Card key={typeId}>
-            <CardHeader>
-                {/* {marketData.marketTypes.find(type => type.marketTypeId === parseInt(typeId))?.marketTypeName || `Type ${typeId}`} */}
-            </CardHeader>
-            <CardBody className="p-1">
-                {Object.entries(categories).map(([categoryId, markets]) => {
-                    const sectionKey = `${teamId || 'oneTimeMarket'}_##_${typeId}_##_${categoryId}`;
-                    return renderMarketCategory(categoryId, markets, sectionKey);
-                })}
-            </CardBody>
-        </Card>
+        <>
+            {Object.entries(categories).map(([categoryId, markets]) => {
+                const sectionKey = `${teamId || 'oneTimeMarket'}_##_${typeId}_##_${categoryId}`;
+                return renderMarketCategory(categoryId, markets, sectionKey);
+            })}
+        </>
     );
 
     // const typeOrder = ["batsmen", "wicket-keeper", "allrounder", "bowler"];
@@ -1383,18 +1391,20 @@ export const CreateEventMarket = () => {
         });
 
         return (
-            <>
-                {Object.entries(sections).map(([sectionKey, section]) => (
-                    <Card key={sectionKey}>
-                        <CardHeader>{section.title}</CardHeader>
-                        <CardBody className="p-1">
-                            {Object.entries(section.data).map(([typeId, categories]) =>
-                                renderMarketType(typeId, categories, sectionKey === 'oneTimeMarket' ? null : sectionKey.split('_')[1])
-                            )}
-                        </CardBody>
-                    </Card>
-                ))}
-            </>
+          <>
+            {Object.entries(sections).map(([sectionKey, section]) => (
+              <Accordion open={openMarket} toggle={toggleMarket} key={sectionKey}>
+                <AccordionItem className="rounded-0">
+                    <AccordionHeader targetId={sectionKey} className="market-category-header">{section.title}</AccordionHeader>
+                    <AccordionBody accordionId={sectionKey} className="market-category-body p-2">
+                        {Object.entries(section.data).map(([typeId, categories]) =>
+                            renderMarketType(typeId, categories, sectionKey === 'oneTimeMarket' ? null : sectionKey.split('_')[1])
+                        )}
+                    </AccordionBody>
+                </AccordionItem>
+              </Accordion>
+            ))}
+          </>
         );
     };
 
