@@ -1133,6 +1133,13 @@
 }
 
 @media (max-width: 575.98px) {
+  .current-team-name {
+    font-size: 20px;
+  }
+  .current-team-score{
+    font-size: 20px;
+  }
+  
   .first-player-name {
     font-size: 10px !important;
   }
