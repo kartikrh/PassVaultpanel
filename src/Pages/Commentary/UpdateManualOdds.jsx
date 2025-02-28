@@ -420,6 +420,8 @@ export const UpdateManualOdds = () => {
         teams: [],
         market: {},
     });
+    const [originalMarketRunnerData, setOriginalMarketRunnerData] = useState([]);
+    const [originalInningsData, setOriginalInningsData] = useState([]);
     const [settings, setSettings] = useState({
         rateRange: 10,
         ballStartAfter: 1,
@@ -443,6 +445,7 @@ export const UpdateManualOdds = () => {
             O: '', P: ''
         },
         favRatio: 10,
+        tieProbability: 1.50
     });
     const [selectedRunnerDetails, setSelectedRunnerDetails] = useState({
         runnerId: null,
@@ -835,17 +838,6 @@ export const UpdateManualOdds = () => {
         setHasShortcutChanges(false);
     };
 
-    // Function to find runner with minimum lay price
-    const getRunnerWithMinimumLay = (runnersData) => {
-        if (!runnersData?.length) return null;
-        return runnersData.reduce((minRunner, currentRunner) => {
-            return (currentRunner.lay?.price || Infinity) < (minRunner.lay?.price || Infinity)
-                ? currentRunner
-                : minRunner;
-        }, runnersData[0]);
-    };
-
-
     // Prepare data for saving
     const prepareMarketData = (optionalStatus) => {
         const isOpen = +(optionalStatus || marketStatus || 0) === +OPEN_VALUE;
@@ -1191,7 +1183,7 @@ export const UpdateManualOdds = () => {
         try {
             const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
             if (response?.result) {
-                if(Number(response?.result?.market?.[0]?.rateSourceRefID) == 0){
+                if (Number(response?.result?.market?.[0]?.rateSourceRefID) == 0) {
                     setIsLive(false)
                 }
                 if (!response.result.market) {
@@ -1207,7 +1199,7 @@ export const UpdateManualOdds = () => {
                 const currentMarketStatus = marketData?.status?.toString();
                 setMarketStatus(currentMarketStatus);
                 if (response?.result?.rsMarket) {
-                  setSocketMarketData([response.result.rsMarket]);
+                    setSocketMarketData([response.result.rsMarket]);
                 }
                 // Disable all interactions if market is closed
                 if (currentMarketStatus === CLOSE_VALUE.toString()) {
@@ -1509,6 +1501,157 @@ export const UpdateManualOdds = () => {
         return updatedRunners;
     };
 
+    // Reusable method for processing MARKET_RUNNER_DATA
+    const processMarketRunnerData = (incomingData) => {
+        // Use incoming data if provided; otherwise, fallback to stored original data.
+        const socketData = incomingData || originalMarketRunnerData;
+        if (!socketData || !socketData.length) return;
+        const currentSettings = settingsRef.current;
+        console.log("Processing Market Runner Data:", socketData);
+
+        // Adjust each runner’s backPrice with bfRateDiff
+        const adjustedRunners = socketData.map(runner => ({
+            ...runner,
+            backPrice: parseFloat((runner.backPrice + parseFloat(currentSettings.bfRateDiff)).toFixed(2))
+        }));
+
+        // Determine the runner with the minimum back price
+        const minBackRunner = adjustedRunners.reduce(
+            (min, curr) => curr.backPrice < min.backPrice ? curr : min,
+            adjustedRunners[0]
+        );
+
+        // Update the originalRunner state using the socket data
+        setOriginalRunner(prevRunners =>
+            prevRunners.map(prevRunner => {
+                const socketRunner = socketData.find(r => r.selectionId === prevRunner.selectionId);
+                if (!socketRunner) return prevRunner;
+                const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+                return {
+                    ...prevRunner,
+                    isSelected,
+                    back: { price: parseFloat(socketRunner.backPrice), volume: prevRunner.back.volume },
+                    lay: { price: parseFloat(socketRunner.layPrice), volume: prevRunner.lay.volume },
+                    b2: parseFloat(socketRunner.backPrice),
+                    b1: parseFloat(socketRunner.backPrice),
+                    l1: parseFloat(socketRunner.layPrice),
+                    l2: parseFloat(socketRunner.layPrice)
+                };
+            })
+        );
+
+        // Update the current runners state
+        setRunners(prevRunners => {
+            const newSelectedBackPrice = minBackRunner.backPrice;
+            const newSelectedLayPrice = parseFloat(
+                (newSelectedBackPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2)
+            );
+            console.log("New selected back:", newSelectedBackPrice, "New selected lay:", newSelectedLayPrice);
+            const updatedRunners = prevRunners.map(prevRunner => {
+                const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
+                if (!socketRunner) return prevRunner;
+                const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+                if (isSelected) {
+                    let backPrice = parseFloat(socketRunner.backPrice || 0);
+                    let layPrice;
+                    if (backPrice === 0 || !backPrice) {
+                        layPrice = 1 + parseFloat(currentSettings.rateDifferent);
+                        backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
+                    } else {
+                        layPrice = parseFloat((backPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
+                    }
+                    const newRates = calculateRunnerRates(
+                        { back: { price: backPrice } },
+                        currentSettings,
+                        { forceCalculateLay: true, isSocketData: true }
+                    );
+                    return {
+                        ...prevRunner,
+                        isSelected: true,
+                        back: { price: backPrice, volume: prevRunner.back.volume },
+                        lay: { price: layPrice, volume: prevRunner.lay.volume },
+                        b2: newRates.b2,
+                        b1: newRates.b1,
+                        l1: newRates.l1,
+                        l2: newRates.l2
+                    };
+                } else {
+                    let selectedBackPrice = minBackRunner.backPrice || 0;
+                    let selectedLayPrice;
+                    if (selectedBackPrice === 0 || !selectedBackPrice) {
+                        selectedLayPrice = 1 + parseFloat(currentSettings.rateDifferent);
+                        selectedBackPrice = 0;
+                        const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                        const layPrice = 0;
+                        const newRates = calculateRunnerRates(
+                            { back: { price: backPrice } },
+                            currentSettings,
+                            { forceCalculateLay: true, isSocketData: true }
+                        );
+                        return {
+                            ...prevRunner,
+                            isSelected: false,
+                            back: { price: backPrice, volume: prevRunner.back.volume },
+                            lay: { price: layPrice, volume: prevRunner.lay.volume },
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            l1: newRates.l1,
+                            l2: newRates.l2
+                        };
+                    }
+                    selectedLayPrice = selectedBackPrice + parseFloat(currentSettings.rateDifferent);
+                    const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                    const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+                    const newRates = calculateRunnerRates(
+                        { back: { price: backPrice } },
+                        currentSettings,
+                        { forceCalculateLay: true, isSocketData: true }
+                    );
+                    return {
+                        ...prevRunner,
+                        isSelected: false,
+                        back: { price: backPrice, volume: prevRunner.back.volume },
+                        lay: { price: layPrice, volume: prevRunner.lay.volume },
+                        b2: newRates.b2,
+                        b1: newRates.b1,
+                        l1: newRates.l1,
+                        l2: newRates.l2
+                    };
+                }
+            });
+            return updatedRunners;
+        });
+    };
+
+    // Reusable method for processing INNINGS_RUN_DATA
+    const processInningsData = (incomingData) => {
+        // Use incoming data if provided; otherwise, fallback to stored original innings data.
+        const dataToProcess = incomingData || originalInningsData;
+        if (!dataToProcess || !dataToProcess.length) return;
+        console.log("Processing Innings Data:", dataToProcess);
+
+        let updatedMarketData = [];
+        if (socketMarketData.length > 0) {
+            updatedMarketData = socketMarketData.map(existingMarket => {
+                const newMarket = dataToProcess.find(m => m?.marketId == existingMarket?.marketId);
+                if (newMarket) {
+                    return { ...existingMarket, ...newMarket };
+                }
+                return existingMarket;
+            });
+            dataToProcess.forEach(newMarket => {
+                const marketExists = socketMarketData.some(m => m?.marketId == newMarket?.marketId);
+                if (!marketExists) {
+                    updatedMarketData.push(newMarket);
+                }
+            });
+        } else {
+            updatedMarketData = dataToProcess;
+        }
+        console.log("Updated Innings Market Data:", updatedMarketData);
+        setSocketMarketData(updatedMarketData);
+        handleInningsDataUpdate(updatedMarketData);
+    };
 
 
     useEffect(() => {
@@ -1780,189 +1923,11 @@ export const UpdateManualOdds = () => {
 
             marketRunnerListener = (message) => {
                 if (!message?.[0]?.runners || message[0].runners.length !== 2) return;
-
                 const socketRunners = message[0].runners;
-                const currentSettings = settingsRef.current;
-
-                console.log("Received market runner data:", {
-                    SelectedBackPrice: socketRunners[0]?.backPrice,
-                    SelectedLayPrice: socketRunners[0]?.layPrice,
-                    nonSelectedBackPrice: socketRunners[1]?.backPrice,
-                    nonSelectedLayPrice: socketRunners[1]?.layPrice
-                });
-
-                // Adjust runners with bfRateDiff
-                const adjustedRunners = socketRunners.map(runner => ({
-                    ...runner,
-                    backPrice: parseFloat((runner.backPrice + parseFloat(currentSettings.bfRateDiff)).toFixed(2))
-                }));
-
-                // Find runner with minimum back price
-                const minBackRunner = adjustedRunners.reduce((min, curr) =>
-                    curr.backPrice < min.backPrice ? curr : min
-                    , adjustedRunners[0]);
-
-                // Update original runners
-                setOriginalRunner(prevRunners => {
-                    return prevRunners.map(prevRunner => {
-                        const socketRunner = socketRunners.find(r => r.selectionId === prevRunner.selectionId);
-                        if (!socketRunner) return prevRunner;
-
-                        const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
-
-                        return {
-                            ...prevRunner,
-                            isSelected,
-                            back: {
-                                price: parseFloat(socketRunner.backPrice),
-                                volume: prevRunner.back.volume
-                            },
-                            lay: {
-                                price: parseFloat(socketRunner.layPrice),
-                                volume: prevRunner.lay.volume
-                            },
-                            b2: parseFloat(socketRunner.backPrice),
-                            b1: parseFloat(socketRunner.backPrice),
-                            l1: parseFloat(socketRunner.layPrice),
-                            l2: parseFloat(socketRunner.layPrice)
-                        };
-                    });
-                });
-
-                // Update current runners
-                setRunners(prevRunners => {
-                    // Calculate new values for logging
-                    const newSelectedBackPrice = minBackRunner.backPrice;
-                    const newSelectedLayPrice = parseFloat((newSelectedBackPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
-                    const newNonSelectedBackPrice = parseFloat((1 / (1 - (1 / newSelectedLayPrice))).toFixed(2));
-                    const newNonSelectedLayPrice = parseFloat((1 / (1 - (1 / newSelectedBackPrice))).toFixed(2));
-
-                    console.log({
-                        newSelectedBackPrice,
-                        newSelectedLayPrice,
-                        newNonSelectedBackPrice,
-                        newNonSelectedLayPrice
-                    });
-
-                    const updatedRunners = prevRunners.map(prevRunner => {
-                        const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
-                        if (!socketRunner) return prevRunner;
-
-                        const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
-
-                        if (isSelected) {
-                            // Selected runner calculations
-                            let backPrice = parseFloat(socketRunner.backPrice || 0);
-                            let layPrice;
-
-                            // Handle zero/null back price case
-                            if (backPrice === 0 || !backPrice) {
-                                layPrice = 1 + parseFloat(currentSettings.rateDifferent);
-                                backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
-                            } else {
-                                layPrice = parseFloat((backPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
-                            }
-
-                            // Calculate rates using existing calculateRunnerRates function
-                            const newRates = calculateRunnerRates({
-                                back: { price: backPrice }
-                            }, currentSettings, {
-                                forceCalculateLay: true,
-                                isSocketData: true
-                            });
-
-                            return {
-                                ...prevRunner,
-                                isSelected: true,
-                                back: {
-                                    price: backPrice,
-                                    volume: prevRunner.back.volume
-                                },
-                                lay: {
-                                    price: layPrice,
-                                    volume: prevRunner.lay.volume
-                                },
-                                b2: newRates.b2,
-                                b1: newRates.b1,
-                                l1: newRates.l1,
-                                l2: newRates.l2
-                            };
-                        } else {
-                            // Unselected runner calculations
-                            let selectedBackPrice = minBackRunner.backPrice || 0;
-                            let selectedLayPrice;
-
-                            // Handle zero/null back price case
-                            if (selectedBackPrice === 0 || !selectedBackPrice) {
-                                selectedLayPrice = 1 + parseFloat(currentSettings.rateDifferent);
-                                selectedBackPrice = 0;
-                                const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                                const layPrice = 0; // Set to 0 when selected back is 0
-
-                                const newRates = calculateRunnerRates({
-                                    back: { price: backPrice }
-                                }, currentSettings, {
-                                    forceCalculateLay: true,
-                                    isSocketData: true
-                                });
-
-                                return {
-                                    ...prevRunner,
-                                    isSelected: false,
-                                    back: {
-                                        price: backPrice,
-                                        volume: prevRunner.back.volume
-                                    },
-                                    lay: {
-                                        price: layPrice,
-                                        volume: prevRunner.lay.volume
-                                    },
-                                    b2: newRates.b2,
-                                    b1: newRates.b1,
-                                    l1: newRates.l1,
-                                    l2: newRates.l2
-                                };
-                            }
-
-                            selectedLayPrice = selectedBackPrice + parseFloat(currentSettings.rateDifferent);
-                            const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                            const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
-
-                            // Calculate rates for unselected runner
-                            const newRates = calculateRunnerRates({
-                                back: { price: backPrice }
-                            }, currentSettings, {
-                                forceCalculateLay: true,
-                                isSocketData: true
-                            });
-                            console.log({
-                                selectedBackPrice,
-                                selectedLayPrice,
-                                backPrice,
-                                layPrice,
-                                rateDiff: currentSettings.rateDifferent
-                            });
-                            return {
-                                ...prevRunner,
-                                isSelected: false,
-                                back: {
-                                    price: backPrice,
-                                    volume: prevRunner.back.volume
-                                },
-                                lay: {
-                                    price: layPrice,
-                                    volume: prevRunner.lay.volume
-                                },
-                                b2: newRates.b2,
-                                b1: newRates.b1,
-                                l1: newRates.l1,
-                                l2: newRates.l2
-                            };
-                        }
-                    });
-
-                    return updatedRunners;
-                });
+                // Save the raw socket data
+                setOriginalMarketRunnerData(socketRunners);
+                // Process the data via the reusable method
+                processMarketRunnerData(socketRunners);
             };
 
             socket.on(MARKET_RUNNER_DATA, marketRunnerListener);
@@ -2089,6 +2054,29 @@ export const UpdateManualOdds = () => {
         oddsB = Number(oddsB.toFixed(2));
         oddsA = Number(oddsA.toFixed(2));
 
+        // When processing innings data (isLive is false and directLineEnabled true),
+        // if both odds are equal then override both runners:
+        if (!isLive && directLineEnabled && oddsA === oddsB) {
+            const tieValue = parseFloat(settings.tieProbability);
+            console.log("Tie detected. Setting both runner back prices to tieProbability:", tieValue);
+            // Update both original and current runner states
+            setOriginalRunner(prevRunners =>
+                prevRunners.map(runner => ({
+                    ...runner,
+                    back: { ...runner.back, price: tieValue },
+                    lay: { ...runner.lay, price: 0 }
+                }))
+            );
+            setRunners(prevRunners =>
+                prevRunners.map(runner => ({
+                    ...runner,
+                    back: { ...runner.back, price: tieValue },
+                    lay: { ...runner.lay, price: 0 }
+                }))
+            );
+            return; // Exit early; tie scenario handled.
+        }
+
         // Create odds mapping object using teamId
         const oddsObj = {
             [newIdSetting[0]?.teamId]: oddsB,
@@ -2117,12 +2105,11 @@ export const UpdateManualOdds = () => {
         const prices = calculatePricesFromSelectedBack(selectedBackPrice, settings);
         console.log("Calculated prices:", prices);
 
-        // Update runners
+        // Update runners with the new calculated prices.
         const updateRunners = (prevRunners) => {
             return prevRunners.map(runner => {
-                // Convert teamId to string for comparison since it might come as number
+                // Convert teamId to string for comparison
                 const isSelected = runner.teamId.toString() === selectedTeamId.toString();
-
                 console.log(`Processing runner:`, {
                     runnerId: runner.runnerId,
                     teamId: runner.teamId,
@@ -2133,25 +2120,21 @@ export const UpdateManualOdds = () => {
                         lay: runner.lay.price
                     }
                 });
-
                 const updatedRunner = updateRunnerWithPrices(runner, isSelected, prices, settings);
-
                 console.log(`Updated prices for runner ${runner.runnerId}:`, {
                     isSelected,
                     back: updatedRunner.back.price,
                     lay: updatedRunner.lay.price
                 });
-
                 return updatedRunner;
             });
         };
 
-        // Update both original and current runners
+        // Update both original and current runner states
         setOriginalRunner(prevRunners => updateRunners(prevRunners));
         setRunners(prevRunners => {
             const updatedRunners = updateRunners(prevRunners);
-
-            // Find selected runner and update details
+            // Update selected runner details
             const selectedRunner = updatedRunners.find(r => r.teamId.toString() === selectedTeamId.toString());
             if (selectedRunner) {
                 setSelectedRunner(selectedRunner.runnerId);
@@ -2162,49 +2145,21 @@ export const UpdateManualOdds = () => {
                     point: ((selectedBackPrice % 1) * 100).toFixed(0).padStart(2, '0')
                 }));
             }
-
             return updatedRunners;
         });
     };
 
+
     useEffect(() => {
         if (!socket) return;
 
-        const handleInningsData = (marketData) => {
-            if (!directLineEnabled || isLive || !marketData?.length) return;
-    
-            console.log("Received innings data from socket:", marketData);
-            console.log("previous marketData", socketMarketData);
-    
-            let updatedMarketData = [];
-    
-            if (socketMarketData.length > 0) {
-                // Loop through the incoming marketData and check if each marketId already exists in socketMarketData
-                updatedMarketData = socketMarketData.map((existingMarket) => {
-                    const newMarket = marketData.find(m => m?.marketId == existingMarket?.marketId);
-                    if (newMarket) {
-                       // If the marketId exists in both the current and new data, we merge them (updating with the new data)
-                       return { ...existingMarket, ...newMarket };
-                    }
-                  return existingMarket;
-                });
-    
-                // Now add any new markets from marketData that aren't in socketMarketData
-                marketData.forEach(newMarket => {
-                    const marketExists = socketMarketData.some(m => m?.marketId == newMarket?.marketId);
-                    if (!marketExists) {
-                      updatedMarketData.push(newMarket);
-                    }
-                });
-            } else {
-               updatedMarketData = marketData;
-            }
-            console.log("updatedMarketData", updatedMarketData);
-    
-            setSocketMarketData(updatedMarketData);
+        const handleInningsData = (data) => {
+            // Save the raw innings socket data
+            setOriginalInningsData(data);
+            // Process the data using the reusable method
+            processInningsData(data);
+        };
 
-            handleInningsDataUpdate(updatedMarketData);
-        }
         if (directLineEnabled && !isLive) {
             socket.on(INNINGS_RUN_DATA, handleInningsData);
         }
@@ -2214,7 +2169,8 @@ export const UpdateManualOdds = () => {
                 socket.off(INNINGS_RUN_DATA, handleInningsData);
             }
         };
-    }, [socket, directLineEnabled, isLive, settings, socketMarketData]);
+    }, [socket, directLineEnabled, isLive, socketMarketData]);
+
 
     useEffect(() => {
         if (!directLineEnabled || isLive || !socketMarketData?.length) return;
@@ -2555,6 +2511,18 @@ export const UpdateManualOdds = () => {
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <StyledTextField
+                                        label="Tie Probability"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.tieProbability}
+                                        inputProps={{ step: "0.1" }}
+                                        onChange={(e) => handleSettingChange('tieProbability', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
                                 </Box>
                                 <Box width="16.67%">
                                     <StyledTextField
