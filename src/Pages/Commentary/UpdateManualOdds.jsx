@@ -2054,6 +2054,29 @@ export const UpdateManualOdds = () => {
         oddsB = Number(oddsB.toFixed(2));
         oddsA = Number(oddsA.toFixed(2));
 
+        // When processing innings data (isLive is false and directLineEnabled true),
+        // if both odds are equal then override both runners:
+        if (!isLive && directLineEnabled && oddsA === oddsB) {
+            const tieValue = parseFloat(settings.tieProbability);
+            console.log("Tie detected. Setting both runner back prices to tieProbability:", tieValue);
+            // Update both original and current runner states
+            setOriginalRunner(prevRunners =>
+                prevRunners.map(runner => ({
+                    ...runner,
+                    back: { ...runner.back, price: tieValue },
+                    lay: { ...runner.lay, price: 0 }
+                }))
+            );
+            setRunners(prevRunners =>
+                prevRunners.map(runner => ({
+                    ...runner,
+                    back: { ...runner.back, price: tieValue },
+                    lay: { ...runner.lay, price: 0 }
+                }))
+            );
+            return; // Exit early; tie scenario handled.
+        }
+
         // Create odds mapping object using teamId
         const oddsObj = {
             [newIdSetting[0]?.teamId]: oddsB,
@@ -2082,12 +2105,11 @@ export const UpdateManualOdds = () => {
         const prices = calculatePricesFromSelectedBack(selectedBackPrice, settings);
         console.log("Calculated prices:", prices);
 
-        // Update runners
+        // Update runners with the new calculated prices.
         const updateRunners = (prevRunners) => {
             return prevRunners.map(runner => {
-                // Convert teamId to string for comparison since it might come as number
+                // Convert teamId to string for comparison
                 const isSelected = runner.teamId.toString() === selectedTeamId.toString();
-
                 console.log(`Processing runner:`, {
                     runnerId: runner.runnerId,
                     teamId: runner.teamId,
@@ -2098,25 +2120,21 @@ export const UpdateManualOdds = () => {
                         lay: runner.lay.price
                     }
                 });
-
                 const updatedRunner = updateRunnerWithPrices(runner, isSelected, prices, settings);
-
                 console.log(`Updated prices for runner ${runner.runnerId}:`, {
                     isSelected,
                     back: updatedRunner.back.price,
                     lay: updatedRunner.lay.price
                 });
-
                 return updatedRunner;
             });
         };
 
-        // Update both original and current runners
+        // Update both original and current runner states
         setOriginalRunner(prevRunners => updateRunners(prevRunners));
         setRunners(prevRunners => {
             const updatedRunners = updateRunners(prevRunners);
-
-            // Find selected runner and update details
+            // Update selected runner details
             const selectedRunner = updatedRunners.find(r => r.teamId.toString() === selectedTeamId.toString());
             if (selectedRunner) {
                 setSelectedRunner(selectedRunner.runnerId);
@@ -2127,10 +2145,10 @@ export const UpdateManualOdds = () => {
                     point: ((selectedBackPrice % 1) * 100).toFixed(0).padStart(2, '0')
                 }));
             }
-
             return updatedRunners;
         });
     };
+
 
     useEffect(() => {
         if (!socket) return;
@@ -2493,6 +2511,18 @@ export const UpdateManualOdds = () => {
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                </Box>
+                                <Box width="16.67%">
+                                    <StyledTextField
+                                        label="Tie Probability"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        value={settings.tieProbability}
+                                        inputProps={{ step: "0.1" }}
+                                        onChange={(e) => handleSettingChange('tieProbability', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
                                 </Box>
                                 <Box width="16.67%">
                                     <StyledTextField
