@@ -161,8 +161,8 @@ export function compareNumStringValues(value1, value2) {
   return !isNaN(numValue1) && !isNaN(numValue2) && numValue1 === numValue2;
 }
 
-export const checkPermission = async (permissionObj, tabName, permissionType) => {
-  const isPermission = await permissionObj[tabName]?.[permissionType] || false
+export const checkPermission = (permissionObj, tabName, permissionType) => {
+  const isPermission = permissionObj[tabName]?.[permissionType] || false
   return isPermission;
 }
 
