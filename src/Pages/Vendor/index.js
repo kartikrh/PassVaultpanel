@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_VENDOR
@@ -23,6 +24,8 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (value) => {
@@ -75,12 +78,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_VENDORS]})
+      .post(`/loadPanelData`, {module: [MODULE_VENDORS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -344,7 +348,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addVendor"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
@@ -355,6 +359,13 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Vendor"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

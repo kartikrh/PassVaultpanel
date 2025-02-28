@@ -11,6 +11,7 @@ import { ERROR, MODULE_ROLES, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_ROLES
@@ -21,6 +22,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -76,12 +79,13 @@ const Index = () => {
       })
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_ROLES]})
+      .post(`/loadPanelData`, {module: [MODULE_ROLES], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -218,7 +222,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addRoles"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
@@ -229,6 +233,13 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Roles"}
+            />}
         </Container>
       </div>
     </React.Fragment>

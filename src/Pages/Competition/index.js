@@ -13,6 +13,7 @@ import { ERROR, MODULE_COMPETITION, PERMISSION_ADD, PERMISSION_DELETE, PERMISSIO
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_COMPETITION
@@ -25,6 +26,8 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -149,12 +152,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COMPETITION]})
+      .post(`/loadPanelData`, {module: [MODULE_COMPETITION], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -449,7 +453,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addCompetition"}
             handleReset={handleReset}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
@@ -460,6 +464,13 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Competition"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

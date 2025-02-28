@@ -15,6 +15,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel';
 import {UploadPlayerHistoryModal} from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
@@ -31,7 +32,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [teams, setTeams] = useState([]);
   const [PlayerHistoryObject,setPlayerHistoryObject] = useState({});
-
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -118,12 +119,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_PLAYERS]})
+      .post(`/loadPanelData`, {module: [MODULE_PLAYERS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -493,7 +495,7 @@ const Index = () => {
             handleReset={handleReset}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}
@@ -520,7 +522,13 @@ const Index = () => {
             handleDownloadPlayerHistory={handleDownloadPlayerHistory}
             UploadFile={UploadFile}
           />}
-
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Players"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

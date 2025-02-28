@@ -1757,7 +1757,7 @@ const Index = forwardRef(
                             <Button
                               color="warning"
                               onClick={() => {
-                                loadDataModelFunction();
+                                loadDataModelFunction(true);
                               }}
                               className="d-flex align-items-center gap-1"
                             >
@@ -2016,7 +2016,7 @@ const Index = forwardRef(
                             <Button
                               color="warning"
                               onClick={() => {
-                                loadDataModelFunction();
+                                loadDataModelFunction(true);
                               }}
                               className="d-flex align-items-center gap-1"
                             >

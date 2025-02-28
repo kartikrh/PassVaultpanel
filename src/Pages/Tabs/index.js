@@ -17,6 +17,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { resetTabSliceData, setSelectedTabHistory, setSelectedTab } from "../../Features/Tabs/tabsSlice";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_TABS
@@ -31,6 +32,8 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   // const [displayTypes, setDisplayTypes] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const displayTypes = [1, 2]
@@ -92,12 +95,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_TABS]})
+      .post(`/loadPanelData`, {module: [MODULE_TABS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -378,7 +382,7 @@ const Index = () => {
             handleReset={handleReset}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             breadCrumbs={selectedTabHistory}
@@ -394,6 +398,13 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Tabs"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

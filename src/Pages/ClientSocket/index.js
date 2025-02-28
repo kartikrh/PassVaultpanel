@@ -13,6 +13,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeActionTypeModel } from "../../components/Model/ChangeActionType";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_ClientSocket
@@ -25,6 +26,8 @@ const Index = () => {
   const [selectedClientSocket, setSelectedClientSocket] = useState({});
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -136,12 +139,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_CLIENT_SOCKETS]})
+      .post(`/loadPanelData`, {module: [MODULE_CLIENT_SOCKETS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -339,7 +343,7 @@ const Index = () => {
             onAddNavigate={"/addClientSocket"}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             selectedClientSocket={selectedClientSocket}
             setSelectedClientSocket={setSelectedClientSocket}
             handleClientSocketChange={handleChange}
@@ -362,6 +366,13 @@ const Index = () => {
               setSelectedClientSocket={setSelectedClientSocket}
             />
           )}
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Client Socket"}
+            />}
         </Container>
       </div>
     </React.Fragment>
