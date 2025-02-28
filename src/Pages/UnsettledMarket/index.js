@@ -93,7 +93,8 @@ const Index = () => {
       payload = {
         ...dataSource,
         rateSourceRefId: dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
-        commentaryId: commentaryId
+        commentaryId: commentaryId,
+        status: 4,
       };
     }
     if (isSearch) {
