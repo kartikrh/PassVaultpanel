@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_MATCH_TYPE;
@@ -36,6 +37,7 @@ const Index = () => {
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [cloneName, setCloneName] = useState("");
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
@@ -72,12 +74,13 @@ const Index = () => {
     setCheckedList(updateSingleCheck);
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_MATCH_TYPES]})
+      .post(`/loadPanelData`, {module: [MODULE_MATCH_TYPES], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -314,7 +317,7 @@ const Index = () => {
             tableElement={tableElement}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
@@ -343,6 +346,13 @@ const Index = () => {
             setCloneName={setCloneName}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Match Type"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_PAGE_FORMAT
@@ -26,6 +27,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -79,12 +82,13 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_PAGE_FORMAT]})
+      .post(`/loadPanelData`, {module: [MODULE_PAGE_FORMAT], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -256,7 +260,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addPageFormat"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
@@ -271,6 +275,13 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Page Format"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

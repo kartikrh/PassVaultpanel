@@ -22,6 +22,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
+
 const Index = () => {
   const pageName = TAB_SHOT_TYPE;
   const finalizeRef = useRef(null);
@@ -33,6 +35,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -99,12 +102,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_SHOT_TYPES]})
+      .post(`/loadPanelData`, {module: [MODULE_SHOT_TYPES], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -304,7 +308,7 @@ const Index = () => {
             onAddNavigate={"/addShotType"}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,
@@ -323,6 +327,13 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Shot Type"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

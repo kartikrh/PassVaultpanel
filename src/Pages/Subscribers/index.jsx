@@ -15,6 +15,8 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel'
 import SubDomainsModels from '../../components/Model/SubdomainsModel'
+import LoadDataModal from "../../components/Model/LoadDataModal";
+
 const Index = () => {
   const pageName = TAB_SUBSCRIBERS
   const finalizeRef = useRef(null);
@@ -26,7 +28,9 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [domainsModelVisable, setDomainsModelVisable] = useState(false);
-  const [subDomains, setSubDomains] = useState([])
+  const [subDomains, setSubDomains] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -82,12 +86,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_SUBSCRIBERS]})
+      .post(`/loadPanelData`, {module: [MODULE_SUBSCRIBERS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -258,7 +263,7 @@ const Index = () => {
             singleCheck={checekedList}
             onAddNavigate={"/addSubscriber"}
             handleReset={handleReset}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
@@ -275,6 +280,13 @@ const Index = () => {
             subDomains = {subDomains}
             handleDomains={handleDomains}
             />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Subscribers"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

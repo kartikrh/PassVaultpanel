@@ -41,6 +41,7 @@ import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
 import AwardSelectionComponent from "./CommentaryModels/AwardModal";
 import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -59,7 +60,8 @@ const Index = () => {
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
-  const [dlsModalCommentary, setDlsModalCommentary] = useState(false)
+  const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -746,12 +748,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COMMENTARY]})
+      .post(`/loadPanelData`, {module: [MODULE_COMMENTARY], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -1762,7 +1765,7 @@ const Index = () => {
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             setEventTypeId={setEventTypeId}
@@ -1898,6 +1901,13 @@ const Index = () => {
               setMarketTemplateModelVisible={setMarketTemplateModelVisible}
               marketTemplateRecord={marketTemplateRecord}
               fetchData={fetchData}
+            />}
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Commentary"} 
             />}
         </Container>
       </div>

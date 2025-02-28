@@ -14,6 +14,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { MarketTemplateClone, MarketTemplateMultiClone } from "../../components/Model/Clone";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_MARKET_TEMPLATE
@@ -36,6 +37,7 @@ const Index = () => {
   });
   const [multiCloneModelVisible, setMultiCloneModelVisible] = useState(false);
   const [multiCloneValues, setMultiCloneValues] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (value) => {
@@ -235,12 +237,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_MARKET_TEMPLATE]})
+      .post(`/loadPanelData`, {module: [MODULE_MARKET_TEMPLATE], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -593,7 +596,7 @@ const Index = () => {
             matchType = {matchType}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             singleCheck={checekedList}
             handleReset={handleReset}
             onAddNavigate={"/addMarketTemplate"}
@@ -625,6 +628,13 @@ const Index = () => {
             cloneValues={multiCloneValues}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Market Template"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

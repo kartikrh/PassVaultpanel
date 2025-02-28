@@ -15,6 +15,7 @@ import { ERROR, MODULE_USERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { useDispatch, useSelector } from "react-redux";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_USERS
@@ -30,6 +31,8 @@ const Index = () => {
   const [changePasswordVisible, setChangPasswordModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false)
   const [checekedList, setCheckedList] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -86,12 +89,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_USERS]})
+      .post(`/loadPanelData`, {module: [MODULE_USERS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -348,7 +352,7 @@ const Index = () => {
             tableElement={tableElement}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             setChangPasswordModelVisible={setChangPasswordModelVisible}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
@@ -368,6 +372,13 @@ const Index = () => {
             setPassword={setPassword}
             handleChangePassword={handleChangePassword}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Users"}
+            />}
         </Container>
       </div>
     </React.Fragment>

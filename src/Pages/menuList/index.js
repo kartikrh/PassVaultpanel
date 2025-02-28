@@ -30,6 +30,7 @@ import {
   setSelectedMenuType,
 } from "../../Features/Tabs/menuTypeSlice";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = Tab_Menu_List;
@@ -44,6 +45,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   // const [addModelVisable, setAddModelVisable] = useState(false);
   // const [level, setLevel] = useState(0);
   // const [displayTypes, setDisplayTypes] = useState([]);
@@ -152,12 +155,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_MENU_LIST]})
+      .post(`/loadPanelData`, {module: [MODULE_MENU_LIST], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -552,7 +556,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,
@@ -573,6 +577,13 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Menu List"} 
+            />}
           {/* <TabModel
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
