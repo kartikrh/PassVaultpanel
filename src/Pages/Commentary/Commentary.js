@@ -535,6 +535,7 @@ const Commentary = (props) => {
         console.log("updatesRuns", currentPartnership)
     }
     const updateExtras = (type, runs, isBoundary = false) => {
+        setIsUndoingLastOver(false)
         setCurrentBall({})
         const bowler = onPitchPlayers[CURRENT_BOWLER]
         const batter = onPitchPlayers[ON_STRIKE]
