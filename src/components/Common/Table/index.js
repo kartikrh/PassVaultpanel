@@ -1753,18 +1753,6 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
-                        {!tableElement?.isDateRange && tableElement?.loadData ? (
-                            <Button
-                              color="warning"
-                              onClick={() => {
-                                loadDataModelFunction(true);
-                              }}
-                              className="d-flex align-items-center gap-1"
-                            >
-                              <i className="ri-refresh-line"></i>
-                              Load Data
-                            </Button>
-                        ) : null}
                         {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
@@ -1790,6 +1778,18 @@ const Index = forwardRef(
                               Player History Update
                             </span>
                           </div>
+                        ) : null}
+                        {!tableElement?.isDateRange && tableElement?.loadData ? (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                loadDataModelFunction(true);
+                              }}
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <i className="ri-refresh-line"></i>
+                              Load Data
+                            </Button>
                         ) : null}
                       </div>
                     </Col>
