@@ -22,6 +22,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
     const pageName = TAB_VIDEOLIBRARY;
@@ -36,6 +37,7 @@ const Index = () => {
     const [deleteModelVisable, setDeleteModelVisable] = useState(false);
     const [importExportModelVisable, setImportExportModelVisable] = useState(false);
     const [checekedList, setCheckedList] = useState([]);
+    const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -129,12 +131,13 @@ const Index = () => {
     //     });
     // };
 
-    const handleLoadData = async () => {
+    const handleLoadData = async (password) => {
         setIsLoading(true);
         await axiosInstance
-          .post(`/loadPanelData`, {module: [MODULE_VIDEO_LIBRARY]})
+          .post(`/loadPanelData`, {module: [MODULE_VIDEO_LIBRARY], password})
           .then((response) => {
             fetchData();
+            setLoadDataModelVisable(false);
             dispatch(
               updateToastData({
                 data: response?.message,
@@ -359,7 +362,7 @@ const Index = () => {
                         onAddNavigate={"/addVideoLibrary"}
                         handleReset={handleReset}
                         handleReload={handleReload}
-                        loadDataModelFunction={handleLoadData}
+                        loadDataModelFunction={setLoadDataModelVisable}
                         reFetchData={fetchData}
                         isAddPermission={checkPermission(
                             permissionObj,
@@ -378,6 +381,13 @@ const Index = () => {
                         handleDelete={handleDelete}
                         singleCheck={checekedList}
                     />
+                    {loadDataModelVisable && 
+                    <LoadDataModal
+                      loadDataModelVisable={loadDataModelVisable}
+                      setLoadDataModelVisable={setLoadDataModelVisable}
+                      handleLoadData={handleLoadData}
+                      moduleName={"Video Library"} 
+                    />}
                 </Container>
             </div>
         </React.Fragment>

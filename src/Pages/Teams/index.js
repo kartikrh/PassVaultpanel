@@ -12,6 +12,7 @@ import { ERROR, MODULE_TEAMS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_TEAMS
@@ -25,6 +26,7 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -80,12 +82,13 @@ const Index = () => {
     window.open(url.href, '_blank');
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_TEAMS]})
+      .post(`/loadPanelData`, {module: [MODULE_TEAMS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -313,7 +316,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             eventTypes={eventTypes}
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}
@@ -327,6 +330,13 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Teams"} 
+            />}
         </Container>
       </div>
     </React.Fragment>
