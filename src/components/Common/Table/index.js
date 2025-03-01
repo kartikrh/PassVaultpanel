@@ -2015,7 +2015,7 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
-                        {tableElement?.isDataprovider ? (
+                        {/* {tableElement?.isDataprovider ? (
                           <Button
                             onClick={() => {
                               openDataProvider();
@@ -2025,7 +2025,7 @@ const Index = forwardRef(
                             <i className="ri-refresh-line"></i>
                             Data Provider
                           </Button>
-                        ) : null}
+                        ) : null} */}
                         {tableElement?.isCloseAllMarket && (
                           <Button
                             color="warning"
