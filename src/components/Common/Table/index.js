@@ -1754,18 +1754,6 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
-                        {!tableElement?.isDateRange && tableElement?.loadData ? (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadDataModelFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Data
-                          </Button>
-                        ) : null}
                         {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
@@ -1792,20 +1780,22 @@ const Index = forwardRef(
                             </span>
                           </div>
                         ) : null}
-                        {!tableElement?.isDateRange && tableElement?.loadData ? (
-                            <Button
-                              color="warning"
-                              onClick={() => {
-                                loadDataModelFunction(true);
-                              }}
-                              className="d-flex align-items-center gap-1"
-                            >
-                              <i className="ri-refresh-line"></i>
-                              Load Data
-                            </Button>
-                        ) : null}
                       </div>
                     </Col>
+                    <Col className="col-sm-auto ms-auto">
+                      {!tableElement?.isDateRange && tableElement?.loadData ? (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadDataModelFunction(true);
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Data
+                          </Button>
+                      ) : null}
+                     </Col>
                   </Row>
                   <Col className="col-sm-auto ms-auto my-2">
                     <div className="d-flex flex-wrap align-items-center gap-2">
@@ -1941,7 +1931,7 @@ const Index = forwardRef(
                   ) : null}
                   {tableElement?.isDateRange ? (
                     <Row className="g-2">
-                      {/* <Col className="bg-white p-2 m-2"> */}
+                      <Col className="col-sm-auto">
                       <div className="d-flex flex-wrap align-items-center gap-2 p-2">
                         <Button
                           color={`${isSearch ? "primary" : "danger"}`}
@@ -2025,18 +2015,6 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
-                        {tableElement?.loadData ? (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadDataModelFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Data
-                          </Button>
-                        ) : null}
                         {tableElement?.isDataprovider ? (
                           <Button
                             onClick={() => {
@@ -2105,7 +2083,21 @@ const Index = forwardRef(
                           </Button>
                         )}
                       </div>
-                      {/* </Col> */}
+                      </Col>
+                      <Col className="col-sm-auto ms-auto p-2">
+                        {tableElement?.loadData ? (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadDataModelFunction(true);
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Data
+                          </Button>
+                        ) : null}
+                      </Col>
                     </Row>
                   ) : null}
                   {(tableElement.title === "Event Markets" || tableElement?.delayTextBox) ?

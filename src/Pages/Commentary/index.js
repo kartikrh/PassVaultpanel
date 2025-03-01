@@ -1765,7 +1765,7 @@ const Index = () => {
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             openDataProvider={() => { navigate("/dataprovider"); }}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
