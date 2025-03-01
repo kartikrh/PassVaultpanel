@@ -1260,21 +1260,21 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip>
-            
 
-          {record.isPredictMarket &&
-          <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-            <Button
-              color={"success"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleUpdateManualOddsClick(record);
-              }}
-            >
-              <i class='bx bx-arrow-to-right' ></i>
-            </Button>
-          </Tooltip>}
+
+            {record.isPredictMarket &&
+              <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"success"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleUpdateManualOddsClick(record);
+                  }}
+                >
+                  <i class='bx bx-arrow-to-right' ></i>
+                </Button>
+              </Tooltip>}
           </>
         </div>
       ),
@@ -1541,71 +1541,71 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-        {record.isPredictMarket &&
-        <>
-        {record.isPredictMarket && <Tooltip
-              title={"Event Market"}
-              color={"#e8e8ea"}
-              overlayInnerStyle={{ color: "#000" }}
-            >
-              <Button
-                color={"danger"}
-                size="sm"
-                className="bstn"
-                onClick={() => {
-                  handleEventMarketClick(record)
-                }}
+          {record.isPredictMarket &&
+            <>
+              {record.isPredictMarket && <Tooltip
+                title={"Event Market"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
               >
-                <i class="bx bxs-up-arrow-square"></i>
-              </Button>
-            </Tooltip>}
-          <Tooltip
-            title={"Session Result"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleSessionResultClick(record);
-              }}
-            >
-              S
-            </Button>
-          </Tooltip>
-          
-          <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-            <Button
-              color={"info"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleMarketResultClick(record);
-              }}
-            >
-              M
-            </Button>
-          </Tooltip>
+                <Button
+                  color={"danger"}
+                  size="sm"
+                  className="bstn"
+                  onClick={() => {
+                    handleEventMarketClick(record)
+                  }}
+                >
+                  <i class="bx bxs-up-arrow-square"></i>
+                </Button>
+              </Tooltip>}
+              <Tooltip
+                title={"Session Result"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleSessionResultClick(record);
+                  }}
+                >
+                  S
+                </Button>
+              </Tooltip>
 
-          <Tooltip
-            title={"Close Market"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"warning"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleCloseMarketClick(record);
-              }}
-            >
-              C
-            </Button>
-          </Tooltip>
-        </>}
+              <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"info"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleMarketResultClick(record);
+                  }}
+                >
+                  M
+                </Button>
+              </Tooltip>
+
+              <Tooltip
+                title={"Close Market"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"warning"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCloseMarketClick(record);
+                  }}
+                >
+                  C
+                </Button>
+              </Tooltip>
+            </>}
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1719,7 +1719,7 @@ const Index = () => {
       },
     ],
     isDateRange: true,
-    compToRender: tabelNoteDisplay
+    compToRender: tabelNoteDisplay, isDataprovider: true
   };
 
   useEffect(() => {
@@ -1734,10 +1734,10 @@ const Index = () => {
   }, [])
 
   useEffect(() => {
-      if(!eventTypeId) {
-        setCompetitions([]);
-      }
-  },[eventTypeId]);
+    if (!eventTypeId) {
+      setCompetitions([]);
+    }
+  }, [eventTypeId]);
 
   const handleReload = (value) => {
     fetchData();
@@ -1765,7 +1765,8 @@ const Index = () => {
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={setLoadDataModelVisable}
+            loadDataModelFunction={handleLoadData}
+            openDataProvider={() => { navigate("/dataprovider"); }}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             setEventTypeId={setEventTypeId}

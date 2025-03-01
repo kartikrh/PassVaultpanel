@@ -56,6 +56,7 @@ const Index = forwardRef(
       cancelModelFunction,
       loadPanelModelFunction,
       loadDataModelFunction,
+      openDataProvider,
       loadClientModelFunction,
       loadSignalRToggleFunction,
       datePriceModelFunction,
@@ -570,24 +571,24 @@ const Index = forwardRef(
       const sortedData = data.slice().sort((a, b) => {
         const valueA = a[propName];
         const valueB = b[propName];
-      
+
         // Handle null or undefined values
         if (valueA == null || valueB == null) {
           return valueA == null ? 1 : -1; // Treat null/undefined as "greater" for descending order
         }
-      
+
         // If both are strings, use localeCompare
         if (typeof valueA === 'string' && typeof valueB === 'string') {
           return order === 'ascending'
             ? valueA.localeCompare(valueB)
             : valueB.localeCompare(valueA);
         }
-      
+
         // For numbers or other types, use subtraction for sorting
         if (typeof valueA === 'number' && typeof valueB === 'number') {
           return order === 'ascending' ? valueA - valueB : valueB - valueA;
         }
-      
+
         // Convert other types to strings and compare
         const stringValueA = String(valueA);
         const stringValueB = String(valueB);
@@ -1056,7 +1057,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.sendDataType}
                               placeholder="Send Data Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.sendDataType?.value){
+                                if (e?.value !== selectedTableElements?.sendDataType?.value) {
                                   handleTableActions("isSendData", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1084,7 +1085,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.createdTypeName}
                               placeholder="Created Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.createdTypeName?.value){
+                                if (e?.value !== selectedTableElements?.createdTypeName?.value) {
                                   handleTableActions("createdType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1248,7 +1249,7 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.displayType?.value){
+                                if (e?.value !== selectedTableElements?.displayType?.value) {
                                   handleTableActions("displayType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1278,7 +1279,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.rateSourceType}
                               placeholder={ratesource?.rateSourceType}
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.rateSourceType?.value){
+                                if (e?.value !== selectedTableElements?.rateSourceType?.value) {
                                   setSearchTerm("")
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1311,7 +1312,7 @@ const Index = forwardRef(
                               isDisabled={selectedTableElementsLogs?.eventType}
                               placeholder="Event Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.eventType?.value){
+                                if (e?.value !== selectedTableElements?.eventType?.value) {
                                   handleTableActions("eventTypeId", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1348,7 +1349,7 @@ const Index = forwardRef(
                               isDisabled={selectedTableElementsLogs?.competition}
                               placeholder="Competition List"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.competition?.value){
+                                if (e?.value !== selectedTableElements?.competition?.value) {
                                   setCompetitionId(e?.value);
                                   handleTableActions("competitionId", e);
                                   setSelectedTableElements({
@@ -1375,11 +1376,11 @@ const Index = forwardRef(
                                   width: 180,
                                 }),
                               }}
-                              value={selectedTableElementsLogs?.eventName ||selectedTableElements?.eventName}
+                              value={selectedTableElementsLogs?.eventName || selectedTableElements?.eventName}
                               isDisabled={selectedTableElementsLogs?.eventName}
                               placeholder="Event List"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.eventName?.value){
+                                if (e?.value !== selectedTableElements?.eventName?.value) {
                                   handleTableActions("commentaryId", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1411,7 +1412,7 @@ const Index = forwardRef(
                               // defaultValue={statusList?.find(item => item.statusId === 1)?.statusType}
                               placeholder="Status Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.statusType?.value){
+                                if (e?.value !== selectedTableElements?.statusType?.value) {
                                   handleTableActions("status", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1439,7 +1440,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.videoType}
                               placeholder="Video Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.videoType?.value){
+                                if (e?.value !== selectedTableElements?.videoType?.value) {
                                   handleTableActions("videoType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1467,7 +1468,7 @@ const Index = forwardRef(
                               value={selectedTableElements?.matchType}
                               placeholder="Match Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.matchType?.value){
+                                if (e?.value !== selectedTableElements?.matchType?.value) {
                                   handleTableActions("matchTypeId", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1483,7 +1484,7 @@ const Index = forwardRef(
                             />
                           </div>
                         ) : null}
-                         {tableElement.title !== "Event Markets" && tableElement?.marketTypeSelect ? (
+                        {tableElement.title !== "Event Markets" && tableElement?.marketTypeSelect ? (
                           <div className="">
                             <Select
                               styles={{
@@ -1560,15 +1561,15 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.competition?.value){
-                                setCompetitionId(e?.value);
-                                handleTableActions("competitionId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  competition: e,
-                                  commentary: { value: 0, label: "Commentary" },
-                                });
-                              }
+                                if (e?.value !== selectedTableElements?.competition?.value) {
+                                  setCompetitionId(e?.value);
+                                  handleTableActions("competitionId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    competition: e,
+                                    commentary: { value: 0, label: "Commentary" },
+                                  });
+                                }
                               }}
                               options={competitions?.map((item) => ({
                                 label: item?.competition,
@@ -1591,7 +1592,7 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.commentary?.value){
+                                if (e?.value !== selectedTableElements?.commentary?.value) {
                                   handleTableActions("commentaryId", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1619,7 +1620,7 @@ const Index = forwardRef(
                               }), // Adjust width as needed
                             }}
                             onChange={(e) => {
-                              if (e?.value !== selectedTableElements?.team?.value){
+                              if (e?.value !== selectedTableElements?.team?.value) {
                                 handleTableActions("teamId", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
@@ -1645,7 +1646,7 @@ const Index = forwardRef(
                               }), // Adjust width as needed
                             }}
                             onChange={(e) => {
-                              if (e?.value !== selectedTableElements?.commentaryStatus?.value){
+                              if (e?.value !== selectedTableElements?.commentaryStatus?.value) {
                                 handleTableActions("commentaryStatus", e);
                                 setSelectedTableElements({
                                   ...selectedTableElements,
@@ -1753,6 +1754,18 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
+                        {!tableElement?.isDateRange && tableElement?.loadData ? (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadDataModelFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Data
+                          </Button>
+                        ) : null}
                         {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
@@ -1794,58 +1807,58 @@ const Index = forwardRef(
                       </div>
                     </Col>
                   </Row>
-                    <Col className="col-sm-auto ms-auto my-2">
-                      <div className="d-flex flex-wrap align-items-center gap-2">
-                        {isDeleteAllPermission && (
-                          <Button
-                            color={isSignalRStarted ? "success" : "danger"}
-                            onClick={() => {
-                              loadSignalRToggleFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            {isSignalRStarted ? "SignalR Started" : "SignalR Stopped"}
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadPanelModelFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Panel Data
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadClientModelFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Client Data
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              deleteAllModelFunction(true)
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-delete-bin-2-line"></i>
-                            Delete All
-                          </Button>
-                        )}
-                      </div>
-                    </Col>
+                  <Col className="col-sm-auto ms-auto my-2">
+                    <div className="d-flex flex-wrap align-items-center gap-2">
+                      {isDeleteAllPermission && (
+                        <Button
+                          color={isSignalRStarted ? "success" : "danger"}
+                          onClick={() => {
+                            loadSignalRToggleFunction();
+                          }}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <i className="ri-refresh-line"></i>
+                          {isSignalRStarted ? "SignalR Started" : "SignalR Stopped"}
+                        </Button>
+                      )}
+                      {isDeleteAllPermission && (
+                        <Button
+                          color="warning"
+                          onClick={() => {
+                            loadPanelModelFunction();
+                          }}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <i className="ri-refresh-line"></i>
+                          Load Panel Data
+                        </Button>
+                      )}
+                      {isDeleteAllPermission && (
+                        <Button
+                          color="warning"
+                          onClick={() => {
+                            loadClientModelFunction();
+                          }}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <i className="ri-refresh-line"></i>
+                          Load Client Data
+                        </Button>
+                      )}
+                      {isDeleteAllPermission && (
+                        <Button
+                          color="danger"
+                          onClick={() => {
+                            deleteAllModelFunction(true)
+                          }}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <i className="ri-delete-bin-2-line"></i>
+                          Delete All
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
                   {tableElement?.dateRange ? (
                     <Row className="">
                       {/* <Col className="bg-white p-2 m-2"> */}
@@ -2013,16 +2026,27 @@ const Index = forwardRef(
                           </div>
                         ) : null}
                         {tableElement?.loadData ? (
-                            <Button
-                              color="warning"
-                              onClick={() => {
-                                loadDataModelFunction(true);
-                              }}
-                              className="d-flex align-items-center gap-1"
-                            >
-                              <i className="ri-refresh-line"></i>
-                              Load Data
-                            </Button>
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadDataModelFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Data
+                          </Button>
+                        ) : null}
+                        {tableElement?.isDataprovider ? (
+                          <Button
+                            onClick={() => {
+                              openDataProvider();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Data Provider
+                          </Button>
                         ) : null}
                         {tableElement?.isCloseAllMarket && (
                           <Button
@@ -2085,9 +2109,9 @@ const Index = forwardRef(
                     </Row>
                   ) : null}
                   {(tableElement.title === "Event Markets" || tableElement?.delayTextBox) ?
-                  <Row className="">
-                    <div className="d-flex flex-wrap align-items-center gap-2">
-                       {tableElement.title === "Event Markets" && tableElement?.marketTypeSelect ? (
+                    <Row className="">
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        {tableElement.title === "Event Markets" && tableElement?.marketTypeSelect ? (
                           <div className="">
                             <Select
                               styles={{
@@ -2119,7 +2143,7 @@ const Index = forwardRef(
                               classNamePrefix="filter-dropdown"
                             />
                           </div>
-                        ) : null}                        
+                        ) : null}
                         {tableElement.title === "Event Markets" && tableElement?.categorySelect ? (
                           <div className="">
                             <Select
@@ -2150,55 +2174,55 @@ const Index = forwardRef(
                               classNamePrefix="filter-dropdown"
                             />
                           </div>
-                  ) : null}
-                  {tableElement?.delayTextBox ? (
-                        <>
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Event Delay"
-                            defaultValue={delay}
-                            onChange={(e) => {
-                              setDelay(e.target.value);
-                            }}
-                            id="delay"
-                          />
-                          {delayValidationMessage && (
-                            <div style={{ color: 'red', marginTop: '2px' }}>
-                              {delayValidationMessage}
+                        ) : null}
+                        {tableElement?.delayTextBox ? (
+                          <>
+                            <div className="d-flex flex-column">
+                              <input
+                                className="form-control"
+                                type="text"
+                                placeholder="Event Delay"
+                                defaultValue={delay}
+                                onChange={(e) => {
+                                  setDelay(e.target.value);
+                                }}
+                                id="delay"
+                              />
+                              {delayValidationMessage && (
+                                <div style={{ color: 'red', marginTop: '2px' }}>
+                                  {delayValidationMessage}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        <button
-                          className="btn btn-primary"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            if (!delay) {
-                              setDelayValidationMessage("Delay value is required.");
-                            } else if (singleCheck.length > 0) {
-                              setDelayValidationMessage("");
-                              handleDelay();
-                            } else {
-                              setDelayValidationMessage("");
-                              dispatch(
-                                updateToastData({
-                                  data: "Select at least one (only one) row",
-                                  title: "Error",
-                                  type: Error,
-                                })
-                              );
-                            }
-                          }}
-                          type="delay"
-                          id="create-btn"
-                        >
-                          Save
-                        </button>
-                        </>
-                  ) : null}
-                   </div>
-                   </Row> : null}
+                            <button
+                              className="btn btn-primary"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                if (!delay) {
+                                  setDelayValidationMessage("Delay value is required.");
+                                } else if (singleCheck.length > 0) {
+                                  setDelayValidationMessage("");
+                                  handleDelay();
+                                } else {
+                                  setDelayValidationMessage("");
+                                  dispatch(
+                                    updateToastData({
+                                      data: "Select at least one (only one) row",
+                                      title: "Error",
+                                      type: Error,
+                                    })
+                                  );
+                                }
+                              }}
+                              type="delay"
+                              id="create-btn"
+                            >
+                              Save
+                            </button>
+                          </>
+                        ) : null}
+                      </div>
+                    </Row> : null}
                 </form>
               </CardHeader>
             )}
@@ -2223,7 +2247,7 @@ const Index = forwardRef(
                       value={selectedTableElements?.tournamentType}
                       placeholder="Tournament List"
                       onChange={(e) => {
-                        if (e?.value !== selectedTableElements?.tournamentType?.value){
+                        if (e?.value !== selectedTableElements?.tournamentType?.value) {
                           handleTableActions("onTournamentisChanges", e);
                           setSelectedTableElements({
                             ...selectedTableElements,
@@ -2477,11 +2501,11 @@ const Index = forwardRef(
                       <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
                         <tr>
                           {columns.map((column) => (
-                            <th style={{...column.style, zIndex: column?.sticky && 100, left: column?.sticky && 0}} className={column.className}>
+                            <th style={{ ...column.style, zIndex: column?.sticky && 100, left: column?.sticky && 0 }} className={column.className}>
                               <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
                                 <span>{column.title}</span>
                                 {column.sort ? (
-                                  <span className="d-flex flex-column align-items-center">                                   
+                                  <span className="d-flex flex-column align-items-center">
                                     <i
                                       className={"bx bx-caret-up " + column.className}
                                       onClick={() => {
