@@ -1719,7 +1719,8 @@ const Index = () => {
       },
     ],
     isDateRange: true,
-    compToRender: tabelNoteDisplay, isDataprovider: true
+    compToRender: tabelNoteDisplay, 
+    // isDataprovider: true
   };
 
   useEffect(() => {
