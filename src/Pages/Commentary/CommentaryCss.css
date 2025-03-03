@@ -585,6 +585,10 @@
   /* background-color: rgba(233, 233, 233, 0.594); */
 }
 
+.category-list {
+  padding-left: 10px;
+}
+
 .event-market-modal .modal-dialog {
   max-width: 90%;
   width: 90%;
@@ -1343,6 +1347,14 @@
   font-weight: 600;
 }
 
+.rate-width {
+  width: 130px;
+}
+
+.odds-width {
+  width: 100px;
+}
+
 .point-font {
   font-size: 12px;
 }
@@ -1350,6 +1362,38 @@
 .yes-rate {
   background-color: #0c5d78 !important;
   color: #fff !important;
+}
+
+.market-suspended-container {
+  position: relative;
+  height: 45px;
+  width: 100%;
+}
+
+.market-suspended-container .no-rate-suspend {
+  background-color: #850912;
+  color: #fff;
+  opacity: 0.6;
+}
+
+.market-suspended-container .yes-rate-suspend {
+  background-color: #0c5d78;
+  color: #fff;
+  opacity: 0.6;
+}
+
+.market-suspended-container .market-overlay {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: none;
+  color: #fff;
+}
+
+.market-suspended-container .suspended-text {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
 }
 
 .active-css {

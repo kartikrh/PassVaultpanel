@@ -33,11 +33,11 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   const [categories, setCategories] = useState([]);
   const [marketTypes, setMarketTypes] = useState([]);
   const marketTypeObj = useSelector(
-      (state) => state.marketType?.marketTypeList
-    );
-    const [openMarkets, setOpenMarkets] = useState([]);
-    const [openCategories, setOpenCategories] = useState([]);
-    
+    (state) => state.marketType?.marketTypeList
+  );
+  const [openMarkets, setOpenMarkets] = useState([]);
+  const [openCategories, setOpenCategories] = useState([]);
+
   const dispatch = useDispatch();
   const socket = useRef(null);
 
@@ -154,16 +154,20 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   }, [eventInfo, marketTypes, categories]);
 
   useEffect(() => {
-    if (eventInfo.length > 0 && marketTypes.length > 0 && categories.length > 0) {
+    if (
+      eventInfo.length > 0 &&
+      marketTypes.length > 0 &&
+      categories.length > 0
+    ) {
       const data = groupMarkets(eventInfo);
       setMarketsGrouped(data);
-  
+
       // Extract all marketTypeIds and categoryIds and set them as open
       const allMarketIds = Object.keys(data);
       const allCategoryIds = Object.values(data).flatMap((type) =>
         Object.keys(type.categories)
       );
-  
+
       setOpenMarkets(allMarketIds);
       setOpenCategories(allCategoryIds);
     }
@@ -297,7 +301,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                           <b>{typeData?.typeInfo?.displayName}</b>
                         </AccordionHeader>
                         <AccordionBody
-                          className="market-category-body"
+                          className="market-category-body category-list"
                           accordionId={marketTypeId}
                         >
                           {Object.entries(typeData?.categories).map(
@@ -337,7 +341,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                       accordionId={categoryId}
                                     >
                                       {fancyLineMarkets.length > 0 ? (
-                                        <Table responsive>
+                                        <Table responsive className="mb-0">
                                           <tbody>
                                             {fancyLineMarkets
                                               .sort(
@@ -359,10 +363,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                     {market?.marketName} [
                                                     {market?.marketId}]
                                                   </td>
-                                                  <td
-                                                    align="center"
-                                                    className="no-rate text-center py-0"
-                                                  >
+                                                  {/* <td className="no-rate rate-width text-center py-0">
                                                     <div className="rate-font">
                                                       {market?.runner?.[0]
                                                         ?.layPrice || "0"}
@@ -372,10 +373,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                         ?.laySize || "0"}
                                                     </div>
                                                   </td>
-                                                  <td
-                                                    align="center"
-                                                    className="yes-rate text-center py-0"
-                                                  >
+                                                  <td className="yes-rate rate-width text-center py-0">
                                                     <div className="rate-font">
                                                       {market?.runner?.[0]
                                                         ?.backPrice || "0"}
@@ -384,98 +382,177 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                       {market?.runner?.[0]
                                                         ?.backSize || "0"}
                                                     </div>
+                                                  </td> */}
+                                                  <td className="p-0">
+                                                    {parseInt(
+                                                      market?.status
+                                                    ) === 1 ? (
+                                                      <div className="d-flex align-items-center justify-content-end p-0">
+                                                        <div className="no-rate rate-width text-center py-0">
+                                                          <div className="rate-font">
+                                                            {market?.runner?.[0]
+                                                              ?.layPrice || "0"}
+                                                          </div>
+                                                          <div className="point-font">
+                                                            {market?.runner?.[0]
+                                                              ?.laySize || "0"}
+                                                          </div>
+                                                        </div>
+                                                        <div className="yes-rate rate-width text-center py-0">
+                                                          <div className="rate-font">
+                                                            {market?.runner?.[0]
+                                                              ?.backPrice ||
+                                                              "0"}
+                                                          </div>
+                                                          <div className="point-font">
+                                                            {market?.runner?.[0]
+                                                              ?.backSize || "0"}
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    ) : (
+                                                      <div className="d-flex justify-content-end market-suspended-container">
+                                                        <div className="no-rate-suspend rate-width"></div>
+                                                        <div className="yes-rate-suspend rate-width"></div>
+                                                        <div className="market-overlay">
+                                                          <span className="suspended-text">
+                                                            Market suspend
+                                                          </span>
+                                                        </div>
+                                                      </div>
+                                                    )}
                                                   </td>
                                                 </tr>
                                               ))}
                                           </tbody>
                                         </Table>
                                       ) : null}
-                                      {otherMarkets.length > 0 &&
-                                        otherMarkets
-                                          .sort(
-                                            (a, b) => a.marketId - b.marketId
-                                          )
-                                          .map((market) => (
-                                            <>
-                                              {market.runner &&
-                                                market.runner.length > 0 && (
-                                                  <Table responsive>
-                                                    <thead>
-                                                      <tr>
-                                                        <th className="p-2">
-                                                          <span
-                                                            style={{
-                                                              backgroundColor:
-                                                                market?.isAllow
-                                                                  ? "green"
-                                                                  : "red",
-                                                            }}
-                                                            className="active-css"
-                                                          ></span>
-                                                          <b>
-                                                            {market?.marketName}{" "}
-                                                            [{market?.marketId}]
-                                                          </b>
-                                                        </th>
-                                                        <th
-                                                          align="center"
-                                                          className="p-2"
-                                                        >
-                                                          <b>Back</b>
-                                                        </th>
-                                                        <th
-                                                          align="center"
-                                                          className="p-2"
-                                                        >
-                                                          <b>Lay</b>
-                                                        </th>
-                                                      </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                      {market.runner.map(
-                                                        (runner) => (
-                                                          <tr
-                                                            key={
-                                                              runner.runnerId
-                                                            }
-                                                          >
-                                                            <td>
-                                                              {runner.runner}
-                                                            </td>
-                                                            <td
-                                                              align="center"
-                                                              className="yes-rate text-center py-0"
+                                      {otherMarkets.length > 0 ? (
+                                        <Row>
+                                          {otherMarkets
+                                            .sort(
+                                              (a, b) => a.marketId - b.marketId
+                                            )
+                                            .map((market) => (
+                                              <Col md={6}>
+                                                {market.runner &&
+                                                  market.runner.length > 0 && (
+                                                    <Table
+                                                      responsive
+                                                      className="mb-0"
+                                                    >
+                                                      <thead>
+                                                        <tr>
+                                                          <th className="p-2">
+                                                            <span
+                                                              style={{
+                                                                backgroundColor:
+                                                                  market?.isAllow
+                                                                    ? "green"
+                                                                    : "red",
+                                                              }}
+                                                              className="active-css"
+                                                            ></span>
+                                                            <b>
+                                                              {
+                                                                market?.marketName
+                                                              }{" "}
+                                                              [
+                                                              {market?.marketId}
+                                                              ]
+                                                            </b>
+                                                          </th>
+                                                          {/* <th className="p-2 text-end">
+                                                            <b>Back</b>
+                                                          </th>
+                                                          <th className="p-2">
+                                                            <b>Lay</b>
+                                                          </th> */}
+                                                          <th className="p-2 text-center">
+                                                            <b>Back Lay</b>
+                                                          </th>
+                                                        </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                        {market.runner.map(
+                                                          (runner) => (
+                                                            <tr
+                                                              key={
+                                                                runner.runnerId
+                                                              }
                                                             >
-                                                              <div className="rate-font">
-                                                                {runner?.backPrice ||
-                                                                  "0"}
-                                                              </div>
-                                                              <div className="point-font">
-                                                                {runner?.backSize ||
-                                                                  "0"}
-                                                              </div>
-                                                            </td>
-                                                            <td
-                                                              align="center"
-                                                              className="no-rate text-center py-0"
-                                                            >
-                                                              <div className="rate-font">
-                                                                {runner?.layPrice ||
-                                                                  "0"}
-                                                              </div>
-                                                              <div className="point-font">
-                                                                {runner?.laySize ||
-                                                                  "0"}
-                                                              </div>
-                                                            </td>
-                                                          </tr>
-                                                        )
-                                                      )}
-                                                    </tbody>
-                                                  </Table>
-                                                )}
-                                            </>
-                                          ))}
+                                                              <td>
+                                                                {runner.runner}
+                                                              </td>
+                                                              {/* <td className="yes-rate odds-width text-center py-0">
+                                                                <div className="rate-font">
+                                                                  {runner?.backPrice ||
+                                                                    "0"}
+                                                                </div>
+                                                                <div className="point-font">
+                                                                  {runner?.backSize ||
+                                                                    "0"}
+                                                                </div>
+                                                              </td>
+                                                              <td className="no-rate odds-width text-center py-0">
+                                                                <div className="rate-font">
+                                                                  {runner?.layPrice ||
+                                                                    "0"}
+                                                                </div>
+                                                                <div className="point-font">
+                                                                  {runner?.laySize ||
+                                                                    "0"}
+                                                                </div>
+                                                              </td> */}
+                                                              <td className="p-0">
+                                                                {parseInt(
+                                                                  market?.status
+                                                                ) === 1 ? (
+                                                                  <div className="d-flex align-items-center justify-content-end p-0">
+                                                                    <div className="yes-rate odds-width text-center py-0">
+                                                                      <div className="rate-font">
+                                                                        {runner?.backPrice ||
+                                                                          "0"}
+                                                                      </div>
+                                                                      <div className="point-font">
+                                                                        {runner?.backSize ||
+                                                                          "0"}
+                                                                      </div>
+                                                                    </div>
+                                                                    <div className="no-rate odds-width text-center py-0">
+                                                                      <div className="rate-font">
+                                                                        {runner?.layPrice ||
+                                                                          "0"}
+                                                                      </div>
+                                                                      <div className="point-font">
+                                                                        {runner?.laySize ||
+                                                                          "0"}
+                                                                      </div>
+                                                                    </div>
+                                                                  </div>
+                                                                ) : (
+                                                                  <div className="d-flex justify-content-end market-suspended-container">
+                                                                    <div className="no-rate-suspend odds-width"></div>
+                                                                    <div className="yes-rate-suspend odds-width"></div>
+                                                                    <div className="market-overlay">
+                                                                      <span className="suspended-text">
+                                                                        Market
+                                                                        suspend
+                                                                      </span>
+                                                                    </div>
+                                                                  </div>
+                                                                )}
+                                                              </td>
+                                                            </tr>
+                                                          )
+                                                        )}
+                                                      </tbody>
+                                                    </Table>
+                                                  )}
+                                              </Col>
+                                            ))}{" "}
+                                        </Row>
+                                      ) : null}
                                     </AccordionBody>
                                   </AccordionItem>
                                 </Accordion>
