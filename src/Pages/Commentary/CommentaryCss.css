@@ -1352,6 +1352,14 @@
   color: #fff !important;
 }
 
+.active-css {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
 .market-back-lay {
   width: 100px;
 }
