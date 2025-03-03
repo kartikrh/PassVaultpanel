@@ -33,11 +33,11 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   const [categories, setCategories] = useState([]);
   const [marketTypes, setMarketTypes] = useState([]);
   const marketTypeObj = useSelector(
-    (state) => state.marketType?.marketTypeList
-  );
-  const [openMarkets, setOpenMarkets] = useState([]);
-  const [openCategories, setOpenCategories] = useState([]);
-
+      (state) => state.marketType?.marketTypeList
+    );
+    const [openMarkets, setOpenMarkets] = useState([]);
+    const [openCategories, setOpenCategories] = useState([]);
+    
   const dispatch = useDispatch();
   const socket = useRef(null);
 

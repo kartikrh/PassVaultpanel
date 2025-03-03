@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Accordion,
     AccordionSummary,
     AccordionDetails,
     Typography,
@@ -9,23 +8,27 @@ import {
     Container,
     Paper,
     CircularProgress,
-    Table,
+    // Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    // Accordion
 } from '@mui/material';
+import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table} from 'reactstrap'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
 import axiosInstance from '../../Features/axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR } from '../../components/Common/Const';
 import EventDetails from './EventDetails';
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
+import { fetchConfig } from '../Commentary/functions';
 
 const DataproviderPage = () => {
+    const loadInit = useSelector((state) => state.loadInit.loadInitData);
     const [events, setEvents] = useState([]);
     const [groupedEvents, setGroupedEvents] = useState({});
     const [loading, setLoading] = useState(true);
@@ -35,7 +38,23 @@ const DataproviderPage = () => {
     const [apiXkey, setApiXkey] = useState(null);
     const [apiURL, setApiURL] = useState(null);
     const dispatch = useDispatch();
+
+    const [openEventTypes, setEventTypes] = useState([]);
+    const [openCompetition, setOpenCompetition] = useState([]);
+
+    const toggleEventType = (id) => {
+        setEventTypes((prev) =>
+          prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+      };
     
+      // Function to toggle Category Accordion
+      const toggleCompetition = (id) => {
+        setOpenCompetition((prev) =>
+          prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+      };
+
     const fetchConfigAll = async () => {
         setLoading(true);
         try {
@@ -52,7 +71,12 @@ const DataproviderPage = () => {
             setLoading(false);
         }
     };
-
+    // useEffect(() => {
+    //     const data = fetchConfig(loadInit)
+    //     setApiURL(data.dpApiURL)
+    //     setApiXkey(data.dpApiXkey)
+    //     setSocketUrl(data.dpSocketUrl)
+    // }, [])
     useEffect(() => {
         fetchConfigAll()
     }, [])
@@ -145,29 +169,28 @@ const DataproviderPage = () => {
             default: return "";
         }
     };
-
     return (
         <Container maxWidth="xl" sx={{ pt: 10 }}>
-            <Typography variant="h6" gutterBottom>
-                Cricket Betting Markets
-            </Typography>
 
             {Object.entries(groupedEvents).map(([eventType, competitions]) => (
-                <Accordion key={eventType}>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Accordion key={eventType} className='data-provider-outer-accordian' open={openEventTypes} toggle={toggleEventType}>
+                    {/* targetId={categoryId} */}
+                    <AccordionItem >
+                    <AccordionHeader className='data-provider-outer-accordian-summary px-1' targetId={eventType}>
+                        <div className='d-flex align-items-center p-1 px-2'>
                             <SportsCricketIcon sx={{ mr: 2 }} />
-                            <Typography variant="h6">{eventType}</Typography>
-                        </Box>
-                    </AccordionSummary>
-                    <AccordionDetails>
+                            <span style={{fontSize: '16px'}}>{eventType}</span>
+                        </div>
+                    </AccordionHeader>
+                    <AccordionBody accordionId={eventType} style={{padding: '0px'}} className='data-provider-outer-accordian-body'>
                         {Object.entries(competitions).map(([competition, matches]) => (
-                            <Accordion key={competition}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Typography variant="subtitle1">{competition}</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <TableContainer component={Paper}>
+                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition} className='px-2 py-1'>
+                                <AccordionItem>
+                                <AccordionHeader targetId={competition} className='data-provider-outer-accordian-summary' expandIcon={<ExpandMoreIcon />}>
+                                    <span style={{fontSize: '16px'}} className='p-1'>{competition}</span>
+                                </AccordionHeader>
+                                <AccordionBody accordionId={competition}>
+                                    {/* <TableContainer component={Paper}>
                                       <Table>
                                         <TableHead>
                                            <TableRow>
@@ -184,7 +207,7 @@ const DataproviderPage = () => {
                                               sx={{ cursor: "pointer" }} 
                                               onClick={() => handleRowClick(match)}
                                             >
-                                              <TableCell sx={{ width: "300px"}}>{convertDateUTCToLocal(match.eventDate, "index")/* dayjs(match.eventDate).format('MMM D, YYYY - HH:mm') */}</TableCell>
+                                              <TableCell sx={{ width: "300px"}}>{convertDateUTCToLocal(match.eventDate, "index")}</TableCell>
                                               <TableCell sx={{ width: "500px"}}>{match.eventName}</TableCell>
                                               <TableCell sx={{ width: "200px"}}>
                                                 <Chip
@@ -200,11 +223,35 @@ const DataproviderPage = () => {
                                            ))}
                                         </TableBody>
                                       </Table>
-                                    </TableContainer>
-                                </AccordionDetails>
+                                    </TableContainer> */}
+                                    {/* <Table>
+                                        {matches.map((match) =>{
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                    {`${match.eventName} ${getStatusLabel(match.status)} ${convertDateUTCToLocal(match.eventDate, "index")}`}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        })}
+                                    </Table> */}
+                                    <Table className='mb-0' responsive hover>
+                                            <tbody>
+                                                {matches.map((match) =>{
+                                                    return(<tr  onClick={() => handleRowClick(match)} className="px-1 mx-2" style={{border: '1px solid gray' }}>
+                                                    <td className='p-1 m-0'>
+                                                        <div>{match.eventName} <span style={{color: getStatusColor(match.status)}}> {getStatusLabel(match.status)} </span> {convertDateUTCToLocal(match.eventDate, "index")}</div>
+                                                    </td>
+                                                    </tr>)
+                                                })}
+                                            </tbody>
+                                        </Table>
+                                </AccordionBody>
+                                </AccordionItem>
                             </Accordion>
                         ))}
-                    </AccordionDetails>
+                    </AccordionBody>
+                    </AccordionItem>
                 </Accordion>
             ))}
         </Container>
