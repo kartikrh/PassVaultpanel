@@ -2,6 +2,8 @@ import _ from "lodash";
 import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
 import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { useSelector } from "react-redux";
+import { loadInit } from "../../config";
 
 export function mapCommentaryStatus(status) {
   switch (parseInt(status)) {
@@ -366,3 +368,10 @@ export const getPlayerNameById = (players = [], playerIdToCheck, isBattingTeam) 
   return player?.playerName || null; // Return the player or null if not found
 
 };
+
+export const fetchConfig = (data) => {
+  const dpSocketUrl = data.find(config => config.key === loadInit.DP_SOCKET_URL)?.value;
+  const dpApiXkey = data.find(config => config.key === loadInit.DP_API_KEY)?.value;
+  const dpApiURL = data.find(config => config.key === loadInit.DP_API_URL)?.value;
+  return {dpSocketUrl, dpApiXkey, dpApiURL}
+}
