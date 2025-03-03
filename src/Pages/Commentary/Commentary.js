@@ -83,6 +83,7 @@ const Commentary = (props) => {
     const [showRretiredHurt, setShowRretiredHurt] = useState(false)
     const [target, setTarget] = useState(0)
     const [superOverModal, setSuperOverModal] = useState(0)
+    const [superOverText, setSuperOverText] = useState(false)
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
     const [retryModel, setRetryModel] = useState(undefined)
     const [isWonByInnings, setIsWonByInnings] = useState(undefined)
@@ -189,7 +190,7 @@ const Commentary = (props) => {
     }
     const completeMatch = () => {
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1;
-        if (isMatchTie) setSuperOverModal(true);
+        if (isMatchTie) {setSuperOverModal(true); setSuperOverText(true)}
         else checkWinner();
         setCompleteMatchModal(undefined);
         setChangePlayerList(undefined);
@@ -212,6 +213,10 @@ const Commentary = (props) => {
             isBattingTeamWon = false
             WINNING_TEAM = BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
+        } else if(setSuperOverText){
+            isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
+            WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
+            WINNING_MESSAGE = `${teams?.[WINNING_TEAM]?.shortName} won in super over.`
         } else {
             const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
@@ -2449,6 +2454,7 @@ const Commentary = (props) => {
                 onExitClick:() => {
                     setWinnerAnnouncement(undefined)
                     navigate("/commentary")
+                    setSuperOverText(undefined)
                 }
             })}
         />
@@ -2580,6 +2586,7 @@ const Commentary = (props) => {
             onExitClick={() => {
                 setWinnerAnnouncement(undefined)
                 navigate("/commentary")
+                setSuperOverText(undefined)
             }}
         />}
         {isChangeBowler.isChangePopup && <ChangeBowlerModal
