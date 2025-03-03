@@ -7,4 +7,9 @@ module.exports = {
   facebook: {
     APP_ID: "",
   },
+  loadInit:{
+    DP_SOCKET_URL: 'DPSOCKETURL',
+    DP_API_KEY: 'DPAPIXKEY',
+    DP_API_URL: 'DPAPIURL'
+  }
 }

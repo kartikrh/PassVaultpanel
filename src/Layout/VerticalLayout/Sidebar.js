@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAuthorisedTabs, getTabPermissions } from "../../Features/Authentication/authorizationSlice";
 import MetisMenu from "metismenujs";
 import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
+import { configInit } from "../../Features/Config/configSlice";
 
 const Sidebar = (props) => {
   const ref = useRef();
@@ -21,6 +22,7 @@ const Sidebar = (props) => {
     dispatch(getAuthorisedTabs());
     dispatch(getTabPermissions());
     dispatch(getMarketType());
+    dispatch(configInit());
   }, []);
 
   const activateParentDropdown = useCallback((item) => {
