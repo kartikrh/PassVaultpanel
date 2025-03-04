@@ -179,15 +179,15 @@ const DataproviderPage = () => {
                     <AccordionHeader className='data-provider-outer-accordian-summary px-1' targetId={eventType}>
                         <div className='d-flex align-items-center p-1 px-2'>
                             <SportsCricketIcon sx={{ mr: 2 }} />
-                            <span style={{fontSize: '16px'}}>{eventType}</span>
+                            <span style={{fontSize: '20px', fontWeight: 'bold'}}>{eventType}</span>
                         </div>
                     </AccordionHeader>
                     <AccordionBody accordionId={eventType} style={{padding: '0px'}} className='data-provider-outer-accordian-body'>
                         {Object.entries(competitions).map(([competition, matches]) => (
-                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition} className='px-2 py-1'>
+                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition} className='px-2 py-0'>
                                 <AccordionItem>
                                 <AccordionHeader targetId={competition} className='data-provider-outer-accordian-summary' expandIcon={<ExpandMoreIcon />}>
-                                    <span style={{fontSize: '16px'}} className='p-1'>{competition}</span>
+                                    <span style={{fontSize: '14px'}} className='p-1'>{competition}</span>
                                 </AccordionHeader>
                                 <AccordionBody accordionId={competition}>
                                     {/* <TableContainer component={Paper}>
@@ -238,9 +238,9 @@ const DataproviderPage = () => {
                                     <Table className='mb-0' responsive hover>
                                             <tbody>
                                                 {matches.map((match) =>{
-                                                    return(<tr  onClick={() => handleRowClick(match)} className="px-1 mx-2" style={{border: '1px solid gray' }}>
-                                                    <td className='p-1 m-0'>
-                                                        <div>{match.eventName} <span style={{color: getStatusColor(match.status)}}> {getStatusLabel(match.status)} </span> {convertDateUTCToLocal(match.eventDate, "index")}</div>
+                                                    return(<tr onClick={() => handleRowClick(match)} className="px-1 mx-2 data-provider-table-row" style={{border: '1px solid gray' }}>
+                                                    <td className='p-0 m-0'>
+                                                        <div className='ms-4'>{match.eventName} <span style={{color: getStatusColor(match.status)}}> {getStatusLabel(match.status)} </span> {convertDateUTCToLocal(match.eventDate, "index")}</div>
                                                     </td>
                                                     </tr>)
                                                 })}
