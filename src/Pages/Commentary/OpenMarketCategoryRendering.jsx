@@ -188,8 +188,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
             ))}
 
             {deactivatedMarkets.length > 0 && (
-            <div className='mt-3'>
-            <h5 className='mb-0'>Deactive Markets</h5>
+            <> <h5 className='mb-0 mt-3'>Deactive Markets</h5>
             {Object.entries(groupedDeactivatedMarkets).map(([category, markets]) => (
                 <Accordion open={deactivatedAccordions} toggle={toggleDeactivatedAccordion} key={`deactivated-${category}`}  className="market-category-accordian">
                     <AccordionItem className="rounded-0">
@@ -203,8 +202,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionBody>
                     </AccordionItem>
                 </Accordion>
-            ))}
-            </div>
+            ))} </>
             )}
 
             <Row>
