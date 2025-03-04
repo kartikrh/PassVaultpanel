@@ -14,6 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_MARKET_TYPE;
@@ -21,6 +22,8 @@ const Index = () => {
   document.title = TAB_MARKET_TYPE;
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -39,12 +42,13 @@ const Index = () => {
     }
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_MARKET_TYPES]})
+      .post(`/loadPanelData`, {module: [MODULE_MARKET_TYPES], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -84,7 +88,7 @@ const Index = () => {
               <Button
                 color="warning"
                 onClick={() => {
-                  handleLoadData();
+                  setLoadDataModelVisable(true);
                 }}
                 className="d-flex align-items-center gap-1"
               >
@@ -164,6 +168,13 @@ const Index = () => {
               </Table>
             </CardBody>
           </Card>}
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Market Type"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

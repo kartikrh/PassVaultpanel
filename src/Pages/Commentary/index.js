@@ -41,6 +41,7 @@ import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
 import AwardSelectionComponent from "./CommentaryModels/AwardModal";
 import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -59,7 +60,10 @@ const Index = () => {
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
-  const [dlsModalCommentary, setDlsModalCommentary] = useState(false)
+  const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [userRefData, setUserRefData] = useState(false)
+  const [filledDropdownData, setFilledDropdownData] = useState(false)
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -97,10 +101,11 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const valueToSetFrom = userRefData || latestValueFromTable
     let payload = {
-      ...(latestValueFromTable || tableActions),
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      ...(valueToSetFrom || tableActions),
+      eventTypeId: valueToSetFrom?.eventTypeId || 0,
+      competitionId: valueToSetFrom?.eventTypeId !== eventTypeId ? 0 : valueToSetFrom?.competitionId || 0,
     };
     if (isSearch) {
       payload = {
@@ -126,10 +131,15 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (latestValueFromTable?.eventTypeId) {
-      fetchCompetitionData(latestValueFromTable?.eventTypeId);
+    if (valueToSetFrom?.eventTypeId) {
+      fetchCompetitionData(valueToSetFrom?.eventTypeId);
     }
   };
+  const fetchUserPermission = () => {
+    const refData = JSON.parse(localStorage.getItem("refData"))
+    setUserRefData(refData)
+    fetchData(refData)
+  }
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/commentary/eventTypeList`, { isActive: true })
@@ -746,12 +756,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COMMENTARY]})
+      .post(`/loadPanelData`, { module: [MODULE_COMMENTARY], password })
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -1257,21 +1268,21 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip>
-            
 
-          {record.isPredictMarket &&
-          <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-            <Button
-              color={"success"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleUpdateManualOddsClick(record);
-              }}
-            >
-              <i class='bx bx-arrow-to-right' ></i>
-            </Button>
-          </Tooltip>}
+
+            {record.isPredictMarket &&
+              <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"success"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleUpdateManualOddsClick(record);
+                  }}
+                >
+                  <i class='bx bx-arrow-to-right' ></i>
+                </Button>
+              </Tooltip>}
           </>
         </div>
       ),
@@ -1538,71 +1549,71 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-        {record.isPredictMarket &&
-        <>
-        {record.isPredictMarket && <Tooltip
-              title={"Event Market"}
-              color={"#e8e8ea"}
-              overlayInnerStyle={{ color: "#000" }}
-            >
-              <Button
-                color={"danger"}
-                size="sm"
-                className="bstn"
-                onClick={() => {
-                  handleEventMarketClick(record)
-                }}
+          {record.isPredictMarket &&
+            <>
+              {record.isPredictMarket && <Tooltip
+                title={"Event Market"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
               >
-                <i class="bx bxs-up-arrow-square"></i>
-              </Button>
-            </Tooltip>}
-          <Tooltip
-            title={"Session Result"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleSessionResultClick(record);
-              }}
-            >
-              S
-            </Button>
-          </Tooltip>
-          
-          <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-            <Button
-              color={"info"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleMarketResultClick(record);
-              }}
-            >
-              M
-            </Button>
-          </Tooltip>
+                <Button
+                  color={"danger"}
+                  size="sm"
+                  className="bstn"
+                  onClick={() => {
+                    handleEventMarketClick(record)
+                  }}
+                >
+                  <i class="bx bxs-up-arrow-square"></i>
+                </Button>
+              </Tooltip>}
+              <Tooltip
+                title={"Session Result"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleSessionResultClick(record);
+                  }}
+                >
+                  S
+                </Button>
+              </Tooltip>
 
-          <Tooltip
-            title={"Close Market"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"warning"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleCloseMarketClick(record);
-              }}
-            >
-              C
-            </Button>
-          </Tooltip>
-        </>}
+              <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"info"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleMarketResultClick(record);
+                  }}
+                >
+                  M
+                </Button>
+              </Tooltip>
+
+              <Tooltip
+                title={"Close Market"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"warning"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCloseMarketClick(record);
+                  }}
+                >
+                  C
+                </Button>
+              </Tooltip>
+            </>}
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1716,7 +1727,8 @@ const Index = () => {
       },
     ],
     isDateRange: true,
-    compToRender: tabelNoteDisplay
+    compToRender: tabelNoteDisplay,
+    // isDataprovider: true
   };
 
   useEffect(() => {
@@ -1728,13 +1740,27 @@ const Index = () => {
 
   useEffect(() => {
     fetchEventTypeData();
+    fetchUserPermission()
   }, [])
 
   useEffect(() => {
-      if(!eventTypeId) {
-        setCompetitions([]);
-      }
-  },[eventTypeId]);
+    if (!eventTypeId) {
+      setCompetitions([]);
+    }
+  }, [eventTypeId]);
+
+  useEffect(() => {
+    const objToSave = {}
+    if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
+      const matchedEvent = eventTypes.find((item) => item.eventTypeId === userRefData?.eventTypeId)
+      objToSave["eventType"] = { label: matchedEvent.eventType, value: matchedEvent.eventTypeId }
+    }
+    if (userRefData?.competitionId !== 0 && competitions && competitions.length > 0) {
+      const matchedCompetition = competitions.find((item) => item.competitionId === userRefData?.competitionId)
+      objToSave["competition"] = { label: matchedCompetition.competition, value: matchedCompetition.competitionId }
+    }
+    setFilledDropdownData(objToSave)
+  }, [eventTypes, competitions]);
 
   const handleReload = (value) => {
     fetchData();
@@ -1762,11 +1788,13 @@ const Index = () => {
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
+            openDataProvider={() => { navigate("/dataprovider"); }}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            selectedTableElementsLogs={filledDropdownData}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
@@ -1898,6 +1926,13 @@ const Index = () => {
               setMarketTemplateModelVisible={setMarketTemplateModelVisible}
               marketTemplateRecord={marketTemplateRecord}
               fetchData={fetchData}
+            />}
+          {loadDataModelVisable &&
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Commentary"}
             />}
         </Container>
       </div>

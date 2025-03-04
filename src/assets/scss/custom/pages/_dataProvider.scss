@@ -1,0 +1,18 @@
+.data-provider-outer-accordian-summary {
+    padding: 0px !important;
+    margin: 0px !important;
+    display: flex !important;
+    align-items: center !important;
+    .accordion-button {
+      padding: 0px 6px !important; 
+    }
+}
+.data-provider-outer-accordian-body{
+    padding: 0px !important;
+    .accordion-body{
+        padding: 0px !important;
+    }
+}
+.data-provider-outer-accordian{
+    background-color: white !important;
+}

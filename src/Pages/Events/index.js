@@ -12,6 +12,7 @@ import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDI
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 import moment from "moment";
 import { Tooltip } from "antd";
 
@@ -32,6 +33,8 @@ const Index = () => {
       new Date().toISOString().split("T")[0]
     }T23:59`
   })
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
@@ -120,12 +123,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_EVENTS]})
+      .post(`/loadPanelData`, {module: [MODULE_EVENTS], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -331,7 +335,7 @@ const Index = () => {
             singleCheck={checekedList}
             handleReset={handleReset}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addEvents"}
             setDateRange = {setDateRange}
             dateRange = {dateRange}
@@ -344,6 +348,13 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Events"} 
+            />}
         </Container>
       </div>
     </React.Fragment>

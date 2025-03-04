@@ -15,6 +15,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import DeleteAllModel from "../../components/Model/DeleteAllModel";
 import { Tooltip } from "antd";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 // import PanelLoadDataModel from "../../components/Model/PanelLoadDataModel";
 // import ClientLoadDataModel from "../../components/Model/ClientLoadDataModel";
 
@@ -32,6 +33,8 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [isSignalRStarted, setIsSignalRStarted] = useState(true);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+
   // const [run, setRun] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -87,12 +90,13 @@ const Index = () => {
       });
   };
 
-  const handleLoadData = async () => {
+  const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_CONFIG]})
+      .post(`/loadPanelData`, {module: [MODULE_CONFIG], password})
       .then((response) => {
         fetchData();
+        setLoadDataModelVisable(false);
         dispatch(
           updateToastData({
             data: response?.message,
@@ -443,7 +447,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
-            loadDataModelFunction={handleLoadData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addConfig"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
@@ -477,6 +481,13 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
+          {loadDataModelVisable && 
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Config"}
+            />}
         </Container>
       </div>
     </React.Fragment>

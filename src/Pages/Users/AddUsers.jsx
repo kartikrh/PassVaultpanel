@@ -45,6 +45,12 @@ function AddUsers() {
   }, []);
 
   useEffect(() => {
+    if (initialEditData?.eventTypeId && +initialEditData?.eventTypeId !== 0) {
+      updateCompetitionValue(initialEditData.eventTypeId)
+    }
+  }, [initialEditData]);
+
+  useEffect(() => {
     if (userId !== "0") {
       fetchData(userId);
       setDisabledFields({
@@ -81,39 +87,53 @@ function AddUsers() {
   };
 
   const fetchMasterData = async () => {
-    await axiosInstance
-      .post(`/admin/user/allWithCurrent`)
-      .then((response) => {
-        setMasterData((preData) => ({
-          ...preData,
-          parentId: response.result?.map((item) => {
-            return { label: item.userName, value: item.userId };
-          }),
-        }));
-        if (userId === "0") {
-          setInitialEditData({
-            parentId: response.result.find(value => value?.current).userId,
-            roleId: "0",
-            isActive: true,
-          })
-        }
-      })
-      .catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
-    await axiosInstance
-      .post("/admin/user/roleList")
-      .then((response) => {
-        setMasterData((preData) => ({
-          ...preData,
-          roleId: response.result?.map((item) => {
-            return { label: item.roleName, value: item.roleId };
-          }),
-        }));
-      })
-      .catch((error) => {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
+    try {
+      const [userResponse, roleResponse, eventResponse] = await Promise.all([
+        axiosInstance.post(`/admin/user/allWithCurrent`),
+        axiosInstance.post("/admin/user/roleList"),
+        axiosInstance.post("/eventTypeList", {})
+      ]);
+
+      const parentIdOptions = userResponse.result?.map((item) => ({
+        label: item.userName,
+        value: item.userId
+      }));
+
+      const roleIdOptions = roleResponse.result?.map((item) => ({
+        label: item.roleName,
+        value: item.roleId
+      }));
+
+      const eventOptions = eventResponse.result?.map((item) => ({
+        label: item.eventType,
+        value: item.eventTypeId
+      }));
+
+
+      setMasterData((preData) => ({
+        ...preData,
+        parentId: parentIdOptions,
+        roleId: roleIdOptions,
+        eventTypeId: eventOptions
+      }));
+
+      if (userId === "0") {
+        const currentUser = userResponse.result.find(value => value?.current);
+        setInitialEditData({
+          parentId: currentUser?.userId,
+          roleId: "0",
+          isActive: true,
+        });
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR
+        })
+      );
+    }
   };
 
   const handleSaveClick = async (saveAction) => {
@@ -126,6 +146,25 @@ function AddUsers() {
       dispatch(addUserToDb({ ...dataToSave, ...extraData }))
     }
   };
+  const updateCompetitionValue = async (eventTypeId) => {
+    await axiosInstance
+      .post("/competitionListByEventTypeId", { eventTypeId })
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          competitionId: response.result?.map((item) => {
+            return { label: item.competition, value: item.competitionId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  }
+  const onFieldValueChange = (key, value) => {
+    if (key === "eventTypeId") updateCompetitionValue(value)
+  }
+
 
   const handleBackClick = () => {
     navigate("/users");
@@ -191,6 +230,7 @@ function AddUsers() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
+                  handleFieldChange={onFieldValueChange}
                 />
               </CardBody>
             </Card>
