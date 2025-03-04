@@ -209,9 +209,7 @@ const Commentary = (props) => {
         dispatch(addSuperOverCall(objToSend));
         setSuperOverModal(false);
     }
-    console.log("superOverText outside", superOverText)
     const checkWinner = () => {
-        console.log("superOverText", superOverText)
         let WINNING_MESSAGE = ""
         let WINNING_TEAM = ""
         let isBattingTeamWon = undefined
