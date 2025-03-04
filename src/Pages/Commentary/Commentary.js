@@ -83,7 +83,9 @@ const Commentary = (props) => {
     const [showRretiredHurt, setShowRretiredHurt] = useState(false)
     const [target, setTarget] = useState(0)
     const [superOverModal, setSuperOverModal] = useState(0)
-    const [superOverText, setSuperOverText] = useState(false)
+    const [superOverText, setSuperOverText] = useState(() => {
+        return JSON.parse(localStorage.getItem("superOverText")) || false;
+      });
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
     const [retryModel, setRetryModel] = useState(undefined)
     const [isWonByInnings, setIsWonByInnings] = useState(undefined)
@@ -133,7 +135,9 @@ const Commentary = (props) => {
     //         console.error("Error updating commentary console:", error);
     //     }
     // };
-
+    useEffect(() => {
+        localStorage.setItem("superOverText", JSON.stringify(superOverText));
+      }, [superOverText]);
 
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
@@ -205,7 +209,9 @@ const Commentary = (props) => {
         dispatch(addSuperOverCall(objToSend));
         setSuperOverModal(false);
     }
+    console.log("superOverText outside", superOverText)
     const checkWinner = () => {
+        console.log("superOverText", superOverText)
         let WINNING_MESSAGE = ""
         let WINNING_TEAM = ""
         let isBattingTeamWon = undefined
@@ -213,7 +219,7 @@ const Commentary = (props) => {
             isBattingTeamWon = false
             WINNING_TEAM = BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
-        } else if(setSuperOverText){
+        } else if(superOverText){
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
             WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[WINNING_TEAM]?.shortName} won in super over.`
@@ -2454,7 +2460,7 @@ const Commentary = (props) => {
                 onExitClick:() => {
                     setWinnerAnnouncement(undefined)
                     navigate("/commentary")
-                    setSuperOverText(undefined)
+                    localStorage.setItem("superOverText", JSON.stringify(false));
                 }
             })}
         />
@@ -2586,7 +2592,7 @@ const Commentary = (props) => {
             onExitClick={() => {
                 setWinnerAnnouncement(undefined)
                 navigate("/commentary")
-                setSuperOverText(undefined)
+                localStorage.setItem("superOverText", JSON.stringify(false));
             }}
         />}
         {isChangeBowler.isChangePopup && <ChangeBowlerModal
