@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-    AccordionSummary,
-    AccordionDetails,
     Typography,
     Box,
-    Chip,
-    Container,
-    Paper,
     CircularProgress,
-    // Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    // Accordion
+
 } from '@mui/material';
-import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table} from 'reactstrap'
+import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table, Container, Row, Card, CardBody} from 'reactstrap'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
 import axiosInstance from '../../Features/axios';
@@ -170,91 +159,100 @@ const DataproviderPage = () => {
         }
     };
     return (
-        <Container maxWidth="xl" sx={{ pt: 10 }}>
-
-            {Object.entries(groupedEvents).map(([eventType, competitions]) => (
-                <Accordion key={eventType} className='data-provider-outer-accordian' open={openEventTypes} toggle={toggleEventType}>
-                    {/* targetId={categoryId} */}
-                    <AccordionItem >
-                    <AccordionHeader className='data-provider-outer-accordian-summary px-1' targetId={eventType}>
-                        <div className='d-flex align-items-center p-1 px-2'>
-                            <SportsCricketIcon sx={{ mr: 2 }} />
-                            <span style={{fontSize: '20px', fontWeight: 'bold'}}>{eventType}</span>
-                        </div>
-                    </AccordionHeader>
-                    <AccordionBody accordionId={eventType} style={{padding: '0px'}} className='data-provider-outer-accordian-body'>
-                        {Object.entries(competitions).map(([competition, matches]) => (
-                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition} className='px-2 py-0'>
-                                <AccordionItem>
-                                <AccordionHeader targetId={competition} className='data-provider-outer-accordian-summary' expandIcon={<ExpandMoreIcon />}>
-                                    <span style={{fontSize: '14px'}} className='p-1'>{competition}</span>
-                                </AccordionHeader>
-                                <AccordionBody accordionId={competition}>
-                                    {/* <TableContainer component={Paper}>
-                                      <Table>
-                                        <TableHead>
-                                           <TableRow>
-                                              <TableCell sx={{ width: "300px"}}><b>Date</b></TableCell>
-                                              <TableCell sx={{ width: "500px"}}><b>Event</b></TableCell>
-                                              <TableCell sx={{ width: "200px"}}><b>Status</b></TableCell>
-                                           </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                           {matches.map((match) => (
-                                           <TableRow 
-                                              key={match.eventId} 
-                                              hover 
-                                              sx={{ cursor: "pointer" }} 
-                                              onClick={() => handleRowClick(match)}
-                                            >
-                                              <TableCell sx={{ width: "300px"}}>{convertDateUTCToLocal(match.eventDate, "index")}</TableCell>
-                                              <TableCell sx={{ width: "500px"}}>{match.eventName}</TableCell>
-                                              <TableCell sx={{ width: "200px"}}>
-                                                <Chip
-                                                    label={getStatusLabel(match.status)}
-                                                    sx={{
-                                                      backgroundColor: getStatusColor(match.status),
-                                                      color: "white",
-                                                      fontWeight: "bold",
-                                                    }}
-                                                />
-                                              </TableCell>
-                                           </TableRow>
-                                           ))}
-                                        </TableBody>
-                                      </Table>
-                                    </TableContainer> */}
-                                    {/* <Table>
-                                        {matches.map((match) =>{
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                    {`${match.eventName} ${getStatusLabel(match.status)} ${convertDateUTCToLocal(match.eventDate, "index")}`}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        })}
-                                    </Table> */}
-                                    <Table className='mb-0' responsive hover>
-                                            <tbody>
-                                                {matches.map((match) =>{
-                                                    return(<tr onClick={() => handleRowClick(match)} className="px-1 mx-2 data-provider-table-row" style={{border: '1px solid gray' }}>
-                                                    <td className='p-0 m-0'>
-                                                        <div className='ms-4'>{match.eventName} <span style={{color: getStatusColor(match.status)}}> {getStatusLabel(match.status)} </span> {convertDateUTCToLocal(match.eventDate, "index")}</div>
-                                                    </td>
-                                                    </tr>)
-                                                })}
-                                            </tbody>
-                                        </Table>
-                                </AccordionBody>
-                                </AccordionItem>
-                            </Accordion>
-                        ))}
-                    </AccordionBody>
-                    </AccordionItem>
-                </Accordion>
-            ))}
-        </Container>
+        <>
+        <div className="page-content">
+            <Container fluid={true}>
+                <Row>
+                    <Card className='p-0'>
+                        <CardBody className='p-3'>
+                            {Object.entries(groupedEvents).map(([eventType, competitions]) => (
+                                <Accordion key={eventType} className='data-provider-outer-accordian' open={openEventTypes} toggle={toggleEventType}>
+                                    {/* targetId={categoryId} */}
+                                    <AccordionItem >
+                                    <AccordionHeader className='data-provider-outer-accordian-summary px-1' targetId={eventType}>
+                                        <div className='d-flex align-items-center p-1 px-2'>
+                                            <SportsCricketIcon sx={{ mr: 2 }} />
+                                            <span style={{fontSize: '20px', fontWeight: 'bold'}}>{eventType}</span>
+                                        </div>
+                                    </AccordionHeader>
+                                    <AccordionBody accordionId={eventType} style={{padding: '0px'}} className='data-provider-outer-accordian-body'>
+                                        {Object.entries(competitions).map(([competition, matches]) => (
+                                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition} className='px-2 py-0'>
+                                                <AccordionItem>
+                                                <AccordionHeader targetId={competition} className='data-provider-outer-accordian-summary' expandIcon={<ExpandMoreIcon />}>
+                                                    <span style={{fontSize: '14px'}} className='p-1'>{competition}</span>
+                                                </AccordionHeader>
+                                                <AccordionBody accordionId={competition} className='ps-3'>
+                                                    {/* <TableContainer component={Paper}>
+                                                    <Table>
+                                                        <TableHead>
+                                                        <TableRow>
+                                                            <TableCell sx={{ width: "300px"}}><b>Date</b></TableCell>
+                                                            <TableCell sx={{ width: "500px"}}><b>Event</b></TableCell>
+                                                            <TableCell sx={{ width: "200px"}}><b>Status</b></TableCell>
+                                                        </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                        {matches.map((match) => (
+                                                        <TableRow 
+                                                            key={match.eventId} 
+                                                            hover 
+                                                            sx={{ cursor: "pointer" }} 
+                                                            onClick={() => handleRowClick(match)}
+                                                            >
+                                                            <TableCell sx={{ width: "300px"}}>{convertDateUTCToLocal(match.eventDate, "index")}</TableCell>
+                                                            <TableCell sx={{ width: "500px"}}>{match.eventName}</TableCell>
+                                                            <TableCell sx={{ width: "200px"}}>
+                                                                <Chip
+                                                                    label={getStatusLabel(match.status)}
+                                                                    sx={{
+                                                                    backgroundColor: getStatusColor(match.status),
+                                                                    color: "white",
+                                                                    fontWeight: "bold",
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                    </TableContainer> */}
+                                                    {/* <Table>
+                                                        {matches.map((match) =>{
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                    {`${match.eventName} ${getStatusLabel(match.status)} ${convertDateUTCToLocal(match.eventDate, "index")}`}
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        })}
+                                                    </Table> */}
+                                                    <Table className='mb-0' responsive hover>
+                                                            <tbody>
+                                                                {matches.map((match) =>{
+                                                                    return(<tr onClick={() => handleRowClick(match)} className="px-1 mx-2 data-provider-table-row" style={{border: '1px solid gray' }}>
+                                                                    <td className='p-0 ps-1 m-0'>
+                                                                        <div className=''>{match.eventName} <span style={{color: getStatusColor(match.status)}}> {getStatusLabel(match.status)} </span> {convertDateUTCToLocal(match.eventDate, "index")}</div>
+                                                                    </td>
+                                                                    </tr>)
+                                                                })}
+                                                            </tbody>
+                                                        </Table>
+                                                </AccordionBody>
+                                                </AccordionItem>
+                                            </Accordion>
+                                        ))}
+                                    </AccordionBody>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))}
+                        </CardBody>
+                    </Card>
+                </Row>
+            </Container>
+        </div>
+        </>
     );
 };
 
