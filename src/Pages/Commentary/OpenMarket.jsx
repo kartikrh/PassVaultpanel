@@ -15,6 +15,7 @@ import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
 import OpenMarketCategories from "./OpenMarketCategoryRendering";
 import Switch from "react-switch";
+import { loadInit } from "../../config";
 
 export const OpenMarket = () => {
     const [data, setData] = useState([]);
@@ -43,11 +44,16 @@ export const OpenMarket = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
+    const loadInitData = useSelector((state) => state.loadInit.loadInitData);
     const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
-    const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
-    const scoreboardUrl = `${scoreCardUrl}/scoreboard?id=${commentaryInfo?.eid}&color=000`;
+    let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
+    if (scorecardFrameUrl) {
+        scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", commentaryInfo?.eid);
+    }
+    // const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
+    // const scoreboardUrl = `${scoreCardUrl}/scoreboard?id=${commentaryInfo?.eid}&color=000`;
     // console.log({ originalMarketData, categorisedData });
     // console.log({ isKeyPressed })
 
@@ -1684,7 +1690,8 @@ export const OpenMarket = () => {
                                                 title="YouTube video player"
                                                 width="100%"
                                                 height="auto"
-                                                src={scoreboardUrl}
+                                                // src={scoreboardUrl}
+                                                src={scorecardFrameUrl}
                                                 frameborder="0"
                                                 className="mb-0"
                                             >
