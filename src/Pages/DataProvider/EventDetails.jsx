@@ -153,7 +153,6 @@ const EventDetails = () => {
     }
   }, [apiURL, apiXkey, event?.eventId]);
 
-
   useEffect(() => {
     if (
       eventInfo.length > 0 &&
@@ -285,6 +284,173 @@ const EventDetails = () => {
       </div>
     );
   };
+
+  const renderCategoryMarkets = (
+    categoryId,
+    categoryData,
+    openAccordion,
+    toggleAccordion,
+    fancyLineMarkets,
+    otherMarkets
+  ) => (
+    <Accordion open={openAccordion} toggle={toggleAccordion} key={categoryId}>
+      <AccordionItem className="rounded-0">
+        <AccordionHeader
+          className="market-category-header"
+          targetId={categoryId}
+        >
+          <b>{categoryData?.categoryInfo?.displayName}</b>
+        </AccordionHeader>
+        <AccordionBody
+          className="market-category-body"
+          accordionId={categoryId}
+        >
+          {fancyLineMarkets.length > 0 ? (
+            <Table responsive className="mb-0">
+              <tbody>
+                {fancyLineMarkets
+                  .sort((a, b) => a.marketId - b.marketId)
+                  .map((market) => (
+                    <tr key={market.marketId} className="position-relative">
+                      <td>
+                        <span
+                          style={{
+                            backgroundColor: market?.isAllow ? "green" : "red",
+                          }}
+                          className="active-css"
+                        ></span>
+                        {market?.marketName} [{market?.marketId}]
+                      </td>
+                      {parseInt(market?.status) === 1 ? (
+                        <>
+                          <td className="no-rate rate-width text-center py-0">
+                            <div className="rate-font">
+                              {market?.runner?.[0]?.layPrice || "0"}
+                            </div>
+                            <div className="point-font">
+                              {market?.runner?.[0]?.laySize || "0"}
+                            </div>
+                          </td>
+                          <td className="yes-rate rate-width text-center py-0">
+                            <div className="rate-font">
+                              {market?.runner?.[0]?.backPrice || "0"}
+                            </div>
+                            <div className="point-font">
+                              {market?.runner?.[0]?.backSize || "0"}
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        <td className="p-0" colSpan={2}>
+                          <div className="d-flex justify-content-end market-suspended-container">
+                            <div className="no-rate-suspend rate-width"></div>
+                            <div className="yes-rate-suspend rate-width"></div>
+                            <div className="market-overlay">
+                              <span className="suspended-text">
+                                Market suspend
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+          ) : null}
+          {otherMarkets.length > 0 ? (
+            <Row>
+              {otherMarkets
+                .sort((a, b) => a.marketId - b.marketId)
+                .map((market) => (
+                  <Col md={6}>
+                    {market.runner && market.runner.length > 0 && (
+                      <Table responsive className="mb-0">
+                        <thead>
+                          <tr>
+                            <th className="p-2">
+                              <span
+                                style={{
+                                  backgroundColor: market?.isAllow
+                                    ? "green"
+                                    : "red",
+                                }}
+                                className="active-css"
+                              ></span>
+                              <b>
+                                {market?.marketName} [{market?.marketId}]
+                              </b>
+                            </th>
+                            {parseInt(market?.status) === 1 ? (
+                              <>
+                                <th className="p-2 text-end">
+                                  <b>Back</b>
+                                </th>
+                                <th className="p-2">
+                                  <b>Lay</b>
+                                </th>{" "}
+                              </>
+                            ) : (
+                              <th className="p-2 text-center">
+                                <span className="px-4 odds-width">Back</span>
+                                <span className="odds-width">Lay</span>
+                              </th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {market.runner.map((runner) => (
+                            <tr
+                              key={runner.runnerId}
+                              className="position-relative"
+                            >
+                              <td>{runner.runner}</td>
+                              {parseInt(market?.status) === 1 ? (
+                                <>
+                                  <td className="yes-rate odds-width text-center py-0">
+                                    <div className="rate-font">
+                                      {runner?.backPrice || "0"}
+                                    </div>
+                                    <div className="point-font">
+                                      {runner?.backSize || "0"}
+                                    </div>
+                                  </td>
+                                  <td className="no-rate odds-width text-center py-0">
+                                    <div className="rate-font">
+                                      {runner?.layPrice || "0"}
+                                    </div>
+                                    <div className="point-font">
+                                      {runner?.laySize || "0"}
+                                    </div>
+                                  </td>
+                                </>
+                              ) : (
+                                <td className="p-0" colSpan={2}>
+                                  <div className="d-flex justify-content-end market-suspended-container">
+                                    <div className="no-rate-suspend odds-width"></div>
+                                    <div className="yes-rate-suspend odds-width"></div>
+                                    <div className="market-overlay">
+                                      <span className="suspended-text">
+                                        Market Suspend
+                                      </span>
+                                    </div>
+                                  </div>
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    )}
+                  </Col>
+                ))}{" "}
+            </Row>
+          ) : null}
+        </AccordionBody>
+      </AccordionItem>
+    </Accordion>
+  );
+
   return (
     <>
       <div className="page-content">
@@ -342,7 +508,10 @@ const EventDetails = () => {
 
                 {Object.entries(marketsGrouped).map(
                   ([categoryId, categoryData]) => {
-                    const activeMarkets = categoryData?.markets?.filter(market => market?.isActive) || [];
+                    const activeMarkets =
+                      categoryData?.markets?.filter(
+                        (market) => market?.isActive
+                      ) || [];
                     const fancyLineMarkets = activeMarkets?.filter(
                       (market) =>
                         market?.marketType == marketTypeObj?.Fancy ||
@@ -357,200 +526,27 @@ const EventDetails = () => {
                     if (activeMarkets.length === 0) {
                       return null;
                     }
-                    return (
-                      <Accordion
-                        open={openCategories}
-                        toggle={toggleCategory}
-                        key={categoryId}
-                      >
-                        <AccordionItem className="rounded-0">
-                          <AccordionHeader
-                            className="market-category-header"
-                            targetId={categoryId}
-                          >
-                            <b>{categoryData?.categoryInfo?.displayName}</b>
-                          </AccordionHeader>
-                          <AccordionBody
-                            className="market-category-body"
-                            accordionId={categoryId}
-                          >
-                            {fancyLineMarkets.length > 0 ? (
-                              <Table responsive className="mb-0">
-                                <tbody>
-                                  {fancyLineMarkets
-                                    .sort((a, b) => a.marketId - b.marketId)
-                                    .map((market) => (
-                                      <tr
-                                        key={market.marketId}
-                                        className="position-relative"
-                                      >
-                                        <td>
-                                          <span
-                                            style={{
-                                              backgroundColor: market?.isAllow
-                                                ? "green"
-                                                : "red",
-                                            }}
-                                            className="active-css"
-                                          ></span>
-                                          {market?.marketName} [
-                                          {market?.marketId}]
-                                        </td>
-                                        {parseInt(market?.status) === 1 ? (
-                                          <>
-                                            <td className="no-rate rate-width text-center py-0">
-                                              <div className="rate-font">
-                                                {market?.runner?.[0]
-                                                  ?.layPrice || "0"}
-                                              </div>
-                                              <div className="point-font">
-                                                {market?.runner?.[0]?.laySize ||
-                                                  "0"}
-                                              </div>
-                                            </td>
-                                            <td className="yes-rate rate-width text-center py-0">
-                                              <div className="rate-font">
-                                                {market?.runner?.[0]
-                                                  ?.backPrice || "0"}
-                                              </div>
-                                              <div className="point-font">
-                                                {market?.runner?.[0]
-                                                  ?.backSize || "0"}
-                                              </div>
-                                            </td>
-                                          </>
-                                        ) : (
-                                          <td className="p-0" colSpan={2}>
-                                            <div className="d-flex justify-content-end market-suspended-container">
-                                              <div className="no-rate-suspend rate-width"></div>
-                                              <div className="yes-rate-suspend rate-width"></div>
-                                              <div className="market-overlay">
-                                                <span className="suspended-text">
-                                                  Market suspend
-                                                </span>
-                                              </div>
-                                            </div>
-                                          </td>
-                                        )}
-                                      </tr>
-                                    ))}
-                                </tbody>
-                              </Table>
-                            ) : null}
-                            {otherMarkets.length > 0 ? (
-                              <Row>
-                                {otherMarkets
-                                  .sort((a, b) => a.marketId - b.marketId)
-                                  .map((market) => (
-                                    <Col md={6}>
-                                      {market.runner &&
-                                        market.runner.length > 0 && (
-                                          <Table responsive className="mb-0">
-                                            <thead>
-                                              <tr>
-                                                <th className="p-2">
-                                                  <span
-                                                    style={{
-                                                      backgroundColor:
-                                                        market?.isAllow
-                                                          ? "green"
-                                                          : "red",
-                                                    }}
-                                                    className="active-css"
-                                                  ></span>
-                                                  <b>
-                                                    {market?.marketName} [
-                                                    {market?.marketId}]
-                                                  </b>
-                                                </th>
-                                                {parseInt(market?.status) ===
-                                                1 ? (
-                                                  <>
-                                                    <th className="p-2 text-end">
-                                                      <b>Back</b>
-                                                    </th>
-                                                    <th className="p-2">
-                                                      <b>Lay</b>
-                                                    </th>{" "}
-                                                  </>
-                                                ) : (
-                                                  <th className="p-2 text-center">
-                                                    <span className="px-4 odds-width">
-                                                      Back
-                                                    </span>
-                                                    <span className="odds-width">
-                                                      Lay
-                                                    </span>
-                                                  </th>
-                                                )}
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {market.runner.map((runner) => (
-                                                <tr
-                                                  key={runner.runnerId}
-                                                  className="position-relative"
-                                                >
-                                                  <td>{runner.runner}</td>
-                                                  {parseInt(market?.status) ===
-                                                  1 ? (
-                                                    <>
-                                                      <td className="yes-rate odds-width text-center py-0">
-                                                        <div className="rate-font">
-                                                          {runner?.backPrice ||
-                                                            "0"}
-                                                        </div>
-                                                        <div className="point-font">
-                                                          {runner?.backSize ||
-                                                            "0"}
-                                                        </div>
-                                                      </td>
-                                                      <td className="no-rate odds-width text-center py-0">
-                                                        <div className="rate-font">
-                                                          {runner?.layPrice ||
-                                                            "0"}
-                                                        </div>
-                                                        <div className="point-font">
-                                                          {runner?.laySize ||
-                                                            "0"}
-                                                        </div>
-                                                      </td>
-                                                    </>
-                                                  ) : (
-                                                    <td
-                                                      className="p-0"
-                                                      colSpan={2}
-                                                    >
-                                                      <div className="d-flex justify-content-end market-suspended-container">
-                                                        <div className="no-rate-suspend odds-width"></div>
-                                                        <div className="yes-rate-suspend odds-width"></div>
-                                                        <div className="market-overlay">
-                                                          <span className="suspended-text">
-                                                            Market Suspend
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                    </td>
-                                                  )}
-                                                </tr>
-                                              ))}
-                                            </tbody>
-                                          </Table>
-                                        )}
-                                    </Col>
-                                  ))}{" "}
-                              </Row>
-                            ) : null}
-                          </AccordionBody>
-                        </AccordionItem>
-                      </Accordion>
+
+                    return renderCategoryMarkets(
+                      categoryId,
+                      categoryData,
+                      openCategories,
+                      toggleCategory,
+                      fancyLineMarkets,
+                      otherMarkets
                     );
                   }
                 )}
 
+                {Object.values(marketsGrouped).some((categoryData) =>
+                  categoryData?.markets?.some((market) => !market?.isActive)
+                ) && <h5 className="mb-0 mt-3">Inactive Markets</h5>}
                 {Object.entries(marketsGrouped).map(
                   ([categoryId, categoryData]) => {
-                    const inActiveMarkets = categoryData?.markets?.filter(market => !market?.isActive) || [];
+                    const inActiveMarkets =
+                      categoryData?.markets?.filter(
+                        (market) => !market?.isActive
+                      ) || [];
                     const fancyLineMarkets = inActiveMarkets?.filter(
                       (market) =>
                         market?.marketType == marketTypeObj?.Fancy ||
@@ -565,196 +561,14 @@ const EventDetails = () => {
                     if (inActiveMarkets.length === 0) {
                       return null;
                     }
-                    return (
-                    <>
-                      <h5 className='mb-0 mt-3'>Inactive Markets</h5>
-                      <Accordion
-                        open={openInactiveMarkets}
-                        toggle={toggleInactiveMarket}
-                        key={categoryId}
-                      >
-                        <AccordionItem className="rounded-0">
-                          <AccordionHeader
-                            className="market-category-header"
-                            targetId={categoryId}
-                          >
-                            <b>{categoryData?.categoryInfo?.displayName}</b>
-                          </AccordionHeader>
-                          <AccordionBody
-                            className="market-category-body"
-                            accordionId={categoryId}
-                          >
-                            {fancyLineMarkets.length > 0 ? (
-                              <Table responsive className="mb-0">
-                                <tbody>
-                                  {fancyLineMarkets
-                                    .sort((a, b) => a.marketId - b.marketId)
-                                    .map((market) => (
-                                      <tr
-                                        key={market.marketId}
-                                        className="position-relative"
-                                      >
-                                        <td>
-                                          <span
-                                            style={{
-                                              backgroundColor: market?.isAllow
-                                                ? "green"
-                                                : "red",
-                                            }}
-                                            className="active-css"
-                                          ></span>
-                                          {market?.marketName} [
-                                          {market?.marketId}]
-                                        </td>
-                                        {parseInt(market?.status) === 1 ? (
-                                          <>
-                                            <td className="no-rate rate-width text-center py-0">
-                                              <div className="rate-font">
-                                                {market?.runner?.[0]
-                                                  ?.layPrice || "0"}
-                                              </div>
-                                              <div className="point-font">
-                                                {market?.runner?.[0]?.laySize ||
-                                                  "0"}
-                                              </div>
-                                            </td>
-                                            <td className="yes-rate rate-width text-center py-0">
-                                              <div className="rate-font">
-                                                {market?.runner?.[0]
-                                                  ?.backPrice || "0"}
-                                              </div>
-                                              <div className="point-font">
-                                                {market?.runner?.[0]
-                                                  ?.backSize || "0"}
-                                              </div>
-                                            </td>
-                                          </>
-                                        ) : (
-                                          <td className="p-0" colSpan={2}>
-                                            <div className="d-flex justify-content-end market-suspended-container">
-                                              <div className="no-rate-suspend rate-width"></div>
-                                              <div className="yes-rate-suspend rate-width"></div>
-                                              <div className="market-overlay">
-                                                <span className="suspended-text">
-                                                  Market suspend
-                                                </span>
-                                              </div>
-                                            </div>
-                                          </td>
-                                        )}
-                                      </tr>
-                                    ))}
-                                </tbody>
-                              </Table>
-                            ) : null}
-                            {otherMarkets.length > 0 ? (
-                              <Row>
-                                {otherMarkets
-                                  .sort((a, b) => a.marketId - b.marketId)
-                                  .map((market) => (
-                                    <Col md={6}>
-                                      {market.runner &&
-                                        market.runner.length > 0 && (
-                                          <Table responsive className="mb-0">
-                                            <thead>
-                                              <tr>
-                                                <th className="p-2">
-                                                  <span
-                                                    style={{
-                                                      backgroundColor:
-                                                        market?.isAllow
-                                                          ? "green"
-                                                          : "red",
-                                                    }}
-                                                    className="active-css"
-                                                  ></span>
-                                                  <b>
-                                                    {market?.marketName} [
-                                                    {market?.marketId}]
-                                                  </b>
-                                                </th>
-                                                {parseInt(market?.status) ===
-                                                1 ? (
-                                                  <>
-                                                    <th className="p-2 text-end">
-                                                      <b>Back</b>
-                                                    </th>
-                                                    <th className="p-2">
-                                                      <b>Lay</b>
-                                                    </th>{" "}
-                                                  </>
-                                                ) : (
-                                                  <th className="p-2 text-center">
-                                                    <span className="px-4 odds-width">
-                                                      Back
-                                                    </span>
-                                                    <span className="odds-width">
-                                                      Lay
-                                                    </span>
-                                                  </th>
-                                                )}
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {market.runner.map((runner) => (
-                                                <tr
-                                                  key={runner.runnerId}
-                                                  className="position-relative"
-                                                >
-                                                  <td>{runner.runner}</td>
-                                                  {parseInt(market?.status) ===
-                                                  1 ? (
-                                                    <>
-                                                      <td className="yes-rate odds-width text-center py-0">
-                                                        <div className="rate-font">
-                                                          {runner?.backPrice ||
-                                                            "0"}
-                                                        </div>
-                                                        <div className="point-font">
-                                                          {runner?.backSize ||
-                                                            "0"}
-                                                        </div>
-                                                      </td>
-                                                      <td className="no-rate odds-width text-center py-0">
-                                                        <div className="rate-font">
-                                                          {runner?.layPrice ||
-                                                            "0"}
-                                                        </div>
-                                                        <div className="point-font">
-                                                          {runner?.laySize ||
-                                                            "0"}
-                                                        </div>
-                                                      </td>
-                                                    </>
-                                                  ) : (
-                                                    <td
-                                                      className="p-0"
-                                                      colSpan={2}
-                                                    >
-                                                      <div className="d-flex justify-content-end market-suspended-container">
-                                                        <div className="no-rate-suspend odds-width"></div>
-                                                        <div className="yes-rate-suspend odds-width"></div>
-                                                        <div className="market-overlay">
-                                                          <span className="suspended-text">
-                                                            Market Suspend
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                    </td>
-                                                  )}
-                                                </tr>
-                                              ))}
-                                            </tbody>
-                                          </Table>
-                                        )}
-                                    </Col>
-                                  ))}{" "}
-                              </Row>
-                            ) : null}
-                          </AccordionBody>
-                        </AccordionItem>
-                      </Accordion>
-                    </>
+
+                    return renderCategoryMarkets(
+                      categoryId,
+                      categoryData,
+                      openInactiveMarkets,
+                      toggleInactiveMarket,
+                      fancyLineMarkets,
+                      otherMarkets
                     );
                   }
                 )}
