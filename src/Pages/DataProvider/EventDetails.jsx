@@ -25,6 +25,8 @@ import {
 } from "../../components/Common/Const";
 import { io } from "socket.io-client";
 import { isEmpty } from "lodash";
+import Switch from "react-switch";
+import { loadInit } from "../../config";
 
 const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   const [eventInfo, setEventInfo] = useState([]);
@@ -35,9 +37,14 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   const marketTypeObj = useSelector(
     (state) => state.marketType?.marketTypeList
   );
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [openMarkets, setOpenMarkets] = useState([]);
   const [openCategories, setOpenCategories] = useState([]);
-
+  const [isScorecardShow, setIsScorecardShow] = useState(false);
+  let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
+  if (scorecardFrameUrl) {
+    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", event?.eventId);
+  }
   const dispatch = useDispatch();
   const socket = useRef(null);
 
@@ -257,6 +264,42 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
     );
   };
 
+  const OffsymbolStatus = () => {
+    return (
+        <div
+            style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                fontSize: 10,
+                color: "#fff",
+                paddingRight: "10px",
+            }}
+        >
+            {" "}
+            ScoreCard
+        </div>
+    );
+  };
+  const OnSymbolStatus = () => {
+    return (
+        <div
+            style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                fontSize: 10,
+                color: "#fff",
+                paddingLeft: "11px",
+            }}
+        >
+            {" "}
+            ScoreCard
+        </div>
+    );
+  };
   return (
     <>
       <div className="page-content">
@@ -275,7 +318,18 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                       {event?.eventType} / {event?.competition}
                     </p>
                   </Col>
-                  <Col className="float-right">
+                  <Col className="d-flex justify-content-end align-items-center">
+                    <Switch
+                      width={80}
+                      uncheckedIcon={<OffsymbolStatus />}
+                      checkedIcon={<OnSymbolStatus />}
+                      className="mx-2"
+                      onColor="#02a499"
+                      onChange={() => {
+                        setIsScorecardShow(!isScorecardShow);
+                      }}
+                      checked={isScorecardShow}
+                    />
                     <Button
                       className="btn btn-success text-right"
                       onClick={() => window.location.reload()}
@@ -285,6 +339,22 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                     </Button>
                   </Col>
                 </Row>
+
+                {isScorecardShow && (
+                  <Row>
+                    <Col xs={12}>
+                      <iframe
+                        title="YouTube video player"
+                        width="100%"
+                        height="auto"
+                        src={scorecardFrameUrl}
+                        frameborder="0"
+                        className="mb-0"
+                      >
+                      </iframe>
+                    </Col>
+                  </Row>
+                )}
 
                 {Object.entries(marketsGrouped).map(
                   ([marketTypeId, typeData]) => (
