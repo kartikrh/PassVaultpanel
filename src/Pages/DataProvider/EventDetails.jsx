@@ -85,7 +85,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
         (market) => market.marketType === type.marketTypeId
       );
       if (typeMarkets.length > 0) {
-        groupedData[type.marketTypeId] = {
+        groupedData[type.displayOrder] = {
           typeInfo: type,
           categories: {},
         };
@@ -97,8 +97,8 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                 market.marketTypeCategory === category.marketTypeCategoryId
             );
             if (categoryMarkets.length > 0) {
-              groupedData[type.marketTypeId].categories[
-                category.marketTypeCategoryId
+              groupedData[type.displayOrder].categories[
+                category.displayOrder
               ] = {
                 categoryInfo: category,
                 markets: categoryMarkets,
