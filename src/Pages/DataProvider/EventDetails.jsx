@@ -86,7 +86,6 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
     const sortedCategories = [...categories].sort(
       (a, b) => a.displayOrder - b.displayOrder
     );
-
     sortedMarketTypes.forEach((type) => {
       const typeMarkets = markets.filter(
         (market) => market.marketType === type.marketTypeId
@@ -98,6 +97,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
         };
 
         sortedCategories.forEach((category) => {
+          console.log(category)
           if (category.marketTypeId === type.marketTypeId) {
             const categoryMarkets = typeMarkets.filter(
               (market) =>
@@ -115,8 +115,48 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
         });
       }
     });
+    console.log("groupedData", groupedData)
     return groupedData;
   };
+
+  // const groupMarkets = (markets) => {
+  //   const groupedData = {};
+
+  //   // Sorting marketTypes & categories by displayOrder
+  //   const sortedCategories = [...categories].sort(
+  //     (a, b) => a.displayOrder - b.displayOrder
+  //   );
+
+  //   sortedMarketTypes.forEach((type) => {
+  //     const typeMarkets = markets.filter(
+  //       (market) => market.marketType === type.marketTypeId
+  //     );
+  //     if (typeMarkets.length > 0) {
+  //       groupedData[type.displayOrder] = {
+  //         typeInfo: type,
+  //         categories: {},
+  //       };
+
+  //       sortedCategories.forEach((category) => {
+  //         if (category.marketTypeId === type.marketTypeId) {
+  //           const categoryMarkets = typeMarkets.filter(
+  //             (market) =>
+  //               market.marketTypeCategory === category.marketTypeCategoryId
+  //           );
+  //           if (categoryMarkets.length > 0) {
+  //             groupedData[type.displayOrder].categories[
+  //               category.displayOrder
+  //             ] = {
+  //               categoryInfo: category,
+  //               markets: categoryMarkets,
+  //             };
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  //   return groupedData;
+  // };
 
   useEffect(() => {
     const fetchData = async (eventId) => {
@@ -358,22 +398,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
 
                 {Object.entries(marketsGrouped).map(
                   ([marketTypeId, typeData]) => (
-                    <Accordion
-                      open={openMarkets}
-                      toggle={toggleMarket}
-                      key={marketTypeId}
-                    >
-                      <AccordionItem className="rounded-0">
-                        <AccordionHeader
-                          className="market-category-header"
-                          targetId={marketTypeId}
-                        >
-                          <b>{typeData?.typeInfo?.displayName}</b>
-                        </AccordionHeader>
-                        <AccordionBody
-                          className="market-category-body category-list"
-                          accordionId={marketTypeId}
-                        >
+                    <>
                           {Object.entries(typeData?.categories).map(
                             ([categoryId, categoryData]) => {
                               const fancyLineMarkets =
@@ -382,12 +407,12 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                     market.marketType == marketTypeObj?.Fancy ||
                                     market.marketType ==
                                       marketTypeObj?.LineMarket
-                                );
+                                ).filter((market) => market.isActive);
                               const otherMarkets = categoryData.markets.filter(
                                 (market) =>
                                   market.marketType != marketTypeObj?.Fancy &&
                                   market.marketType != marketTypeObj?.LineMarket
-                              );
+                              ).filter((market) => market.isActive);
                               return (
                                 <Accordion
                                   open={openCategories}
@@ -461,7 +486,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                       </td>
                                                     </>
                                                   ) : (
-                                                    <td className="p-0">
+                                                    <td className="p-0" colSpan="2">
                                                       <div className="d-flex justify-content-end market-suspended-container">
                                                         <div className="no-rate-suspend rate-width"></div>
                                                         <div className="yes-rate-suspend rate-width"></div>
@@ -574,7 +599,7 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                                   </td>
                                                                 </>
                                                               ) : (
-                                                                <td className="p-0">
+                                                                <td className="p-0" colSpan="2">
                                                                   <div className="d-flex justify-content-end market-suspended-container">
                                                                     <div className="no-rate-suspend odds-width"></div>
                                                                     <div className="yes-rate-suspend odds-width"></div>
@@ -603,11 +628,10 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                               );
                             }
                           )}
-                        </AccordionBody>
-                      </AccordionItem>
-                    </Accordion>
+                    </>
                   )
                 )}
+                
               </CardBody>
             </Card>
           </Row>
