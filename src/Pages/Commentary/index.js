@@ -62,6 +62,8 @@ const Index = () => {
   const [selectedEventRef, setSelectedEventRef] = useState({});
   const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [userRefData, setUserRefData] = useState(false)
+  const [filledDropdownData, setFilledDropdownData] = useState(false)
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -99,10 +101,11 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const valueToSetFrom = userRefData || latestValueFromTable
     let payload = {
-      ...(latestValueFromTable || tableActions),
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      ...(valueToSetFrom || tableActions),
+      eventTypeId: valueToSetFrom?.eventTypeId || 0,
+      competitionId: valueToSetFrom?.eventTypeId !== eventTypeId ? 0 : valueToSetFrom?.competitionId || 0,
     };
     if (isSearch) {
       payload = {
@@ -128,10 +131,15 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (latestValueFromTable?.eventTypeId) {
-      fetchCompetitionData(latestValueFromTable?.eventTypeId);
+    if (valueToSetFrom?.eventTypeId) {
+      fetchCompetitionData(valueToSetFrom?.eventTypeId);
     }
   };
+  const fetchUserPermission = () => {
+    const refData = JSON.parse(localStorage.getItem("refData"))
+    setUserRefData(refData)
+    fetchData(refData)
+  }
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/commentary/eventTypeList`, { isActive: true })
@@ -751,7 +759,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COMMENTARY], password})
+      .post(`/loadPanelData`, { module: [MODULE_COMMENTARY], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -1719,7 +1727,7 @@ const Index = () => {
       },
     ],
     isDateRange: true,
-    compToRender: tabelNoteDisplay, 
+    compToRender: tabelNoteDisplay,
     // isDataprovider: true
   };
 
@@ -1732,6 +1740,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchEventTypeData();
+    fetchUserPermission()
   }, [])
 
   useEffect(() => {
@@ -1739,6 +1748,19 @@ const Index = () => {
       setCompetitions([]);
     }
   }, [eventTypeId]);
+
+  useEffect(() => {
+    const objToSave = {}
+    if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
+      const matchedEvent = eventTypes.find((item) => item.eventTypeId === userRefData?.eventTypeId)
+      objToSave["eventType"] = { label: matchedEvent.eventType, value: matchedEvent.eventTypeId }
+    }
+    if (userRefData?.competitionId !== 0 && competitions && competitions.length > 0) {
+      const matchedCompetition = competitions.find((item) => item.competitionId === userRefData?.competitionId)
+      objToSave["competition"] = { label: matchedCompetition.competition, value: matchedCompetition.competitionId }
+    }
+    setFilledDropdownData(objToSave)
+  }, [eventTypes, competitions]);
 
   const handleReload = (value) => {
     fetchData();
@@ -1772,6 +1794,7 @@ const Index = () => {
             competitions={competitions}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            selectedTableElementsLogs={filledDropdownData}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
@@ -1904,12 +1927,12 @@ const Index = () => {
               marketTemplateRecord={marketTemplateRecord}
               fetchData={fetchData}
             />}
-          {loadDataModelVisable && 
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Commentary"} 
+              moduleName={"Commentary"}
             />}
         </Container>
       </div>

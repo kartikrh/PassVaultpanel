@@ -57,8 +57,10 @@ const userSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.userName = action.payload.userName;
+        state.refData = action.payload.refData
         state.isUserLogout = false;
         localStorage.setItem("authUser", encryptData(action.payload));
+        localStorage.setItem("refData", JSON.stringify(action.payload.refData));
         localStorage.setItem('loggedIn', true);
         setAuthToken(action.payload.token);
         state.isLoading = false;
