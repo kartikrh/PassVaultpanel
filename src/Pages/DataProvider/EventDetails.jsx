@@ -349,7 +349,10 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                   a.marketId - b.marketId
                                               )
                                               .map((market) => (
-                                                <tr key={market.marketId}>
+                                                <tr
+                                                  key={market.marketId}
+                                                  className="position-relative"
+                                                >
                                                   <td>
                                                     <span
                                                       style={{
@@ -363,54 +366,32 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                     {market?.marketName} [
                                                     {market?.marketId}]
                                                   </td>
-                                                  {/* <td className="no-rate rate-width text-center py-0">
-                                                    <div className="rate-font">
-                                                      {market?.runner?.[0]
-                                                        ?.layPrice || "0"}
-                                                    </div>
-                                                    <div className="point-font">
-                                                      {market?.runner?.[0]
-                                                        ?.laySize || "0"}
-                                                    </div>
-                                                  </td>
-                                                  <td className="yes-rate rate-width text-center py-0">
-                                                    <div className="rate-font">
-                                                      {market?.runner?.[0]
-                                                        ?.backPrice || "0"}
-                                                    </div>
-                                                    <div className="point-font">
-                                                      {market?.runner?.[0]
-                                                        ?.backSize || "0"}
-                                                    </div>
-                                                  </td> */}
-                                                  <td className="p-0">
-                                                    {parseInt(
-                                                      market?.status
-                                                    ) === 1 ? (
-                                                      <div className="d-flex align-items-center justify-content-end p-0">
-                                                        <div className="no-rate rate-width text-center py-0">
-                                                          <div className="rate-font">
-                                                            {market?.runner?.[0]
-                                                              ?.layPrice || "0"}
-                                                          </div>
-                                                          <div className="point-font">
-                                                            {market?.runner?.[0]
-                                                              ?.laySize || "0"}
-                                                          </div>
+                                                  {parseInt(market?.status) ===
+                                                  1 ? (
+                                                    <>
+                                                      <td className="no-rate rate-width text-center py-0">
+                                                        <div className="rate-font">
+                                                          {market?.runner?.[0]
+                                                            ?.layPrice || "0"}
                                                         </div>
-                                                        <div className="yes-rate rate-width text-center py-0">
-                                                          <div className="rate-font">
-                                                            {market?.runner?.[0]
-                                                              ?.backPrice ||
-                                                              "0"}
-                                                          </div>
-                                                          <div className="point-font">
-                                                            {market?.runner?.[0]
-                                                              ?.backSize || "0"}
-                                                          </div>
+                                                        <div className="point-font">
+                                                          {market?.runner?.[0]
+                                                            ?.laySize || "0"}
                                                         </div>
-                                                      </div>
-                                                    ) : (
+                                                      </td>
+                                                      <td className="yes-rate rate-width text-center py-0">
+                                                        <div className="rate-font">
+                                                          {market?.runner?.[0]
+                                                            ?.backPrice || "0"}
+                                                        </div>
+                                                        <div className="point-font">
+                                                          {market?.runner?.[0]
+                                                            ?.backSize || "0"}
+                                                        </div>
+                                                      </td>
+                                                    </>
+                                                  ) : (
+                                                    <td className="p-0">
                                                       <div className="d-flex justify-content-end market-suspended-container">
                                                         <div className="no-rate-suspend rate-width"></div>
                                                         <div className="yes-rate-suspend rate-width"></div>
@@ -420,8 +401,8 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                           </span>
                                                         </div>
                                                       </div>
-                                                    )}
-                                                  </td>
+                                                    </td>
+                                                  )}
                                                 </tr>
                                               ))}
                                           </tbody>
@@ -462,15 +443,27 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                               ]
                                                             </b>
                                                           </th>
-                                                          {/* <th className="p-2 text-end">
-                                                            <b>Back</b>
-                                                          </th>
-                                                          <th className="p-2">
-                                                            <b>Lay</b>
-                                                          </th> */}
-                                                          <th className="p-2 text-center">
-                                                            <b>Back Lay</b>
-                                                          </th>
+                                                          {parseInt(
+                                                            market?.status
+                                                          ) === 1 ? (
+                                                            <>
+                                                              <th className="p-2 text-end">
+                                                                <b>Back</b>
+                                                              </th>
+                                                              <th className="p-2">
+                                                                <b>Lay</b>
+                                                              </th>{" "}
+                                                            </>
+                                                          ) : (
+                                                            <th className="p-2 text-center">
+                                                              <span className="px-4 odds-width">
+                                                                Back
+                                                              </span>
+                                                              <span className="odds-width">
+                                                                Lay
+                                                              </span>
+                                                            </th>
+                                                          )}
                                                         </tr>
                                                       </thead>
                                                       <tbody>
@@ -480,69 +473,50 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                                                               key={
                                                                 runner.runnerId
                                                               }
+                                                              className="position-relative"
                                                             >
                                                               <td>
                                                                 {runner.runner}
                                                               </td>
-                                                              {/* <td className="yes-rate odds-width text-center py-0">
-                                                                <div className="rate-font">
-                                                                  {runner?.backPrice ||
-                                                                    "0"}
-                                                                </div>
-                                                                <div className="point-font">
-                                                                  {runner?.backSize ||
-                                                                    "0"}
-                                                                </div>
-                                                              </td>
-                                                              <td className="no-rate odds-width text-center py-0">
-                                                                <div className="rate-font">
-                                                                  {runner?.layPrice ||
-                                                                    "0"}
-                                                                </div>
-                                                                <div className="point-font">
-                                                                  {runner?.laySize ||
-                                                                    "0"}
-                                                                </div>
-                                                              </td> */}
-                                                              <td className="p-0">
-                                                                {parseInt(
-                                                                  market?.status
-                                                                ) === 1 ? (
-                                                                  <div className="d-flex align-items-center justify-content-end p-0">
-                                                                    <div className="yes-rate odds-width text-center py-0">
-                                                                      <div className="rate-font">
-                                                                        {runner?.backPrice ||
-                                                                          "0"}
-                                                                      </div>
-                                                                      <div className="point-font">
-                                                                        {runner?.backSize ||
-                                                                          "0"}
-                                                                      </div>
+                                                              {parseInt(
+                                                                market?.status
+                                                              ) === 1 ? (
+                                                                <>
+                                                                  <td className="yes-rate odds-width text-center py-0">
+                                                                    <div className="rate-font">
+                                                                      {runner?.backPrice ||
+                                                                        "0"}
                                                                     </div>
-                                                                    <div className="no-rate odds-width text-center py-0">
-                                                                      <div className="rate-font">
-                                                                        {runner?.layPrice ||
-                                                                          "0"}
-                                                                      </div>
-                                                                      <div className="point-font">
-                                                                        {runner?.laySize ||
-                                                                          "0"}
-                                                                      </div>
+                                                                    <div className="point-font">
+                                                                      {runner?.backSize ||
+                                                                        "0"}
                                                                     </div>
-                                                                  </div>
-                                                                ) : (
+                                                                  </td>
+                                                                  <td className="no-rate odds-width text-center py-0">
+                                                                    <div className="rate-font">
+                                                                      {runner?.layPrice ||
+                                                                        "0"}
+                                                                    </div>
+                                                                    <div className="point-font">
+                                                                      {runner?.laySize ||
+                                                                        "0"}
+                                                                    </div>
+                                                                  </td>
+                                                                </>
+                                                              ) : (
+                                                                <td className="p-0">
                                                                   <div className="d-flex justify-content-end market-suspended-container">
                                                                     <div className="no-rate-suspend odds-width"></div>
                                                                     <div className="yes-rate-suspend odds-width"></div>
                                                                     <div className="market-overlay">
                                                                       <span className="suspended-text">
                                                                         Market
-                                                                        suspend
+                                                                        Suspend
                                                                       </span>
                                                                     </div>
                                                                   </div>
-                                                                )}
-                                                              </td>
+                                                                </td>
+                                                              )}
                                                             </tr>
                                                           )
                                                         )}
