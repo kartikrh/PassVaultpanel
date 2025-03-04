@@ -16,3 +16,9 @@
 .data-provider-outer-accordian{
     background-color: white !important;
 }
+.data-provider-table-row{
+    font-size: 12px !important;
+    &:hover{
+        cursor: pointer !important;
+      }
+}
