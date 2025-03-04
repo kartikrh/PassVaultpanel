@@ -8,25 +8,19 @@ import {
 import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table, Container, Row, Card, CardBody} from 'reactstrap'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
-import axiosInstance from '../../Features/axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateToastData } from '../../Features/toasterSlice';
-import { ERROR } from '../../components/Common/Const';
-import EventDetails from './EventDetails';
+import { useSelector } from 'react-redux';
 import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
-import { fetchConfig } from '../Commentary/functions';
+import { useNavigate } from 'react-router-dom';
 
 const DataproviderPage = () => {
-    const loadInit = useSelector((state) => state.loadInit.loadInitData);
     const [events, setEvents] = useState([]);
     const [groupedEvents, setGroupedEvents] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedMatch, setSelectedMatch] = useState(null);
-    const [socketUrl, setSocketUrl] = useState(null);
     const [apiXkey, setApiXkey] = useState(null);
     const [apiURL, setApiURL] = useState(null);
-    const dispatch = useDispatch();
+    const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+    const navigate = useNavigate();
 
     const [openEventTypes, setEventTypes] = useState([]);
     const [openCompetition, setOpenCompetition] = useState([]);
@@ -44,31 +38,14 @@ const DataproviderPage = () => {
         );
       };
 
-    const fetchConfigAll = async () => {
-        setLoading(true);
-        try {
-            const response = await axiosInstance.post("/loadInitData", { isActive: true });
-            const dpSocketUrl = response.result.find(config => config.key === 'DPSOCKETURL')?.value;
-            const dpApiXkey = response.result.find(config => config.key === 'DPAPIXKEY')?.value;
-            const dpApiURL = response.result.find(config => config.key === 'DPAPIURL')?.value;
-            setSocketUrl(dpSocketUrl);
+    useEffect(() => {
+        if(loadInitData) {
+            const dpApiXkey = loadInitData.find(config => config.key === 'DPAPIXKEY')?.value;
+            const dpApiURL = loadInitData.find(config => config.key === 'DPAPIURL')?.value;
             setApiXkey(dpApiXkey);
             setApiURL(dpApiURL);
-        } catch (error) {
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        } finally {
-            setLoading(false);
         }
-    };
-    // useEffect(() => {
-    //     const data = fetchConfig(loadInit)
-    //     setApiURL(data.dpApiURL)
-    //     setApiXkey(data.dpApiXkey)
-    //     setSocketUrl(data.dpSocketUrl)
-    // }, [])
-    useEffect(() => {
-        fetchConfigAll()
-    }, [])
+    },[loadInitData]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -116,12 +93,9 @@ const DataproviderPage = () => {
     }, [events]);
 
     const handleRowClick = (match) => {
-        setSelectedMatch(match);
+        sessionStorage.setItem("selectedMatch", JSON.stringify(match));
+        navigate("/dataproviderMarkets");
     };
-
-    if (selectedMatch) {
-        return <EventDetails event={selectedMatch} apiURL={apiURL} apiXkey={apiXkey} socketUrl={socketUrl} />;
-    }
 
     if (loading) {
         return (
