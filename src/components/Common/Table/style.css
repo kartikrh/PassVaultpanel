@@ -45,7 +45,7 @@ body[data-theme="dark"] {
 /* Card header container */
 .card-header {
   position: relative; /* Ensure dropdown is positioned relative to this container */
-  z-index: 15; /* Set higher than table header */
+  z-index: 1; /* Set higher than table header */
 }
 
 /* Table container with scroll */
