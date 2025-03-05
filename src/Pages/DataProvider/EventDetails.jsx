@@ -25,8 +25,11 @@ import {
 } from "../../components/Common/Const";
 import { io } from "socket.io-client";
 import { isEmpty } from "lodash";
+import Switch from "react-switch";
+import { loadInit } from "../../config";
+import { useNavigate } from "react-router-dom";
 
-const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
+const EventDetails = () => {
   const [eventInfo, setEventInfo] = useState([]);
   const [marketsGrouped, setMarketsGrouped] = useState({});
   const [loading, setLoading] = useState(true);
@@ -35,9 +38,21 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   const marketTypeObj = useSelector(
     (state) => state.marketType?.marketTypeList
   );
-  const [openMarkets, setOpenMarkets] = useState([]);
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  const [openInactiveMarkets, setOpenInactiveMarkets] = useState([]);
   const [openCategories, setOpenCategories] = useState([]);
-
+  const [isScorecardShow, setIsScorecardShow] = useState(false);
+  const [socketUrl, setSocketUrl] = useState(null);
+  const [apiXkey, setApiXkey] = useState(null);
+  const [apiURL, setApiURL] = useState(null);
+  const event = JSON.parse(sessionStorage.getItem("selectedMatch") || "{}");
+  let scorecardFrameUrl = loadInitData.find(
+    (item) => item.key === loadInit.SCORECARD_FRAME_URL
+  )?.value;
+  if (scorecardFrameUrl) {
+    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", event?.eventId);
+  }
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useRef(null);
 
@@ -45,6 +60,23 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
     if (!isEmpty(event))
       document.title = `View Market - ${event?.eventName} [${event?.eventId}]`;
   }, [event]);
+
+  useEffect(() => {
+    if (loadInitData) {
+      const dpSocketUrl = loadInitData.find(
+        (config) => config.key === "DPSOCKETURL"
+      )?.value;
+      const dpApiXkey = loadInitData.find(
+        (config) => config.key === "DPAPIXKEY"
+      )?.value;
+      const dpApiURL = loadInitData.find(
+        (config) => config.key === "DPAPIURL"
+      )?.value;
+      setSocketUrl(dpSocketUrl);
+      setApiXkey(dpApiXkey);
+      setApiURL(dpApiURL);
+    }
+  }, [loadInitData]);
 
   useEffect(() => {
     const fetchMarketCategoriesList = async () => {
@@ -72,40 +104,19 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
   const groupMarkets = (markets) => {
     const groupedData = {};
 
-    // Sorting marketTypes & categories by displayOrder
-    const sortedMarketTypes = [...marketTypes].sort(
-      (a, b) => a.displayOrder - b.displayOrder
-    );
     const sortedCategories = [...categories].sort(
       (a, b) => a.displayOrder - b.displayOrder
     );
 
-    sortedMarketTypes.forEach((type) => {
-      const typeMarkets = markets.filter(
-        (market) => market.marketType === type.marketTypeId
+    sortedCategories.forEach((category) => {
+      const categoryMarkets = markets.filter(
+        (market) => market.marketTypeCategory === category.marketTypeCategoryId
       );
-      if (typeMarkets.length > 0) {
-        groupedData[type.displayOrder] = {
-          typeInfo: type,
-          categories: {},
+      if (categoryMarkets.length > 0) {
+        groupedData[category.displayOrder] = {
+          categoryInfo: category,
+          markets: categoryMarkets,
         };
-
-        sortedCategories.forEach((category) => {
-          if (category.marketTypeId === type.marketTypeId) {
-            const categoryMarkets = typeMarkets.filter(
-              (market) =>
-                market.marketTypeCategory === category.marketTypeCategoryId
-            );
-            if (categoryMarkets.length > 0) {
-              groupedData[type.displayOrder].categories[
-                category.displayOrder
-              ] = {
-                categoryInfo: category,
-                markets: categoryMarkets,
-              };
-            }
-          }
-        });
       }
     });
     return groupedData;
@@ -150,26 +161,9 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
     ) {
       const data = groupMarkets(eventInfo);
       setMarketsGrouped(data);
-    }
-  }, [eventInfo, marketTypes, categories]);
-
-  useEffect(() => {
-    if (
-      eventInfo.length > 0 &&
-      marketTypes.length > 0 &&
-      categories.length > 0
-    ) {
-      const data = groupMarkets(eventInfo);
-      setMarketsGrouped(data);
-
-      // Extract all marketTypeIds and categoryIds and set them as open
-      const allMarketIds = Object.keys(data);
-      const allCategoryIds = Object.values(data).flatMap((type) =>
-        Object.keys(type.categories)
-      );
-
-      setOpenMarkets(allMarketIds);
+      const allCategoryIds = Object.keys(data);
       setOpenCategories(allCategoryIds);
+      // setOpenInactiveMarkets(allCategoryIds);
     }
   }, [eventInfo, marketTypes, categories]);
 
@@ -236,16 +230,8 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
     //     }
     // };
   }, [socketUrl, event?.eventId]);
-
-  // const toggleMarket = (marketTypeId) => {
-  //     setOpenMarkets((prev) => ({
-  //         ...prev,
-  //         [marketTypeId]: !prev[marketTypeId],
-  //     }));
-  // };
-
-  const toggleMarket = (id) => {
-    setOpenMarkets((prev) =>
+  const toggleInactiveMarket = (id) => {
+    setOpenInactiveMarkets((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
@@ -256,6 +242,214 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  const handleBackClick = () => {
+    sessionStorage.removeItem("selectedMatch");
+    navigate("/dataprovider");
+  };
+
+  const OffsymbolStatus = () => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          fontSize: 10,
+          color: "#fff",
+          paddingRight: "10px",
+        }}
+      >
+        {" "}
+        ScoreCard
+      </div>
+    );
+  };
+  const OnSymbolStatus = () => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          fontSize: 10,
+          color: "#fff",
+          paddingLeft: "11px",
+        }}
+      >
+        {" "}
+        ScoreCard
+      </div>
+    );
+  };
+
+  const renderCategoryMarkets = (
+    categoryId,
+    categoryData,
+    openAccordion,
+    toggleAccordion,
+    fancyLineMarkets,
+    otherMarkets
+  ) => (
+    <Accordion open={openAccordion} toggle={toggleAccordion} key={categoryId}>
+      <AccordionItem className="rounded-0">
+        <AccordionHeader
+          className="market-category-header"
+          targetId={categoryId}
+        >
+          <b>{categoryData?.categoryInfo?.displayName}</b>
+        </AccordionHeader>
+        <AccordionBody
+          className="market-category-body"
+          accordionId={categoryId}
+        >
+          {fancyLineMarkets.length > 0 ? (
+            <Table responsive className="mb-0">
+              <tbody>
+                {fancyLineMarkets
+                  .sort((a, b) => a.marketId - b.marketId)
+                  .map((market) => (
+                    <tr key={market.marketId} className="position-relative">
+                      <td>
+                        <span
+                          style={{
+                            backgroundColor: market?.isAllow ? "green" : "red",
+                          }}
+                          className="active-css"
+                        ></span>
+                        {market?.marketName} [{market?.marketId}]
+                      </td>
+                      {parseInt(market?.status) === 1 ? (
+                        <>
+                          <td className="no-rate rate-width text-center py-0">
+                            <div className="rate-font">
+                              {market?.runner?.[0]?.layPrice || "0"}
+                            </div>
+                            <div className="point-font">
+                              {market?.runner?.[0]?.laySize || "0"}
+                            </div>
+                          </td>
+                          <td className="yes-rate rate-width text-center py-0">
+                            <div className="rate-font">
+                              {market?.runner?.[0]?.backPrice || "0"}
+                            </div>
+                            <div className="point-font">
+                              {market?.runner?.[0]?.backSize || "0"}
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        <td className="p-0" colSpan={2}>
+                          <div className="d-flex justify-content-end market-suspended-container">
+                            <div className="no-rate-suspend rate-width"></div>
+                            <div className="yes-rate-suspend rate-width"></div>
+                            <div className="market-overlay">
+                              <span className="suspended-text">
+                                Market suspend
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+          ) : null}
+          {otherMarkets.length > 0 ? (
+            <Row>
+              {otherMarkets
+                .sort((a, b) => a.marketId - b.marketId)
+                .map((market) => (
+                  <Col md={6}>
+                    {market.runner && market.runner.length > 0 && (
+                      <Table responsive className="mb-0">
+                        <thead>
+                          <tr>
+                            <th className="p-2">
+                              <span
+                                style={{
+                                  backgroundColor: market?.isAllow
+                                    ? "green"
+                                    : "red",
+                                }}
+                                className="active-css"
+                              ></span>
+                              <b>
+                                {market?.marketName} [{market?.marketId}]
+                              </b>
+                            </th>
+                            {parseInt(market?.status) === 1 ? (
+                              <>
+                                <th className="p-2 text-end">
+                                  <b>Back</b>
+                                </th>
+                                <th className="p-2">
+                                  <b>Lay</b>
+                                </th>{" "}
+                              </>
+                            ) : (
+                              <th className="p-2 text-center">
+                                <span className="px-4 odds-width">Back</span>
+                                <span className="odds-width">Lay</span>
+                              </th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {market.runner.map((runner) => (
+                            <tr
+                              key={runner.runnerId}
+                              className="position-relative"
+                            >
+                              <td>{runner.runner}</td>
+                              {parseInt(market?.status) === 1 ? (
+                                <>
+                                  <td className="yes-rate odds-width text-center py-0">
+                                    <div className="rate-font">
+                                      {runner?.backPrice || "0"}
+                                    </div>
+                                    <div className="point-font">
+                                      {runner?.backSize || "0"}
+                                    </div>
+                                  </td>
+                                  <td className="no-rate odds-width text-center py-0">
+                                    <div className="rate-font">
+                                      {runner?.layPrice || "0"}
+                                    </div>
+                                    <div className="point-font">
+                                      {runner?.laySize || "0"}
+                                    </div>
+                                  </td>
+                                </>
+                              ) : (
+                                <td className="p-0" colSpan={2}>
+                                  <div className="d-flex justify-content-end market-suspended-container">
+                                    <div className="no-rate-suspend odds-width"></div>
+                                    <div className="yes-rate-suspend odds-width"></div>
+                                    <div className="market-overlay">
+                                      <span className="suspended-text">
+                                        Market Suspend
+                                      </span>
+                                    </div>
+                                  </div>
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    )}
+                  </Col>
+                ))}{" "}
+            </Row>
+          ) : null}
+        </AccordionBody>
+      </AccordionItem>
+    </Accordion>
+  );
 
   return (
     <>
@@ -275,10 +469,21 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                       {event?.eventType} / {event?.competition}
                     </p>
                   </Col>
-                  <Col className="float-right">
+                  <Col className="d-flex justify-content-end align-items-center">
+                    <Switch
+                      width={80}
+                      uncheckedIcon={<OffsymbolStatus />}
+                      checkedIcon={<OnSymbolStatus />}
+                      className="mx-2"
+                      onColor="#02a499"
+                      onChange={() => {
+                        setIsScorecardShow(!isScorecardShow);
+                      }}
+                      checked={isScorecardShow}
+                    />
                     <Button
                       className="btn btn-success text-right"
-                      onClick={() => window.location.reload()}
+                      onClick={handleBackClick}
                     >
                       {" "}
                       Back{" "}
@@ -286,257 +491,86 @@ const EventDetails = ({ event, apiURL, apiXkey, socketUrl }) => {
                   </Col>
                 </Row>
 
+                {isScorecardShow && (
+                  <Row>
+                    <Col xs={12}>
+                      <iframe
+                        title="YouTube video player"
+                        width="100%"
+                        height="auto"
+                        src={scorecardFrameUrl}
+                        frameborder="0"
+                        className="mb-0"
+                      ></iframe>
+                    </Col>
+                  </Row>
+                )}
+
                 {Object.entries(marketsGrouped).map(
-                  ([marketTypeId, typeData]) => (
-                    <Accordion
-                      open={openMarkets}
-                      toggle={toggleMarket}
-                      key={marketTypeId}
-                    >
-                      <AccordionItem className="rounded-0">
-                        <AccordionHeader
-                          className="market-category-header"
-                          targetId={marketTypeId}
-                        >
-                          <b>{typeData?.typeInfo?.displayName}</b>
-                        </AccordionHeader>
-                        <AccordionBody
-                          className="market-category-body category-list"
-                          accordionId={marketTypeId}
-                        >
-                          {Object.entries(typeData?.categories).map(
-                            ([categoryId, categoryData]) => {
-                              const fancyLineMarkets =
-                                categoryData.markets.filter(
-                                  (market) =>
-                                    market.marketType == marketTypeObj?.Fancy ||
-                                    market.marketType ==
-                                      marketTypeObj?.LineMarket
-                                );
-                              const otherMarkets = categoryData.markets.filter(
-                                (market) =>
-                                  market.marketType != marketTypeObj?.Fancy &&
-                                  market.marketType != marketTypeObj?.LineMarket
-                              );
-                              return (
-                                <Accordion
-                                  open={openCategories}
-                                  toggle={toggleCategory}
-                                  key={categoryId}
-                                >
-                                  <AccordionItem className="rounded-0">
-                                    <AccordionHeader
-                                      className="market-category-header"
-                                      targetId={categoryId}
-                                    >
-                                      <b>
-                                        {
-                                          categoryData?.categoryInfo
-                                            ?.displayName
-                                        }
-                                      </b>
-                                    </AccordionHeader>
-                                    <AccordionBody
-                                      className="market-category-body"
-                                      accordionId={categoryId}
-                                    >
-                                      {fancyLineMarkets.length > 0 ? (
-                                        <Table responsive className="mb-0">
-                                          <tbody>
-                                            {fancyLineMarkets
-                                              .sort(
-                                                (a, b) =>
-                                                  a.marketId - b.marketId
-                                              )
-                                              .map((market) => (
-                                                <tr
-                                                  key={market.marketId}
-                                                  className="position-relative"
-                                                >
-                                                  <td>
-                                                    <span
-                                                      style={{
-                                                        backgroundColor:
-                                                          market?.isAllow
-                                                            ? "green"
-                                                            : "red",
-                                                      }}
-                                                      className="active-css"
-                                                    ></span>
-                                                    {market?.marketName} [
-                                                    {market?.marketId}]
-                                                  </td>
-                                                  {parseInt(market?.status) ===
-                                                  1 ? (
-                                                    <>
-                                                      <td className="no-rate rate-width text-center py-0">
-                                                        <div className="rate-font">
-                                                          {market?.runner?.[0]
-                                                            ?.layPrice || "0"}
-                                                        </div>
-                                                        <div className="point-font">
-                                                          {market?.runner?.[0]
-                                                            ?.laySize || "0"}
-                                                        </div>
-                                                      </td>
-                                                      <td className="yes-rate rate-width text-center py-0">
-                                                        <div className="rate-font">
-                                                          {market?.runner?.[0]
-                                                            ?.backPrice || "0"}
-                                                        </div>
-                                                        <div className="point-font">
-                                                          {market?.runner?.[0]
-                                                            ?.backSize || "0"}
-                                                        </div>
-                                                      </td>
-                                                    </>
-                                                  ) : (
-                                                    <td className="p-0">
-                                                      <div className="d-flex justify-content-end market-suspended-container">
-                                                        <div className="no-rate-suspend rate-width"></div>
-                                                        <div className="yes-rate-suspend rate-width"></div>
-                                                        <div className="market-overlay">
-                                                          <span className="suspended-text">
-                                                            Market suspend
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                    </td>
-                                                  )}
-                                                </tr>
-                                              ))}
-                                          </tbody>
-                                        </Table>
-                                      ) : null}
-                                      {otherMarkets.length > 0 ? (
-                                        <Row>
-                                          {otherMarkets
-                                            .sort(
-                                              (a, b) => a.marketId - b.marketId
-                                            )
-                                            .map((market) => (
-                                              <Col md={6}>
-                                                {market.runner &&
-                                                  market.runner.length > 0 && (
-                                                    <Table
-                                                      responsive
-                                                      className="mb-0"
-                                                    >
-                                                      <thead>
-                                                        <tr>
-                                                          <th className="p-2">
-                                                            <span
-                                                              style={{
-                                                                backgroundColor:
-                                                                  market?.isAllow
-                                                                    ? "green"
-                                                                    : "red",
-                                                              }}
-                                                              className="active-css"
-                                                            ></span>
-                                                            <b>
-                                                              {
-                                                                market?.marketName
-                                                              }{" "}
-                                                              [
-                                                              {market?.marketId}
-                                                              ]
-                                                            </b>
-                                                          </th>
-                                                          {parseInt(
-                                                            market?.status
-                                                          ) === 1 ? (
-                                                            <>
-                                                              <th className="p-2 text-end">
-                                                                <b>Back</b>
-                                                              </th>
-                                                              <th className="p-2">
-                                                                <b>Lay</b>
-                                                              </th>{" "}
-                                                            </>
-                                                          ) : (
-                                                            <th className="p-2 text-center">
-                                                              <span className="px-4 odds-width">
-                                                                Back
-                                                              </span>
-                                                              <span className="odds-width">
-                                                                Lay
-                                                              </span>
-                                                            </th>
-                                                          )}
-                                                        </tr>
-                                                      </thead>
-                                                      <tbody>
-                                                        {market.runner.map(
-                                                          (runner) => (
-                                                            <tr
-                                                              key={
-                                                                runner.runnerId
-                                                              }
-                                                              className="position-relative"
-                                                            >
-                                                              <td>
-                                                                {runner.runner}
-                                                              </td>
-                                                              {parseInt(
-                                                                market?.status
-                                                              ) === 1 ? (
-                                                                <>
-                                                                  <td className="yes-rate odds-width text-center py-0">
-                                                                    <div className="rate-font">
-                                                                      {runner?.backPrice ||
-                                                                        "0"}
-                                                                    </div>
-                                                                    <div className="point-font">
-                                                                      {runner?.backSize ||
-                                                                        "0"}
-                                                                    </div>
-                                                                  </td>
-                                                                  <td className="no-rate odds-width text-center py-0">
-                                                                    <div className="rate-font">
-                                                                      {runner?.layPrice ||
-                                                                        "0"}
-                                                                    </div>
-                                                                    <div className="point-font">
-                                                                      {runner?.laySize ||
-                                                                        "0"}
-                                                                    </div>
-                                                                  </td>
-                                                                </>
-                                                              ) : (
-                                                                <td className="p-0">
-                                                                  <div className="d-flex justify-content-end market-suspended-container">
-                                                                    <div className="no-rate-suspend odds-width"></div>
-                                                                    <div className="yes-rate-suspend odds-width"></div>
-                                                                    <div className="market-overlay">
-                                                                      <span className="suspended-text">
-                                                                        Market
-                                                                        Suspend
-                                                                      </span>
-                                                                    </div>
-                                                                  </div>
-                                                                </td>
-                                                              )}
-                                                            </tr>
-                                                          )
-                                                        )}
-                                                      </tbody>
-                                                    </Table>
-                                                  )}
-                                              </Col>
-                                            ))}{" "}
-                                        </Row>
-                                      ) : null}
-                                    </AccordionBody>
-                                  </AccordionItem>
-                                </Accordion>
-                              );
-                            }
-                          )}
-                        </AccordionBody>
-                      </AccordionItem>
-                    </Accordion>
-                  )
+                  ([categoryId, categoryData]) => {
+                    const activeMarkets =
+                      categoryData?.markets?.filter(
+                        (market) => market?.isActive
+                      ) || [];
+                    const fancyLineMarkets = activeMarkets?.filter(
+                      (market) =>
+                        market?.marketType == marketTypeObj?.Fancy ||
+                        market?.marketType == marketTypeObj?.LineMarket
+                    );
+                    const otherMarkets = activeMarkets?.filter(
+                      (market) =>
+                        market?.marketType != marketTypeObj?.Fancy &&
+                        market?.marketType != marketTypeObj?.LineMarket
+                    );
+
+                    if (activeMarkets.length === 0) {
+                      return null;
+                    }
+
+                    return renderCategoryMarkets(
+                      categoryId,
+                      categoryData,
+                      openCategories,
+                      toggleCategory,
+                      fancyLineMarkets,
+                      otherMarkets
+                    );
+                  }
+                )}
+
+                {Object.values(marketsGrouped).some((categoryData) =>
+                  categoryData?.markets?.some((market) => !market?.isActive)
+                ) && <h5 className="mb-0 mt-3">Inactive Markets</h5>}
+                {Object.entries(marketsGrouped).map(
+                  ([categoryId, categoryData]) => {
+                    const inActiveMarkets =
+                      categoryData?.markets?.filter(
+                        (market) => !market?.isActive
+                      ) || [];
+                    const fancyLineMarkets = inActiveMarkets?.filter(
+                      (market) =>
+                        market?.marketType == marketTypeObj?.Fancy ||
+                        market?.marketType == marketTypeObj?.LineMarket
+                    );
+                    const otherMarkets = inActiveMarkets?.filter(
+                      (market) =>
+                        market?.marketType != marketTypeObj?.Fancy &&
+                        market?.marketType != marketTypeObj?.LineMarket
+                    );
+
+                    if (inActiveMarkets.length === 0) {
+                      return null;
+                    }
+
+                    return renderCategoryMarkets(
+                      categoryId,
+                      categoryData,
+                      openInactiveMarkets,
+                      toggleInactiveMarket,
+                      fancyLineMarkets,
+                      otherMarkets
+                    );
+                  }
                 )}
               </CardBody>
             </Card>
