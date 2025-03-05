@@ -1154,6 +1154,7 @@
 
   .first-player-stats {
     font-size: 10px !important;
+    text-align: center;
   }
 
   .remaining-card-body {
@@ -1243,6 +1244,7 @@
 
   .remaining-player-stats {
     font-size: 8px !important;
+    text-align: center;
   }
 
   .circle-display {
