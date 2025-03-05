@@ -273,7 +273,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                             <div className="col-1"></div>
                             <div className="col-3">Player</div>
                             <div className="col-2">Avg</div>
-                            <div className="col-1">SR</div>
+                            {/* <div className="col-1">SR</div> */}
                             <div className="col-2">BDRY</div>
                             <div className="col-2">PBF</div>
                             <div className="col-1">XI</div>
@@ -306,7 +306,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                                         }
                                     />
                                 </div>
-                                <div className="col-1">
+                                {/* <div className="col-1">
                                     <input
                                         type="number"
                                         style={{ width: "50px" }}
@@ -322,7 +322,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
                                             )
                                         }
                                     />
-                                </div>
+                                </div> */}
                                 <div className="col-2">
                                     <input
                                         type="number"
