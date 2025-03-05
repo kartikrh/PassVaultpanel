@@ -37,6 +37,9 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [status, setStatus] = useState(0);
   const [dataToDB, setDataToDB] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const { selectedMarket, selectedMarketHistory } = useSelector(
     (state) => state.tabsData?.manualEvent
   );
@@ -69,6 +72,7 @@ const Index = () => {
       .post(`/admin/manualEvent/marketList`, { ...selectedMarket })
       .then((response) => {
         const apiData = response?.result?.appdata;
+        setTotal(apiData?.length || 0); 
         setData(apiData);
         setIsLoading(false);
       })
@@ -472,6 +476,7 @@ const Index = () => {
     isActive: false,
     dragDrop: false,
     subTable: true,
+    isServerPagination: true,
   };
 
   const handleBreadCrumbsClick = (value) => {
@@ -570,6 +575,11 @@ const Index = () => {
             tournamentList = {tournamentList}
             onTournamentisChanges = {handleTournamentObjectClick}
             setStickHeader = {StickHeader}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
            <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
