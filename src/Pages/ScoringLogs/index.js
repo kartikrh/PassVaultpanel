@@ -6,7 +6,7 @@ import { PERMISSION_VIEW, TAB_SCORING_LOGS } from "../../components/Common/Const
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
 
@@ -24,6 +24,7 @@ function ScoringLogs() {
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
+  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -168,7 +169,10 @@ useEffect(() => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal2(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+          }
         </span>
       ),
       key: "eventDate",
@@ -241,6 +245,7 @@ useEffect(() => {
     reloadButton: true,
     isServerPagination: true,
     isDateRange: true,
+    isDateTypeSelect: true,
   };
 
   useEffect(() => {
@@ -310,6 +315,8 @@ useEffect(() => {
             setIsSearch={setIsSearch}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            dateType={dateType}
+            setDateType={setDateType}
           />
         </Container>
       </div>
