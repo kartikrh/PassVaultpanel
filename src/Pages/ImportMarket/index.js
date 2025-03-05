@@ -51,7 +51,9 @@ const Index = () => {
   const [showtournamentList, setisShowTournamentList] = useState(false);
   const [eventTypeRefId, setEventTypeRefId] = useState("");
   const [StickHeader,setStickHeader] = useState(true);
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const [tournamentObject, setTournamentObject] = useState({
     competitionId: 0,
     competitionName: "",
@@ -75,6 +77,7 @@ const Index = () => {
       .post(`/admin/ImportMarket/marketList`, { ...selectedMarket })
       .then((response) => {
         const apiData = response?.result?.appdata;
+        setTotal(apiData?.length || 0); 
         setData(apiData);
         setIsLoading(false);
       })
@@ -472,6 +475,7 @@ const Index = () => {
     isActive: false,
     dragDrop: false,
     subTable: true,
+    isServerPagination: true,
   };
 
   const handleBreadCrumbsClick = (value) => {
@@ -559,12 +563,6 @@ const Index = () => {
             changeOrderApiName="eventType"
             singleCheck={checekedList}
             reFetchData={fetchData}
-            // onAddNavigate={"/addEventType"}
-            // isAddPermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_ADD
-            // )}
             isDeletePermission={checkPermission(
               permissionObj,
               pageName,
@@ -576,6 +574,11 @@ const Index = () => {
             tournamentList = {tournamentList}
             onTournamentisChanges = {handleTournamentObjectClick}
             setStickHeader = {StickHeader}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
