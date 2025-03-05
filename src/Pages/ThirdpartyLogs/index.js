@@ -12,7 +12,7 @@ import {
   TAB_THIRDPARTY_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 
 const Index = () => {
   const pageName = TAB_THIRDPARTY_LOGS;
@@ -25,6 +25,7 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [isSearch, setIsSearch] = useState(true);
+  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -81,7 +82,10 @@ const Index = () => {
       dataIndex: "requestStartTime",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal2(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+          }
         </span>
       ),
       key: "requestStartTime",
@@ -135,6 +139,7 @@ const Index = () => {
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
+    isDateTypeSelect: true,
   };
 
   useEffect(() => {
@@ -172,6 +177,8 @@ const Index = () => {
             setServerPageSize={setPageSize}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            dateType={dateType}
+            setDateType={setDateType}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
