@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MatchTypeClone } from "../../components/Model/Clone";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import {
   ERROR,
   MODULE_MATCH_TYPES,
@@ -295,11 +295,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();
