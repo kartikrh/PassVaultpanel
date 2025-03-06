@@ -33,6 +33,9 @@ const Index = () => {
   // const [displayTypes, setDisplayTypes] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -50,6 +53,7 @@ const Index = () => {
         const tabsDataDB = validateTabResponse(response?.result);
         const first = apiGetTabCleaner(tabsDataDB);
         const sorted = [...first].sort((a, b) => a.displayOrder - b.displayOrder);
+        setTotal(sorted?.length || 0);
         const apiDataIdList = sorted.map(item => item?.tabId).filter(Boolean);
         setData(sorted);
         setDataIndexList(apiDataIdList);
@@ -339,6 +343,7 @@ const Index = () => {
     reloadButton: true,
     isActive: true,
     loadData: true,
+    isServerPagination: true,
     displayTypes: [
       { label: "Admin", value: 1 },
       { label: "Agent", value: 2 },
@@ -372,7 +377,6 @@ const Index = () => {
             ref={finalizeRef}
             columns={columns}
             dataSource={data}
-            serverTotal={data.length}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             onAddNavigate={"/addTabs"}
@@ -387,6 +391,11 @@ const Index = () => {
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             breadCrumbs={selectedTabHistory}
             onBreadCrumbsClick={handleBreadCrumbsClick}
+            serverCurrentPage={currentPage}
+            serverPageSize={pageSize}
+            serverTotal={total}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
