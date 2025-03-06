@@ -330,7 +330,7 @@ const Index = () => {
   }, []);
 
   const handleReload = (value) => {
-    fetchData({ isActive: true });
+    fetchData();
   };
   return (
     <React.Fragment>

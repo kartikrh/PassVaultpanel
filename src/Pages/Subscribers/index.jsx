@@ -37,10 +37,11 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
+    const data = latestValueFromTable || tableActions
     await axiosInstance
       .post(`/admin/subscribeDomain/all`, {
-        ...(latestValueFromTable || tableActions),
-        isApproved: latestValueFromTable?.isApproved !== undefined ? latestValueFromTable?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
+        ...data,
+        isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.subScribesDomainId - b?.subScribesDomainId);

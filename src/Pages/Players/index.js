@@ -394,8 +394,8 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    fetchEventTypeData()
-    fetchTeamsData()
+    // fetchEventTypeData()
+    // fetchTeamsData()
   };
 
   const handleDownloadPlayerHistory = async () => {

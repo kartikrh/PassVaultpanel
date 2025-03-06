@@ -78,10 +78,11 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     let payload = {
-      ...(latestValueFromTable || tableActions),
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      ...data,
+      eventTypeId: data?.eventTypeId || 0,
+      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
     if (isSearch) {
       payload = {
@@ -107,8 +108,8 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (latestValueFromTable?.eventTypeId) {
-      fetchCompetitionData(latestValueFromTable?.eventTypeId);
+    if (data?.eventTypeId && latestValueFromTable) {
+      fetchCompetitionData(data?.eventTypeId);
     }
   };
   const fetchEventTypeData = async () => {
@@ -1101,7 +1102,7 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    fetchEventTypeData();
+    // fetchEventTypeData();
   };
   return (
     <React.Fragment>
