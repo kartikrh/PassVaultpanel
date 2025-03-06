@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table, Container, Row, Card, CardBody} from 'reactstrap'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
 import { useSelector } from 'react-redux';
 import { checkPermission, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
@@ -21,7 +20,7 @@ const DataproviderPage = () => {
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
     const navigate = useNavigate();
-    document.title = "Traders";
+    document.title = "Trader";
 
     const [openEventTypes, setEventTypes] = useState([]);
     const [openCompetition, setOpenCompetition] = useState([]);
@@ -99,6 +98,12 @@ const DataproviderPage = () => {
         setGroupedEvents(groupEvents(events));
     }, [events]);
 
+    useEffect(() => {
+        if (Object.keys(groupedEvents).length > 0) {
+            setEventTypes(Object.keys(groupedEvents));
+        }
+    }, [groupedEvents]);
+
     const handleRowClick = (details) => {
         const url = new URL(window.location.origin + "/dataproviderMarkets");
         sessionStorage.setItem('dataproviderEventId', "" + details?.eventId);
@@ -136,30 +141,38 @@ const DataproviderPage = () => {
                         <CardBody className='p-3'>
                             {loading && <SpinnerModel />}
                             {Object.entries(groupedEvents).map(([eventType, competitions]) => (
-                                <Accordion key={eventType} className='data-provider-outer-accordian' open={openEventTypes} toggle={toggleEventType}>
+                                <Accordion key={eventType} open={openEventTypes} toggle={toggleEventType}>
                                     <AccordionItem className="rounded-0">
-                                    <AccordionHeader className='data-provider-outer-accordian-summary px-1' targetId={eventType}>
-                                        <div className='d-flex align-items-center p-1 px-2'>
-                                            <SportsCricketIcon sx={{ mr: 2 }} />
-                                            <span style={{fontSize: '20px', fontWeight: 'bold'}}>{eventType}</span>
-                                        </div>
+                                    <AccordionHeader className='market-category-header' targetId={eventType}>
+                                        <SportsCricketIcon sx={{ mr: 2 }} />
+                                        <b>{eventType}</b>
                                     </AccordionHeader>
-                                    <AccordionBody accordionId={eventType} className='data-provider-outer-accordian-body p-0'>
+                                    <AccordionBody accordionId={eventType} className='market-category-body category-list'>
                                         {Object.entries(competitions).map(([competition, matches]) => (
-                                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition} className='category-list py-0'>
+                                            <Accordion key={competition} open={openCompetition} toggle={toggleCompetition}>
                                                 <AccordionItem className="rounded-0">
-                                                <AccordionHeader targetId={competition} className='data-provider-outer-accordian-summary' expandIcon={<ExpandMoreIcon />}>
-                                                    <span style={{fontSize: '14px'}} className='p-1'>{competition}</span>
+                                                <AccordionHeader targetId={competition} className='market-category-header'>
+                                                    {competition}
                                                 </AccordionHeader>
-                                                <AccordionBody accordionId={competition} className='ps-3'>
+                                                <AccordionBody accordionId={competition} className="market-category-body">
                                                        <Table className='mb-0' responsive hover>
                                                             <tbody>
                                                                 {matches.map((match) =>{
-                                                                    return(<tr onClick={() => handleRowClick(match)} className="px-1 data-provider-table-row" style={{border: '1px solid gray' }}>
-                                                                    <td className='p-0 ps-1 m-0'>
-                                                                        <div className=''>{match.eventName} <span style={{color: getStatusColor(match.status)}}> {getStatusLabel(match.status)} </span> {convertDateUTCToLocal(match.eventDate, "index")}</div>
-                                                                    </td>
-                                                                    </tr>)
+                                                                  return (
+                                                                    <tr onClick={() => handleRowClick(match)} className='cursor-pointer'>
+                                                                      <td className='event-col p-2'>
+                                                                        <b>{match.eventName}</b>
+                                                                      </td>
+                                                                      <td className='date-status p-2'>
+                                                                        <span className="event-status" style={{backgroundColor: getStatusColor(match.status)}}> 
+                                                                            {getStatusLabel(match.status)}
+                                                                        </span>
+                                                                      </td>
+                                                                      <td className='date-status p-2'>
+                                                                        {convertDateUTCToLocal(match.eventDate, "index")}
+                                                                      </td>
+                                                                    </tr>
+                                                                  )
                                                                 })}
                                                             </tbody>
                                                         </Table>
