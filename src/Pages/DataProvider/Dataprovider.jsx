@@ -14,8 +14,10 @@ const DataproviderPage = () => {
     const [events, setEvents] = useState([]);
     const [groupedEvents, setGroupedEvents] = useState({});
     const [loading, setLoading] = useState(true);
-    const [apiXkey, setApiXkey] = useState(null);
-    const [apiURL, setApiURL] = useState(null);
+    const [apiConfig, setApiConfig] = useState({
+        apiXkey: null,
+        apiURL: null
+    });
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
     const navigate = useNavigate();
@@ -45,20 +47,20 @@ const DataproviderPage = () => {
 
     useEffect(() => {
         if(loadInitData) {
-            const dpApiXkey = loadInitData.find(config => config.key === 'DPAPIXKEY')?.value;
-            const dpApiURL = loadInitData.find(config => config.key === 'DPAPIURL')?.value;
-            setApiXkey(dpApiXkey);
-            setApiURL(dpApiURL);
+            setApiConfig({
+                apiXkey: loadInitData.find((config) => config.key === "DPAPIXKEY")?.value,
+                apiURL: loadInitData.find((config) => config.key === "DPAPIURL")?.value
+            });
         }
     },[loadInitData]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${apiURL}/api/eventList`,  {
+                const response = await fetch(`${apiConfig.apiURL}/api/eventList`,  {
                     method: "POST",
                     headers: {
-                      "X-Key": apiXkey,
+                      "X-Key": apiConfig.apiXkey,
                     },
                 });
                 const data = await response.json();
@@ -78,10 +80,10 @@ const DataproviderPage = () => {
             }
         };
 
-        if(apiURL && apiXkey) {
+        if(apiConfig.apiURL && apiConfig.apiXkey) {
           fetchData();
         }
-    }, [apiURL, apiXkey]);
+    }, [apiConfig.apiURL, apiConfig.apiXkey]);
 
     const groupEvents = (eventsList) => {
         return eventsList.reduce((acc, event) => {
@@ -97,9 +99,13 @@ const DataproviderPage = () => {
         setGroupedEvents(groupEvents(events));
     }, [events]);
 
-    const handleRowClick = (match) => {
-        sessionStorage.setItem("selectedMatch", JSON.stringify(match));
-        navigate("/dataproviderMarkets");
+    const handleRowClick = (details) => {
+        const url = new URL(window.location.origin + "/dataproviderMarkets");
+        sessionStorage.setItem('dataproviderEventId', "" + details?.eventId);
+        sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify(details));
+        window.open(url.href, '_blank');
+        sessionStorage.removeItem("dataproviderEventId");
+        sessionStorage.removeItem("dataproviderEventDetails");
     };
 
     const getStatusLabel = (status) => {
