@@ -12,10 +12,11 @@ import {
   TAB_COMMENTARY_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
+import { isEmpty } from "lodash";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LOGS;
@@ -37,6 +38,7 @@ const Index = () => {
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
+  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -226,11 +228,11 @@ const Index = () => {
         return <div 
         onClick={() => {
                   setResModelVisible(true);
-                  setResBodyData({response :record?.response,id:record?.id,
-                      eventName:record?.eventName,
-                      eventRefId:record?.eventRefId
-                      ,createdDate:record?.createdDate}
-                  );
+                  setResBodyData({
+                    response :record?.response,id:record?.id,
+                    eventName:record?.eventName,
+                    eventRefId:record?.eventRefId,
+                    createdDate:record?.createdDate});
                 }}
         style={{ 
           display: 'inline-block', 
@@ -250,7 +252,10 @@ const Index = () => {
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal2(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+          }
         </span>
       ),
       key: "createdDate",
@@ -306,14 +311,15 @@ const Index = () => {
     reloadButton: true,
     isServerPagination: true,
     isDateRange: true,
+    isDateTypeSelect: true,
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();
@@ -360,6 +366,8 @@ const Index = () => {
             setIsSearch={setIsSearch}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            dateType={dateType}
+            setDateType={setDateType}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

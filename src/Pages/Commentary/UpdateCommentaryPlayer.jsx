@@ -16,6 +16,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import TeamPlayerCard from "./TeamPlayerCard";
+import { isEmpty } from "lodash";
 
 const PlayerCommentary = () => {
   const pageName = TAB_COMMENTARY;
@@ -34,13 +35,13 @@ const PlayerCommentary = () => {
   const [commentaryData, setCommentaryData] = useState(null);
   
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     if (commentaryId !== "0") {
       fetchData(commentaryId);
     }
-  }, []);
+  }, [permissionObj]);
 
   const fetchData = async (commentaryId) => {
     setIsDataLoading(true);

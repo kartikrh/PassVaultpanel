@@ -127,6 +127,19 @@ export const convertDateUTCToLocal2 = (UTCDate, page, format) => {
   return "";
 }
 
+export const convertDateUtcFormat = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === 'index') {
+      return moment.utc(UTCDate).format("DD/MM/YY, h:mm:ss.SSS a");
+    }
+    if (format) {
+      return moment.utc(UTCDate).format(`${format}.SSS`);
+    }
+    return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm:ss.SSS");
+  }
+  return "";
+};
+
 export const convertDateUTCToLocalWithoutSec = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {
@@ -161,8 +174,8 @@ export function compareNumStringValues(value1, value2) {
   return !isNaN(numValue1) && !isNaN(numValue2) && numValue1 === numValue2;
 }
 
-export const checkPermission = async (permissionObj, tabName, permissionType) => {
-  const isPermission = await permissionObj[tabName]?.[permissionType] || false
+export const checkPermission = (permissionObj, tabName, permissionType) => {
+  const isPermission = permissionObj[tabName]?.[permissionType] || false
   return isPermission;
 }
 

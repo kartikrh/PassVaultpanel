@@ -43,14 +43,14 @@ export const CommentaryFeatures = () => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
             navigate("/dashboard")
         }
         dispatch(clearLoadingAndError())
         return () => {
             dispatch(clearLoadingAndError())
         }
-    }, []);
+    }, [permissionObj]);
 
     useEffect(() => {
         if (commentaryId !== "0") fetchData(commentaryId);
