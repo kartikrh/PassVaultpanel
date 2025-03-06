@@ -8,7 +8,7 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import {
   ERROR,
   MODULE_SEND_MAIL_CONFIG,
@@ -371,11 +371,11 @@ const Index = () => {
       });
   };
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [permissionObj]);
 
   return (
     <React.Fragment>

@@ -19,6 +19,7 @@ import { ChangeSessionResult } from "../../components/Model/ChangeSessionResult"
 import { Tooltip } from "antd";
 import SetResultModal from "./SetResultModal";
 import CancelModal from "./CancelModal";
+import { isEmpty } from "lodash";
 
 const Index = () => {
   const pageName = TAB_SET_SESSION_RESULT;
@@ -442,12 +443,12 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
     fetchMarketCategoriesList();
-  }, [isSearch, ratesource]);
+  }, [isSearch, ratesource, permissionObj]);
 
   useEffect(()=>{
     if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId){

@@ -16,6 +16,7 @@ import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
+import { isEmpty } from "lodash";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LOGS;
@@ -309,11 +310,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();
