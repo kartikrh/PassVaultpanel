@@ -390,8 +390,8 @@ const Index = forwardRef(
           setFilteredData(updatedData);
           setTotal(updatedData.length);
         } else {
-          setTotal(data.length);
-          setFilteredData(data);
+          setTotal(dataSource.length);
+          setFilteredData(dataSource);
         }
       } else if (tableElement.title === "Auto Events") {
         const updatedData = dataSource.filter((val) => {
