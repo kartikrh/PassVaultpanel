@@ -8,6 +8,8 @@
     }
 
     .table-light {
+        position: relative !important;
+        z-index: 0 !important;
         color: $body-color;
         border-color: $table-border-color;
         background-color: $table-head-bg;
