@@ -108,6 +108,17 @@ export const OpenMarket = () => {
         }
     };
 
+    const upSendMarket = async (payload) => {
+        try {
+            const response = await axiosInstance.post("/admin/eventMarket/upSendMarket", payload);
+            if(response?.result) {
+               dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
+    };
+
     useEffect(() => {
         if (debouncedLineRatio && isLineRatioInitialized !== debouncedLineRatio) {
             const payload = {
@@ -620,6 +631,29 @@ export const OpenMarket = () => {
 
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
+          if (action === "SEND_ALL") {
+               const eventMarketIds = dataToUpdate.map(record => record.marketId);
+               const payload = { eventMarketId: eventMarketIds, isSendData: true }
+               await upSendMarket(payload);
+               // Update local state after successful API call
+               setData(prevData =>
+                    prevData.map(market => {
+                        const updatedMarket = dataToUpdate.find(u => u.marketId === market.marketId);
+                        if (updatedMarket) {
+                            return {
+                                ...market,
+                                [key]: value,
+                                // Also update runner status in local state
+                                runner: key === "status" ? market.runner.map(runner => ({
+                                   ...runner,
+                                   status: +value
+                                })) : market.runner
+                            };
+                        }
+                        return market;
+                    })
+                );
+          } else {
             await saveData({ dataToSave: dataToUpdate, action });
 
             // Update local state after successful API call
@@ -640,6 +674,7 @@ export const OpenMarket = () => {
                     return market;
                 })
             );
+          }
         } else {
             dispatch(updateToastData({ data: "No records to update", title: "Update Skipped", type: WARNING }));
         }

@@ -179,6 +179,21 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Start Date",
+      dataIndex: "reqStartTime",
+      render: (text, record) => (
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+          }
+        </span>
+      ),
+      key: "reqStartTime",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Request Body",
       dataIndex: "requestBody",
       render: (text, record) => {
@@ -248,7 +263,7 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
-      title: "Date",
+      title: "Finished Date",
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
