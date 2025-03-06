@@ -7,7 +7,7 @@ import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
@@ -27,6 +27,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
+  const [CompetitionId, setCompetitionId] = useState(0);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
     endDate: `${
@@ -304,13 +305,13 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard")
     }
     fetchData({ isActive: true });
     fetchEventTypeData();
     fetchCompetitionData();
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();
@@ -337,6 +338,7 @@ const Index = () => {
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addEvents"}
+            setCompetitionId={setCompetitionId}
             setDateRange = {setDateRange}
             dateRange = {dateRange}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
