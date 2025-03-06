@@ -11,6 +11,7 @@ import {
   PERMISSION_VIEW,
   TAB_PREDICTOR_LOGS,
 } from "../../components/Common/Const";
+import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
@@ -332,11 +333,12 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    console.log("!checkPermission(permissionObj, pageName, PERMISSION_VIEW)", !checkPermission(permissionObj, pageName, PERMISSION_VIEW))
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();

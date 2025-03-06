@@ -9,6 +9,7 @@ import axiosInstance from "../../Features/axios";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
+import { isEmpty } from "lodash";
 
 function ScoringLogs() {
   const pageName = TAB_SCORING_LOGS;
@@ -249,11 +250,11 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();
