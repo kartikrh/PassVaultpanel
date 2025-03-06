@@ -19,6 +19,7 @@ const DataproviderPage = () => {
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
     const navigate = useNavigate();
+    document.title = "Traders";
 
     const [openEventTypes, setEventTypes] = useState([]);
     const [openCompetition, setOpenCompetition] = useState([]);
