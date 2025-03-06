@@ -313,9 +313,9 @@ const Index = () => {
   }, []);
 
   const handleReload = (value) => {
-    fetchData({ isActive: true });
-    fetchEventTypeData();
-    fetchCompetitionData();
+    fetchData();
+    // fetchEventTypeData();
+    // fetchCompetitionData();
   };
   return (
     <React.Fragment>

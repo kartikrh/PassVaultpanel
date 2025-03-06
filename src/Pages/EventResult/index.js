@@ -31,6 +31,7 @@ const Index = () => {
   const [cancelCalculateModelVisable, setCancelCalculateModelVisable] = useState(false);
   const [competitions, setCompetitions] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [CompetitionId, setCompetitionId] = useState(0);
   const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -53,18 +54,19 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     let payload = {
-      ...(latestValueFromTable || tableActions),
+      ...data,
       page: currentPage+1,
       limit: pageSize,
     }
     if(competitionId !== 0 || teamId !== 0) {
       payload = {
-        ...(latestValueFromTable || tableActions),
+        ...data,
         page: currentPage+1,
         limit: pageSize,
         competitionId: competitionId,
-        teamId: teamId ? teamId : latestValueFromTable?.teamId,
+        teamId: teamId ? teamId : data?.teamId,
       };
     }
     if (isSearch) {
@@ -378,15 +380,15 @@ const Index = () => {
   }, []);
 
   const handleReset = (value) => {
-    fetchData({ isActive: true });
+    fetchData(value);
     fetchCompetitionData();
     fetchTeamData();
   };
 
   const handleReload = (value) => {
-    fetchData({ isActive: true });
-    fetchCompetitionData();
-    fetchTeamData();
+    fetchData();
+    // fetchCompetitionData();
+    // fetchTeamData();
   };
 
   const title = (competitionDetails?.teamName || competitionDetails?.competition)
@@ -423,6 +425,7 @@ const Index = () => {
             setServerPageSize={setPageSize}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            setCompetitionId={setCompetitionId}
           />
           <CancelCalculationModel
             cancelCalculateModelVisable={cancelCalculateModelVisable}

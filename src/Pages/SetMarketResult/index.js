@@ -73,19 +73,20 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     setEventTypeActive(tableActions?.isActive)
     let payload = {
-      ...(latestValueFromTable || tableActions),
-      rateSourceRefId : latestValueFromTable?.rateSourceRefId || ratesource?.rateSourceRefId,
-      marketTypeId: latestValueFromTable?.marketTypeId || 0,
-      marketTypeCategoryId: latestValueFromTable?.marketTypeId !== selectedMarketType ? 0 : latestValueFromTable?.marketTypeCategoryId || 0,
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
-      commentaryId: (latestValueFromTable?.competitionId !== competitionId || latestValueFromTable?.eventTypeId !== eventTypeId) ? 0 : latestValueFromTable?.commentaryId || 0,
+      ...data,
+      rateSourceRefId : data?.rateSourceRefId || ratesource?.rateSourceRefId,
+      marketTypeId: data?.marketTypeId || 0,
+      marketTypeCategoryId: data?.marketTypeId !== selectedMarketType ? 0 : data?.marketTypeCategoryId || 0,
+      eventTypeId: data?.eventTypeId || 0,
+      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      commentaryId: (data?.competitionId !== competitionId || data?.eventTypeId !== eventTypeId) ? 0 : data?.commentaryId || 0,
     };
     if(commentaryId !== 0) {
       payload = {
-        ...(latestValueFromTable || tableActions),
+        ...data,
         commentaryId: commentaryId
       };
     }
@@ -96,7 +97,7 @@ const Index = () => {
         endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       };
     }
-    if (latestValueFromTable?.eventTypeId === null) {
+    if (data?.eventTypeId === null) {
       payload.competitionId = null;
       payload.commentaryId = null;
     }
@@ -440,7 +441,7 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    fetchMarketCategoriesList();
+    // fetchMarketCategoriesList();
   };
 
   useEffect(() => {

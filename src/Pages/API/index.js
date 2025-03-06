@@ -43,9 +43,10 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     await axiosInstance
       .post(`/admin/api/all`, {
-        ...(latestValueFromTable || tableActions),
+        ...data,
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.apiId - b?.apiId);

@@ -59,17 +59,19 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
+    console.log("data", data)
     let payload = {
-      ...(latestValueFromTable || tableActions),
+      ...data,
       page: currentPage+1,
       limit: pageSize,
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
-      commentaryId: (latestValueFromTable?.eventTypeId !== eventTypeId || latestValueFromTable?.competitionId !== competitionId) ? 0 : latestValueFromTable?.commentaryId || 0,
+      eventTypeId: data?.eventTypeId || 0,
+      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
     }
     if(commentaryId !== 0) {
       payload = {
-        ...(latestValueFromTable || tableActions),
+        ...(data || tableActions),
         page: currentPage+1,
         limit: pageSize,
         commentaryId: commentaryId
@@ -98,11 +100,11 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (latestValueFromTable?.eventTypeId) {
-      fetchCompetitionData(latestValueFromTable?.eventTypeId);
+    if (data?.eventTypeId && latestValueFromTable) {
+      fetchCompetitionData(data?.eventTypeId);
     }
-    if(latestValueFromTable?.competitionId) {
-      fetchCommentaryData(latestValueFromTable?.competitionId);
+    if(data?.competitionId && latestValueFromTable) {
+      fetchCommentaryData(data?.competitionId);
     }
   };
   useEffect(() => {
@@ -326,13 +328,13 @@ const Index = () => {
   }, []);
 
   const handleReset = (value) => {
-    fetchData({ isActive: true });
+    fetchData();
     fetchEventTypeData();
   };
 
   const handleReload = (value) => {
-    fetchData({ isActive: true });
-    fetchEventTypeData();
+    fetchData();
+    // fetchEventTypeData();
   };
 
   return (

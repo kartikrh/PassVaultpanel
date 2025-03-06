@@ -815,7 +815,7 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    fetchMarketCategoriesList();
+    // fetchMarketCategoriesList();
   };
 
   useEffect(() => {
