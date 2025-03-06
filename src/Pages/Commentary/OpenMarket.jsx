@@ -109,12 +109,17 @@ export const OpenMarket = () => {
     };
 
     const upSendMarket = async (payload) => {
+        setIsLoading(true);
         try {
             const response = await axiosInstance.post("/admin/eventMarket/upSendMarket", payload);
             if(response?.result) {
+               setIsKeyPressed(false);
+               setIsLoading(false);
                dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
             }
         } catch (error) {
+            setIsKeyPressed(false);
+            setIsLoading(false);
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         }
     };

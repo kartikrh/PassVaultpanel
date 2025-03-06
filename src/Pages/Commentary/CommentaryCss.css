@@ -226,6 +226,10 @@
   z-index: 99;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .player-header,
 .section-header {
   background: lightgray;
@@ -587,6 +591,25 @@
 
 .category-list {
   padding-left: 10px;
+}
+
+.event-col {
+  width: 60%;
+}
+
+.date-status {
+  width: 20%;
+  font-size: 12px;
+}
+
+.event-status {
+  color: #fff;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 10px;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
 }
 
 .event-market-modal .modal-dialog {
