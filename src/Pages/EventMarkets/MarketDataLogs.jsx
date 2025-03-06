@@ -33,14 +33,15 @@ function MarketDataLogs() {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     await axiosInstance
       .post("/admin/eventMarket/getDSReport", {
-        ...(latestValueFromTable || tableActions), 
+        ...data,
         eventMarketId,
         page: currentPage+1,
         limit: pageSize,
-        isSendData: latestValueFromTable?.isSendData,
-        createdType: latestValueFromTable?.createdType,
+        isSendData: data?.isSendData,
+        createdType: data?.createdType,
       })
       .then((response) => {
         setTotal(response?.result?.totalRecords || 0); 

@@ -831,71 +831,15 @@ const Index = forwardRef(
     const handleTableReload = (e) => {
       e.preventDefault();
       setSearchTerm("");
-      setTableActions({
-        isActive: true,
-      });
-      setSelectedTableElements({
-        rateSourceType: {
-          value: 1,
-          label: "Ratesource",
-        },
-        eventName: {
-          value: 0,
-          label: "Event List",
-        },
-        competition: {
-          value: 0,
-          label: "Competition",
-        },
-        commentary: {
-          value: 0,
-          label: "Commentary",
-        },
-        eventType: {
-          value: 0,
-          label: "Event Type",
-        },
-        matchType: {
-          value: 0,
-          label: "Match Type",
-        },
-        commentaryStatus: {
-          value: 0,
-          label: "Commentary Status",
-        },
-        displayType: {
-          value: 0,
-          label: "Display Type",
-        },
-        team: {
-          value: 0,
-          label: "Select Team",
-        },
-        statusType: {
-          value: 0,
-          label: "Select Status"
-        },
-        videoType: {
-          value: 0,
-          label: "Select Video Type"
-        },
-        createdTypeName: {
-          value: 0,
-          label: "Created Type"
-        },
-        sendDataType: {
-          value: 0,
-          label: "Send Data Type"
-        },
-        marketTypeName: {
-          value: 0,
-          label: "Market Type"
-        },
-        categoryName: {
-          value: 0,
-          label: "Category"
-        },
-      });
+      console.log("prevElements", selectedTableElements)
+      // setTableActions({
+      //   isActive: true,
+      // });
+    
+      setSelectedTableElements((prevElements) => ({
+        ...prevElements, // Retain previous state
+      }));
+    
       if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
         setDateRange(() => getDateRange(5));
       } else if (tableElement?.dateRange) {
@@ -904,6 +848,7 @@ const Index = forwardRef(
           endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
         });
       }
+    
       setStatusSwitch(true);
       if (tableElement?.rateSourceListSelect) {
         handleReload({
@@ -916,6 +861,96 @@ const Index = forwardRef(
         });
       }
     };
+    
+
+    // const handleTableReload = (e) => {
+    //   e.preventDefault();
+    //   setSearchTerm("");
+    //   setTableActions({
+    //     isActive: true,
+    //   });
+    //   setSelectedTableElements({
+    //     rateSourceType: {
+    //       value: 1,
+    //       label: "Ratesource",
+    //     },
+    //     eventName: {
+    //       value: 0,
+    //       label: "Event List",
+    //     },
+    //     competition: {
+    //       value: 0,
+    //       label: "Competition",
+    //     },
+    //     commentary: {
+    //       value: 0,
+    //       label: "Commentary",
+    //     },
+    //     eventType: {
+    //       value: 0,
+    //       label: "Event Type",
+    //     },
+    //     matchType: {
+    //       value: 0,
+    //       label: "Match Type",
+    //     },
+    //     commentaryStatus: {
+    //       value: 0,
+    //       label: "Commentary Status",
+    //     },
+    //     displayType: {
+    //       value: 0,
+    //       label: "Display Type",
+    //     },
+    //     team: {
+    //       value: 0,
+    //       label: "Select Team",
+    //     },
+    //     statusType: {
+    //       value: 0,
+    //       label: "Select Status"
+    //     },
+    //     videoType: {
+    //       value: 0,
+    //       label: "Select Video Type"
+    //     },
+    //     createdTypeName: {
+    //       value: 0,
+    //       label: "Created Type"
+    //     },
+    //     sendDataType: {
+    //       value: 0,
+    //       label: "Send Data Type"
+    //     },
+    //     marketTypeName: {
+    //       value: 0,
+    //       label: "Market Type"
+    //     },
+    //     categoryName: {
+    //       value: 0,
+    //       label: "Category"
+    //     },
+    //   });
+    //   if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
+    //     setDateRange(() => getDateRange(5));
+    //   } else if (tableElement?.dateRange) {
+    //     setDateRange({
+    //       startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    //       endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
+    //     });
+    //   }
+    //   setStatusSwitch(true);
+    //   if (tableElement?.rateSourceListSelect) {
+    //     handleReload({
+    //       isActive: true,
+    //       rateSourceRefId: 1,
+    //     });
+    //   } else {
+    //     handleReload({
+    //       isActive: true,
+    //     });
+    //   }
+    // };
 
     const getTableAction = () => {
       return tableActions;

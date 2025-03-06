@@ -7,7 +7,7 @@ import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { ERROR, MODULE_MARKET_TEMPLATE, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_MARKET_TEMPLATE } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -43,11 +43,12 @@ const Index = () => {
   const fetchData = async (value) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
+    const data = value || tableActions
     await axiosInstance
       .post(`/admin/marketTemplate/all`, {
-        ...(value || tableActions),
-        marketTypeId: value?.marketTypeId || 0,
-        marketTypeCategoryId: value?.marketTypeId !== selectedMarketType ? 0 : value?.marketTypeCategoryId || 0,
+        ...data,
+        marketTypeId: data?.marketTypeId || 0,
+        marketTypeCategoryId: data?.marketTypeId !== selectedMarketType ? 0 : data?.marketTypeCategoryId || 0,
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.marketTemplateId - b?.marketTemplateId);
@@ -557,13 +558,13 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard")
     }
     fetchData({ isActive: true });
     fetchMatchTypeList();
     fetchMarketCategoriesList();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if(mtAndCategories && selectedMarketType) {
@@ -575,9 +576,9 @@ const Index = () => {
   },[mtAndCategories, selectedMarketType]);
 
   const handleReload = (value) => {
-    fetchData({ isActive: true });
-    fetchMatchTypeList();
-    fetchMarketCategoriesList();
+    fetchData();
+    // fetchMatchTypeList();
+    // fetchMarketCategoriesList();
   };
   return (
     <React.Fragment>

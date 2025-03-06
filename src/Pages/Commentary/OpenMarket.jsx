@@ -37,7 +37,7 @@ export const OpenMarket = () => {
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
     const [isScorecardShow, setIsScorecardShow] = useState(true);
-    const [isKeyPressed, setIsKeyPressed] = useState(undefined);
+    const [isKeyPressed, setIsKeyPressed] = useState(false);
     const [ballStatus, setBallStatus] = useState(null);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
@@ -109,12 +109,17 @@ export const OpenMarket = () => {
     };
 
     const upSendMarket = async (payload) => {
+        setIsLoading(true);
         try {
             const response = await axiosInstance.post("/admin/eventMarket/upSendMarket", payload);
             if(response?.result) {
+               setIsKeyPressed(false);
+               setIsLoading(false);
                dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
             }
         } catch (error) {
+            setIsKeyPressed(false);
+            setIsLoading(false);
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         }
     };
@@ -758,7 +763,7 @@ export const OpenMarket = () => {
         } catch (error) {
             console.error('Save failed:', error);
             setIsLoading(false);
-            setIsKeyPressed(false)
+            setIsKeyPressed(false);
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         }
     };

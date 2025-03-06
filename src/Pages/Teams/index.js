@@ -298,7 +298,7 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    fetchEventTypeData()
+    // fetchEventTypeData()
   };
 
   return (

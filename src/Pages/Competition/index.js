@@ -34,12 +34,13 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
-    const isDragValue = latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : isDrag;
+    const data = latestValueFromTable || tableActions
+    const isDragValue = data?.isTrending !== undefined ? data?.isTrending : isDrag;
     setIsDrag(isDragValue);
     await axiosInstance
       .post(`/admin/competition/all`, {
-        ...(latestValueFromTable || tableActions),
-        isTrending: latestValueFromTable?.isTrending !== undefined ? latestValueFromTable?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : false
+        ...data,
+        isTrending: data?.isTrending !== undefined ? data?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : false
       })
       .then((response) => {
         const apiData = [...response?.result]?.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -434,7 +435,7 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    fetchEventTypeData();
+    // fetchEventTypeData();
   };
   return (
     <React.Fragment>
