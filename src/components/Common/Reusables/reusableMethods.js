@@ -127,6 +127,19 @@ export const convertDateUTCToLocal2 = (UTCDate, page, format) => {
   return "";
 }
 
+export const convertDateUtcFormat = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === 'index') {
+      return moment.utc(UTCDate).format("DD/MM/YY, h:mm:ss.SSS a");
+    }
+    if (format) {
+      return moment.utc(UTCDate).format(`${format}.SSS`);
+    }
+    return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm:ss.SSS");
+  }
+  return "";
+};
+
 export const convertDateUTCToLocalWithoutSec = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {

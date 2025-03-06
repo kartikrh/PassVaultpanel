@@ -80,6 +80,8 @@ const Index = forwardRef(
       reFetchData,
       delay,
       setDelay,
+      dateType,
+      setDateType,
       handleDelay,
       sendDataList,
       createdTypeList,
@@ -2014,6 +2016,24 @@ const Index = forwardRef(
                               {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                             </button>
                           </div>
+                        ) : null}
+                        {tableElement?.isDateTypeSelect ? (
+                          <Select
+                            value={dateType}
+                            placeholder="Date Type"
+                            styles={{
+                              control: (provided) => ({
+                                ...provided,
+                                width: 200,
+                              }),
+                            }}
+                            onChange={(e) => setDateType(e)}
+                            options={[
+                              { label: "Local Timezone", value: 1 },
+                              { label: "UTC Timezone", value: 2 },
+                            ]}
+                            classNamePrefix="filter-dropdown"
+                          />
                         ) : null}
                         {/* {tableElement?.isDataprovider ? (
                           <Button
