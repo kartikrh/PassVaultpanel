@@ -425,7 +425,7 @@ const Index = () => {
 
   const handleReload = (value) => {
     fetchData();
-    handleSignalRCheckStatus()
+    // handleSignalRCheckStatus()
   };
   return (
     <React.Fragment>
