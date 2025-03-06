@@ -13,7 +13,7 @@ import {
   CardBody,
 } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -21,6 +21,8 @@ import {
   CONNECT,
   CONNECT_EVENT,
   ERROR,
+  PERMISSION_VIEW,
+  TAB_DATA_PROVIDER,
   UPDATE_EVENT,
 } from "../../components/Common/Const";
 import { io } from "socket.io-client";
@@ -30,11 +32,11 @@ import { loadInit } from "../../config";
 import { useNavigate } from "react-router-dom";
 
 const EventDetails = () => {
+  const pageName = TAB_DATA_PROVIDER;
   const [eventInfo, setEventInfo] = useState([]);
   const [marketsGrouped, setMarketsGrouped] = useState({});
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
-  const [marketTypes, setMarketTypes] = useState([]);
   const marketTypeObj = useSelector(
     (state) => state.marketType?.marketTypeList
   );
@@ -42,39 +44,44 @@ const EventDetails = () => {
   const [openInactiveMarkets, setOpenInactiveMarkets] = useState([]);
   const [openCategories, setOpenCategories] = useState([]);
   const [isScorecardShow, setIsScorecardShow] = useState(false);
-  const [socketUrl, setSocketUrl] = useState(null);
-  const [apiXkey, setApiXkey] = useState(null);
-  const [apiURL, setApiURL] = useState(null);
-  const event = JSON.parse(sessionStorage.getItem("selectedMatch") || "{}");
+  const [apiConfig, setApiConfig] = useState({
+    socketUrl: null,
+    apiXkey: null,
+    apiURL: null
+  });
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const eventId = +sessionStorage.getItem("dataproviderEventId") || "0";
+  const eventDetails = JSON.parse(
+    sessionStorage.getItem("dataproviderEventDetails") || "{}"
+  );
   let scorecardFrameUrl = loadInitData.find(
     (item) => item.key === loadInit.SCORECARD_FRAME_URL
   )?.value;
   if (scorecardFrameUrl) {
-    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", event?.eventId);
+    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", eventId);
   }
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useRef(null);
 
   useEffect(() => {
-    if (!isEmpty(event))
-      document.title = `View Market - ${event?.eventName} [${event?.eventId}]`;
-  }, [event]);
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+      navigate("/dashboard");
+    }
+  }, [permissionObj]);
+
+  useEffect(() => {
+    if (!isEmpty(eventDetails))
+      document.title = `View Market - ${eventDetails?.eventName} [${eventDetails?.eventId}]`;
+  }, [eventDetails]);
 
   useEffect(() => {
     if (loadInitData) {
-      const dpSocketUrl = loadInitData.find(
-        (config) => config.key === "DPSOCKETURL"
-      )?.value;
-      const dpApiXkey = loadInitData.find(
-        (config) => config.key === "DPAPIXKEY"
-      )?.value;
-      const dpApiURL = loadInitData.find(
-        (config) => config.key === "DPAPIURL"
-      )?.value;
-      setSocketUrl(dpSocketUrl);
-      setApiXkey(dpApiXkey);
-      setApiURL(dpApiURL);
+      setApiConfig({
+        socketUrl: loadInitData.find((config) => config.key === "DPSOCKETURL")?.value,
+        apiXkey: loadInitData.find((config) => config.key === "DPAPIXKEY")?.value,
+        apiURL: loadInitData.find((config) => config.key === "DPAPIURL")?.value
+      });
     }
   }, [loadInitData]);
 
@@ -85,7 +92,6 @@ const EventDetails = () => {
         .then((response) => {
           if (response?.result) {
             setCategories(response.result?.categories || []);
-            setMarketTypes(response.result?.marketTypes || []);
           }
         })
         .catch((error) => {
@@ -125,11 +131,11 @@ const EventDetails = () => {
   useEffect(() => {
     const fetchData = async (eventId) => {
       try {
-        const response = await fetch(`${apiURL}/api/eventInfo`, {
+        const response = await fetch(`${apiConfig.apiURL}/api/eventInfo`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Key": apiXkey,
+            "X-Key": apiConfig.apiXkey,
           },
           body: JSON.stringify({ eventId }),
         });
@@ -148,15 +154,14 @@ const EventDetails = () => {
         setLoading(false);
       }
     };
-    if (apiURL && apiXkey && event?.eventId) {
-      fetchData(event.eventId);
+    if (apiConfig.apiURL && apiConfig.apiXkey && eventId) {
+      fetchData(eventId);
     }
-  }, [apiURL, apiXkey, event?.eventId]);
+  }, [apiConfig.apiURL, apiConfig.apiXkey, eventId]);
 
   useEffect(() => {
     if (
       eventInfo.length > 0 &&
-      marketTypes.length > 0 &&
       categories.length > 0
     ) {
       const data = groupMarkets(eventInfo);
@@ -165,7 +170,7 @@ const EventDetails = () => {
       setOpenCategories(allCategoryIds);
       // setOpenInactiveMarkets(allCategoryIds);
     }
-  }, [eventInfo, marketTypes, categories]);
+  }, [eventInfo, categories]);
 
   const configSocket = (eventId) => {
     socket.current.emit(CONNECT_EVENT, {
@@ -209,19 +214,22 @@ const EventDetails = () => {
   };
 
   useEffect(() => {
-    if (socketUrl) {
-      socket.current = io.connect(socketUrl, {
+    if (apiConfig.socketUrl) {
+      socket.current = io.connect(apiConfig.socketUrl, {
         transports: ["websocket"],
       });
 
-      if (event?.eventId) {
-        if (socket.current?.connected) {
-          configSocket(event.eventId);
-        } else {
-          socket.current.on(CONNECT, () => {
-            configSocket(event.eventId);
-          });
-        }
+      // if (eventId) {
+      //   if (socket.current?.connected) {
+      //     configSocket(eventId);
+      //   } else {
+      //     socket.current.on(CONNECT, () => {
+      //       configSocket(eventId);
+      //     });
+      //   }
+      // }
+      if (eventId) {
+        socket.current.on(CONNECT, () => configSocket(eventId));
       }
     }
     // return () => {
@@ -229,7 +237,7 @@ const EventDetails = () => {
     //       socket.current.disconnect();
     //     }
     // };
-  }, [socketUrl, event?.eventId]);
+  }, [apiConfig.socketUrl, eventId]);
   const toggleInactiveMarket = (id) => {
     setOpenInactiveMarkets((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -462,11 +470,11 @@ const EventDetails = () => {
                 <Row>
                   <Col>
                     <h5>
-                      {event?.eventName} [
-                      {convertDateUTCToLocal(event?.eventDate, "index")}]
+                      {eventDetails?.eventName} [
+                      {convertDateUTCToLocal(eventDetails?.eventDate, "index")}]
                     </h5>
                     <p>
-                      {event?.eventType} / {event?.competition}
+                      {eventDetails?.eventType} / {eventDetails?.competition}
                     </p>
                   </Col>
                   <Col className="d-flex justify-content-end align-items-center">
