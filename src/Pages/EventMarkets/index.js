@@ -7,7 +7,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import {
   TAB_EVENT_MARKETS,
   PERMISSION_ADD,
@@ -806,12 +806,12 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
     fetchMarketCategoriesList();
-  }, [isSearch, ratesource]);
+  }, [isSearch, ratesource, permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

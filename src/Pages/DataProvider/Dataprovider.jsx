@@ -3,21 +3,31 @@ import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table, Containe
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
 import { useSelector } from 'react-redux';
-import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
+import { checkPermission, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from 'react-router-dom';
+import { TAB_DATA_PROVIDER, PERMISSION_VIEW } from '../../components/Common/Const';
+import { isEmpty } from 'lodash';
 
 const DataproviderPage = () => {
+    const pageName = TAB_DATA_PROVIDER;
     const [events, setEvents] = useState([]);
     const [groupedEvents, setGroupedEvents] = useState({});
     const [loading, setLoading] = useState(true);
     const [apiXkey, setApiXkey] = useState(null);
     const [apiURL, setApiURL] = useState(null);
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+    const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
     const navigate = useNavigate();
 
     const [openEventTypes, setEventTypes] = useState([]);
     const [openCompetition, setOpenCompetition] = useState([]);
+
+    useEffect(() => {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+          navigate("/dashboard");
+        }
+      }, [permissionObj]);
 
     const toggleEventType = (id) => {
         setEventTypes((prev) =>

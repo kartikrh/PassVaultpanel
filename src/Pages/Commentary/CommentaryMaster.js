@@ -207,10 +207,11 @@ function CommentaryMaster() {
   }, [commentaryId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]); // Runs again when permissionObj updates
+  
 
   useEffect(() => {
     if (isCommentaryDataUpdated && currentScreen !== 3) {

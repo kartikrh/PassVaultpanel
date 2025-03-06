@@ -6,7 +6,7 @@ import { updateToastData } from "../../Features/toasterSlice"
 import { ERROR, PERMISSION_VIEW, STRING_SEPERATOR, TAB_COMMENTARY, WARNING } from "../../components/Common/Const"
 import ShortCommentaryScreen from "./ShortCommentary.jsx"
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { isEqual } from "lodash"
+import { isEmpty, isEqual } from "lodash"
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
 import { clearLoadingAndError } from "../../Features/Tabs/commentarySlice.js"
 
@@ -25,11 +25,11 @@ export const ShortCommentary = () => {
     let navigate = useNavigate();
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
             navigate("/dashboard")
         }
         dispatch(clearLoadingAndError())
-    }, []);
+    }, [permissionObj]);
 
     useEffect(() => {
         if (commentaryId !== "0") fetchData(commentaryId);

@@ -1256,6 +1256,7 @@
   }
 
   .card-body {
+    z-index: 0 !important;
     /* flex: 1 1 auto; */
     /* padding: 4px 6px !important; */
   }
