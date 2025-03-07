@@ -13,6 +13,7 @@ import {
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { isEmpty } from "lodash";
 
 const Index = () => {
   const pageName = TAB_THIRDPARTY_LOGS;
@@ -143,11 +144,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

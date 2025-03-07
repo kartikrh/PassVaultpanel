@@ -31,6 +31,7 @@ import {
 
 const Index = () => {
   const pageName = TAB_AUTO_EVENT;
+  const globalPageSize = localStorage.getItem("pageSize")
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =
@@ -52,7 +53,7 @@ const Index = () => {
   const [eventTypeRefId, setEventTypeRefId] = useState("");
   const [StickHeader,setStickHeader] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
   const [tournamentObject, setTournamentObject] = useState({
     competitionId: 0,

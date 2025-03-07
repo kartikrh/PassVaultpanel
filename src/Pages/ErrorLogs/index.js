@@ -14,12 +14,14 @@ import {
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
+import { isEmpty } from "lodash";
 
 const Index = () => {
   const pageName = TAB_ERROR_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Error Logs";
+  const globalPageSize = localStorage.getItem("pageSize")
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +36,7 @@ const Index = () => {
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
@@ -179,11 +181,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

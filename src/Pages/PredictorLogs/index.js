@@ -20,6 +20,7 @@ import { mapCommentaryStatus } from "../Commentary/functions";
 
 const Index = () => {
   const pageName = TAB_PREDICTOR_LOGS;
+  const globalPageSize = localStorage.getItem("pageSize")
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Predictor Logs";
@@ -44,7 +45,7 @@ const Index = () => {
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -334,7 +335,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    console.log("!checkPermission(permissionObj, pageName, PERMISSION_VIEW)", !checkPermission(permissionObj, pageName, PERMISSION_VIEW))
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
