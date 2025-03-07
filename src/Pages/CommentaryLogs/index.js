@@ -16,7 +16,7 @@ import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDa
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 
 const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
@@ -44,6 +44,11 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
+  const [cloneValues, setCloneValues] = useState({
+      eventName: "",
+      eventRefId: "",
+  });
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
@@ -92,6 +97,7 @@ const Index = () => {
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.id);
         });
+        setDataIndexList(logsDataIdList);
         setData(logsData);
         setTotal(response?.result?.totalRecords || 0); 
         setCheckedList([]);
@@ -173,6 +179,54 @@ const Index = () => {
   };
   //table columns
   const columns = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className={`form-check d-flex align-items-center justify-between ${
+          checekedList.includes(record.id) ? "selected-row" : ""
+        }`}>
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.id)}
+            onChange={() => {
+              handleSingleCheck(record);
+              if (!checekedList.includes(record.id)) {
+                setCloneValues({
+                  eventName: record?.eventName,
+                  eventRefId: record?.eventRefId,
+                });
+              }
+            }}
+          />
+          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
+        </div>
+      ), // Use 'select' as a placeholder key for the checkbox column
+      key: "select",
+      style: { width: "2%" },
+    },
     {
       title: "Id",
       dataIndex: "id",
@@ -351,6 +405,17 @@ const Index = () => {
     fetchData();
     // fetchEventTypeData();
   };
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.id)) {
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.id
+      );
+    } else {
+      updateSingleCheck = [...checekedList, e.id];
+    }
+    setCheckedList(updateSingleCheck);
+  };
 
   return (
     <React.Fragment>
@@ -362,6 +427,7 @@ const Index = () => {
             ref={finalizeRef}
             columns={columns}
             dataSource={data}
+            dataIndexList={dataIndexList}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             eventTypes={eventTypes}
