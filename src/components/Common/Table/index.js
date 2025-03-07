@@ -123,13 +123,14 @@ const Index = forwardRef(
     },
     ref
   ) => {
+    const globalPageSize = localStorage.getItem("pageSize")
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
     });
     const [total, setTotal] = useState(dataSource.length);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(globalPageSize || 10);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -2677,7 +2678,7 @@ const Index = forwardRef(
                     </Col>
                   </Row>
                 ) : (
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-center no-data-available" >
                     <span style={{ color: "lightgray" }}>
                       No Data Available
                     </span>

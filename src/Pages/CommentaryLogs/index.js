@@ -19,6 +19,7 @@ import { mapCommentaryStatus } from "../Commentary/functions";
 import { isEmpty } from "lodash";
 
 const Index = () => {
+  const globalPageSize = localStorage.getItem("pageSize")
   const pageName = TAB_COMMENTARY_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
@@ -44,7 +45,7 @@ const Index = () => {
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -60,7 +61,6 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     const data = latestValueFromTable || tableActions
-    console.log("data", data)
     let payload = {
       ...data,
       page: currentPage+1,
