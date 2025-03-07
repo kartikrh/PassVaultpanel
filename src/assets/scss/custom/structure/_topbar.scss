@@ -102,8 +102,8 @@
 }
 
 .page-content {
-    min-height: 800px;
-    padding: calc(#{$header-height} + #{$grid-gutter-width}) calc(#{$grid-gutter-width} / 2) $footer-height
+    // min-height: 800px;
+    padding: calc(#{$header-height} + #{$grid-gutter-width}) calc(#{$grid-gutter-width} / 2) 0px
         calc(#{$grid-gutter-width} / 2);
 }
 .commentary-content {

@@ -15,6 +15,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
+  const globalPageSize = localStorage.getItem("pageSize")
   const pageName = TAB_TEAMS
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -27,7 +28,8 @@ const Index = () => {
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  console.log("pageSize", pageSize)
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -320,6 +322,8 @@ const Index = () => {
             eventTypes={eventTypes}
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}
+            setServerPageSize={setPageSize}
+            serverPageSize={pageSize}
             reFetchData={fetchData}
             setCompetitionId={setCompetitionId}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}

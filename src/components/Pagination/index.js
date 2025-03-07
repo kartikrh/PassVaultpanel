@@ -10,6 +10,7 @@ const Index = ({
 }) => {
   const shouldShowSizeChanger = total >= 10;
   const onShowSizeChange = (currentPage, pageSize) => {
+    localStorage.setItem("pageSize", pageSize)
     setPageSize(pageSize);
     setCurrentPage(currentPage - 1);
   };

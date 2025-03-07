@@ -22,6 +22,7 @@ import LoadDataModal from "../../components/Model/LoadDataModal";
 const Index = () => {
   const pageName = TAB_TABS
   const finalizeRef = useRef(null);
+  const globalPageSize = localStorage.getItem("pageSize")
   document.title = "Tabs";
   const { selectedTab, selectedTabHistory } = useSelector(state => state.tabsData?.tab);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -34,9 +35,8 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const displayTypes = [1, 2]
