@@ -11,7 +11,7 @@ import {
   PERMISSION_VIEW,
   TAB_PREDICTOR_LOGS,
 } from "../../components/Common/Const";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
@@ -39,6 +39,11 @@ const Index = () => {
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
+    const [dataIndexList, setDataIndexList] = useState([]);
+  const [cloneValues, setCloneValues] = useState({
+        eventName: "",
+        eventRefId: "",
+    });
   const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -92,6 +97,7 @@ const Index = () => {
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.id);
         });
+        setDataIndexList(logsDataIdList)
         setData(logsData);
         setTotal(response?.result?.totalRecords || 0); 
         setCheckedList([]);
@@ -172,8 +178,66 @@ const Index = () => {
       })
       .catch((error) => { });
   };
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.id)) {
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.id
+      );
+    } else {
+      updateSingleCheck = [...checekedList, e.id];
+    }
+    setCheckedList(updateSingleCheck);
+  };
   //table columns
   const columns = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.id)}
+            onChange={() => {
+              handleSingleCheck(record);
+              if (!checekedList.includes(record.id)) {
+                setCloneValues({
+                  eventName: record?.eventName,
+                  eventRefId: record?.eventRefId,
+                });
+              }
+            }}
+          />
+          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
+        </div>
+      ), // Use 'select' as a placeholder key for the checkbox column
+      key: "select",
+      style: { width: "2%" },
+    },
     {
       title: "Id",
       dataIndex: "id",

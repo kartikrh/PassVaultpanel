@@ -3,6 +3,10 @@
     color:white;
     /* cursor: pointer; */
 }
+.selected{
+  background-color: gray !important;
+  color:white !important; 
+}
 .hover .sticky-column {
   background-color: #ffff;
   position: sticky;
@@ -16,6 +20,9 @@ body[data-theme="dark"] {
   }
   .hover:hover .sticky-column {
     background-color: #202936;
+  }
+  .selected {
+    background-color: #202936 !important;
   }
 }
 
