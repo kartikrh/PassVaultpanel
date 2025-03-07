@@ -163,13 +163,13 @@ const DataproviderPage = () => {
                                                                       <td className='event-col p-2'>
                                                                         <b>{match.eventName}</b>
                                                                       </td>
-                                                                      <td className='date-status p-2'>
+                                                                      <td className='date-width p-2'>
+                                                                        {convertDateUTCToLocal(match.eventDate, "index")}
+                                                                      </td>
+                                                                      <td className='status-width p-2'>
                                                                         <span className="event-status" style={{backgroundColor: getStatusColor(match.status)}}> 
                                                                             {getStatusLabel(match.status)}
                                                                         </span>
-                                                                      </td>
-                                                                      <td className='date-status p-2'>
-                                                                        {convertDateUTCToLocal(match.eventDate, "index")}
                                                                       </td>
                                                                     </tr>
                                                                   )
