@@ -75,6 +75,11 @@ const AuthProtected = (props) => {
     }
   }, [isSocketConnected])
 
+  useEffect(() => {
+    if (!userProfile && !loading) {
+      navigate("/login", { replace: true });
+    }
+  }, [userProfile, loading]);
 
   if (!userProfile && loading) {
     return (
