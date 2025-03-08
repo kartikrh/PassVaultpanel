@@ -35,7 +35,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                                     value={updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo}
                                     onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
                                 />
-                                <Col xs={1} md={1} lg={2}>
+                                <Col xs={4} md={1} lg={2}>
                                     <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(partnershipInfo.commentaryPartnershipId)}>
                                         <i class="bi bi-trash"></i>
                                     </Button>
