@@ -594,10 +594,15 @@
 }
 
 .event-col {
-  width: 60%;
+  width: 40%;
 }
 
-.date-status {
+.date-width {
+  width: 40%;
+  font-size: 12px;
+}
+
+.status-width {
   width: 20%;
   font-size: 12px;
 }

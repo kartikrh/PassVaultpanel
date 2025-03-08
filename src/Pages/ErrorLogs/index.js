@@ -14,12 +14,14 @@ import {
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
+import { isEmpty, isEqual } from "lodash";
 
 const Index = () => {
   const pageName = TAB_ERROR_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Error Logs";
+  const globalPageSize = localStorage.getItem("pageSize")
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +36,14 @@ const Index = () => {
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
+  const [cloneValues, setCloneValues] = useState({
+        eventName: "",
+        eventRefId: "",
+    });
+    const [dataIndexList, setDataIndexList] = useState([]);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -61,6 +68,7 @@ const Index = () => {
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.errId);
         });
+        setDataIndexList(logsDataIdList)
         setData(logsData);
         setTotal(response?.result?.totalRecords || 0); 
         setCheckedList([]);
@@ -71,8 +79,68 @@ const Index = () => {
       });
   };
 
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.errId)) {
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.errId
+      );
+    } else {
+      updateSingleCheck = [...checekedList, e.errId];
+    }
+    setCheckedList(updateSingleCheck);
+  };
+
   //table columns
   const columns = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className={`form-check d-flex align-items-center justify-between ${
+          checekedList.includes(record.id) ? "selected-row" : ""
+        }`}>
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.errId)}
+            onChange={() => {
+              handleSingleCheck(record);
+              if (!checekedList.includes(record.errId)) {
+                setCloneValues({
+                  eventName: record?.eventName,
+                  eventRefId: record?.eventRefId,
+                });
+              }
+            }}
+          />
+          {/* <i className="bx bx-move ms-1 mt-1"></i> */}
+        </div>
+      ), // Use 'select' as a placeholder key for the checkbox column
+      key: "select",
+      style: { width: "2%" },
+    },
     {
       title: "Id",
       dataIndex: "errId",
@@ -179,11 +247,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize]);
+  },[isSearch, currentPage, pageSize, permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

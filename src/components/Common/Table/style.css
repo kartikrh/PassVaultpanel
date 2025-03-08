@@ -3,6 +3,10 @@
     color:white;
     /* cursor: pointer; */
 }
+.selected{
+  background-color: gray !important;
+  color:white !important; 
+}
 .hover .sticky-column {
   background-color: #ffff;
   position: sticky;
@@ -16,6 +20,9 @@ body[data-theme="dark"] {
   }
   .hover:hover .sticky-column {
     background-color: #202936;
+  }
+  .selected {
+    background-color: #202936 !important;
   }
 }
 
@@ -50,9 +57,27 @@ body[data-theme="dark"] {
 
 /* Table container with scroll */
 .table-responsive2 {
-  max-height: 550px;
+  /* max-height: 550px; */
   overflow-y: auto;
 }
+
+@media only screen and (min-width: 1280px) {
+  .no-data-available{
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+@media only screen and (min-width: 1024px)  and (max-width: 1279px) {
+  .no-data-available{
+    min-height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 
 /* Sticky table header */
 thead th {

@@ -70,7 +70,9 @@ const Login = (props) => {
 
   useEffect(() => {
     if (token && !isUserLogout) {
-      navigate('/dashboard')
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
     }
   }, [token])
 

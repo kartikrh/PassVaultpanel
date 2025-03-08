@@ -123,13 +123,14 @@ const Index = forwardRef(
     },
     ref
   ) => {
+    const globalPageSize = localStorage.getItem("pageSize")
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
       isActive: true,
     });
     const [total, setTotal] = useState(dataSource.length);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(globalPageSize || 10);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -831,7 +832,6 @@ const Index = forwardRef(
     const handleTableReload = (e) => {
       e.preventDefault();
       setSearchTerm("");
-      console.log("prevElements", selectedTableElements)
       // setTableActions({
       //   isActive: true,
       // });
@@ -955,6 +955,30 @@ const Index = forwardRef(
     const getTableAction = () => {
       return tableActions;
     };
+
+    useEffect(() => {
+      if (!data || data.length === 0) return;
+    
+      const idSet = new Set(singleCheck); // Convert array to Set for faster lookup
+    
+      setData(prevData =>
+        prevData.map((item) => {
+          // Find the first non-null ID in the given list
+          const itemId = item.id || item.commentaryId || item.competitionId || item.playerId || item.teamId ||
+                         item.paneltyId || item.eventTypeId || item.matchTypeId || item.marketTemplateId || 
+                         item.displayStatusId || item.newsId || item.bannerId || item.photoLibraryId 
+                          || item.eventMarketId || item.errId || item.notificationId || 
+                         item.vendorId || item.templateId || item.clientId || item.blockId || 
+                         item.configId || item.clientSocketId || item.apiId || item.apiEndPointId;
+    
+          return {
+            ...item,
+            isIncluded: idSet.has(itemId) // Check in Set instead of array for efficiency
+          };
+        })
+      );
+    }, [singleCheck, data]);
+    
 
     useEffect(() => {
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
@@ -2501,6 +2525,7 @@ const Index = forwardRef(
                                 //   (a, b) =>
                                 //     (a.displayOrder || 0) - (b.displayOrder || 0)
                                 // )
+                                
                                 .map((record, index) => (
                                   <Draggable
                                     key={index}
@@ -2512,7 +2537,7 @@ const Index = forwardRef(
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        className={`hover`}
+                                        className={`hover ${record.isIncluded && 'selected'}`}
                                       >
                                         {columns.map((column) => (
                                           <>
@@ -2611,7 +2636,7 @@ const Index = forwardRef(
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
                           <React.Fragment key={index}>
-                            <tr onClick={() => toggleRow(index)} className={tableElement.title === "Event Markets" ? "hover1" : "hover"} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
+                            <tr onClick={() => toggleRow(index)} className={`${tableElement.title === "Event Markets" ? "hover1" : "hover"} ${record.isIncluded ? "selected" : ""}`} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
                               {columns.map((column) => (
                                 <td key={column.key} style={{ color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), ...column.style }} className={column?.sticky && "sticky-column"}>
                                   {column.render
@@ -2677,7 +2702,7 @@ const Index = forwardRef(
                     </Col>
                   </Row>
                 ) : (
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-center no-data-available" >
                     <span style={{ color: "lightgray" }}>
                       No Data Available
                     </span>
