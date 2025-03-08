@@ -445,7 +445,7 @@ export const UpdateManualOdds = () => {
             O: '', P: ''
         },
         favRatio: 10,
-        tieProbability: 1.50
+        tieProbability: 1.90
     });
     const [selectedRunnerDetails, setSelectedRunnerDetails] = useState({
         runnerId: null,
