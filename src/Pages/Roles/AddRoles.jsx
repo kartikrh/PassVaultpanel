@@ -13,6 +13,7 @@ import { rearrangeTabs, transformData } from './helpers';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from '../../Features/toasterSlice';
+import { isEmpty } from 'lodash';
 
 function AddRoles() {
     const pageName = TAB_ROLES
@@ -52,10 +53,10 @@ function AddRoles() {
     }, [displayType])
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
             navigate("/dashboard")
         }
-    }, [])
+    }, [permissionObj])
 
     useEffect(() => {
         if (isSaved) {
