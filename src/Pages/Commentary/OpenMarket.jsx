@@ -53,6 +53,52 @@ export const OpenMarket = () => {
     if (scorecardFrameUrl) {
         scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", commentaryInfo?.eid);
     }
+    const [keys, setKeys] = useState(() => {
+        const savedKeys = localStorage.getItem("editableKeys");
+        return savedKeys
+            ? JSON.parse(savedKeys)
+            : [
+                  { key: "Q", QNo: 180, QYes: 120 },
+                  { key: "W", WNo: 140, WYes: 100 },
+                  { key: "E", ENo: 140, EYes: 110 },
+                  { key: "R", RNo: 150, RYes: 115 },
+                  { key: "T", TNo: 225, TYes: 125 },
+                  { key: "Y", YNo: 250, YYes: 150 },
+                  { key: "U", UNo: 300, UYes: 200 },
+                  { key: "I", INo: 400, IYes: 300 },
+                  { key: "O", ONo: 500, OYes: 300 },
+                  { key: "P", PNo: 120, PYes: 100 },
+                  { key: "A", ANo: 105, AYes: 95 },
+                  { key: "S", SNo: 140, SYes: 90 },
+                  { key: "D", DNo: 250, DYes: 125 },
+                  { key: "F", FNo: 400, FYes: 250 },
+                  { key: "G", GNo: 200, GYes: 140 },
+                  { key: "H", HNo: 2, HYes: null },
+                  { key: "J", JNo: 3, JYes: null },
+                  { key: "K", KNo: 55, KYes: 40 },
+                  { key: "L", LNo: 100, LYes: 80 },
+                  { key: "Z", ZNo: 100, ZYes: 85 },
+                  { key: "X", XNo: 150, XYes: 100 },
+                  { key: "C", CNo: 110, CYes: 90 },
+                  { key: "V", VNo: 110, VYes: 95 },
+                  { key: "B", BNo: 115, BYes: 85 },
+                  { key: "N", NNo: 120, NYes: 80 },
+                  { key: "M", MNo: 125, MYes: 75 },
+              ];
+    });
+    const [selectedKey, setSelectedKey] = useState("C");
+    
+    const handleKeyValueChange = (index, fieldName, newValue) => {
+        const updatedKeys = [...keys];
+        updatedKeys[index][fieldName] = Number(newValue) || "";
+        setKeys(updatedKeys);
+        localStorage.setItem("editableKeys", JSON.stringify(updatedKeys));
+    };
+
+    const handleSelectedKeyChange = (event) => {
+        const newKey = event.target.value.toUpperCase();
+        setSelectedKey(newKey);
+    };
     // const scoreCardUrl = process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
     // const scoreboardUrl = `${scoreCardUrl}/scoreboard?id=${commentaryInfo?.eid}&color=000`;
     // console.log({ originalMarketData, categorisedData });
@@ -70,22 +116,6 @@ export const OpenMarket = () => {
             selectedCategories.some(category => category.value === item.marketTypeCategoryId)
         );
     };
-
-    const keys = [
-        { key: "Q", values: [180, 120] }, { key: "W", values: [140, 100] },
-        { key: "E", values: [140, 110] }, { key: "R", values: [150, 115] },
-        { key: "T", values: [225, 125] }, { key: "Y", values: [250, 150] },
-        { key: "U", values: [300, 200] }, { key: "I", values: [400, 300] },
-        { key: "O", values: [500, 300] }, { key: "P", values: [120, 100] },
-        { key: "A", values: [105, 95] }, { key: "S", values: [140, 90] },
-        { key: "D", values: [250, 125] }, { key: "F", values: [400, 250] },
-        { key: "G", values: [200, 140] }, { key: "H+", values: [2] },
-        { key: "J+", values: [3] }, { key: "K", values: [55, 40] },
-        { key: "L", values: [100, 80] }, { key: "Z", values: [100, 85] },
-        { key: "X", values: [150, 100] }, { key: "C", values: [110, 90] },
-        { key: "V", values: [110, 95] }, { key: "B", values: [115, 85] },
-        { key: "N", values: [120, 80] }, { key: "M", values: [125, 75] }
-    ];
       
     const handleKeyClick = (key) => {
         setInput((prev) => prev + key);
@@ -540,6 +570,27 @@ export const OpenMarket = () => {
 
                             updatedData[marketIndex] = updatedMarket;
                         }
+                    }
+                }
+                else if (key === "rateDiff" && parseInt(updatedMarket?.marketTypeCategoryId) === 23) {
+                    const selectedKeyMapping = keys.find(k => k.key === selectedKey);
+                    if (selectedKeyMapping) {
+                        const noValue = selectedKeyMapping[`${selectedKey}No`] || 0;
+                        const yesValue = selectedKeyMapping[`${selectedKey}Yes`] || 0;
+        
+                        const updatedRunner = generateOverUnderLineType({
+                            ...updatedMarket,
+                            rateDiff: value,
+                            line: updatedMarket.runner[0]?.line,
+                            backSize: yesValue,
+                            laySize: noValue,
+                        }, marketTypeObj);
+                        updatedMarket.runner = updatedMarket.runner.map(runner => ({
+                            ...runner,
+                            ...updatedRunner
+                        }));
+                        updatedMarket.rateDiff = value
+                        updatedData[marketIndex] = updatedMarket;
                     }
                 }
                 else if (key === "rateDiff") {
@@ -1378,24 +1429,43 @@ export const OpenMarket = () => {
           if (keyMapping) {
             const marketId = event?.target?.dataset?.marketId;
            if (marketId) {
-            setData(prevData => {
-                return prevData.map(market => {
-                    if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeCategoryId) === 23) {
-                        return {
-                            ...market,
-                            runner: market.runner.map(runner => ({
-                               ...runner,
-                               layPrice: runner?.layPrice,
-                               backPrice: runner?.layPrice,
-                               laySize: keyMapping.values[0],
-                               backSize: keyMapping.values[1] || keyMapping.values[0],
-                            })),
-                            rateDiff: 0
-                        };
-                    }
-                    return market;
+            if(pressedKey === 'H' || pressedKey === 'J') {
+                setData(prevData => {
+                    return prevData.map(market => {
+                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeCategoryId) === 23) {
+                            return {
+                                ...market,
+                                runner: market.runner.map(runner => ({
+                                   ...runner,
+                                   layPrice: runner?.layPrice,
+                                   backPrice: parseInt(runner?.layPrice) + parseInt(keyMapping[`${pressedKey}No`]),
+                                })),
+                                rateDiff: 0
+                            };
+                        }
+                        return market;
+                    });
                 });
-            });
+            } else {
+                setData(prevData => {
+                    return prevData.map(market => {
+                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeCategoryId) === 23) {
+                            return {
+                                ...market,
+                                runner: market.runner.map(runner => ({
+                                   ...runner,
+                                   layPrice: runner?.layPrice,
+                                   backPrice: runner?.layPrice,
+                                   laySize: keyMapping[`${pressedKey}No`],
+                                   backSize: keyMapping[`${pressedKey}Yes`],
+                                })),
+                                rateDiff: 0
+                            };
+                        }
+                        return market;
+                    });
+                });
+            }
            }
           }
         } else if (event.target.tagName === 'SELECT' || isKeyPressed) {
@@ -1800,13 +1870,27 @@ export const OpenMarket = () => {
                                             className="key-fields key-button py-1"
                                             onClick={() => handleKeyClick(item.key)}
                                           >
-                                            {item.key}
+                                            {item.key}{(item.key === "H" || item.key === "J") && "+"}
                                           </Button>
-                                          <Input type="text" className="key-fields py-1" value={item?.values[0]} readOnly />
-                                          <Input type="text" className="key-fields py-1" value={item?.values[1] || ""} readOnly />
+                                          <Input type="number" className="key-fields py-1" value={item[`${item.key}No`] || ""} onChange={(e) => handleKeyValueChange(index, `${item.key}No`, e.target.value)} />
+                                          <Input type="number" className="key-fields py-1" value={item[`${item.key}Yes`] || ""} onChange={(e) => handleKeyValueChange(index, `${item.key}Yes`, e.target.value)} />
                                        </Col>
                                    </>
                                    ))}
+                                    <Col xs="auto" className="d-flex align-items-center mb-2">
+                                        <Button
+                                            className="key-button rounded-0 py-1"
+                                        >
+                                            Default key
+                                        </Button>
+                                       <Input
+                                          type="text"
+                                          className="key-fields py-1"
+                                          value={selectedKey}
+                                          maxLength={1}
+                                          onChange={handleSelectedKeyChange}
+                                       />
+                                    </Col>
                                 </Row>
                                 {Object.keys(categorisedData).length > 0 && (
                                     <OpenMarketCategories
