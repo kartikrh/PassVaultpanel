@@ -7,11 +7,17 @@
   background-color: gray !important;
   color:white !important; 
 }
+.hover .sticky-column .selected {
+  background-color: gray !important;
+}
 .hover .sticky-column {
   background-color: #ffff;
   position: sticky;
   left: 0;
   z-index: 10;
+}
+tr.selected .sticky-column {
+  background-color: gray;
 }
 
 body[data-theme="dark"] {
@@ -22,6 +28,9 @@ body[data-theme="dark"] {
     background-color: #202936;
   }
   .selected {
+    background-color: #202936 !important;
+  }
+  tr.selected .sticky-column {
     background-color: #202936 !important;
   }
 }
