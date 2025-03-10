@@ -38,6 +38,7 @@ export const OpenMarket = () => {
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
     const [isScorecardShow, setIsScorecardShow] = useState(true);
     const [isKeyPressed, setIsKeyPressed] = useState(false);
+    const [input, setInput] = useState("");
     const [ballStatus, setBallStatus] = useState(null);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
@@ -68,6 +69,26 @@ export const OpenMarket = () => {
         return dataToFilter.filter(item =>
             selectedCategories.some(category => category.value === item.marketTypeCategoryId)
         );
+    };
+
+    const keys = [
+        { key: "Q", values: [180, 120] }, { key: "W", values: [140, 100] },
+        { key: "E", values: [140, 110] }, { key: "R", values: [150, 115] },
+        { key: "T", values: [225, 125] }, { key: "Y", values: [250, 150] },
+        { key: "U", values: [300, 200] }, { key: "I", values: [400, 300] },
+        { key: "O", values: [500, 300] }, { key: "P", values: [120, 100] },
+        { key: "A", values: [105, 95] }, { key: "S", values: [140, 90] },
+        { key: "D", values: [250, 125] }, { key: "F", values: [400, 250] },
+        { key: "G", values: [200, 140] }, { key: "H+", values: [2] },
+        { key: "J+", values: [3] }, { key: "K", values: [55, 40] },
+        { key: "L", values: [100, 80] }, { key: "Z", values: [100, 85] },
+        { key: "X", values: [150, 100] }, { key: "C", values: [110, 90] },
+        { key: "V", values: [110, 95] }, { key: "B", values: [115, 85] },
+        { key: "N", values: [120, 80] }, { key: "M", values: [125, 75] }
+    ];
+      
+    const handleKeyClick = (key) => {
+        setInput((prev) => prev + key);
     };
 
     useEffect(() => {
@@ -1062,6 +1083,7 @@ export const OpenMarket = () => {
                         handleValueChange(record, "line", parseFloat(newValue))
                     }}
                     inputProps={{ step: "0.1" }}
+                    data-market-id={record.marketId}
                 />
             ),
             key: "line",
@@ -1122,12 +1144,14 @@ export const OpenMarket = () => {
                         className="form-control price-text-fields input-no-field text-bold"
                         value={text === null ? "" : text}
                         onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
+                        data-market-id={record?.marketId}
                     />
                     <CustomInput
                         className="form-control size-text-fields input-no-field mt-1"
                         value={record?.laySize === null ? "" : record?.laySize}
                         onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                         steps={5}
+                        data-market-id={record?.marketId}
                     />
                 </>
             ),
@@ -1145,12 +1169,14 @@ export const OpenMarket = () => {
                         className="form-control price-text-fields input-yes-field text-bold"
                         value={text === null ? "" : text}
                         onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
+                        data-market-id={record?.marketId}
                     />
                     <CustomInput
                         className="form-control size-text-fields input-yes-field mt-1"
                         value={record?.backSize === null ? "" : record?.backSize}
                         onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                         steps={5}
+                        data-market-id={record?.marketId}
                     />
                 </>
             ),
@@ -1346,9 +1372,35 @@ export const OpenMarket = () => {
         </Col>
     </>
     const handleKeyPress = (event) => {
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || isKeyPressed) {
+        if(event.target.tagName === 'INPUT') {
+          const pressedKey = event.key.toUpperCase();
+          const keyMapping = keys.find(k => k.key === pressedKey);
+          if (keyMapping) {
+            const marketId = event?.target?.dataset?.marketId;
+           if (marketId) {
+            setData(prevData => {
+                return prevData.map(market => {
+                    if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeCategoryId) === 23) {
+                        return {
+                            ...market,
+                            runner: market.runner.map(runner => ({
+                               ...runner,
+                               layPrice: runner?.layPrice,
+                               backPrice: runner?.layPrice,
+                               laySize: keyMapping.values[0],
+                               backSize: keyMapping.values[1] || keyMapping.values[0],
+                            })),
+                            rateDiff: 0
+                        };
+                    }
+                    return market;
+                });
+            });
+           }
+          }
+        } else if (event.target.tagName === 'SELECT' || isKeyPressed) {
             return; // Don't trigger shortcuts if focus is on input or select elements
-        }
+        } else {
         const key = event.key.toLowerCase();
         // console.log('Key pressed:', key);
         switch (key) {
@@ -1382,6 +1434,7 @@ export const OpenMarket = () => {
                 break;
             default:
                 break;
+        }
         }
     }
 
@@ -1619,14 +1672,14 @@ export const OpenMarket = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories, isKeyPressed])
+    }, [data, selectedCategories, isKeyPressed, input]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories, isKeyPressed]);
+    }, [data, selectedCategories, isKeyPressed, input]);
 
     return (
         <React.Fragment>
@@ -1724,8 +1777,8 @@ export const OpenMarket = () => {
                                         </Col>
                                     </Row>}
                                 {isScorecardShow && (
-                                    <Row>
-                                        <Col xs={12}>
+                                    <Row className='p-0'>
+                                        <Col xs={12} className="p-0">
                                             <iframe
                                                 title="YouTube video player"
                                                 width="100%"
@@ -1733,12 +1786,28 @@ export const OpenMarket = () => {
                                                 // src={scoreboardUrl}
                                                 src={scorecardFrameUrl}
                                                 frameborder="0"
-                                                className="mb-0"
+                                                className="mb-0 p-0"
                                             >
                                             </iframe>
                                         </Col>
                                     </Row>
                                 )}
+                                <Row>
+                                   {keys.map((item, index) => (
+                                   <>
+                                       <Col key={index} xs="auto" className="d-flex align-items-center mb-2">
+                                          <Button
+                                            className="key-fields key-button py-1"
+                                            onClick={() => handleKeyClick(item.key)}
+                                          >
+                                            {item.key}
+                                          </Button>
+                                          <Input type="text" className="key-fields py-1" value={item?.values[0]} readOnly />
+                                          <Input type="text" className="key-fields py-1" value={item?.values[1] || ""} readOnly />
+                                       </Col>
+                                   </>
+                                   ))}
+                                </Row>
                                 {Object.keys(categorisedData).length > 0 && (
                                     <OpenMarketCategories
                                         categorisedData={categorisedData}
