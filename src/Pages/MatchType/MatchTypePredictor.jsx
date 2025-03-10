@@ -35,6 +35,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import PredictorTable from "./PredictorTable";
+import { isEmpty } from "lodash";
 
 const MatchTypePredictor = () => {
   const pageName = TAB_MATCH_TYPE;
@@ -116,10 +117,10 @@ const MatchTypePredictor = () => {
   }, [initialEditData?.oversPerInings]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {
