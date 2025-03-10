@@ -1,0 +1,11 @@
+.menu-arrow {
+    display: block;
+    float: right;
+    font-family: "Material Design Icons", sans-serif;
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.menu-arrow.rotate-down {
+    transform: rotate(90deg);
+}
