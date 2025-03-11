@@ -108,6 +108,18 @@ export const CreateEventMarket = () => {
         });
     }
 
+    const sortbasedOnthePlayerTypeBowlerFirst = (team) => {
+        const typeOrder = ["Bowler", "Wicketkeeper", "AllRounder", "BatsMan"];
+        team.sort((a, b) => {
+            // Compare playerType based on typeOrder
+            const typeComparison = typeOrder.indexOf(a.playerType) - typeOrder.indexOf(b.playerType);
+            if (typeComparison !== 0) return typeComparison;
+
+            // If playerType is the same, compare playerName alphabetically
+            return a.playerName.localeCompare(b.playerName);
+        });
+    }
+
     // const handleSelectAllInSection = (sectionKey) => {
     //     setSelectedMarkets(prev => {
     //         const sectionSelections = prev[sectionKey] || [];
@@ -266,7 +278,13 @@ export const CreateEventMarket = () => {
         // Process templates first to ensure all markets are generated
         templates.forEach(template => {
             if (template.isPerEvent) {
-                processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), null, 'oneTimeMarket', processedMarketsObj);
+                if (template.marketTypeCategoryId === 38) {
+                    processTopBatsManRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+                } else if (template.marketTypeCategoryId === 37) {
+                    processTopBowlerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+                } else {
+                    processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), null, 'oneTimeMarket', processedMarketsObj);
+                }
             } else if (template.marketTypeCategoryId === 11 && template.isOver) {
                 processOnlyOverMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.maxOversInFirstInings, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 13) {
@@ -717,6 +735,44 @@ export const CreateEventMarket = () => {
                     defaultLine: parseFloat(player.batsmanAverage)
                 }
                 processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
+            });
+        });
+    };
+
+    const processTopBowlerRunsMarkets = (market, teams, processedMarketsObj) => {
+        teams.forEach(team => {
+            sortbasedOnthePlayerTypeBowlerFirst(team.players);
+            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            team.players.forEach(player => {
+                const specialMarketName = `Top ${player.playerName} Bowler`;
+                const specialMarket = {
+                    ...market,
+                    playerId: player.commentaryPlayerId,
+                    marketName: specialMarketName,
+                    teamId: team.teamId,
+                    over: 0,
+                    defaultLine: parseFloat(player.batsmanAverage)
+                }
+                processMarketAndRunners(specialMarket, null, 'oneTimeMarket', processedMarketsObj);
+            });
+        });
+    };
+
+    const processTopBatsManRunsMarkets = (market, teams, processedMarketsObj) => {
+        teams.forEach(team => {
+            sortbasedOnthePlayerTypeAndPlayerName(team.players);
+            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
+            team.players.forEach(player => {
+                const specialMarketName = `Top ${player.playerName} Batsman`;
+                const specialMarket = {
+                    ...market,
+                    playerId: player.commentaryPlayerId,
+                    marketName: specialMarketName,
+                    teamId: team.teamId,
+                    over: 0,
+                    defaultLine: parseFloat(player.batsmanAverage)
+                }
+                processMarketAndRunners(specialMarket, null, 'oneTimeMarket', processedMarketsObj);
             });
         });
     };
