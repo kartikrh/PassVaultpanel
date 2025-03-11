@@ -693,14 +693,14 @@ const Index = forwardRef(
         let sliced;
         if (serverCurrentPage < possibleNoOfPages) {
           sliced = dataSource.slice(
-            serverCurrentPage * serverPageSize,
-            serverCurrentPage * serverPageSize + serverPageSize
+            serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage * serverPageSize,
+            serverCurrentPage == 1 ? serverPageSize : Number(serverCurrentPage * serverPageSize) + Number(serverPageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * serverPageSize,
-            pageToJump * serverPageSize + serverPageSize
+            Number(pageToJump * serverPageSize) + Number(serverPageSize)
           );
         }
         setData(sliced);
@@ -710,14 +710,14 @@ const Index = forwardRef(
 
         if (currentPage < possibleNoOfPages) {
           sliced = dataSource.slice(
-            currentPage * pageSize,
-            currentPage * pageSize + pageSize
+            currentPage == 1 ? currentPage - 1 : currentPage * pageSize,
+            currentPage == 1 ? pageSize : Number(currentPage * pageSize) + Number(pageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * pageSize,
-            pageToJump * pageSize + pageSize
+            Number(pageToJump * pageSize) + Number(pageSize)
           );
         }
         setData(sliced);
@@ -977,9 +977,8 @@ const Index = forwardRef(
           };
         })
       );
-    }, [singleCheck, data]);
+    }, [singleCheck]);
     
-
     useEffect(() => {
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
         handleSearchFilter();
@@ -2337,7 +2336,18 @@ const Index = forwardRef(
                 {
                   tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
-                      <span>
+                    {
+                      Number(serverCurrentPage) != 0 ? 
+                        <span>
+                          Showing {Number(Number(serverCurrentPage) - 1) * serverPageSize + 1} -{" "}
+                          {Number(Number(serverCurrentPage) - 1) * serverPageSize + data.length} of{" "}
+                          {/* {tableElement.title === "Tabs"
+                            ? data?.length
+                            : serverTotal}{" "} */}
+                          {serverTotal}{" "}
+                          entries
+                        </span>:
+                        <span>
                         Showing {serverCurrentPage * serverPageSize + 1} -{" "}
                         {serverCurrentPage * serverPageSize + data.length} of{" "}
                         {/* {tableElement.title === "Tabs"
@@ -2346,6 +2356,8 @@ const Index = forwardRef(
                         {serverTotal}{" "}
                         entries
                       </span>
+                    }
+                      
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>
                     <Col className="col-sm">
@@ -2394,6 +2406,16 @@ const Index = forwardRef(
                     </Col>
                   </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
+                    {
+                      Number(currentPage) != 0 ?
+                      <span>
+                        Showing {Number(Number(currentPage) - 1) * pageSize + 1} -{" "}
+                        {Number(Number(currentPage) - 1) * pageSize + data.length} of{" "}
+                        {tableElement.title === "Tabs"
+                          ? serverTotal
+                          : dataSource?.length}{" "}
+                        entries
+                      </span>:
                       <span>
                         Showing {currentPage * pageSize + 1} -{" "}
                         {currentPage * pageSize + data.length} of{" "}
@@ -2402,6 +2424,7 @@ const Index = forwardRef(
                           : dataSource?.length}{" "}
                         entries
                       </span>
+                    }
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>
                     <Col className="col-sm">

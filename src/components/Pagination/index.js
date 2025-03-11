@@ -9,11 +9,14 @@ const Index = ({
   setPageSize,
 }) => {
   const shouldShowSizeChanger = total >= 10;
+  const [prev, setPrev] = useState(pageSize)
   const onShowSizeChange = (currentPage, pageSize) => {
     localStorage.setItem("pageSize", pageSize)
     setPageSize(pageSize);
-    setCurrentPage(currentPage - 1);
+    Number(pageSize) === Number(prev) ? setCurrentPage(currentPage) : setCurrentPage(0)
+    setPrev(pageSize)
   };
+
   useEffect(() => {
 
     fetchData();
@@ -23,7 +26,8 @@ const Index = ({
       showSizeChanger={shouldShowSizeChanger}
       onShowSizeChange={onShowSizeChange}
       onChange={onShowSizeChange}
-      defaultCurrent={currentPage}
+      current={currentPage}
+      // defaultCurrent={currentPage}
       total={total}
       pageSize={pageSize}
 
