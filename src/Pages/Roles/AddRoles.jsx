@@ -79,13 +79,68 @@ function AddRoles() {
     }, [permissions])
 
 
+    // const fetchData = async (roleId, storeInitialData = false) => {
+    //     await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
+    //         .then((response) => {
+    //             console.log("response", response)
+    //             const parentZeroItems = response.result.permissions.filter(item => item.parentId === "0").sort((a, b) => a.displayOrder - b.displayOrder);
+    //             const otherItems = response.result.permissions.filter(item => item.parentId !== "0");
+
+    //             // Merge sorted parentId: "0" items with other items
+    //             const sortedData = [...parentZeroItems, ...otherItems];
+    //             console.log("sortedData", sortedData)
+    //             if (storeInitialData) setInitialEditData(response?.result);
+    //             const newPermission = rearrangeTabs(response?.result?.permissions || []);
+    //             setPermissions(sortedData)
+    //         }).catch((error) => {
+    //             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    //         });
+    // };
+
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
+                console.log("response", response);
+    
+                const permissions = response?.result?.permissions || [];
+    
+                // Step 1: Get parentId === "0" and sort them by displayOrder
+                const parentZeroItems = permissions.filter(item => item.parentId === "0").sort((a, b) => a.displayOrder - b.displayOrder);
+    
+                // Step 2: Create a map for child items grouped by parentId
+                const childItemsMap = new Map();
+                permissions.forEach(item => {
+                    if (item.parentId !== "0") {
+                        if (!childItemsMap.has(item.parentId)) {
+                            childItemsMap.set(item.parentId, []);
+                        }
+                        childItemsMap.get(item.parentId).push(item);
+                    }
+                });
+    
+                // Step 3: Sort child items within each parent by displayOrder
+                childItemsMap.forEach((children, parentId) => {
+                    children.sort((a, b) => a.displayOrder - b.displayOrder);
+                });
+    
+                // Step 4: Build the final sorted list with parent-child structure
+                const sortedData = [];
+                parentZeroItems.forEach(parent => {
+                    sortedData.push(parent); // Add parent
+                    if (childItemsMap.has(parent.tabId)) {
+                        sortedData.push(...childItemsMap.get(parent.tabId)); // Add its children
+                    }
+                });
+    
+                console.log("sortedData", sortedData);
+    
                 if (storeInitialData) setInitialEditData(response?.result);
-                const newPermission = rearrangeTabs(response?.result?.permissions || []);
-                setPermissions(newPermission)
-            }).catch((error) => {
+                
+                // Rearrange tabs and set final permissions
+                const newPermission = rearrangeTabs(sortedData);
+                setPermissions(newPermission);
+            })
+            .catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
