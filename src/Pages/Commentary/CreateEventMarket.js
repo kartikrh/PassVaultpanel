@@ -744,7 +744,7 @@ export const CreateEventMarket = () => {
             sortbasedOnthePlayerTypeBowlerFirst(team.players);
             // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
-                const specialMarketName = `Top ${player.playerName} Bowler`;
+                const specialMarketName = `Top Bowler ${team?.teamName} ${player?.playerName} adv`;
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
@@ -763,7 +763,7 @@ export const CreateEventMarket = () => {
             sortbasedOnthePlayerTypeAndPlayerName(team.players);
             // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
-                const specialMarketName = `Top ${player.playerName} Batsman`;
+                const specialMarketName = `Top Batsman ${team?.teamName} ${player?.playerName} adv`;
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
