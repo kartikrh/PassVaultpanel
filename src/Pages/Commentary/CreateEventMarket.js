@@ -278,9 +278,7 @@ export const CreateEventMarket = () => {
         // Process templates first to ensure all markets are generated
         templates.forEach(template => {
             if (template.isPerEvent) {
-                if (template.marketTypeCategoryId === 38) {
-                    processTopBatsManRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
-                } else if (template.marketTypeCategoryId === 37) {
+                if (template.marketTypeCategoryId === 37) {
                     processTopBowlerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
                 } else {
                     processMarketAndRunners(generateMarketFromTemplate(template, teams, commentary), null, 'oneTimeMarket', processedMarketsObj);
@@ -307,6 +305,8 @@ export const CreateEventMarket = () => {
                 processPartnershipBoundariesMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 33) {
                 processWicketLostBallsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
+            } else if (template.marketTypeCategoryId === 38) {
+                processTopBatsManRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
@@ -772,7 +772,7 @@ export const CreateEventMarket = () => {
                     over: 0,
                     defaultLine: parseFloat(player.batsmanAverage)
                 }
-                processMarketAndRunners(specialMarket, null, 'oneTimeMarket', processedMarketsObj);
+                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
             });
         });
     };
