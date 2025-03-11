@@ -313,6 +313,29 @@
   font-size: 12px !important;
 }
 
+.key-fields {
+  width: 3.75rem !important;
+  border-radius: 0px !important;
+}
+
+.key-button {
+  background-color: #295c90 !important;
+  border-color: #295c90 !important;
+}
+
+/* .sticky-open {
+  position: relative;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+.sticky-keyboard {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 2;
+} */
+
 .small-labels {
   word-break: break-word;
   padding: 0;

@@ -16,6 +16,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel';
 import {UploadPlayerHistoryModal} from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import GenerateModal from "./GenerateModal";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
@@ -33,6 +34,8 @@ const Index = () => {
   const [teams, setTeams] = useState([]);
   const [PlayerHistoryObject,setPlayerHistoryObject] = useState({});
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [generateModalData, setGenerateModalData] = useState(null);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -353,6 +356,28 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Generate Image",
+      key: "generateImage",
+      render: (text, record) => (
+        <>
+          <Tooltip title={"Generate Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                setGenerateModalData(record);
+                setIsGenerateModalOpen(true);
+              }}
+            >
+              GI
+            </Button>
+          </Tooltip>
+        </>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
   const modelColumns = [
     { title: "Player Id", key: "playerId", type: "text" },
@@ -508,6 +533,12 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          {isGenerateModalOpen && <GenerateModal
+            isOpen={isGenerateModalOpen}
+            toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
+            data={generateModalData}
+            fetchData={fetchData}
+          />}
           {importExportModelVisable && <ImportExportModel
             importExportModelVisable={importExportModelVisable}
             setImportExportModelVisable={setImportExportModelVisable}
