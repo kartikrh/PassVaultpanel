@@ -177,9 +177,17 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addMatchType", { state: { userId: id } });
   };
+
   const handlePredictorClick = (id) => {
     const url = new URL(window.location.origin + "/matchTypePredictor");
     sessionStorage.setItem('matchTypePredictorId', "" + id);
+    window.open(url.href, '_blank');
+    // navigate("/matchTypePredictor", { state: { userId: id } });
+  };
+
+  const handleBowlingPredictorClick = (id) => {
+    const url = new URL(window.location.origin + "/bowlingPredictor");
+    sessionStorage.setItem('bowlingPredictorId', "" + id);
     window.open(url.href, '_blank');
     // navigate("/matchTypePredictor", { state: { userId: id } });
   };
@@ -240,7 +248,7 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       key: "matchType",
-      style: { width: "86%" },
+      style: { width: "76%" },
       sort: true,
     },
     {
@@ -274,6 +282,26 @@ const Index = () => {
           className="btn"
           onClick={() => {
             handlePredictorClick(record?.matchTypeId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "8%", textAlign: "center" },
+    },
+    {
+      title: "Bowling Predictor",
+      key: "predictor",
+      printType: "ignore",
+      render: (text, record) => (
+      <Tooltip title={"View Test bowling Predictor"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleBowlingPredictorClick(record?.matchTypeId);
           }}
         >
           <i className="bx bx-plus"></i>

@@ -138,6 +138,7 @@ import { ManualOddsMarket } from "../Pages/Commentary/ManualOddsMarket.jsx";
 import { UpdateManualOdds } from "../Pages/Commentary/UpdateManualOdds.jsx";
 import DataproviderPage from "../Pages/DataProvider/Dataprovider.jsx";
 import EventDetails from "../Pages/DataProvider/EventDetails.jsx";
+import BowlingPredictor from "../Pages/MatchType/BowlingPredictor.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -161,6 +162,7 @@ const authProtectedRoutes = [
   { path: "/matchType", component: <MatchType /> },
   { path: "/addMatchType", component: <AddMatchType /> },
   { path: "/matchTypePredictor", component: <MatchTypePredictor /> },
+  { path: "/bowlingPredictor", component: <BowlingPredictor /> },
   { path: "/penalty", component: <PenaltyRuns /> },
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
