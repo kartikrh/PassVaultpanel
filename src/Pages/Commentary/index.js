@@ -42,6 +42,7 @@ import { Tooltip } from "antd";
 import AwardSelectionComponent from "./CommentaryModels/AwardModal";
 import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import GenerateModal from "./GenerateModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -89,6 +90,9 @@ const Index = () => {
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [generateModalData, setGenerateModalData] = useState(null);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -1618,6 +1622,28 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Generate Image",
+      key: "generateImage",
+      render: (text, record) => (
+        <>
+          <Tooltip title={"Generate Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                setGenerateModalData(record);
+                setIsGenerateModalOpen(true);
+              }}
+            >
+              GI
+            </Button>
+          </Tooltip>
+        </>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -1934,6 +1960,12 @@ const Index = () => {
               handleLoadData={handleLoadData}
               moduleName={"Commentary"}
             />}
+          {isGenerateModalOpen && <GenerateModal
+            isOpen={isGenerateModalOpen}
+            toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
+            data={generateModalData}
+            fetchData={fetchData}
+          />}
         </Container>
       </div>
     </React.Fragment>
