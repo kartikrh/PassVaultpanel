@@ -710,8 +710,8 @@ const Index = forwardRef(
 
         if (currentPage < possibleNoOfPages) {
           sliced = dataSource.slice(
-            currentPage == 1 ? currentPage - 1 : currentPage * pageSize,
-            currentPage == 1 ? pageSize : Number(currentPage * pageSize) + Number(pageSize)
+            (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
+            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
