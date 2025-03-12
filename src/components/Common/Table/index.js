@@ -25,6 +25,7 @@ import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 import { Tooltip } from "antd";
 import { convertDateUTCToLocal, getDateRange } from "../Reusables/reusableMethods";
 import { getStatusColor, getStatusFontColor } from "../../../Pages/Commentary/CommentartConst";
+import { isEmpty } from "lodash";
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
@@ -147,8 +148,20 @@ const Index = forwardRef(
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
     useEffect(() => {
-      setData(filteredData);
+      
+      if(!isEmpty(filteredData)){
+        setData(filteredData);
+      }
     }, [filteredData]);
+
+    useEffect(() => {
+      if(data.length == 0 && filteredData.length == 0){
+        if(serverCurrentPage){
+          setServerCurrentPage(0)
+        }
+        setCurrentPage(0)
+      }
+    },[data, filteredData])
 
     const toggleRow = (index) => {
       setExpandedRows((prev) => ({
@@ -310,7 +323,15 @@ const Index = forwardRef(
     };
     const handleTableActions = (key, id) => {
       setSearchTerm("")
+      setCurrentPage(0)
+      if(setServerCurrentPage){
+        setServerCurrentPage(0)
+      }
       if (key === "isActive") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        
         setStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -323,6 +344,10 @@ const Index = forwardRef(
           isActive: id,
         });
       } else if (key === "isApproved") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        
         setStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -335,6 +360,10 @@ const Index = forwardRef(
           isApproved: id,
         });
       } else if (key === "isTrending") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        
         setTrendingStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -347,6 +376,10 @@ const Index = forwardRef(
           isTrending: id,
         });
       } else if (key === "isShowContent") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        
         setStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -361,6 +394,10 @@ const Index = forwardRef(
       } else if (key === "onTournamentisChanges") {
         onTournamentisChanges(id);
       } else {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        
         reFetchData({
           ...tableActions,
           [key]: id?.value,
@@ -375,7 +412,6 @@ const Index = forwardRef(
     };
 
     const handleSearchFilter = () => {
-
       if (tableElement.title === "Tabs") {
         const updatedData = data.filter((val) => {
           const found = Object.values(val).some((value) => {
@@ -689,14 +725,19 @@ const Index = forwardRef(
     ];
     const fetchData = () => {
       if (tableElement?.isServerPagination) {
+        console.log("isServerPagination")
         const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
         let sliced;
+        console.log("serverCurrentPage", serverCurrentPage)
+        console.log("serverPageSize", serverPageSize)
         if (serverCurrentPage < possibleNoOfPages) {
+          console.log("if serverCurrentPage", serverCurrentPage)
           sliced = dataSource.slice(
-            serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage * serverPageSize,
-            serverCurrentPage == 1 ? serverPageSize : Number(serverCurrentPage * serverPageSize) + Number(serverPageSize)
+            (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage) * serverPageSize,
+            (serverCurrentPage == 1 ? serverPageSize : Number(serverCurrentPage * serverPageSize)) + Number(serverPageSize)
           );
         } else {
+          console.log("else serverCurrentPage")
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * serverPageSize,
@@ -705,15 +746,20 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
+        console.log("isPagination")
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
         let sliced;
 
         if (currentPage < possibleNoOfPages) {
+          console.log("if")
+          console.log("(currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize",(currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize)
+          console.log("(currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)", (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize))
           sliced = dataSource.slice(
             (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
             (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)
           );
         } else {
+          console.log("else")
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * pageSize,
@@ -827,6 +873,10 @@ const Index = forwardRef(
           isActive: true,
         });
       }
+      setCurrentPage(0)
+      if(serverCurrentPage){
+        setServerCurrentPage(0)
+      }
     };
 
     const handleTableReload = (e) => {
@@ -859,6 +909,10 @@ const Index = forwardRef(
         handleReload({
           isActive: true,
         });
+      }
+      setCurrentPage(0)
+      if(serverCurrentPage){
+        setServerCurrentPage(0)
       }
     };
     
@@ -987,6 +1041,10 @@ const Index = forwardRef(
     useEffect(() => {
       fetchData();
     }, [dataSource]);
+
+    const setServerSideCurrentPage = (currentpage) =>{
+      setServerCurrentPage(currentpage + 1)
+    }
 
     useImperativeHandle(ref, () => ({ getTableAction }));
     return (
@@ -1145,7 +1203,8 @@ const Index = forwardRef(
                               value={selectedTableElements?.createdTypeName}
                               placeholder="Created Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.createdTypeName?.value) {
+                                if (e?.value !== selectedTableElements?.createdTypeName?.value) {                                
+                                  
                                   handleTableActions("createdType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1310,6 +1369,7 @@ const Index = forwardRef(
                               }}
                               onChange={(e) => {
                                 if (e?.value !== selectedTableElements?.displayType?.value) {
+                                  
                                   handleTableActions("displayType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1340,6 +1400,7 @@ const Index = forwardRef(
                               placeholder={ratesource?.rateSourceType}
                               onChange={(e) => {
                                 if (e?.value !== selectedTableElements?.rateSourceType?.value) {
+                                  
                                   setSearchTerm("")
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1945,6 +2006,10 @@ const Index = forwardRef(
                         <button
                           className="btn btn-primary"
                           onClick={() => {
+                            if (setServerCurrentPage) {
+                              setServerCurrentPage(0);
+                            }
+                            setCurrentPage(0)
                             reFetchData();
                           }}
                           type="reset"
@@ -2036,6 +2101,10 @@ const Index = forwardRef(
                         <button
                           className="btn btn-primary"
                           onClick={() => {
+                            if (setServerCurrentPage) {
+                              setServerCurrentPage(0);
+                            }
+                            setCurrentPage(0)
                             reFetchData();
                           }}
                           disabled={!isSearch}
@@ -2337,7 +2406,7 @@ const Index = forwardRef(
                   tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
                     {
-                      Number(serverCurrentPage) != 0 ? 
+                      Number(serverCurrentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > serverTotal == false)? 
                         <span>
                           Showing {Number(Number(serverCurrentPage) - 1) * serverPageSize + 1} -{" "}
                           {Number(Number(serverCurrentPage) - 1) * serverPageSize + data.length} of{" "}
@@ -2347,6 +2416,17 @@ const Index = forwardRef(
                           {serverTotal}{" "}
                           entries
                         </span>:
+                        (Number((Number(currentPage) - 1) * pageSize) + 1) > serverTotal? 
+                        <span>
+                          Showing {Number(Number(serverCurrentPage) - 2) * serverPageSize + 1} -{" "}
+                          {Number(Number(serverCurrentPage) - 2) * serverPageSize + data.length} of{" "}
+                          {/* {tableElement.title === "Tabs"
+                            ? data?.length
+                            : serverTotal}{" "} */}
+                          {serverTotal}{" "}
+                          entries
+                        </span>
+                        :
                         <span>
                         Showing {serverCurrentPage * serverPageSize + 1} -{" "}
                         {serverCurrentPage * serverPageSize + data.length} of{" "}
@@ -2407,15 +2487,24 @@ const Index = forwardRef(
                   </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
                     {
-                      Number(currentPage) != 0 ?
+                      Number(currentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) == false)?
                       <span>
-                        Showing {Number(Number(currentPage) - 1) * pageSize + 1} -{" "}
-                        {Number(Number(currentPage) - 1) * pageSize + data.length} of{" "}
+                        Showing {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
+                        {Number((Number(currentPage) - 1) * pageSize) + data.length} of{" "}
                         {tableElement.title === "Tabs"
                           ? serverTotal
                           : dataSource?.length}{" "}
                         entries
-                      </span>:
+                      </span> : (Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) ?
+                      <span>
+                        Showing {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
+                        {Number((Number(currentPage) - 2) * pageSize) + data.length} of{" "}
+                        {tableElement.title === "Tabs"
+                          ? serverTotal
+                          : dataSource?.length}{" "}
+                        entries
+                      </span>
+                      :
                       <span>
                         Showing {currentPage * pageSize + 1} -{" "}
                         {currentPage * pageSize + data.length} of{" "}
@@ -2702,7 +2791,7 @@ const Index = forwardRef(
                     </div>
                   </div>
                 </div>
-                {data.length > 0 ? (
+                {!isEmpty(data) ? (
                   <Row>
                     <Col >{tableElement?.compToRender}</Col>
                     <Col className="d-flex justify-content-end">
@@ -2714,6 +2803,7 @@ const Index = forwardRef(
                           fetchData={fetchData}
                           setCurrentPage={setServerCurrentPage}
                           setPageSize={setServerPageSize}
+                          isServerSide = {true}
                         />) : isPagination ? (<Pagination
                           total={total}
                           pageSize={pageSize}
@@ -2721,6 +2811,7 @@ const Index = forwardRef(
                           fetchData={fetchData}
                           setCurrentPage={setCurrentPage}
                           setPageSize={setPageSize}
+                          isServerSide = {false}
                         />) : null}
                     </Col>
                   </Row>
