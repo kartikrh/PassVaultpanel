@@ -57,13 +57,13 @@ const Index = () => {
     const data = latestValueFromTable || tableActions
     let payload = {
       ...data,
-      page: currentPage+1,
+      page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
     }
     if(competitionId !== 0 || teamId !== 0) {
       payload = {
         ...data,
-        page: currentPage+1,
+        page: currentPage == 0 ? 1 : currentPage,
         limit: pageSize,
         competitionId: competitionId,
         teamId: teamId ? teamId : data?.teamId,

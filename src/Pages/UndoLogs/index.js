@@ -67,7 +67,7 @@ const Index = () => {
     const data = latestValueFromTable || tableActions
     let payload = {
       ...data,
-      page: currentPage+1,
+      page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
       eventTypeId: data?.eventTypeId || 0,
       competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
@@ -76,7 +76,7 @@ const Index = () => {
     if(commentaryId !== 0) {
       payload = {
         ...data,
-        page: currentPage+1,
+        page: currentPage == 0 ? 1 : currentPage,
         limit: pageSize,
         commentaryId: commentaryId
       };

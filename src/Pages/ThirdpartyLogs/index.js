@@ -46,7 +46,7 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction();
     let payload = {
       ...(latestValueFromTable || tableActions),
-      page: currentPage+1,
+      page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
     }
     if (isSearch) {
