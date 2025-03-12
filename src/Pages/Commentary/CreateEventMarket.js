@@ -1332,7 +1332,8 @@ export const CreateEventMarket = () => {
                     return column.render(
                         runner ? runner[column.key] : null,
                         runner || {},
-                        (key, value) => handleRunnerValueChange(record, 0, key, value)
+                        (key, value) => handleRunnerValueChange(record, 0, key, value),
+                        record,
                     );
                 }
             }))
@@ -1376,7 +1377,8 @@ export const CreateEventMarket = () => {
                                                 {column.render(
                                                     runner[column.key],
                                                     runner,
-                                                    (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value)
+                                                    (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value),
+                                                    market,
                                                 )}
                                             </td>
                                         ))}
@@ -1505,7 +1507,17 @@ export const CreateEventMarket = () => {
                 markets.filter((_, index) => selectedMarkets[key]?.[index])
             )
             .map(market => {
-                // Get predefinedValue from the first runner
+                let selectedRunners;
+                if (market?.marketTypeCategoryId === 37 || market?.marketTypeCategoryId === 38) {
+                    selectedRunners = market?.runners.filter(runner => runner?.isChecked);
+                } else {
+                    selectedRunners = market.runners;
+                }
+
+                if ((market.marketTypeCategoryId === 37 || market.marketTypeCategoryId === 38) && selectedRunners.length === 0) {
+                    return null;
+                }
+
                 const predefinedValue = market.runners[0]?.predefinedValue;
 
                 return {
@@ -1533,7 +1545,7 @@ export const CreateEventMarket = () => {
                     beforeCloseMin: market.beforeCloseMin,
                     isPredefineRunnerValue: market.isPredefineRunnerValue,
                     predefinedValue: predefinedValue, // Add predefinedValue at market level
-                    runners: market.runners.map(runner => {
+                    runners: selectedRunners?.map(runner => {
                         // Remove predefinedValue from runner level
                         const { predefinedValue: _, ...runnerWithoutPredefined } = runner;
                         return {
@@ -1555,7 +1567,7 @@ export const CreateEventMarket = () => {
                 };
             });
 
-        if (savedData.length === 0) {
+        if (savedData.length === 0 || savedData.every(market => market === null)) {
             dispatch(updateToastData({
                 data: "Select at least one row",
                 title: "Error",
@@ -1756,6 +1768,19 @@ export const CreateEventMarket = () => {
     ]
 
     const runnerColumns = [
+        {
+            key: "selectRunner",
+            render: (text, record, onChange, market) => (
+                (market?.marketTypeCategoryId === 37 || market?.marketTypeCategoryId === 38) ? (
+                    <input
+                        type="checkbox"
+                        checked={record?.isChecked || false}
+                        onChange={(e) => onChange("isChecked", e.target.checked)}
+                    />
+                ) : null
+            ),
+            style: { width: "5%", textAlign: "center" }
+        },
         {
             title: "Runner",
             key: "runner",

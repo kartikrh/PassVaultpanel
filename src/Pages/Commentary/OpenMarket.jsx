@@ -1425,6 +1425,9 @@ export const OpenMarket = () => {
     const handleKeyPress = (event) => {
         if(event.target.tagName === 'INPUT') {
           const pressedKey = event.key.toUpperCase();
+          if(pressedKey === 'E') {
+            event.preventDefault();
+          }
           const keyMapping = keys.find(k => k.key === pressedKey);
           if (keyMapping) {
             const marketId = event?.target?.dataset?.marketId;
