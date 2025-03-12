@@ -725,19 +725,14 @@ const Index = forwardRef(
     ];
     const fetchData = () => {
       if (tableElement?.isServerPagination) {
-        console.log("isServerPagination")
         const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
         let sliced;
-        console.log("serverCurrentPage", serverCurrentPage)
-        console.log("serverPageSize", serverPageSize)
         if (serverCurrentPage < possibleNoOfPages) {
-          console.log("if serverCurrentPage", serverCurrentPage)
           sliced = dataSource.slice(
             (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage) * serverPageSize,
             (serverCurrentPage == 1 ? serverPageSize : Number(serverCurrentPage * serverPageSize)) + Number(serverPageSize)
           );
         } else {
-          console.log("else serverCurrentPage")
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * serverPageSize,
@@ -746,20 +741,15 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
-        console.log("isPagination")
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
         let sliced;
 
         if (currentPage < possibleNoOfPages) {
-          console.log("if")
-          console.log("(currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize",(currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize)
-          console.log("(currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)", (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize))
           sliced = dataSource.slice(
             (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
             (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)
           );
         } else {
-          console.log("else")
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * pageSize,
@@ -1032,7 +1022,7 @@ const Index = forwardRef(
         })
       );
     }, [singleCheck]);
-    
+
     useEffect(() => {
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
         handleSearchFilter();
@@ -1041,10 +1031,6 @@ const Index = forwardRef(
     useEffect(() => {
       fetchData();
     }, [dataSource]);
-
-    const setServerSideCurrentPage = (currentpage) =>{
-      setServerCurrentPage(currentpage + 1)
-    }
 
     useImperativeHandle(ref, () => ({ getTableAction }));
     return (
@@ -1848,6 +1834,7 @@ const Index = forwardRef(
                         {!tableElement?.isDateRange && tableElement?.resetButton && (tableElement?.title !== "Commentary History") ? (
                           <div>
                             <button
+                              disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
                               className="btn btn-primary"
                               onClick={() => {
                                 handleTableReset();
@@ -2022,6 +2009,7 @@ const Index = forwardRef(
                         {tableElement?.resetButton && (tableElement?.title === "Commentary History") ? (
                           <div>
                             <button
+                              disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
                               className="btn btn-primary"
                               onClick={() => {
                                 handleTableReset();
@@ -2117,6 +2105,7 @@ const Index = forwardRef(
                         {tableElement?.resetButton ? (
                           <div>
                             <button
+                            disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
                               className="btn btn-primary"
                               onClick={() => {
                                 handleTableReset();
