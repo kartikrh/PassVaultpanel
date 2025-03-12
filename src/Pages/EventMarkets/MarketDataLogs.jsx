@@ -38,7 +38,7 @@ function MarketDataLogs() {
       .post("/admin/eventMarket/getDSReport", {
         ...data,
         eventMarketId,
-        page: currentPage+1,
+        page: currentPage == 0 ? 1 : currentPage,
         limit: pageSize,
         isSendData: data?.isSendData,
         createdType: data?.createdType,
