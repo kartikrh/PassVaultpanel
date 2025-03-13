@@ -108,33 +108,33 @@ const Commentary = (props) => {
     const socket = createSocket();
     // console.log({ "Current Over Ball count": currentOver.ballCount, "OverHistory": overHistory });
 
-    // const handleCommentaryConsole = async (temp, main) => {
-    //     const currentState = {
-    //         over: main?.over,
-    //         ballCount: main?.ballCount,
-    //         teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-    //     }
-    //     const temporaryState = {
-    //         over: temp?.over,
-    //         ballCount: temp?.ballCount,
-    //         teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM]
-    //             ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
-    //             : '0/0',
-    //     }
-    //     const payload = {
-    //         currentState: JSON.stringify(currentState),
-    //         temporaryState: JSON.stringify(temporaryState),
-    //         ballCount: main?.ballCount,
-    //         over: main?.over,
-    //         teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-    //         commentaryId: main?.commentaryId,
-    //     }
-    //     try {
-    //         await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
-    //     } catch (error) {
-    //         console.error("Error updating commentary console:", error);
-    //     }
-    // };
+    const handleCommentaryConsole = async (temp, main) => {
+        const currentState = {
+            over: main?.over,
+            ballCount: main?.ballCount,
+            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+        }
+        const temporaryState = {
+            over: temp?.over,
+            ballCount: temp?.ballCount,
+            teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM]
+                ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
+                : '0/0',
+        }
+        const payload = {
+            currentState: JSON.stringify(currentState),
+            temporaryState: JSON.stringify(temporaryState),
+            ballCount: main?.ballCount,
+            over: main?.over,
+            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+            commentaryId: main?.commentaryId,
+        }
+        try {
+            await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
+        } catch (error) {
+            console.error("Error updating commentary console:", error);
+        }
+    };
     useEffect(() => {
         localStorage.setItem("superOverText", JSON.stringify(superOverText));
       }, [superOverText]);
@@ -2027,6 +2027,17 @@ const Commentary = (props) => {
                 }
                 console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
+                console.log("objToSave", objToSave)
+                if(objToSave.commentaryPartnership?.batter1Id && objToSave.commentaryPartnership?.batter2Id){
+                    handleCommentaryConsole(_currentOver, currentOver)
+                    dispatch(
+                        updateToastData({
+                          data: 'batter1Name or batter2Name is null',
+                          title: 'batter1Name or batter2Name is null' ,
+                          type: ERROR,
+                        })
+                      );
+                }
                 dispatch(addCommentaryScreenData(objToSave))
                 setSaveToDb(false)
             }
