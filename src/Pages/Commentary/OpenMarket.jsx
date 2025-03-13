@@ -610,7 +610,7 @@ export const OpenMarket = () => {
                         }
                     }
                 }
-                else if (key === "rateDiff" && parseInt(updatedMarket?.marketTypeCategoryId) === 23) {
+                else if (key === "rateDiff" && parseInt(updatedMarket?.marketTypeId) === marketTypeObj?.Fancy) {
                     const selectedKeyMapping = keys.find(k => k.key === selectedKey);
                     if (selectedKeyMapping) {
                         const noValue = selectedKeyMapping[`${selectedKey}No`] || 0;
@@ -1473,7 +1473,7 @@ export const OpenMarket = () => {
             if(pressedKey === 'H' || pressedKey === 'J') {
                 setData(prevData => {
                     return prevData.map(market => {
-                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeCategoryId) === 23) {
+                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeId) === marketTypeObj?.Fancy) {
                             return {
                                 ...market,
                                 runner: market.runner.map(runner => ({
@@ -1490,7 +1490,7 @@ export const OpenMarket = () => {
             } else {
                 setData(prevData => {
                     return prevData.map(market => {
-                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeCategoryId) === 23) {
+                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeId) === marketTypeObj?.Fancy) {
                             return {
                                 ...market,
                                 runner: market.runner.map(runner => ({
