@@ -1783,14 +1783,14 @@ export const OpenMarket = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories, isKeyPressed, input]);
+    }, [data, selectedCategories, isKeyPressed, input, isPointsShow]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories, isKeyPressed, input]);
+    }, [data, selectedCategories, isKeyPressed, input, isPointsShow]);
 
     return (
         <React.Fragment>
