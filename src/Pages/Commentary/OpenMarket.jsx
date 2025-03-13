@@ -1469,7 +1469,7 @@ export const OpenMarket = () => {
           const keyMapping = keys.find(k => k.key === pressedKey);
           if (keyMapping) {
             const marketId = event?.target?.dataset?.marketId;
-           if (marketId) {
+           if (marketId && isPointsShow) {
             if(pressedKey === 'H' || pressedKey === 'J') {
                 setData(prevData => {
                     return prevData.map(market => {
