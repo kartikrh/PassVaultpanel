@@ -108,11 +108,15 @@ const Commentary = (props) => {
     const socket = createSocket();
     // console.log({ "Current Over Ball count": currentOver.ballCount, "OverHistory": overHistory });
 
-    const handleCommentaryConsole = async (temp, main) => {
+    const handleCommentaryConsole = async (temp, main, objToSave, currentPartnership) => {
         const currentState = {
             over: main?.over,
             ballCount: main?.ballCount,
             teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+            commentaryBallByBall: objToSave?.commentaryBallByBall,
+            commentaryPartnership: objToSave?.commentaryPartnership,
+            commentaryPlayers: objToSave?.commentaryPlayers,
+            currentPartnership: currentPartnership,
         }
         const temporaryState = {
             over: temp?.over,
@@ -2027,13 +2031,12 @@ const Commentary = (props) => {
                 }
                 console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
-                console.log("objToSave", objToSave)
-                if(objToSave.commentaryPartnership?.batter1Id && objToSave.commentaryPartnership?.batter2Id){
-                    handleCommentaryConsole(_currentOver, currentOver)
+                if(!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id){
+                    handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
                     dispatch(
                         updateToastData({
-                          data: 'batter1Name or batter2Name is null',
-                          title: 'batter1Name or batter2Name is null' ,
+                          title: 'Partnership issue',
+                          data: 'batter1 or batter2 is null',
                           type: ERROR,
                         })
                       );
