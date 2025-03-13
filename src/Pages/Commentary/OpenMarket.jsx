@@ -37,6 +37,7 @@ export const OpenMarket = () => {
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
     const [isScorecardShow, setIsScorecardShow] = useState(true);
+    const [isPointsShow, setIsPointsShow] = useState(false);
     const [isKeyPressed, setIsKeyPressed] = useState(false);
     const [input, setInput] = useState("");
     const [ballStatus, setBallStatus] = useState(null);
@@ -245,6 +246,43 @@ export const OpenMarket = () => {
             >
                 {" "}
                 ScoreCard
+            </div>
+        );
+    };
+
+    const OffsymbolPointStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingRight: "10px",
+                }}
+            >
+                {" "}
+                Points
+            </div>
+        );
+    };
+    const OnSymbolPointStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingLeft: "11px",
+                }}
+            >
+                {" "}
+                Points
             </div>
         );
     };
@@ -1847,6 +1885,17 @@ export const OpenMarket = () => {
                                                 }}
                                                 checked={isScorecardShow}
                                             />
+                                            <Switch
+                                                width={80}
+                                                uncheckedIcon={<OffsymbolPointStatus />}
+                                                checkedIcon={<OnSymbolPointStatus />}
+                                                className="mx-2"
+                                                onColor="#02a499"
+                                                onChange={() => {
+                                                    setIsPointsShow(!isPointsShow);
+                                                }}
+                                                checked={isPointsShow}
+                                            />
                                         </Col>
                                     </Row>}
                                 {isScorecardShow && (
@@ -1865,7 +1914,7 @@ export const OpenMarket = () => {
                                         </Col>
                                     </Row>
                                 )}
-                                <Row>
+                                {isPointsShow && <Row>
                                    {keys.map((item, index) => (
                                    <>
                                        <Col key={index} xs="auto" className="d-flex align-items-center mb-2">
@@ -1894,7 +1943,7 @@ export const OpenMarket = () => {
                                           onChange={handleSelectedKeyChange}
                                        />
                                     </Col>
-                                </Row>
+                                </Row>}
                                 {Object.keys(categorisedData).length > 0 && (
                                     <OpenMarketCategories
                                         categorisedData={categorisedData}
