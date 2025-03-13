@@ -740,40 +740,71 @@ export const CreateEventMarket = () => {
     };
 
     const processTopBowlerRunsMarkets = (market, teams, processedMarketsObj) => {
-        teams.forEach(team => {
-            sortbasedOnthePlayerTypeBowlerFirst(team.players);
-            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
-            team.players.forEach(player => {
-                const specialMarketName = `Top Bowler ${team?.teamName} ${player?.playerName} adv`;
-                const specialMarket = {
-                    ...market,
-                    playerId: player.commentaryPlayerId,
-                    marketName: specialMarketName,
-                    teamId: team.teamId,
-                    over: 0,
-                    defaultLine: parseFloat(player.batsmanAverage)
-                }
-                processMarketAndRunners(specialMarket, null, 'oneTimeMarket', processedMarketsObj);
-            });
-        });
+        const specialMarketName = `Man Of the Match ${market?.matchType} ADV`;
+        const specialMarket = {
+            ...market,
+            marketName: specialMarketName,
+            over: 0,
+            runners: teams?.flatMap(team => 
+                team?.players?.flatMap(player => 
+                    (market?.runners || []).map(runner => ({
+                        marketTemplateRunnerId: runner?.marketTemplateRunnerId,
+                        marketTemplateId: market?.marketTemplateId,
+                        runner: `${player?.playerName} ${team?.teamName}`,
+                        line: runner?.line,
+                        overRate: runner?.overRate,
+                        underRate: runner?.underRate,
+                        lastUpdate: new Date().toISOString(),
+                        selectionId: runner?.selectionId,
+                        order: runner?.order,
+                        backPrice: runner?.backPrice,
+                        layPrice: runner?.layPrice,
+                        backSize: market?.isPredefineRunnerValue ? runner?.backSize : market?.defaultBackSize,
+                        laySize: market?.isPredefineRunnerValue ? runner?.laySize : market?.defaultLaySize,
+                        predefinedValue: runner?.predefinedValue,
+                        runnerId: runner?.runnerId || "0",
+                        playerId: player?.commentaryPlayerId,
+                        defaultLine: parseFloat(player?.batsmanAverage),
+                        teamId: team?.teamId,
+                    }))
+                )
+            )
+        }
+        processMarketAndRunners(specialMarket, null, 'oneTimeMarket', processedMarketsObj);
     };
 
     const processTopBatsManRunsMarkets = (market, teams, processedMarketsObj) => {
         teams.forEach(team => {
             sortbasedOnthePlayerTypeAndPlayerName(team.players);
-            // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
-            team.players.forEach(player => {
-                const specialMarketName = `Top Batsman ${team?.teamName} ${player?.playerName} adv`;
-                const specialMarket = {
-                    ...market,
-                    playerId: player.commentaryPlayerId,
-                    marketName: specialMarketName,
-                    teamId: team.teamId,
-                    over: 0,
-                    defaultLine: parseFloat(player.batsmanAverage)
-                }
-                processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
-            });
+            const specialMarketName = `Top Batsman ${team?.teamName} adv`;
+            const specialMarket = {
+                ...market,
+                marketName: specialMarketName,
+                teamId: team?.teamId,
+                over: 0,
+                runners: team?.players?.flatMap(player => 
+                    (market?.runners || []).map(runner => ({
+                        marketTemplateRunnerId: runner?.marketTemplateRunnerId,
+                        marketTemplateId: market?.marketTemplateId,
+                        runner: `${player?.playerName} ${team?.teamName}`,
+                        line: runner?.line,
+                        overRate: runner?.overRate,
+                        underRate: runner?.underRate,
+                        lastUpdate: new Date().toISOString(),
+                        selectionId: runner?.selectionId,
+                        order: runner?.order,
+                        backPrice: runner?.backPrice,
+                        layPrice: runner?.layPrice,
+                        backSize: market?.isPredefineRunnerValue ? runner?.backSize : market?.defaultBackSize,
+                        laySize: market?.isPredefineRunnerValue ? runner?.laySize : market?.defaultLaySize,
+                        predefinedValue: runner?.predefinedValue,
+                        runnerId: runner?.runnerId || "0",
+                        playerId: player?.commentaryPlayerId,
+                        defaultLine: parseFloat(player?.batsmanAverage),
+                    }))
+                )
+            }
+            processMarketAndRunners(specialMarket, team.teamId, team.teamId.toString(), processedMarketsObj);
         });
     };
 
@@ -1301,7 +1332,8 @@ export const CreateEventMarket = () => {
                     return column.render(
                         runner ? runner[column.key] : null,
                         runner || {},
-                        (key, value) => handleRunnerValueChange(record, 0, key, value)
+                        (key, value) => handleRunnerValueChange(record, 0, key, value),
+                        record,
                     );
                 }
             }))
@@ -1345,7 +1377,8 @@ export const CreateEventMarket = () => {
                                                 {column.render(
                                                     runner[column.key],
                                                     runner,
-                                                    (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value)
+                                                    (key, value) => handleRunnerValueChange(market, runnerIndex + 1, key, value),
+                                                    market,
                                                 )}
                                             </td>
                                         ))}
@@ -1474,7 +1507,17 @@ export const CreateEventMarket = () => {
                 markets.filter((_, index) => selectedMarkets[key]?.[index])
             )
             .map(market => {
-                // Get predefinedValue from the first runner
+                let selectedRunners;
+                if (market?.marketTypeCategoryId === 37 || market?.marketTypeCategoryId === 38) {
+                    selectedRunners = market?.runners.filter(runner => runner?.isChecked);
+                } else {
+                    selectedRunners = market.runners;
+                }
+
+                if ((market.marketTypeCategoryId === 37 || market.marketTypeCategoryId === 38) && selectedRunners.length === 0) {
+                    return null;
+                }
+
                 const predefinedValue = market.runners[0]?.predefinedValue;
 
                 return {
@@ -1502,7 +1545,7 @@ export const CreateEventMarket = () => {
                     beforeCloseMin: market.beforeCloseMin,
                     isPredefineRunnerValue: market.isPredefineRunnerValue,
                     predefinedValue: predefinedValue, // Add predefinedValue at market level
-                    runners: market.runners.map(runner => {
+                    runners: selectedRunners?.map(runner => {
                         // Remove predefinedValue from runner level
                         const { predefinedValue: _, ...runnerWithoutPredefined } = runner;
                         return {
@@ -1524,7 +1567,7 @@ export const CreateEventMarket = () => {
                 };
             });
 
-        if (savedData.length === 0) {
+        if (savedData.length === 0 || savedData.every(market => market === null)) {
             dispatch(updateToastData({
                 data: "Select at least one row",
                 title: "Error",
@@ -1725,6 +1768,19 @@ export const CreateEventMarket = () => {
     ]
 
     const runnerColumns = [
+        {
+            key: "selectRunner",
+            render: (text, record, onChange, market) => (
+                (market?.marketTypeCategoryId === 37 || market?.marketTypeCategoryId === 38) ? (
+                    <input
+                        type="checkbox"
+                        checked={record?.isChecked || false}
+                        onChange={(e) => onChange("isChecked", e.target.checked)}
+                    />
+                ) : null
+            ),
+            style: { width: "5%", textAlign: "center" }
+        },
         {
             title: "Runner",
             key: "runner",
