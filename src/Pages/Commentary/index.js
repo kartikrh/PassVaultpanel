@@ -92,7 +92,8 @@ const Index = () => {
   const [competitionId, setCompetitionId] = useState(null);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
-  
+
+  const didInitialFetch = useRef(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -105,12 +106,15 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    const valueToSetFrom = userRefData || latestValueFromTable
     let payload = {
-      ...(valueToSetFrom || tableActions),
-      eventTypeId: valueToSetFrom?.eventTypeId || 0,
-      competitionId: valueToSetFrom?.eventTypeId !== eventTypeId ? 0 : valueToSetFrom?.competitionId || 0,
+      ...(latestValueFromTable || tableActions),
+      eventTypeId: latestValueFromTable?.eventTypeId || 0,
+      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
     };
+    if (!isEmpty(userRefData)) {
+      if (userRefData.eventTypeId && userRefData.eventTypeId !== 0) payload['eventTypeId'] = userRefData.eventTypeId
+      if (userRefData.competitionId && userRefData.competitionId !== 0) payload['competitionId'] = userRefData.competitionId
+    }
     if (isSearch) {
       payload = {
         ...payload,
@@ -135,8 +139,12 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (valueToSetFrom?.eventTypeId) {
-      fetchCompetitionData(valueToSetFrom?.eventTypeId);
+    if (latestValueFromTable?.eventTypeId || userRefData.eventTypeId) {
+      const valueToFetchFrom =
+        userRefData.eventTypeId && +userRefData.eventTypeId !== 0 ?
+          userRefData.eventTypeId :
+          latestValueFromTable?.eventTypeId
+      fetchCompetitionData(valueToFetchFrom);
     }
   };
   const fetchUserPermission = () => {
@@ -1777,15 +1785,32 @@ const Index = () => {
 
   useEffect(() => {
     const objToSave = {}
+    let shouldFetchData = false;
+
     if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
       const matchedEvent = eventTypes.find((item) => item.eventTypeId === userRefData?.eventTypeId)
       objToSave["eventType"] = { label: matchedEvent.eventType, value: matchedEvent.eventTypeId }
     }
-    if (userRefData?.competitionId !== 0 && competitions && competitions.length > 0) {
-      const matchedCompetition = competitions.find((item) => item.competitionId === userRefData?.competitionId)
-      objToSave["competition"] = { label: matchedCompetition.competition, value: matchedCompetition.competitionId }
+
+    if (competitions && competitions.length > 0) {
+      if (userRefData?.competitionId !== 0) {
+        const matchedCompetition = competitions.find((item) => item.competitionId === userRefData?.competitionId)
+        if (matchedCompetition) {
+          objToSave["competition"] = { label: matchedCompetition.competition, value: matchedCompetition.competitionId }
+          shouldFetchData = true;
+        }
+      } else {
+        shouldFetchData = true;
+      }
     }
-    setFilledDropdownData(objToSave)
+
+    setFilledDropdownData(objToSave);
+
+    // Use a ref to track if we've already fetched data
+    if (shouldFetchData && !didInitialFetch.current) {
+      fetchData();
+      didInitialFetch.current = true;
+    }
   }, [eventTypes, competitions]);
 
   const handleReload = (value) => {
