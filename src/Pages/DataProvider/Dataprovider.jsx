@@ -164,6 +164,12 @@ const DataproviderPage = () => {
                                                                         <b>{match.eventName}</b>
                                                                       </td>
                                                                       <td className='date-width p-2'>
+                                                                        {match.marketCount} total market
+                                                                      </td>
+                                                                      <td className='date-width p-2'>
+                                                                        {match.openMarketCount} open market
+                                                                      </td>
+                                                                      <td className='date-width p-2'>
                                                                         {convertDateUTCToLocal(match.eventDate, "index")}
                                                                       </td>
                                                                       <td className='status-width p-2'>
