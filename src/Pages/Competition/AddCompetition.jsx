@@ -108,6 +108,7 @@ function AddCompetitions() {
         tiePoint: dataToSave?.tiePoint || null,
         lossPoint: dataToSave?.lossPoint || null,
         cancelPoint: dataToSave?.cancelPoint || null,
+        drsCount: dataToSave?.drsCount || 0,
       }
       setCurrentSaveAction(saveAction);
       dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
