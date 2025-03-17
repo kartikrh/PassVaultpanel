@@ -111,6 +111,15 @@ export const convertDateUTCToLocal = (UTCDate, page, format) => {
   return "";
 }
 
+export const convertDateFormat = (date, page, format) => {
+  if (!date) return "";
+  
+  if (page === "index") {
+    return moment(date).format("DD/MM/YY, h:mm:ss a");
+  }
+  return moment(date).format(format || "YYYY-MM-DDTHH:mm:ss");
+};
+
 export const convertDateUTCToLocal2 = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {
