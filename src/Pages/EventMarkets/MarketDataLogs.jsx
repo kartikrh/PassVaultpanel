@@ -6,7 +6,7 @@ import Table from "../../components/Common/Table";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
 import { Tooltip } from "antd";
@@ -26,6 +26,7 @@ function MarketDataLogs() {
   const [total, setTotal] = useState(0);
   const [dateModelVisable, setDateModelVisable] = useState(false);
   const [datePriceValues, setDatePriceValues] = useState([]);
+  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const eventMarketId = +sessionStorage.getItem('eventMarketDataLogId') || "0";
   const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketDataLogDetails') || "{}");
   const finalizeRef = useRef(null);
@@ -181,7 +182,14 @@ function MarketDataLogs() {
     {
       title: "Date",
       dataIndex: "createdDate",
-      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal2(text, "index")}</span>,
+      render: (text) => (
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+          }
+        </span>
+      ),
       key: "createdDate",
       style: { width: "10%" },
       sort: true,
@@ -489,6 +497,7 @@ function MarketDataLogs() {
     createdTypeListSelect: true,
     resetButton: true,
     reloadButton: true,
+    isDateTypeSelect: true,
   };
 
   const sendDataList = [
@@ -582,6 +591,8 @@ function MarketDataLogs() {
             createdTypeList={createdTypeList}
             handleReset={handleReset}
             handleReload={handleReload}
+            dateType={dateType}
+            setDateType={setDateType}
           /> : 
           <Table
             ref={finalizeRef}
@@ -614,6 +625,8 @@ function MarketDataLogs() {
             createdTypeList={createdTypeList}
             handleReset={handleReset}
             handleReload={handleReload}
+            dateType={dateType}
+            setDateType={setDateType}
           />}
           {dateModelVisable &&
           <CheckBackLayPrice
