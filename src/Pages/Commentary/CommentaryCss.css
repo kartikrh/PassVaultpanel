@@ -626,8 +626,13 @@
 }
 
 .status-width {
-  width: 20%;
+  width: 10%;
   font-size: 12px;
+}
+
+.event-btn {
+  padding-top: 2px !important;
+  padding-bottom: 0px !important;
 }
 
 .event-status {
