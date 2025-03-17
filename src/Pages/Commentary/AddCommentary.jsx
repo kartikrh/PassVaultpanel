@@ -101,7 +101,7 @@ function AddCommentary() {
     }, [isSaved]);
 
     const handleFormADataChange = (newFormData) => {
-        setSavedFormState(newFormData);
+        setSavedFormState({...savedFormState, ...newFormData});
         setCompetitionId(newFormData["competitionId"]);
         const requiredFields = ["competitionId", "eventTypeId", "eventId", "matchTypeId", "eventRefId", "eventName", "eventDate", "delay"];
         const isValid = requiredFields.every(
@@ -162,12 +162,6 @@ function AddCommentary() {
                 "eventId": [],
             }));
             if (newFormData["competitionId"] !== "0") {
-                const selectedCompetition = competitionList.find(item => item?.competitionId === newFormData["competitionId"]);
-                if (selectedCompetition) {
-                    const { matchTypeId, drsCount } = selectedCompetition;
-                    finalizeRef1.current.updateFormFromParent({ matchTypeId });
-                    finalizeRef2.current.updateFormFromParent({ drsCount });
-                }
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/commentary/eventListByCompetitionId', { competitionId: newFormData["competitionId"] })
                     .then((response) => {
@@ -184,6 +178,12 @@ function AddCommentary() {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                         setIsApiLoading(false);
                     });
+                const selectedCompetition = competitionList.find(item => item?.competitionId == newFormData["competitionId"]);
+                if (selectedCompetition) {
+                    const { matchTypeId, drsCount } = selectedCompetition;
+                    finalizeRef1.current.updateFormFromParent({ matchTypeId });
+                    finalizeRef2.current.updateFormFromParent({ drsCount });
+                }
             } else {
                 setMasterData((preData) => ({
                     ...preData,
@@ -231,7 +231,7 @@ function AddCommentary() {
         }
     }
     const handleFormBDataChange = (newFormData) => {
-        setSavedFormState(newFormData);
+        setSavedFormState({...savedFormState, ...newFormData});
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
