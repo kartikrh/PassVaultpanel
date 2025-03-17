@@ -16,7 +16,7 @@ import {
   TAB_MANUAL_EVENT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateFormat } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {
   setSelectedMarketHistory,
@@ -298,7 +298,7 @@ const Index = () => {
     {
       title: "Date",
       dataIndex: `eventDate`,
-      render: (text, record) => <span>{convertDateFormat(text, 'index')}</span>,
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
       sort: true,
       key: "eventDate",
       style: { width: "30%" },
@@ -418,7 +418,7 @@ const Index = () => {
     {
       title: "Date",
       dataIndex: `matchDate`,
-      render: (text, record) => <span>{convertDateFormat(text, 'index')}</span>,
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
       sort: true,
       key: "matchDate",
       style: { width: "10%" },
