@@ -21,7 +21,7 @@ import {
   TAB_AUTO_EVENT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateFormat } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {
   resetTabSliceData,
@@ -302,7 +302,7 @@ const Index = () => {
     {
       title: "Date",
       dataIndex: `event`,
-      render: (text, record) => <span>{convertDateFormat(text?.openDate, 'index')}</span>,
+      render: (text, record) => <span>{convertDateUTCToLocal(text?.openDate, 'index')}</span>,
       sort: true,
       key: "date",
       style: { width: "30%" },
@@ -419,7 +419,7 @@ const Index = () => {
     {
       title: "Date",
       dataIndex: `matchDate`,
-      render: (text, record) => <span>{convertDateFormat(text, 'index')}</span>,
+      render: (text, record) => <span>{convertDateUTCToLocal(text, 'index')}</span>,
       sort: true,
       key: "matchDate",
       style: { width: "10%" },
