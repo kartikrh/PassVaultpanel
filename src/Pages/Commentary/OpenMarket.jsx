@@ -1167,7 +1167,8 @@ export const OpenMarket = () => {
             render: (text, record) => (
                 <CustomInput
                     className="form-control small-text-fields input-line-field text-bold"
-                    value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
+                    // value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
+                    value={Number(text)}
                     onChange={(newValue) => {
                         handleValueChange(record, "line", parseFloat(newValue))
                     }}

@@ -8,7 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { TAB_SUBSCRIBERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_SUBSCRIBERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -243,11 +243,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard")
     }
     fetchData();
-  }, []);
+  }, [permissionObj]);
 
   return (
     <React.Fragment>
