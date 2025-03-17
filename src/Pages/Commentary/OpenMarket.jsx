@@ -610,7 +610,7 @@ export const OpenMarket = () => {
                         }
                     }
                 }
-                else if (key === "rateDiff" && parseInt(updatedMarket?.marketTypeId) === marketTypeObj?.Fancy) {
+                else if (key === "rateDiff" && value == 0 && parseInt(updatedMarket?.marketTypeId) === marketTypeObj?.Fancy) {
                     const selectedKeyMapping = keys.find(k => k.key === selectedKey);
                     if (selectedKeyMapping) {
                         const noValue = selectedKeyMapping[`${selectedKey}No`] || 0;

@@ -86,6 +86,13 @@ export const CompetitionFields = [
         type: IMAGE,
     },
     {
+        type: TEXT,
+        name: "drsCount",
+        label: "Drs Count",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         name: "isActive",
         label: "Is Active",
         defaultValue: true,
