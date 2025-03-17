@@ -729,15 +729,17 @@ const Index = forwardRef(
         let sliced;
         if (serverCurrentPage < possibleNoOfPages) {
           sliced = dataSource.slice(
-            (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage) * serverPageSize,
-            (serverCurrentPage == 1 ? serverPageSize : Number(serverCurrentPage * serverPageSize)) + Number(serverPageSize)
+            (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize,
+            (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize)
           );
+          console.log("sliced")
         } else {
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * serverPageSize,
             Number(pageToJump * serverPageSize) + Number(serverPageSize)
           );
+          console.log("sliced")
         }
         setData(sliced);
       } else if (isPagination) {
@@ -1862,6 +1864,24 @@ const Index = forwardRef(
                             </button>
                           </div>
                         ) : null}
+                        {(!tableElement?.isDateRange && tableElement?.isDateTypeSelect && (tableElement?.title == "Market Data Logs")) ? (
+                          <Select
+                            value={dateType}
+                            placeholder="Date Type"
+                            styles={{
+                              control: (provided) => ({
+                                ...provided,
+                                width: 200,
+                              }),
+                            }}
+                            onChange={(e) => setDateType(e)}
+                            options={[
+                              { label: "Local Timezone", value: 1 },
+                              { label: "UTC Timezone", value: 2 },
+                            ]}
+                            classNamePrefix="filter-dropdown"
+                          />
+                        ) : null}
                         {tableElement?.importExport ? (
                           <div className="d-flex align-items-center" style={{}}>
                             <span
@@ -2395,7 +2415,7 @@ const Index = forwardRef(
                   tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
                     {
-                      Number(serverCurrentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > serverTotal == false)? 
+                      Number(serverCurrentPage) != 0 && ((Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal == false)? 
                         <span>
                           Showing {Number(Number(serverCurrentPage) - 1) * serverPageSize + 1} -{" "}
                           {Number(Number(serverCurrentPage) - 1) * serverPageSize + data.length} of{" "}
@@ -2405,7 +2425,7 @@ const Index = forwardRef(
                           {serverTotal}{" "}
                           entries
                         </span>:
-                        (Number((Number(currentPage) - 1) * pageSize) + 1) > serverTotal? 
+                        (Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal? 
                         <span>
                           Showing {Number(Number(serverCurrentPage) - 2) * serverPageSize + 1} -{" "}
                           {Number(Number(serverCurrentPage) - 2) * serverPageSize + data.length} of{" "}
