@@ -728,18 +728,18 @@ const Index = forwardRef(
         const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
         let sliced;
         if (serverCurrentPage < possibleNoOfPages) {
+          // console.log("staRT", (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize)
+          // console.log("END", (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize))
           sliced = dataSource.slice(
             (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize,
             (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize)
           );
-          console.log("sliced")
         } else {
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * serverPageSize,
             Number(pageToJump * serverPageSize) + Number(serverPageSize)
           );
-          console.log("sliced")
         }
         setData(sliced);
       } else if (isPagination) {
