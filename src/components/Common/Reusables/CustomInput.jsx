@@ -7,13 +7,29 @@ const CustomInput = ({ value, onChange, steps, ...rest }) => {
     const inputValue = e.target.value;
     if (inputValue === "") {
       onChange(null);
-    } else {
-      const parsedValue = parseFloat(inputValue);
-      if (!isNaN(parsedValue)) {
-        if (parsedValue >= 0) {
-          onChange(parsedValue);
-        }
-      }
+      return;
+    }
+    // Allow only valid numbers with up to two decimal places OR a single "."
+    if (!/^\d*\.?\d{0,2}$/.test(inputValue) && inputValue !== ".") return;
+  
+    // Prevent multiple dots
+    if (inputValue.split(".").length > 2) return;
+  
+    // Prevent leading zeros (e.g., "01" should become "1", but keep "0." valid)
+    if (/^0\d/.test(inputValue)) {
+      inputValue = inputValue.replace(/^0+/, "");
+    }
+  
+    // Allow standalone "." and "0." without converting them to a number
+    if (inputValue === "." || inputValue === "0.") {
+      onChange(inputValue);
+      return;
+    }
+  
+    // Convert to float when valid
+    const parsedValue = parseFloat(inputValue);
+    if (!isNaN(parsedValue) && parsedValue >= 0) {
+      onChange(inputValue); // Keep as string to preserve user input
     }
   };
 

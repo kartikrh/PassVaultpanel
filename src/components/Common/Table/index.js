@@ -147,12 +147,11 @@ const Index = forwardRef(
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
-    useEffect(() => {
-      
-      if(!isEmpty(filteredData)){
-        setData(filteredData);
-      }
-    }, [filteredData]);
+    // useEffect(() => {
+    //   if(!isEmpty(filteredData)){
+    //     setData(filteredData);
+    //   }
+    // }, [filteredData]);
 
     useEffect(() => {
       if(data.length == 0 && filteredData.length == 0){
@@ -728,35 +727,39 @@ const Index = forwardRef(
         const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
         let sliced;
         if (serverCurrentPage < possibleNoOfPages) {
+          // console.log("staRT", (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize)
+          // console.log("END", (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize))
           sliced = dataSource.slice(
             (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize,
             (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize)
           );
-          console.log("sliced")
         } else {
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * serverPageSize,
             Number(pageToJump * serverPageSize) + Number(serverPageSize)
           );
-          console.log("sliced")
         }
         setData(sliced);
       } else if (isPagination) {
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
         let sliced;
-
+        console.log("currentPage", currentPage)
         if (currentPage < possibleNoOfPages) {
+          console.log("start", (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize)
+          console.log("end", (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize))
           sliced = dataSource.slice(
             (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
             (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)
           );
+          console.log("sliced", sliced)
         } else {
           const pageToJump = possibleNoOfPages - 1;
           sliced = dataSource.slice(
             pageToJump * pageSize,
             Number(pageToJump * pageSize) + Number(pageSize)
           );
+          console.log("sliced", sliced)
         }
         setData(sliced);
       }
@@ -2414,6 +2417,7 @@ const Index = forwardRef(
                 {
                   tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
+                    {console.log("serverCurrentPage", serverCurrentPage)}
                     {
                       Number(serverCurrentPage) != 0 && ((Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal == false)? 
                         <span>
@@ -2498,6 +2502,8 @@ const Index = forwardRef(
                     {
                       Number(currentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) == false)?
                       <span>
+                        {console.log("currentPage", currentPage , pageSize)}
+                        {console.log(Number((Number(currentPage) - 1) * pageSize) + 1, Number((Number(currentPage) - 1) * pageSize) + data.length)}
                         Showing {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
                         {Number((Number(currentPage) - 1) * pageSize) + data.length} of{" "}
                         {tableElement.title === "Tabs"
@@ -2506,6 +2512,7 @@ const Index = forwardRef(
                         entries
                       </span> : (Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) ?
                       <span>
+                        {console.log("2")}
                         Showing {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
                         {Number((Number(currentPage) - 2) * pageSize) + data.length} of{" "}
                         {tableElement.title === "Tabs"
@@ -2515,6 +2522,7 @@ const Index = forwardRef(
                       </span>
                       :
                       <span>
+                        {console.log("3")}
                         Showing {currentPage * pageSize + 1} -{" "}
                         {currentPage * pageSize + data.length} of{" "}
                         {tableElement.title === "Tabs"

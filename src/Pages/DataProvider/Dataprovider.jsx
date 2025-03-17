@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table, Container, Row, Card, CardBody} from 'reactstrap'
+import{Accordion, AccordionBody, AccordionItem, AccordionHeader, Table, Container, Row, Card, CardBody, Button} from 'reactstrap'
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { checkPermission, convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from 'react-router-dom';
-import { TAB_DATA_PROVIDER, PERMISSION_VIEW } from '../../components/Common/Const';
+import { TAB_DATA_PROVIDER, PERMISSION_VIEW, ERROR } from '../../components/Common/Const';
 import { isEmpty } from 'lodash';
+import { Tooltip } from 'antd';
+import axiosInstance from '../../Features/axios';
+import { updateToastData } from '../../Features/toasterSlice';
 
 const DataproviderPage = () => {
     const pageName = TAB_DATA_PROVIDER;
@@ -21,9 +24,10 @@ const DataproviderPage = () => {
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
     const navigate = useNavigate();
     document.title = "Trader";
-
+    const dispatch = useDispatch();
     const [openEventTypes, setEventTypes] = useState([]);
     const [openCompetition, setOpenCompetition] = useState([]);
+    const [eventData, setEventData] = useState([]);
 
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
@@ -53,6 +57,31 @@ const DataproviderPage = () => {
         }
     },[loadInitData]);
 
+    const handleEventMarketClick = (match) => {
+        const eventDetails = eventData.find((item) => item?.eventRefId === match?.eventId);
+        const details = {...match, ...eventDetails }
+        const url = new URL(window.location.origin + "/eventMarkets");
+        sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
+        sessionStorage.setItem('commentaryEventMarketDetails', "" + JSON.stringify(details));
+        window.open(url.href, '_blank');
+        sessionStorage.removeItem("commentaryEventMarketId");
+        sessionStorage.removeItem("commentaryEventMarketDetails");
+      };
+
+    const fetchEventData = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosInstance.post("/admin/eventMarket/eventsData");
+            if(response?.result) {
+              setEventData(response?.result);
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -81,6 +110,7 @@ const DataproviderPage = () => {
 
         if(apiConfig.apiURL && apiConfig.apiXkey) {
           fetchData();
+          fetchEventData();
         }
     }, [apiConfig.apiURL, apiConfig.apiXkey]);
 
@@ -161,13 +191,13 @@ const DataproviderPage = () => {
                                                                   return (
                                                                     <tr onClick={() => handleRowClick(match)} className='cursor-pointer'>
                                                                       <td className='event-col p-2'>
-                                                                        <b>{match?.eventName}</b>
+                                                                        <b>{match?.eventName} ({match.eventId})</b>
                                                                       </td>
                                                                       <td className='date-width p-2'>
-                                                                        {match?.marketCount} total market
+                                                                        total market: <b>{match?.marketCount}</b>
                                                                       </td>
                                                                       <td className='date-width p-2'>
-                                                                        {match?.openMarketCount} open market
+                                                                        open market: <b>{match?.openMarketCount}</b>
                                                                       </td>
                                                                       <td className='date-width p-2'>
                                                                         {convertDateUTCToLocal(match?.eventDate, "index")}
@@ -176,6 +206,24 @@ const DataproviderPage = () => {
                                                                         <span className="event-status" style={{backgroundColor: getStatusColor(match.status)}}> 
                                                                             {getStatusLabel(match?.status)}
                                                                         </span>
+                                                                      </td>
+                                                                      <td className='status-width p-2'>
+                                                                        <Tooltip
+                                                                            title={"Event Market"}
+                                                                            color={"#e8e8ea"}
+                                                                            overlayInnerStyle={{ color: "#000" }}
+                                                                        >
+                                                                        <Button
+                                                                            color={"info"}
+                                                                            size="sm"
+                                                                            className="btn event-btn"
+                                                                            onClick={() => {
+                                                                            handleEventMarketClick(match)
+                                                                            }}
+                                                                        >
+                                                                            <i class="bx bxs-up-arrow-square"></i>
+                                                                        </Button>
+                                                                        </Tooltip>
                                                                       </td>
                                                                     </tr>
                                                                   )
