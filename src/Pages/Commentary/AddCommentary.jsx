@@ -39,6 +39,7 @@ function AddCommentary() {
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+    const [competitionList, setCompetitionList] = useState([]);
     const [masterData, setMasterData] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.commentary);
@@ -75,6 +76,7 @@ function AddCommentary() {
                 "team2Players": true,
                 "matchTypeId": true,
                 "addSystemPlayer": true,
+                "drsCount": true,
             })
         }
     }, [id]);
@@ -134,7 +136,8 @@ function AddCommentary() {
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId: newFormData["eventTypeId"] })
                     .then((response) => {
-                        const resultData = fetchResult(response)
+                        const resultData = fetchResult(response);
+                        setCompetitionList(resultData);
                         const formattedData = resultData?.map(item => {
                             return { label: item?.competition, value: item?.competitionId }
                         })
@@ -159,6 +162,12 @@ function AddCommentary() {
                 "eventId": [],
             }));
             if (newFormData["competitionId"] !== "0") {
+                const selectedCompetition = competitionList.find(item => item?.competitionId === newFormData["competitionId"]);
+                if (selectedCompetition) {
+                    const { matchTypeId, drsCount } = selectedCompetition;
+                    finalizeRef1.current.updateFormFromParent({ matchTypeId });
+                    finalizeRef2.current.updateFormFromParent({ drsCount });
+                }
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/commentary/eventListByCompetitionId', { competitionId: newFormData["competitionId"] })
                     .then((response) => {
@@ -371,7 +380,6 @@ function AddCommentary() {
                 setMasterData((preData) => ({
                     ...preData,
                     "matchTypeId": formattedData
-
                 }));
                 setIsApiLoading(false);
             }).catch((error) => {
@@ -432,7 +440,8 @@ function AddCommentary() {
                 "team1Players": dataToSave2.team1Players,
                 "team2Players": dataToSave2.team2Players,
                 "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
-                "systemPlayerCount" :dataToSave2.addSystemPlayer?dataToSave2.systemPlayerCount : "0" 
+                "systemPlayerCount" :dataToSave2.addSystemPlayer ? dataToSave2.systemPlayerCount : "0",
+                "drsCount": dataToSave2?.drsCount || 0,
             }
             const extraData = {
                 commentaryId: id,
