@@ -275,6 +275,13 @@ export const TeamDetailsFields = [
         requiredErrorMessage: "Please enter value",
         fieldColspan: { xs: 12, md: 3, lg: 3 }
     },
+    {
+        type: TEXT,
+        name: "drsCount",
+        label: "Drs Count",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
 ]
 
 export const SHORT_COMMENTARY_TEAM = [
