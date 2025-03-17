@@ -161,20 +161,20 @@ const DataproviderPage = () => {
                                                                   return (
                                                                     <tr onClick={() => handleRowClick(match)} className='cursor-pointer'>
                                                                       <td className='event-col p-2'>
-                                                                        <b>{match.eventName}</b>
+                                                                        <b>{match?.eventName}</b>
                                                                       </td>
                                                                       <td className='date-width p-2'>
-                                                                        {match.marketCount} total market
+                                                                        {match?.marketCount} total market
                                                                       </td>
                                                                       <td className='date-width p-2'>
-                                                                        {match.openMarketCount} open market
+                                                                        {match?.openMarketCount} open market
                                                                       </td>
                                                                       <td className='date-width p-2'>
-                                                                        {convertDateUTCToLocal(match.eventDate, "index")}
+                                                                        {convertDateUTCToLocal(match?.eventDate, "index")}
                                                                       </td>
                                                                       <td className='status-width p-2'>
                                                                         <span className="event-status" style={{backgroundColor: getStatusColor(match.status)}}> 
-                                                                            {getStatusLabel(match.status)}
+                                                                            {getStatusLabel(match?.status)}
                                                                         </span>
                                                                       </td>
                                                                     </tr>
