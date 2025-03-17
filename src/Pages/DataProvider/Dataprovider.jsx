@@ -161,7 +161,7 @@ const DataproviderPage = () => {
                                                                   return (
                                                                     <tr onClick={() => handleRowClick(match)} className='cursor-pointer'>
                                                                       <td className='event-col p-2'>
-                                                                        <b>{match?.eventName}</b>
+                                                                        <b>{match.eventName} ({match.eventId})</b>
                                                                       </td>
                                                                       <td className='date-width p-2'>
                                                                         {match?.marketCount} total market
