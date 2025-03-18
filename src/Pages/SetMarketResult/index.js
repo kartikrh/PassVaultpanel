@@ -19,7 +19,8 @@ import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResu
 import { Tooltip } from "antd";
 import SetResultModal from "./SetResultModal";
 import CancelModal from "./CancelModal";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
+import ResultSelectedModel from "./ResultSelectedModel";
 
 const Index = () => {
   const pageName = TAB_SET_MARKETS_RESULT;
@@ -47,6 +48,8 @@ const Index = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [mtAndCategories, setMtAndCategories] = useState(null);
   const [selectedMarketType, setSelectedMarketType] = useState(null);
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [resultModelVisable, setResultModelVisable] = useState(false);
   const [categories, setCategories] = useState([]);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -110,12 +113,25 @@ const Index = () => {
           apiDataIdList.push(ele?.eventMarketId);
         });
         setData(apiData);
+        setDataIndexList(apiDataIdList);
         setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
       });
+  };
+
+  const handleSingleCheck = (e) => {
+    let updateSingleCheck = [];
+    if (checekedList.includes(e.eventMarketId)) {
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.eventMarketId
+      );
+    } else {
+      updateSingleCheck = [...checekedList, e.eventMarketId];
+    }
+    setCheckedList(updateSingleCheck);
   };
 
   const fetchMarketCategoriesList = async () =>{
@@ -262,6 +278,45 @@ const Index = () => {
   ]
   //table columns
   const columns = [
+    {
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
+            onChange={() => {
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
+            }}
+          />
+        </div>
+      ),
+      render: (text, record) => (
+        <div className="form-check d-flex align-items-center justify-between">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checekedList.includes(record.eventMarketId)}
+            onChange={() => {
+              handleSingleCheck(record);
+            }}
+          />
+        </div>
+      ),
+      key: "select",
+      style: { width: "2%" },
+    },
     {
       title: "Event Date",
       dataIndex: "eventDate",
@@ -437,6 +492,7 @@ const Index = () => {
     isDateRange: true,
     marketTypeSelect: true,
     categorySelect: true,
+    isResultMarket: true,
   };
 
   const handleReload = (value) => {
@@ -524,6 +580,7 @@ const Index = () => {
             eventTypes={eventTypes}
             competitionList={competitionList}
             eventList={eventList}
+            resultModelFunction={setResultModelVisable}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             onAddNavigate={"/addEventMarkets"}
@@ -564,6 +621,12 @@ const Index = () => {
           isOpen={isCancelModalOpen}
           toggle={() => setIsCancelModalOpen(!isCancelModalOpen)}
           data={cancelModalData}
+          fetchData={fetchData}
+        />
+        <ResultSelectedModel
+          resultModelVisable={resultModelVisable}
+          setResultModelVisable={setResultModelVisable}
+          singleCheck={checekedList}
           fetchData={fetchData}
         />
         </Container>
