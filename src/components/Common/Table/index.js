@@ -55,6 +55,7 @@ const Index = forwardRef(
       closeMarketModelFunction,
       cancelAllModelFunction,
       cancelModelFunction,
+      resultModelFunction,
       loadPanelModelFunction,
       loadDataModelFunction,
       openDataProvider,
@@ -2239,6 +2240,24 @@ const Index = forwardRef(
                             }}
                           >
                             Cancel Market
+                          </Button>
+                        )}
+                        {tableElement?.isResultMarket && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              singleCheck.length > 0
+                                ? resultModelFunction(true)
+                                : dispatch(
+                                  updateToastData({
+                                    data: "Select at least one row",
+                                    title: "Error",
+                                    type: ERROR,
+                                  })
+                                );
+                            }}
+                          >
+                            Result
                           </Button>
                         )}
                       </div>
