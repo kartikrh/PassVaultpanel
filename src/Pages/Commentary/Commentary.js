@@ -1549,7 +1549,7 @@ const Commentary = (props) => {
                 updatedPlayerToSend["fielderId1"] = "0"
                 updatedPlayerToSend["fielderId2"] = "0"
                 updatedPlayerToSend["wicketType"] = null
-                updatedPlayerToSend["batterOrder"] = null
+                // updatedPlayerToSend["batterOrder"] = null
             }
             return updatedPlayerToSend
         }
