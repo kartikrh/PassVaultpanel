@@ -85,7 +85,7 @@ const Commentary = (props) => {
     const [superOverModal, setSuperOverModal] = useState(0)
     const [superOverText, setSuperOverText] = useState(() => {
         return JSON.parse(localStorage.getItem("superOverText")) || false;
-      });
+    });
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
     const [retryModel, setRetryModel] = useState(undefined)
     const [isWonByInnings, setIsWonByInnings] = useState(undefined)
@@ -141,7 +141,7 @@ const Commentary = (props) => {
     };
     useEffect(() => {
         localStorage.setItem("superOverText", JSON.stringify(superOverText));
-      }, [superOverText]);
+    }, [superOverText]);
 
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
@@ -198,7 +198,7 @@ const Commentary = (props) => {
     }
     const completeMatch = () => {
         const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1;
-        if (isMatchTie) {setSuperOverModal(true); setSuperOverText(true)}
+        if (isMatchTie) { setSuperOverModal(true); setSuperOverText(true) }
         else checkWinner();
         setCompleteMatchModal(undefined);
         setChangePlayerList(undefined);
@@ -221,7 +221,7 @@ const Commentary = (props) => {
             isBattingTeamWon = false
             WINNING_TEAM = BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
-        } else if(superOverText){
+        } else if (superOverText) {
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
             WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[WINNING_TEAM]?.shortName} won in super over.`
@@ -563,7 +563,7 @@ const Commentary = (props) => {
             if (+runs === 4) {
                 updateBall["ballIsBoundry"] = true
                 updateBall["ballFour"] = 1
-                batter["batFour"] = type === NO_BALL ? (batter.batFour || 0) + 1 : (batter.batFour || 0) 
+                batter["batFour"] = type === NO_BALL ? (batter.batFour || 0) + 1 : (batter.batFour || 0)
                 updateOver["totalFour"] = (currentOver.totalFour || 0) + 1
                 updatePartnership["totalFour"] = type === NO_BALL ? (currentPartnership.totalFour || 0) + 1 : (currentPartnership.totalFour || 0)
                 updateBowler["bowlerFour"] = (bowler.bowlerFour || 0) + 1
@@ -609,7 +609,7 @@ const Commentary = (props) => {
             updateBall["ballExtraRun"] = valueOfNoBall
             updatePartnership["batter1Balls"] = currentPartnership.batter1Balls +
                 (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0);
-                updatePartnership["batter2Balls"] = currentPartnership.batter2Balls +
+            updatePartnership["batter2Balls"] = currentPartnership.batter2Balls +
                 (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0);
             if (type === NO_BALL) {
                 updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
@@ -1549,7 +1549,7 @@ const Commentary = (props) => {
                 updatedPlayerToSend["fielderId1"] = "0"
                 updatedPlayerToSend["fielderId2"] = "0"
                 updatedPlayerToSend["wicketType"] = null
-                updatedPlayerToSend["batterOrder"] = null
+                // updatedPlayerToSend["batterOrder"] = null
             }
             return updatedPlayerToSend
         }
@@ -1869,6 +1869,14 @@ const Commentary = (props) => {
         setOnPitchPlayers(onPitchPlayers)
         setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData))
         setBallHistory(ballByBallHistoryData)
+        try {
+            axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
+                ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: ballByBallHistoryData }
+            });
+            console.log("BallbyBall history ->>>>>>>>", { hstory: ballByBallHistoryData })
+        } catch (error) {
+            console.error("Error updating commentary console:", error);
+        }
         setOverHistory(overHistoryData)
         setPartnershipHistory(partnershipHistoryData)
         setWicketHistory(propsData.commentaryData.commentaryWicket)
@@ -1961,6 +1969,12 @@ const Commentary = (props) => {
             dispatch(clearUndoFlag())
             // setOverBallByBallDisplay(updatedBallHistory)
             setBallHistory(updatedBallHistoryList)
+            try {
+                axiosInstance.post(`/admin/score/commentaryConsoleFe`, { ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: updatedBallHistoryList } });
+                console.log("BallbyBall history ->>>>>>>>", { history: updatedBallHistoryList })
+            } catch (error) {
+                console.error("Error updating commentary console:", error);
+            }
             setCurrentBall(updatedBallHistoryList[updatedBallHistoryList.length - 1])
             setIsUndoBall(undefined)
         }
@@ -2031,15 +2045,15 @@ const Commentary = (props) => {
                 }
                 console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
-                if(!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id){
+                if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
                     handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
                     dispatch(
                         updateToastData({
-                          title: 'Partnership issue',
-                          data: 'batter1 or batter2 is null',
-                          type: ERROR,
+                            title: 'Partnership issue',
+                            data: 'batter1 or batter2 is null',
+                            type: ERROR,
                         })
-                      );
+                    );
                 }
                 dispatch(addCommentaryScreenData(objToSave))
                 setSaveToDb(false)
@@ -2106,14 +2120,20 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-              console.log("if 2")
-              if ((!currentPartnership?.commentaryBallByBallId || +currentPartnership?.commentaryBallByBallId === 0)) {
-                  // console.log("2095 currentPartnership before", currentPartnership)
-                  console.log("if 2 if")
+                console.log("if 2")
+                if ((!currentPartnership?.commentaryBallByBallId || +currentPartnership?.commentaryBallByBallId === 0)) {
+                    // console.log("2095 currentPartnership before", currentPartnership)
+                    console.log("if 2 if")
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
-                  // console.log("2097 currentPartnership after", currentPartnership)
+                    // console.log("2097 currentPartnership after", currentPartnership)
                 }
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
+                try {
+                    axiosInstance.post(`/admin/score/commentaryConsoleFe`, { ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: [].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]) } });
+                    console.log("BallbyBall history ->>>>>>>>", { hstory: [].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]) })
+                } catch (error) {
+                    console.error("Error updating commentary console:", error);
+                }
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
                 // handleCommentaryConsole(_currentOver, currentOver);
@@ -2123,30 +2143,38 @@ const Commentary = (props) => {
                 && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
                 && !isEqual(currentBall, commentaryDataToUpdate.commentaryBallByBallDetails)) {
                 setBallHistory([].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]))
+                try {
+                    axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
+                        ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: [].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]) }
+                    });
+                    console.log("BallbyBall history ->>>>>>>>", { hstory: [].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]) })
+                } catch (error) {
+                    console.error("Error updating commentary console:", error);
+                }
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
-        //   console.log("commentaryDataToUpdate?.commentaryPartnershipDetails", commentaryDataToUpdate?.commentaryPartnershipDetails)
-        //   console.log("currentPartnership?.commentaryPartnershipId", currentPartnership?.commentaryPartnershipId)
-        //   console.log("+currentPartnership?.commentaryPartnershipId == 0", +currentPartnership?.commentaryPartnershipId)
-        //   console.log("isEmpty(currentPartnership)", isEmpty(currentPartnership))
-        console.log("partnershipFromApi", partnershipFromApi)
-        console.log("currentPartnership ----> ", currentPartnership)
-        //   console.log("!isEmpty(partnershipFromApi)", isEmpty(partnershipFromApi))
-        //   console.log("(!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))", (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
-          console.log("full condition", (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))&&(!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0))))
+            //   console.log("commentaryDataToUpdate?.commentaryPartnershipDetails", commentaryDataToUpdate?.commentaryPartnershipDetails)
+            //   console.log("currentPartnership?.commentaryPartnershipId", currentPartnership?.commentaryPartnershipId)
+            //   console.log("+currentPartnership?.commentaryPartnershipId == 0", +currentPartnership?.commentaryPartnershipId)
+            //   console.log("isEmpty(currentPartnership)", isEmpty(currentPartnership))
+            console.log("partnershipFromApi", partnershipFromApi)
+            console.log("currentPartnership ----> ", currentPartnership)
+            //   console.log("!isEmpty(partnershipFromApi)", isEmpty(partnershipFromApi))
+            //   console.log("(!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))", (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
+            console.log("full condition", (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))) && (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0))))
             if (
                 (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
                 &&
                 (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0)))) {
-                    const newPartnership = {
+                const newPartnership = {
                     ...commentaryDataToUpdate.commentaryPartnershipDetails,
                     "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId),
                     isActive: true,
                 }
                 console.log("if 3")
-              console.log("2120 new before", newPartnership)
+                console.log("2120 new before", newPartnership)
                 setCurrentPartnership(newPartnership)
-            //   console.log("2122 currentPartnership after", currentPartnership)
+                //   console.log("2122 currentPartnership after", currentPartnership)
                 setPartnershipHistory([].concat(partnershipHistory || [], [newPartnership]))
             }
             // Update Current Wicket on Wicket change
@@ -2240,148 +2268,148 @@ const Commentary = (props) => {
     };
 
     return <>
-       {props?.isNewUi ?
-        <NewCommentaryScreen
-            refId={props.refId}
-            commentaryId={commentaryDetails?.commentaryId}
-            teamDetails={teams}
-            onPitchPlayers={onPitchPlayers}
-            updateRuns={updateRuns}
-            changePlayer={(type) => {
-                setIsSwapPlayer(true)
-                changePlayer(type)
-            }}
-            changeOver={() => { setShowChangeOverModal(true) }}
-            updateExtras={(extraType) => {
-                setExtrasType(extraType)
-            }}
-            onWicketClick={() => { setShowWicketModal(true) }}
-            changeStrike={changeOnStrikePlayer}
-            endInnings={() => setShowInningsChangePopup(true)}
-            onUndoClick={handleUndoClick}
-            isLoading={isCommentaryBallLoading}
-            changeBowler={() => {
-                setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
-            }}
-            updateDisplayStatus={(displayStatus) => {
-                setBallStatus(BALL_START_STATUS);
-                dispatch(updateCommentaryDisplayStatus({
-                    "commentaryId": commentaryDetails.commentaryId,
-                    "displayStatus": displayStatus,
-                    "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
-                }))
-            }}
-            handleRetiredHurt={() => setShowRretiredHurt(true)}
-            overBalls={overBallByBallDisplay}
-            overHistory={overHistory}
-            currentOver={currentOver}
-            players={players}
-            showPaneltyRuns={setIsPaneltyPopup}
-            target={target}
-            partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}
-            anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
-                || superOverModal || showRretiredHurt || isPaneltyPopup
-                || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
-                || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
-            handleWheelShowToggle={handleWheelShowToggle}
-            isWheelShow={isWheelShow}
-            showWicketModal={showWicketModal}
-            showChangeOverModal={showChangeOverModal && !changePlayerList}
-            // wicket control
-            // toggle={() => {
-            //     setExtrasType(undefined)
-            // }}
-            // onSubmit={handleWicket}
-            // bowlingTeam={players[BOWLING_TEAM]}
-            // bowlingTeamDetails={teams[BOWLING_TEAM]}
-            //Wicket Modal
-            extraType={extrasType}
-            {...(showWicketModal && {
-                isOpen: showWicketModal,
-                toggle: () => {
-                    setShowWicketModal(undefined);
-                    setExtrasType(undefined);
-                },
-                onSubmit: handleWicket,
-                bowlingTeam: players[BOWLING_TEAM],
-                bowlingTeamDetails: teams[BOWLING_TEAM],
-            })}
-            {...(extrasType && {
-                extrasTypeIsOpen: extrasType,
-                extrasTypeToggle: () => {
-                    setExtrasType(undefined)
-                },
-                updateExtrasExtrasType: onExtrasChange
-            })}
-            // RetiredHurt
-            // revertModal
-            // {...(completeMatchModal && {
-            //     revertModalisOpen:completeMatchModal,
-            //     revertModaltoggle:() => { setCompleteMatchModal(undefined) },
-            //     revertModalonNoClick:() => { setCompleteMatchModal(undefined) },
-            //     revertModalonYesClick:() => completeMatch()
-            // })}
-            // RetiredHurt
-            {...(showRretiredHurt && {
-                retiredHurtisOpen: showRretiredHurt,
-                retiredHurttoggle:() => setShowRretiredHurt(false),
-                retiredHurtonsubmit:onRetiredHurtClick,
-                retiringHurtPartnership : retiringHurtPartnership,
-                onPitchplayers:onPitchPlayers,
-                retiredHurtplayerList: players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true)),
-                allBattingPlayers: players[BATTING_TEAM]
-            })}
+        {props?.isNewUi ?
+            <NewCommentaryScreen
+                refId={props.refId}
+                commentaryId={commentaryDetails?.commentaryId}
+                teamDetails={teams}
+                onPitchPlayers={onPitchPlayers}
+                updateRuns={updateRuns}
+                changePlayer={(type) => {
+                    setIsSwapPlayer(true)
+                    changePlayer(type)
+                }}
+                changeOver={() => { setShowChangeOverModal(true) }}
+                updateExtras={(extraType) => {
+                    setExtrasType(extraType)
+                }}
+                onWicketClick={() => { setShowWicketModal(true) }}
+                changeStrike={changeOnStrikePlayer}
+                endInnings={() => setShowInningsChangePopup(true)}
+                onUndoClick={handleUndoClick}
+                isLoading={isCommentaryBallLoading}
+                changeBowler={() => {
+                    setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
+                }}
+                updateDisplayStatus={(displayStatus) => {
+                    setBallStatus(BALL_START_STATUS);
+                    dispatch(updateCommentaryDisplayStatus({
+                        "commentaryId": commentaryDetails.commentaryId,
+                        "displayStatus": displayStatus,
+                        "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+                    }))
+                }}
+                handleRetiredHurt={() => setShowRretiredHurt(true)}
+                overBalls={overBallByBallDisplay}
+                overHistory={overHistory}
+                currentOver={currentOver}
+                players={players}
+                showPaneltyRuns={setIsPaneltyPopup}
+                target={target}
+                partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}
+                anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
+                    || superOverModal || showRretiredHurt || isPaneltyPopup
+                    || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
+                    || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
+                handleWheelShowToggle={handleWheelShowToggle}
+                isWheelShow={isWheelShow}
+                showWicketModal={showWicketModal}
+                showChangeOverModal={showChangeOverModal && !changePlayerList}
+                // wicket control
+                // toggle={() => {
+                //     setExtrasType(undefined)
+                // }}
+                // onSubmit={handleWicket}
+                // bowlingTeam={players[BOWLING_TEAM]}
+                // bowlingTeamDetails={teams[BOWLING_TEAM]}
+                //Wicket Modal
+                extraType={extrasType}
+                {...(showWicketModal && {
+                    isOpen: showWicketModal,
+                    toggle: () => {
+                        setShowWicketModal(undefined);
+                        setExtrasType(undefined);
+                    },
+                    onSubmit: handleWicket,
+                    bowlingTeam: players[BOWLING_TEAM],
+                    bowlingTeamDetails: teams[BOWLING_TEAM],
+                })}
+                {...(extrasType && {
+                    extrasTypeIsOpen: extrasType,
+                    extrasTypeToggle: () => {
+                        setExtrasType(undefined)
+                    },
+                    updateExtrasExtrasType: onExtrasChange
+                })}
+                // RetiredHurt
+                // revertModal
+                // {...(completeMatchModal && {
+                //     revertModalisOpen:completeMatchModal,
+                //     revertModaltoggle:() => { setCompleteMatchModal(undefined) },
+                //     revertModalonNoClick:() => { setCompleteMatchModal(undefined) },
+                //     revertModalonYesClick:() => completeMatch()
+                // })}
+                // RetiredHurt
+                {...(showRretiredHurt && {
+                    retiredHurtisOpen: showRretiredHurt,
+                    retiredHurttoggle: () => setShowRretiredHurt(false),
+                    retiredHurtonsubmit: onRetiredHurtClick,
+                    retiringHurtPartnership: retiringHurtPartnership,
+                    onPitchplayers: onPitchPlayers,
+                    retiredHurtplayerList: players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true)),
+                    allBattingPlayers: players[BATTING_TEAM]
+                })}
 
-            // change Innings
-            {...(inningsChangePopup && {
-                inningsChangeisOpen:inningsChangePopup,
-                inningsChangetoggle:() => { setShowInningsChangePopup(undefined) },
-                inningsChangeNoClick:() => { setShowInningsChangePopup(undefined) },
-                inningsChangeYesClick:() => onInningsChange()
-            })}
+                // change Innings
+                {...(inningsChangePopup && {
+                    inningsChangeisOpen: inningsChangePopup,
+                    inningsChangetoggle: () => { setShowInningsChangePopup(undefined) },
+                    inningsChangeNoClick: () => { setShowInningsChangePopup(undefined) },
+                    inningsChangeYesClick: () => onInningsChange()
+                })}
 
-            // PenaltyModal
-            {...(isPaneltyPopup && {
-                PenaltyToggle : () => { setIsPaneltyPopup(null)},
-                PenaltyIsOpen : true,
-                PenaltySelectedPenalty:(selectedPenalty) => {
-                    updatePanelty(selectedPenalty)
-                    setIsPaneltyPopup(null)
-                }
-            })}
+                // PenaltyModal
+                {...(isPaneltyPopup && {
+                    PenaltyToggle: () => { setIsPaneltyPopup(null) },
+                    PenaltyIsOpen: true,
+                    PenaltySelectedPenalty: (selectedPenalty) => {
+                        updatePanelty(selectedPenalty)
+                        setIsPaneltyPopup(null)
+                    }
+                })}
 
 
-            {...((showChangeOverModal && !changePlayerList) && {
-                isOpen:{showChangeOverModal},
-                toggle:() => { setShowChangeOverModal(undefined) },
-                onNoClick:() => { setShowChangeOverModal(undefined) },
-                onYesClick:() => {
-                    setIsBowlerrChange(true)
-                    setShowChangeOverModal(undefined);
-                    setChangeOverOnPopupClick(true)
-                },
-                overBalls:overBallByBallDisplay,
-                currentOver:currentOver,
-                battingTeam:teams?.[BATTING_TEAM] || {},
-                bowlerName:getPlayerNameById(players, currentOver?.bowlerId, false),
-                onPitchPlayers:onPitchPlayers,
-            })}
-            //Select Player Modal
-            {...!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
-                winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList &&
+                {...((showChangeOverModal && !changePlayerList) && {
+                    isOpen: { showChangeOverModal },
+                    toggle: () => { setShowChangeOverModal(undefined) },
+                    onNoClick: () => { setShowChangeOverModal(undefined) },
+                    onYesClick: () => {
+                        setIsBowlerrChange(true)
+                        setShowChangeOverModal(undefined);
+                        setChangeOverOnPopupClick(true)
+                    },
+                    overBalls: overBallByBallDisplay,
+                    currentOver: currentOver,
+                    battingTeam: teams?.[BATTING_TEAM] || {},
+                    bowlerName: getPlayerNameById(players, currentOver?.bowlerId, false),
+                    onPitchPlayers: onPitchPlayers,
+                })}
+                //Select Player Modal
+                {...!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+                    winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList &&
                 {
-                    isOpen:changePlayerList ? true : false,
+                    isOpen: changePlayerList ? true : false,
                     showPlayerModal: true,
-                    toggle:isWicketChange ? false : () => {
+                    toggle: isWicketChange ? false : () => {
                         setChangePlayerList(undefined)
                         setIsSwapPlayer(undefined)
                         setOverPopUpForBowler(undefined)
                         setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
                     },
-                    overPopUpForBowler:overPopUpForBowler,
-                    isBowler:(isChangeBowler.isChange || isBowlerrChange) ? true : false,
-                    playerList:changePlayerList,
-                    selectPlayer:(newPlayerId) => {
+                    overPopUpForBowler: overPopUpForBowler,
+                    isBowler: (isChangeBowler.isChange || isBowlerrChange) ? true : false,
+                    playerList: changePlayerList,
+                    selectPlayer: (newPlayerId) => {
                         if (isSwapPlayer) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
                         else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
                         else {
@@ -2391,136 +2419,136 @@ const Commentary = (props) => {
                         }
                     }
                 }
-            } 
+                }
 
-            isSelectPlayerModalOpen={!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
-                winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList}
-            selectPlayerModalProps={{
-                isOpen: !!changePlayerList,
-                toggle: isWicketChange ? false : () => {
-                    setChangePlayerList(undefined);
-                    setIsSwapPlayer(undefined);
-                    setOverPopUpForBowler(undefined);
-                    setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null });
-                },
-                overPopUpForBowler,
-                isBowler: isChangeBowler.isChange || isBowlerrChange,
-                playerList: changePlayerList,
-                selectPlayer: (newPlayerId) => {
-                    setOverPopUpForBowler(undefined);
-                    setIsBowlerrChange(undefined);
-                    if (isSwapPlayer) {
-                        swapPlayer(newPlayerId);
-                    } else if (isChangeBowler.isChange) {
-                        onBowlerChange(newPlayerId);
-                    } else {
-                        onPlayerChange(newPlayerId);
+                isSelectPlayerModalOpen={!(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
+                    winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) && !!changePlayerList}
+                selectPlayerModalProps={{
+                    isOpen: !!changePlayerList,
+                    toggle: isWicketChange ? false : () => {
+                        setChangePlayerList(undefined);
+                        setIsSwapPlayer(undefined);
+                        setOverPopUpForBowler(undefined);
+                        setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null });
+                    },
+                    overPopUpForBowler,
+                    isBowler: isChangeBowler.isChange || isBowlerrChange,
+                    playerList: changePlayerList,
+                    selectPlayer: (newPlayerId) => {
+                        setOverPopUpForBowler(undefined);
+                        setIsBowlerrChange(undefined);
+                        if (isSwapPlayer) {
+                            swapPlayer(newPlayerId);
+                        } else if (isChangeBowler.isChange) {
+                            onBowlerChange(newPlayerId);
+                        } else {
+                            onPlayerChange(newPlayerId);
+                        }
                     }
-                }
-            }}
-            // wheel
-            {...(showCricketFieldModal && {
-                cricketFieldData: cricketFieldData,
-                shotTypes: propsData?.commentaryData?.shotTypes ,
-                isShotType : isShotType,
-                handleShotTypeToggle : handleShotTypeToggle,
-                cricketFieldIsOpen : true,
-                cricketFieldToggle : () => {
-                    setShowCricketFieldModal(undefined);
-                    setIsWheelShowComplete(true);
-                }
-            })}
-            
-            // undo
-            {...(undoOverPopup && {
-                undoOverPopupIsOpen : true,
-                undoOverPopupToggle : () => {
-                    setUndoOverPopup(undefined)
-                },
-                onChangebowlerClick : () => {
-                    setUndoOverPopup(undefined)
-                    setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: SWITCH_BOWLER })
-                    changePlayer(CURRENT_BOWLER)
-                },
-                onLastOverClick : () => {
-                    setUndoOverPopup(undefined)
-                    updateAfterOverUndo()
-                }
-            })}
-            // undo innings
-            {...(undoInningsPopup && {
-                undoInningsPopupIsOpen : undoInningsPopup,
-                undoInningsPopupToggle : () => {
-                    setUndoInningsPopup(undefined)
-                },
-                onLastInnigsClick : () => { },
-                onPlayerSelectionClick : {onUndoPlayerSelection}
-            })}
+                }}
+                // wheel
+                {...(showCricketFieldModal && {
+                    cricketFieldData: cricketFieldData,
+                    shotTypes: propsData?.commentaryData?.shotTypes,
+                    isShotType: isShotType,
+                    handleShotTypeToggle: handleShotTypeToggle,
+                    cricketFieldIsOpen: true,
+                    cricketFieldToggle: () => {
+                        setShowCricketFieldModal(undefined);
+                        setIsWheelShowComplete(true);
+                    }
+                })}
 
-            // complete Match Modal
-            {...(completeMatchModal && {
-                completeMatchisOpen: completeMatchModal,
-                completeMatchtoggle:() => { setCompleteMatchModal(undefined) },
-                completeMatchNoClick:() => { setCompleteMatchModal(undefined) },
-                completeMatchYesClick:() => completeMatch()
-            })}
+                // undo
+                {...(undoOverPopup && {
+                    undoOverPopupIsOpen: true,
+                    undoOverPopupToggle: () => {
+                        setUndoOverPopup(undefined)
+                    },
+                    onChangebowlerClick: () => {
+                        setUndoOverPopup(undefined)
+                        setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: SWITCH_BOWLER })
+                        changePlayer(CURRENT_BOWLER)
+                    },
+                    onLastOverClick: () => {
+                        setUndoOverPopup(undefined)
+                        updateAfterOverUndo()
+                    }
+                })}
+                // undo innings
+                {...(undoInningsPopup && {
+                    undoInningsPopupIsOpen: undoInningsPopup,
+                    undoInningsPopupToggle: () => {
+                        setUndoInningsPopup(undefined)
+                    },
+                    onLastInnigsClick: () => { },
+                    onPlayerSelectionClick: { onUndoPlayerSelection }
+                })}
 
-            // Winner
-            {...(winnerAnnouncement && {
-                winnerAnnouncementisOpen: winnerAnnouncement,
-                winnerAnnouncement : winnerAnnouncement,
-                onExitClick:() => {
-                    setWinnerAnnouncement(undefined)
-                    navigate("/commentary")
-                    localStorage.setItem("superOverText", JSON.stringify(false));
-                }
-            })}
-        />
-        : <CommentaryScreen
-            refId={props.refId}
-            commentaryId={commentaryDetails?.commentaryId}
-            teamDetails={teams}
-            onPitchPlayers={onPitchPlayers}
-            updateRuns={updateRuns}
-            changePlayer={(type) => {
-                setIsSwapPlayer(true)
-                changePlayer(type)
-            }}
-            changeOver={() => { setShowChangeOverModal(true) }}
-            updateExtras={(extraType) => {
-                setExtrasType(extraType)
-            }}
-            onWicketClick={() => { setShowWicketModal(true) }}
-            changeStrike={changeOnStrikePlayer}
-            endInnings={() => setShowInningsChangePopup(true)}
-            onUndoClick={handleUndoClick}
-            isLoading={isCommentaryBallLoading}
-            changeBowler={() => {
-                setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
-            }}
-            updateDisplayStatus={(displayStatus) => {
-                setBallStatus("ballstart");
-                dispatch(updateCommentaryDisplayStatus({
-                    "commentaryId": commentaryDetails.commentaryId,
-                    "displayStatus": displayStatus,
-                    "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
-                }))
-            }}
-            handleRetiredHurt={() => setShowRretiredHurt(true)}
-            overBalls={overBallByBallDisplay}
-            overHistory={overHistory}
-            currentOver={currentOver}
-            players={players}
-            showPaneltyRuns={setIsPaneltyPopup}
-            target={target}
-            partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}
-            anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
-                || superOverModal || showRretiredHurt || isPaneltyPopup
-                || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
-                || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
-            handleWheelShowToggle={handleWheelShowToggle}
-            isWheelShow={isWheelShow}
-        />}
+                // complete Match Modal
+                {...(completeMatchModal && {
+                    completeMatchisOpen: completeMatchModal,
+                    completeMatchtoggle: () => { setCompleteMatchModal(undefined) },
+                    completeMatchNoClick: () => { setCompleteMatchModal(undefined) },
+                    completeMatchYesClick: () => completeMatch()
+                })}
+
+                // Winner
+                {...(winnerAnnouncement && {
+                    winnerAnnouncementisOpen: winnerAnnouncement,
+                    winnerAnnouncement: winnerAnnouncement,
+                    onExitClick: () => {
+                        setWinnerAnnouncement(undefined)
+                        navigate("/commentary")
+                        localStorage.setItem("superOverText", JSON.stringify(false));
+                    }
+                })}
+            />
+            : <CommentaryScreen
+                refId={props.refId}
+                commentaryId={commentaryDetails?.commentaryId}
+                teamDetails={teams}
+                onPitchPlayers={onPitchPlayers}
+                updateRuns={updateRuns}
+                changePlayer={(type) => {
+                    setIsSwapPlayer(true)
+                    changePlayer(type)
+                }}
+                changeOver={() => { setShowChangeOverModal(true) }}
+                updateExtras={(extraType) => {
+                    setExtrasType(extraType)
+                }}
+                onWicketClick={() => { setShowWicketModal(true) }}
+                changeStrike={changeOnStrikePlayer}
+                endInnings={() => setShowInningsChangePopup(true)}
+                onUndoClick={handleUndoClick}
+                isLoading={isCommentaryBallLoading}
+                changeBowler={() => {
+                    setIsChangeBowler({ isChange: null, isChangePopup: true, popupOption: null })
+                }}
+                updateDisplayStatus={(displayStatus) => {
+                    setBallStatus("ballstart");
+                    dispatch(updateCommentaryDisplayStatus({
+                        "commentaryId": commentaryDetails.commentaryId,
+                        "displayStatus": displayStatus,
+                        "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+                    }))
+                }}
+                handleRetiredHurt={() => setShowRretiredHurt(true)}
+                overBalls={overBallByBallDisplay}
+                overHistory={overHistory}
+                currentOver={currentOver}
+                players={players}
+                showPaneltyRuns={setIsPaneltyPopup}
+                target={target}
+                partnerships={[...(partnershipHistory?.slice(0, -1) || []), currentPartnership]}
+                anyPopup={props.statusPopup || inningsChangePopup || extrasType || showChangeOverModal || inningsChangePopup || showWicketModal || showUpdateInnings
+                    || superOverModal || showRretiredHurt || isPaneltyPopup
+                    || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
+                    || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
+                handleWheelShowToggle={handleWheelShowToggle}
+                isWheelShow={isWheelShow}
+            />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
             <SelectPlayerModal isOpen={changePlayerList ? true : false}
@@ -2650,7 +2678,7 @@ const Commentary = (props) => {
         {(!props?.isNewUi && showRretiredHurt) && <RetiredHurtModal
             toggle={() => setShowRretiredHurt(false)}
             onsubmit={onRetiredHurtClick}
-            retiringHurtPartnership = {retiringHurtPartnership}
+            retiringHurtPartnership={retiringHurtPartnership}
             onPitchplayers={onPitchPlayers}
             playerList={players[BATTING_TEAM]?.filter((player) => (player.isPlay === null && player.isBatterOut !== true))}
             allBattingPlayers={players[BATTING_TEAM]}
