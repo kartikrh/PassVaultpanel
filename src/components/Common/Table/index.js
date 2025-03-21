@@ -122,7 +122,8 @@ const Index = forwardRef(
       showtournamentList,
       onTournamentisChanges,
       setStickHeader,
-      renderHeader
+      renderHeader,
+      manualExcel,
     },
     ref
   ) => {
@@ -150,17 +151,17 @@ const Index = forwardRef(
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
     useEffect(() => {
-        setData(filteredData);
+      setData(filteredData);
     }, [filteredData]);
 
     useEffect(() => {
-      if(data.length == 0 && filteredData.length == 0){
-        if(serverCurrentPage){
+      if (data.length == 0 && filteredData.length == 0) {
+        if (serverCurrentPage) {
           setServerCurrentPage(0)
         }
         setCurrentPage(0)
       }
-    },[data, filteredData])
+    }, [data, filteredData])
 
     const toggleRow = (index) => {
       setExpandedRows((prev) => ({
@@ -323,14 +324,14 @@ const Index = forwardRef(
     const handleTableActions = (key, id) => {
       setSearchTerm("")
       setCurrentPage(0)
-      if(setServerCurrentPage){
+      if (setServerCurrentPage) {
         setServerCurrentPage(0)
       }
       if (key === "isActive") {
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
         }
-        
+
         setStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -346,7 +347,7 @@ const Index = forwardRef(
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
         }
-        
+
         setStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -362,7 +363,7 @@ const Index = forwardRef(
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
         }
-        
+
         setTrendingStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -378,7 +379,7 @@ const Index = forwardRef(
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
         }
-        
+
         setStatusSwitch(id);
         setTableActions((preValue) => {
           return {
@@ -396,7 +397,7 @@ const Index = forwardRef(
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
         }
-        
+
         reFetchData({
           ...tableActions,
           [key]: id?.value,
@@ -525,6 +526,36 @@ const Index = forwardRef(
       });
       return { headers, colsData, csvData };
     };
+    const generateManualSimplifiedData = () => {
+      let pdfCols = ["No."];
+      let colsDataKey = [];
+      manualExcel?.forEach((item) => {
+        if (
+          item.key !== "select" &&
+          item.key !== "edit" &&
+          item.printType !== "ignore"
+        ) {
+          pdfCols.push(item.title);
+          colsDataKey.push(item.key);
+        }
+      });
+      const headers = [pdfCols];
+      let colsData = dataSource.map((dataItem) =>
+        colsDataKey.map((key) => dataItem[key])
+      );
+      colsData = colsData.map((value, index) => [index + 1, ...value]);
+      const csvData = colsData.map((value, i) => {
+        let data = {};
+        value.forEach((v, i) => {
+          data = {
+            ...data,
+            [pdfCols[i]]: v,
+          };
+        });
+        return data;
+      });
+      return { headers, colsData, csvData };
+    };
     const generateDifferentData = () => {
       let pdfCols = ["No."];
       let colsDataKey = [];
@@ -584,7 +615,9 @@ const Index = forwardRef(
 
     const downloadExcel = () => {
       // Create a worksheet
-      const ws = XLSX.utils.json_to_sheet(generateSimplifiedData().csvData);
+      let ws
+      if (manualExcel) ws = XLSX.utils.json_to_sheet(generateManualSimplifiedData().csvData);
+      else ws = XLSX.utils.json_to_sheet(generateSimplifiedData().csvData);
 
       // Create a workbook
       const wb = XLSX.utils.book_new();
@@ -864,7 +897,7 @@ const Index = forwardRef(
         });
       }
       setCurrentPage(0)
-      if(serverCurrentPage){
+      if (serverCurrentPage) {
         setServerCurrentPage(0)
       }
     };
@@ -875,11 +908,11 @@ const Index = forwardRef(
       // setTableActions({
       //   isActive: true,
       // });
-    
+
       setSelectedTableElements((prevElements) => ({
         ...prevElements, // Retain previous state
       }));
-    
+
       if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
         setDateRange(() => getDateRange(5));
       } else if (tableElement?.dateRange) {
@@ -888,7 +921,7 @@ const Index = forwardRef(
           endDate: `${new Date().toISOString().split("T")[0]}T23:59`,
         });
       }
-    
+
       setStatusSwitch(true);
       if (tableElement?.rateSourceListSelect) {
         handleReload({
@@ -901,11 +934,11 @@ const Index = forwardRef(
         });
       }
       setCurrentPage(0)
-      if(serverCurrentPage){
+      if (serverCurrentPage) {
         setServerCurrentPage(0)
       }
     };
-    
+
 
     // const handleTableReload = (e) => {
     //   e.preventDefault();
@@ -1002,19 +1035,19 @@ const Index = forwardRef(
 
     useEffect(() => {
       if (!data || data.length === 0) return;
-    
+
       const idSet = new Set(singleCheck); // Convert array to Set for faster lookup
-    
+
       setData(prevData =>
         prevData.map((item) => {
           // Find the first non-null ID in the given list
           const itemId = item.id || item.commentaryId || item.competitionId || item.playerId || item.teamId ||
-                         item.paneltyId || item.eventTypeId || item.matchTypeId || item.marketTemplateId || 
-                         item.displayStatusId || item.newsId || item.bannerId || item.photoLibraryId 
-                          || item.eventMarketId || item.errId || item.notificationId || 
-                         item.vendorId || item.templateId || item.clientId || item.blockId || 
-                         item.configId || item.clientSocketId || item.apiId || item.apiEndPointId;
-    
+            item.paneltyId || item.eventTypeId || item.matchTypeId || item.marketTemplateId ||
+            item.displayStatusId || item.newsId || item.bannerId || item.photoLibraryId
+            || item.eventMarketId || item.errId || item.notificationId ||
+            item.vendorId || item.templateId || item.clientId || item.blockId ||
+            item.configId || item.clientSocketId || item.apiId || item.apiEndPointId;
+
           return {
             ...item,
             isIncluded: idSet.has(itemId) // Check in Set instead of array for efficiency
@@ -1190,8 +1223,8 @@ const Index = forwardRef(
                               value={selectedTableElements?.createdTypeName}
                               placeholder="Created Type"
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.createdTypeName?.value) {                                
-                                  
+                                if (e?.value !== selectedTableElements?.createdTypeName?.value) {
+
                                   handleTableActions("createdType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1356,7 +1389,7 @@ const Index = forwardRef(
                               }}
                               onChange={(e) => {
                                 if (e?.value !== selectedTableElements?.displayType?.value) {
-                                  
+
                                   handleTableActions("displayType", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1387,7 +1420,7 @@ const Index = forwardRef(
                               placeholder={ratesource?.rateSourceType}
                               onChange={(e) => {
                                 if (e?.value !== selectedTableElements?.rateSourceType?.value) {
-                                  
+
                                   setSearchTerm("")
                                   setSelectedTableElements({
                                     ...selectedTableElements,
@@ -1911,18 +1944,18 @@ const Index = forwardRef(
                     </Col>
                     <Col className="col-sm-auto ms-auto">
                       {!tableElement?.isDateRange && tableElement?.loadData ? (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadDataModelFunction(true);
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Data
-                          </Button>
+                        <Button
+                          color="warning"
+                          onClick={() => {
+                            loadDataModelFunction(true);
+                          }}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <i className="ri-refresh-line"></i>
+                          Load Data
+                        </Button>
                       ) : null}
-                     </Col>
+                    </Col>
                   </Row>
                   <Col className="col-sm-auto ms-auto my-2">
                     <div className="d-flex flex-wrap align-items-center gap-2">
@@ -2064,113 +2097,113 @@ const Index = forwardRef(
                   {tableElement?.isDateRange ? (
                     <Row className="g-2">
                       <Col className="col-sm-auto">
-                      <div className="d-flex flex-wrap align-items-center gap-2 p-2">
-                        <Button
-                          color={`${isSearch ? "primary" : "danger"}`}
-                          size="sm"
-                          className="btn"
-                          onClick={() => { setIsSearch(!isSearch) }}
-                        >
-                          <i
-                            className={`bx ${isSearch ? "bx-check" : "bx-block"
-                              }`}
-                          ></i>
-                        </Button>
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="datetime-local"
-                            defaultValue={dateRange?.startDate}
-                            onChange={(startDate) => {
-                              setDateRange({
-                                ...dateRange,
-                                startDate: startDate?.target?.value,
-                              });
-                            }}
-                            id="example-datetime-local-input"
-                          />
-                        </div>
-                        <span>To</span>
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="datetime-local"
-                            defaultValue={dateRange?.endDate}
-                            onChange={(startDate) => {
-                              setDateRange({
-                                ...dateRange,
-                                endDate: startDate?.target?.value,
-                              });
-                            }}
-                            id="example-datetime-local-input"
-                          />
-                        </div>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => {
-                            if (setServerCurrentPage) {
-                              setServerCurrentPage(0);
-                            }
-                            setCurrentPage(0)
-                            reFetchData();
-                          }}
-                          disabled={!isSearch}
-                          type="reset"
-                          id="create-btn"
-                        >
-                          Search
-                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                        </button>
-                        {tableElement?.resetButton ? (
-                          <div>
-                            <button
-                            disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
-                              className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReset();
+                        <div className="d-flex flex-wrap align-items-center gap-2 p-2">
+                          <Button
+                            color={`${isSearch ? "primary" : "danger"}`}
+                            size="sm"
+                            className="btn"
+                            onClick={() => { setIsSearch(!isSearch) }}
+                          >
+                            <i
+                              className={`bx ${isSearch ? "bx-check" : "bx-block"
+                                }`}
+                            ></i>
+                          </Button>
+                          <div className="d-flex flex-column">
+                            <input
+                              className="form-control"
+                              type="datetime-local"
+                              defaultValue={dateRange?.startDate}
+                              onChange={(startDate) => {
+                                setDateRange({
+                                  ...dateRange,
+                                  startDate: startDate?.target?.value,
+                                });
                               }}
-                              type="reset"
-                              id="create-btn"
-                            >
-                              Reset
-                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                            </button>
+                              id="example-datetime-local-input"
+                            />
                           </div>
-                        ) : null}
-                        {(tableElement?.reloadButton) ? (
-                          <div>
-                            <button
-                              className="btn btn-primary"
-                              onClick={(e) => {
-                                handleTableReload(e);
+                          <span>To</span>
+                          <div className="d-flex flex-column">
+                            <input
+                              className="form-control"
+                              type="datetime-local"
+                              defaultValue={dateRange?.endDate}
+                              onChange={(startDate) => {
+                                setDateRange({
+                                  ...dateRange,
+                                  endDate: startDate?.target?.value,
+                                });
                               }}
-                              type="reload"
-                              id="create-btn"
-                            >
-                              Reload
-                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                            </button>
+                              id="example-datetime-local-input"
+                            />
                           </div>
-                        ) : null}
-                        {tableElement?.isDateTypeSelect ? (
-                          <Select
-                            value={dateType}
-                            placeholder="Date Type"
-                            styles={{
-                              control: (provided) => ({
-                                ...provided,
-                                width: 200,
-                              }),
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              if (setServerCurrentPage) {
+                                setServerCurrentPage(0);
+                              }
+                              setCurrentPage(0)
+                              reFetchData();
                             }}
-                            onChange={(e) => setDateType(e)}
-                            options={[
-                              { label: "Local Timezone", value: 1 },
-                              { label: "UTC Timezone", value: 2 },
-                            ]}
-                            classNamePrefix="filter-dropdown"
-                          />
-                        ) : null}
-                        {/* {tableElement?.isDataprovider ? (
+                            disabled={!isSearch}
+                            type="reset"
+                            id="create-btn"
+                          >
+                            Search
+                            {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                          </button>
+                          {tableElement?.resetButton ? (
+                            <div>
+                              <button
+                                disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleTableReset();
+                                }}
+                                type="reset"
+                                id="create-btn"
+                              >
+                                Reset
+                                {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                              </button>
+                            </div>
+                          ) : null}
+                          {(tableElement?.reloadButton) ? (
+                            <div>
+                              <button
+                                className="btn btn-primary"
+                                onClick={(e) => {
+                                  handleTableReload(e);
+                                }}
+                                type="reload"
+                                id="create-btn"
+                              >
+                                Reload
+                                {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                              </button>
+                            </div>
+                          ) : null}
+                          {tableElement?.isDateTypeSelect ? (
+                            <Select
+                              value={dateType}
+                              placeholder="Date Type"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }),
+                              }}
+                              onChange={(e) => setDateType(e)}
+                              options={[
+                                { label: "Local Timezone", value: 1 },
+                                { label: "UTC Timezone", value: 2 },
+                              ]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          ) : null}
+                          {/* {tableElement?.isDataprovider ? (
                           <Button
                             onClick={() => {
                               openDataProvider();
@@ -2181,81 +2214,81 @@ const Index = forwardRef(
                             Data Provider
                           </Button>
                         ) : null} */}
-                        {tableElement?.isCloseAllMarket && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              closeAllModelFunction(true);
-                            }}
-                          >
-                            Close All Market
-                          </Button>
-                        )}
-                        {tableElement?.isCloseMarket && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              singleCheck.length > 0
-                                ? closeMarketModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Close Market
-                          </Button>
-                        )}
-                        {tableElement?.isCancelAllMarket && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              cancelAllModelFunction(true);
-                            }}
-                          >
-                            Cancel All Market
-                          </Button>
-                        )}
-                        {tableElement?.isCancelMarket && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              singleCheck.length > 0
-                                ? cancelModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Cancel Market
-                          </Button>
-                        )}
-                        {tableElement?.isResultMarket && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              singleCheck.length > 0
-                                ? resultModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Result
-                          </Button>
-                        )}
-                      </div>
+                          {tableElement?.isCloseAllMarket && (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                closeAllModelFunction(true);
+                              }}
+                            >
+                              Close All Market
+                            </Button>
+                          )}
+                          {tableElement?.isCloseMarket && (
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                singleCheck.length > 0
+                                  ? closeMarketModelFunction(true)
+                                  : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                              }}
+                            >
+                              Close Market
+                            </Button>
+                          )}
+                          {tableElement?.isCancelAllMarket && (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                cancelAllModelFunction(true);
+                              }}
+                            >
+                              Cancel All Market
+                            </Button>
+                          )}
+                          {tableElement?.isCancelMarket && (
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                singleCheck.length > 0
+                                  ? cancelModelFunction(true)
+                                  : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                              }}
+                            >
+                              Cancel Market
+                            </Button>
+                          )}
+                          {tableElement?.isResultMarket && (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                singleCheck.length > 0
+                                  ? resultModelFunction(true)
+                                  : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                              }}
+                            >
+                              Result
+                            </Button>
+                          )}
+                        </div>
                       </Col>
                       <Col className="col-sm-auto ms-auto p-2">
                         {tableElement?.loadData ? (
@@ -2431,39 +2464,39 @@ const Index = forwardRef(
                 {
                   tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
-                    {
-                      Number(serverCurrentPage) != 0 && ((Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal == false)? 
-                        <span>
-                          Showing {Number(Number(serverCurrentPage) - 1) * serverPageSize + 1} -{" "}
-                          {Number(Number(serverCurrentPage) - 1) * serverPageSize + data.length} of{" "}
-                          {/* {tableElement.title === "Tabs"
+                      {
+                        Number(serverCurrentPage) != 0 && ((Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal == false) ?
+                          <span>
+                            Showing {Number(Number(serverCurrentPage) - 1) * serverPageSize + 1} -{" "}
+                            {Number(Number(serverCurrentPage) - 1) * serverPageSize + data.length} of{" "}
+                            {/* {tableElement.title === "Tabs"
                             ? data?.length
                             : serverTotal}{" "} */}
-                          {serverTotal}{" "}
-                          entries
-                        </span>:
-                        (Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal? 
-                        <span>
-                          Showing {Number(Number(serverCurrentPage) - 2) * serverPageSize + 1} -{" "}
-                          {Number(Number(serverCurrentPage) - 2) * serverPageSize + data.length} of{" "}
-                          {/* {tableElement.title === "Tabs"
+                            {serverTotal}{" "}
+                            entries
+                          </span> :
+                          (Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal ?
+                            <span>
+                              Showing {Number(Number(serverCurrentPage) - 2) * serverPageSize + 1} -{" "}
+                              {Number(Number(serverCurrentPage) - 2) * serverPageSize + data.length} of{" "}
+                              {/* {tableElement.title === "Tabs"
                             ? data?.length
                             : serverTotal}{" "} */}
-                          {serverTotal}{" "}
-                          entries
-                        </span>
-                        :
-                        <span>
-                        Showing {serverCurrentPage * serverPageSize + 1} -{" "}
-                        {serverCurrentPage * serverPageSize + data.length} of{" "}
-                        {/* {tableElement.title === "Tabs"
+                              {serverTotal}{" "}
+                              entries
+                            </span>
+                            :
+                            <span>
+                              Showing {serverCurrentPage * serverPageSize + 1} -{" "}
+                              {serverCurrentPage * serverPageSize + data.length} of{" "}
+                              {/* {tableElement.title === "Tabs"
                           ? data?.length
                           : serverTotal}{" "} */}
-                        {serverTotal}{" "}
-                        entries
-                      </span>
-                    }
-                      
+                              {serverTotal}{" "}
+                              entries
+                            </span>
+                      }
+
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>
                     <Col className="col-sm">
@@ -2512,34 +2545,34 @@ const Index = forwardRef(
                     </Col>
                   </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
-                    {
-                      Number(currentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) == false)?
-                      <span>
-                        Showing {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
-                        {Number((Number(currentPage) - 1) * pageSize) + data.length} of{" "}
-                        {tableElement.title === "Tabs"
-                          ? serverTotal
-                          : dataSource?.length}{" "}
-                        entries
-                      </span> : (Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) ?
-                      <span>
-                        Showing {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
-                        {Number((Number(currentPage) - 2) * pageSize) + data.length} of{" "}
-                        {tableElement.title === "Tabs"
-                          ? serverTotal
-                          : dataSource?.length}{" "}
-                        entries
-                      </span>
-                      :
-                      <span>
-                        Showing {currentPage * pageSize + 1} -{" "}
-                        {currentPage * pageSize + data.length} of{" "}
-                        {tableElement.title === "Tabs"
-                          ? serverTotal
-                          : dataSource?.length}{" "}
-                        entries
-                      </span>
-                    }
+                      {
+                        Number(currentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) == false) ?
+                          <span>
+                            Showing {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
+                            {Number((Number(currentPage) - 1) * pageSize) + data.length} of{" "}
+                            {tableElement.title === "Tabs"
+                              ? serverTotal
+                              : dataSource?.length}{" "}
+                            entries
+                          </span> : (Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) ?
+                            <span>
+                              Showing {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
+                              {Number((Number(currentPage) - 2) * pageSize) + data.length} of{" "}
+                              {tableElement.title === "Tabs"
+                                ? serverTotal
+                                : dataSource?.length}{" "}
+                              entries
+                            </span>
+                            :
+                            <span>
+                              Showing {currentPage * pageSize + 1} -{" "}
+                              {currentPage * pageSize + data.length} of{" "}
+                              {tableElement.title === "Tabs"
+                                ? serverTotal
+                                : dataSource?.length}{" "}
+                              entries
+                            </span>
+                      }
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>
                     <Col className="col-sm">
@@ -2663,7 +2696,7 @@ const Index = forwardRef(
                                 //   (a, b) =>
                                 //     (a.displayOrder || 0) - (b.displayOrder || 0)
                                 // )
-                                
+
                                 .map((record, index) => (
                                   <Draggable
                                     key={index}
@@ -2829,7 +2862,7 @@ const Index = forwardRef(
                           fetchData={fetchData}
                           setCurrentPage={setServerCurrentPage}
                           setPageSize={setServerPageSize}
-                          isServerSide = {true}
+                          isServerSide={true}
                         />) : isPagination ? (<Pagination
                           total={total}
                           pageSize={pageSize}
@@ -2837,7 +2870,7 @@ const Index = forwardRef(
                           fetchData={fetchData}
                           setCurrentPage={setCurrentPage}
                           setPageSize={setPageSize}
-                          isServerSide = {false}
+                          isServerSide={false}
                         />) : null}
                     </Col>
                   </Row>

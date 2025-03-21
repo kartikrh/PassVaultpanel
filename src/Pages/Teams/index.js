@@ -45,7 +45,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions)
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.teamId - b?.teamId);
+        const apiData = response?.result?.sort((a, b) => a?.teamId - b?.teamId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.teamId)
@@ -90,7 +90,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_TEAMS], password})
+      .post(`/loadPanelData`, { module: [MODULE_TEAMS], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -304,6 +304,65 @@ const Index = () => {
     },
   ];
 
+  const downloadExcelColumn = [
+    {
+      title: "Team Name",
+      dataIndex: "teamName",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      key: "teamName",
+      sort: true,
+      style: { width: "30%" },
+    },
+    {
+      title: "Event Type",
+      dataIndex: "eventType",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      key: "eventType",
+      sort: true,
+      style: { width: "30%" },
+    },
+    {
+      title: "Short Name",
+      dataIndex: "teamShortName",
+      key: "teamShortName",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Image Url",
+      dataIndex: "image",
+      key: "image",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Jersey Url",
+      dataIndex: "jersey",
+      key: "jersey",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+  ]
+
   //elements required
   const tableElement = {
     title: "Teams",
@@ -353,18 +412,19 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            manualExcel={downloadExcelColumn}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Teams"} 
+              moduleName={"Teams"}
             />}
           {isGenerateModalOpen && <GenerateModal
             isOpen={isGenerateModalOpen}

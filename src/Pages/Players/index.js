@@ -32,14 +32,13 @@ const Index = () => {
   const [importExportPlayerHistoryModelVisable, setImportExportPlayerHistoryModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [PlayerHistoryObject,setPlayerHistoryObject] = useState({});
+  const [PlayerHistoryObject, setPlayerHistoryObject] = useState({});
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
 
@@ -58,7 +57,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions)
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.playerId - b?.playerId);
+        const apiData = response?.result?.sort((a, b) => a?.playerId - b?.playerId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.playerId)
@@ -125,7 +124,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_PLAYERS], password})
+      .post(`/loadPanelData`, { module: [MODULE_PLAYERS], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -210,10 +209,10 @@ const Index = () => {
             checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
             onChange={() => {
               setCheckedList(
-                isEqual(checekedList?.sort(), 
-                dataIndexList?.sort())
-                 ? []
-                 : dataIndexList
+                isEqual(checekedList?.sort(),
+                  dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
               )
             }}
           />
@@ -301,18 +300,18 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Player"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isActive", record, record.isActive);
-          }}
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Active/Inactive Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isActive", record, record.isActive);
+            }}
+          >
+            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -320,18 +319,18 @@ const Index = () => {
       title: "System Player",
       key: "isSystemPlayer",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive System Player"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isSystemPlayer ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleSystemPlayer("isSystemPlayer", record, record.isSystemPlayer);
-          }}
-        >
-          <i className={`bx ${record.isSystemPlayer ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Active/Inactive System Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isSystemPlayer ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleSystemPlayer("isSystemPlayer", record, record.isSystemPlayer);
+            }}
+          >
+            <i className={`bx ${record.isSystemPlayer ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -379,6 +378,56 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
   ];
+  const downloadExcelColumn = [
+    {
+      title: "Player Name",
+      dataIndex: "playerName",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      key: "playerName",
+      sort: true,
+      style: { width: "30%" },
+    },
+    {
+      title: "Short Name",
+      dataIndex: "displayName",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      key: "displayName",
+      sort: true,
+      style: { width: "30%" },
+    },
+    {
+      title: "Player Image",
+      dataIndex: "image",
+      key: "image",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Is Active",
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      style: { width: "10%", textAlign: "left" },
+    },
+  ]
+
   const modelColumns = [
     { title: "Player Id", key: "playerId", type: "text" },
     { title: "Player Name", key: "playerName", type: "text" },
@@ -394,7 +443,7 @@ const Index = () => {
     { item: "batsmanStrikeRate", type: "input" },
     { item: "bowlerEconomy", type: "input" },
     { item: "bowlerAverage", type: "input" },
-    {item: "isUpdate", type: "input" }
+    { item: "isUpdate", type: "input" }
   ];
   //elements required
   const tableElement = {
@@ -405,7 +454,7 @@ const Index = () => {
     reloadButton: true,
     loadData: true,
     importExport: true,
-    teamsList:true,
+    teamsList: true,
   };
 
   useEffect(() => {
@@ -431,14 +480,14 @@ const Index = () => {
       const response = await axiosInstance.post('/admin/playerHistory/export', {
         teamId,
         eventTypeId,
-      } ,{
+      }, {
         responseType: 'arraybuffer', // Ensure the response is treated as a file blob
       });
-      
+
       if (response) {
         // Create a blob from the response data (the file)
         const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
+
         // Create a URL for the blob
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -464,9 +513,9 @@ const Index = () => {
   const UploadFile = async (file) => {
     const formData = new FormData();
     formData.append("file", file); // Append the file to the FormData object
-  
+
     setIsLoading(true); // You can manage loading state
-  
+
     await axiosInstance
       .post(`/admin/playerHistory/import`, formData, {
         headers: {
@@ -484,7 +533,7 @@ const Index = () => {
         dispatch(updateToastData({ data: 'Error uploading file :' + error, title: 'Error', type: ERROR }));
       });
   };
-  
+
   const handlePlayerHistoryModalPopUp = (event) => {
     const { teamId, eventTypeId } = PlayerHistoryObject;
     // Check if teamId and eventTypeId are present
@@ -525,7 +574,8 @@ const Index = () => {
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             setImportExportModelVisable={setImportExportModelVisable}
             handlePlayerHistoryModalPopUp={handlePlayerHistoryModalPopUp}
-            teams = {teams}
+            teams={teams}
+            manualExcel={downloadExcelColumn}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -553,12 +603,12 @@ const Index = () => {
             handleDownloadPlayerHistory={handleDownloadPlayerHistory}
             UploadFile={UploadFile}
           />}
-          {loadDataModelVisable && 
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Players"} 
+              moduleName={"Players"}
             />}
         </Container>
       </div>
