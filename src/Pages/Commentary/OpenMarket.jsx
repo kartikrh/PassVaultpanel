@@ -393,7 +393,7 @@ export const OpenMarket = () => {
 
                         updatedMarket.runner = [{
                             ...updatedMarket.runner[0],
-                            line: newLine,
+                            line: parseFloat(newLine).toFixed(2),
                             layPrice: Math.round(newLine),
                             backPrice: (updatedMarket.marketTypeId === marketTypeObj?.Fancy ||
                                 updatedMarket.marketTypeId === marketTypeObj?.LineMarket)
@@ -422,7 +422,7 @@ export const OpenMarket = () => {
                                     ...nextMarket,
                                     runner: [{
                                         ...nextMarket.runner[0],
-                                        line: nextNewLine,
+                                        line: parseFloat(nextNewLine).toFixed(2),
                                         layPrice: Math.round(nextNewLine),
                                         backPrice: (nextMarket.marketTypeId === marketTypeObj?.Fancy ||
                                             nextMarket.marketTypeId === marketTypeObj?.LineMarket)
@@ -439,7 +439,7 @@ export const OpenMarket = () => {
                         updatedMarket.predefinedValue = value;
                         updatedMarket.runner = [{
                             ...updatedMarket.runner[0],
-                            line: newLine,
+                            line: parseFloat(newLine).toFixed(2),
                             layPrice: Math.round(newLine),
                             backPrice: (updatedMarket.marketTypeId === marketTypeObj?.Fancy ||
                                 updatedMarket.marketTypeId === marketTypeObj?.LineMarket)
@@ -470,7 +470,7 @@ export const OpenMarket = () => {
                         }));
 
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        updatedMarket.predefinedValue = (originalData.predefinedValue || 0) + lineDifference;
+                        updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
 
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
@@ -1168,7 +1168,7 @@ export const OpenMarket = () => {
                 <CustomInput
                     className="form-control small-text-fields input-line-field text-bold"
                     // value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
-                    value={Number(text)}
+                    value={text}
                     onChange={(newValue) => {
                         handleValueChange(record, "line", parseFloat(newValue))
                     }}
@@ -1345,7 +1345,8 @@ export const OpenMarket = () => {
                     return (
                         <CustomInput
                             className="form-control small-text-fields text-bold"
-                            value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
+                            // value={text === null ? "" : (Number.isInteger(parseFloat(text)) ? parseInt(text) : parseFloat(text).toFixed(1))}
+                            value={text}
                             onChange={(newValue) => handleValueChange(record, "predefinedValue", newValue)}
                             inputProps={{ step: "0.1" }}
                         />
