@@ -13,6 +13,7 @@ import { configInit } from "../../Features/Config/configSlice";
 import "./sidebar.css";
 import LogRocket from 'logrocket';
 import { loadInit } from "../../config";
+import { USER_DATA_KEY } from "../../components/Common/Const";
 
 const Sidebar = (props) => {
   const ref = useRef();
@@ -29,7 +30,15 @@ const Sidebar = (props) => {
     if (initLogRocket && initLogRocket === "TRUE" && !isLogRocketInitialized) {
       const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
       LogRocket.init(logRocketAppId);
-      console.log("#####################_Log Rocket App Id._#####################", { logRocketAppId })
+      const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}")
+      LogRocket.identify(userObj.userName, {
+        name: userObj.userName,
+        email: userObj.userName,
+        subscriptionType: 'pro'
+      });
+      console.log("#####################_Log Rocket App Id._#####################", {
+        logRocketAppId, name: userObj.userName
+      })
       setIsLogRocketInitialized(true);
     }
   }, [initLogRocket, isLogRocketInitialized, loadInitData]);
