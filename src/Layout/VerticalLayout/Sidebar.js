@@ -37,7 +37,7 @@ const Sidebar = (props) => {
         subscriptionType: 'pro'
       });
       console.log("#####################_Log Rocket App Id._#####################", {
-        logRocketAppId, name: userObj.userName
+        logRocketAppId, name: userObj?.userName
       })
       setIsLogRocketInitialized(true);
     }
