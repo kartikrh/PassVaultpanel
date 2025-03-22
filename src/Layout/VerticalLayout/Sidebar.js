@@ -31,9 +31,9 @@ const Sidebar = (props) => {
       const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
       LogRocket.init(logRocketAppId);
       const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}")
-      LogRocket.identify(userObj.userName, {
-        name: userObj.userName,
-        email: userObj.userName,
+      LogRocket.identify(userObj?.userName, {
+        name: userObj?.userName,
+        email: userObj?.userName,
         subscriptionType: 'pro'
       });
       console.log("#####################_Log Rocket App Id._#####################", {
