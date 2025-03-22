@@ -11,12 +11,28 @@ import MetisMenu from "metismenujs";
 import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
 import { configInit } from "../../Features/Config/configSlice";
 import "./sidebar.css";
+import LogRocket from 'logrocket';
+import { loadInit } from "../../config";
 
 const Sidebar = (props) => {
   const ref = useRef();
   const newTabList = useSelector((state) => state.auth.tabList);
   const dispatch = useDispatch();
   const [openMenus, setOpenMenus] = useState({});
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  const [isLogRocketInitialized, setIsLogRocketInitialized] = useState(false);
+
+  let initLogRocket = loadInitData.find(item => item.key === loadInit.ENABLE_LOGROCKET)?.value;
+
+  useEffect(() => {
+    if (initLogRocket && !isLogRocketInitialized) {
+      const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
+      LogRocket.init(logRocketAppId);
+      setIsLogRocketInitialized(true);
+    }
+  }, [initLogRocket, isLogRocketInitialized, loadInitData]);
+
+
 
   useEffect(() => {
     dispatch(getAuthorisedTabs());
@@ -167,8 +183,8 @@ const Sidebar = (props) => {
                         </Link>
                       </li>
                     ) : (
-                    <>
-                      {/* <li className={openMenus[item.label] ? "mm-active" : ""}>
+                      <>
+                        {/* <li className={openMenus[item.label] ? "mm-active" : ""}>
                         <Link to="#" onClick={() => toggleMenu(item?.label)} className="menu-toggle">
                           <i className={item.icon}></i>
                           <span>{props.t(item.label)}</span>
@@ -187,50 +203,50 @@ const Sidebar = (props) => {
                           </ul>
                         )}
                       </li> */}
-                      <li key={key}>
-                        <Link
-                          to={item.url ? item.url : "/#"}
-                          className={
-                            item.issubMenubadge || item.isHasArrow
-                              ? " "
-                              : "has-arrow"
-                          }
-                        >
-                          <i
-                            className={item.icon}
-                          ></i>
-                          {item.issubMenubadge && (
-                            <span
-                              className={
-                                "badge rounded-pill float-end " + item.bgcolor
-                              }
-                            >
-                              {" "}
-                              {item.badgeValue}{" "}
-                            </span>
+                        <li key={key}>
+                          <Link
+                            to={item.url ? item.url : "/#"}
+                            className={
+                              item.issubMenubadge || item.isHasArrow
+                                ? " "
+                                : "has-arrow"
+                            }
+                          >
+                            <i
+                              className={item.icon}
+                            ></i>
+                            {item.issubMenubadge && (
+                              <span
+                                className={
+                                  "badge rounded-pill float-end " + item.bgcolor
+                                }
+                              >
+                                {" "}
+                                {item.badgeValue}{" "}
+                              </span>
+                            )}
+                            <span>{props.t(item.label)}</span>
+                          </Link>
+                          {item.subItem && item.subItem.length > 0 && (
+                            <ul className="sub-menu" >
+                              {item.subItem
+                                .slice() // Create a shallow copy
+                                .sort(
+                                  (subA, subB) =>
+                                    (subA.displayOrder || 0) -
+                                    (subB.displayOrder || 0)
+                                )
+                                .map((subItem, subKey) => (
+                                  <li key={subKey} >
+                                    <Link to={subItem.link} onClick={tToggle} >
+                                      {props.t(subItem.sublabel)}
+                                    </Link>
+                                  </li>
+                                ))}
+                            </ul>
                           )}
-                          <span>{props.t(item.label)}</span>
-                        </Link>
-                        {item.subItem && item.subItem.length > 0 && (
-                          <ul className="sub-menu" >
-                            {item.subItem
-                              .slice() // Create a shallow copy
-                              .sort(
-                                (subA, subB) =>
-                                  (subA.displayOrder || 0) -
-                                  (subB.displayOrder || 0)
-                              )
-                              .map((subItem, subKey) => (
-                                <li key={subKey} >
-                                  <Link to={subItem.link} onClick={tToggle} >
-                                    {props.t(subItem.sublabel)}
-                                  </Link>
-                                </li>
-                              ))}
-                          </ul>
-                        )}
-                      </li>
-                    </>
+                        </li>
+                      </>
                     )}
                   </React.Fragment>
                 ))}
