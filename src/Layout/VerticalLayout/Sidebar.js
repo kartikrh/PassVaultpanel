@@ -25,9 +25,11 @@ const Sidebar = (props) => {
   let initLogRocket = loadInitData.find(item => item.key === loadInit.ENABLE_LOGROCKET)?.value;
 
   useEffect(() => {
-    if (initLogRocket && !isLogRocketInitialized) {
+    console.log("#####################_Is Log Rocket Enabled_#####################", { initLogRocket })
+    if (initLogRocket && initLogRocket === "TRUE" && !isLogRocketInitialized) {
       const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
       LogRocket.init(logRocketAppId);
+      console.log("#####################_Log Rocket App Id._#####################", { logRocketAppId })
       setIsLogRocketInitialized(true);
     }
   }, [initLogRocket, isLogRocketInitialized, loadInitData]);
