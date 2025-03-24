@@ -430,6 +430,12 @@ export const CreateEventMarket = () => {
         if (market.runners && market.runners.length > 0) {
             market.runners.forEach((runner, index) => {
                 requiredRunnerFields.forEach(field => {
+                    if (
+                        (market?.marketTypeCategoryId === 37 || market?.marketTypeCategoryId === 38) &&
+                        field === 'layPrice'
+                    ) {
+                        return; // Skip this validation
+                    }
                     if (runner[field] === undefined || runner[field] === null || runner[field] === '') {
                         errors.push(`${index + 1} ${field}`);
                     }
