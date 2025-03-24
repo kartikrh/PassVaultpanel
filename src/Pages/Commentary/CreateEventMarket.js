@@ -1563,7 +1563,7 @@ export const CreateEventMarket = () => {
                             overRate: runner.overRate,
                             underRate: runner.underRate,
                             backPrice: runner.backPrice,
-                            layPrice: runner.layPrice,
+                            layPrice: runner.layPrice || null,
                             backSize: runner.backSize,
                             laySize: runner.laySize,
                             order: runner.order,
