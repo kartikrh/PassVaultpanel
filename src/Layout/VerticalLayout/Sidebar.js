@@ -29,9 +29,9 @@ const Sidebar = (props) => {
     console.log("#####################_Is Log Rocket Enabled_#####################", { initLogRocket })
     if (initLogRocket && initLogRocket === "TRUE" && !isLogRocketInitialized) {
       const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
-      if (!userObj?.userName || userObj.userName === LOG_ROCKET_TO_INCLUDE_ONLY)
-        LogRocket.init(logRocketAppId);
       const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}")
+      if (!userObj?.userName || userObj?.userName === LOG_ROCKET_TO_INCLUDE_ONLY)
+        LogRocket.init(logRocketAppId);
       LogRocket.identify(userObj?.userName, {
         name: userObj?.userName,
         email: userObj?.userName,
