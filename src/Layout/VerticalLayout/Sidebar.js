@@ -13,7 +13,7 @@ import { configInit } from "../../Features/Config/configSlice";
 import "./sidebar.css";
 import LogRocket from 'logrocket';
 import { loadInit } from "../../config";
-import { USER_DATA_KEY } from "../../components/Common/Const";
+import { LOG_ROCKET_TO_INCLUDE_ONLY, USER_DATA_KEY } from "../../components/Common/Const";
 
 const Sidebar = (props) => {
   const ref = useRef();
@@ -29,7 +29,8 @@ const Sidebar = (props) => {
     console.log("#####################_Is Log Rocket Enabled_#####################", { initLogRocket })
     if (initLogRocket && initLogRocket === "TRUE" && !isLogRocketInitialized) {
       const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
-      LogRocket.init(logRocketAppId);
+      if (!userObj?.userName || userObj.userName === LOG_ROCKET_TO_INCLUDE_ONLY)
+        LogRocket.init(logRocketAppId);
       const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}")
       LogRocket.identify(userObj?.userName, {
         name: userObj?.userName,

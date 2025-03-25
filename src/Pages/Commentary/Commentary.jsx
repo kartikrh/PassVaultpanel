@@ -75,6 +75,15 @@ export const CommentaryScreen = ({
             case '6':
                 handleRuns(6, 1, true);
                 break;
+            case '7':
+                updateExtras(BALL_WIDE);
+                break;
+            case '8':
+                updateExtras(NO_BALL);
+                break;
+            case '9':
+                updateExtras(BALL_LEG_BYE);
+                break;
             // case '/':
             //     updateExtras(BALL_WIDE)
             //     break;
