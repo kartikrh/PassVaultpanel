@@ -10,6 +10,8 @@ import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDa
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
 import { isEmpty, isEqual } from "lodash";
+import RequestModal from "./RequestModal";
+import ResponseModal from "./ResponseModal";
 
 function EventMarketLogs() {
   const pageName = TAB_EVENTMARKET_LOGS;
@@ -25,6 +27,10 @@ function EventMarketLogs() {
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
+  const [reqBodyData, setReqBodyData] = useState(null);
+  const [reqModelVisible, setReqModelVisible] = useState(false);
+  const [resModelVisible, setResModelVisible] = useState(false);
+  const [resBodyData, setResBodyData] = useState({});
   const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [cloneValues, setCloneValues] = useState({
         eventName: "",
@@ -232,7 +238,7 @@ useEffect(() => {
     },
     {
       title: "Date",
-      dataIndex: "eventDate",
+      dataIndex: "createdAt",
       render: (text, record) => (
         <span>
           {dateType?.value == 1
@@ -241,60 +247,145 @@ useEffect(() => {
           }
         </span>
       ),
-      key: "eventDate",
+      key: "createdAt",
       sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Event Id",
-      dataIndex: "eventRefId",
-      key: "eventRefId",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Event",
-      dataIndex: "eventName",
-      key: "eventName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Competition",
-      dataIndex: "competition",
-      key: "competition",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Status",
-      dataIndex: "commentaryStatus",
-      render: (text, record) => (
-        <span>{mapCommentaryStatus(text)}</span>
-      ),
-      key: "commentaryStatus",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "User",
-      dataIndex: "userName",
-      key: "userName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Time",
-      dataIndex: "createdDate",
-      render: (text, record) => (
+        title: "Request Time",
+        dataIndex: "requestTime",
+        render: (text, record) => (
         <span>
-          {convertDateUTCToLocal2(text, "index")}
+            {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+            }
         </span>
-      ),
-      key: "createdDate",
-      sort: true,
-      style: { width: "10%" },
+        ),
+        key: "requestTime",
+        sort: true,
+        style: { width: "10%" },
     },
+    
+    {
+        title: "Request Body",
+        dataIndex: "requestBody",
+        render: (text, record) => {
+          const logObject = text;
+          const logItems =
+            logObject &&
+            Object.entries(logObject).map(([key, value]) => (
+              <span key={key}>
+                <strong>{key}:</strong>{" "}
+                {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              </span>
+            ));
+          return <div 
+          onClick={() => {
+                    setReqModelVisible(true);
+                    setReqBodyData({requestBody :record?.requestBody,id:record?.id,
+                      eventName:record?.eventName,
+                      eventRefId:record?.eventRefId
+                      ,createdDate:record?.createdAt});
+                  }}
+        style={{ 
+        display: 'inline-block', 
+        maxWidth: '400px',
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis',
+        cursor: "pointer" 
+        }}>{logItems}</div>;
+        },
+        key: "requestBody",
+        sort: true,
+        style: { width: "20%" },
+    },
+    {
+        title: "Error",
+        dataIndex: "error",
+        render: (text, record) => {
+          const logObject = text;
+          const logItems =
+            logObject &&
+            Object.entries(logObject).map(([key, value]) => (
+              <span key={key}>
+                <strong>{key}:</strong>{" "}
+                {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              </span>
+            ));
+          return <div 
+        style={{ 
+        display: 'inline-block', 
+        maxWidth: '400px',
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis',
+        cursor: "pointer" 
+        }}>{logItems}</div>;
+        },
+        key: "error",
+        sort: true,
+        style: { width: "20%" },
+    },
+    {
+        title: "Response",
+        dataIndex: "response",
+        render: (text, record) => {
+          const logObject = text;
+          const logItems =
+            logObject &&
+            Object.entries(logObject).map(([key, value]) => (
+              <span key={key}>
+                <strong>{key}:</strong>{" "}
+                {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              </span>
+            ));
+          return <div 
+          onClick={() => {
+                    setResModelVisible(true);
+                    setResBodyData({
+                      response :record?.response,id:record?.id,
+                      eventName:record?.eventName,
+                      eventRefId:record?.eventRefId,
+                      createdDate:record?.createdAt});
+                  }}
+          style={{ 
+            display: 'inline-block', 
+            maxWidth: '400px',
+            whiteSpace: 'nowrap', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis', 
+            cursor: "pointer"
+          }}>{logItems}</div>;
+        },
+        key: "response",
+        sort: true,
+        style: { width: "20%" },
+    },
+    {
+        title: "Response Time",
+        dataIndex: "responseTime",
+        render: (text, record) => (
+        <span>
+            {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")
+            }
+        </span>
+        ),
+        key: "responseTime",
+        sort: true,
+        style: { width: "10%" },
+    },
+    {
+        title: "Created By",
+        dataIndex: "createdByName",
+        key: "createdByName",
+        sort: true,
+        style: { width: "10%", textAlign: "center" },
+    },
+    
   ];
 
   const handleBackClick = () => {
@@ -384,6 +475,22 @@ useEffect(() => {
             dateType={dateType}
             setDateType={setDateType}
           />
+          {reqModelVisible && (
+            <RequestModal
+              isOpen={reqModelVisible}
+              toggle={() => setReqModelVisible(!reqModelVisible)}
+              data={reqBodyData}
+              fetchData={fetchData}
+            />
+          )}
+          {resModelVisible && (
+            <ResponseModal
+              isOpen={resModelVisible}
+              toggle={() => setResModelVisible(!resModelVisible)}
+              data={resBodyData}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
