@@ -90,6 +90,7 @@ export const TAB_UNSETTLED_MARKETS = "Unsettled Markets";
 export const TAB_UNDO_LOGS = "Undo Logs";
 export const TAB_VIDEOLIBRARY = "Video Library";
 export const TAB_VENDOR = "Vendors";
+export const TAB_EVENTMARKET_LOGS = "EventMarket Logs";
 
 // Permission Type
 export const PERMISSION_ADD = "isAdd";
