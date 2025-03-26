@@ -459,6 +459,14 @@ const Index = () => {
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
+  const handleEventMarketLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/EventMarketLogs");
+    sessionStorage.setItem('eventMarketLogsId', "" + details?.commentaryId);
+    sessionStorage.setItem('eventMarketLogsDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+    sessionStorage.removeItem("eventMarketLogsId");
+    sessionStorage.removeItem("eventMarketLogsDetails");
+  };
   const handleCommentaryMarketRunnerClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryMarketRunner");
     sessionStorage.setItem('marketRunnerCommentaryId', "" + details?.commentaryId);
@@ -1405,6 +1413,22 @@ const Index = () => {
               className="btn"
               onClick={() => {
                 handleUndoLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"EventMarket Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleEventMarketLogsClick(record);
               }}
             >
               <i class="bx bxs-up-arrow-square"></i>

@@ -119,6 +119,7 @@ import ErrorLogs from "../Pages/ErrorLogs";
 import PredictorLogs from "../Pages/PredictorLogs";
 import UndoLogs from "../Pages/UndoLogs";
 import ScoringLogs from "../Pages/ScoringLogs";
+import EventMarketLogs from "../Pages/EventMarketLogs";
 import AddSocialMedia from "../Pages/SocialMedia/AddSocialMedia.jsx";
 import SocialMedia from "../Pages/SocialMedia";
 import AddAward from "../Pages/Awards/AddAwards.jsx";
@@ -259,6 +260,7 @@ const authProtectedRoutes = [
   { path: "/predictorLogs", component: <PredictorLogs /> },
   { path: "/undoLogs", component: <UndoLogs /> },
   { path: "/scoringLogs", component: <ScoringLogs /> },
+  { path: "/EventMarketLogs", component: <EventMarketLogs /> },
   { path: "/eventResult", component: <EventResult /> },
   { path: "/photoLibrary", component: <PhotoLibrary /> },
   { path: "/addPhotoLibrary", component: <AddPhotoLibrary /> },
