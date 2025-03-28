@@ -1064,8 +1064,8 @@ const Commentary = (props) => {
                 "playerName": oldPlayer["playerName"],
                 "batsmanAverage": oldPlayer["batsmanAverage"],
                 "bowlerAverage": oldPlayer["bowlerAverage"],
-                "batterOrder": null,
-                "bowlerOrder": null,
+                "batterOrder": oldPlayer["batterOrder"],
+                "bowlerOrder": oldPlayer["bowlerOrder"],
             }
             updatedOldPlayer = {
                 ...oldPlayer,
