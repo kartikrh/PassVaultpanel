@@ -108,37 +108,37 @@ const Commentary = (props) => {
     const socket = createSocket();
     // console.log({ "Current Over Ball count": currentOver.ballCount, "OverHistory": overHistory });
 
-    const handleCommentaryConsole = async (temp, main, objToSave, currentPartnership) => {
-        const currentState = {
-            over: main?.over,
-            ballCount: main?.ballCount,
-            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-            commentaryBallByBall: objToSave?.commentaryBallByBall,
-            commentaryPartnership: objToSave?.commentaryPartnership,
-            commentaryPlayers: objToSave?.commentaryPlayers,
-            currentPartnership: currentPartnership,
-        }
-        const temporaryState = {
-            over: temp?.over,
-            ballCount: temp?.ballCount,
-            teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM]
-                ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
-                : '0/0',
-        }
-        const payload = {
-            currentState: JSON.stringify(currentState),
-            temporaryState: JSON.stringify(temporaryState),
-            ballCount: main?.ballCount,
-            over: main?.over,
-            teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-            commentaryId: main?.commentaryId,
-        }
-        try {
-            await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
-        } catch (error) {
-            console.error("Error updating commentary console:", error);
-        }
-    };
+    // const handleCommentaryConsole = async (temp, main, objToSave, currentPartnership) => {
+    //     const currentState = {
+    //         over: main?.over,
+    //         ballCount: main?.ballCount,
+    //         teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+    //         commentaryBallByBall: objToSave?.commentaryBallByBall,
+    //         commentaryPartnership: objToSave?.commentaryPartnership,
+    //         commentaryPlayers: objToSave?.commentaryPlayers,
+    //         currentPartnership: currentPartnership,
+    //     }
+    //     const temporaryState = {
+    //         over: temp?.over,
+    //         ballCount: temp?.ballCount,
+    //         teamScore: typeof BATTING_TEAM !== 'undefined' && _teams?.[BATTING_TEAM]
+    //             ? `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
+    //             : '0/0',
+    //     }
+    //     const payload = {
+    //         currentState: JSON.stringify(currentState),
+    //         temporaryState: JSON.stringify(temporaryState),
+    //         ballCount: main?.ballCount,
+    //         over: main?.over,
+    //         teamScore: `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
+    //         commentaryId: main?.commentaryId,
+    //     }
+    //     try {
+    //         await axiosInstance.post(`/admin/score/commentaryConsoleFe`, payload);
+    //     } catch (error) {
+    //         console.error("Error updating commentary console:", error);
+    //     }
+    // };
     useEffect(() => {
         localStorage.setItem("superOverText", JSON.stringify(superOverText));
     }, [superOverText]);
@@ -1064,8 +1064,8 @@ const Commentary = (props) => {
                 "playerName": oldPlayer["playerName"],
                 "batsmanAverage": oldPlayer["batsmanAverage"],
                 "bowlerAverage": oldPlayer["bowlerAverage"],
-                "batterOrder": null,
-                "bowlerOrder": null,
+                "batterOrder": oldPlayer["batterOrder"],
+                "bowlerOrder": oldPlayer["bowlerOrder"],
             }
             updatedOldPlayer = {
                 ...oldPlayer,
@@ -1869,14 +1869,14 @@ const Commentary = (props) => {
         setOnPitchPlayers(onPitchPlayers)
         setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData))
         setBallHistory(ballByBallHistoryData)
-        try {
-            axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
-                ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: ballByBallHistoryData }
-            });
-            console.log("BallbyBall history ->>>>>>>>", { hstory: ballByBallHistoryData })
-        } catch (error) {
-            console.error("Error updating commentary console:", error);
-        }
+        // try {
+        //     axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
+        //         ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: ballByBallHistoryData }
+        //     });
+        //     console.log("BallbyBall history ->>>>>>>>", { hstory: ballByBallHistoryData })
+        // } catch (error) {
+        //     console.error("Error updating commentary console:", error);
+        // }
         setOverHistory(overHistoryData)
         setPartnershipHistory(partnershipHistoryData)
         setWicketHistory(propsData.commentaryData.commentaryWicket)
@@ -1969,12 +1969,12 @@ const Commentary = (props) => {
             dispatch(clearUndoFlag())
             // setOverBallByBallDisplay(updatedBallHistory)
             setBallHistory(updatedBallHistoryList)
-            try {
-                axiosInstance.post(`/admin/score/commentaryConsoleFe`, { ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: updatedBallHistoryList } });
-                console.log("BallbyBall history ->>>>>>>>", { history: updatedBallHistoryList })
-            } catch (error) {
-                console.error("Error updating commentary console:", error);
-            }
+            // try {
+            //     axiosInstance.post(`/admin/score/commentaryConsoleFe`, { ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: updatedBallHistoryList } });
+            //     console.log("BallbyBall history ->>>>>>>>", { history: updatedBallHistoryList })
+            // } catch (error) {
+            //     console.error("Error updating commentary console:", error);
+            // }
             setCurrentBall(updatedBallHistoryList[updatedBallHistoryList.length - 1])
             setIsUndoBall(undefined)
         }
@@ -2046,7 +2046,7 @@ const Commentary = (props) => {
                 console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
                 if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
-                    handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
+                    // handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
                     dispatch(
                         updateToastData({
                             title: 'Partnership issue',
@@ -2128,12 +2128,12 @@ const Commentary = (props) => {
                     // console.log("2097 currentPartnership after", currentPartnership)
                 }
                 setBallHistory([].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]))
-                try {
-                    axiosInstance.post(`/admin/score/commentaryConsoleFe`, { ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: [].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]) } });
-                    console.log("BallbyBall history ->>>>>>>>", { hstory: [].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]) })
-                } catch (error) {
-                    console.error("Error updating commentary console:", error);
-                }
+                // try {
+                //     axiosInstance.post(`/admin/score/commentaryConsoleFe`, { ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: [].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]) } });
+                //     console.log("BallbyBall history ->>>>>>>>", { hstory: [].concat(ballHistory || [], [commentaryDataToUpdate.commentaryBallByBallDetails]) })
+                // } catch (error) {
+                //     console.error("Error updating commentary console:", error);
+                // }
                 setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
                 // handleCommentaryConsole(_currentOver, currentOver);
@@ -2143,14 +2143,14 @@ const Commentary = (props) => {
                 && isEqual(currentBall.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails?.commentaryBallByBallId)
                 && !isEqual(currentBall, commentaryDataToUpdate.commentaryBallByBallDetails)) {
                 setBallHistory([].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]))
-                try {
-                    axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
-                        ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: [].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]) }
-                    });
-                    console.log("BallbyBall history ->>>>>>>>", { hstory: [].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]) })
-                } catch (error) {
-                    console.error("Error updating commentary console:", error);
-                }
+                // try {
+                //     axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
+                //         ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: [].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]) }
+                //     });
+                //     console.log("BallbyBall history ->>>>>>>>", { hstory: [].concat((ballHistory.slice(0, -1) || []), [commentaryDataToUpdate.commentaryBallByBallDetails]) })
+                // } catch (error) {
+                //     console.error("Error updating commentary console:", error);
+                // }
             }
             const partnershipFromApi = commentaryDataToUpdate?.commentaryPartnershipDetails
             //   console.log("commentaryDataToUpdate?.commentaryPartnershipDetails", commentaryDataToUpdate?.commentaryPartnershipDetails)
