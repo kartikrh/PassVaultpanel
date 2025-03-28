@@ -44,8 +44,10 @@ export const ManualOddsMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if (!isEmpty(commentaryDetails))
+        if (!isEmpty(commentaryDetails)) {
             document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
+            setFormData({ ...formData, eventRefId: commentaryDetails?.eventRefId })
+        }
     }, [commentaryDetails])
 
     const fetchMarketData = async () => {
@@ -82,19 +84,19 @@ export const ManualOddsMarket = () => {
     }, []);
 
     useEffect(() => {
-            if (!socket) return;
-    
-            if (commentaryId) {
-                socket.emit(INNINGS_CONNECT, commentaryId);
-    
-                socket.on(INNINGS_RUN_DATA, (data) => {
+        if (!socket) return;
+
+        if (commentaryId) {
+            socket.emit(INNINGS_CONNECT, commentaryId);
+
+            socket.on(INNINGS_RUN_DATA, (data) => {
                 //   console.log("innings run data", data);
-                });
-            }
-    
-            return () => {
-                socket.off(INNINGS_RUN_DATA);
-            };
+            });
+        }
+
+        return () => {
+            socket.off(INNINGS_RUN_DATA);
+        };
     }, [socket, commentaryId]);
 
     useEffect(() => {
