@@ -545,7 +545,7 @@ const Commentary = (props) => {
             return { ...actualPrevData, ...updatePartnership, isActive: freezePlayers ? false : true }
         })
         setSaveToDb(true)
-        console.log("updatesRuns", currentPartnership)
+        // console.log("updatesRuns", currentPartnership)
     }
     const updateExtras = (type, runs, isBoundary = false) => {
         setIsUndoingLastOver(false)
@@ -987,7 +987,7 @@ const Commentary = (props) => {
         setPlayerUpdateList([].concat(allPlayersToUpdate, playerUpdateList || []))
         if (playerToChange === CURRENT_BOWLER) setIsOverChange(true)
         if (isWicketChange) {
-            console.log("isWicketChange currentPartnership", currentPartnership)
+            // console.log("isWicketChange currentPartnership", currentPartnership)
             const currentBallDetails = { ...currentBall }
             currentBallDetails["nextBatStrikeId"] = updatedOnPitchPlayer[ON_STRIKE]?.commentaryPlayerId
             currentBallDetails["nextBatNonStrikeId"] = updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId
@@ -1902,7 +1902,7 @@ const Commentary = (props) => {
         }
     }
     const updateTempToMain = () => {
-        console.log("_currentPartnership", _currentPartnership)
+        // console.log("_currentPartnership", _currentPartnership)
         if (!isEmpty(_currentOver)) {
             setCurrentOver(_currentOver)
             _setCurrentOver()
@@ -1923,7 +1923,7 @@ const Commentary = (props) => {
             setTeams(_teams)
             _setTeams()
         }
-        console.log("update to main currentPartnership", currentPartnership)
+        // console.log("update to main currentPartnership", currentPartnership)
     }
     useEffect(() => {
         if (superOverApiData) {
@@ -2043,7 +2043,7 @@ const Commentary = (props) => {
                     "batsmen2": objToSave.commentaryPartnership.batter2Name,
                     "partnership_no": objToSave.commentaryPartnership.order
                 }
-                console.log("partnership details", partnershipDetailsForConsole);
+                // console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
                 if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
                     // handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
@@ -2105,7 +2105,6 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
-                console.log("if 1")
                 const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams, currentPartnership })
                 // console.log("Called from : 24");
                 dispatch(addCommentaryScreenData({
@@ -2120,10 +2119,8 @@ const Commentary = (props) => {
             if (!isEmpty(commentaryDataToUpdate.commentaryBallByBallDetails)
                 && !compareNumStringValues(currentBall?.commentaryBallByBallId, commentaryDataToUpdate.commentaryBallByBallDetails.commentaryBallByBallId)) {
                 // If Partnership Ball By ball Id is not correct, then update it
-                console.log("if 2")
                 if ((!currentPartnership?.commentaryBallByBallId || +currentPartnership?.commentaryBallByBallId === 0)) {
                     // console.log("2095 currentPartnership before", currentPartnership)
-                    console.log("if 2 if")
                     setCurrentPartnership({ ...currentPartnership, "commentaryBallByBallId": commentartBallByBallIdToUpdate })
                     // console.log("2097 currentPartnership after", currentPartnership)
                 }
@@ -2157,11 +2154,11 @@ const Commentary = (props) => {
             //   console.log("currentPartnership?.commentaryPartnershipId", currentPartnership?.commentaryPartnershipId)
             //   console.log("+currentPartnership?.commentaryPartnershipId == 0", +currentPartnership?.commentaryPartnershipId)
             //   console.log("isEmpty(currentPartnership)", isEmpty(currentPartnership))
-            console.log("partnershipFromApi", partnershipFromApi)
-            console.log("currentPartnership ----> ", currentPartnership)
+            // console.log("partnershipFromApi", partnershipFromApi)
+            // console.log("currentPartnership ----> ", currentPartnership)
             //   console.log("!isEmpty(partnershipFromApi)", isEmpty(partnershipFromApi))
             //   console.log("(!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))", (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
-            console.log("full condition", (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))) && (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0))))
+            // console.log("full condition", (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))) && (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0))))
             if (
                 (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
                 &&
@@ -2171,8 +2168,8 @@ const Commentary = (props) => {
                     "commentaryBallByBallId": (commentartBallByBallIdToUpdate || currentBall.commentaryBallByBallId),
                     isActive: true,
                 }
-                console.log("if 3")
-                console.log("2120 new before", newPartnership)
+                // console.log("if 3")
+                // console.log("2120 new before", newPartnership)
                 setCurrentPartnership(newPartnership)
                 //   console.log("2122 currentPartnership after", currentPartnership)
                 setPartnershipHistory([].concat(partnershipHistory || [], [newPartnership]))

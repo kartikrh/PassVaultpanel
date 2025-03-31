@@ -719,7 +719,7 @@ export const UpdateManualOdds = () => {
             manualEdit = false,
             editedField = null
         } = options;
-        console.log("____________________", { runner })
+        // console.log("____________________", { runner })
         const back = parseFloat(runner?.back?.price) || 0;
         const existingLay = parseFloat(runner?.lay?.price) || 0;
         const existingL1 = parseFloat(runner?.l1) || 0;
@@ -1246,15 +1246,15 @@ export const UpdateManualOdds = () => {
                 }
 
                 if (socket && commentaryId) {
-                    console.log("Connecting COMMENTARY_STATUS_CONNECT");
+                    // console.log("Connecting COMMENTARY_STATUS_CONNECT");
                     socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
 
                     if (directLineEnabled && !isLive) {
-                        console.log("Connecting to INNINGS_CONNECT");
+                        // console.log("Connecting to INNINGS_CONNECT");
                         socket.emit(INNINGS_CONNECT, commentaryId);
                     } else {
-                        console.log("Connecting to MARKET_RUNNER_CONNECT");
-                        socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+                        // console.log("Connecting to MARKET_RUNNER_CONNECT");
+                        // socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
                     }
                 }
             }
@@ -1507,7 +1507,7 @@ export const UpdateManualOdds = () => {
         const socketData = incomingData || originalMarketRunnerData;
         if (!socketData || !socketData.length) return;
         const currentSettings = settingsRef.current;
-        console.log("Processing Market Runner Data:", socketData);
+        // console.log("Processing Market Runner Data:", socketData);
 
         // Adjust each runner’s backPrice with bfRateDiff
         const adjustedRunners = socketData.map(runner => ({
@@ -1546,7 +1546,7 @@ export const UpdateManualOdds = () => {
             const newSelectedLayPrice = parseFloat(
                 (newSelectedBackPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2)
             );
-            console.log("New selected back:", newSelectedBackPrice, "New selected lay:", newSelectedLayPrice);
+            // console.log("New selected back:", newSelectedBackPrice, "New selected lay:", newSelectedLayPrice);
             const updatedRunners = prevRunners.map(prevRunner => {
                 const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
                 if (!socketRunner) return prevRunner;
@@ -1628,7 +1628,7 @@ export const UpdateManualOdds = () => {
         // Use incoming data if provided; otherwise, fallback to stored original innings data.
         const dataToProcess = incomingData || originalInningsData;
         if (!dataToProcess || !dataToProcess.length) return;
-        console.log("Processing Innings Data:", dataToProcess);
+        // console.log("Processing Innings Data:", dataToProcess);
 
         let updatedMarketData = [];
         if (socketMarketData.length > 0) {
@@ -1648,7 +1648,7 @@ export const UpdateManualOdds = () => {
         } else {
             updatedMarketData = dataToProcess;
         }
-        console.log("Updated Innings Market Data:", updatedMarketData);
+        // console.log("Updated Innings Market Data:", updatedMarketData);
         setSocketMarketData(updatedMarketData);
         handleInningsDataUpdate(updatedMarketData);
     };
@@ -1918,7 +1918,7 @@ export const UpdateManualOdds = () => {
         let marketRunnerListener = null;
 
         if (isLive) {
-            console.log("Connecting to MARKET_RUNNER_CONNECT");
+            // console.log("Connecting to MARKET_RUNNER_CONNECT");
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
 
             marketRunnerListener = (message) => {
@@ -1932,13 +1932,13 @@ export const UpdateManualOdds = () => {
 
             socket.on(MARKET_RUNNER_DATA, marketRunnerListener);
         } else {
-            console.log("Disconnecting from MARKET_RUNNER_CONNECT");
+            // console.log("Disconnecting from MARKET_RUNNER_CONNECT");
             socket.emit(MARKET_RUNNER_CONNECT, []); // Disconnect by sending empty array
         }
 
         return () => {
             if (marketRunnerListener) {
-                console.log("Cleaning up MARKET_RUNNER_DATA listener");
+                // console.log("Cleaning up MARKET_RUNNER_DATA listener");
                 socket.off(MARKET_RUNNER_DATA, marketRunnerListener);
             }
         };
@@ -1948,10 +1948,10 @@ export const UpdateManualOdds = () => {
         if (!socket || !commentaryId) return;
 
         if (directLineEnabled && !isLive) {
-            console.log("Connecting to INNINGS_CONNECT for DirectLine data");
+            // console.log("Connecting to INNINGS_CONNECT for DirectLine data");
             socket.emit(INNINGS_CONNECT, commentaryId);
         } else {
-            console.log("Connecting to MARKET_RUNNER_CONNECT");
+            // console.log("Connecting to MARKET_RUNNER_CONNECT");
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
         }
 
@@ -2029,7 +2029,7 @@ export const UpdateManualOdds = () => {
         const currentInningsMarket = sortedMarkets[0];
 
         if (!currentInningsMarket?.runner?.[0]) {
-            console.log("No valid market data found");
+            // console.log("No valid market data found");
             return;
         }
         // Calculate probability and odds
@@ -2058,7 +2058,7 @@ export const UpdateManualOdds = () => {
         // if both odds are equal then override both runners:
         if (!isLive && directLineEnabled && oddsA === oddsB) {
             const tieValue = parseFloat(settings.tieProbability);
-            console.log("Tie detected. Setting both runner back prices to tieProbability:", tieValue);
+            // console.log("Tie detected. Setting both runner back prices to tieProbability:", tieValue);
             // Update both original and current runner states
             setOriginalRunner(prevRunners =>
                 prevRunners.map(runner => ({
@@ -2083,14 +2083,14 @@ export const UpdateManualOdds = () => {
             [newIdSetting[1]?.teamId]: oddsA
         };
 
-        console.log("Odds by team:", oddsObj);
+        // console.log("Odds by team:", oddsObj);
 
         // Find the smallest non-zero back price
         const nonZeroOdds = Object.entries(oddsObj)
             .filter(([_, odds]) => odds > 0);
 
         if (!nonZeroOdds.length) {
-            console.log("No valid odds found");
+            // console.log("No valid odds found");
             return;
         }
 
@@ -2099,33 +2099,33 @@ export const UpdateManualOdds = () => {
             nonZeroOdds[0]
         );
 
-        console.log("Selected team and price:", { selectedTeamId, selectedBackPrice });
+        // console.log("Selected team and price:", { selectedTeamId, selectedBackPrice });
 
         // Calculate all prices based on the selected back price
         const prices = calculatePricesFromSelectedBack(selectedBackPrice, settings);
-        console.log("Calculated prices:", prices);
+        // console.log("Calculated prices:", prices);
 
         // Update runners with the new calculated prices.
         const updateRunners = (prevRunners) => {
             return prevRunners.map(runner => {
                 // Convert teamId to string for comparison
                 const isSelected = runner.teamId.toString() === selectedTeamId.toString();
-                console.log(`Processing runner:`, {
-                    runnerId: runner.runnerId,
-                    teamId: runner.teamId,
-                    selectedTeamId,
-                    isSelected,
-                    currentPrices: {
-                        back: runner.back.price,
-                        lay: runner.lay.price
-                    }
-                });
+                // console.log(`Processing runner:`, {
+                //     runnerId: runner.runnerId,
+                //     teamId: runner.teamId,
+                //     selectedTeamId,
+                //     isSelected,
+                //     currentPrices: {
+                //         back: runner.back.price,
+                //         lay: runner.lay.price
+                //     }
+                // });
                 const updatedRunner = updateRunnerWithPrices(runner, isSelected, prices, settings);
-                console.log(`Updated prices for runner ${runner.runnerId}:`, {
-                    isSelected,
-                    back: updatedRunner.back.price,
-                    lay: updatedRunner.lay.price
-                });
+                // console.log(`Updated prices for runner ${runner.runnerId}:`, {
+                //     isSelected,
+                //     back: updatedRunner.back.price,
+                //     lay: updatedRunner.lay.price
+                // });
                 return updatedRunner;
             });
         };

@@ -100,7 +100,7 @@ function AddRoles() {
     const fetchData = async (roleId, storeInitialData = false) => {
         await axiosInstance.post('/admin/roles/byId', { roleId, displayType: displayType })
             .then((response) => {
-                console.log("response", response);
+                // console.log("response", response);
     
                 const permissions = response?.result?.permissions || [];
     
@@ -132,7 +132,7 @@ function AddRoles() {
                     }
                 });
     
-                console.log("sortedData", sortedData);
+                // console.log("sortedData", sortedData);
     
                 if (storeInitialData) setInitialEditData(response?.result);
                 
