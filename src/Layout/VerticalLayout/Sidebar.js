@@ -26,7 +26,7 @@ const Sidebar = (props) => {
   let initLogRocket = loadInitData.find(item => item.key === loadInit.ENABLE_LOGROCKET)?.value;
 
   useEffect(() => {
-    console.log("#####################_Is Log Rocket Enabled_#####################", { initLogRocket })
+    // console.log("#####################_Is Log Rocket Enabled_#####################", { initLogRocket })
     if (initLogRocket && initLogRocket === "TRUE" && !isLogRocketInitialized) {
       const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
       const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}")
@@ -37,9 +37,9 @@ const Sidebar = (props) => {
         email: userObj?.userName,
         subscriptionType: 'pro'
       });
-      console.log("#####################_Log Rocket App Id._#####################", {
-        logRocketAppId, name: userObj?.userName
-      })
+      // console.log("#####################_Log Rocket App Id._#####################", {
+      //   logRocketAppId, name: userObj?.userName
+      // })
       setIsLogRocketInitialized(true);
     }
   }, [initLogRocket, isLogRocketInitialized, loadInitData]);
