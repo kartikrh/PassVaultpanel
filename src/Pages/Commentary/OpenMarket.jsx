@@ -461,7 +461,7 @@ export const OpenMarket = () => {
                 updatedData[marketIndex] = updatedMarket;
             } else if (key === 'line' || key === 'margin' || key === "rateDiff") {
                 if (key === 'line') {
-                    console.log("originalMarketData[updatedMarket.marketId]", originalMarketData[updatedMarket.marketId])
+                    // console.log("originalMarketData[updatedMarket.marketId]", originalMarketData[updatedMarket.marketId])
                     const originalData = originalMarketData[updatedMarket.marketId];
                     if (originalData) {
                         // Reset all lineDiffs to 0
@@ -469,7 +469,7 @@ export const OpenMarket = () => {
                             ...market,
                             lineDiff: 0
                         }));
-                        console.log("originalData.line", originalData.line)
+                        // console.log("originalData.line", originalData.line)
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
                         updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
 
@@ -1671,15 +1671,15 @@ export const OpenMarket = () => {
     useEffect(() => {
         if (!isEmpty(teams)) {
             if (socket) {
-                console.log('Connecting to socket for market updates');
+                // console.log('Connecting to socket for market updates');
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 setIsSocketConnected(true)
                 socket.on(OPEN_MARKET_DATA, (socketData) => {
-                    console.log('Received OPEN_MARKET_DATA event');
+                    // console.log('Received OPEN_MARKET_DATA event');
                     formatSocketDataForState(socketData || [])
                 });
                 socket.on(UPDATE_MARKET_DATA, (marketData) => {
-                    console.log('Received UPDATE_MARKET_DATA event');
+                    // console.log('Received UPDATE_MARKET_DATA event');
                     if (marketData) {
                         handleMarketUpdate(marketData);
                     }
