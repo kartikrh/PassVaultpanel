@@ -50,7 +50,7 @@ export const predictWinProbability = (
 
     // Calculate win probability
     let probabilityBWins = 1.0 - parseFloat(cdfValue);
-
+    console.log({ probabilityBWins })
     // Clip to [0, 1] range
     return Math.max(0.0, Math.min(probabilityBWins, 1.0));
 };
