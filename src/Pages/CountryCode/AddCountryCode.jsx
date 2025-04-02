@@ -30,6 +30,7 @@ import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
 const AddCountryCode = () => {
   const pageName = TAB_COUNTRY_CODE;
@@ -94,7 +95,7 @@ const AddCountryCode = () => {
         id: countryCodeId,
       };
       dispatch(
-        addCountryCodeToDb({ ...dataToSave, ...extraData })
+        addCountryCodeToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
       );
       setCurrentSaveAction(saveAction);
     }
