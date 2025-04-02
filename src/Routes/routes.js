@@ -140,6 +140,8 @@ import { UpdateManualOdds } from "../Pages/Commentary/UpdateManualOdds.jsx";
 import DataproviderPage from "../Pages/DataProvider/Dataprovider.jsx";
 import EventDetails from "../Pages/DataProvider/EventDetails.jsx";
 import BowlingPredictor from "../Pages/MatchType/BowlingPredictor.jsx";
+import CountryCode from "../Pages/CountryCode";
+import AddCountryCode from "../Pages/CountryCode/AddCountryCode.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -174,6 +176,8 @@ const authProtectedRoutes = [
   { path: "/awards", component: <Awards /> },
   { path: "/addAward", component: <AddAward /> },
   { path: "/addCompetition", component: <AddCompetition /> },
+  { path: "/countryCode", component: <CountryCode /> },
+  { path: "/addCountryCode", component: <AddCountryCode /> },
   { path: "/commentary", component: <Commentary /> },
   { path: "/commentaryList", component: <CommentaryList /> },
   { path: "/commentaryHistory", component: <CommentaryHistory /> },
