@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Tooltip } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -220,13 +220,37 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Flag",
+      dataIndex: "image",
+      printType: "ignore",
+      render: (text, record) => (
+        <div className="flex-shrink-0">
+          {text ? (
+            <div>
+              <img
+                className="avatar-sm rounded-circle"
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "image",
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
       title: "Social Media Name",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
         <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "84%" },
       sort: true,
     },
     {

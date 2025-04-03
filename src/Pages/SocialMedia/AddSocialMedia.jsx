@@ -43,7 +43,7 @@ const AddSocialMedia = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [socialMediaId, setSocialMediaId] = useState(location.state?.socialMediaId || "0");
+  const [socialMediaId, setSocialMediaId] = useState(location.state?.id || "0");
   const [fields, setFields] = useState(socialMediaField || [])
   useEffect(() => {
     if (socialMediaId !== 0) {
@@ -73,7 +73,7 @@ const AddSocialMedia = () => {
 
   const fetchData = async (socialMediaId) => {
     await axiosInstance
-      .post("/admin/award/byId", { id: socialMediaId })
+      .post("/admin/socialMedia/byId", { id: socialMediaId })
       .then((response) => {
         setInitialEditData(response?.result);
       })
