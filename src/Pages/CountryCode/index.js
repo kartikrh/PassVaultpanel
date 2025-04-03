@@ -210,7 +210,7 @@ const Index = () => {
           )}
         </div>
       ),
-      key: "image",
+      key: "flag",
       style: { width: "10%", textAlign: "left" },
     },
     {
