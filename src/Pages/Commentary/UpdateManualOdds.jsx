@@ -1526,10 +1526,9 @@ export const UpdateManualOdds = () => {
             rateDifferent: currentSettings.rateDifferent
         });
 
-        // Adjust each runner's backPrice with bfRateDiff and ensure it's at least 1.01 or 0
+        // Adjust each runner's backPrice with bfRateDiff and calculate lay price using the margin
         const adjustedRunners = socketData.map(runner => {
             const originalBackPrice = runner.backPrice;
-            const originalLayPrice = runner.layPrice;
 
             // Apply bfRateDiff adjustment to backPrice
             let adjustedBackPrice = parseFloat((originalBackPrice + parseFloat(currentSettings.bfRateDiff)).toFixed(2));
@@ -1539,25 +1538,28 @@ export const UpdateManualOdds = () => {
                 adjustedBackPrice = 0;
             }
 
-            // Use the original layPrice from the API
-            // If we need to adjust the layPrice similarly, we could do it here
-            let adjustedLayPrice = originalLayPrice;
+            // Calculate lay price from back price using the margin formula: Lay = Back / (1 - margin)
+            const layMargin = currentSettings.margin / 100;
+            const calculatedLayPrice = adjustedBackPrice > 0
+                ? parseFloat((adjustedBackPrice / (1 - layMargin)).toFixed(2))
+                : 0;
 
-            console.log(`Runner ${runner.selectionId} (${runner.runner}) price adjustment:`, {
+            console.log(`Runner ${runner.selectionId} (${runner.runner}) price calculation:`, {
                 originalBack: originalBackPrice,
                 adjustedBack: adjustedBackPrice,
-                originalLay: originalLayPrice,
-                adjustedLay: adjustedLayPrice
+                layMargin: layMargin,
+                calculatedLay: calculatedLayPrice,
+                originalLayFromAPI: runner.layPrice // For comparison
             });
 
             return {
                 ...runner,
                 backPrice: adjustedBackPrice,
-                layPrice: adjustedLayPrice
+                layPrice: calculatedLayPrice // Use the calculated lay price based on margin
             };
         });
 
-        console.log("Adjusted runners with API prices:", adjustedRunners);
+        console.log("Adjusted runners with calculated lay prices:", adjustedRunners);
 
         // Determine the runner with the minimum back price
         const minBackRunner = adjustedRunners.reduce(
@@ -1573,7 +1575,7 @@ export const UpdateManualOdds = () => {
 
         console.log("Selected minimum back price runner:", minBackRunner);
 
-        // Update the originalRunner state using the socket data
+        // Update the originalRunner state using the calculated prices
         setOriginalRunner(prevRunners =>
             prevRunners.map(prevRunner => {
                 const adjustedRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
@@ -1600,7 +1602,7 @@ export const UpdateManualOdds = () => {
             })
         );
 
-        // Update the current runners state
+        // Update the current runners state with calculated prices and ladder
         setRunners(prevRunners => {
             return prevRunners.map(prevRunner => {
                 const adjustedRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
@@ -1608,7 +1610,7 @@ export const UpdateManualOdds = () => {
 
                 const isSelected = adjustedRunner.selectionId === minBackRunner.selectionId;
 
-                // Calculate ladder prices based on original back and lay prices
+                // Calculate ladder prices based on calculated back and lay prices
                 const bRateDiff = parseFloat(currentSettings.bRateDifferent);
                 const lRateDiff = parseFloat(currentSettings.lRateDifferent);
 
