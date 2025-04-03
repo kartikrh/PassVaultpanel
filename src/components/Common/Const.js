@@ -34,6 +34,7 @@ export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_AWARDS = "Awards";
 export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
+export const TAB_COUNTRY_CODE = "Country Code";
 
 export const TAB_CLIENT = "Client";
 
@@ -174,6 +175,7 @@ export const MODULE_API_ENDPOINTS = 33;
 export const MODULE_THIRD_PARTY_APIS = 34;
 export const MODULE_NOTIFICATIONS = 35;
 export const MODULE_VENDORS = 36;
+export const MODULE_COUNTRY_CODE = 37;
 
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG"

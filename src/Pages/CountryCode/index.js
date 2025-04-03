@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar, Tooltip } from "antd";
-import { Button } from "reactstrap";
+import { Avatar } from "antd";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -10,14 +9,14 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
-  TAB_SOCIAL_MEDIA,
+  TAB_COUNTRY_CODE,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
-  MODULE_SOCIAL_MEDIA,
+  MODULE_COUNTRY_CODE,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -25,10 +24,10 @@ import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
-  const pageName = TAB_SOCIAL_MEDIA;
+  const pageName = TAB_COUNTRY_CODE;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_SOCIAL_MEDIA;
+  document.title = TAB_COUNTRY_CODE;
   const [data, setData] = useState([]);
 
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -44,11 +43,11 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/socialMedia/all`, {
+      .post(`/admin/countryCode/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.id - b?.id);
+        const apiData = response?.result;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.id);
@@ -73,39 +72,10 @@ const Index = () => {
     setCheckedList(updateSingleCheck);
   };
 
-  const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/socialMedia/activeInactiveApi`, {
-        id: record.id,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_SOCIAL_MEDIA], password})
+      .post(`/loadPanelData`, {module: [MODULE_COUNTRY_CODE], password})
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -132,7 +102,7 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/socialMedia/delete`, {
+      .post(`/admin/countryCode/delete`, {
         id: checekedList,
       })
       .then((response) => {
@@ -160,7 +130,7 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    navigate("/addSocialMedia", { state: { id } });
+    navigate("/addCountryCode", { state: { countryCodeId: id } });
   };
   const handleReset = (value) => {
     fetchData(value);
@@ -221,7 +191,7 @@ const Index = () => {
     },
     {
       title: "Flag",
-      dataIndex: "image",
+      dataIndex: "flag",
       printType: "ignore",
       render: (text, record) => (
         <div className="flex-shrink-0">
@@ -240,42 +210,26 @@ const Index = () => {
           )}
         </div>
       ),
-      key: "image",
+      key: "flag",
       style: { width: "10%", textAlign: "left" },
     },
     {
-      title: "Social Media Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text, record) => (
-        <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
-      ),
-      style: { width: "84%" },
+      title: "Code",
+      dataIndex: "countryCode",
+      key: "countryCode",
+      style: { width: "10%" },
       sort: true,
     },
     {
-      title: "Active",
-      key: "IsActive",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isActive ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handlePermissions("isActive", record, record.isActive);
-            }}
-          >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
+      title: "Country",
+      dataIndex: "countryName",
+      key: "countryName",
+      style: { width: "76%" },
+      sort: true,
     },
   ];
   const tableElement = {
-    title: "Social Media",
-    isActive: true,
+    title: "Country Code",
     reloadButton: true,
     loadData: true,
   };
@@ -294,7 +248,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Social Media" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Country Code" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -303,7 +257,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addSocialMedia"}
+            onAddNavigate={"/addCountryCode"}
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
@@ -325,12 +279,12 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-           {loadDataModelVisable && 
+          {loadDataModelVisable && 
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Social Media"} 
+              moduleName={"Country Code"} 
             />}
         </Container>
       </div>

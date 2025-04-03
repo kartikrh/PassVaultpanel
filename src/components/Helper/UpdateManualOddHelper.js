@@ -1,20 +1,12 @@
-// import {erf} from 'mathjs'
-/**
- * Predicts the probability that Team B will win using a simple Normal distribution model.
- * @param {number} teamAFinalScore - The final score (target) set by Team A
- * @param {number} teamBExpectedFinalScore - Estimated final score for Team B (mean of Normal)
- * @param {number} stdDev - Standard deviation for Team B's final score (default: 10.0)
- * @returns {number} Probability (0.0 to 1.0) that Team B will reach or exceed Team A's score
- */
 // Custom approximation of the error function (erf)
 const customErf = (x) => {
     // Coefficients for approximation
-    const a1 =  0.254829592;
+    const a1 = 0.254829592;
     const a2 = -0.284496736;
-    const a3 =  1.421413741;
+    const a3 = 1.421413741;
     const a4 = -1.453152027;
-    const a5 =  1.061405429;
-    const p  =  0.3275911;
+    const a5 = 1.061405429;
+    const p = 0.3275911;
 
     // Save the sign of x
     const sign = x < 0 ? -1 : 1;
@@ -27,48 +19,81 @@ const customErf = (x) => {
     return sign * y;
 };
 
+/**
+ * Predicts the probability that Team B will win using a simple Normal distribution model.
+ * @param {number} teamAFinalScore - The final score (target) set by Team A
+ * @param {number} teamBExpectedFinalScore - Estimated final score for Team B (mean of Normal)
+ * @param {number} favRatio - Standard deviation for Team B's final score (default: 10.0)
+ * @param {number} totalOvers - Total overs in the match (optional)
+ * @returns {number} Probability (0.0 to 1.0) that Team B will reach or exceed Team A's score
+ */
 export const predictWinProbability = (
     teamAFinalScore,
     teamBExpectedFinalScore,
-    stdDev = 10.0
+    favRatio = 10.0,
+    totalOvers = 20
 ) => {
+    // If either score is missing, return default probability
+    if (!teamAFinalScore || !teamBExpectedFinalScore) {
+        return 0.5; // Default to 50/50
+    }
+
     // Model Team B's final score ~ Normal(µ, σ²)
     const mu = teamBExpectedFinalScore;
-    const sigma = stdDev;
+    const sigma = favRatio;
 
     // Calculate z-value for normal distribution
     const zValue = (teamAFinalScore - mu) / sigma;
 
     // Calculate CDF using error function (erf)
     const cdfValue = (0.5 * (1 + customErf(zValue / Math.sqrt(2)))).toFixed(2);
-    // const cdfValueMathjs = (0.5 * (1 + erf(zValue / Math.sqrt(2)))).toFixed(2);
-    // console.log("cdfValue", cdfValue)
-    // Calculate win probability
-    let probabilityBWins = 1.0 - cdfValue;
 
+    // Calculate win probability
+    let probabilityBWins = 1.0 - parseFloat(cdfValue);
+    console.log({ probabilityBWins })
     // Clip to [0, 1] range
     return Math.max(0.0, Math.min(probabilityBWins, 1.0));
 };
-
 /**
- * Convert a fair probability into two-outcome decimal odds with a margin (overround)
- * @param {number} pBFair - Probability of Team B winning (0 < pBFair < 1)
- * @param {number} margin - Desired total overround (0.05 means 5% margin)
- * @returns {[number, number]} [oddsB, oddsA] - Decimal odds for Team B and Team A
+ * Calculate decimal odds for two outcomes based on win probabilities and margin
+ * 
+ * @param {number} pBFair - Win probability for team B (0.0 to 1.0)
+ * @param {number} margin - Margin to apply (0.05 = 5%)
+ * @returns {Array} - Array containing [teamBOdds, teamAOdds]
  */
 export const decimalOddsTwoOutcomes = (pBFair, margin = 0.05) => {
     // Probability of Team A winning
     const pAFair = 1.0 - pBFair;
 
-    // Inflate probabilities so that pB + pA = 1 + margin
-    const pBInflated = pBFair * (1 + margin);
-    const pAInflated = pAFair * (1 + margin);
+    // Apply margin to probabilities
+    const adjustedProbA = pAFair * (1 + margin);
+    const adjustedProbB = pBFair * (1 + margin);
 
-    // Calculate decimal odds
-    const oddsB = 1.025 / pBInflated;
-    const oddsA = 1.025 / pAInflated;
+    // Calculate back odds with margin
+    // Using 1.0 instead of 1.025 as in the original formula to match your example
+    const oddsA = adjustedProbA > 0 ? 1 / adjustedProbA : 999;
+    const oddsB = adjustedProbB > 0 ? 1 / adjustedProbB : 999;
 
-    return [oddsB, oddsA];
+    return [
+        Number(oddsB.toFixed(2)),
+        Number(oddsA.toFixed(2))
+    ];
+};
+
+/**
+ * Calculate lay odds from back odds using a lay margin
+ * 
+ * @param {number} backOdds - Back odds
+ * @param {number} layMargin - Lay margin to apply (0.05 = 5%)
+ * @returns {number} - Lay odds
+ */
+export const calculateLayFromBack = (backOdds, layMargin = 0.05) => {
+    // If back odds are invalid, return 0
+    if (!backOdds || backOdds <= 1) return 0;
+
+    // Apply lay margin to back odds
+    // Formula: layOdds = backOdds / (1 - layMargin)
+    return Number((backOdds / (1 - layMargin)).toFixed(2));
 };
 
 /**

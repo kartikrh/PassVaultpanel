@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { socialMediaField } from "../../constants/FieldConst/SocialMediaConst";
+import { countryCodeField } from "../../constants/FieldConst/CountryCodeConst";
 import {
   Button,
   ButtonDropdown,
@@ -23,33 +23,33 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  TAB_SOCIAL_MEDIA,
+  TAB_COUNTRY_CODE,
 } from "../../components/Common/Const";
-import { addSocialMediaToDb, updateSavedState } from "../../Features/Tabs/socialMediaSlice";
+import { addCountryCodeToDb, updateSavedState } from "../../Features/Tabs/countryCodeSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 
-const AddSocialMedia = () => {
-  const pageName = TAB_SOCIAL_MEDIA;
+const AddCountryCode = () => {
+  const pageName = TAB_COUNTRY_CODE;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector((state) => state.tabsData.socialMedia);
+  const { isSaved, isLoading } = useSelector((state) => state.tabsData.countryCode);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [socialMediaId, setSocialMediaId] = useState(location.state?.id || "0");
-  const [fields, setFields] = useState(socialMediaField || [])
+  const [countryCodeId, setCountryCodeId] = useState(location.state?.countryCodeId || "0");
+  
   useEffect(() => {
-    if (socialMediaId !== 0) {
-      fetchData(socialMediaId);
+    if (countryCodeId !== 0) {
+      fetchData(countryCodeId);
     }
-  }, [socialMediaId]);
+  }, [countryCodeId]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -61,19 +61,19 @@ const AddSocialMedia = () => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
-        navigate("/SocialMedia");
+        navigate("/countryCode");
       } else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({});
-        setSocialMediaId("0");
+        setCountryCodeId("0");
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined);
     }
   }, [isSaved]);
 
-  const fetchData = async (socialMediaId) => {
+  const fetchData = async (countryCodeId) => {
     await axiosInstance
-      .post("/admin/socialMedia/byId", { id: socialMediaId })
+      .post("/admin/countryCode/byId", { id: countryCodeId })
       .then((response) => {
         setInitialEditData(response?.result);
       })
@@ -88,29 +88,20 @@ const AddSocialMedia = () => {
       });
   };
 
-  const handleFormBDataChange = (val) => {
-    if (val?.isPermanent) {
-      const filteredFields = socialMediaField.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")
-      setFields(filteredFields)
-    } else if (!val?.isPermanent) {
-      setFields(socialMediaField)
-    }
-  };
-
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
       const extraData = {
-        id: socialMediaId,
+        id: countryCodeId,
       };
       dispatch(
-        addSocialMediaToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
+        addCountryCodeToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
       );
       setCurrentSaveAction(saveAction);
     }
   };
   const handleBackClick = () => {
-    navigate("/socialMedia");
+    navigate("/countryCode");
   };
 
   return (
@@ -119,7 +110,7 @@ const AddSocialMedia = () => {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3 className="modal-header-title">Social Media</h3>
+              <h3 className="modal-header-title">CountryCode</h3>
             </Col>
             <Card>
               <CardBody>
@@ -201,9 +192,8 @@ const AddSocialMedia = () => {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={fields}
+                  fields={countryCodeField}
                   editFormData={initialEditData}
-                  onFormDataChange={handleFormBDataChange}
                 />
               </CardBody>
             </Card>
@@ -214,4 +204,4 @@ const AddSocialMedia = () => {
   );
 };
 
-export default AddSocialMedia;
+export default AddCountryCode;
