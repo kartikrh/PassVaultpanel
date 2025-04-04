@@ -1343,7 +1343,7 @@ export const UpdateManualOdds = () => {
 
     const handleSavedRunnerChange = (runnerId, field, value) => {
         const runner = runners.find(r => r.runnerId === runnerId);
-        const isSelectedRunner = runner.isSelected;
+        const isSelectedRunner = runner?.isSelected;
         const otherRunner = runners.find(r => r.runnerId !== runnerId);
         const numericValue = Number(parseFloat(value).toFixed(2));
 
@@ -1518,129 +1518,136 @@ export const UpdateManualOdds = () => {
         const socketData = incomingData || originalMarketRunnerData;
         if (!socketData || !socketData.length) return;
         const currentSettings = settingsRef.current;
-        // console.log("Processing Market Runner Data:", socketData);
 
-        // Adjust each runner's backPrice with bfRateDiff and ensure it's at least 1.01 or 0
+        console.log("Processing Market Runner Data with raw socket data:", socketData);
+
+        // First, update originalRunner with the raw socket data without any calculations
+        setOriginalRunner(prevRunners =>
+            prevRunners.map(prevRunner => {
+                const socketRunner = socketData.find(r => r.selectionId === prevRunner.selectionId);
+                if (!socketRunner) return prevRunner;
+
+                // Store original values without calculations
+                return {
+                    ...prevRunner,
+                    back: { price: socketRunner.backPrice, volume: prevRunner.back.volume },
+                    lay: { price: socketRunner.layPrice, volume: prevRunner.lay.volume },
+                    b2: socketRunner.backPrice,
+                    b1: socketRunner.backPrice,
+                    l1: socketRunner.layPrice,
+                    l2: socketRunner.layPrice
+                };
+            })
+        );
+
+        // Then prepare adjusted data for the current runners state
         const adjustedRunners = socketData.map(runner => {
-            let backPrice = parseFloat((runner.backPrice + parseFloat(currentSettings.bfRateDiff)).toFixed(2));
+            const originalBackPrice = runner.backPrice;
 
-            // If backPrice is less than 1.01 but greater than 0, set it to 1.01
-            if (backPrice > 0 && backPrice < 1.01) {
-                backPrice = 0;
+            // Apply bfRateDiff adjustment to backPrice
+            let adjustedBackPrice = parseFloat((originalBackPrice + parseFloat(currentSettings.bfRateDiff)).toFixed(2));
+
+            // If backPrice is less than 1.01 but greater than 0, set it to 0
+            if (adjustedBackPrice > 0 && adjustedBackPrice < 1.01) {
+                adjustedBackPrice = 0;
             }
+
+            // Calculate lay price from back price using the margin formula: Lay = Back / (1 - margin)
+            const layMargin = currentSettings.margin / 100;
+            const calculatedLayPrice = adjustedBackPrice > 0
+                ? parseFloat((adjustedBackPrice / (1 - layMargin)).toFixed(2))
+                : 0;
+
+            console.log(`Runner ${runner.selectionId} (${runner.runner}) price calculation:`, {
+                originalBack: originalBackPrice,
+                adjustedBack: adjustedBackPrice,
+                layMargin: layMargin,
+                calculatedLay: calculatedLayPrice
+            });
 
             return {
                 ...runner,
-                backPrice
+                backPrice: adjustedBackPrice,
+                layPrice: calculatedLayPrice
             };
         });
 
         // Determine the runner with the minimum back price
         const minBackRunner = adjustedRunners.reduce(
-            (min, curr) => curr.backPrice < min.backPrice ? curr : min,
-            adjustedRunners[0]
+            (min, curr) => {
+                // Only consider runners with a valid back price (greater than 0)
+                if (curr.backPrice > 0 && (min.backPrice === undefined || curr.backPrice < min.backPrice)) {
+                    return curr;
+                }
+                return min;
+            },
+            {}
         );
 
-        // Update the originalRunner state using the socket data
-        setOriginalRunner(prevRunners =>
-            prevRunners.map(prevRunner => {
-                const socketRunner = socketData.find(r => r.selectionId === prevRunner.selectionId);
-                if (!socketRunner) return prevRunner;
-                const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
+        console.log("Selected minimum back price runner:", minBackRunner);
+
+        // Update only the current runners state with calculated prices
+        setRunners(prevRunners => {
+            return prevRunners.map(prevRunner => {
+                const adjustedRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
+                if (!adjustedRunner) return prevRunner;
+
+                const isSelected = adjustedRunner.selectionId === minBackRunner.selectionId;
+
+                // Calculate ladder prices based on calculated back and lay prices
+                const bRateDiff = parseFloat(currentSettings.bRateDifferent);
+                const lRateDiff = parseFloat(currentSettings.lRateDifferent);
+
+                const backPrice = adjustedRunner.backPrice;
+                const layPrice = adjustedRunner.layPrice;
+
+                const b2 = Math.max(0, parseFloat((backPrice - (2 * bRateDiff)).toFixed(2)));
+                const b1 = Math.max(0, parseFloat((backPrice - bRateDiff).toFixed(2)));
+                const l1 = Math.max(0, parseFloat((layPrice + lRateDiff).toFixed(2)));
+                const l2 = Math.max(0, parseFloat((layPrice + (2 * lRateDiff)).toFixed(2)));
+
+                console.log(`Updating current runner ${prevRunner.selectionId} (${prevRunner.runner}) ladder prices:`, {
+                    isSelected,
+                    backPrice,
+                    layPrice,
+                    b2,
+                    b1,
+                    l1,
+                    l2
+                });
+
                 return {
                     ...prevRunner,
                     isSelected,
-                    back: { price: parseFloat(socketRunner.backPrice), volume: prevRunner.back.volume },
-                    lay: { price: parseFloat(socketRunner.layPrice), volume: prevRunner.lay.volume },
-                    b2: parseFloat(socketRunner.backPrice),
-                    b1: parseFloat(socketRunner.backPrice),
-                    l1: parseFloat(socketRunner.layPrice),
-                    l2: parseFloat(socketRunner.layPrice)
+                    back: {
+                        ...prevRunner.back,
+                        price: backPrice
+                    },
+                    lay: {
+                        ...prevRunner.lay,
+                        price: layPrice
+                    },
+                    b2,
+                    b1,
+                    l1,
+                    l2
                 };
-            })
-        );
-
-        // Update the current runners state
-        setRunners(prevRunners => {
-            const newSelectedBackPrice = minBackRunner.backPrice;
-            const newSelectedLayPrice = parseFloat(
-                (newSelectedBackPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2)
-            );
-            // console.log("New selected back:", newSelectedBackPrice, "New selected lay:", newSelectedLayPrice);
-            const updatedRunners = prevRunners.map(prevRunner => {
-                const socketRunner = adjustedRunners.find(r => r.selectionId === prevRunner.selectionId);
-                if (!socketRunner) return prevRunner;
-                const isSelected = socketRunner.selectionId === minBackRunner.selectionId;
-                if (isSelected) {
-                    let backPrice = parseFloat(socketRunner.backPrice || 0);
-                    let layPrice;
-                    if (backPrice === 0 || !backPrice) {
-                        layPrice = 1 + parseFloat(currentSettings.rateDifferent);
-                        backPrice = parseFloat((1 / (1 - (1 / layPrice))).toFixed(2));
-                    } else {
-                        layPrice = parseFloat((backPrice + parseFloat(currentSettings.rateDifferent)).toFixed(2));
-                    }
-                    const newRates = calculateRunnerRates(
-                        { back: { price: backPrice } },
-                        currentSettings,
-                        { forceCalculateLay: true, isSocketData: true }
-                    );
-                    return {
-                        ...prevRunner,
-                        isSelected: true,
-                        back: { price: backPrice, volume: prevRunner.back.volume },
-                        lay: { price: layPrice, volume: prevRunner.lay.volume },
-                        b2: newRates.b2,
-                        b1: newRates.b1,
-                        l1: newRates.l1,
-                        l2: newRates.l2
-                    };
-                } else {
-                    let selectedBackPrice = minBackRunner.backPrice || 0;
-                    let selectedLayPrice;
-                    if (selectedBackPrice === 0 || !selectedBackPrice) {
-                        selectedLayPrice = 1 + parseFloat(currentSettings.rateDifferent);
-                        selectedBackPrice = 0;
-                        const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                        const layPrice = 0;
-                        const newRates = calculateRunnerRates(
-                            { back: { price: backPrice } },
-                            currentSettings,
-                            { forceCalculateLay: true, isSocketData: true }
-                        );
-                        return {
-                            ...prevRunner,
-                            isSelected: false,
-                            back: { price: backPrice, volume: prevRunner.back.volume },
-                            lay: { price: layPrice, volume: prevRunner.lay.volume },
-                            b2: newRates.b2,
-                            b1: newRates.b1,
-                            l1: newRates.l1,
-                            l2: newRates.l2
-                        };
-                    }
-                    selectedLayPrice = selectedBackPrice + parseFloat(currentSettings.rateDifferent);
-                    const backPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                    const layPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
-                    const newRates = calculateRunnerRates(
-                        { back: { price: backPrice } },
-                        currentSettings,
-                        { forceCalculateLay: true, isSocketData: true }
-                    );
-                    return {
-                        ...prevRunner,
-                        isSelected: false,
-                        back: { price: backPrice, volume: prevRunner.back.volume },
-                        lay: { price: layPrice, volume: prevRunner.lay.volume },
-                        b2: newRates.b2,
-                        b1: newRates.b1,
-                        l1: newRates.l1,
-                        l2: newRates.l2
-                    };
-                }
             });
-            return updatedRunners;
         });
+
+        // Update selectedRunner based on minimum back price
+        if (minBackRunner && minBackRunner.selectionId) {
+            const runner = adjustedRunners.find(r => r.selectionId === minBackRunner.selectionId);
+            if (runner) {
+                setSelectedRunner(runner.runnerId);
+                setSelectedRunnerDetails(prev => ({
+                    ...prev,
+                    runnerId: runner.runnerId,
+                    main: Math.floor(runner.backPrice).toString(),
+                    point: ((runner.backPrice % 1) * 100).toFixed(0).padStart(2, '0')
+                }));
+            }
+        }
     };
 
     // Reusable method for processing INNINGS_RUN_DATA
