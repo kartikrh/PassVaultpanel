@@ -1519,7 +1519,7 @@ export const UpdateManualOdds = () => {
         if (!socketData || !socketData.length) return;
         const currentSettings = settingsRef.current;
 
-        console.log("Processing Market Runner Data with raw socket data:", socketData);
+        // console.log("Processing Market Runner Data with raw socket data:", socketData);
 
         // First, update originalRunner with the raw socket data without any calculations
         setOriginalRunner(prevRunners =>
@@ -1558,12 +1558,12 @@ export const UpdateManualOdds = () => {
                 ? parseFloat((adjustedBackPrice / (1 - layMargin)).toFixed(2))
                 : 0;
 
-            console.log(`Runner ${runner.selectionId} (${runner.runner}) price calculation:`, {
-                originalBack: originalBackPrice,
-                adjustedBack: adjustedBackPrice,
-                layMargin: layMargin,
-                calculatedLay: calculatedLayPrice
-            });
+            // console.log(`Runner ${runner.selectionId} (${runner.runner}) price calculation:`, {
+            //     originalBack: originalBackPrice,
+            //     adjustedBack: adjustedBackPrice,
+            //     layMargin: layMargin,
+            //     calculatedLay: calculatedLayPrice
+            // });
 
             return {
                 ...runner,
@@ -1584,7 +1584,7 @@ export const UpdateManualOdds = () => {
             {}
         );
 
-        console.log("Selected minimum back price runner:", minBackRunner);
+        // console.log("Selected minimum back price runner:", minBackRunner);
 
         // Update only the current runners state with calculated prices
         setRunners(prevRunners => {
@@ -1606,15 +1606,15 @@ export const UpdateManualOdds = () => {
                 const l1 = Math.max(0, parseFloat((layPrice + lRateDiff).toFixed(2)));
                 const l2 = Math.max(0, parseFloat((layPrice + (2 * lRateDiff)).toFixed(2)));
 
-                console.log(`Updating current runner ${prevRunner.selectionId} (${prevRunner.runner}) ladder prices:`, {
-                    isSelected,
-                    backPrice,
-                    layPrice,
-                    b2,
-                    b1,
-                    l1,
-                    l2
-                });
+                // console.log(`Updating current runner ${prevRunner.selectionId} (${prevRunner.runner}) ladder prices:`, {
+                //     isSelected,
+                //     backPrice,
+                //     layPrice,
+                //     b2,
+                //     b1,
+                //     l1,
+                //     l2
+                // });
 
                 return {
                     ...prevRunner,
@@ -2144,7 +2144,7 @@ export const UpdateManualOdds = () => {
             nonZeroOdds[0]
         );
 
-        console.log("Selected team and odds:", { selectedTeamId, odds: selectedOdds });
+        // console.log("Selected team and odds:", { selectedTeamId, odds: selectedOdds });
 
         // Update runners with the calculated odds
         const updateRunners = (prevRunners) => {
