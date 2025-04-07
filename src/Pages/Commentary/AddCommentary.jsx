@@ -103,7 +103,7 @@ function AddCommentary() {
     const handleFormADataChange = (newFormData) => {
         setSavedFormState({...savedFormState, ...newFormData});
         setCompetitionId(newFormData["competitionId"]);
-        const requiredFields = ["competitionId", "eventTypeId", "eventId", "matchTypeId", "eventRefId", "eventName", "eventDate", "delay"];
+        const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate", "delay"];
         const isValid = requiredFields.every(
            (field) => newFormData[field] && newFormData[field] !== "0"
         );
