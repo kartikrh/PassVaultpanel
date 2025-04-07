@@ -12,6 +12,7 @@ import { convertDateLocalToUTC, convertDateUTCToLocal } from '../../components/C
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { isEmpty } from 'lodash';
 
 const fetchResult = (response) => {
     return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -53,11 +54,11 @@ function AddCommentary() {
     const [isFormAValid, setIsFormAValid] = useState(false);
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
             navigate("/dashboard")
         }
         fetchMasterData()
-    }, []);
+    }, [permissionObj]);
 
     useEffect(() => {
         if (id !== "0") {
@@ -103,7 +104,7 @@ function AddCommentary() {
     const handleFormADataChange = (newFormData) => {
         setSavedFormState({...savedFormState, ...newFormData});
         setCompetitionId(newFormData["competitionId"]);
-        const requiredFields = ["competitionId", "eventTypeId", "eventId", "matchTypeId", "eventRefId", "eventName", "eventDate", "delay"];
+        const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate", "delay"];
         const isValid = requiredFields.every(
            (field) => newFormData[field] && newFormData[field] !== "0"
         );
