@@ -93,6 +93,7 @@ const Commentary = (props) => {
     const [showCricketFieldModal, setShowCricketFieldModal] = useState(undefined);
     const [cricketFieldData, setCricketFieldData] = useState(null);
     const [isWheelShow, setIsWheelShow] = useState(undefined);
+    const [isRemainingBallsShow, setIsRemainingBallsShow] = useState(undefined);
     const [isWheelShowComplete, setIsWheelShowComplete] = useState(undefined);
     const [isUndoingLastOver, setIsUndoingLastOver] = useState(false);
     const [ballStatus, setBallStatus] = useState(null);
@@ -399,9 +400,7 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall }),
-                "rmk": teams[BATTING_TEAM].teamTrialRuns ?
-                    generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver) :
-                    ""
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             },
             "commentaryOvers": {
                 ..._currentOver,
@@ -733,7 +732,7 @@ const Commentary = (props) => {
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryBallByBall": generatedBallByBall,
-            "commentaryDetails": { ...commentaryDetails, "displayStatus": `Penalty ${runs} runs` },
+            "commentaryDetails": { ...commentaryDetails, "displayStatus": `Penalty ${runs} runs`, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
             "commentaryTeams": [updateBattingTeam],
         }
         // console.log("Called from : 5")
@@ -772,7 +771,8 @@ const Commentary = (props) => {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
-                "displayStatus": "Over Completed"
+                "displayStatus": "Over Completed",
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             },
             "commentaryOvers": updatedOver,
             "commentaryPlayers": [updateBowler],
@@ -796,7 +796,8 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "commentaryDetails": {
                     ...commentaryDetails,
-                    "displayStatus": "Strike Changed"
+                    "displayStatus": "Strike Changed",
+                    "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
                 },
                 "commentaryPlayers": Object.values(syncOnPitchPlayer),
             }
@@ -844,7 +845,8 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "commentaryDetails": {
                     ...commentaryDetails,
-                    "displayStatus": "Player Changed"
+                    "displayStatus": "Player Changed",
+                    "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
                 },
                 "commentaryPartnership": updatedPartnership,
                 "commentaryPlayers": Object.values(updatedOnPitchPlyer),
@@ -854,7 +856,8 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "commentaryDetails": {
                     ...commentaryDetails,
-                    "displayStatus": "Player Changed"
+                    "displayStatus": "Player Changed",
+                    "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
                 },
                 "commentaryPlayers": Object.values(updatedOnPitchPlyer),
             }
@@ -1102,7 +1105,8 @@ const Commentary = (props) => {
             "commentaryPlayers": Object.values(updatedOnPitchPlayer),
             "commentaryDetails": {
                 ...commentaryDetails,
-                "displayStatus": "Batter Switched"
+                "displayStatus": "Batter Switched",
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             }
         }
         if (currentPartnership?.commentaryPartnershipId && +currentPartnership?.commentaryPartnershipId != 0) {
@@ -1275,7 +1279,7 @@ const Commentary = (props) => {
             setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: updatedOnStrikePlayer, [NON_STRIKE]: updatedNonStrikePlayer })
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike` },
+                "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike`, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
                 "commentaryBallByBall": generateBall({
                     currentBall, commentaryDetails, currentOver,
                     onPitchPlayers: { ...onPitchPlayers, [ON_STRIKE]: updatedOnStrikePlayer, [NON_STRIKE]: updatedNonStrikePlayer }, teams,
@@ -2029,9 +2033,7 @@ const Commentary = (props) => {
                     "commentaryDetails": {
                         ...commentaryDetails,
                         "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall }),
-                        "rmk": teams[BATTING_TEAM].teamTrialRuns ?
-                            generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver) :
-                            ""
+                        "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
                     },
                     "commentaryTeams": [_teams[BATTING_TEAM]],
                 }
@@ -2064,7 +2066,7 @@ const Commentary = (props) => {
         if (isOverChange) {
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "commentaryDetails": { ...commentaryDetails, "displayStatus": `${onPitchPlayers[CURRENT_BOWLER]?.playerName} with new Over` },
+                "commentaryDetails": { ...commentaryDetails, "displayStatus": `${onPitchPlayers[CURRENT_BOWLER]?.playerName} with new Over`, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
                 "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams }),
                 "commentaryPlayers": [].concat(Object.values(onPitchPlayers), playerUpdateList).filter(x => x),
                 "commentaryTeams": [teams[BATTING_TEAM]],
@@ -2077,10 +2079,12 @@ const Commentary = (props) => {
     }, [isOverChange])
     useEffect(() => {
         if (isEmpty(propsData) && !isEmpty(props.data)) {
+            const remainingBallsShow = props?.data?.commentaryData?.commentaryTeams.some(team => team.isBattingComplete)
             setPropsData(props.data)
             setIsWheelShow(props?.data?.commentaryData?.commentaryDetails?.isWheelShow);
+            setIsRemainingBallsShow(remainingBallsShow);
             setIsShotType(props?.data?.commentaryData?.commentaryDetails?.shotType);
-            setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, rmk: "", displayStatus: "" })
+            setCommentaryDetails({ ...props.data.commentaryData.commentaryDetails, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "", displayStatus: "" })
             setMatchTypeDetails(props.data.commentaryData.matchTypeDetails)
         }
         props.saveUserInfo()
@@ -2109,7 +2113,7 @@ const Commentary = (props) => {
                 // console.log("Called from : 24");
                 dispatch(addCommentaryScreenData({
                     "commentaryId": commentaryDetails.commentaryId,
-                    "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }) },
+                    "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }), "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
                     "commentaryBallByBall": generatedBall,
                 }))
                 setCurrentOver(commentaryDataToUpdate.overdetails)
@@ -2236,6 +2240,9 @@ const Commentary = (props) => {
                 );
             });
     };
+    const handleRemainingBallsShowToggle = () =>{
+        setIsRemainingBallsShow(!isRemainingBallsShow)
+    }
 
     const handleShotTypeToggle = async (value) => {
         await axiosInstance
@@ -2268,6 +2275,7 @@ const Commentary = (props) => {
         {props?.isNewUi ?
             <NewCommentaryScreen
                 refId={props.refId}
+                currentInnings={teams && teams[BATTING_TEAM]?.teamTrialRuns}
                 commentaryId={commentaryDetails?.commentaryId}
                 teamDetails={teams}
                 onPitchPlayers={onPitchPlayers}
@@ -2309,6 +2317,8 @@ const Commentary = (props) => {
                     || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
                     || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
                 handleWheelShowToggle={handleWheelShowToggle}
+                handleRemainingBallsShowToggle={handleRemainingBallsShowToggle}
+                isRemainingBallsShow = {isRemainingBallsShow}
                 isWheelShow={isWheelShow}
                 showWicketModal={showWicketModal}
                 showChangeOverModal={showChangeOverModal && !changePlayerList}
@@ -2503,6 +2513,7 @@ const Commentary = (props) => {
             />
             : <CommentaryScreen
                 refId={props.refId}
+                currentInnings={teams && teams[BATTING_TEAM]?.teamTrialRuns}
                 commentaryId={commentaryDetails?.commentaryId}
                 teamDetails={teams}
                 onPitchPlayers={onPitchPlayers}
@@ -2544,6 +2555,8 @@ const Commentary = (props) => {
                     || props.isDataLoading || isCommentaryBallLoading || selectMissingPlayer
                     || undoInningsPopup || completeMatchModal || winnerAnnouncement || isChangeBowler.isChangePopup || (changePlayerList ? true : false)}
                 handleWheelShowToggle={handleWheelShowToggle}
+                handleRemainingBallsShowToggle={handleRemainingBallsShowToggle}
+                isRemainingBallsShow = {isRemainingBallsShow}
                 isWheelShow={isWheelShow}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||

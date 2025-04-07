@@ -10,8 +10,8 @@ import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
-    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, isWheelShow, overHistory,
-    players, currentOver }) => {
+    overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
+    players, currentOver, currentInnings }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     
     const OffsymbolStatus = () => {
@@ -47,6 +47,43 @@ export const CommentaryScreen = ({
             >
                 {" "}
                 wheel
+            </div>
+        );
+    };
+
+    const OffRemainingStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 2,
+                }}
+            >
+                {" "}
+                Remain
+            </div>
+        );
+    };
+    const OnRemainingStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 4,
+                }}
+            >
+                {" "}
+                Remain
             </div>
         );
     };
@@ -339,6 +376,7 @@ export const CommentaryScreen = ({
                         <img className="button-icon" src="icons/out.png" alt="Icon" />
                     </Col>
                 </Row>
+                <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center py-2">
                     <span>Tracking a Ball</span>
                     <Switch
@@ -352,6 +390,23 @@ export const CommentaryScreen = ({
                         }}
                         checked={isWheelShow}
                     />
+                </div>
+                {currentInnings > 0 && 
+                    <div className="d-flex align-items-center py-2">
+                        <span>Remaining balls</span>
+                        <Switch
+                            width={70}
+                            uncheckedIcon={<OffRemainingStatus />}
+                            checkedIcon={<OnRemainingStatus />}
+                            className="pe-0 mx-2"
+                            onColor="#02a499"
+                            onChange={() => {
+                                handleRemainingBallsShowToggle();
+                            }}
+                            checked={isRemainingBallsShow}
+                        />
+                    </div>
+                }
                 </div>
             </Col>
             <Col className="over-render p-0 m-0 px-md-2" xs={12} md={12} lg={6}>
