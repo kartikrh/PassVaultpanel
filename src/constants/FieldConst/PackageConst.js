@@ -71,6 +71,7 @@ export const packageField = [
     name: "trailDays",
     label: "Trail Days",
     type: TEXT,
+    isRequired: true,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
