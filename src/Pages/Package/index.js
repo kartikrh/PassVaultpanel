@@ -106,7 +106,7 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`${pType == 'isActive' ? '/admin/package/activeInactive' : '/admin/package/isDefault'}`, {
+      .post(`${pType == 'isActive' ? '/admin/package/activeInactive' : pType == 'isDefault' ? '/admin/package/isDefault' : '/admin/package/isDisplay'}`, {
         id: record.id,
         // isActive: cState,
         [pType]: cState ? false : true,
@@ -255,13 +255,6 @@ const Index = () => {
       style: { width: "30%", textAlign: "center" },
     },
     {
-      title: "Interval Count",
-      dataIndex: "intervalCount",
-      key: "intervalCount",
-
-      style: { width: "30%", textAlign: "center" },
-    },
-    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
@@ -294,6 +287,25 @@ const Index = () => {
             }}
           >
             <i className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Display",
+      key: "isDisplay",
+      render: (text, record) => (
+        <Tooltip title={"isDisplay"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isDisplay ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isDisplay", record, record.isDisplay);
+            }}
+          >
+            <i className={`bx ${record.isDisplay ? "bx-check" : "bx-block"}`}></i>
           </Button>
         </Tooltip>
       ),
@@ -362,55 +374,55 @@ const Index = () => {
     //   style: { width: "2%", textAlign: "center" },
     // },
   ];
-  const downloadExcelColumn = [
-    {
-      title: "Player Name",
-      dataIndex: "playerName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "playerName",
-      sort: true,
-      style: { width: "30%" },
-    },
-    {
-      title: "Short Name",
-      dataIndex: "displayName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "displayName",
-      sort: true,
-      style: { width: "30%" },
-    },
-    {
-      title: "Player Image",
-      dataIndex: "image",
-      key: "image",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      style: { width: "10%", textAlign: "left" },
-    },
-    {
-      title: "Is Active",
-      dataIndex: "isActive",
-      key: "isActive",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      style: { width: "10%", textAlign: "left" },
-    },
-    {
-      title: "Event Type",
-      dataIndex: "eventType",
-      key: "eventType",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      style: { width: "10%", textAlign: "left" },
-    },
-  ]
+  // const downloadExcelColumn = [
+  //   {
+  //     title: "Player Name",
+  //     dataIndex: "playerName",
+  //     render: (text, record) => (
+  //       <span style={{ cursor: "pointer" }}>{text}</span>
+  //     ),
+  //     key: "playerName",
+  //     sort: true,
+  //     style: { width: "30%" },
+  //   },
+  //   {
+  //     title: "Short Name",
+  //     dataIndex: "displayName",
+  //     render: (text, record) => (
+  //       <span style={{ cursor: "pointer" }}>{text}</span>
+  //     ),
+  //     key: "displayName",
+  //     sort: true,
+  //     style: { width: "30%" },
+  //   },
+  //   {
+  //     title: "Player Image",
+  //     dataIndex: "image",
+  //     key: "image",
+  //     render: (text, record) => (
+  //       <span style={{ cursor: "pointer" }}>{text}</span>
+  //     ),
+  //     style: { width: "10%", textAlign: "left" },
+  //   },
+  //   {
+  //     title: "Is Active",
+  //     dataIndex: "isActive",
+  //     key: "isActive",
+  //     render: (text, record) => (
+  //       <span style={{ cursor: "pointer" }}>{text}</span>
+  //     ),
+  //     style: { width: "10%", textAlign: "left" },
+  //   },
+  //   {
+  //     title: "Event Type",
+  //     dataIndex: "eventType",
+  //     key: "eventType",
+  //     render: (text, record) => (
+  //       <span style={{ cursor: "pointer" }}>{text}</span>
+  //     ),
+  //     style: { width: "10%", textAlign: "left" },
+  //   },
+  // ]
 
   const modelColumns = [
     { title: "Player Id", key: "playerId", type: "text" },
@@ -434,9 +446,9 @@ const Index = () => {
     title: "Package",
     isActive: true,
     // eventTypeSelect: true,
-    resetButton: true,
+    // resetButton: true,
     reloadButton: true,
-    // loadData: true,
+    loadData: true,
     // importExport: true,
     // teamsList: true,
     dragDrop: true,
@@ -455,67 +467,6 @@ const Index = () => {
     fetchData();
     // fetchEventTypeData()
     // fetchTeamsData()
-  };
-
-  const handleDownloadPlayerHistory = async () => {
-    try {
-      const { teamId, eventTypeId } = PlayerHistoryObject;
-      setIsLoading(true);
-      // Call the export API
-      const response = await axiosInstance.post('/admin/playerHistory/export', {
-        teamId,
-        eventTypeId,
-      }, {
-        responseType: 'arraybuffer', // Ensure the response is treated as a file blob
-      });
-
-      if (response) {
-        // Create a blob from the response data (the file)
-        const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-        // Create a URL for the blob
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Players_history_${new Date().toISOString()}.xlsx`; // Dynamic filename
-        document.body.appendChild(a); // Append anchor to body
-        a.click(); // Trigger file download
-        a.remove(); // Cleanup after download
-        setIsLoading(false);
-        dispatch(updateToastData({ data: 'File Downloaded successfully', title: 'SUCCESS', type: SUCCESS }));
-      } else {
-        console.error('Error downloading file:', response.statusText);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error('Error while downloading file:', error);
-      setIsLoading(false);
-      dispatch(updateToastData({ data: 'Failed to download file', title: 'Error', type: ERROR }));
-    }
-  };
-
-  const UploadFile = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file); // Append the file to the FormData object
-
-    setIsLoading(true); // You can manage loading state
-
-    await axiosInstance
-      .post(`/admin/playerHistory/import`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
-        },
-      })
-      .then((response) => {
-        setIsLoading(false);
-        dispatch(updateToastData({ data: 'File uploaded successfully', title: 'SUCCESS', type: SUCCESS }));
-        setImportExportPlayerHistoryModelVisable(false)
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.error("Error uploading file:", error);
-        dispatch(updateToastData({ data: 'Error uploading file :' + error, title: 'Error', type: ERROR }));
-      });
   };
 
   const handlePlayerHistoryModalPopUp = (event) => {
@@ -560,7 +511,7 @@ const Index = () => {
             setImportExportModelVisable={setImportExportModelVisable}
             handlePlayerHistoryModalPopUp={handlePlayerHistoryModalPopUp}
             teams={teams}
-            manualExcel={downloadExcelColumn}
+            // manualExcel={downloadExcelColumn}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -588,13 +539,13 @@ const Index = () => {
             handleDownloadPlayerHistory={handleDownloadPlayerHistory}
             UploadFile={UploadFile}
           />} */}
-          {/* {loadDataModelVisable &&
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Package"}
-            />} */}
+            />}
         </Container>
       </div>
     </React.Fragment>
