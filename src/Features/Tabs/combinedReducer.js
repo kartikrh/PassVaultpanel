@@ -38,6 +38,7 @@ import socialMediaSlice from "./socialMediaSlice";
 import awardSlice from "./awardSlice";
 import shotTypeSlice from "./shotTypeSlice";
 import countryCodeSlice from "./countryCodeSlice";
+import packageSlice from "./packageSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -79,6 +80,7 @@ const rootReducer = combineReducers({
   socialMedia: socialMediaSlice,
   shotType: shotTypeSlice,
   countryCode: countryCodeSlice,
+  package: packageSlice
 });
 
 export default rootReducer;

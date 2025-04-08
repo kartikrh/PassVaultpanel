@@ -315,13 +315,23 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTe
   }
 }
 
+// export const generateRemainingRuns = (team, ballsPerOver) => {
+//   const totalOverRemaining = team.teamMaxOver - Math.floor(team.teamOver || 0)
+//   const ballsInCurrentOver = (team.teamOve || 0) * 10 % 10
+//   const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
+//   const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
+//   return ${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.
+// }
+
 export const generateRemainingRuns = (team, ballsPerOver) => {
-  const totalOverRemaining = team.teamMaxOver - Math.floor(team.teamOver || 0)
-  const ballsInCurrentOver = (team.teamOve || 0) * 10 % 10
-  const totalBallsRemaining = (totalOverRemaining * (ballsPerOver || 6)) - (ballsInCurrentOver || 0)
-  const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0)
-  return `${team.shortName} needs ${totalRunRemaining} runs from ${totalBallsRemaining} balls.`
-}
+  const oversParts = String(team.teamOver || "0").split(".");
+  const completedOvers = parseInt(oversParts[0], 10);
+  const ballsInCurrentOver = parseInt(oversParts[1] || "0", 10);
+  const totalBallsBowled = (completedOvers * ballsPerOver) + ballsInCurrentOver;
+  const totalBallsRemaining = (team.teamMaxOver * ballsPerOver) - totalBallsBowled;
+  const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0);
+  return `${team.shortName} needs ${totalRunRemaining + 1} runs from ${totalBallsRemaining} balls.`;
+};
 
 export const getNonExtraRuns = (over) => {
   const toReturn = (+over?.totalRun || 0) - (+over?.totalWideRun || 0) - (+over?.totalNoBallRun || 0) - (+over?.totalByesRun || 0) - (+over?.totalLegByesRun || 0)

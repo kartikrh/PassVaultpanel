@@ -9,6 +9,7 @@ import Tabs from "../Pages/Tabs";
 import Roles from "../Pages/Roles";
 import EventTypes from "../Pages/EventTypes";
 import Players from "../Pages/Players";
+import Package from "../Pages/Package";
 import Teams from "../Pages/Teams";
 import MatchType from "../Pages/MatchType";
 import PenaltyRuns from "../Pages/PenaltyRuns";
@@ -142,6 +143,7 @@ import EventDetails from "../Pages/DataProvider/EventDetails.jsx";
 import BowlingPredictor from "../Pages/MatchType/BowlingPredictor.jsx";
 import CountryCode from "../Pages/CountryCode";
 import AddCountryCode from "../Pages/CountryCode/AddCountryCode.jsx";
+import AddPackage from "../Pages/Package/AddPackage.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -156,7 +158,9 @@ const authProtectedRoutes = [
   { path: "/events", component: <Events /> },
   { path: "/addEvents", component: <AddEvents /> },
   { path: "/Players", component: <Players /> },
+  { path: "/package", component: <Package /> },
   { path: "/addPlayer", component: <AddPlayers /> },
+  { path: "/addPackage", component: <AddPackage /> },
   { path: "/playerHistory", component: <PlayerHistory /> },
   { path: "/playerEventHistory", component: <MatchHistory /> },
   { path: "/marketType", component: <MarketType /> },
