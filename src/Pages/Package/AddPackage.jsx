@@ -38,7 +38,8 @@ const AddPackage = () => {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector((state) => state.tabsData.award);
+  const { isSaved, isLoading } = useSelector((state) => state.tabsData.package);
+  // console.log("isSaved", isSaved, isLoading)
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
