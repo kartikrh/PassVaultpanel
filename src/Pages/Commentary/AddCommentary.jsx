@@ -429,6 +429,7 @@ function AddCommentary() {
             const dataToSave = {
                 ...dataToSave1,
                 "isActive": dataToSave1?.isActive ? dataToSave1.isActive : false,
+                "isTest": dataToSave1?.isTest ? dataToSave1.isTest : false,
                 "isClientShow": dataToSave1?.isClientShow ? dataToSave1.isClientShow : false,
                 "isCountInPoint": dataToSave1?.isCountInPoint ? dataToSave1.isCountInPoint : false,
                 "team1Id": dataToSave2.team1Id,
@@ -545,7 +546,7 @@ function AddCommentary() {
                                             <FormBuilder
                                                 ref={finalizeRef1}
                                                 // fields={MatchDetailFields}
-                                                fields={MatchDetailFields.filter(field => state === 'isPredict' ? field.name !== "isPredictMarket" : true)}
+                                                fields={MatchDetailFields.filter(field => state === 'isPredict' ? field.name !== "isPredictMarket" && field.name !== "isTest" : true)}
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}

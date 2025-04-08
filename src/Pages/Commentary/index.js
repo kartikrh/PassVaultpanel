@@ -776,6 +776,35 @@ const Index = () => {
       });
   };
 
+  const handleActiveInactiveTest = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeIsTest`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
@@ -1673,6 +1702,27 @@ const Index = () => {
             </Button>
           </Tooltip>
         </>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Test",
+      key: "isTest",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Test"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isTest ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactiveTest("isTest", record, record?.isTest);
+            }}
+          >
+            <i
+              className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
