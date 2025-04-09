@@ -49,10 +49,10 @@ const TossScreen = ({ data, next, save }) => {
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
-        rmk: `Toss won by ${winnerTeam?.shortName} and choose to ${
+        rmk: `${winnerTeam?.shortName} opt to ${
           values.choseTo == 1 ? "Bat" : "Ball"
         }`,
-        displayStatus: `Toss won by ${winnerTeam?.shortName} and choose to ${
+        displayStatus: `${winnerTeam?.shortName} opt to ${
           values.choseTo == 1 ? "Bat" : "Ball"
         }`,
         commentaryStatus: "2",
