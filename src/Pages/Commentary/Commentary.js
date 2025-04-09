@@ -771,7 +771,7 @@ const Commentary = (props) => {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
-                "displayStatus": "Over Completed",
+                "displayStatus": "Over",
                 "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             },
             "commentaryOvers": updatedOver,
