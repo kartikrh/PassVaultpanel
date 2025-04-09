@@ -21,6 +21,8 @@ export const OpenMarket = () => {
     const [data, setData] = useState([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [teams, setTeams] = useState({});
+    const [playersMarketShow, setPlayerMarketShow] = useState(false);
+    const [players, setPlayers] = useState({});
     const [categories, setCategories] = useState([]);
     const [fullCategories, setFullCategories] = useState([]);
     const [categorisedData, setCategorisedData] = useState([]);
@@ -283,6 +285,42 @@ export const OpenMarket = () => {
             >
                 {" "}
                 Points
+            </div>
+        );
+    };
+    const OffsymbolPlayerMarketStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingRight: "10px",
+                }}
+            >
+                {" "}
+                Players
+            </div>
+        );
+    };
+    const OnSymbolPlayerMarketStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingLeft: "11px",
+                }}
+            >
+                {" "}
+                Players
             </div>
         );
     };
@@ -1066,11 +1104,14 @@ export const OpenMarket = () => {
             .then((response) => {
                 if (response?.result) {
                     const teamsObj = {}
+                    const playersObj = {}
                     const newCategoryObj = {}
                     setFullCategories(response?.result?.categories || [])
-                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.teamName })
+                    response?.result?.teams?.forEach(team => { teamsObj[team.teamId] = team.shortName })
+                    response?.result?.comPlayer?.forEach(player => { playersObj[player.comPlayerId] = player.playerName })
                     response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
+                    setPlayers(playersObj)
                     setTeams(teamsObj)
                     setData(formattedData.data);
                     setIsDataFromApiOrSocket(true);
@@ -1899,6 +1940,17 @@ export const OpenMarket = () => {
                                                 }}
                                                 checked={isPointsShow}
                                             />
+                                            <Switch
+                                                width={80}
+                                                uncheckedIcon={<OffsymbolPlayerMarketStatus />}
+                                                checkedIcon={<OnSymbolPlayerMarketStatus />}
+                                                className="mx-2"
+                                                onColor="#02a499"
+                                                onChange={() => {
+                                                    setPlayerMarketShow(!playersMarketShow);
+                                                }}
+                                                checked={playersMarketShow}
+                                            />
                                         </Col>
                                     </Row>}
                                 {isScorecardShow && (
@@ -1951,12 +2003,16 @@ export const OpenMarket = () => {
                                     <OpenMarketCategories
                                         categorisedData={categorisedData}
                                         columns={columns}
+                                        players={players}
+                                        playersMarketShow={playersMarketShow}
                                         teams={teams}
                                         handleMultiRunnerUpdate={handleMultiRunnerUpdate}
                                         setIsLoading={setIsLoading}
                                         openAccordions={openAccordions}
                                         toggleAccordion={toggleAccordion}
                                         commentaryInfo={commentaryInfo}
+                                        handleValueChange={handleValueChange}
+                                        handleSingleAction={handleSingleAction}
                                     />
                                 )}
                             </CardBody>
