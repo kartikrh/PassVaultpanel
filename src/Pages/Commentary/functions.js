@@ -197,12 +197,12 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
       }
     }
     // else if (ballType === BALL_TYPE_OVER_COMPLETE) displayStatus = "Over Ended"
-    else if (ballType === BALL_TYPE_WIDE) displayStatus = `WD + ${run}`
-    else if (ballType === BALL_TYPE_BYE) displayStatus = `${run}B`
-    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `${run}LB`
-    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `NB + ${run}`
-    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `NB + ${run}B`
-    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `NB + ${run}LB`
+    else if (ballType === BALL_TYPE_WIDE) displayStatus = `Wide${run > 0 ? ` + ${run}` : ""}`
+    else if (ballType === BALL_TYPE_BYE) displayStatus = `${run > 0 ? run : ""}Bye`
+    else if (ballType === BALL_TYPE_LEG_BYE) displayStatus = `${run > 0 ? run : ""}Leg Bye`
+    else if (ballType === BALL_TYPE_NO_BALL) displayStatus = `No Ball${run > 0 ? ` + ${run}` : ""}`
+    else if (ballType === BALL_TYPE_NO_BALL_BYE) displayStatus = `No Ball${run > 0 ? ` + ${run}` : ""}Bye`
+    else if (ballType === BALL_TYPE_NO_BALL_LEG_BYE) displayStatus = `No Ball${run > 0 ? ` + ${run}` : ""}Leg Bye`
   }
   return displayStatus
 }
