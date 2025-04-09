@@ -342,7 +342,7 @@ const Commentary = (props) => {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
                 commentaryStatus: 2,
-                "displayStatus": "Innings Changed"
+                "displayStatus": "Innings Break"
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
@@ -399,7 +399,7 @@ const Commentary = (props) => {
             "commentaryId": commentaryDetails.commentaryId,
             "commentaryDetails": {
                 ...commentaryDetails,
-                "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall }),
+                "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall, onStrikePlayer: onPitchPlayers[ON_STRIKE] }),
                 "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             },
             "commentaryOvers": {

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
-import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOWLING_TEAM, CATCH, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_WICKET, LBW, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, OBSTRACT_THE_FIELDING, ON_STRIKE, RETIRED_OUT, RUN_OUT, STUMP, SWITCH_BOWLER, TIMED_OUT } from "./CommentartConst";
+import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOLD_LABEL, BOWLING_TEAM, CATCH, CATCH_LABEL, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_BALL_TWICE_LABEL, HIT_WICKET, HIT_WICKET_LABEL, LBW, LBW_LABEL, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, OBSTRACT_THE_FIELDING, OBSTRACT_THE_FIELDING_LABEL, ON_STRIKE, RETIRED_OUT, RETIRED_OUT_LABEL, RUN_OUT, RUN_OUT_LABEL, STUMP, STUMP_LABEL, SWITCH_BOWLER, TIMED_OUT, TIMED_OUT_LABEL } from "./CommentartConst";
 import { useSelector } from "react-redux";
 import { loadInit } from "../../config";
 
@@ -160,7 +160,7 @@ export const getRunRate = (runs, currentOver, ballsPerOver) => {
   return totalBalls > 0 ? fixDecimal(((+runs / totalBalls) * ballsPerOver), 2) : 0
 }
 
-export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
+export const generateDisplayStatus = ({ currentBall, playerSwitch, onStrikePlayer }) => {
   let displayStatus = ""
   // New Logic 
   const run = currentBall.ballRun
@@ -174,16 +174,16 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch }) => {
   } else {
     if (ballType === BALL_TYPE_REGULAR) {
       if (currentBall.ballIsWicket) {
-        if (wicketType === BOLD) displayStatus = "Wicket"
-        else if (wicketType === CATCH) displayStatus = "Wicket"
-        else if (wicketType === STUMP) displayStatus = "Wicket"
-        else if (wicketType === HIT_WICKET) displayStatus = "Wicket"
-        else if (wicketType === LBW) displayStatus = "Wicket"
-        else if (wicketType === RUN_OUT) displayStatus = "Wicket"
-        else if (wicketType === RETIRED_OUT) displayStatus = "Wicket"
-        else if (wicketType === TIMED_OUT) displayStatus = "Wicket"
-        else if (wicketType === HIT_BALL_TWICE) displayStatus = "Wicket"
-        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = "Wicket"
+        if (wicketType === BOLD) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${BOLD_LABEL}` : ""} `
+        else if (wicketType === CATCH) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${CATCH_LABEL}`: ""}`
+        else if (wicketType === STUMP) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${STUMP_LABEL}` : ""}`
+        else if (wicketType === HIT_WICKET) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${HIT_WICKET_LABEL}` : ""}`
+        else if (wicketType === LBW) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${LBW_LABEL}` : ""}`
+        else if (wicketType === RUN_OUT) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${RUN_OUT_LABEL}` : ""}`
+        else if (wicketType === RETIRED_OUT) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${RETIRED_OUT_LABEL}` : ""}`
+        else if (wicketType === TIMED_OUT) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${TIMED_OUT_LABEL}` : ""}`
+        else if (wicketType === HIT_BALL_TWICE) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${HIT_BALL_TWICE_LABEL}` : ""}`
+        else if (wicketType === OBSTRACT_THE_FIELDING) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${OBSTRACT_THE_FIELDING_LABEL}` : ""}`
       }
       else if (currentBall.ballFour !== 0) displayStatus = "4"
       else if (currentBall.ballSix !== 0) displayStatus = "6"
