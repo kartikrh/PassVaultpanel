@@ -32,6 +32,7 @@ export const TAB_API_ENDPOINTS = "API Endpoints";
 
 export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_AWARDS = "Awards";
+export const TAB_PACKAGE = "Package";
 export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
 export const TAB_COUNTRY_CODE = "Country Code";
