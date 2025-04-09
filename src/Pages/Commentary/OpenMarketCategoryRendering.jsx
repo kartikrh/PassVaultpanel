@@ -2,8 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Col, Row } from "reactstrap";
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import MultiRunnerMarket from "./MultiRunnerMarket";
+import { PlayeraListingComponent } from '../../components/Common/Reusables/PlayeraListingComponent';
 
-const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction) => {
+function groupMarketsByPlayer(markets) {
+    const grouped = {};
+  
+    markets.forEach(market => {
+      const playerId = market.playerId;
+  
+      if (!grouped[playerId]) {
+        grouped[playerId] = {
+          playerId,
+          markets: [market]
+        };
+      } else {
+        grouped[playerId].markets.push(market);
+      }
+    });
+    return Object.values(grouped);
+}
+   
+const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction, handleValueChange, handleSingleAction, players) => {
     const singleRunnerMarkets = markets.filter(market => !market.runner || market.runner.length <= 1);
     const multiRunnerMarkets = markets.filter(market => market.runner && market.runner.length > 1);
     const getVisibleColumns = (isSingleRunner) => {
@@ -15,9 +34,18 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
             return true;
         });
     };
+    let groupedMarkets = category?.toLowerCase() === "players"
+    ? groupMarketsByPlayer(singleRunnerMarkets)
+    : [];
+
+    groupedMarkets = Object.values(groupedMarkets).map((group) => ({
+        playerName: players?.[group.playerId] || "Unknown Player",
+        markets: group.markets,
+    }));
     return (
         <>
-            {singleRunnerMarkets.length > 0 && (
+            {singleRunnerMarkets.length > 0 && category !== 'Players' && (
+               
                 <ListingElement
                     columns={getVisibleColumns(true)}
                     dataSource={singleRunnerMarkets.map(market => {
@@ -45,6 +73,58 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                     onSwitch={handleAction}
                 />
             )}
+            {groupedMarkets.length > 0 && category === 'Players' && (
+                <>
+                    <div className='d-flex p-1 player-market'>
+                                <div style={{ width: '20%' }} className="py-2"></div>
+                                <div className="d-flex" style={{ width: '80%' }}>
+                                {['Runs', 'Boundaries', 'Balls'].slice(0, 3).map((title, index) => (
+                                    <div key={index} className="flex-33 player-market-title text-center fs-5 fw-semibold">
+                                        {title}
+                                    </div>
+                                ))}
+                                </div>
+                            {/* </div> */}
+                    </div>
+                    <>
+                    {groupedMarkets.map(group => (
+                        <div className='d-flex p-1 player-market'>
+                            <div style={{width: '20%'}}>
+                                <div className='fs-5'>{group.playerName}</div>
+                                <div className='fs-6 gap-2'><span className='pe-1'>{group?.markets[0]?.teamName}</span>|<span className='ps-1'>Innings - {group?.markets[0]?.inningsId}</span></div>
+                            </div>
+                            <div style={{width: '80%'}}>
+
+                            <PlayeraListingComponent
+                                key={group.playerName}
+                                columns={getVisibleColumns(true)}
+                                dataSource={group.markets.map(market => {
+                                    const firstRunner = market.runner?.[0];
+                                    return {
+                                    ...market,
+                                    backPrice: firstRunner?.backPrice,
+                                    layPrice: firstRunner?.layPrice,
+                                    runnerId: firstRunner?.runnerId,
+                                    runnerName: firstRunner?.runnerName,
+                                    line: firstRunner?.line,
+                                    overRate: firstRunner?.overRate,
+                                    underRate: firstRunner?.underRate,
+                                    };
+                                })}
+                                tableElement={{ title: group.playerName, displayTitle: true }}
+                                tableClassName="open-market-table-class"
+                                onSwitch={handleAction}
+                                handleValueChange={handleValueChange}
+                                handleSingleAction={handleSingleAction}
+                            />
+                            </div>
+                        </div>
+                    ))}
+                    </>
+                </>
+                )
+            }
+
             {multiRunnerMarkets.length > 0 && (
                 <div className='overflow-scroll'>
                     {multiRunnerMarkets.map(market => (
@@ -63,7 +143,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
     );
 };
 
-const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo }) => {
+const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow }) => {
     const [deactivatedMarkets, setDeactivatedMarkets] = useState([]);
     const [activeMarkets, setActiveMarkets] = useState({});
     const [deactivatedAccordions, setDeactivatedAccordions] = useState([]);
@@ -168,9 +248,24 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
         acc[category].push(market);
         return acc;
     }, {});
+    
+    const mergedActiveMarkets = {
+        ...activeMarkets,
+        'Players': [
+            ...(activeMarkets['Player'] || []),
+            ...(activeMarkets['Player Boundaries'] || []),
+            ...(activeMarkets['Player Balls Faced'] || [])
+        ]
+    };
+    
+    // Remove original 'Player Boundaries' and 'Players'
+    delete mergedActiveMarkets['Player Boundaries'];
+    delete mergedActiveMarkets['Player'];
+    delete mergedActiveMarkets['Player Balls Faced'];
+
     return (
         <>
-            {Object.entries(activeMarkets).map(([category, markets]) => (
+            {Object.entries(playersMarketShow ? mergedActiveMarkets : activeMarkets).map(([category, markets]) => (
                 <Accordion open={openAccordions} toggle={toggleAccordion} key={category} className="market-category-accordian">
                     <AccordionItem className="rounded-0">
                         <AccordionHeader className="market-category-header" targetId={category}>
@@ -178,7 +273,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionHeader>
                         <AccordionBody className="market-category-body" accordionId={category}>
                             {markets.length > 0 ? (
-                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate)
+                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow)
                             ) : (
                                 <div className="m-4 text-center">No record found</div>
                             )}
@@ -197,7 +292,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionHeader>
                         <AccordionBody className="market-category-body" accordionId={`deactivated-${category}`}>
                             {markets.length > 0 &&
-                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleReactivate)
+                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleReactivate, handleValueChange, handleSingleAction)
                             }
                         </AccordionBody>
                     </AccordionItem>
