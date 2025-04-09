@@ -587,7 +587,7 @@ const Commentary = (props) => {
             updateOver["totalWideRun"] = (currentOver.totalWideRun || 0) + runToUpdate
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runToUpdate
             updateBall["ballIsCount"] = false
-            updateBall["ballRun"] = 0
+            updateBall["ballRun"] = runs
             updateBall["ballExtraRun"] = runToUpdate
             updateBall["ballType"] = BALL_TYPE_WIDE
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
