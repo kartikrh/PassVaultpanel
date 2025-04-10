@@ -1,30 +1,22 @@
 import {
-  IMAGE,
   SWITCH,
   TEXT,
 } from "../../components/Common/Const";
 
-export const countryCodeField = [
+export const notificationConfigField = [
   {
-    name: "countryCode",
-    label: "Country Code",
+    name: "eventName",
+    label: "Event",
     isRequired: true,
     type: TEXT,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-    name: "countryName",
-    label: "Country Name",
+    name: "content",
+    label: "Content",
     isRequired: true,
     type: TEXT,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
-  {
-    type: IMAGE,
-    name: "flag",
-    label: "Flag",
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },

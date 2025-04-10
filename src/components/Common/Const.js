@@ -36,6 +36,7 @@ export const TAB_PACKAGE = "Package";
 export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
 export const TAB_COUNTRY_CODE = "Country Code";
+export const TAB_NOTIFICATION_CONFIG = "Notification Config";
 
 export const TAB_CLIENT = "Client";
 
@@ -177,6 +178,7 @@ export const MODULE_THIRD_PARTY_APIS = 34;
 export const MODULE_NOTIFICATIONS = 35;
 export const MODULE_VENDORS = 36;
 export const MODULE_COUNTRY_CODE = 37;
+export const MODULE_NOTIFICATION_CONFIG = 38;
 
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG"
