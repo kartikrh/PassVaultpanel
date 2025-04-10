@@ -147,7 +147,6 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
     const [deactivatedMarkets, setDeactivatedMarkets] = useState([]);
     const [activeMarkets, setActiveMarkets] = useState({});
     const [deactivatedAccordions, setDeactivatedAccordions] = useState([]);
-    
     useEffect(() => {     
         if (Object.keys(categorisedData).length > 0) {
           if(deactivatedMarkets.length > 0) {
@@ -248,24 +247,10 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
         acc[category].push(market);
         return acc;
     }, {});
-    
-    const mergedActiveMarkets = {
-        ...activeMarkets,
-        'Players': [
-            ...(activeMarkets['Player'] || []),
-            ...(activeMarkets['Player Boundaries'] || []),
-            ...(activeMarkets['Player Balls Faced'] || [])
-        ]
-    };
-    
-    // Remove original 'Player Boundaries' and 'Players'
-    delete mergedActiveMarkets['Player Boundaries'];
-    delete mergedActiveMarkets['Player'];
-    delete mergedActiveMarkets['Player Balls Faced'];
 
     return (
         <>
-            {Object.entries(playersMarketShow ? mergedActiveMarkets : activeMarkets).map(([category, markets]) => (
+            {Object.entries(activeMarkets).map(([category, markets]) => (
                 <Accordion open={openAccordions} toggle={toggleAccordion} key={category} className="market-category-accordian">
                     <AccordionItem className="rounded-0">
                         <AccordionHeader className="market-category-header" targetId={category}>
