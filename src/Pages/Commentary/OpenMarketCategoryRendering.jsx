@@ -3,6 +3,7 @@ import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Col, Row } fr
 import { ListingElement } from "../../components/Common/Reusables/ListingComponent";
 import MultiRunnerMarket from "./MultiRunnerMarket";
 import { PlayeraListingComponent } from '../../components/Common/Reusables/PlayeraListingComponent';
+import { getStatusColor1 } from './CommentartConst';
 
 function groupMarketsByPlayer(markets) {
     const grouped = {};
@@ -96,6 +97,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                             <div style={{width: '80%'}}>
 
                             <PlayeraListingComponent
+                                backgroundColor={getStatusColor1(+group?.markets[0]?.status)}
                                 key={group.playerName}
                                 columns={getVisibleColumns(true)}
                                 dataSource={group.markets.map(market => {
