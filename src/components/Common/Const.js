@@ -179,6 +179,7 @@ export const MODULE_NOTIFICATIONS = 35;
 export const MODULE_VENDORS = 36;
 export const MODULE_COUNTRY_CODE = 37;
 export const MODULE_NOTIFICATION_CONFIG = 38;
+export const MODULE_PACKAGES = 39;
 
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG"
