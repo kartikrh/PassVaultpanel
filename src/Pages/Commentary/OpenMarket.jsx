@@ -1214,6 +1214,11 @@ export const OpenMarket = () => {
                     onChange={(newValue) => {
                         handleValueChange(record, "line", parseFloat(newValue))
                     }}
+                    onKeyDown={(e) => {
+                        if (["e", "E", "+", "-"].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                    }}
                     inputProps={{ step: "0.1" }}
                     data-market-id={record.marketId}
                 />
@@ -1276,6 +1281,11 @@ export const OpenMarket = () => {
                         className="form-control price-text-fields input-no-field text-bold"
                         value={text === null ? "" : text}
                         onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                     <CustomInput
@@ -1283,6 +1293,11 @@ export const OpenMarket = () => {
                         value={record?.laySize === null ? "" : record?.laySize}
                         onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                         steps={5}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                 </>
@@ -1301,6 +1316,11 @@ export const OpenMarket = () => {
                         className="form-control price-text-fields input-yes-field text-bold"
                         value={text === null ? "" : text}
                         onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                     <CustomInput
@@ -1308,6 +1328,11 @@ export const OpenMarket = () => {
                         value={record?.backSize === null ? "" : record?.backSize}
                         onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                         steps={5}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                 </>
@@ -1507,9 +1532,6 @@ export const OpenMarket = () => {
     const handleKeyPress = (event) => {
         if(event.target.tagName === 'INPUT') {
           const pressedKey = event.key.toUpperCase();
-          if(pressedKey === 'E') {
-            event.preventDefault();
-          }
           const keyMapping = keys.find(k => k.key === pressedKey);
           if (keyMapping) {
             const marketId = event?.target?.dataset?.marketId;
