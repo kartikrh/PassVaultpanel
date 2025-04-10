@@ -144,6 +144,8 @@ import BowlingPredictor from "../Pages/MatchType/BowlingPredictor.jsx";
 import CountryCode from "../Pages/CountryCode";
 import AddCountryCode from "../Pages/CountryCode/AddCountryCode.jsx";
 import AddPackage from "../Pages/Package/AddPackage.jsx";
+import NotificationConfig from "../Pages/NotificationConfig";
+import AddNotificationConfig from "../Pages/NotificationConfig/AddNotificationConfig.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -191,6 +193,8 @@ const authProtectedRoutes = [
   { path: "/updateCommentaryFeature", component: <CommentaryFeatures /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
   { path: "/predictorApiLogs", component: <PredictorApiLogs /> },
+  { path: "/notificationConfig", component: <NotificationConfig /> },
+  { path: "/addNotificationConfig", component: <AddNotificationConfig /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,

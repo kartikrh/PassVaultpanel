@@ -38,6 +38,7 @@ import socialMediaSlice from "./socialMediaSlice";
 import awardSlice from "./awardSlice";
 import shotTypeSlice from "./shotTypeSlice";
 import countryCodeSlice from "./countryCodeSlice";
+import notificationConfigSlice from "./notificationConfigSlice";
 import packageSlice from "./packageSlice";
 
 const rootReducer = combineReducers({
@@ -80,7 +81,8 @@ const rootReducer = combineReducers({
   socialMedia: socialMediaSlice,
   shotType: shotTypeSlice,
   countryCode: countryCodeSlice,
-  package: packageSlice
+  package: packageSlice,
+  notificationConfig: notificationConfigSlice,
 });
 
 export default rootReducer;
