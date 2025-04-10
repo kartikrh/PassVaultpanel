@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -9,20 +9,18 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isEqual } from "lodash";
-import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_PLAYERS, } from "../../components/Common/Const";
+import { TAB_PACKAGE, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_PACKAGES, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import {ImportExportModel} from '../../components/Model/ImportExportModel';
-import {UploadPlayerHistoryModal} from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
 import LoadDataModal from "../../components/Model/LoadDataModal";
 // import GenerateModal from "./GenerateModal";
 
 const Index = () => {
-  const pageName = TAB_PLAYERS
+  const pageName = TAB_PACKAGE
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
-  document.title = TAB_PLAYERS;
+  document.title = TAB_PACKAGE;
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -124,7 +122,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, { module: [MODULE_PLAYERS], password })
+      .post(`/loadPanelData`, { module: [MODULE_PACKAGES], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
