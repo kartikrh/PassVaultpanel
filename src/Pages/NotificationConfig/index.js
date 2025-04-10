@@ -9,14 +9,14 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 import {
-  TAB_COUNTRY_CODE,
+  TAB_NOTIFICATION_CONFIG,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
   ERROR,
-  MODULE_COUNTRY_CODE,
+  MODULE_NOTIFICATION_CONFIG,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -24,10 +24,10 @@ import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
-  const pageName = TAB_COUNTRY_CODE;
+  const pageName = TAB_NOTIFICATION_CONFIG;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_COUNTRY_CODE;
+  document.title = TAB_NOTIFICATION_CONFIG;
   const [data, setData] = useState([]);
 
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -43,7 +43,7 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/countryCode/all`, {
+      .post(`/admin/notificationConfig/all`, {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
@@ -75,7 +75,7 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/countryCode/activeInactive`, {
+      .post(`/admin/notificationConfig/activeInactive`, {
         id: record.id,
         [pType]: cState ? false : true,
       })
@@ -104,7 +104,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COUNTRY_CODE], password})
+      .post(`/loadPanelData`, {module: [MODULE_NOTIFICATION_CONFIG], password})
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -131,7 +131,7 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/countryCode/delete`, {
+      .post(`/admin/notificationConfig/delete`, {
         id: checekedList,
       })
       .then((response) => {
@@ -159,7 +159,7 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    navigate("/addCountryCode", { state: { countryCodeId: id } });
+    navigate("/addNotificationConfig", { state: { notificationConfigId: id } });
   };
   const handleReset = (value) => {
     fetchData(value);
@@ -219,48 +219,24 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Flag",
-      dataIndex: "flag",
-      printType: "ignore",
-      render: (text, record) => (
-        <div className="flex-shrink-0">
-          {text ? (
-            <div>
-              <img
-                className="avatar-sm rounded-circle"
-                alt=""
-                src={text}
-              />
-            </div>
-          ) : (
-            <Avatar src="#" alt="ET">
-              Image
-            </Avatar>
-          )}
-        </div>
-      ),
-      key: "flag",
-      style: { width: "10%", textAlign: "left" },
-    },
-    {
-      title: "Code",
-      dataIndex: "countryCode",
-      key: "countryCode",
+      title: "Event",
+      dataIndex: "eventName",
+      key: "eventName",
       style: { width: "10%" },
       sort: true,
     },
     {
-      title: "Country",
-      dataIndex: "countryName",
-      key: "countryName",
-      style: { width: "74%" },
+      title: "Content",
+      dataIndex: "content",
+      key: "content",
+      style: { width: "84%" },
       sort: true,
     },
     {
       title: "Active",
       key: "IsActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Country Code"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Active/Inactive Notification Config"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -277,7 +253,7 @@ const Index = () => {
     },
   ];
   const tableElement = {
-    title: "Country Code",
+    title: "Notification Config",
     reloadButton: true,
     isActive: true,
     loadData: true,
@@ -297,7 +273,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Country Code" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Notification Config" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -306,7 +282,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addCountryCode"}
+            onAddNavigate={"/addNotificationConfig"}
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
@@ -333,7 +309,7 @@ const Index = () => {
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Country Code"} 
+              moduleName={"Notification Config"} 
             />}
         </Container>
       </div>
