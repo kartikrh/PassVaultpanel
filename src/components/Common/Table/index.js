@@ -1996,6 +1996,7 @@ const Index = forwardRef(
                         </Button>
                       )}
                       {isDeleteAllPermission && (
+                      <div className="ms-auto">
                         <Button
                           color="danger"
                           onClick={() => {
@@ -2004,8 +2005,9 @@ const Index = forwardRef(
                           className="d-flex align-items-center gap-1"
                         >
                           <i className="ri-delete-bin-2-line"></i>
-                          Delete All
+                          Delete All Commentary
                         </Button>
+                      </div>
                       )}
                     </div>
                   </Col>
