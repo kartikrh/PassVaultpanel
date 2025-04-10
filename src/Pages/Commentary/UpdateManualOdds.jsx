@@ -1075,6 +1075,7 @@ export const UpdateManualOdds = () => {
         }
     };
 
+    // Modify the handleSelectedRunnerChange function to maintain focus better
     const handleSelectedRunnerChange = (newRunnerId) => {
         const savedPrice = savedPrices[newRunnerId]?.back || 0;
 
@@ -1084,6 +1085,17 @@ export const UpdateManualOdds = () => {
                 ...prev,
                 runnerId: newRunnerId,
                 main: "1",
+                point: "00"
+            }));
+            return;
+        }
+
+        // For directLineEnabled and !isLive mode, if price < 1.01, treat as 0
+        if (!isLive && directLineEnabled && savedPrice < 1.01) {
+            setSelectedRunnerDetails(prev => ({
+                ...prev,
+                runnerId: newRunnerId,
+                main: "0",
                 point: "00"
             }));
             return;
@@ -1114,12 +1126,17 @@ export const UpdateManualOdds = () => {
         const type = isBackType ? 'back' : isLayType ? 'lay' : '';
         const showSavedAndLive = ['back', 'lay'].includes(field) && savedPrice !== undefined;
 
-        // Format the display of prices, ensuring very low values display as blank or "00"
+        // Format the display of prices, ensuring very low values display as blank
         const formatPriceDisplay = (priceValue) => {
             if (!priceValue || priceValue <= 0) return '';
-            if (priceValue < 1.01) return '';
+            // For directLineEnabled and !isLive, values < 1.01 should be blank
+            if (!isLive && directLineEnabled && priceValue < 1.01) return '';
             return Number(priceValue).toFixed(2).replace(/\.?0+$/, '');
         };
+
+        // Handle display value for saved price
+        const displaySavedPrice = !isLive && directLineEnabled && savedPrice < 1.01 ? '' :
+            isActive ? savedPrice : '-';
 
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -1142,7 +1159,7 @@ export const UpdateManualOdds = () => {
                         type="number"
                         fullWidth
                         size="small"
-                        value={isActive ? savedPrice : '-'}
+                        value={displaySavedPrice}
                         onChange={(e) => handleSavedRunnerChange(runner.runnerId, field, e.target.value)}
                         disabled={!isActive || marketStatus === CLOSE_VALUE.toString()}
                         sx={{
@@ -1347,20 +1364,23 @@ export const UpdateManualOdds = () => {
         const otherRunner = runners.find(r => r.runnerId !== runnerId);
         const numericValue = Number(parseFloat(value).toFixed(2));
 
+        // For directLineEnabled and !isLive mode, if value < 1.01, set it to 0
+        const adjustedValue = !isLive && directLineEnabled && numericValue < 1.01 ? 0 : numericValue;
+
         setSavedPrices(prevValue => {
             const newSavedPrices = {
                 ...prevValue,
                 [runnerId]: {
                     ...prevValue[runnerId],
-                    [field]: numericValue
+                    [field]: adjustedValue
                 }
             };
 
-            if (isSelectedRunner) {
+            if (isSelectedRunner && otherRunner) {
                 if (field === 'back') {
-                    const newLayPrice = Number((numericValue + parseFloat(settings.rateDifferent)).toFixed(2));
+                    const newLayPrice = Number((adjustedValue + parseFloat(settings.rateDifferent)).toFixed(2));
                     const newNonSelectedBack = Number((1 / (1 - (1 / newLayPrice))).toFixed(2));
-                    const newNonSelectedLay = Number((1 / (1 - (1 / numericValue))).toFixed(2));
+                    const newNonSelectedLay = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
 
                     newSavedPrices[runnerId] = {
                         ...newSavedPrices[runnerId],
@@ -1371,7 +1391,7 @@ export const UpdateManualOdds = () => {
                         lay: newNonSelectedLay
                     };
                 } else if (field === 'lay') {
-                    const newNonSelectedBack = Number((1 / (1 - (1 / numericValue))).toFixed(2));
+                    const newNonSelectedBack = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
                     const currentSelectedBack = prevValue[runnerId]?.back || 0;
                     const newNonSelectedLay = Number((1 / (1 - (1 / currentSelectedBack))).toFixed(2));
 
@@ -1380,9 +1400,9 @@ export const UpdateManualOdds = () => {
                         lay: newNonSelectedLay
                     };
                 }
-            } else {
+            } else if (otherRunner) {
                 if (field === 'back') {
-                    const newNonSelectedLay = Number((1 / (1 - (1 / numericValue))).toFixed(2));
+                    const newNonSelectedLay = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
                     newSavedPrices[runnerId] = {
                         ...newSavedPrices[runnerId],
                         lay: newNonSelectedLay
@@ -1726,22 +1746,26 @@ export const UpdateManualOdds = () => {
                 };
             }
 
-            // When directLine is enabled and not live, use original runner rates
+            // When directLine is enabled and not live, use savedPrices
             if (!isLive && directLineEnabled) {
-                const originalRunnerData = originalRunner.find(or => or.runnerId === runner.runnerId);
-                if (originalRunnerData) {
-                    return {
-                        ...runner,
-                        backPrice: originalRunnerData.back.price,
-                        layPrice: originalRunnerData.lay.price,
-                        overRate: originalRunnerData.back.price,
-                        underRate: originalRunnerData.lay.price,
-                        backSize: runner.back.volume,
-                        laySize: runner.lay.volume,
-                        runnerId: runner.runnerId,
-                        line: runner.line || 0
-                    };
-                }
+                let backPrice = savedPrices[runner.runnerId]?.back || 0;
+                let layPrice = savedPrices[runner.runnerId]?.lay || 0;
+
+                // If prices are < 1.01, explicitly set to 0
+                backPrice = backPrice < 1.01 ? 0 : backPrice;
+                layPrice = layPrice < 1.01 ? 0 : layPrice;
+
+                return {
+                    ...runner,
+                    backPrice: backPrice,
+                    layPrice: layPrice,
+                    overRate: backPrice,
+                    underRate: layPrice,
+                    backSize: runner.back.volume,
+                    laySize: runner.lay.volume,
+                    runnerId: runner.runnerId,
+                    line: runner.line || 0
+                };
             }
 
             const useSavedPrices = (!isLive && !directLineEnabled) || (event && event.shiftKey);
@@ -2150,7 +2174,7 @@ export const UpdateManualOdds = () => {
         const updateRunners = (prevRunners) => {
             return prevRunners.map(runner => {
                 // Convert teamId to string for comparison
-                const teamId = runner.teamId.toString();
+                const teamId = runner.teamId?.toString();
                 const odds = oddsObj[teamId];
 
                 if (!odds) {
@@ -2196,7 +2220,7 @@ export const UpdateManualOdds = () => {
             const updatedRunners = updateRunners(prevRunners);
 
             // Update selected runner details
-            const selectedRunner = updatedRunners.find(r => r.teamId.toString() === selectedTeamId.toString());
+            const selectedRunner = updatedRunners.find(r => r.teamId?.toString() === selectedTeamId?.toString());
             if (selectedRunner) {
                 const backPrice = selectedRunner.back.price;
                 setSelectedRunner(selectedRunner.runnerId);
