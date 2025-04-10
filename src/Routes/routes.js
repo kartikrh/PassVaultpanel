@@ -146,6 +146,7 @@ import AddCountryCode from "../Pages/CountryCode/AddCountryCode.jsx";
 import AddPackage from "../Pages/Package/AddPackage.jsx";
 import NotificationConfig from "../Pages/NotificationConfig";
 import AddNotificationConfig from "../Pages/NotificationConfig/AddNotificationConfig.jsx";
+import PlayerDetails from "../Pages/Players/PlayerDetails.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -160,6 +161,7 @@ const authProtectedRoutes = [
   { path: "/events", component: <Events /> },
   { path: "/addEvents", component: <AddEvents /> },
   { path: "/Players", component: <Players /> },
+  { path: "/PlayerDetails", component: <PlayerDetails />},
   { path: "/package", component: <Package /> },
   { path: "/addPlayer", component: <AddPlayers /> },
   { path: "/addPackage", component: <AddPackage /> },
