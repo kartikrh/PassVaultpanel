@@ -47,14 +47,14 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
                                                         style={{
                                                             position: 'absolute',
                                                             top: 0,
-                                                            right: 0,
+                                                            right: '4px',
                                                             width: '50px',
                                                             height: '15px',
                                                             fontSize: '12px',
-                                                            paddingLeft: '6px',
                                                             borderRadius: '4px',
                                                             border: '1px solid #ccc',
                                                             background: '#fff',
+                                                            textAlign: 'center'
                                                         }}
                                                         value={market?.predefinedValue || ''}
                                                         onChange={(e) => handleValueChange(market, "predefinedValue", e.target.value)}
