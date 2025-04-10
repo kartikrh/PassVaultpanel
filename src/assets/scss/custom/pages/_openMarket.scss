@@ -1,7 +1,7 @@
 .player-market-card{
     // color: ;
     // width: 30%;
-    height: 122px;
+    height: 108px;
     display: flex;
     overflow-x: auto;
 }
@@ -21,97 +21,87 @@
     display: flex;
     background-color: $light-score-card-bg !important;
     border-radius: 4px;
-    box-shadow:
-        1px 1px 3px 0px #B2B2B2E5,
-        -1px -1px 2px 0px #FFFFFFE5,
-        1px -1px 2px 0px #B2B2B233,
-        -1px 1px 2px 0px #B2B2B233,
-        -1px -1px 2px 0px #B2B2B280 inset,
-        1px 1px 2px 0px #FFFFFF4D inset;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -1px -1px 2px 0px #B2B2B280 inset,
+    //     1px 1px 2px 0px #FFFFFF4D inset;
 }
 .second-col-second-div{
-    // background-color: $light-score-card-bg !important;
+    background-color: $light-score-card-bg !important;
     border-radius: 4px;
     font-size: 12px;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    box-shadow:
-        1px 1px 3px 0px #B2B2B2E5,
-        -1px -1px 2px 0px #FFFFFFE5,
-        1px -1px 2px 0px #B2B2B233,
-        -1px 1px 2px 0px #B2B2B233,
-        -1px -1px 2px 0px #B2B2B280 inset,
-        1px 1px 2px 0px #FFFFFF4D inset;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -1px -1px 2px 0px #B2B2B280 inset,
+    //     1px 1px 2px 0px #FFFFFF4D inset;
 }
 .button-a{
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #EA2E2E;
-    background-color: #d7d7d7;
+    color: #8b3a3a;
+    background-color: #f2e8e8;
+    // color: #EA2E2E;
+    // background-color: #d7d7d7;
     border-radius: 4px;
-    box-shadow:
-    1px 1px 3px 0px #B2B2B2E5,
-    -1px -1px 2px 0px #FFFFFFE5,
-    1px -1px 2px 0px #B2B2B233,
-    -1px 1px 2px 0px #B2B2B233,
-    -3px -3px 2px 0px #ABABAB80 inset,
-    3px 3px 2px 0px #FFFFFF4D inset;
+    // box-shadow:
+    // 1px 1px 3px 0px #B2B2B2E5,
+    // -1px -1px 2px 0px #FFFFFFE5,
+    // 1px -1px 2px 0px #B2B2B233,
+    // -1px 1px 2px 0px #B2B2B233,
+    // -3px -3px 2px 0px #ABABAB80 inset,
+    // 3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #bdbdbd; // darker red on hover
-        box-shadow:
-          1px 1px 5px 0px #8a8a8a,
-          -1px -1px 4px 0px #ffffffcc,
-          inset 3px 3px 4px #ffffff4d,
-          inset -3px -3px 4px #ababab80;
+        background-color: #e5c0c0; // darker red on hover
+        // box-shadow:
+        //   1px 1px 5px 0px #8a8a8a,
+        //   -1px -1px 4px 0px #ffffffcc,
+        //   inset 3px 3px 4px #ffffff4d,
+        //   inset -3px -3px 4px #ababab80;
         cursor: pointer;
     }
-    &:active {
-        background-color: #bdbdbd; // even darker green
-        transform: scale(0.96); // press down effect
-        box-shadow:
-          inset 2px 2px 4px #ababab80,
-          inset -2px -2px 4px #ffffff4d;
-      }
 }
 .button-b{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #d7d7d7;
-    color: #00DB00;
+    // background-color: #d7d7d7;
+    // color: #00DB00;
+    background-color: #e8efe8;
+    color: #336633;
     border-radius: 4px;
-    box-shadow:
-        1px 1px 3px 0px #B2B2B2E5,
-        -1px -1px 2px 0px #FFFFFFE5,
-        1px -1px 2px 0px #B2B2B233,
-        -1px 1px 2px 0px #B2B2B233,
-        -3px -3px 2px 0px #ABABAB80 inset,
-        3px 3px 2px 0px #FFFFFF4D inset;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -3px -3px 2px 0px #ABABAB80 inset,
+    //     3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #bdbdbd; // slightly darker green
-        box-shadow:
-            1px 1px 5px 0px #8a8a8a,
-            -1px -1px 4px 0px #ffffffcc,
-            inset 3px 3px 4px #ffffff4d,
-            inset -3px -3px 4px #ababab80;
+        background-color: #c4e3c4; // slightly darker green
+        // box-shadow:
+        //     1px 1px 5px 0px #8a8a8a,
+        //     -1px -1px 4px 0px #ffffffcc,
+        //     inset 3px 3px 4px #ffffff4d,
+        //     inset -3px -3px 4px #ababab80;
         cursor: pointer;
     }
-    &:active {
-        background-color: #029302; // even darker green
-        transform: scale(0.96); // press down effect
-        box-shadow:
-          inset 2px 2px 4px #ababab80,
-          inset -2px -2px 4px #ffffff4d;
-      }
 }
 .second-col-line{
     position: relative;
     color: #3A1290;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: end;
 }
 .second-col-back{
     color: #3385FF;
@@ -130,16 +120,17 @@
     justify-content: center;
     align-items: center;
     border-radius: 4px;
+    margin: 2px -1px;
     // padding: 4px;
     width: 100%;
-    height: 30px;
-    box-shadow:
-        1px 1px 3px 0px #B2B2B2E5,
-        -1px -1px 2px 0px #FFFFFFE5,
-        1px -1px 2px 0px #B2B2B233,
-        -1px 1px 2px 0px #B2B2B233,
-        -3px -3px 2px 0px #ABABAB80 inset,
-        3px 3px 2px 0px #FFFFFF4D inset;
+    // height: 30px;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -3px -3px 2px 0px #ABABAB80 inset,
+    //     3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
         cursor: pointer;
     }
@@ -157,16 +148,22 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #00DB00;
-    background-color: #d7d7d7;
+    color: #336633;
+    background-color: #e8efe8;
+    // color: #00DB00;
+    // background-color: #d7d7d7;
     border-radius: 4px;
-    box-shadow:
-        1px 1px 3px 0px #B2B2B2E5,
-        -1px -1px 2px 0px #FFFFFFE5,
-        1px -1px 2px 0px #B2B2B233,
-        -1px 1px 2px 0px #B2B2B233,
-        -3px -3px 2px 0px #ABABAB80 inset,
-        3px 3px 2px 0px #FFFFFF4D inset;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -3px -3px 2px 0px #ABABAB80 inset,
+    //     3px 3px 2px 0px #FFFFFF4D inset;
+    &:hover {
+        background-color: #c4e3c4;
+        cursor: pointer;
+    }
 }
 .fourth-col{
     display: flex;
@@ -178,13 +175,13 @@
     justify-content: center;
     align-items: center;
     background-color: #E6E6E6;
-    box-shadow:
-        1px 1px 3px 0px #B2B2B2E5,
-        -1px -1px 2px 0px #FFFFFFE5,
-        1px -1px 2px 0px #B2B2B233,
-        -1px 1px 2px 0px #B2B2B233,
-        -1px -1px 2px 0px #B2B2B280 inset,
-        1px 1px 2px 0px #FFFFFF4D inset;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -1px -1px 2px 0px #B2B2B280 inset,
+    //     1px 1px 2px 0px #FFFFFF4D inset;
     border: none;
     height: 32px; /* Optional: set your desired height */
     text-align: center;
@@ -202,6 +199,7 @@
     line-height: 1.2;
     width: 100%; // optional
     // text-align: center; // optional
+    text-align: center; 
   
     /* optional: remove spinner buttons in some browsers */
     &::-webkit-outer-spin-button,
@@ -213,7 +211,7 @@
   
   .laySize {
     all: unset;
-    width: 50%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -224,6 +222,7 @@
     appearance: none;        // just in case it's an input
     -webkit-appearance: none;
     -moz-appearance: none;
+    text-align: center; 
   }
   .absolute-input{
     all: unset;
@@ -237,10 +236,11 @@
   
 .backSize {
     all: unset;
-    width: 50%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center; 
   
     font-size: 16px;         // optional
     line-height: 1.2;        // optional
