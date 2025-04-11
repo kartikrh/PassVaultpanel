@@ -222,7 +222,9 @@ const NewCommentaryScreen = ({
   completeMatchYesClick,
   winnerAnnouncementisOpen,
   winnerAnnouncement,
-  onExitClick
+  onExitClick,
+  handleRemainingBallsShowToggle,
+  isRemainingBallsShow, currentInnings
 }) => {
   const [changePlayerType, setChangePlayerType] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -274,6 +276,43 @@ const NewCommentaryScreen = ({
         wheel
       </div>
     );
+  };
+
+  const OffRemainingStatus = () => {
+    return (
+        <div
+            style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                fontSize: 10,
+                color: "#fff",
+                // paddingRight: 2,
+            }}
+        >
+            {" "}
+            Remain
+        </div>
+    );
+  };
+  const OnRemainingStatus = () => {
+      return (
+          <div
+              style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                  fontSize: 10,
+                  color: "#fff",
+                  // paddingRight: 4,
+              }}
+          >
+              {" "}
+              Remain
+          </div>
+      );
   };
 
   const handleRevertToToss = async () => {
@@ -800,6 +839,22 @@ const NewCommentaryScreen = ({
                   )}
                   {showChangeOverModal ? "Over Complete" : cricketFieldIsOpen ? `Ball : ${cricketFieldData?.overCount} ${cricketFieldData?.bowler} to ${cricketFieldData?.batter}` : "Control Centre"}
                 </h5>
+                {currentInnings > 0 && 
+                    <div className="d-flex align-items-center py-2">
+                        <span>Remaining balls</span>
+                        <Switch
+                            width={70}
+                            uncheckedIcon={<OffRemainingStatus />}
+                            checkedIcon={<OnRemainingStatus />}
+                            className="pe-0 mx-2"
+                            onColor="#02a499"
+                            onChange={() => {
+                                handleRemainingBallsShowToggle();
+                            }}
+                            checked={isRemainingBallsShow}
+                        />
+                    </div>
+                }
                 {(!showChangeOverModal && !cricketFieldIsOpen) ? (
                   <div className="d-flex align-items-center py-2">
                     <span>Tracking a Ball</span>
