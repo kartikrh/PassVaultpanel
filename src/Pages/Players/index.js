@@ -103,6 +103,15 @@ const Index = () => {
     setCheckedList(updateSingleCheck)
   };
 
+  const handlePlayerClick = (details) => {
+    const url = new URL(window.location.origin + "/playerDetails");
+    sessionStorage.setItem('playerId', "" + details?.playerId);
+    sessionStorage.setItem('playerDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+    sessionStorage.removeItem("playerId");
+    sessionStorage.removeItem("playerDetails");
+  };
+
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -255,7 +264,11 @@ const Index = () => {
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
           {text ? (
-            <div>
+            <div className="cursor-pointer"
+              onClick={() => {
+                handlePlayerClick(record);
+              }}
+            >
               <img
                 className="avatar-sm rounded-circle"
                 alt=""
@@ -276,7 +289,12 @@ const Index = () => {
       title: "Player Name",
       dataIndex: "playerName",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
+        <span 
+          className="cursor-pointer"
+          onClick={() => {
+            handlePlayerClick(record);
+          }}
+        >{text}</span>
       ),
       key: "playerName",
       sort: true,

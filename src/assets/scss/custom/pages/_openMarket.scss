@@ -1,7 +1,7 @@
 .player-market-card{
     // color: ;
     // width: 30%;
-    height: 108px;
+    height: 96px;
     display: flex;
     overflow-x: auto;
 }
@@ -261,13 +261,30 @@
     }
   }
   .player-market{
-    background-color: $light-body-bg !important;
+    // background-color: $light-body-bg !important;
+  }
+  .status-dropdown{
+    all: unset;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E6E6E6;
+    border: none;
+    height: 32px; /* Optional: set your desired height */
+    text-align: center;
+    font-size: 14px;
+    border-radius: 4px;
+    outline: none;
+    &:hover {
+        cursor: pointer;
+    }
   }
   
 
 body[data-theme="dark"]{
     .player-market-card{
-        background-color: $dark-body-bg !important;
+        // background-color: $dark-body-bg !important;
         color: $dark-font-color !important;
     }
 }

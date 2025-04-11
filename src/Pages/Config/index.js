@@ -8,7 +8,7 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { ERROR, MODULE_CONFIG, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_CONFIG } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -416,12 +416,12 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard")
     }
     fetchData();
     handleSignalRCheckStatus()
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

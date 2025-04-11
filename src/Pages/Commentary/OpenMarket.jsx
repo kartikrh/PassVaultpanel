@@ -1214,6 +1214,11 @@ export const OpenMarket = () => {
                     onChange={(newValue) => {
                         handleValueChange(record, "line", parseFloat(newValue))
                     }}
+                    onKeyDown={(e) => {
+                        if (["e", "E", "+", "-"].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                    }}
                     inputProps={{ step: "0.1" }}
                     data-market-id={record.marketId}
                 />
@@ -1276,6 +1281,11 @@ export const OpenMarket = () => {
                         className="form-control price-text-fields input-no-field text-bold"
                         value={text === null ? "" : text}
                         onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                     <CustomInput
@@ -1283,6 +1293,11 @@ export const OpenMarket = () => {
                         value={record?.laySize === null ? "" : record?.laySize}
                         onChange={(newValue) => handleValueChange(record, "laySize", newValue)}
                         steps={5}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                 </>
@@ -1301,6 +1316,11 @@ export const OpenMarket = () => {
                         className="form-control price-text-fields input-yes-field text-bold"
                         value={text === null ? "" : text}
                         onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                     <CustomInput
@@ -1308,6 +1328,11 @@ export const OpenMarket = () => {
                         value={record?.backSize === null ? "" : record?.backSize}
                         onChange={(newValue) => handleValueChange(record, "backSize", newValue)}
                         steps={5}
+                        onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                        }}
                         data-market-id={record?.marketId}
                     />
                 </>
@@ -1507,9 +1532,6 @@ export const OpenMarket = () => {
     const handleKeyPress = (event) => {
         if(event.target.tagName === 'INPUT') {
           const pressedKey = event.key.toUpperCase();
-          if(pressedKey === 'E') {
-            event.preventDefault();
-          }
           const keyMapping = keys.find(k => k.key === pressedKey);
           if (keyMapping) {
             const marketId = event?.target?.dataset?.marketId;
@@ -1781,16 +1803,12 @@ export const OpenMarket = () => {
     }, [isAutoUpdate, isSocketConnected])
 
     useEffect(() => {
-        const tempCategorisedData = {}
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
-            // data.forEach(market => {
-
-            //     tempCategorisedData[categories[market.marketTypeCategoryId]] =
-            //         [].concat(
-            //             tempCategorisedData[categories[market.marketTypeCategoryId]] || [], [market]
-            //         )
-            // })
+        
+            const tempCategorisedData = {};
+        
+            // Step 1: Categorize raw data
             data.forEach((market) => {
                 const categoryName = categories[market.marketTypeCategoryId];
                 tempCategorisedData[categoryName] = [].concat(
@@ -1798,27 +1816,53 @@ export const OpenMarket = () => {
                     [market]
                 );
             });
-            // Separate selected and non-selected categories
-            const selectedCategoryNames = selectedCategories.map(
-                (selected) => fullCategories.find((cat) => cat.marketTypeCategoryId === selected.value)?.categoryName
-            ).filter(Boolean);
+            const playerCategories = ["Player", "Player Boundaries", "Player Balls Faced"];
+        
+            // ✅ Step 2: Merge all player-related categories into "Players" if enabled
+            if (playersMarketShow) {
+                const mergedPlayers = [];
+                playerCategories.forEach((cat) => {
+                    if (tempCategorisedData[cat]) {
+                        mergedPlayers.push(...tempCategorisedData[cat]);
+                        delete tempCategorisedData[cat]; // Remove original player-related keys
+                    }
+                });
+        
+                if (mergedPlayers.length) {
+                    tempCategorisedData["Players"] = mergedPlayers;
+                }
+            }
+        
+            // Step 3: Get selected category names (as string)
+            const selectedCategoryNames = selectedCategories
+                .map((selected) =>
+                    fullCategories.find((cat) => cat.marketTypeCategoryId === selected.value)?.categoryName
+                ).filter(Boolean);
+        
             const selectedData = {};
             const remainingData = {};
+        
+            // Step 4: Sort and categorize selected vs remaining
             fullCategories
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .forEach((category) => {
-                    const categoryName = category.categoryName;
-                    if (selectedCategoryNames.includes(categoryName)) {
-                        if (tempCategorisedData[categoryName]) {
-                            selectedData[categoryName] = tempCategorisedData[categoryName];
-                        }
+                    let categoryName = category.categoryName;
+        
+                    if (playersMarketShow && playerCategories.includes(categoryName)) {
+                        categoryName = "Players";
+                    }
+        
+                    const categoryData = tempCategorisedData[categoryName];
+                    if (!categoryData) return;
+        
+                    if (selectedCategoryNames.includes(category.categoryName)) {
+                        selectedData[categoryName] = categoryData;
                     } else {
-                        if (tempCategorisedData[categoryName]) {
-                            remainingData[categoryName] = tempCategorisedData[categoryName];
-                        }
+                        remainingData[categoryName] = categoryData;
                     }
                 });
-            // Combine selected and remaining data
+        
+            // Step 5: Merge and set final data
             const sortedCategorisedData = { ...selectedData, ...remainingData };
             setCategorisedData(sortedCategorisedData);
         } else {
@@ -1827,7 +1871,7 @@ export const OpenMarket = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [data, selectedCategories, isKeyPressed, input, isPointsShow]);
+    }, [data, selectedCategories, isKeyPressed, input, isPointsShow, playersMarketShow]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
