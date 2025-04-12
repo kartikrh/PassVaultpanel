@@ -1109,7 +1109,7 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Batter Switched",
-                "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             }
         }
         if (currentPartnership?.commentaryPartnershipId && +currentPartnership?.commentaryPartnershipId != 0) {
