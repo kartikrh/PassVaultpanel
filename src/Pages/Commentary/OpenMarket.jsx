@@ -2074,6 +2074,7 @@ export const OpenMarket = () => {
                                         commentaryInfo={commentaryInfo}
                                         handleValueChange={handleValueChange}
                                         handleSingleAction={handleSingleAction}
+                                        updateRecordsFunc={updateRecords}
                                     />
                                 )}
                             </CardBody>

@@ -4,7 +4,7 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import { getStatusColor, getStatusColor1, getStatusFontColor, OPEN_MARKET_STATUS } from "../../../Pages/Commentary/CommentartConst";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
-export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement, tableExtras, tableClassName, hideHeader = false, onSwitch, handleValueChange, handleSingleAction, backgroundColor }) => {
+export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement, tableExtras, tableClassName, hideHeader = false, onSwitch, handleValueChange, handleSingleAction, backgroundColor, updateRecordsFunc }) => {
     const rDiffColumns = columns.filter(col => col.title === "R-Diff");
     const handleSwitch = (marketId) => {
         onSwitch(marketId);
@@ -107,9 +107,7 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
                                                 </div>
                                             </div>
                                             <div className="third-col p-2 fs-5 fw-bold" style={{ width: '14%' }} 
-                                                onClick={() => {
-                                                    handleSingleAction(market, "isSendData", !market.isSendData);
-                                                }}
+                                                onClick={() => updateRecordsFunc(market, "SAVE_ALL")}
                                             >
                                                 S
                                             </div>
