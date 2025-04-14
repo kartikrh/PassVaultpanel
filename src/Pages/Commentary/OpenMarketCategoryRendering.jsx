@@ -23,7 +23,7 @@ function groupMarketsByPlayer(markets) {
     return Object.values(grouped);
 }
    
-const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction, handleValueChange, handleSingleAction, players) => {
+const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc) => {
     const singleRunnerMarkets = markets.filter(market => !market.runner || market.runner.length <= 1);
     const multiRunnerMarkets = markets.filter(market => market.runner && market.runner.length > 1);
     const getVisibleColumns = (isSingleRunner) => {
@@ -75,7 +75,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                 />
             )}
             {groupedMarkets.length > 0 && category === 'Players' && (
-                <>
+                <div className='bg-white'>
                     <div className='d-flex p-1 player-market'>
                                 <div style={{ width: '20%' }} className="py-2"></div>
                                 <div className="d-flex" style={{ width: '80%' }}>
@@ -118,12 +118,13 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                                 onSwitch={handleAction}
                                 handleValueChange={handleValueChange}
                                 handleSingleAction={handleSingleAction}
+                                updateRecordsFunc={updateRecordsFunc}
                             />
                             </div>
                         </div>
                     ))}
                     </>
-                </>
+                </div>
                 )
             }
 
@@ -145,7 +146,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
     );
 };
 
-const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow }) => {
+const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc }) => {
     const [deactivatedMarkets, setDeactivatedMarkets] = useState([]);
     const [activeMarkets, setActiveMarkets] = useState({});
     const [deactivatedAccordions, setDeactivatedAccordions] = useState([]);
@@ -260,7 +261,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionHeader>
                         <AccordionBody className="market-category-body" accordionId={category}>
                             {markets.length > 0 ? (
-                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow)
+                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
                             ) : (
                                 <div className="m-4 text-center">No record found</div>
                             )}
@@ -279,7 +280,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionHeader>
                         <AccordionBody className="market-category-body" accordionId={`deactivated-${category}`}>
                             {markets.length > 0 &&
-                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleReactivate, handleValueChange, handleSingleAction)
+                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleReactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
                             }
                         </AccordionBody>
                     </AccordionItem>
