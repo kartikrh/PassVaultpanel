@@ -68,6 +68,8 @@ function CommentaryMaster() {
   const [statusList, setStatusList] = useState([]);
   const [isBetAllow, setIsBetAllow] = useState(false);
   const [isNewUi, setIsNewUi] = useState(false);
+  const [isPredict, setIsPredict] = useState(false);
+  const [isPredictToggle, setIsPredictToggle] = useState(false);
   const { isCommentaryDataUpdated, isCommentaryBallLoading } = useSelector(
     (state) => state.tabsData.commentary
   );
@@ -233,6 +235,7 @@ function CommentaryMaster() {
         );
         setCommentaryData(commentaryDataToUpdate);
         setStatusList(commentaryDataToUpdate.commentaryDisplayStatus);
+        setIsPredict(commentaryDataToUpdate?.commentaryDetails?.isPredictMarket || false);
         setIsDataLoading(false);
         // if (response?.result?.callPrediction?.predictioncallSuccess === false) {
         //     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
@@ -471,6 +474,7 @@ function CommentaryMaster() {
                     {!isNewUi ? <Toss
                       data={commentaryData}
                       save={handleSaveClick}
+                      isPredictToggle={isPredictToggle}
                       next={() => {
                         setCurrentScreen(
                           getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
@@ -479,6 +483,7 @@ function CommentaryMaster() {
                     />: <TossScreen 
                           data={commentaryData} 
                           save={handleSaveClick} 
+                          isPredictToggle={isPredictToggle}
                           next={() => {
                             setCurrentScreen(
                               getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
@@ -492,6 +497,7 @@ function CommentaryMaster() {
                     {!isNewUi ? <PlayerSelection
                       data={commentaryData}
                       save={handleSaveClick}
+                      isPredictToggle={isPredictToggle}
                       previous={() => {
                         setCurrentScreen(
                           getScreenNumber(COMMENTARY_TOSS_SCREEN)
@@ -505,6 +511,7 @@ function CommentaryMaster() {
                     /> : <PlayerSelectionScreen 
                             data={commentaryData}
                             save={handleSaveClick}
+                            isPredictToggle={isPredictToggle}
                             previous={() => {
                               setCurrentScreen(
                                 getScreenNumber(COMMENTARY_TOSS_SCREEN)
@@ -527,6 +534,9 @@ function CommentaryMaster() {
                       statusPopup={statusPopup}
                       saveUserInfo={saveUserInfo}
                       isNewUi={isNewUi}
+                      isPredict={isPredict}
+                      isPredictToggle={isPredictToggle}
+                      setIsPredictToggle={setIsPredictToggle}
                     />
                   )}
                   {!isNewUi && <Col xs={12} md={6} lg={6}>

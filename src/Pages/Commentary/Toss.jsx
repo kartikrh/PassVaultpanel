@@ -14,7 +14,7 @@ import { CONNECT_COMMENTARY, ERROR } from "../../components/Common/Const";
 import createSocket from "../../Features/socket";
 import { isEmpty } from "lodash";
 
-const Index = ({ data, next, save }) => {
+const Index = ({ data, next, save, isPredictToggle }) => {
   document.title = "Toss";
   const theme = useSelector((state) => state.layout.panelTheme);
   const [commentaryDetails, setCommentaryDetails] = useState({});
@@ -50,6 +50,7 @@ const Index = ({ data, next, save }) => {
     );
     const newData = {
       commentaryId: commentaryDetails.commentaryId,
+      isCallPredict: isPredictToggle,
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
