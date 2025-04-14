@@ -804,7 +804,7 @@ const Commentary = (props) => {
                 "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": {
                     ...commentaryDetails,
-                    "displayStatus": "Strike Changed",
+                    "displayStatus": "",
                     "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams ? _teams[BATTING_TEAM] : teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
                 },
                 "commentaryPlayers": Object.values(syncOnPitchPlayer),
