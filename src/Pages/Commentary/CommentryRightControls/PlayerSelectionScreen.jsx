@@ -26,7 +26,7 @@ import CardComponent from "../CardComponent";
 
 const PlayerSelectionScreen = forwardRef((props, ref) => {
   document.title = "Player Selection";
-  const { data, next, previous, save } = props;
+  const { data, next, previous, save, isPredictToggle } = props;
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -183,6 +183,7 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
       axiosInstance
         .post(`/admin/commentary/saveDetails`, {
           commentaryId: commentaryDetails.commentaryId,
+          isCallPredict: isPredictToggle,
           commentaryOvers,
         })
         .then((response) => {
@@ -219,6 +220,7 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
             };
             const newData = {
               commentaryId: commentaryDetails.commentaryId,
+              isCallPredict: isPredictToggle,
               commentaryDetails: clone(commentaryDetails),
               commentaryPlayers: [].concat(
                 isPlayPlayers || [],
