@@ -98,7 +98,6 @@ const Commentary = (props) => {
     const [isUndoingLastOver, setIsUndoingLastOver] = useState(false);
     const [ballStatus, setBallStatus] = useState(null);
     const [isShotType, setIsShotType] = useState(undefined);
-    const [isPredictToggle, setIsPredictToggle] = useState(false);
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -246,7 +245,7 @@ const Commentary = (props) => {
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": {
                 ...commentaryDetails,
                 ...commentaryUpdates
@@ -269,7 +268,7 @@ const Commentary = (props) => {
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPartnership": updatedPartnership
         }
         // console.log("retiringHurtPartnership", retiringHurtPartnership)
@@ -302,7 +301,7 @@ const Commentary = (props) => {
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": {
                 ...commentaryDetails,
                 ...commentaryUpdates
@@ -342,7 +341,7 @@ const Commentary = (props) => {
         });
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
@@ -402,7 +401,7 @@ const Commentary = (props) => {
         })
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall, onStrikePlayer: onPitchPlayers[ON_STRIKE] }),
@@ -737,7 +736,7 @@ const Commentary = (props) => {
         const generatedBallByBall = generateBall({ currentBall: updateBall, commentaryDetails, currentOver, onPitchPlayers, teams, currentPartnership })
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryBallByBall": generatedBallByBall,
             "commentaryDetails": { ...commentaryDetails, "displayStatus": `Penalty ${runs} runs`, "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
             "commentaryTeams": [updateBattingTeam],
@@ -776,7 +775,7 @@ const Commentary = (props) => {
         setCurrentOver(updatedOver)
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Over",
@@ -802,7 +801,7 @@ const Commentary = (props) => {
             const syncOnPitchPlayer = isEmpty(prevValue) ? onPitchPlayers : prevValue
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": {
                     ...commentaryDetails,
                     "displayStatus": "Strike Changed",
@@ -851,7 +850,7 @@ const Commentary = (props) => {
         if (isEmpty(currentPartnership)) {
             objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": {
                     ...commentaryDetails,
                     "displayStatus": "Player Changed",
@@ -863,7 +862,7 @@ const Commentary = (props) => {
         } else {
             objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": {
                     ...commentaryDetails,
                     "displayStatus": "Player Changed",
@@ -1018,7 +1017,7 @@ const Commentary = (props) => {
             const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
                 "commentaryPartnership": updatedPartnership,
                 "commentaryDetails": commentaryDetails,
                 "commentaryPlayers": [].concat(allPlayersToUpdate, Object.values(updatedOnPitchPlayer)),
@@ -1117,7 +1116,7 @@ const Commentary = (props) => {
         updatedOnPitchPlayer["EXTRA_PLAYER"] = updatedNewPlayer
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPlayers": Object.values(updatedOnPitchPlayer),
             "commentaryDetails": {
                 ...commentaryDetails,
@@ -1206,7 +1205,7 @@ const Commentary = (props) => {
         }
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPlayers": [updatedPerviousBowler, updatedNewBowler],
         }
         // console.log("Called from : 12")
@@ -1250,7 +1249,7 @@ const Commentary = (props) => {
         const objToSave = {
             "commentaryBallByBall": generatedBallByBall,
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPlayers": playersToChangeList,
         }
         // console.log("Called from : 13")
@@ -1281,7 +1280,7 @@ const Commentary = (props) => {
         })
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPlayers": playersToChangeList,
             "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
         }
@@ -1302,7 +1301,7 @@ const Commentary = (props) => {
             setOnPitchPlayers({ ...onPitchPlayers, [ON_STRIKE]: updatedOnStrikePlayer, [NON_STRIKE]: updatedNonStrikePlayer })
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike`, "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
                 "commentaryBallByBall": generateBall({
                     currentBall, commentaryDetails, currentOver,
@@ -1338,7 +1337,7 @@ const Commentary = (props) => {
                 _setTeams({ ...(_teams || teams), [BATTING_TEAM]: updateBattingTeam })
                 const objToSave = {
                     "commentaryId": commentaryDetails.commentaryId,
-                    "isCallPredict": isPredictToggle,
+                    "isCallPredict": props?.isPredictToggle,
                     "commentaryTeams": [updateBattingTeam],
                     "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
                 }
@@ -1676,7 +1675,7 @@ const Commentary = (props) => {
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": {
                 ...commentaryDetails,
                 ...commentaryUpdates
@@ -1704,7 +1703,7 @@ const Commentary = (props) => {
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryDetails": { ...commentaryDetails, ...commentaryUpdates },
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": [
@@ -1751,7 +1750,7 @@ const Commentary = (props) => {
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPartnership": updatedPartnership,
             "commentaryDetails": commentaryDetails,
             "commentaryPlayers": [retiredHurtData[ON_STRIKE], retiredHurtData[NON_STRIKE], retiredHurtData[RETIRED_HURT_BATTER]],
@@ -1790,7 +1789,7 @@ const Commentary = (props) => {
         })
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
-            "isCallPredict": isPredictToggle,
+            "isCallPredict": props?.isPredictToggle,
             "commentaryPlayers": Object.values(playersToChange),
             "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
         }
@@ -1931,7 +1930,7 @@ const Commentary = (props) => {
             dispatch(addCommentaryScreenData({
                 ...apiCallObj,
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
             }))
         }
     }
@@ -2050,7 +2049,7 @@ const Commentary = (props) => {
                 objToSave = {
                     ...objToSave,
                     "commentaryId": commentaryDetails.commentaryId,
-                    "isCallPredict": isPredictToggle,
+                    "isCallPredict": props?.isPredictToggle,
                     "commentaryBallByBall": generatedBallByBall,
                     "commentaryOvers": {
                         ..._currentOver,
@@ -2097,7 +2096,7 @@ const Commentary = (props) => {
         if (isOverChange) {
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
-                "isCallPredict": isPredictToggle,
+                "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": { ...commentaryDetails, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
                 "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams }),
                 "commentaryPlayers": [].concat(Object.values(onPitchPlayers), playerUpdateList).filter(x => x),
@@ -2145,7 +2144,7 @@ const Commentary = (props) => {
                 // console.log("Called from : 24");
                 dispatch(addCommentaryScreenData({
                     "commentaryId": commentaryDetails.commentaryId,
-                    "isCallPredict": isPredictToggle,
+                    "isCallPredict": props?.isPredictToggle,
                     "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }), "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): "" },
                     "commentaryBallByBall": generatedBall,
                 }))
@@ -2592,8 +2591,8 @@ const Commentary = (props) => {
                 isRemainingBallsShow = {isRemainingBallsShow}
                 isWheelShow={isWheelShow}
                 isPredict={props?.isPredict}
-                isPredictToggle={isPredictToggle}
-                setIsPredictToggle={setIsPredictToggle}
+                isPredictToggle={props?.isPredictToggle}
+                setIsPredictToggle={props?.setIsPredictToggle}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
