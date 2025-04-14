@@ -178,6 +178,20 @@ export const OpenMarket = () => {
         }
     };
 
+    const loadMarketData = async (commentaryId) => {
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post("/admin/eventMarket/loadMarketByCom", {commentaryId});
+            if(response?.result) {
+               setIsLoading(false);
+               dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+            }
+        } catch (error) {
+            setIsLoading(false);
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        }
+    };
+
     useEffect(() => {
         if (debouncedLineRatio && isLineRatioInitialized !== debouncedLineRatio) {
             const payload = {
@@ -1898,7 +1912,10 @@ export const OpenMarket = () => {
                                             <span className='text-bold mx-2'>Ball Start</span>
                                         </span>
                                     </Col>}
-                                    <Col className="p-0" xs={2} md={1} lg={1}>
+                                    <Col className="p-0 d-flex align-items-center" xs={2} md={1} lg={1}>
+                                        <button className="btn btn-warning p-1" onClick={() => loadMarketData(commentaryId)}>Load Market</button>
+                                    </Col>
+                                    <Col className="p-0 d-flex align-items-center" xs={2} md={1} lg={1}>
                                         <button className="btn btn-danger p-1" onClick={handleBackClick}>Back</button>
                                     </Col>
                                 </Row>

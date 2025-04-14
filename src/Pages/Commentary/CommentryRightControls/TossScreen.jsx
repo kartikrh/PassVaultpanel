@@ -6,7 +6,7 @@ import { CONNECT_COMMENTARY, ERROR } from "../../../components/Common/Const";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { Button } from "reactstrap";
 
-const TossScreen = ({ data, next, save }) => {
+const TossScreen = ({ data, next, save, isPredictToggle }) => {
   document.title = "Toss";
   const theme = useSelector((state) => state.layout.panelTheme);
   const [commentaryDetails, setCommentaryDetails] = useState({});
@@ -46,6 +46,7 @@ const TossScreen = ({ data, next, save }) => {
     );
     const newData = {
       commentaryId: commentaryDetails.commentaryId,
+      isCallPredict: isPredictToggle,
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
