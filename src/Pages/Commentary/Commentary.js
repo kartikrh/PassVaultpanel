@@ -2215,6 +2215,12 @@ const Commentary = (props) => {
                 setWicketHistory([].concat(wicketHistory || [], [commentaryDataToUpdate.commentaryWicketDetails]))
                 setCurrentWicket(commentaryDataToUpdate.commentaryWicketDetails)
             }
+            if(!isEmpty(commentaryDataToUpdate?.commentaryDetails)){
+              props?.setIsPredict(commentaryDataToUpdate.commentaryDetails?.isPredictMarket);
+              if(!commentaryDataToUpdate.commentaryDetails?.isPredictMarket) {
+                props?.setIsPredictToggle(commentaryDataToUpdate.commentaryDetails?.isPredictMarket)
+              }
+            }
             // }
             updateTempToMain()
             setPlayerUpdateList(undefined)
