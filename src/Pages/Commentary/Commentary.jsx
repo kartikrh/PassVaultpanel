@@ -11,10 +11,10 @@ export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     
-    const OffsymbolStatus = () => {
+    const OffSymbolStatus = () => {
         return (
             <div
                 style={{
@@ -84,6 +84,43 @@ export const CommentaryScreen = ({
             >
                 {" "}
                 Remain
+            </div>
+        );
+    };
+
+    const OffSymbolPredict = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 2,
+                }}
+            >
+                {" "}
+                predict
+            </div>
+        );
+    };
+    const OnSymbolPredict = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 4,
+                }}
+            >
+                {" "}
+                predict
             </div>
         );
     };
@@ -381,7 +418,7 @@ export const CommentaryScreen = ({
                     <span>Tracking a Ball</span>
                     <Switch
                         width={70}
-                        uncheckedIcon={<OffsymbolStatus />}
+                        uncheckedIcon={<OffSymbolStatus />}
                         checkedIcon={<OnSymbolStatus />}
                         className="pe-0 mx-2"
                         onColor="#02a499"
@@ -391,6 +428,20 @@ export const CommentaryScreen = ({
                         checked={isWheelShow}
                     />
                 </div>
+                {isPredict && <div className="d-flex align-items-center py-2">
+                    <span>Predict</span>
+                    <Switch
+                        width={70}
+                        uncheckedIcon={<OffSymbolPredict />}
+                        checkedIcon={<OnSymbolPredict />}
+                        className="pe-0 mx-2"
+                        onColor="#02a499"
+                        onChange={() => {
+                            setIsPredictToggle(!isPredictToggle);
+                        }}
+                        checked={isPredictToggle}
+                    />
+                </div>}
                 {currentInnings > 0 && 
                     <div className="d-flex align-items-center py-2">
                         <span>Remaining balls</span>
