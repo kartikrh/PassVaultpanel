@@ -405,7 +405,7 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": generateDisplayStatus({ currentBall: updatedBallByBall, onStrikePlayer: onPitchPlayers[ON_STRIKE] }),
-                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams ? _teams[BATTING_TEAM] : teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             },
             "commentaryOvers": {
                 ..._currentOver,
@@ -805,6 +805,7 @@ const Commentary = (props) => {
                 "commentaryDetails": {
                     ...commentaryDetails,
                     "displayStatus": "Strike Changed",
+                    "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams ? _teams[BATTING_TEAM] : teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
                 },
                 "commentaryPlayers": Object.values(syncOnPitchPlayer),
             }
@@ -1019,7 +1020,7 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "isCallPredict": props?.isPredictToggle,
                 "commentaryPartnership": updatedPartnership,
-                "commentaryDetails": commentaryDetails,
+                "commentaryDetails": {...commentaryDetails, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""},
                 "commentaryPlayers": [].concat(allPlayersToUpdate, Object.values(updatedOnPitchPlayer)),
                 "commentaryBallByBall": currentBallDetails
             }
@@ -2614,11 +2615,11 @@ const Commentary = (props) => {
                 isBowler={(isChangeBowler.isChange || isBowlerrChange) ? true : false}
                 playerList={changePlayerList}
                 selectPlayer={(newPlayerId) => {
-                    if (isSwapPlayer) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
-                    else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
+                    setOverPopUpForBowler(undefined)
+                    setIsBowlerrChange(undefined);
+                    if (isSwapPlayer) { swapPlayer(newPlayerId) }
+                    else if (isChangeBowler.isChange) { onBowlerChange(newPlayerId) }
                     else {
-                        setOverPopUpForBowler(undefined)
-                        setIsBowlerrChange(undefined)
                         onPlayerChange(newPlayerId)
                     }
                 }}
