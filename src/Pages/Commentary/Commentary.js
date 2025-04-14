@@ -1066,8 +1066,8 @@ const Commentary = (props) => {
                 "playerName": oldPlayer["playerName"],
                 "batsmanAverage": oldPlayer["batsmanAverage"],
                 "bowlerAverage": oldPlayer["bowlerAverage"],
-                "batterOrder": oldPlayer["batterOrder"],
-                "bowlerOrder": oldPlayer["bowlerOrder"],
+                "batterOrder": newPlayer["batterOrder"],
+                "bowlerOrder": newPlayer["bowlerOrder"],
             }
             updatedOldPlayer = {
                 ...oldPlayer,
@@ -1075,17 +1075,21 @@ const Commentary = (props) => {
                 "playerName": newPlayer["playerName"],
                 "batsmanAverage": newPlayer["batsmanAverage"],
                 "bowlerAverage": newPlayer["bowlerAverage"],
-                "batterOrder": newPlayer["batterOrder"],
-                "bowlerOrder": newPlayer["bowlerOrder"],
+                "batterOrder": oldPlayer["batterOrder"],
+                "bowlerOrder": oldPlayer["bowlerOrder"],
             }
         } else {
             updatedNewPlayer = {
                 ...oldPlayer,
+                "batterOrder": newPlayer?.batterOrder,
+                "bowlerOrder": newPlayer?.bowlerOrder,
                 "isPlay": newPlayer?.isPlay,
                 "onStrike": newPlayer?.onStrike,
             }
             updatedOldPlayer = {
                 ...newPlayer,
+                "batterOrder": oldPlayer?.batterOrder,
+                "bowlerOrder": oldPlayer?.bowlerOrder,
                 "isPlay": oldPlayer?.isPlay,
                 "onStrike": oldPlayer?.onStrike,
             }
@@ -1105,7 +1109,7 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Batter Switched",
-                "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver): ""
             }
         }
         if (currentPartnership?.commentaryPartnershipId && +currentPartnership?.commentaryPartnershipId != 0) {
@@ -1148,6 +1152,8 @@ const Commentary = (props) => {
             "bowlerByeBallRun": +currentBowler.bowlerByeBallRun - +currentOver.totalByesRun,
             "bowlerLegByeBallRun": +currentBowler.bowlerLegByeBallRun - +currentOver.totalLegByesRun,
             "bowlerTotalWicket": +currentBowler.bowlerTotalWicket - getBowlerRelatedWickets(currentOver?.overId, ballHistory),
+            "bowlerOrder": newBowler?.bowlerOrder,
+            "batterOrder": newBowler?.batterOrder,
             "isPlay": null
         }
         const updatedNewBowler = {
@@ -1166,6 +1172,8 @@ const Commentary = (props) => {
             "bowlerByeBallRun": +(newBowler.bowlerByeBallRun || 0) + +(currentOver.totalByesRun || 0),
             "bowlerLegByeBallRun": +(newBowler.bowlerLegByeBallRun || 0) + +(currentOver.totalLegByesRun || 0),
             "bowlerTotalWicket": +(newBowler.bowlerTotalWicket || 0) + getBowlerRelatedWickets(currentOver?.overId, ballHistory),
+            "bowlerOrder": currentBowler?.bowlerOrder,
+            "batterOrder": currentBowler?.batterOrder,
             "isPlay": true
         }
         const UpdatedOver = {
@@ -1271,7 +1279,7 @@ const Commentary = (props) => {
         else if (isChangeBowler.popupOption === CHANGE_BOWLER) sameOverNewBaller(newPlayerId)
     }
     const changeOnStrikePlayer = (commentaryPlayerId) => {
-        const isPlayerOnNonstrike = compareNumStringValues(onPitchPlayers[NON_STRIKE].commentaryPlayerId, commentaryPlayerId)
+        const isPlayerOnNonstrike = compareNumStringValues(onPitchPlayers[NON_STRIKE].commentaryPlayerId, commentaryPlayerId);
         if (isPlayerOnNonstrike) {
             const updatedOnStrikePlayer = { ...onPitchPlayers[NON_STRIKE], onStrike: true }
             const updatedNonStrikePlayer = { ...onPitchPlayers[ON_STRIKE], onStrike: false }
