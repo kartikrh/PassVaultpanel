@@ -428,8 +428,7 @@ export const CommentaryScreen = ({
                         checked={isWheelShow}
                     />
                 </div>
-                {isPredict && <div className="d-flex align-items-center py-2">
-                    <span>Predict</span>
+                {isPredict && <div className="py-2">
                     <Switch
                         width={70}
                         uncheckedIcon={<OffSymbolPredict />}

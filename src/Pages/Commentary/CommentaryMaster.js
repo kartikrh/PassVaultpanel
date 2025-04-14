@@ -236,6 +236,9 @@ function CommentaryMaster() {
         setCommentaryData(commentaryDataToUpdate);
         setStatusList(commentaryDataToUpdate.commentaryDisplayStatus);
         setIsPredict(commentaryDataToUpdate?.commentaryDetails?.isPredictMarket || false);
+        if(commentaryDataToUpdate?.commentaryDetails?.isPredictMarket) {
+          setIsPredictToggle(true);
+        }
         setIsDataLoading(false);
         // if (response?.result?.callPrediction?.predictioncallSuccess === false) {
         //     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
@@ -535,6 +538,7 @@ function CommentaryMaster() {
                       saveUserInfo={saveUserInfo}
                       isNewUi={isNewUi}
                       isPredict={isPredict}
+                      setIsPredict={setIsPredict}
                       isPredictToggle={isPredictToggle}
                       setIsPredictToggle={setIsPredictToggle}
                     />
