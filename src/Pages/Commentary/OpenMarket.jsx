@@ -339,6 +339,11 @@ export const OpenMarket = () => {
         );
     };
 
+    const categoryOptions = [
+        { value: 'ALL', label: 'Select All' },
+        ...Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))
+    ];
+
     const formatDataBeforeSend = (dataToChange = []) => {
         return dataToChange.map(record => {
             let workingRecord = _.clone(record);
@@ -411,8 +416,17 @@ export const OpenMarket = () => {
     }, []);
 
     const handleCategoryChange = (selectedOptions) => {
-        setSelectedCategories(selectedOptions);
-        localStorage.setItem("selectedCategories", JSON.stringify(selectedOptions));
+        // setSelectedCategories(selectedOptions);
+        // localStorage.setItem("selectedCategories", JSON.stringify(selectedOptions));
+        const isSelectAll = selectedOptions.find(option => option.value === 'ALL');
+        if (isSelectAll) {
+            const allOptions = Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }));
+            setSelectedCategories(allOptions);
+            localStorage.setItem("selectedCategories", JSON.stringify(allOptions));
+        } else {
+            setSelectedCategories(selectedOptions);
+            localStorage.setItem("selectedCategories", JSON.stringify(selectedOptions));
+        }
     };
 
     const handleValueChange = (record, key, value) => {
@@ -1550,6 +1564,7 @@ export const OpenMarket = () => {
           if (keyMapping) {
             const marketId = event?.target?.dataset?.marketId;
            if (marketId && isPointsShow) {
+            setHasUnsavedChanges(true);
             if(pressedKey === 'H' || pressedKey === 'J') {
                 setData(prevData => {
                     return prevData.map(market => {
@@ -1949,7 +1964,8 @@ export const OpenMarket = () => {
                                             <Select
                                                 isMulti
                                                 name="categories"
-                                                options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
+                                                // options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
+                                                options={categoryOptions}
                                                 className="filter-categories"
                                                 classNamePrefix="filter-dropdown"
                                                 value={selectedCategories}
@@ -2074,6 +2090,7 @@ export const OpenMarket = () => {
                                         commentaryInfo={commentaryInfo}
                                         handleValueChange={handleValueChange}
                                         handleSingleAction={handleSingleAction}
+                                        updateRecordsFunc={updateRecords}
                                     />
                                 )}
                             </CardBody>
