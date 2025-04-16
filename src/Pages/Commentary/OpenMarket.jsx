@@ -38,7 +38,7 @@ export const OpenMarket = () => {
     const [isLineRatioInitialized, setIsLineRatioInitialized] = useState(0);
     const [originalMarketData, setOriginalMarketData] = useState({});
     const [isDataFromApiOrSocket, setIsDataFromApiOrSocket] = useState(false);
-    const [isScorecardShow, setIsScorecardShow] = useState(true);
+    const [isScorecardShow, setIsScorecardShow] = useState(false);
     const [isPointsShow, setIsPointsShow] = useState(false);
     const [isKeyPressed, setIsKeyPressed] = useState(false);
     const [input, setInput] = useState("");
