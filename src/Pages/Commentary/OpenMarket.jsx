@@ -45,11 +45,12 @@ export const OpenMarket = () => {
     const [ballStatus, setBallStatus] = useState(null);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
+    const socketRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-    const socket = createSocket();
+    // const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
     let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
@@ -61,36 +62,117 @@ export const OpenMarket = () => {
         return savedKeys
             ? JSON.parse(savedKeys)
             : [
-                  { key: "Q", QNo: 180, QYes: 120 },
-                  { key: "W", WNo: 140, WYes: 100 },
-                  { key: "E", ENo: 140, EYes: 110 },
-                  { key: "R", RNo: 150, RYes: 115 },
-                  { key: "T", TNo: 225, TYes: 125 },
-                  { key: "Y", YNo: 250, YYes: 150 },
-                  { key: "U", UNo: 300, UYes: 200 },
-                  { key: "I", INo: 400, IYes: 300 },
-                  { key: "O", ONo: 500, OYes: 300 },
-                  { key: "P", PNo: 120, PYes: 100 },
-                  { key: "A", ANo: 105, AYes: 95 },
-                  { key: "S", SNo: 140, SYes: 90 },
-                  { key: "D", DNo: 250, DYes: 125 },
-                  { key: "F", FNo: 400, FYes: 250 },
-                  { key: "G", GNo: 200, GYes: 140 },
-                  { key: "H", HNo: 2, HYes: null },
-                  { key: "J", JNo: 3, JYes: null },
-                  { key: "K", KNo: 55, KYes: 40 },
-                  { key: "L", LNo: 100, LYes: 80 },
-                  { key: "Z", ZNo: 100, ZYes: 85 },
-                  { key: "X", XNo: 150, XYes: 100 },
-                  { key: "C", CNo: 110, CYes: 90 },
-                  { key: "V", VNo: 110, VYes: 95 },
-                  { key: "B", BNo: 115, BYes: 85 },
-                  { key: "N", NNo: 120, NYes: 80 },
-                  { key: "M", MNo: 125, MYes: 75 },
-              ];
+                { key: "Q", QNo: 180, QYes: 120 },
+                { key: "W", WNo: 140, WYes: 100 },
+                { key: "E", ENo: 140, EYes: 110 },
+                { key: "R", RNo: 150, RYes: 115 },
+                { key: "T", TNo: 225, TYes: 125 },
+                { key: "Y", YNo: 250, YYes: 150 },
+                { key: "U", UNo: 300, UYes: 200 },
+                { key: "I", INo: 400, IYes: 300 },
+                { key: "O", ONo: 500, OYes: 300 },
+                { key: "P", PNo: 120, PYes: 100 },
+                { key: "A", ANo: 105, AYes: 95 },
+                { key: "S", SNo: 140, SYes: 90 },
+                { key: "D", DNo: 250, DYes: 125 },
+                { key: "F", FNo: 400, FYes: 250 },
+                { key: "G", GNo: 200, GYes: 140 },
+                { key: "H", HNo: 2, HYes: null },
+                { key: "J", JNo: 3, JYes: null },
+                { key: "K", KNo: 55, KYes: 40 },
+                { key: "L", LNo: 100, LYes: 80 },
+                { key: "Z", ZNo: 100, ZYes: 85 },
+                { key: "X", XNo: 150, XYes: 100 },
+                { key: "C", CNo: 110, CYes: 90 },
+                { key: "V", VNo: 110, VYes: 95 },
+                { key: "B", BNo: 115, BYes: 85 },
+                { key: "N", NNo: 120, NYes: 80 },
+                { key: "M", MNo: 125, MYes: 75 },
+            ];
     });
     const [selectedKey, setSelectedKey] = useState("C");
-    
+
+    useEffect(() => {
+        socketRef.current = createSocket();
+
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        const socket = socketRef.current;
+
+        if (!socket || !commentaryId) return;
+
+        // Connect to sockets only if we have required data
+        if (!isEmpty(teams)) {
+            // 1. Setup market data connection
+            socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+
+            // 2. Setup commentary connection
+            socket.emit(CONNECT_COMMENTARY, { commentaryId });
+
+            // 3. Important: explicitly emit connectEventMarket
+            socket.emit('connectEventMarket', { commentaryId });
+
+            // 4. Set up all event listeners
+            socket.on(OPEN_MARKET_DATA, (socketData) => {
+                formatSocketDataForState(socketData || []);
+            });
+
+            socket.on(UPDATE_MARKET_DATA, (marketData) => {
+                if (marketData) {
+                    handleMarketUpdate(marketData);
+                }
+            });
+
+            socket.on(UNDO_CALLED, (data) => {
+                if (data) {
+                    dispatch(
+                        updateToastData({
+                            data: `${data?.message}`,
+                            title: "Undo Called",
+                            type: WARNING,
+                        })
+                    );
+                }
+            });
+
+            socket.on(UPDATE_BALL_STATUS, (data) => {
+                if (data) {
+                    setBallStatus(data?.ballStatus);
+                }
+            });
+
+            // 5. Handle reconnection case
+            socket.on('connect', () => {
+                // Re-establish all connections on reconnect
+                socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+                socket.emit(CONNECT_COMMENTARY, { commentaryId });
+                socket.emit('connectEventMarket', { commentaryId });
+            });
+
+            setIsSocketConnected(true);
+        } else {
+            setIsSocketConnected(false);
+            fetchConfigAll();
+        }
+
+        // Clean up function to remove all listeners
+        return () => {
+            if (socket) {
+                socket.off(OPEN_MARKET_DATA);
+                socket.off(UPDATE_MARKET_DATA);
+                socket.off(UNDO_CALLED);
+                socket.off(UPDATE_BALL_STATUS);
+                socket.off('connect');
+            }
+        };
+    }, [teams, commentaryId]);
+
     const handleKeyValueChange = (index, fieldName, newValue) => {
         const updatedKeys = [...keys];
         updatedKeys[index][fieldName] = Number(newValue) || "";
@@ -119,7 +201,7 @@ export const OpenMarket = () => {
             selectedCategories.some(category => category.value === item.marketTypeCategoryId)
         );
     };
-      
+
     const handleKeyClick = (key) => {
         setInput((prev) => prev + key);
     };
@@ -166,10 +248,10 @@ export const OpenMarket = () => {
         setIsLoading(true);
         try {
             const response = await axiosInstance.post("/admin/eventMarket/upSendMarket", payload);
-            if(response?.result) {
-               setIsKeyPressed(false);
-               setIsLoading(false);
-               dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+            if (response?.result) {
+                setIsKeyPressed(false);
+                setIsLoading(false);
+                dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
             }
         } catch (error) {
             setIsKeyPressed(false);
@@ -181,10 +263,10 @@ export const OpenMarket = () => {
     const loadMarketData = async (commentaryId) => {
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post("/admin/eventMarket/loadMarketByCom", {commentaryId});
-            if(response?.result) {
-               setIsLoading(false);
-               dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
+            const response = await axiosInstance.post("/admin/eventMarket/loadMarketByCom", { commentaryId });
+            if (response?.result) {
+                setIsLoading(false);
+                dispatch(updateToastData({ data: response?.result, title: response?.title, type: SUCCESS }));
             }
         } catch (error) {
             setIsLoading(false);
@@ -682,7 +764,7 @@ export const OpenMarket = () => {
                     if (selectedKeyMapping) {
                         const noValue = selectedKeyMapping[`${selectedKey}No`] || 0;
                         const yesValue = selectedKeyMapping[`${selectedKey}Yes`] || 0;
-        
+
                         const updatedRunner = generateOverUnderLineType({
                             ...updatedMarket,
                             rateDiff: value,
@@ -813,12 +895,12 @@ export const OpenMarket = () => {
 
         dataToUpdate = formatDataBeforeSend(dataToUpdate);
         if (!isEmpty(dataToUpdate)) {
-          if (action === "SEND_ALL") {
-               const eventMarketIds = dataToUpdate.map(record => record.marketId);
-               const payload = { eventMarketId: eventMarketIds, isSendData: true }
-               await upSendMarket(payload);
-               // Update local state after successful API call
-               setData(prevData =>
+            if (action === "SEND_ALL") {
+                const eventMarketIds = dataToUpdate.map(record => record.marketId);
+                const payload = { eventMarketId: eventMarketIds, isSendData: true }
+                await upSendMarket(payload);
+                // Update local state after successful API call
+                setData(prevData =>
                     prevData.map(market => {
                         const updatedMarket = dataToUpdate.find(u => u.marketId === market.marketId);
                         if (updatedMarket) {
@@ -827,36 +909,36 @@ export const OpenMarket = () => {
                                 [key]: value,
                                 // Also update runner status in local state
                                 runner: key === "status" ? market.runner.map(runner => ({
-                                   ...runner,
-                                   status: +value
+                                    ...runner,
+                                    status: +value
                                 })) : market.runner
                             };
                         }
                         return market;
                     })
                 );
-          } else {
-            await saveData({ dataToSave: dataToUpdate, action });
+            } else {
+                await saveData({ dataToSave: dataToUpdate, action });
 
-            // Update local state after successful API call
-            setData(prevData =>
-                prevData.map(market => {
-                    const updatedMarket = dataToUpdate.find(u => u.marketId === market.marketId);
-                    if (updatedMarket) {
-                        return {
-                            ...market,
-                            [key]: value,
-                            // Also update runner status in local state
-                            runner: key === "status" ? market.runner.map(runner => ({
-                                ...runner,
-                                status: +value
-                            })) : market.runner
-                        };
-                    }
-                    return market;
-                })
-            );
-          }
+                // Update local state after successful API call
+                setData(prevData =>
+                    prevData.map(market => {
+                        const updatedMarket = dataToUpdate.find(u => u.marketId === market.marketId);
+                        if (updatedMarket) {
+                            return {
+                                ...market,
+                                [key]: value,
+                                // Also update runner status in local state
+                                runner: key === "status" ? market.runner.map(runner => ({
+                                    ...runner,
+                                    status: +value
+                                })) : market.runner
+                            };
+                        }
+                        return market;
+                    })
+                );
+            }
         } else {
             dispatch(updateToastData({ data: "No records to update", title: "Update Skipped", type: WARNING }));
         }
@@ -1244,7 +1326,7 @@ export const OpenMarket = () => {
                     }}
                     onKeyDown={(e) => {
                         if (["e", "E", "+", "-"].includes(e.key)) {
-                          e.preventDefault();
+                            e.preventDefault();
                         }
                     }}
                     inputProps={{ step: "0.1" }}
@@ -1311,7 +1393,7 @@ export const OpenMarket = () => {
                         onChange={(newValue) => handleValueChange(record, "layPrice", newValue)}
                         onKeyDown={(e) => {
                             if (["e", "E", "+", "-"].includes(e.key)) {
-                              e.preventDefault();
+                                e.preventDefault();
                             }
                         }}
                         data-market-id={record?.marketId}
@@ -1323,7 +1405,7 @@ export const OpenMarket = () => {
                         steps={5}
                         onKeyDown={(e) => {
                             if (["e", "E", "+", "-"].includes(e.key)) {
-                              e.preventDefault();
+                                e.preventDefault();
                             }
                         }}
                         data-market-id={record?.marketId}
@@ -1346,7 +1428,7 @@ export const OpenMarket = () => {
                         onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
                         onKeyDown={(e) => {
                             if (["e", "E", "+", "-"].includes(e.key)) {
-                              e.preventDefault();
+                                e.preventDefault();
                             }
                         }}
                         data-market-id={record?.marketId}
@@ -1358,7 +1440,7 @@ export const OpenMarket = () => {
                         steps={5}
                         onKeyDown={(e) => {
                             if (["e", "E", "+", "-"].includes(e.key)) {
-                              e.preventDefault();
+                                e.preventDefault();
                             }
                         }}
                         data-market-id={record?.marketId}
@@ -1558,89 +1640,89 @@ export const OpenMarket = () => {
         </Col>
     </>
     const handleKeyPress = (event) => {
-        if(event.target.tagName === 'INPUT') {
-          const pressedKey = event.key.toUpperCase();
-          const keyMapping = keys.find(k => k.key === pressedKey);
-          if (keyMapping) {
-            const marketId = event?.target?.dataset?.marketId;
-           if (marketId && isPointsShow) {
-            setHasUnsavedChanges(true);
-            if(pressedKey === 'H' || pressedKey === 'J') {
-                setData(prevData => {
-                    return prevData.map(market => {
-                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeId) === marketTypeObj?.Fancy) {
-                            return {
-                                ...market,
-                                runner: market.runner.map(runner => ({
-                                   ...runner,
-                                   layPrice: runner?.layPrice,
-                                   backPrice: parseInt(runner?.layPrice) + parseInt(keyMapping[`${pressedKey}No`]),
-                                })),
-                                rateDiff: 0
-                            };
-                        }
-                        return market;
-                    });
-                });
-            } else {
-                setData(prevData => {
-                    return prevData.map(market => {
-                        if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeId) === marketTypeObj?.Fancy) {
-                            return {
-                                ...market,
-                                runner: market.runner.map(runner => ({
-                                   ...runner,
-                                   layPrice: runner?.layPrice,
-                                   backPrice: runner?.layPrice,
-                                   laySize: keyMapping[`${pressedKey}No`],
-                                   backSize: keyMapping[`${pressedKey}Yes`],
-                                })),
-                                rateDiff: 0
-                            };
-                        }
-                        return market;
-                    });
-                });
+        if (event.target.tagName === 'INPUT') {
+            const pressedKey = event.key.toUpperCase();
+            const keyMapping = keys.find(k => k.key === pressedKey);
+            if (keyMapping) {
+                const marketId = event?.target?.dataset?.marketId;
+                if (marketId && isPointsShow) {
+                    setHasUnsavedChanges(true);
+                    if (pressedKey === 'H' || pressedKey === 'J') {
+                        setData(prevData => {
+                            return prevData.map(market => {
+                                if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeId) === marketTypeObj?.Fancy) {
+                                    return {
+                                        ...market,
+                                        runner: market.runner.map(runner => ({
+                                            ...runner,
+                                            layPrice: runner?.layPrice,
+                                            backPrice: parseInt(runner?.layPrice) + parseInt(keyMapping[`${pressedKey}No`]),
+                                        })),
+                                        rateDiff: 0
+                                    };
+                                }
+                                return market;
+                            });
+                        });
+                    } else {
+                        setData(prevData => {
+                            return prevData.map(market => {
+                                if (parseInt(market?.marketId) === parseInt(marketId) && parseInt(market?.marketTypeId) === marketTypeObj?.Fancy) {
+                                    return {
+                                        ...market,
+                                        runner: market.runner.map(runner => ({
+                                            ...runner,
+                                            layPrice: runner?.layPrice,
+                                            backPrice: runner?.layPrice,
+                                            laySize: keyMapping[`${pressedKey}No`],
+                                            backSize: keyMapping[`${pressedKey}Yes`],
+                                        })),
+                                        rateDiff: 0
+                                    };
+                                }
+                                return market;
+                            });
+                        });
+                    }
+                }
             }
-           }
-          }
         } else if (event.target.tagName === 'SELECT' || isKeyPressed) {
             return; // Don't trigger shortcuts if focus is on input or select elements
         } else {
-        const key = event.key.toLowerCase();
-        // console.log('Key pressed:', key);
-        switch (key) {
-            case 'a':
-                // console.log('Save all triggered by key press');
-                if (selectedCategories.length > 0 && hasUnsavedChanges) {
+            const key = event.key.toLowerCase();
+            // console.log('Key pressed:', key);
+            switch (key) {
+                case 'a':
+                    // console.log('Save all triggered by key press');
+                    if (selectedCategories.length > 0 && hasUnsavedChanges) {
+                        setIsKeyPressed(true)
+                        updateRecords();
+                    }
+                    break;
+                case 's':
+                    // console.log('Send all triggered by key press');
+                    if (selectedCategories.length > 0 && !hasUnsavedChanges) {
+                        setIsKeyPressed(true)
+                        handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
+                    }
+                    break;
+                case 'd':
+                    if (selectedCategories.length > 0) {
+                        setIsKeyPressed(true)
+                        handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
+                    }
+                    break;
+                case 'z':
                     setIsKeyPressed(true)
-                    updateRecords();
-                }
-                break;
-            case 's':
-                // console.log('Send all triggered by key press');
-                if (selectedCategories.length > 0 && !hasUnsavedChanges) {
+                    handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE });
+                    break;
+                case 'q':
                     setIsKeyPressed(true)
-                    handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" });
-                }
-                break;
-            case 'd':
-                if (selectedCategories.length > 0) {
-                    setIsKeyPressed(true)
-                    handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" });
-                }
-                break;
-            case 'z':
-                setIsKeyPressed(true)
-                handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE });
-                break;
-            case 'q':
-                setIsKeyPressed(true)
-                handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" });
-                break;
-            default:
-                break;
-        }
+                    handleAction({ changeIn: data, key: "status", value: SUSPEND_VALUE, action: "SUSPEND" });
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -1760,61 +1842,61 @@ export const OpenMarket = () => {
     //     };
     // }, [teams])
 
-    useEffect(() => {
-        if (!isEmpty(teams)) {
-            if (socket) {
-                // console.log('Connecting to socket for market updates');
-                socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
-                setIsSocketConnected(true)
-                socket.on(OPEN_MARKET_DATA, (socketData) => {
-                    // console.log('Received OPEN_MARKET_DATA event');
-                    formatSocketDataForState(socketData || [])
-                });
-                socket.on(UPDATE_MARKET_DATA, (marketData) => {
-                    // console.log('Received UPDATE_MARKET_DATA event');
-                    if (marketData) {
-                        handleMarketUpdate(marketData);
-                    }
-                });
-            } else {
-                // console.log('Socket not available, falling back to polling');
-                setIsSocketConnected(false)
-                fetchConfigAll();
-            }
-        }
-        return () => {
-            // console.log('Cleaning up socket listeners');
-            socket.off(OPEN_MARKET_DATA);
-            socket.off(UPDATE_MARKET_DATA);
-        };
-    }, [teams])
+    // useEffect(() => {
+    //     if (!isEmpty(teams)) {
+    //         if (socket) {
+    //             // console.log('Connecting to socket for market updates');
+    //             socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+    //             setIsSocketConnected(true)
+    //             socket.on(OPEN_MARKET_DATA, (socketData) => {
+    //                 // console.log('Received OPEN_MARKET_DATA event');
+    //                 formatSocketDataForState(socketData || [])
+    //             });
+    //             socket.on(UPDATE_MARKET_DATA, (marketData) => {
+    //                 // console.log('Received UPDATE_MARKET_DATA event');
+    //                 if (marketData) {
+    //                     handleMarketUpdate(marketData);
+    //                 }
+    //             });
+    //         } else {
+    //             // console.log('Socket not available, falling back to polling');
+    //             setIsSocketConnected(false)
+    //             fetchConfigAll();
+    //         }
+    //     }
+    //     return () => {
+    //         // console.log('Cleaning up socket listeners');
+    //         socket.off(OPEN_MARKET_DATA);
+    //         socket.off(UPDATE_MARKET_DATA);
+    //     };
+    // }, [teams])
 
-    useEffect(() => {
-        if (commentaryId) {
-            if (socket) {
-                socket.emit(CONNECT_COMMENTARY, { commentaryId });
-                socket.on(UNDO_CALLED, (data) => {
-                    if (data) {
-                        dispatch(
-                            updateToastData({
-                                data: `${data?.message}`,
-                                title: "Undo Called",
-                                type: WARNING,
-                            })
-                        );
-                    }
-                });
-                socket.on(UPDATE_BALL_STATUS, (data) => {
-                    if (data) {
-                        setBallStatus(data?.ballStatus);
-                    }
-                });
-            }
-        }
-        return () => {
-            socket.off(CONNECT_COMMENTARY);
-        };
-    }, [])
+    // useEffect(() => {
+    //     if (commentaryId) {
+    //         if (socket) {
+    //             socket.emit(CONNECT_COMMENTARY, { commentaryId });
+    //             socket.on(UNDO_CALLED, (data) => {
+    //                 if (data) {
+    //                     dispatch(
+    //                         updateToastData({
+    //                             data: `${data?.message}`,
+    //                             title: "Undo Called",
+    //                             type: WARNING,
+    //                         })
+    //                     );
+    //                 }
+    //             });
+    //             socket.on(UPDATE_BALL_STATUS, (data) => {
+    //                 if (data) {
+    //                     setBallStatus(data?.ballStatus);
+    //                 }
+    //             });
+    //         }
+    //     }
+    //     return () => {
+    //         socket.off(CONNECT_COMMENTARY);
+    //     };
+    // }, [])
 
     useEffect(() => {
         if (isAutoUpdate && !isSocketConnected) {
@@ -1829,14 +1911,14 @@ export const OpenMarket = () => {
         return () => {
             clearInterval(intervalIdRef.current);
         };
-    }, [isAutoUpdate, isSocketConnected])
+    }, [isAutoUpdate, isSocketConnected, autoInterval, commentaryId]);
 
     useEffect(() => {
         if (!isEmpty(data)) {
             window.addEventListener('keydown', handleKeyPress);
-        
+
             const tempCategorisedData = {};
-        
+
             // Step 1: Categorize raw data
             data.forEach((market) => {
                 const categoryName = categories[market.marketTypeCategoryId];
@@ -1846,7 +1928,7 @@ export const OpenMarket = () => {
                 );
             });
             const playerCategories = ["Player", "Player Boundaries", "Player Balls Faced"];
-        
+
             // ✅ Step 2: Merge all player-related categories into "Players" if enabled
             if (playersMarketShow) {
                 const mergedPlayers = [];
@@ -1856,41 +1938,41 @@ export const OpenMarket = () => {
                         delete tempCategorisedData[cat]; // Remove original player-related keys
                     }
                 });
-        
+
                 if (mergedPlayers.length) {
                     tempCategorisedData["Players"] = mergedPlayers;
                 }
             }
-        
+
             // Step 3: Get selected category names (as string)
             const selectedCategoryNames = selectedCategories
                 .map((selected) =>
                     fullCategories.find((cat) => cat.marketTypeCategoryId === selected.value)?.categoryName
                 ).filter(Boolean);
-        
+
             const selectedData = {};
             const remainingData = {};
-        
+
             // Step 4: Sort and categorize selected vs remaining
             fullCategories
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .forEach((category) => {
                     let categoryName = category.categoryName;
-        
+
                     if (playersMarketShow && playerCategories.includes(categoryName)) {
                         categoryName = "Players";
                     }
-        
+
                     const categoryData = tempCategorisedData[categoryName];
                     if (!categoryData) return;
-        
+
                     if (selectedCategoryNames.includes(category.categoryName)) {
                         selectedData[categoryName] = categoryData;
                     } else {
                         remainingData[categoryName] = categoryData;
                     }
                 });
-        
+
             // Step 5: Merge and set final data
             const sortedCategorisedData = { ...selectedData, ...remainingData };
             setCategorisedData(sortedCategorisedData);
@@ -2047,33 +2129,33 @@ export const OpenMarket = () => {
                                     </Row>
                                 )}
                                 {isPointsShow && <Row>
-                                   {keys.map((item, index) => (
-                                   <>
-                                       <Col key={index} xs="auto" className="d-flex align-items-center mb-2">
-                                          <Button
-                                            className="key-fields key-button py-1"
-                                            onClick={() => handleKeyClick(item.key)}
-                                          >
-                                            {item.key}{(item.key === "H" || item.key === "J") && "+"}
-                                          </Button>
-                                          <Input type="number" className="key-fields py-1" value={item[`${item.key}No`] || ""} onChange={(e) => handleKeyValueChange(index, `${item.key}No`, e.target.value)} />
-                                          <Input type="number" className="key-fields py-1" value={item[`${item.key}Yes`] || ""} onChange={(e) => handleKeyValueChange(index, `${item.key}Yes`, e.target.value)} />
-                                       </Col>
-                                   </>
-                                   ))}
+                                    {keys.map((item, index) => (
+                                        <>
+                                            <Col key={index} xs="auto" className="d-flex align-items-center mb-2">
+                                                <Button
+                                                    className="key-fields key-button py-1"
+                                                    onClick={() => handleKeyClick(item.key)}
+                                                >
+                                                    {item.key}{(item.key === "H" || item.key === "J") && "+"}
+                                                </Button>
+                                                <Input type="number" className="key-fields py-1" value={item[`${item.key}No`] || ""} onChange={(e) => handleKeyValueChange(index, `${item.key}No`, e.target.value)} />
+                                                <Input type="number" className="key-fields py-1" value={item[`${item.key}Yes`] || ""} onChange={(e) => handleKeyValueChange(index, `${item.key}Yes`, e.target.value)} />
+                                            </Col>
+                                        </>
+                                    ))}
                                     <Col xs="auto" className="d-flex align-items-center mb-2">
                                         <Button
                                             className="key-button rounded-0 py-1"
                                         >
                                             Default key
                                         </Button>
-                                       <Input
-                                          type="text"
-                                          className="key-fields py-1"
-                                          value={selectedKey}
-                                          maxLength={1}
-                                          onChange={handleSelectedKeyChange}
-                                       />
+                                        <Input
+                                            type="text"
+                                            className="key-fields py-1"
+                                            value={selectedKey}
+                                            maxLength={1}
+                                            onChange={handleSelectedKeyChange}
+                                        />
                                     </Col>
                                 </Row>}
                                 {Object.keys(categorisedData).length > 0 && (
