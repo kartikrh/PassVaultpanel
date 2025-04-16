@@ -146,7 +146,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
     );
 };
 
-const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc }) => {
+const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc, teamsData }) => {
     const [deactivatedMarkets, setDeactivatedMarkets] = useState([]);
     const [activeMarkets, setActiveMarkets] = useState({});
     const [deactivatedAccordions, setDeactivatedAccordions] = useState([]);
@@ -253,7 +253,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
 
     return (
         <>
-            {Object.entries(activeMarkets).map(([category, markets]) => (
+            {/* {Object.entries(activeMarkets).map(([category, markets]) => (
                 <Accordion open={openAccordions} toggle={toggleAccordion} key={category} className="market-category-accordian">
                     <AccordionItem className="rounded-0">
                         <AccordionHeader className="market-category-header" targetId={category}>
@@ -268,7 +268,82 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionBody>
                     </AccordionItem>
                 </Accordion>
-            ))}
+            ))} */}
+
+            {(() => {
+                const oneTimeMarkets = {};
+                Object.entries(activeMarkets).forEach(([category, markets]) => {
+                    const filtered = markets.filter(market => !market.teamId);
+                    if (filtered.length > 0) {
+                        oneTimeMarkets[category] = filtered;
+                    }
+                });
+                return Object.keys(oneTimeMarkets).length > 0 && (
+                    <Accordion open={openAccordions} toggle={toggleAccordion} key="one-time" className="market-category-accordian">
+                        <AccordionItem className="rounded-0">
+                            <AccordionHeader className="market-category-header" targetId="one-time">
+                                <b>One Time Markets</b>
+                            </AccordionHeader>
+                            <AccordionBody className="market-category-body category-list bg-white" accordionId="one-time">
+                                {Object.entries(oneTimeMarkets).map(([category, markets]) => (
+                                    <Accordion open={openAccordions} toggle={toggleAccordion} key={`one-time-${category}`} className="market-category-accordian">
+                                        <AccordionItem className="rounded-0">
+                                            <AccordionHeader className="market-category-header" targetId={`one-time-${category}`}>
+                                                <b>{category}</b>
+                                            </AccordionHeader>
+                                            <AccordionBody className="market-category-body" accordionId={`one-time-${category}`}>
+                                                {markets.length > 0 ? (
+                                                    renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
+                                                ) : (
+                                                    <div className="m-4 text-center">No record found</div>
+                                                )}
+                                            </AccordionBody>
+                                        </AccordionItem>
+                                    </Accordion>
+                                ))}
+                            </AccordionBody>
+                        </AccordionItem>
+                    </Accordion>
+                );
+            })()}
+
+            {Object.entries(teams).map(([id, teamName]) => {
+                // const isTeamOpen = openAccordions.includes(id);
+                const teamHasMarkets = Object.entries(activeMarkets).some(([category, markets]) => 
+                    markets.some(market => +market.teamId === +id)
+                );
+                const teamFullName = teamsData?.find((item)=> +item?.teamId === +id)?.teamName;
+                if (!teamHasMarkets) return null;
+                return (
+                <Accordion open={openAccordions} toggle={toggleAccordion} key={id} className="market-category-accordian">
+                    <AccordionItem className="rounded-0" /* className={isTeamOpen && "market-accordian-item rounded-0"} */>
+                        <AccordionHeader className="market-category-header" targetId={id}>
+                            <b>{teamFullName}</b>
+                        </AccordionHeader>
+                        <AccordionBody className="market-category-body category-list bg-white" accordionId={id}>
+                            {Object.entries(activeMarkets).map(([category, markets]) => {
+                                const filteredMarkets = markets.filter(market => +market.teamId === +id);
+                                if (filteredMarkets.length === 0) return null;
+                                return (
+                                    <Accordion open={openAccordions} toggle={toggleAccordion} key={`${category}-${id}`} className="market-category-accordian">
+                                        <AccordionItem className="rounded-0">
+                                            <AccordionHeader className="market-category-header" targetId={`${category}-${id}`}>
+                                                <b>{category}</b>
+                                            </AccordionHeader>
+                                            <AccordionBody className="market-category-body" accordionId={`${category}-${id}`}>
+                                                {filteredMarkets.length > 0 ? (
+                                                    renderCategoryMarkets(category, filteredMarkets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
+                                                ) : (
+                                                    <div className="m-4 text-center">No record found</div>
+                                                )}
+                                            </AccordionBody>
+                                        </AccordionItem>
+                                    </Accordion>
+                            )})}
+                        </AccordionBody>
+                    </AccordionItem>
+                </Accordion>
+            )})}
 
             {deactivatedMarkets.length > 0 && (
             <> <h5 className='mb-0 mt-3'>Deactive Markets</h5>
