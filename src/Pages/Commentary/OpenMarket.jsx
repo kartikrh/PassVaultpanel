@@ -43,6 +43,7 @@ export const OpenMarket = () => {
     const [isKeyPressed, setIsKeyPressed] = useState(false);
     const [input, setInput] = useState("");
     const [ballStatus, setBallStatus] = useState(null);
+    const [teamsData, setTeamsData] = useState([]);
     const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const socketRef = useRef(null);
@@ -1225,7 +1226,8 @@ export const OpenMarket = () => {
                     setTeams(teamsObj)
                     setData(formattedData.data);
                     setIsDataFromApiOrSocket(true);
-                    setCategories(newCategoryObj)
+                    setCategories(newCategoryObj);
+                    setTeamsData(response?.result?.teams);
                     // setLineRatio(formattedData.lineRatio)
                 }
             })
@@ -2173,6 +2175,7 @@ export const OpenMarket = () => {
                                         handleValueChange={handleValueChange}
                                         handleSingleAction={handleSingleAction}
                                         updateRecordsFunc={updateRecords}
+                                        teamsData={teamsData}
                                     />
                                 )}
                             </CardBody>
