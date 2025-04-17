@@ -52,7 +52,9 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "nextBatNonStrikeId": currentBall.nextBatNonStrikeId || onPitchPlayers[NON_STRIKE]?.commentaryPlayerId || 0,
     "currentInnings": commentaryDetails.currentInnings,
     "autoStrikeBallCount": currentBall.autoStrikeBallCount || 0,
-    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0
+    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
+    "teamScore": teams?.[BATTING_TEAM]?.teamScore || 0,
+    "teamWicket": teams?.[BATTING_TEAM]?.teamWicket || 0,
   }
 }
 
