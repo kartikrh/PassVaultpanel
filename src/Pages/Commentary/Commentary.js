@@ -831,8 +831,8 @@ const Commentary = (props) => {
     }
     // const playerCheck = onPitchPlayers
     const handleMissingPlayerChange = (playerType, player) => {
-        const order = props.data.commentaryData.commentaryPartnership[0].order
-        // const order = props.data.commentaryData.commentaryTeams.filter((t) => t.teamBattingOrder === 1)
+        // const order = props.data.commentaryData.commentaryPartnership[0].order
+        const order = props.data.commentaryData.commentaryTeams.filter((t) => t.teamBattingOrder === 1)
         const commentaryDetailsobj = props.data.commentaryData.commentaryDetails
         const onPitchPlayersobj = { ...onPitchPlayers, [playerType]: player }
         const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true } }
@@ -841,8 +841,8 @@ const Commentary = (props) => {
             "batter1Name": onPitchPlayersobj[ON_STRIKE]?.playerName,
             "batter2Id": onPitchPlayersobj[NON_STRIKE]?.commentaryPlayerId,
             "batter2Name": onPitchPlayersobj[NON_STRIKE]?.playerName,
-            // "order": order[0].teamWicket + 1,
-            "order": order + 1,
+            "order": order[0].teamWicket,
+            // "order": order + 1,
             "isActive": true,
             "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
         }
@@ -1009,8 +1009,8 @@ const Commentary = (props) => {
                 "batter1Name": updatedOnPitchPlayer[ON_STRIKE]?.playerName,
                 "batter2Id": updatedOnPitchPlayer[NON_STRIKE]?.commentaryPlayerId,
                 "batter2Name": updatedOnPitchPlayer[NON_STRIKE]?.playerName,
-                // "order": teams?.[BATTING_TEAM]?.teamWicket + 1,
-                "order": currentPartnership.order + 1,
+                "order": teams?.[BATTING_TEAM]?.teamWicket,
+                // "order": currentPartnership.order + 1,
                 "isActive": true,
                 "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
 
@@ -1719,7 +1719,6 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
     }
     const onRetiredHurtClick = (retiredHurtData) => {
-        const dd = props.data.commentaryData.commentaryWicket[0]?.wicketCount + 1 || 1
         // console.log("retiredHurtData", retiredHurtData)
         const updateBall = {
             "commentaryBallByBallId": "0",
@@ -1744,8 +1743,8 @@ const Commentary = (props) => {
             "batter2Runs": 0,
             "batter1Balls": 0,
             "batter2Balls": 0,
-            // "order": teams?.[BATTING_TEAM]?.teamWicket + 1,
-            "order": currentPartnership.order + 1,
+            "order": teams?.[BATTING_TEAM]?.teamWicket,
+            // "order": currentPartnership.order + 1,
             // "order": dd,
             "isActive": true,
         }
@@ -1894,8 +1893,8 @@ const Commentary = (props) => {
             "batter2Id": onPitchPlayers[NON_STRIKE]?.commentaryPlayerId,
             "batter2Name": onPitchPlayers[NON_STRIKE]?.playerName,
             "commentaryBallByBallId": currentBallToUpdate?.commentaryBallByBallId || "0",
-            // "order": currentInningsTeams?.[BATTING_TEAM]?.teamWicket + 1 || 1,
-            "order": currentPartnership.order + 1 || 1,
+            "order": currentInningsTeams?.[BATTING_TEAM]?.teamWicket || 1,
+            // "order": currentPartnership.order + 1 || 1,
             "isActive": true,
         }
         setTeams(currentInningsTeams)
