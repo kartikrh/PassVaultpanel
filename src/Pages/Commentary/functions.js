@@ -81,7 +81,7 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
 }
 
 export const generatePartnership = ({ currentPartnership, commentaryDetails, teams }) => {
-  return {
+  const toReturn = {
     "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
     "commentaryId": commentaryDetails.commentaryId,
     "teamId": teams[BATTING_TEAM].teamId,
@@ -102,9 +102,11 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "batter2Balls": currentPartnership.batter2Balls || 0,
     "player1image": currentPartnership.player1image || null,
     "player2image": currentPartnership.player2image || null,
-    "order" : currentPartnership?.order,
+    // "order" : currentPartnership?.order,
+    "order" : currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
     "isActive": currentPartnership?.isActive,
   };
+  return toReturn;
 }
 
 export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
