@@ -22,6 +22,23 @@ function groupMarketsByPlayer(markets) {
     });
     return Object.values(grouped);
 }
+function groupMarketsByWickets(markets) {
+    const grouped = {};
+  
+    markets.forEach(market => {
+      const wicketNo = market.wicketNo;
+  
+      if (!grouped[wicketNo]) {
+        grouped[wicketNo] = {
+            wicketNo,
+          markets: [market]
+        };
+      } else {
+        grouped[wicketNo].markets.push(market);
+      }
+    });
+    return Object.values(grouped);
+}
    
 const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc) => {
     const singleRunnerMarkets = markets.filter(market => !market.runner || market.runner.length <= 1);
@@ -43,9 +60,19 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
         playerName: players?.[group.playerId] || "Unknown Player",
         markets: group.markets,
     }));
+    let groupedWicketMarkets = category?.toLowerCase() === "wickets"
+    ? groupMarketsByWickets(singleRunnerMarkets)
+    : [];
+
+    // groupedWicketMarkets = Object.values(groupedWicketMarkets).map((group) => ({
+    //     WicketNum: players?.[group.wicketNo] || "Unknown Wicket",
+    //     markets: group.markets,
+    // }));
+    // Object.values(groupedWicketMarkets).map((i) => console.log("i", i));
+    // console.log("groupedWicketMarkets", groupedWicketMarkets)
     return (
         <>
-            {singleRunnerMarkets.length > 0 && category !== 'Players' && (
+            {singleRunnerMarkets.length > 0 && (category !== 'Players' && category !== 'Wickets') && (
                
                 <ListingElement
                     columns={getVisibleColumns(true)}
@@ -92,6 +119,59 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                         <div className='d-flex p-1 player-market'>
                             <div style={{width: '20%'}}>
                                 <div className='fs-5'>{group.playerName}</div>
+                                <div className='fs-6 gap-2'><span className='pe-1'>{group?.markets[0]?.teamName}</span>|<span className='ps-1'>Innings - {group?.markets[0]?.inningsId}</span></div>
+                            </div>
+                            <div style={{width: '80%'}}>
+
+                            <PlayeraListingComponent
+                                backgroundColor={getStatusColor1(+group?.markets[0]?.status)}
+                                key={group.playerName}
+                                columns={getVisibleColumns(true)}
+                                dataSource={group.markets.map(market => {
+                                    const firstRunner = market.runner?.[0];
+                                    return {
+                                    ...market,
+                                    backPrice: firstRunner?.backPrice,
+                                    layPrice: firstRunner?.layPrice,
+                                    runnerId: firstRunner?.runnerId,
+                                    runnerName: firstRunner?.runnerName,
+                                    line: firstRunner?.line,
+                                    overRate: firstRunner?.overRate,
+                                    underRate: firstRunner?.underRate,
+                                    };
+                                })}
+                                tableElement={{ title: group.playerName, displayTitle: true }}
+                                tableClassName="open-market-table-class"
+                                onSwitch={handleAction}
+                                handleValueChange={handleValueChange}
+                                handleSingleAction={handleSingleAction}
+                                updateRecordsFunc={updateRecordsFunc}
+                            />
+                            </div>
+                        </div>
+                    ))}
+                    </>
+                </div>
+                )
+            }
+            {groupedWicketMarkets.length > 0 && category === 'Wickets' && (
+                <div className='bg-white'>
+                    <div className='d-flex p-1 player-market'>
+                                <div style={{ width: '20%' }} className="py-2"></div>
+                                <div className="d-flex" style={{ width: '80%' }}>
+                                {['Wickets', 'Boundaries', 'Balls'].slice(0, 3).map((title, index) => (
+                                    <div key={index} className="flex-33 player-market-title text-center fs-5 fw-semibold">
+                                        {title}
+                                    </div>
+                                ))}
+                                </div>
+                            {/* </div> */}
+                    </div>
+                    <>
+                    {groupedWicketMarkets.map(group => (
+                        <div className='d-flex p-1 player-market'>
+                            <div style={{width: '20%'}}>
+                                <div className='fs-5'>Wicket {group.wicketNo}</div>
                                 <div className='fs-6 gap-2'><span className='pe-1'>{group?.markets[0]?.teamName}</span>|<span className='ps-1'>Innings - {group?.markets[0]?.inningsId}</span></div>
                             </div>
                             <div style={{width: '80%'}}>
