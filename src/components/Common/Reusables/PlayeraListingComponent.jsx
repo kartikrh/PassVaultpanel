@@ -36,74 +36,76 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
                                                 </div>
                                             </div>
                                             <div className="second-col px-1" style={{ width: '50%' }}>
-                                                <div className="second-col-first-div" style={{height: '70%'}}>
-                                                
-                                                    <div className="second-col-line p-2" style={{width: '80%'}}>
-                                                    <input
-                                                        type="number"
-                                                        className="absolute-input"
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: 0,
-                                                            right: '4px',
-                                                            width: '50px',
-                                                            height: '15px',
-                                                            fontSize: '12px',
-                                                            borderRadius: '4px',
-                                                            border: '1px solid #ccc',
-                                                            background: '#fff',
-                                                            textAlign: 'center'
-                                                        }}
-                                                        value={market?.predefinedValue || ''}
-                                                        onChange={(e) => handleValueChange(market, "predefinedValue", e.target.value)}
-                                                        placeholder="PR"
-                                                    />
-                                                        <input 
-                                                            type="number" 
-                                                            className="line" 
-                                                            // min={0}
-                                                            value={market?.line} 
-                                                            data-market-id={market.marketId}
-                                                            onChange={(newValue) => handleValueChange(market, "line", parseFloat(newValue.target.value))}
-                                                        />
-                                                    </div>
-                                                    <div className="second-col-buttons" style={{width: '20%'}}>
-                                                        <div className="arrow-buttons" style={{height: '50%'}} onClick={() => handleValueChange(market, "line", (market?.line || 0) + 1)}>
-                                                            <FaArrowUp className="up-arrow" />
-                                                        </div>
-                                                        <div className=" arrow-buttons" style={{height: '50%'}} onClick={() => handleValueChange(market, "line", (market?.line || 0) - 1)}>
-                                                            <FaArrowDown className="down-arrow" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div style={{height: '30%'}} className="second-col-second-div">
-                                                    {/* <div className="second-col-back">
-                                                    onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
-                                                    </div>
-                                                    <div className="second-col-lay">90</div> */}
-                                                    <div className="second-col-lay">
+                                                <div className="d-flex flex-column" style={{width: '80%'}}>
+                                                    <div className="second-col-first-div" style={{height: '70%'}}>
+                                                        <div className="second-col-line p-2">
                                                         <input
                                                             type="number"
-                                                            className="laySize"
-                                                            step="5"
-                                                            min={0}
-                                                            data-market-id={market.marketId}
-                                                            value={market?.runner[0]?.laySize} 
-                                                            onChange={(newValue) => handleValueChange(market, "laySize", newValue.target.value)}
+                                                            className="absolute-input"
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: 0,
+                                                                right: '4px',
+                                                                width: '50px',
+                                                                height: '15px',
+                                                                fontSize: '12px',
+                                                                borderRadius: '4px',
+                                                                border: '1px solid #ccc',
+                                                                background: '#fff',
+                                                                textAlign: 'center'
+                                                            }}
+                                                            value={market?.predefinedValue || ''}
+                                                            onChange={(e) => handleValueChange(market, "predefinedValue", e.target.value)}
+                                                            placeholder="PR"
                                                         />
+                                                            <input 
+                                                                type="number" 
+                                                                className="line" 
+                                                                // min={0}
+                                                                value={market?.line} 
+                                                                data-market-id={market.marketId}
+                                                                onChange={(newValue) => handleValueChange(market, "line", parseFloat(newValue.target.value))}
+                                                            />
+                                                        </div>
+                                                        
                                                     </div>
-                                                    <div className="second-col-back">
-                                                        <input 
-                                                            type="number" 
-                                                            className="backSize"
-                                                            step="5" 
-                                                            min={0}
-                                                            value={market?.runner[0]?.backSize} 
-                                                            data-market-id={market.marketId}
-                                                            onChange={(newValue) => handleValueChange(market, "backSize", newValue.target.value)}
-                                                        />
+                                                    <div style={{height: '30%'}} className="second-col-second-div">
+                                                        {/* <div className="second-col-back">
+                                                        onChange={(newValue) => handleValueChange(record, "backPrice", newValue)}
+                                                        </div>
+                                                        <div className="second-col-lay">90</div> */}
+                                                        <div className="second-col-lay">
+                                                            <input
+                                                                type="number"
+                                                                className="laySize"
+                                                                step="5"
+                                                                min={0}
+                                                                data-market-id={market.marketId}
+                                                                value={market?.runner[0]?.laySize} 
+                                                                onChange={(newValue) => handleValueChange(market, "laySize", newValue.target.value)}
+                                                            />
+                                                        </div>
+                                                        <div className="second-col-back">
+                                                            <input 
+                                                                type="number" 
+                                                                className="backSize"
+                                                                step="5" 
+                                                                min={0}
+                                                                value={market?.runner[0]?.backSize} 
+                                                                data-market-id={market.marketId}
+                                                                onChange={(newValue) => handleValueChange(market, "backSize", newValue.target.value)}
+                                                            />
+                                                        </div>
+                                                        
                                                     </div>
-                                                    
+                                                </div>
+                                                <div className="second-col-buttons" style={{width: '20%'}}>
+                                                    <div className="arrow-buttons" style={{height: '50%'}} onClick={() => handleValueChange(market, "line", (market?.line || 0) + 1)}>
+                                                        <FaArrowUp className="up-arrow" />
+                                                    </div>
+                                                    <div className=" arrow-buttons" style={{height: '50%'}} onClick={() => handleValueChange(market, "line", (market?.line || 0) - 1)}>
+                                                        <FaArrowDown className="down-arrow" />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="third-col p-2 fs-5 fw-bold" style={{ width: '14%' }} 
