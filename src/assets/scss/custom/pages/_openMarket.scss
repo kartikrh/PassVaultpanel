@@ -13,7 +13,7 @@
 .second-col{
     width: 100%;
     display: flex;
-    flex-direction: column;
+    // flex-direction: column;
     gap: 2px;
 }
 .second-col-first-div{
@@ -115,12 +115,13 @@
     justify-content: end;
 }
 .arrow-buttons{
-    background-color: $light-body-bg !important;
+    // background-color:  !important;
+    border: 1px solid #E6E6E6;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 4px;
-    margin: 2px -1px;
+    margin: 2px 1px;
     // padding: 4px;
     width: 100%;
     // height: 30px;
@@ -137,7 +138,7 @@
 }
 .up-arrow{
     font-size: 10px !important;
-    color: #00B400 !important;
+    color: #035a03 !important;
 }
 .down-arrow{
     font-size: 10px !important;
