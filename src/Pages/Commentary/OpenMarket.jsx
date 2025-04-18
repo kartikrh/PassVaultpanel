@@ -288,7 +288,7 @@ export const OpenMarket = () => {
     const fetchConfigAll = async () => {
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post("/admin/config/all", { isActive: true });
+            const response = await axiosInstance.post("/configs");
 
             const isMarketRepetitionCall = response.result.find(config => config.key === 'ISMARKETREPETITIONCALL')?.value;
             const repetitionCallInterval = response.result.find(config => config.key === 'REPETITIONCALLINTERVAL')?.value;
