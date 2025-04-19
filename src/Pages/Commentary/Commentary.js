@@ -290,7 +290,7 @@ const Commentary = (props) => {
             commentaryUpdates = {
                 // "commentaryStatus": 2,
                 "commentaryStatus": 5,
-                "displayStatus": "Batting for Current team Completed"
+                "displayStatus": "Innings Break"
             }
             setRedirectOnScreenChange(true)
         }
@@ -346,7 +346,7 @@ const Commentary = (props) => {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
                 commentaryStatus: 2,
-                "displayStatus": "Innings Break"
+                "displayStatus": "Innings Complete"
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
