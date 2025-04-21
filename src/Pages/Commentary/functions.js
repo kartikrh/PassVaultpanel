@@ -22,6 +22,17 @@ export function mapCommentaryStatus(status) {
   }
 }
 
+export function mapType(status) {
+  switch (parseInt(status)) {
+    case 1:
+      return "International";
+    case 2:
+      return "Domestic";
+    default:
+      return "";
+  }
+}
+
 export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPlayers, currentBall, currentPartnership }) => {
   return {
     "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,

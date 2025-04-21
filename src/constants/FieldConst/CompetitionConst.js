@@ -93,6 +93,38 @@ export const CompetitionFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        name: "matchTypeId",
+        label: "Match Type",
+        isRequired: true,
+        parentclassName: "",
+        type: SELECT,
+        options: [{ label: "Select Match Type", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "type",
+        label: "Type",
+        options: [
+          { label: "Select Type", value: "0" },
+          { label: "International", value: 1 },
+          { label: "Domestic", value: 2 },
+        ],
+        isRequired: true,
+        type: SELECT,
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "isMen",
+        label: "Is Men",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+    },
+    {
         name: "isActive",
         label: "Is Active",
         defaultValue: true,
