@@ -387,6 +387,21 @@ function AddCommentary() {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsApiLoading(false);
             });
+        setIsApiLoading(true);
+        axiosInstance.post('/admin/commentary/allDifficulties')
+            .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item?.difficulty, value: item?.id }
+                })
+                setMasterData((preData) => ({
+                    ...preData,
+                    "difficulty": formattedData
+                }));
+                setIsApiLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
+            });
         // setIsApiLoading(true);
         // axiosInstance.post('/admin/commentary/teamList', {})
         //     .then((response) => {

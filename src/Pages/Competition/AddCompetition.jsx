@@ -95,6 +95,20 @@ function AddCompetitions() {
       .catch((error) => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
+
+    await axiosInstance
+    .post("/admin/matchType/all", {})
+    .then((response) => {
+      setMasterData((preData) => ({
+        ...preData,
+        matchTypeId: response.result?.map((item) => {
+          return { label: item?.matchType, value: item?.matchTypeId };
+        }),
+      }));
+    })
+    .catch((error) => {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
   };
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
@@ -102,6 +116,7 @@ function AddCompetitions() {
       const extraData = {
         competitionId,
         isTrending: dataToSave?.isTrending || false,
+        isMen: dataToSave?.isMen || false,
         isEventSnap: dataToSave?.isEventSnap || false,
         isPointTable: dataToSave?.isPointTable || false,
         winPoint: dataToSave?.winPoint || null,
