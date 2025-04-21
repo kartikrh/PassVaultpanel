@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { mapType } from "../Commentary/functions";
 
 const Index = () => {
   const pageName = TAB_COMPETITION
@@ -26,6 +27,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
+  const [matchTypes, setMatchTypes] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
   const navigate = useNavigate();
@@ -63,6 +65,16 @@ const Index = () => {
       .post(`/admin/competition/eventTypeList`, {})
       .then((response) => {
         setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
+
+  const fetchMatchTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/matchType/all`, {})
+      .then((response) => {
+        setMatchTypes(response.result);
         setIsLoading(false);
       })
       .catch((error) => { });
@@ -108,6 +120,22 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/competition/isTrending`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+  const handleIsMen = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/competition/isMen`, {
         competitionId: record.competitionId,
         [pType]: cState ? false : true,
       })
@@ -294,6 +322,29 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Match Type",
+      dataIndex: "matchTypeId",
+      render: (text, record) => {
+        const matchTypeName = matchTypes.length > 0 && matchTypes.find((item) => item.matchTypeId === record?.matchTypeId)?.matchType; 
+        return (
+          <span>{matchTypeName}</span>
+        );
+      },
+      key: "matchTypeId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      render: (text, record) => (
+        <span>{mapType(text)}</span>
+      ),
+      key: "type",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Reference Id",
       dataIndex: "refId",
       key: "refId",
@@ -313,7 +364,7 @@ const Index = () => {
         </span>
       ),
       key: "competition",
-      style: { width: "60%" },
+      style: { width: "34%" },
     },
     {
       title: "Active",
@@ -347,6 +398,23 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Men",
+      key: "isMen",
+      render: (text, record) => (
+        <Button
+          color={`${record?.isMen ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleIsMen("isMen", record, record?.isMen);
+          }}
+        >
+          <i className={`bx ${record.isMen ? "bx-check" : "bx-block"}`}></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -417,10 +485,13 @@ const Index = () => {
     dragDrop: isDrag,
     headerSelect: false,
     eventTypeSelect: true,
+    matchTypeSelect: true,
+    typeSelect: true,
     isActive: true,
     resetButton: true,
     reloadButton: true,
     isTrending: true,
+    isMen: true,
     loadData: true,
   };
 
@@ -431,6 +502,7 @@ const Index = () => {
     }
     fetchData();
     fetchEventTypeData();
+    fetchMatchTypeData();
   }, []);
 
   const handleReload = (value) => {
@@ -451,6 +523,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="competition"
             eventTypes={eventTypes}
+            matchType = {matchTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}

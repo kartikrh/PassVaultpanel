@@ -144,6 +144,7 @@ const Index = forwardRef(
     });
     const [statusSwitch, setStatusSwitch] = useState(true);
     const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(false);
+    const [menSwitch, setMenSwitch] = useState(false);
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const [expandedRows, setExpandedRows] = useState({});
@@ -318,6 +319,43 @@ const Index = forwardRef(
       );
     };
 
+    const OffsymbolMenStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 10,
+            color: "#fff",
+            // paddingRight: 2,
+          }}
+        >
+          {" "}
+          women
+        </div>
+      );
+    };
+    const OnSymbolMenStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 12,
+            color: "#fff",
+            // paddingRight: 4,
+          }}
+        >
+          {" "}
+          men
+        </div>
+      );
+    };
+
     const styles = {
       menu: ({ width, ...css }) => ({ ...css }),
     };
@@ -374,6 +412,22 @@ const Index = forwardRef(
         reFetchData({
           ...tableActions,
           isTrending: id,
+        });
+      } else if (key === "isMen") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+
+        setMenSwitch(id);
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id,
+          };
+        });
+        reFetchData({
+          ...tableActions,
+          isMen: id,
         });
       } else if (key === "isShowContent") {
         if (setServerCurrentPage) {
@@ -840,6 +894,10 @@ const Index = forwardRef(
           value: 0,
           label: "Match Type",
         },
+        type: {
+          value: 0,
+          label: "Type",
+        },
         commentaryStatus: {
           value: 0,
           label: "Commentary Status",
@@ -1094,51 +1152,6 @@ const Index = forwardRef(
                             Add
                           </Button>
                         )}
-                        {tableElement?.isActive ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolStatus />}
-                              checkedIcon={<OnSymbolStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isActive", !statusSwitch);
-                              }}
-                              checked={statusSwitch}
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.isApproved ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolApprovedStatus />}
-                              checkedIcon={<OnSymbolApprovedStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isApproved", !statusSwitch);
-                              }}
-                              checked={statusSwitch}
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.isTrending ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolTrendingStatus />}
-                              checkedIcon={<OnSymbolTrendingStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isTrending", !trendingStatusSwitch);
-                              }}
-                              checked={trendingStatusSwitch}
-                            />
-                          </div>
-                        ) : null}
                         {tableElement?.clone ? (
                           <Button
                             color="warning"
@@ -1617,10 +1630,41 @@ const Index = forwardRef(
                                   });
                                 }
                               }}
-                              options={matchType?.map((item) => ({
+                              options={[
+                                { label: "Select Match Type", value: null },
+                                ...matchType?.map((item) => ({
                                 label: item?.matchType,
                                 value: item?.matchTypeId,
-                              }))}
+                              }))]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.typeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }), // Adjust width as needed
+                              }}
+                              value={selectedTableElements?.type}
+                              placeholder="Type"
+                              onChange={(e) => {
+                                if (e?.value !== selectedTableElements?.type?.value) {
+                                  handleTableActions("type", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    type: e,
+                                  });
+                                }
+                              }}
+                              options={[
+                                { label: "Select Type", value: null },
+                                { label: "International", value: 1 },
+                                { label: "Domestic", value: 2 },
+                              ]}
                               classNamePrefix="filter-dropdown"
                             />
                           </div>
@@ -1862,6 +1906,66 @@ const Index = forwardRef(
                                 );
                               }}
                               checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.isActive ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolStatus />}
+                              checkedIcon={<OnSymbolStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isActive", !statusSwitch);
+                              }}
+                              checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.isApproved ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolApprovedStatus />}
+                              checkedIcon={<OnSymbolApprovedStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isApproved", !statusSwitch);
+                              }}
+                              checked={statusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.isTrending ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolTrendingStatus />}
+                              checkedIcon={<OnSymbolTrendingStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isTrending", !trendingStatusSwitch);
+                              }}
+                              checked={trendingStatusSwitch}
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.isMen ? (
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolMenStatus />}
+                              checkedIcon={<OnSymbolMenStatus />}
+                              className="pe-0"
+                              onColor="#02a499"
+                              onChange={() => {
+                                handleTableActions("isMen", !menSwitch);
+                              }}
+                              checked={menSwitch}
                             />
                           </div>
                         ) : null}

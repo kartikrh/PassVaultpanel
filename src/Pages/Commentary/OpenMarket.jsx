@@ -288,7 +288,7 @@ export const OpenMarket = () => {
     const fetchConfigAll = async () => {
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post("/admin/config/all", { isActive: true });
+            const response = await axiosInstance.post("/configs");
 
             const isMarketRepetitionCall = response.result.find(config => config.key === 'ISMARKETREPETITIONCALL')?.value;
             const repetitionCallInterval = response.result.find(config => config.key === 'REPETITIONCALLINTERVAL')?.value;
@@ -1930,19 +1930,30 @@ export const OpenMarket = () => {
                 );
             });
             const playerCategories = ["Player", "Player Boundaries", "Player Balls Faced"];
+            const WicketCategories = ["Fall of Wicket", "Partnership boundaries", "Wicket Lost Balls"];
 
             // ✅ Step 2: Merge all player-related categories into "Players" if enabled
             if (playersMarketShow) {
                 const mergedPlayers = [];
+                const mergedWickets = [];
                 playerCategories.forEach((cat) => {
                     if (tempCategorisedData[cat]) {
                         mergedPlayers.push(...tempCategorisedData[cat]);
                         delete tempCategorisedData[cat]; // Remove original player-related keys
                     }
                 });
+                WicketCategories.forEach((cat) => {
+                    if (tempCategorisedData[cat]) {
+                        mergedWickets.push(...tempCategorisedData[cat]);
+                        delete tempCategorisedData[cat]; // Remove original player-related keys
+                    }
+                });
 
                 if (mergedPlayers.length) {
                     tempCategorisedData["Players"] = mergedPlayers;
+                }
+                if (mergedWickets.length) {
+                    tempCategorisedData["Wickets"] = mergedWickets;
                 }
             }
 
@@ -1963,6 +1974,9 @@ export const OpenMarket = () => {
 
                     if (playersMarketShow && playerCategories.includes(categoryName)) {
                         categoryName = "Players";
+                    }
+                    if (playersMarketShow && WicketCategories.includes(categoryName)) {
+                        categoryName = "Wickets";
                     }
 
                     const categoryData = tempCategorisedData[categoryName];
