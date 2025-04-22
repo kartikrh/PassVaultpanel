@@ -581,7 +581,8 @@ const Commentary = (props) => {
             }
         }
         if (type === BALL_WIDE) {
-            const runToUpdate = (+matchTypeDetails["valueOfWideBall"] || 0) + runs
+            const valueOfWideBall = (+matchTypeDetails["valueOfWideBall"] || 0);
+            const runToUpdate = valueOfWideBall + runs
             updateBowler["bowlerWideBall"] = (bowler.bowlerWideBall || 0) + 1
             updateBowler["bowlerWideBallRun"] = (bowler.bowlerWideBallRun || 0) + runToUpdate
             updateBowler["bowlerRun"] = (bowler.bowlerRun || 0) + runToUpdate
@@ -593,7 +594,7 @@ const Commentary = (props) => {
             updateOver["totalRun"] = (currentOver.totalRun || 0) + runToUpdate
             updateBall["ballIsCount"] = false
             updateBall["ballRun"] = runs
-            updateBall["ballExtraRun"] = runToUpdate
+            updateBall["ballExtraRun"] = valueOfWideBall
             updateBall["ballType"] = BALL_TYPE_WIDE
             updatePartnership["totalRuns"] = currentPartnership.totalRuns + runToUpdate
             updatePartnership["extras"] = currentPartnership.extras + runToUpdate
