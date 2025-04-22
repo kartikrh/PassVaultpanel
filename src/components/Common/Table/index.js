@@ -170,7 +170,6 @@ const Index = forwardRef(
         [index]: !prev[index],
       }));
     };
-
     const OffsymbolStatus = () => {
       return (
         <div
@@ -1632,10 +1631,11 @@ const Index = forwardRef(
                               }}
                               options={[
                                 { label: "Select Match Type", value: null },
-                                ...matchType?.map((item) => ({
-                                label: item?.matchType,
-                                value: item?.matchTypeId,
-                              }))]}
+                                ...(matchType?.map((item) => ({
+                                  label: item?.matchType,
+                                  value: item?.matchTypeId,
+                                })) || [])
+                              ]}
                               classNamePrefix="filter-dropdown"
                             />
                           </div>
@@ -2100,18 +2100,18 @@ const Index = forwardRef(
                         </Button>
                       )}
                       {isDeleteAllPermission && (
-                      <div className="ms-auto">
-                        <Button
-                          color="danger"
-                          onClick={() => {
-                            deleteAllModelFunction(true)
-                          }}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <i className="ri-delete-bin-2-line"></i>
-                          Delete All Commentary
-                        </Button>
-                      </div>
+                        <div className="ms-auto">
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              deleteAllModelFunction(true)
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-delete-bin-2-line"></i>
+                            Delete All Commentary
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </Col>
