@@ -686,18 +686,14 @@ const Index = () => {
     {
       title: "Event",
       dataIndex: "eventName",
-      // render: (text, record) => (
-      //   <span
-      //     style={{ cursor: record.isPredictMarket && "pointer" }}
-      //     onClick={() => {
-      //       if (record.isPredictMarket) {
-      //         handleMarketEventActionClick(record.commentaryId);
-      //       }
-      //     }}
-      //   >
-      //     {text}
-      //   </span>
-      // ),
+      render: (text, record) => (
+        <div className="d-flex flex-column">
+          <span>
+            {text}
+          </span>
+          <span className="point-font">{record?.eventNo}</span>
+        </div>
+      ),
       key: "eventName",
       sort: true,
       sticky: true,
