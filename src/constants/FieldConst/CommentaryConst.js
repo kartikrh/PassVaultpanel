@@ -210,7 +210,7 @@ export const MatchDetailFields = [
         label: "Lawn Striping",
         defaultValue: "0",
         options: [
-            { label: "Lawn Striping", value: "0" },
+            { label: "Select Lawn Striping", value: "0" },
             { label: "Cross hatch", value: 1 },
             { label: "Stripe", value: 2 },
             { label: "Vertical", value: 3 },
