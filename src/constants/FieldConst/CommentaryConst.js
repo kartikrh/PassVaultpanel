@@ -95,8 +95,10 @@ export const MatchDetailFields = [
         options: [
             { label: "Select Weather", value: "0" },
             { label: "RANDOM", value: 1 },
-            { label: "WARM", value: 2 },
-            { label: "MILD", value: 3 },
+            { label: "COLD", value: 2 },
+            { label: "WARM", value: 3 },
+            { label: "HOT", value: 4 },
+            { label: "MILD", value: 5 },
             // { label: "Select Weather", value: "0" },
             // { label: "Sunny", value: "1" },
             // { label: "Cloudy", value: "2" },
