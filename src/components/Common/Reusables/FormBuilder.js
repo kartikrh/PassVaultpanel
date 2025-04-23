@@ -319,7 +319,7 @@ const FormBuilder = forwardRef(
                   </>
                 )}
                 <Col
-                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent") ? "d-none" : "invisible"
+                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent" || field.name === "winPoint" || field.name === "tiePoint" || field.name === "lossPoint" || field.name === "cancelPoint") ? "d-none" : "invisible"
                     }`}
                   xs={field.labelColspan?.xs || 3}
                   md={field.labelColspan?.md || 2}
@@ -338,7 +338,7 @@ const FormBuilder = forwardRef(
                   </div>
                 </Col>
                 <Col
-                  className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent") ? "d-none" : "invisible"
+                  className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent" || field.name === "winPoint" || field.name === "tiePoint" || field.name === "lossPoint" || field.name === "cancelPoint") ? "d-none" : "invisible"
                     } mb-4`}
                   xs={field.fieldColspan?.xs || 9}
                   md={field.fieldColspan?.md || 4}
