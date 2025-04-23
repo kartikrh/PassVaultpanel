@@ -117,7 +117,7 @@ export const OpenMarket = () => {
             socket.emit(CONNECT_COMMENTARY, { commentaryId });
 
             // 3. Important: explicitly emit connectEventMarket
-            socket.emit('connectEventMarket', { commentaryId });
+            // socket.emit('connectEventMarket', { commentaryId });
 
             // 4. Set up all event listeners
             socket.on(OPEN_MARKET_DATA, (socketData) => {
@@ -153,7 +153,7 @@ export const OpenMarket = () => {
                 // Re-establish all connections on reconnect
                 socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
                 socket.emit(CONNECT_COMMENTARY, { commentaryId });
-                socket.emit('connectEventMarket', { commentaryId });
+                // socket.emit('connectEventMarket', { commentaryId });
             });
 
             setIsSocketConnected(true);
