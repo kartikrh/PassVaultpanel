@@ -1814,6 +1814,7 @@ export const CreateEventMarket = () => {
                     value={record?.predefinedValue == null ? "" : record?.predefinedValue}
                     onChange={(newValue) => onChange("predefinedValue", newValue)}
                     placeholder="Predefined Value"
+                    name="predefinedValue"
                 />
             ),
             style: { width: "5%" },

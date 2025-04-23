@@ -5,12 +5,16 @@ import "./CustomInput.css";
 const CustomInput = ({ value, onChange, steps, ...rest }) => {
   const handleChange = (e) => {
     const inputValue = e.target.value;
+    const isPredefinedValue = rest?.name === "predefinedValue";
     if (inputValue === "") {
       onChange(null);
       return;
     }
+    const pattern = isPredefinedValue ? /^-?\d*\.?\d{0,2}$/ : /^\d*\.?\d{0,2}$/;
+    const allowedTemp = isPredefinedValue ? ["-", "-.", ".", "0.", "-0."] : [".", "0."];
     // Allow only valid numbers with up to two decimal places OR a single "."
-    if (!/^\d*\.?\d{0,2}$/.test(inputValue) && inputValue !== ".") return;
+    if (!pattern.test(inputValue) && inputValue !== ".") return;
+    // if (!/^\d*\.?\d{0,2}$/.test(inputValue) && inputValue !== ".") return;
   
     // Prevent multiple dots
     if (inputValue.split(".").length > 2) return;
@@ -21,14 +25,14 @@ const CustomInput = ({ value, onChange, steps, ...rest }) => {
     }
   
     // Allow standalone "." and "0." without converting them to a number
-    if (inputValue === "." || inputValue === "0.") {
+    if (allowedTemp.includes(inputValue)) {
       onChange(inputValue);
       return;
     }
   
     // Convert to float when valid
     const parsedValue = parseFloat(inputValue);
-    if (!isNaN(parsedValue) && parsedValue >= 0) {
+    if (!isNaN(parsedValue) && (parsedValue >= 0 || isPredefinedValue)) {
       onChange(inputValue); // Keep as string to preserve user input
     }
   };
@@ -61,7 +65,7 @@ const CustomInput = ({ value, onChange, steps, ...rest }) => {
         className="form-control small-text-fields"
         type="number"
         step={steps || 1}
-        min={0}
+        // min={0}
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
