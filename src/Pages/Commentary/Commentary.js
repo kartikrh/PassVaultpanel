@@ -346,7 +346,7 @@ const Commentary = (props) => {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
                 commentaryStatus: 2,
-                "displayStatus": "Innings Complete"
+                "displayStatus": "Innings Completed"
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),

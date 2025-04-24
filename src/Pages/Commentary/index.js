@@ -1836,6 +1836,10 @@ const Index = () => {
         label: "End",
         value: 4,
       },
+      {
+        label: "Innings Break",
+        value: 5,
+      },
     ],
     isDateRange: true,
     compToRender: tabelNoteDisplay,
