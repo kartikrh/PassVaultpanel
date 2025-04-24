@@ -140,6 +140,7 @@ export const COMMENTARY_STATUS_OPEN = 1;
 export const COMMENTARY_STATUS_TOSS_DONE = 2;
 export const COMMENTARY_STATUS_IN_PROGRESS = 3;
 export const COMMENTARY_STATUS_END = 4;
+export const COMMENTARY_STATUS_INNINGS_BREAK = 5;
 
 export const MODULE_COMMENTARY = 1;
 export const MODULE_PLAYERS = 2;

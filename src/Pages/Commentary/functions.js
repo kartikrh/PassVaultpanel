@@ -22,6 +22,27 @@ export function mapCommentaryStatus(status) {
   }
 }
 
+export function mapEventName(status) {
+  switch (parseInt(status)) {
+    case 1:
+      return "Comming Soon";
+    case 2:
+      return "Win Toss";
+    case 3:
+      return "Event Start";
+    case 4:
+      return "Inning Completed";
+    case 5:
+      return "Boundary";
+    case 6:
+      return "Wicket";
+    case 7:
+      return "Event Completed";
+    default:
+      return "";
+  }
+}
+
 export function mapType(status) {
   switch (parseInt(status)) {
     case 1:

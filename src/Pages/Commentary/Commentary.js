@@ -290,7 +290,7 @@ const Commentary = (props) => {
             commentaryUpdates = {
                 // "commentaryStatus": 2,
                 "commentaryStatus": 5,
-                "displayStatus": "Innings Break"
+                "displayStatus": "Innings"
             }
             setRedirectOnScreenChange(true)
         }
@@ -345,8 +345,8 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 currentInnings: commentaryDetails.currentInnings + 1,
-                commentaryStatus: 2,
-                "displayStatus": "Innings Complete"
+                commentaryStatus: 5,
+                "displayStatus": "Innings"
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
@@ -1673,9 +1673,9 @@ const Commentary = (props) => {
             { ...teams?.[BATTING_TEAM], isBattingComplete: false, teamStatus: 1 },
             { ...teams?.[BOWLING_TEAM], teamStatus: 2 }]
         commentaryUpdates = {
-            "commentaryStatus": 2,
+            "commentaryStatus": 5,
             "target": 0,
-            "displayStatus": "Innings Break"
+            "displayStatus": "Innings"
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
