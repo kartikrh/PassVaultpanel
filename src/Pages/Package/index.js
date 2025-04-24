@@ -229,13 +229,13 @@ const Index = () => {
       ),
       key: "name",
       sort: true,
-      style: { width: "30%" },
+      style: { width: "20%" },
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
-      style: { width: "30%" },
+      style: { width: "50%" },
       sort: true,
     },
     {
@@ -243,14 +243,14 @@ const Index = () => {
       dataIndex: "price",
       key: "price",
 
-      style: { width: "30%", textAlign: "center" },
+      style: { width: "10%"},
     },
     {
       title: "Trail Days",
       dataIndex: "trailDays",
       key: "trailDays",
 
-      style: { width: "30%", textAlign: "center" },
+      style: { width: "10%", textAlign: "center" },
     },
     {
       title: "Active",

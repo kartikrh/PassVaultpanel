@@ -261,9 +261,9 @@ const Photos = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
-    }
+    // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    //   navigate("/dashboard")
+    // }
     fetchData();
   }, []);
 
