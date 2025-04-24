@@ -114,7 +114,7 @@ const AddNotificationConfig = () => {
               <h3 className="modal-header-title">Notification Config</h3>
             </Col>
             <Card>
-              <CardBody>
+              <CardBody style={{minHeight : "300px"}}>
                 {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
