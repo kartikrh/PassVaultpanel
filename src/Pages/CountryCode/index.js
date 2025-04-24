@@ -246,7 +246,14 @@ const Index = () => {
       title: "Code",
       dataIndex: "countryCode",
       key: "countryCode",
-      style: { width: "10%" },
+      style: { width: "5%", textAlign: "center" },
+      sort: true,
+    },
+    {
+      title: "Max Number",
+      dataIndex: "maxNumber",
+      key: "maxNumber",
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
     {
