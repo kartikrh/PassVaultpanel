@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { mapEventName } from "../Commentary/functions";
 
 const Index = () => {
   const pageName = TAB_NOTIFICATION_CONFIG;
@@ -221,6 +222,9 @@ const Index = () => {
     {
       title: "Event",
       dataIndex: "eventName",
+      render: (text, record) => (
+        <span>{mapEventName(text)}</span>
+      ),
       key: "eventName",
       style: { width: "10%" },
       sort: true,

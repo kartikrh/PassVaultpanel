@@ -148,13 +148,13 @@ export const OpenMarket = () => {
                 }
             });
 
-            // // 5. Handle reconnection case
-            // socket.on('connect', () => {
-            //     // Re-establish all connections on reconnect
-            //     socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
-            //     socket.emit(CONNECT_COMMENTARY, { commentaryId });
-            //     // socket.emit('connectEventMarket', { commentaryId });
-            // });
+            // 5. Handle reconnection case
+            socket.on('connect', () => {
+                // Re-establish all connections on reconnect
+                socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+                socket.emit(CONNECT_COMMENTARY, { commentaryId });
+                // socket.emit('connectEventMarket', { commentaryId });
+            });
 
             setIsSocketConnected(true);
         } else {
