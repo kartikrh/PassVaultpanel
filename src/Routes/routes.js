@@ -147,6 +147,8 @@ import AddPackage from "../Pages/Package/AddPackage.jsx";
 import NotificationConfig from "../Pages/NotificationConfig";
 import AddNotificationConfig from "../Pages/NotificationConfig/AddNotificationConfig.jsx";
 import PlayerDetails from "../Pages/Players/PlayerDetails.jsx";
+import WhiteLabel from "../Pages/WhiteLabel";
+import AddWhiteLabel from "../Pages/WhiteLabel/AddWhiteLabel.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -197,6 +199,8 @@ const authProtectedRoutes = [
   { path: "/predictorApiLogs", component: <PredictorApiLogs /> },
   { path: "/notificationConfig", component: <NotificationConfig /> },
   { path: "/addNotificationConfig", component: <AddNotificationConfig /> },
+  { path: "/whiteLabel", component: <WhiteLabel /> },
+  { path: "/addWhiteLabel", component: <AddWhiteLabel /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
