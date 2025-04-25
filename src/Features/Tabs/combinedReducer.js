@@ -40,6 +40,7 @@ import shotTypeSlice from "./shotTypeSlice";
 import countryCodeSlice from "./countryCodeSlice";
 import notificationConfigSlice from "./notificationConfigSlice";
 import packageSlice from "./packageSlice";
+import WhiteLabelSlice from "./WhiteLabelSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -83,6 +84,7 @@ const rootReducer = combineReducers({
   countryCode: countryCodeSlice,
   package: packageSlice,
   notificationConfig: notificationConfigSlice,
+  whiteLabel: WhiteLabelSlice,
 });
 
 export default rootReducer;
