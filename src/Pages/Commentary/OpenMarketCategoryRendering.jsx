@@ -40,7 +40,7 @@ function groupMarketsByWickets(markets) {
     return Object.values(grouped);
 }
    
-const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc) => {
+const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleAction, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc, handleDS) => {
     const singleRunnerMarkets = markets.filter(market => !market.runner || market.runner.length <= 1);
     const multiRunnerMarkets = markets.filter(market => market.runner && market.runner.length > 1);
     const getVisibleColumns = (isSingleRunner) => {
@@ -146,6 +146,8 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                                 handleValueChange={handleValueChange}
                                 handleSingleAction={handleSingleAction}
                                 updateRecordsFunc={updateRecordsFunc}
+                                handleDS={handleDS}
+                                commentaryInfo={commentaryInfo}
                             />
                             </div>
                         </div>
@@ -226,7 +228,7 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
     );
 };
 
-const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc, teamsData }) => {
+const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunnerUpdate, setIsLoading, openAccordions, toggleAccordion, commentaryInfo, handleValueChange, handleSingleAction, players, playersMarketShow, updateRecordsFunc, teamsData, handleDS }) => {
     const [deactivatedMarkets, setDeactivatedMarkets] = useState([]);
     const [activeMarkets, setActiveMarkets] = useState({});
     const [deactivatedAccordions, setDeactivatedAccordions] = useState([]);
@@ -369,7 +371,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                                     </AccordionHeader>
                                     <AccordionBody className="market-category-body" accordionId={`one-time-${category}`}>
                                         {markets.length > 0 ? (
-                                            renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
+                                            renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc, handleDS)
                                         ) : (
                                             <div className="m-4 text-center">No record found</div>
                                         )}
@@ -408,7 +410,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                                         </AccordionHeader>
                                         <AccordionBody className="market-category-body" accordionId={`${category}-${item?.teamId}`}>
                                             {filteredMarkets.length > 0 ? (
-                                                renderCategoryMarkets(category, filteredMarkets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
+                                                renderCategoryMarkets(category, filteredMarkets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleDeactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc, handleDS)
                                             ) : (
                                                 <div className="m-4 text-center">No record found</div>
                                             )}
@@ -455,7 +457,7 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                         </AccordionHeader>
                         <AccordionBody className="market-category-body" accordionId={`deactivated-${category}`}>
                             {markets.length > 0 &&
-                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleReactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc)
+                                renderCategoryMarkets(category, markets, columns, teams, handleMultiRunnerUpdate, setIsLoading, commentaryInfo, handleReactivate, handleValueChange, handleSingleAction, players, playersMarketShow ,updateRecordsFunc, handleDS)
                             }
                         </AccordionBody>
                     </AccordionItem>
