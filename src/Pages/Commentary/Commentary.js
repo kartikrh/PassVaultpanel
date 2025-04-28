@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getBowlerRelatedWickets, getEconomyRate, getNonNegativeValue, getPlayerNameById, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryBallStatus, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
@@ -2339,7 +2339,7 @@ const Commentary = (props) => {
                 }}
                 updateDisplayStatus={(displayStatus) => {
                     setBallStatus(BALL_START_STATUS);
-                    dispatch(updateCommentaryDisplayStatus({
+                    dispatch(updateCommentaryBallStatus({
                         "commentaryId": commentaryDetails.commentaryId,
                         "displayStatus": displayStatus,
                         "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
@@ -2577,7 +2577,7 @@ const Commentary = (props) => {
                 }}
                 updateDisplayStatus={(displayStatus) => {
                     setBallStatus("ballstart");
-                    dispatch(updateCommentaryDisplayStatus({
+                    dispatch(updateCommentaryBallStatus({
                         "commentaryId": commentaryDetails.commentaryId,
                         "displayStatus": displayStatus,
                         "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
