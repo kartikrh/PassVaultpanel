@@ -83,6 +83,33 @@ export const updateCommentaryDisplayStatus = createAsyncThunk(
         }
     }
 );
+export const updateCommentaryBallStatus = createAsyncThunk(
+    'commentary/updateCommentaryBallStatus',
+    async (data, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/admin/commentary/ballStart', data);
+            if (response?.result?.callPredictions?.length > 0) {
+                response.result.callPredictions.forEach((prediction) => {
+                    if (prediction?.predictioncallSuccess === false) {
+                        const predictionMessage = prediction?.predictionMessage;
+                        const endPoint = prediction?.endPoint;
+                        dispatch(
+                            updateToastData({
+                                data: `${endPoint}\n${predictionMessage}`,
+                                title: "Call Prediction",
+                                type: WARNING,
+                            })
+                        );
+                    }
+                });
+            }
+            return response?.result;
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            return rejectWithValue(error?.message);
+        }
+    }
+);
 export const changeBowlerFromCommentary = createAsyncThunk(
     'commentary/changeBowlerFromCommentary',
     async (data, { rejectWithValue, dispatch }) => {
@@ -243,6 +270,16 @@ const commentarySlice = createSlice({
                 state.isCommentaryBallLoading = false
             })
             .addCase(updateCommentaryDisplayStatus.rejected, (state, action) => {
+                state.error = action.payload;
+                state.isCommentaryBallLoading = false
+            })
+            .addCase(updateCommentaryBallStatus.pending, (state) => {
+                state.isCommentaryBallLoading = true;
+            })
+            .addCase(updateCommentaryBallStatus.fulfilled, (state, action) => {
+                state.isCommentaryBallLoading = false
+            })
+            .addCase(updateCommentaryBallStatus.rejected, (state, action) => {
                 state.error = action.payload;
                 state.isCommentaryBallLoading = false
             })
