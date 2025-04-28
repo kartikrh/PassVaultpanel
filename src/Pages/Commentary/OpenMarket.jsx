@@ -2190,6 +2190,7 @@ export const OpenMarket = () => {
                                         handleSingleAction={handleSingleAction}
                                         updateRecordsFunc={updateRecords}
                                         teamsData={teamsData}
+                                        handleDS={handleDS}
                                     />
                                 )}
                             </CardBody>
