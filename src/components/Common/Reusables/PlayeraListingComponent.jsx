@@ -4,7 +4,7 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import { getStatusColor, getStatusColor1, getStatusFontColor, OPEN_MARKET_STATUS } from "../../../Pages/Commentary/CommentartConst";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
-export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement, tableExtras, tableClassName, hideHeader = false, onSwitch, handleValueChange, handleSingleAction, backgroundColor, updateRecordsFunc }) => {
+export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement, tableExtras, tableClassName, hideHeader = false, onSwitch, handleValueChange, handleSingleAction, backgroundColor, updateRecordsFunc, handleDS, commentaryInfo }) => {
     const rDiffColumns = columns.filter(col => col.title === "R-Diff");
     const handleSwitch = (marketId) => {
         onSwitch(marketId);
@@ -108,11 +108,19 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="third-col p-2 fs-5 fw-bold" style={{ width: '14%' }} 
+                                            <div className="third-col " style={{ width: '14%' }}>
+                                                <div className="third-col-save-btn p-2 fs-5 fw-bold" style={{height: '70%'}} onClick={() => updateRecordsFunc(market, "SAVE_ALL")}>
+                                                    S
+                                                </div>
+                                                <div className="third-col-logs-btn p-2 mt-2 fs-6" style={{height: '28%'}} onClick={() => { handleDS({ ...market, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: market?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et }) }}>
+                                                    L
+                                                </div>
+                                            </div>
+                                            {/* <div className="third-col p-2 fs-5 fw-bold" style={{ width: '14%' }} 
                                                 onClick={() => updateRecordsFunc(market, "SAVE_ALL")}
                                             >
                                                 S
-                                            </div>
+                                            </div> */}
                                             <div className="fourth-col text-black px-2" style={{ width: '15%' }}>
                                                 <input 
                                                     style={{height: "50%"}}

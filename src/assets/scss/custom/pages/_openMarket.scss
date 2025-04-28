@@ -49,7 +49,7 @@
     justify-content: center;
     align-items: center;
     color: #8b3a3a;
-    background-color: #f2e8e8;
+    background-color: #e5c0c0;
     // color: #EA2E2E;
     // background-color: #d7d7d7;
     border-radius: 4px;
@@ -61,7 +61,7 @@
     // -3px -3px 2px 0px #ABABAB80 inset,
     // 3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #e5c0c0; // darker red on hover
+        background-color: #f2e8e8; // darker red on hover
         // box-shadow:
         //   1px 1px 5px 0px #8a8a8a,
         //   -1px -1px 4px 0px #ffffffcc,
@@ -76,7 +76,7 @@
     align-items: center;
     // background-color: #d7d7d7;
     // color: #00DB00;
-    background-color: #e8efe8;
+    background-color: #c4e3c4;
     color: #336633;
     border-radius: 4px;
     // box-shadow:
@@ -87,7 +87,7 @@
     //     -3px -3px 2px 0px #ABABAB80 inset,
     //     3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #c4e3c4; // slightly darker green
+        background-color: #e8efe8; // slightly darker green
         // box-shadow:
         //     1px 1px 5px 0px #8a8a8a,
         //     -1px -1px 4px 0px #ffffffcc,
@@ -147,10 +147,29 @@
 
 .third-col{
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    // color: #336633;
+    // background-color: #e8efe8;
+    // color: #00DB00;
+    // background-color: #d7d7d7;
+    // border-radius: 4px;
+    // box-shadow:
+    //     1px 1px 3px 0px #B2B2B2E5,
+    //     -1px -1px 2px 0px #FFFFFFE5,
+    //     1px -1px 2px 0px #B2B2B233,
+    //     -1px 1px 2px 0px #B2B2B233,
+    //     -3px -3px 2px 0px #ABABAB80 inset,
+    //     3px 3px 2px 0px #FFFFFF4D inset;
+}
+.third-col-save-btn{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #336633;
-    background-color: #e8efe8;
+    background-color: #c4e3c4;
     // color: #00DB00;
     // background-color: #d7d7d7;
     border-radius: 4px;
@@ -162,7 +181,17 @@
     //     -3px -3px 2px 0px #ABABAB80 inset,
     //     3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #c4e3c4;
+        background-color: #e8efe8;
+        cursor: pointer;
+    }
+}
+.third-col-logs-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E6E6E6;
+    border-radius: 4px;
+    &:hover {
         cursor: pointer;
     }
 }
