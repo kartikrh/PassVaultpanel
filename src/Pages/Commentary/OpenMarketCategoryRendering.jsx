@@ -201,6 +201,8 @@ const renderCategoryMarkets = (category, markets, columns, teams, handleMultiRun
                                 handleValueChange={handleValueChange}
                                 handleSingleAction={handleSingleAction}
                                 updateRecordsFunc={updateRecordsFunc}
+                                handleDS={handleDS}
+                                commentaryInfo={commentaryInfo}
                             />
                             </div>
                         </div>
