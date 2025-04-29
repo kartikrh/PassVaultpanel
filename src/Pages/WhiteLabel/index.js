@@ -38,7 +38,6 @@ const Index = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const imageBaseUrl = "https://contentscore.cloudd.in";
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -102,10 +101,39 @@ const Index = () => {
       });
   };
 
-  // const handleIsDemoClientEnableInIOS = async (pType, record, cState) => {
+  const handleIsDemoClientEnableInIOS = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/whitelabel/demoClientEnableInIOS`, {
+        id: record.id,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  // const handleIsDemoClientLogin = async (pType, record, cState) => {
   //   setIsLoading(true);
   //   await axiosInstance
-  //     .post(`/admin/whitelabel/isDemoClientEnableInIOS`, {
+  //     .post(`/admin/whitelabel/demoClientLogin`, {
   //       id: record.id,
   //       [pType]: cState ? false : true,
   //     })
@@ -249,49 +277,51 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Image",
+      title: "Image Path",
       dataIndex: "imagePath",
-      printType: "ignore",
-      render: (text, record) => (
-        <div className="flex-shrink-0">
-          {text ? (
-            <div>
-              <img
-                className="avatar-sm rounded-circle"
-                alt=""
-                src={`${imageBaseUrl}${text}`}
-              />
-            </div>
-          ) : (
-            <Avatar src="#" alt="ET">
-              Image
-            </Avatar>
-          )}
-        </div>
-      ),
       key: "imagePath",
-      style: { width: "10%", textAlign: "left" },
+      style: { width: "20%" },
+      sort: true,
     },
     {
       title: "Domain",
       dataIndex: "domain",
       key: "domain",
-      style: { width: "80%" },
+      style: { width: "60%" },
       sort: true,
     },
     {
-      title: "Is Demo Client Enable In IOS",
-      key: "isDemoClientEnableInIOS",
+      title: "Demo Login",
+      key: "isDemoClientLogin",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Demo Client"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Active/Inactive Demo Login"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
-            color={`${record.isDemoClientEnableInIOS ? "primary" : "danger"}`}
+            color={`${record.isDemoClientLogin ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             disabled
             // onClick={() => {
-            //   handleIsDemoClientEnableInIOS("isDemoClientEnableInIOS", record, record.isDemoClientEnableInIOS);
+            //   handleIsDemoClientLogin("isDemoClientLogin", record, record.isDemoClientLogin);
             // }}
+          >
+            <i className={`bx ${record.isDemoClientLogin ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Demo IOS",
+      key: "isDemoClientEnableInIOS",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Demo IOS"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isDemoClientEnableInIOS ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsDemoClientEnableInIOS("isDemoClientEnableInIOS", record, record.isDemoClientEnableInIOS);
+            }}
           >
             <i className={`bx ${record.isDemoClientEnableInIOS ? "bx-check" : "bx-block"}`}></i>
           </Button>
