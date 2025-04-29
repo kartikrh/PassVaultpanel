@@ -240,7 +240,7 @@ const Index = () => {
         </div>
       ),
       key: "flag",
-      style: { width: "10%", textAlign: "left" },
+      style: { width: "5%", textAlign: "left" },
     },
     {
       title: "Code",
@@ -250,19 +250,27 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Max Number",
-      dataIndex: "maxNumber",
-      key: "maxNumber",
-      style: { width: "5%", textAlign: "center" },
-      sort: true,
-    },
-    {
       title: "Country",
       dataIndex: "countryName",
       key: "countryName",
-      style: { width: "74%" },
+      style: { width: "64%" },
       sort: true,
     },
+    {
+      title: "Short Name",
+      dataIndex: "shortName",
+      key: "shortName",
+      style: { width: "10%", textAlign: "center" },
+      sort: true,
+    },
+    {
+      title: "Max Number",
+      dataIndex: "maxNumber",
+      key: "maxNumber",
+      style: { width: "10%", textAlign: "center" },
+      sort: true,
+    },
+    
     {
       title: "Active",
       key: "IsActive",

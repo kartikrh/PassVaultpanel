@@ -97,7 +97,7 @@ const AddWhiteLabel = () => {
         isDemoClientEnableInIOS: dataToSave?.isDemoClientEnableInIOS || false,
       };
       dispatch(
-        addWhiteLabelToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
+        addWhiteLabelToDb({ ...dataToSave, ...extraData })
       );
       setCurrentSaveAction(saveAction);
     }

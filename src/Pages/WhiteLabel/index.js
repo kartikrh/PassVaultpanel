@@ -130,34 +130,34 @@ const Index = () => {
       });
   };
 
-  // const handleIsDemoClientLogin = async (pType, record, cState) => {
-  //   setIsLoading(true);
-  //   await axiosInstance
-  //     .post(`/admin/whitelabel/demoClientLogin`, {
-  //       id: record.id,
-  //       [pType]: cState ? false : true,
-  //     })
-  //     .then((response) => {
-  //       fetchData();
-  //       dispatch(
-  //         updateToastData({
-  //           data: response?.message,
-  //           title: response?.title,
-  //           type: SUCCESS,
-  //         })
-  //       );
-  //     })
-  //     .catch((error) => {
-  //       setIsLoading(false);
-  //       dispatch(
-  //         updateToastData({
-  //           data: error?.message,
-  //           title: error?.title,
-  //           type: ERROR,
-  //         })
-  //       );
-  //     });
-  // };
+  const handleIsDemoClientLogin = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/whitelabel/demoClientLogin`, {
+        id: record.id,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const handleLoadData = async (password) => {
     setIsLoading(true);
@@ -277,17 +277,17 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Image",
-      dataIndex: "imagePath",
-      key: "imagePath",
-      style: { width: "20%" },
-      sort: true,
-    },
-    {
       title: "Domain",
       dataIndex: "domain",
       key: "domain",
-      style: { width: "60%" },
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Image",
+      dataIndex: "imagePath",
+      key: "imagePath",
+      style: { width: "80%" },
       sort: true,
     },
     {
@@ -299,10 +299,9 @@ const Index = () => {
             color={`${record.isDemoClientLogin ? "primary" : "danger"}`}
             size="sm"
             className="btn"
-            disabled
-            // onClick={() => {
-            //   handleIsDemoClientLogin("isDemoClientLogin", record, record.isDemoClientLogin);
-            // }}
+            onClick={() => {
+              handleIsDemoClientLogin("isDemoClientLogin", record, record.isDemoClientLogin);
+            }}
           >
             <i className={`bx ${record.isDemoClientLogin ? "bx-check" : "bx-block"}`}></i>
           </Button>
