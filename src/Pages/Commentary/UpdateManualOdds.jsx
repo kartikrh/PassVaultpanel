@@ -1219,7 +1219,7 @@ export const UpdateManualOdds = () => {
                 }
                 setEventData({
                     comDetails: response.result.comDetails || null,
-                    teams: response.result.teams || [],
+                    teams: response.result.teams?.sort((a,b)=> a?.teamNo - b?.teamNo) || [],
                     market: response.result.market?.[0] || {},
                 });
                 const marketData = response.result.market?.[0];
