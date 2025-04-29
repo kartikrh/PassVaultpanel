@@ -14,11 +14,19 @@ export const WhiteLabelField = [
   },
   {
     name: "imagePath",
-    label: "Image Path",
+    label: "Image",
     type: TEXT,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
+  // {
+  //   type: SWITCH,
+  //   name: "isDemoClientLogin",
+  //   label: "Demo Android",
+  //   defaultValue: false,
+  //   labelColspan: { xs: 12, md: 2, lg: 2 },
+  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
+  // },
   {
     type: SWITCH,
     name: "isDemoClientEnableInIOS",
@@ -27,14 +35,6 @@ export const WhiteLabelField = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  // {
-  //   type: SWITCH,
-  //   name: "isDemoClientLogin",
-  //   label: "Demo Login",
-  //   defaultValue: false,
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
   {
     type: SWITCH,
     name: "isActive",
