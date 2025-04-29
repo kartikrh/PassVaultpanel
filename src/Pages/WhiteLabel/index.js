@@ -280,34 +280,15 @@ const Index = () => {
       title: "Image Path",
       dataIndex: "imagePath",
       key: "imagePath",
-      style: { width: "10%" },
+      style: { width: "20%" },
       sort: true,
     },
     {
       title: "Domain",
       dataIndex: "domain",
       key: "domain",
-      style: { width: "80%" },
+      style: { width: "60%" },
       sort: true,
-    },
-    {
-      title: "Demo IOS",
-      key: "isDemoClientEnableInIOS",
-      render: (text, record) => (
-        <Tooltip title={"Active/Inactive Demo IOS"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isDemoClientEnableInIOS ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleIsDemoClientEnableInIOS("isDemoClientEnableInIOS", record, record.isDemoClientEnableInIOS);
-            }}
-          >
-            <i className={`bx ${record.isDemoClientEnableInIOS ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Demo Login",
@@ -324,6 +305,25 @@ const Index = () => {
             // }}
           >
             <i className={`bx ${record.isDemoClientLogin ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Demo IOS",
+      key: "isDemoClientEnableInIOS",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Demo IOS"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isDemoClientEnableInIOS ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsDemoClientEnableInIOS("isDemoClientEnableInIOS", record, record.isDemoClientEnableInIOS);
+            }}
+          >
+            <i className={`bx ${record.isDemoClientEnableInIOS ? "bx-check" : "bx-block"}`}></i>
           </Button>
         </Tooltip>
       ),
