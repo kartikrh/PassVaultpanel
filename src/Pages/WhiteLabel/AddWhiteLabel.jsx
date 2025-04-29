@@ -44,7 +44,6 @@ const AddWhiteLabel = () => {
   let navigate = useNavigate();
   const location = useLocation();
   const [whiteLabelId, setwhiteLabelId] = useState(location.state?.whiteLabelId || "0");
-  const imageBaseUrl = "https://contentscore.cloudd.in";
   
   useEffect(() => {
     if (whiteLabelId !== 0) {
@@ -76,9 +75,7 @@ const AddWhiteLabel = () => {
     await axiosInstance
       .post("/admin/whitelabel/byId", { id: whiteLabelId })
       .then((response) => {
-        const whiteLabelData = response?.result;
-        const imagePath = `${imageBaseUrl}${whiteLabelData?.imagePath}`
-        setInitialEditData({...whiteLabelData, imagePath});
+        setInitialEditData(response?.result);
       })
       .catch((error) => {
         dispatch(
