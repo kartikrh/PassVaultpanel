@@ -117,7 +117,7 @@ export const ManualOddsMarket = () => {
     useEffect(() => {
         // Initialize with 2 default runners using team data
         if (eventData.teams.length > 0) {
-            const defaultRunners = eventData.teams.slice(0, 2).map((team, index) => {
+            const defaultRunners = eventData.teams.slice(0, 2).sort((a,b)=> a?.teamNo - b?.teamNo).map((team, index) => {
                 const tpRunner = eventData.tpMarkets?.[0]?.runners?.find(r => r.teamId === team.teamId);
                 const selectionId = tpRunner ?
                     tpRunner.selectionId :

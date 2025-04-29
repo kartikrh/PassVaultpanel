@@ -277,7 +277,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Image Path",
+      title: "Image",
       dataIndex: "imagePath",
       key: "imagePath",
       style: { width: "20%" },
@@ -291,10 +291,10 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Demo Login",
+      title: "Demo Android",
       key: "isDemoClientLogin",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Demo Login"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Active/Inactive Demo Android"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isDemoClientLogin ? "primary" : "danger"}`}
             size="sm"
