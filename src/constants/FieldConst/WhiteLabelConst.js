@@ -19,14 +19,14 @@ export const WhiteLabelField = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  // {
-  //   type: SWITCH,
-  //   name: "isDemoClientLogin",
-  //   label: "Demo Android",
-  //   defaultValue: false,
-  //   labelColspan: { xs: 12, md: 2, lg: 2 },
-  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
-  // },
+  {
+    type: SWITCH,
+    name: "isDemoClientLogin",
+    label: "Demo Android",
+    defaultValue: false,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
   {
     type: SWITCH,
     name: "isDemoClientEnableInIOS",
