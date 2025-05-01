@@ -13,6 +13,7 @@ import { ERROR, MODULE_COMPETITION, PERMISSION_ADD, PERMISSION_DELETE, PERMISSIO
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import CompetitionMarketTemplateModel from "../../components/Model/CompetitionMarketTemplateModel";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import { mapType } from "../Commentary/functions";
 
@@ -29,7 +30,8 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-
+  const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
+  const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -325,7 +327,7 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchTypeId",
       render: (text, record) => {
-        const matchTypeName = matchTypes.length > 0 && matchTypes.find((item) => item.matchTypeId === record?.matchTypeId)?.matchType; 
+        const matchTypeName = matchTypes.length > 0 && matchTypes.find((item) => item.matchTypeId == record?.matchTypeId)?.matchType; 
         return (
           <span>{matchTypeName}</span>
         );
@@ -365,6 +367,33 @@ const Index = () => {
       ),
       key: "competition",
       style: { width: "34%" },
+    },
+    {
+      title: "",
+      key: "matchType",
+      render: (text, record) => {
+        const matchTypeName = matchTypes.length > 0 && matchTypes.find((item) => item?.matchTypeId == record?.matchTypeId)?.matchType; 
+        return (
+        <div className="d-flex align-items-center gap-2">
+          <>
+            {parseInt(record.matchTypeId) ?
+              <Tooltip title={"Add Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    setMarketTemplateModelVisible(true);
+                    setMarketTemplateTimeRecord({...record, matchType: matchTypeName});
+                  }}
+                >
+                  <i className="bx bx-plus"></i>
+                </Button>
+              </Tooltip> : ""}
+          </>
+        </div>
+      )},
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Active",
@@ -544,6 +573,13 @@ const Index = () => {
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Competition"} 
+            />}
+          {marketTemplateModelVisible &&
+            <CompetitionMarketTemplateModel
+              marketTemplateModelVisible={marketTemplateModelVisible}
+              setMarketTemplateModelVisible={setMarketTemplateModelVisible}
+              marketTemplateRecord={marketTemplateRecord}
+              fetchData={fetchData}
             />}
         </Container>
       </div>
