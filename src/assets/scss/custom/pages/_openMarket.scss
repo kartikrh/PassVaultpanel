@@ -48,8 +48,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #8b3a3a;
-    background-color: #e5c0c0;
+    // color: #8b3a3a;
+    // background-color: #e5c0c0;
+    background-color: #6a0202 !important;
+    color: #edc1c1 !important;
     // color: #EA2E2E;
     // background-color: #d7d7d7;
     border-radius: 4px;
@@ -61,7 +63,9 @@
     // -3px -3px 2px 0px #ABABAB80 inset,
     // 3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #f2e8e8; // darker red on hover
+        // background-color: #f2e8e8; // darker red on hover
+        background-color: #edc1c1 !important;
+        color: #6a0202 !important;
         // box-shadow:
         //   1px 1px 5px 0px #8a8a8a,
         //   -1px -1px 4px 0px #ffffffcc,
@@ -76,8 +80,10 @@
     align-items: center;
     // background-color: #d7d7d7;
     // color: #00DB00;
-    background-color: #c4e3c4;
-    color: #336633;
+    // background-color: #c4e3c4;
+    background-color: #025f02 !important;
+    // color: #336633;
+    color: #aaf6aa !important;
     border-radius: 4px;
     // box-shadow:
     //     1px 1px 3px 0px #B2B2B2E5,
@@ -87,7 +93,9 @@
     //     -3px -3px 2px 0px #ABABAB80 inset,
     //     3px 3px 2px 0px #FFFFFF4D inset;
     &:hover {
-        background-color: #e8efe8; // slightly darker green
+        // background-color: #e8efe8; // slightly darker green
+        background-color: #aaf6aa !important;
+        color: #025f02 !important;
         // box-shadow:
         //     1px 1px 5px 0px #8a8a8a,
         //     -1px -1px 4px 0px #ffffffcc,
