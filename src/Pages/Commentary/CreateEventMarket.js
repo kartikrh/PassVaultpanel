@@ -89,10 +89,10 @@ export const CreateEventMarket = () => {
     const scrollToTop = () => {
         const contentSection = document.querySelector('.content-section');
         if (contentSection) {
-          contentSection.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+            contentSection.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     };
 
@@ -309,7 +309,7 @@ export const CreateEventMarket = () => {
                 processTopBatsManRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 39) {
                 processOnlyOverMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.maxOversInFirstInings, processedMarketsObj);
-            }else {
+            } else {
                 teams.forEach(team => {
                     processMarketAndRunners(generateExtraMarketFromTemplate(template, team, commentary), team.teamId, team.teamId.toString(), processedMarketsObj);
                 });
@@ -753,8 +753,8 @@ export const CreateEventMarket = () => {
             ...market,
             marketName: specialMarketName,
             over: 0,
-            runners: teams?.flatMap(team => 
-                team?.players?.flatMap(player => 
+            runners: teams?.flatMap(team =>
+                team?.players?.flatMap(player =>
                     (market?.runners || []).map(runner => ({
                         marketTemplateRunnerId: runner?.marketTemplateRunnerId,
                         marketTemplateId: market?.marketTemplateId,
@@ -790,7 +790,7 @@ export const CreateEventMarket = () => {
                 marketName: specialMarketName,
                 teamId: team?.teamId,
                 over: 0,
-                runners: team?.players?.flatMap(player => 
+                runners: team?.players?.flatMap(player =>
                     (market?.runners || []).map(runner => ({
                         marketTemplateRunnerId: runner?.marketTemplateRunnerId,
                         marketTemplateId: market?.marketTemplateId,
@@ -922,14 +922,20 @@ export const CreateEventMarket = () => {
 
     const ballsToOvers = (value, matchTypeId) => {
         const LD_OVER_BALLS = {
-            "2": 6 // For 20 Over Event. Add more match types as needed
+            "2": 6,
+            "4": 6
         };
-        const ballsPerOver = LD_OVER_BALLS[`${matchTypeId}`];
+        const ballsPerOver = LD_OVER_BALLS[`${matchTypeId}`] || 6;
 
-        if (parseInt(value) === 0) {
+        // Guard against invalid inputs
+        if (typeof value !== 'number' || isNaN(value)) {
+            return 0.0;
+        }
+
+        if (value === 0) {
             return 0.0;
         } else {
-            const over = ((value - ballsPerOver) / ballsPerOver) + ballsPerOver / 10;
+            const over = ((value - ballsPerOver) / ballsPerOver) + (ballsPerOver / 10);
             return parseFloat(over.toFixed(2));
         }
     };
@@ -995,13 +1001,6 @@ export const CreateEventMarket = () => {
     };
 
     const processLotteryMarkets = (market, teams, processedMarketsObj, matchType) => {
-        const ballsToOvers = (value, matchTypeId) => {
-            const LD_OVER_BALLS = { "2": 6 };
-            const ballsPerOver = LD_OVER_BALLS[`${matchTypeId}`];
-            if (parseInt(value) === 0) return 0.0;
-            const over = ((value - ballsPerOver) / ballsPerOver) + ballsPerOver / 10;
-            return parseFloat(over.toFixed(2));
-        };
 
         const maxOvers = market.maxOvers || matchType?.maxOversInFirstInings || 5;
         const startOver = parseInt(market.over) || 2;
@@ -1414,14 +1413,14 @@ export const CreateEventMarket = () => {
 
     const renderMarketCategory = (categoryId, markets, sectionKey) => (
         <Accordion open={openCategory} toggle={toggleCategory} key={sectionKey}>
-        <AccordionItem className="rounded-0">
-            <AccordionHeader targetId={sectionKey} className="market-category-header">
-                {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
-            </AccordionHeader>
-            <AccordionBody accordionId={sectionKey} className="market-category-body">
-               {renderTable(markets, sectionKey)}
-            </AccordionBody>
-        </AccordionItem>
+            <AccordionItem className="rounded-0">
+                <AccordionHeader targetId={sectionKey} className="market-category-header">
+                    {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
+                </AccordionHeader>
+                <AccordionBody accordionId={sectionKey} className="market-category-body">
+                    {renderTable(markets, sectionKey)}
+                </AccordionBody>
+            </AccordionItem>
         </Accordion>
     );
     const renderMarketType = (typeId, categories, teamId) => (
@@ -1464,7 +1463,7 @@ export const CreateEventMarket = () => {
         };
 
         // Create sections for each team dynamically
-        const teamPlayers = marketData?.teamAndPlayers?.sort((a,b)=>a?.teamStatus - b?.teamStatus);
+        const teamPlayers = marketData?.teamAndPlayers?.sort((a, b) => a?.teamStatus - b?.teamStatus);
         teamPlayers.forEach(team => {
             sections[`team_${team.teamId}`] = {
                 title: `${team.teamName} Markets`,
@@ -1492,20 +1491,20 @@ export const CreateEventMarket = () => {
         });
 
         return (
-          <>
-            {Object.entries(sections).map(([sectionKey, section]) => (
-              <Accordion open={openMarket} toggle={toggleMarket} key={sectionKey}>
-                <AccordionItem className="rounded-0">
-                    <AccordionHeader targetId={sectionKey} className="market-category-header">{section.title}</AccordionHeader>
-                    <AccordionBody accordionId={sectionKey} className="market-category-body p-2">
-                        {Object.entries(section.data).map(([typeId, categories]) =>
-                            renderMarketType(typeId, categories, sectionKey === 'oneTimeMarket' ? null : sectionKey.split('_')[1])
-                        )}
-                    </AccordionBody>
-                </AccordionItem>
-              </Accordion>
-            ))}
-          </>
+            <>
+                {Object.entries(sections).map(([sectionKey, section]) => (
+                    <Accordion open={openMarket} toggle={toggleMarket} key={sectionKey}>
+                        <AccordionItem className="rounded-0">
+                            <AccordionHeader targetId={sectionKey} className="market-category-header">{section.title}</AccordionHeader>
+                            <AccordionBody accordionId={sectionKey} className="market-category-body p-2">
+                                {Object.entries(section.data).map(([typeId, categories]) =>
+                                    renderMarketType(typeId, categories, sectionKey === 'oneTimeMarket' ? null : sectionKey.split('_')[1])
+                                )}
+                            </AccordionBody>
+                        </AccordionItem>
+                    </Accordion>
+                ))}
+            </>
         );
     };
 
@@ -1973,40 +1972,40 @@ export const CreateEventMarket = () => {
                             <CardBody className="p-1 card-container">
                                 {isLoading && <SpinnerModel />}
                                 <div className="header-sticky">
-                                <Row>
-                                    <Col className="mt-3 mt-lg-3 mt-md-3" >
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
-                                    </Col>
-                                    <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
-                                        <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
-                                        <Button color="primary mx-2" className="btn text-right" onClick={handleSave} disabled={isLoading}> Save </Button>
-                                        {/* <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button> */}
-                                    </Col>
-                                </Row>
-                                <Row className="g-2 mb-3">
-                                    {commentaryDetails && (
-                                        <Col className="col-sm-auto">
-                                            <EventMarketModal
-                                                isOpen={isModalOpen}
-                                                onClose={() => setIsModalOpen(false)}
-                                                apiResponse={marketData}
-                                            />
-                                            <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
-                                            <div>{`Ref: ${commentaryDetails?.eventRefId} [
+                                    <Row>
+                                        <Col className="mt-3 mt-lg-3 mt-md-3" >
+                                            <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
+                                        </Col>
+                                        <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
+                                            <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
+                                            <Button color="primary mx-2" className="btn text-right" onClick={handleSave} disabled={isLoading}> Save </Button>
+                                            {/* <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button> */}
+                                        </Col>
+                                    </Row>
+                                    <Row className="g-2 mb-3">
+                                        {commentaryDetails && (
+                                            <Col className="col-sm-auto">
+                                                <EventMarketModal
+                                                    isOpen={isModalOpen}
+                                                    onClose={() => setIsModalOpen(false)}
+                                                    apiResponse={marketData}
+                                                />
+                                                <div className="match-details-breadcrumbs">{`${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
+                                                <div>{`Ref: ${commentaryDetails?.eventRefId} [
                                             ${MarketDetailsDate}
                                         ]`}</div>
-                                        </Col>
-                                    )}
-                                </Row>
+                                            </Col>
+                                        )}
+                                    </Row>
                                 </div>
                                 <div className="content-section" onScroll={handleScroll}>
-                                   {renderMainSections()}
+                                    {renderMainSections()}
                                 </div>
                                 {showBackToTop && (
-                                     <>
-                                    <Button className="btn text-right my-2 sticky-btn" onClick={scrollToTop}>
-                                        <FaArrowUp />
-                                    </Button>
+                                    <>
+                                        <Button className="btn text-right my-2 sticky-btn" onClick={scrollToTop}>
+                                            <FaArrowUp />
+                                        </Button>
                                     </>
                                 )}
                             </CardBody>
