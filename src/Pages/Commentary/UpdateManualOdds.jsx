@@ -2211,21 +2211,8 @@ export const UpdateManualOdds = () => {
                 }))
             );
 
-            // Update savedPrices for both runners in case of tie
-            if (!isLive && directLineEnabled) {
-                setSavedPrices(prevSavedPrices => {
-                    const newSavedPrices = { ...prevSavedPrices };
-                    // Use runners from the current state instead of prevRunners
-                    runners.forEach(runner => {
-                        newSavedPrices[runner.runnerId] = {
-                            back: tieValue,
-                            lay: 0
-                        };
-                    });
-                    console.log("Updated savedPrices for tie scenario:", newSavedPrices);
-                    return newSavedPrices;
-                });
-            }
+            // REMOVED: Update of savedPrices for tie scenario
+            // We no longer update savedPrices from socket data when !isLive && directLineEnabled
 
             return; // Exit early; tie scenario handled.
         }
@@ -2303,7 +2290,9 @@ export const UpdateManualOdds = () => {
                 };
             });
 
-            // Update savedPrices with the new calculated odds when directLineEnabled and !isLive
+            // REMOVED: Update savedPrices section
+            // The following code block has been removed:
+            /*
             if (!isLive && directLineEnabled) {
                 setSavedPrices(prevSavedPrices => {
                     const newSavedPrices = { ...prevSavedPrices };
@@ -2321,6 +2310,7 @@ export const UpdateManualOdds = () => {
                     return newSavedPrices;
                 });
             }
+            */
 
             return updatedRunners;
         };
