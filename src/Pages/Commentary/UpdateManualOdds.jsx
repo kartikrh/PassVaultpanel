@@ -453,7 +453,11 @@ export const UpdateManualOdds = () => {
         point: ''
     });
     const settingsRef = useRef(settings);
+    const runnersRef = useRef([]);
 
+    useEffect(() => {
+        runnersRef.current = runners;
+    }, [runners]);
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
             document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
@@ -788,6 +792,74 @@ export const UpdateManualOdds = () => {
         };
     };
 
+    const fixedHandleStatusChange = async (newStatus) => {
+        // Add confirmation for market close
+        if (newStatus === CLOSE_VALUE.toString()) {
+            const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
+            if (!confirmed) return;
+        }
+
+        try {
+            setIsLoading(true);
+            setMarketStatus(newStatus);
+
+            // IMPORTANT: Directly construct the complete market data instead of using prepareMarketData
+            const isOpen = +(newStatus || 0) === +OPEN_VALUE;
+
+            // Get runners data from ref if the state is empty
+            const currentRunners = runners.length > 0 ? runners : runnersRef.current;
+
+            console.log("Using runners data:", currentRunners);
+
+            // Construct the payload manually with all required fields
+            const currentMarketData = {
+                eventMarket: [{
+                    eventMarketId: eventData.market.eventMarketId,
+                    marketName: eventData.market.marketName,
+                    margin: settings.margin,
+                    status: parseInt(newStatus),
+                    isActive: settings.active,
+                    isAllow: settings.betAllow,
+                    isSendData: true,
+                    lineRatio: eventData.market.lineRatio || 0,
+                    rateDiff: settings.rateDifferent,
+                    predefinedValue: eventData.market.predefinedValue,
+                    favRatio: settings.favRatio,
+                    runner: currentRunners.map(runner => ({
+                        runnerId: runner.runnerId,
+                        line: runner.line || 0,
+                        overRate: isOpen ? runner.back.price : 0,
+                        underRate: isOpen ? runner.lay.price : 0,
+                        backPrice: isOpen ? runner.back.price : 0,
+                        layPrice: isOpen ? runner.lay.price : 0,
+                        backSize: runner.back?.volume || 0,
+                        laySize: runner.lay?.volume || 0
+                    }))
+                }]
+            };
+
+            console.log("FIXED PAYLOAD:", JSON.stringify(currentMarketData, null, 2));
+
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
+            if (response?.success) {
+                handleSavedRunnerUpdate(currentMarketData)
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
         const value = settings.shortcutValues[key];
@@ -808,21 +880,21 @@ export const UpdateManualOdds = () => {
         }
         switch (key) {
             case 'S':
-                handleStatusChange(SUSPEND_VALUE.toString)
+                fixedHandleStatusChange(SUSPEND_VALUE.toString());
                 break;
             case 'D':
-                handleStatusChange(INACTIVE_VALUE.toString)
+                fixedHandleStatusChange(INACTIVE_VALUE.toString());
                 break;
             case 'F':
-                handleStatusChange(CLOSE_VALUE.toString)
+                fixedHandleStatusChange(CLOSE_VALUE.toString());
                 break;
             case 'G':
-                handleStatusChange(OPEN_VALUE.toString)
+                fixedHandleStatusChange(OPEN_VALUE.toString());
                 break;
             default:
                 break;
         }
-    }, [settings.shortcutValues, isLive, calculateRunnerRates]);
+    }, [settings.shortcutValues, isLive, calculateRunnerRates, eventData.market, settings]);
 
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
