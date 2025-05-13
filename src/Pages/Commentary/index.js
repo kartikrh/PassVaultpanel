@@ -108,8 +108,9 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction();
     let payload = {
       ...(latestValueFromTable || tableActions),
-      eventTypeId: latestValueFromTable?.eventTypeId || 0,
-      competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      eventTypeId: latestValueFromTable?.eventTypeId || tableActions?.eventTypeId || 0,
+      // competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
+      competitionId: latestValueFromTable?.eventTypeId == eventTypeId ? latestValueFromTable?.competitionId : tableActions?.eventTypeId == eventTypeId ? tableActions?.competitionId : 0,
     };
     if (!isEmpty(userRefData)) {
       if (userRefData.eventTypeId && userRefData.eventTypeId !== 0) payload['eventTypeId'] = userRefData.eventTypeId
