@@ -4,6 +4,7 @@ import React, {
   forwardRef,
   useRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
@@ -23,9 +24,15 @@ import { updateToastData } from "../../../Features/toasterSlice";
 import { useDispatch } from "react-redux";
 import { ReusableBreadcrumbs } from "../Reusables/Breadcrumbs";
 import { Tooltip } from "antd";
-import { convertDateUTCToLocal, getDateRange } from "../Reusables/reusableMethods";
-import { getStatusColor, getStatusFontColor } from "../../../Pages/Commentary/CommentartConst";
-import { isEmpty } from "lodash";
+import {
+  convertDateUTCToLocal,
+  getDateRange,
+} from "../Reusables/reusableMethods";
+import {
+  getStatusColor,
+  getStatusFontColor,
+} from "../../../Pages/Commentary/CommentartConst";
+import { debounce, isEmpty } from "lodash";
 const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
   try {
     const response = await axiosInstance.post(
@@ -127,7 +134,7 @@ const Index = forwardRef(
     },
     ref
   ) => {
-    const globalPageSize = localStorage.getItem("pageSize")
+    const globalPageSize = localStorage.getItem("pageSize");
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState({
@@ -148,21 +155,127 @@ const Index = forwardRef(
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const [expandedRows, setExpandedRows] = useState({});
+    const [isSearching, setIsSearching] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
     useEffect(() => {
       setData(filteredData);
     }, [filteredData]);
-
+    useEffect(() => {
+      if (dataSource) setSearchTerm("");
+    }, [dataSource]);
     useEffect(() => {
       if (data.length == 0 && filteredData.length == 0) {
         if (serverCurrentPage) {
-          setServerCurrentPage(0)
+          setServerCurrentPage(0);
         }
-        setCurrentPage(0)
+        setCurrentPage(0);
       }
-    }, [data, filteredData])
+    }, [data, filteredData]);
+
+    const debouncedHandleSearchFilter = useCallback(
+      debounce((searchValue) => {
+        setIsSearching(true);
+
+        // Use a setTimeout to prevent UI blocking
+        setTimeout(() => {
+          // Just use your existing handleSearchFilter logic here
+          if (tableElement.title === "Tabs") {
+            const updatedData = dataSource.filter((val) => {
+              const found = Object.values(val).some((value) => {
+                if (typeof value === "string" || value instanceof String) {
+                  return value
+                    .toLowerCase()
+                    .includes(searchValue.toLowerCase());
+                }
+                return false;
+              });
+              return found === true;
+            });
+
+            if (searchValue) {
+              setFilteredData(updatedData);
+              setTotal(updatedData.length);
+            } else {
+              setTotal(dataSource.length);
+              setFilteredData(dataSource);
+            }
+          } else if (tableElement.title === "Auto Events") {
+            const updatedData = dataSource.filter((val) => {
+              const marketIDFlag = val.marketID ? true : false;
+              if (marketIDFlag) {
+                const found = Object.values(val).some((value) => {
+                  if (typeof value === "string" || value instanceof String) {
+                    return value
+                      .toLowerCase()
+                      .includes(searchValue.toLowerCase());
+                  }
+                  return false;
+                });
+                return found === true;
+              } else {
+                const first = Object.values(val);
+                const firstObject = first[0];
+                const found = Object.values(firstObject).some((value) => {
+                  if (typeof value === "string" || value instanceof String) {
+                    return value
+                      .toLowerCase()
+                      .includes(searchValue.toLowerCase());
+                  }
+                  return false;
+                });
+                return found === true;
+              }
+            });
+
+            if (searchValue === "") {
+              setTotal(dataSource.length);
+              const sliced = dataSource.slice(
+                currentPage * pageSize,
+                currentPage * pageSize + pageSize
+              );
+              setFilteredData(sliced);
+            } else {
+              setFilteredData(updatedData);
+              setTotal(updatedData.length);
+            }
+          } else {
+            const updatedData = dataSource.filter((val) => {
+              const found = Object.values(val).some((value) => {
+                if (typeof value === "string" || value instanceof String) {
+                  return value
+                    .toLowerCase()
+                    .includes(searchValue.toLowerCase());
+                }
+                return false;
+              });
+              return found === true;
+            });
+
+            if (searchValue.length <= 2) {
+              setTotal(dataSource.length);
+              const sliced = dataSource.slice(
+                (currentPage == 1
+                  ? currentPage - 1
+                  : currentPage == 0
+                  ? currentPage
+                  : currentPage - 1) * pageSize,
+                (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
+                  Number(pageSize)
+              );
+              setFilteredData(sliced);
+            } else {
+              setFilteredData(updatedData);
+              setTotal(updatedData.length);
+            }
+          }
+
+          setIsSearching(false);
+        }, 0);
+      }, 300),
+      [dataSource, currentPage, pageSize, tableElement.title]
+    );
 
     const toggleRow = (index) => {
       setExpandedRows((prev) => ({
@@ -359,10 +472,10 @@ const Index = forwardRef(
       menu: ({ width, ...css }) => ({ ...css }),
     };
     const handleTableActions = (key, id) => {
-      setSearchTerm("")
-      setCurrentPage(0)
+      setSearchTerm("");
+      setCurrentPage(0);
       if (setServerCurrentPage) {
-        setServerCurrentPage(0)
+        setServerCurrentPage(0);
       }
       if (key === "isActive") {
         if (setServerCurrentPage) {
@@ -494,9 +607,7 @@ const Index = forwardRef(
               return false;
             });
             return found === true;
-
-          }
-          else {
+          } else {
             const first = Object.values(val);
             const firstObject = first[0];
             const found = Object.values(firstObject).some((value) => {
@@ -532,8 +643,13 @@ const Index = forwardRef(
         if (searchTerm.length <= 2) {
           setTotal(dataSource.length);
           const sliced = dataSource.slice(
-            (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
-            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)
+            (currentPage == 1
+              ? currentPage - 1
+              : currentPage == 0
+              ? currentPage
+              : currentPage - 1) * pageSize,
+            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
+              Number(pageSize)
           );
           setFilteredData(sliced);
         } else {
@@ -668,8 +784,9 @@ const Index = forwardRef(
 
     const downloadExcel = () => {
       // Create a worksheet
-      let ws
-      if (manualExcel) ws = XLSX.utils.json_to_sheet(generateManualSimplifiedData().csvData);
+      let ws;
+      if (manualExcel)
+        ws = XLSX.utils.json_to_sheet(generateManualSimplifiedData().csvData);
       else ws = XLSX.utils.json_to_sheet(generateSimplifiedData().csvData);
 
       // Create a workbook
@@ -702,21 +819,21 @@ const Index = forwardRef(
         }
 
         // If both are strings, use localeCompare
-        if (typeof valueA === 'string' && typeof valueB === 'string') {
-          return order === 'ascending'
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          return order === "ascending"
             ? valueA.localeCompare(valueB)
             : valueB.localeCompare(valueA);
         }
 
         // For numbers or other types, use subtraction for sorting
-        if (typeof valueA === 'number' && typeof valueB === 'number') {
-          return order === 'ascending' ? valueA - valueB : valueB - valueA;
+        if (typeof valueA === "number" && typeof valueB === "number") {
+          return order === "ascending" ? valueA - valueB : valueB - valueA;
         }
 
         // Convert other types to strings and compare
         const stringValueA = String(valueA);
         const stringValueB = String(valueB);
-        return order === 'ascending'
+        return order === "ascending"
           ? stringValueA.localeCompare(stringValueB)
           : stringValueB.localeCompare(stringValueA);
       });
@@ -810,14 +927,23 @@ const Index = forwardRef(
     ];
     const fetchData = () => {
       if (tableElement?.isServerPagination) {
-        const possibleNoOfPages = Math.ceil(dataSource?.length / serverPageSize);
+        const possibleNoOfPages = Math.ceil(
+          dataSource?.length / serverPageSize
+        );
         let sliced;
         if (serverCurrentPage < possibleNoOfPages) {
           // console.log("staRT", (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize)
           // console.log("END", (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize))
           sliced = dataSource.slice(
-            (serverCurrentPage == 1 ? serverCurrentPage - 1 : serverCurrentPage == 0 ? serverCurrentPage : serverCurrentPage - 1) * serverPageSize,
-            (serverCurrentPage == 0 ? 0 : Number((serverCurrentPage - 1) * serverPageSize)) + Number(serverPageSize)
+            (serverCurrentPage == 1
+              ? serverCurrentPage - 1
+              : serverCurrentPage == 0
+              ? serverCurrentPage
+              : serverCurrentPage - 1) * serverPageSize,
+            (serverCurrentPage == 0
+              ? 0
+              : Number((serverCurrentPage - 1) * serverPageSize)) +
+              Number(serverPageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
@@ -832,8 +958,13 @@ const Index = forwardRef(
         let sliced;
         if (currentPage < possibleNoOfPages) {
           sliced = dataSource.slice(
-            (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
-            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) + Number(pageSize)
+            (currentPage == 1
+              ? currentPage - 1
+              : currentPage == 0
+              ? currentPage
+              : currentPage - 1) * pageSize,
+            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
+              Number(pageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
@@ -843,8 +974,7 @@ const Index = forwardRef(
           );
         }
         setData(sliced);
-      }
-      else {
+      } else {
         setData(dataSource);
       }
       setTotal(dataSource.length);
@@ -911,30 +1041,33 @@ const Index = forwardRef(
         },
         statusType: {
           value: 0,
-          label: "Select Status"
+          label: "Select Status",
         },
         videoType: {
           value: 0,
-          label: "Select Video Type"
+          label: "Select Video Type",
         },
         createdTypeName: {
           value: 0,
-          label: "Created Type"
+          label: "Created Type",
         },
         sendDataType: {
           value: 0,
-          label: "Send Data Type"
+          label: "Send Data Type",
         },
         marketTypeName: {
           value: 0,
-          label: "Market Type"
+          label: "Market Type",
         },
         categoryName: {
           value: 0,
-          label: "Category"
+          label: "Category",
         },
       });
-      if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
+      if (
+        tableElement?.dateRange &&
+        tableElement?.title === "Commentary History"
+      ) {
         setDateRange(() => getDateRange(5));
       } else if (tableElement?.dateRange) {
         setDateRange({
@@ -953,9 +1086,9 @@ const Index = forwardRef(
           isActive: true,
         });
       }
-      setCurrentPage(0)
+      setCurrentPage(0);
       if (serverCurrentPage) {
-        setServerCurrentPage(0)
+        setServerCurrentPage(0);
       }
     };
 
@@ -970,7 +1103,10 @@ const Index = forwardRef(
         ...prevElements, // Retain previous state
       }));
 
-      if (tableElement?.dateRange && tableElement?.title === "Commentary History") {
+      if (
+        tableElement?.dateRange &&
+        tableElement?.title === "Commentary History"
+      ) {
         setDateRange(() => getDateRange(5));
       } else if (tableElement?.dateRange) {
         setDateRange({
@@ -990,12 +1126,11 @@ const Index = forwardRef(
           isActive: true,
         });
       }
-      setCurrentPage(0)
+      setCurrentPage(0);
       if (serverCurrentPage) {
-        setServerCurrentPage(0)
+        setServerCurrentPage(0);
       }
     };
-
 
     // const handleTableReload = (e) => {
     //   e.preventDefault();
@@ -1095,19 +1230,38 @@ const Index = forwardRef(
 
       const idSet = new Set(singleCheck); // Convert array to Set for faster lookup
 
-      setData(prevData =>
+      setData((prevData) =>
         prevData.map((item) => {
           // Find the first non-null ID in the given list
-          const itemId = item.id || item.commentaryId || item.competitionId || item.playerId || item.teamId ||
-            item.paneltyId || item.eventTypeId || item.matchTypeId || item.marketTemplateId ||
-            item.displayStatusId || item.newsId || item.bannerId || item.photoLibraryId
-            || item.eventMarketId || item.errId || item.notificationId ||
-            item.vendorId || item.templateId || item.clientId || item.blockId ||
-            item.configId || item.clientSocketId || item.apiId || item.apiEndPointId;
+          const itemId =
+            item.id ||
+            item.commentaryId ||
+            item.competitionId ||
+            item.playerId ||
+            item.teamId ||
+            item.paneltyId ||
+            item.eventTypeId ||
+            item.matchTypeId ||
+            item.marketTemplateId ||
+            item.displayStatusId ||
+            item.newsId ||
+            item.bannerId ||
+            item.photoLibraryId ||
+            item.eventMarketId ||
+            item.errId ||
+            item.notificationId ||
+            item.vendorId ||
+            item.templateId ||
+            item.clientId ||
+            item.blockId ||
+            item.configId ||
+            item.clientSocketId ||
+            item.apiId ||
+            item.apiEndPointId;
 
           return {
             ...item,
-            isIncluded: idSet.has(itemId) // Check in Set instead of array for efficiency
+            isIncluded: idSet.has(itemId), // Check in Set instead of array for efficiency
           };
         })
       );
@@ -1115,284 +1269,806 @@ const Index = forwardRef(
 
     useEffect(() => {
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
-        handleSearchFilter();
+        debouncedHandleSearchFilter(searchTerm);
       }
-    }, [searchTerm, dataSource]);
+    }, [searchTerm, debouncedHandleSearchFilter]);
+
     useEffect(() => {
       fetchData();
     }, [dataSource]);
-
+    useEffect(() => {
+      return () => {
+        debouncedHandleSearchFilter.cancel();
+      };
+    }, [debouncedHandleSearchFilter]);
     useImperativeHandle(ref, () => ({ getTableAction }));
     return (
       <Row>
         <Col lg={12}>
-          <Card className='card'>
-            {(tableElement?.title !== "Auto Events" && tableElement?.title !== "Manual Events") && (
-              <CardHeader className="p-0 p-md-2">
-                <form>
-                  {renderHeader && renderHeader()}
-                  <Row className="g-2">
-                    <Col className="col-sm-auto">
-                      <div className="d-flex flex-wrap align-items-center gap-2">
-                        {tableElement?.displayTitle && tableElement?.title}
-                        {isAddPermission && (
-                          <Button
-                            color="success"
-                            className="add-btn"
-                            onClick={() => {
-                              const data = isCommentaryList ? { state: 'isPredict' } : {};
+          <Card className="card">
+            {tableElement?.title !== "Auto Events" &&
+              tableElement?.title !== "Manual Events" && (
+                <CardHeader className="p-0 p-md-2">
+                  <form>
+                    {renderHeader && renderHeader()}
+                    <Row className="g-2">
+                      <Col className="col-sm-auto">
+                        <div className="d-flex flex-wrap align-items-center gap-2">
+                          {tableElement?.displayTitle && tableElement?.title}
+                          {isAddPermission && (
+                            <Button
+                              color="success"
+                              className="add-btn"
+                              onClick={() => {
+                                const data = isCommentaryList
+                                  ? { state: "isPredict" }
+                                  : {};
 
-                              navigate(onAddNavigate, data);
-                              // navigate(onAddNavigate);
-                            }}
-                            id="create-btn"
-                          >
-                            <i className="ri-add-line align-bottom me-1"></i>{" "}
-                            Add
-                          </Button>
-                        )}
-                        {tableElement?.clone ? (
-                          <Button
-                            color="warning"
-                            className="btn"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length === 1
-                                ? cloneModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                            id="create-btn"
-                          >
-                            <i className="ri-add-line align-bottom me-1"></i>{" "}
-                            Clone
-                          </Button>
-                        ) : null}
-                        {tableElement?.multiClone ? (
-                          <Button
-                            color="info"
-                            className="btn"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? multiCloneModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                            id="create-btn"
-                          >
-                            <i className="ri-add-line align-bottom me-1"></i>{" "}
-                            Multi Clone
-                          </Button>
-                        ) : null}
-                        {tableElement?.sendDataListSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
+                                navigate(onAddNavigate, data);
+                                // navigate(onAddNavigate);
                               }}
-                              value={selectedTableElements?.sendDataType}
-                              placeholder="Send Data Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.sendDataType?.value) {
-                                  handleTableActions("isSendData", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    sendDataType: e,
-                                  });
+                              id="create-btn"
+                            >
+                              <i className="ri-add-line align-bottom me-1"></i>{" "}
+                              Add
+                            </Button>
+                          )}
+                          {tableElement?.clone ? (
+                            <Button
+                              color="warning"
+                              className="btn"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length === 1
+                                  ? cloneModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                              id="create-btn"
+                            >
+                              <i className="ri-add-line align-bottom me-1"></i>{" "}
+                              Clone
+                            </Button>
+                          ) : null}
+                          {tableElement?.multiClone ? (
+                            <Button
+                              color="info"
+                              className="btn"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? multiCloneModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                              id="create-btn"
+                            >
+                              <i className="ri-add-line align-bottom me-1"></i>{" "}
+                              Multi Clone
+                            </Button>
+                          ) : null}
+                          {tableElement?.sendDataListSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.sendDataType}
+                                placeholder="Send Data Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.sendDataType?.value
+                                  ) {
+                                    handleTableActions("isSendData", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      sendDataType: e,
+                                    });
+                                  }
+                                }}
+                                options={sendDataList?.map((item) => ({
+                                  label: item?.sendDataType,
+                                  value: item?.isSendData,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.createdTypeListSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.createdTypeName}
+                                placeholder="Created Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.createdTypeName
+                                      ?.value
+                                  ) {
+                                    handleTableActions("createdType", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      createdTypeName: e,
+                                    });
+                                  }
+                                }}
+                                options={createdTypeList?.map((item) => ({
+                                  label: item?.createdTypeName,
+                                  value: item?.createdType,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isDatePrice && (
+                            <Button
+                              color="btn btn-primary"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 1
+                                  ? datePriceModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least two rows to open request info modal",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                            >
+                              Request Info
+                            </Button>
+                          )}
+                          {tableElement?.loadCommentary ? (
+                            <Button
+                              color="success"
+                              className="btn"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? loadModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                              id="create-btn"
+                            >
+                              <i className="ri-add-line align-bottom me-1"></i>{" "}
+                              Load
+                            </Button>
+                          ) : null}
+                          {isSuspendPermission && (
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? suspendModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                            >
+                              Suspend
+                            </Button>
+                          )}
+                          {isClosePermission && (
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? closeModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                            >
+                              Close
+                            </Button>
+                          )}
+                          {isCancelPermission && (
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? cancelModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          )}
+                          {isDeletePermission && (
+                            <Button
+                              color="soft-danger"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? deleteModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                            >
+                              <i className="ri-delete-bin-2-line"></i>
+                            </Button>
+                          )}
+                          {tableElement?.isNotCalculate && (
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? noCalculateModelFunction(true)
+                                  : dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
+                              }}
+                            >
+                              Not Calculate
+                            </Button>
+                          )}
+                          {tableElement?.displayTypeDropDown ? (
+                            <div className="">
+                              <Select
+                                value={selectedTableElements?.display}
+                                placeholder="Select Event Type"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 200,
+                                  }), // Adjust width as needed
+                                }}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.displayType?.value
+                                  ) {
+                                    handleTableActions("displayType", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      displayType: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.displayTypes?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.rateSourceListSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.rateSourceType}
+                                placeholder={ratesource?.rateSourceType}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.rateSourceType?.value
+                                  ) {
+                                    setSearchTerm("");
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      rateSourceType: e,
+                                    });
+                                    setRatesource({
+                                      rateSourceType: e?.label,
+                                      rateSourceRefId: e?.value,
+                                    });
+                                  }
+                                }}
+                                options={rateSourceList?.map((item) => ({
+                                  label: item?.rateSourceType,
+                                  value: item?.rateSourceRefId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.eventTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.eventType ||
+                                  selectedTableElements?.eventType
                                 }
-                              }}
-                              options={sendDataList?.map((item) => ({
-                                label: item?.sendDataType,
-                                value: item?.isSendData,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.createdTypeListSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.createdTypeName}
-                              placeholder="Created Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.createdTypeName?.value) {
-
-                                  handleTableActions("createdType", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    createdTypeName: e,
-                                  });
+                                isDisabled={
+                                  selectedTableElementsLogs?.eventType
                                 }
-                              }}
-                              options={createdTypeList?.map((item) => ({
-                                label: item?.createdTypeName,
-                                value: item?.createdType,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.isDatePrice && (
-                          <Button
-                            color="btn btn-primary"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 1
-                                ? datePriceModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least two rows to open request info modal",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Request Info
-                          </Button>
-                        )}
-                        {tableElement?.loadCommentary ? (
-                          <Button
-                            color="success"
-                            className="btn"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? loadModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                            id="create-btn"
-                          >
-                            <i className="ri-add-line align-bottom me-1"></i>{" "}
-                            Load
-                          </Button>
-                        ) : null}
-                        {isSuspendPermission && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? suspendModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Suspend
-                          </Button>
-                        )}
-                        {isClosePermission && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? closeModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Close
-                          </Button>
-                        )}
-                        {isCancelPermission && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? cancelModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        )}
-                        {isDeletePermission && (
-                          <Button
-                            color="soft-danger"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? deleteModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            <i className="ri-delete-bin-2-line"></i>
-                          </Button>
-                        )}
-                        {tableElement?.isNotCalculate && (
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              setSearchTerm("")
-                              singleCheck.length > 0
-                                ? noCalculateModelFunction(true)
-                                : dispatch(
-                                  updateToastData({
-                                    data: "Select at least one (only One) row",
-                                    title: "Error",
-                                    type: ERROR,
-                                  })
-                                );
-                            }}
-                          >
-                            Not Calculate
-                          </Button>
-                        )}
-                        {tableElement?.displayTypeDropDown ? (
-                          <div className="">
+                                placeholder="Event Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.eventType?.value
+                                  ) {
+                                    handleTableActions("eventTypeId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      eventType: e,
+                                      competition: {
+                                        value: 0,
+                                        label: "Competition",
+                                      },
+                                      eventName: {
+                                        value: 0,
+                                        label: "Event List",
+                                      },
+                                      commentary: {
+                                        value: 0,
+                                        label: "Commentary",
+                                      },
+                                    });
+                                    setEventTypeId(e?.value);
+                                    setCompetitionId(null);
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Event Type", value: null },
+                                  ...eventTypes?.map((item) => ({
+                                    label: item?.eventType,
+                                    value: item?.eventTypeId,
+                                  })),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.competitionsListSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.competition ||
+                                  selectedTableElements?.competition
+                                }
+                                isDisabled={
+                                  selectedTableElementsLogs?.competition
+                                }
+                                placeholder="Competition List"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.competition?.value
+                                  ) {
+                                    setCompetitionId(e?.value);
+                                    handleTableActions("competitionId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      competition: e,
+                                      eventName: {
+                                        value: 0,
+                                        label: "Event List",
+                                      },
+                                    });
+                                  }
+                                }}
+                                options={competitionList?.map((item) => ({
+                                  label: item?.competition,
+                                  value: item?.competitionId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.eventListSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.eventName ||
+                                  selectedTableElements?.eventName
+                                }
+                                isDisabled={
+                                  selectedTableElementsLogs?.eventName
+                                }
+                                placeholder="Event List"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.eventName?.value
+                                  ) {
+                                    handleTableActions("commentaryId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      eventName: e,
+                                    });
+                                  }
+                                }}
+                                options={eventList
+                                  ?.sort(
+                                    (a, b) =>
+                                      new Date(a.eventDate) -
+                                      new Date(b.eventDate)
+                                  ) // Sort in ascending order
+                                  ?.map((item) => ({
+                                    label: `${
+                                      item?.eventName
+                                    } (${convertDateUTCToLocal(
+                                      item?.eventDate,
+                                      "index"
+                                    )})`,
+                                    value: item?.commentaryId,
+                                  }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.statusListSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.statusType}
+                                // isDisabled={selectedTableElementsLogs?.status}
+                                // defaultValue={statusList?.find(item => item.statusId === 1)?.statusType}
+                                placeholder="Status Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.statusType?.value
+                                  ) {
+                                    handleTableActions("status", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      statusType: e,
+                                    });
+                                  }
+                                }}
+                                options={statusList?.map((item) => ({
+                                  label: item?.statusType,
+                                  value: item?.statusId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.videoType ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.videoType}
+                                placeholder="Video Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.videoType?.value
+                                  ) {
+                                    handleTableActions("videoType", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      videoType: e,
+                                    });
+                                  }
+                                }}
+                                options={matchType?.map((item) => ({
+                                  label: item?.matchType,
+                                  value: item?.matchTypeId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.matchTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.matchType}
+                                placeholder="Match Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.matchType?.value
+                                  ) {
+                                    handleTableActions("matchTypeId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      matchType: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Match Type", value: null },
+                                  ...(matchType?.map((item) => ({
+                                    label: item?.matchType,
+                                    value: item?.matchTypeId,
+                                  })) || []),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.typeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.type}
+                                placeholder="Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.type?.value
+                                  ) {
+                                    handleTableActions("type", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      type: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Type", value: null },
+                                  { label: "International", value: 1 },
+                                  { label: "Domestic", value: 2 },
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement.title !== "Event Markets" &&
+                          tableElement?.marketTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.marketTypeName}
+                                placeholder="Market Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.marketTypeName?.value
+                                  ) {
+                                    handleTableActions("marketTypeId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      marketTypeName: e,
+                                      categoryName: {
+                                        value: 0,
+                                        label: "Category",
+                                      },
+                                    });
+                                    setSelectedMarketType(e?.value);
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Market Type", value: 0 },
+                                  ...marketTypes?.map((item) => ({
+                                    label: item?.marketTypeName,
+                                    value: item?.marketTypeId,
+                                  })),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement.title !== "Event Markets" &&
+                          tableElement?.categorySelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.categoryName}
+                                placeholder="Category"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.categoryName?.value
+                                  ) {
+                                    handleTableActions(
+                                      "marketTypeCategoryId",
+                                      e
+                                    );
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      categoryName: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Category", value: 0 },
+                                  ...categories?.map((item) => ({
+                                    label: item?.categoryName,
+                                    value: item?.marketTypeCategoryId,
+                                  })),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.competitionsSelect ? (
+                            <div className="">
+                              <Select
+                                value={
+                                  selectedTableElementsLogs?.competition ||
+                                  selectedTableElements?.competition
+                                }
+                                isDisabled={
+                                  selectedTableElementsLogs?.competition
+                                }
+                                placeholder="Competition"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 200,
+                                  }), // Adjust width as needed
+                                }}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.competition?.value
+                                  ) {
+                                    setCompetitionId(e?.value);
+                                    handleTableActions("competitionId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      competition: e,
+                                      commentary: {
+                                        value: 0,
+                                        label: "Commentary",
+                                      },
+                                    });
+                                  }
+                                }}
+                                options={competitions?.map((item) => ({
+                                  label: item?.competition,
+                                  value: item?.competitionId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.commentarySelect ? (
+                            <div className="">
+                              <Select
+                                value={
+                                  selectedTableElementsLogs?.commentary ||
+                                  selectedTableElements?.commentary
+                                }
+                                isDisabled={
+                                  selectedTableElementsLogs?.commentary
+                                }
+                                placeholder="Commentary"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 200,
+                                  }), // Adjust width as needed
+                                }}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.commentary?.value
+                                  ) {
+                                    handleTableActions("commentaryId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      commentary: e,
+                                    });
+                                  }
+                                }}
+                                options={commentary?.map((item) => ({
+                                  label: `${
+                                    item?.eventName
+                                  } (${convertDateUTCToLocal(
+                                    item?.eventDate,
+                                    "index"
+                                  )})`,
+                                  value: item?.commentaryId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.teamsList ? (
                             <Select
-                              value={selectedTableElements?.display}
-                              placeholder="Select Event Type"
+                              value={
+                                selectedTableElementsLogs?.team
+                                  ? selectedTableElementsLogs?.team
+                                  : selectedTableElements?.team
+                              }
+                              isDisabled={selectedTableElementsLogs?.team}
+                              placeholder="Team"
                               styles={{
                                 control: (provided) => ({
                                   ...provided,
@@ -1400,16 +2076,47 @@ const Index = forwardRef(
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.displayType?.value) {
-
-                                  handleTableActions("displayType", e);
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.team?.value
+                                ) {
+                                  handleTableActions("teamId", e);
                                   setSelectedTableElements({
                                     ...selectedTableElements,
-                                    displayType: e,
+                                    team: e,
                                   });
                                 }
                               }}
-                              options={tableElement?.displayTypes?.map(
+                              options={teams?.map((item) => ({
+                                label: item?.teamName,
+                                value: item?.teamId,
+                              }))}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          ) : null}
+                          {tableElement?.commentaryStatus ? (
+                            <Select
+                              value={selectedTableElements?.commentaryStatus}
+                              placeholder="Commentary Status"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.commentaryStatus?.value
+                                ) {
+                                  handleTableActions("commentaryStatus", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    commentaryStatus: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.statusOptions?.map(
                                 (item) => ({
                                   label: item?.label,
                                   value: item?.value,
@@ -1417,804 +2124,306 @@ const Index = forwardRef(
                               )}
                               classNamePrefix="filter-dropdown"
                             />
-                          </div>
-                        ) : null}
-                        {tableElement?.rateSourceListSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.rateSourceType}
-                              placeholder={ratesource?.rateSourceType}
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.rateSourceType?.value) {
-
-                                  setSearchTerm("")
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    rateSourceType: e,
-                                  });
-                                  setRatesource({
-                                    rateSourceType: e?.label,
-                                    rateSourceRefId: e?.value,
-                                  })
-                                }
-                              }}
-                              options={rateSourceList?.map((item) => ({
-                                label: item?.rateSourceType,
-                                value: item?.rateSourceRefId,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.eventTypeSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElementsLogs?.eventType || selectedTableElements?.eventType}
-                              isDisabled={selectedTableElementsLogs?.eventType}
-                              placeholder="Event Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.eventType?.value) {
-                                  handleTableActions("eventTypeId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    eventType: e,
-                                    competition: { value: 0, label: "Competition" },
-                                    eventName: { value: 0, label: "Event List" },
-                                    commentary: { value: 0, label: "Commentary" },
-                                  });
-                                  setEventTypeId(e?.value);
-                                  setCompetitionId(null);
-                                }
-                              }}
-                              options={[
-                                { label: "Select Event Type", value: null },
-                                ...eventTypes?.map((item) => ({
-                                  label: item?.eventType,
-                                  value: item?.eventTypeId,
-                                })),
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.competitionsListSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElementsLogs?.competition || selectedTableElements?.competition}
-                              isDisabled={selectedTableElementsLogs?.competition}
-                              placeholder="Competition List"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.competition?.value) {
-                                  setCompetitionId(e?.value);
-                                  handleTableActions("competitionId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    competition: e,
-                                    eventName: { value: 0, label: "Event List" },
-                                  });
-                                }
-                              }}
-                              options={competitionList?.map((item) => ({
-                                label: item?.competition,
-                                value: item?.competitionId,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.eventListSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElementsLogs?.eventName || selectedTableElements?.eventName}
-                              isDisabled={selectedTableElementsLogs?.eventName}
-                              placeholder="Event List"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.eventName?.value) {
-                                  handleTableActions("commentaryId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    eventName: e,
-                                  });
-                                }
-                              }}
-                              options={eventList
-                                ?.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate)) // Sort in ascending order
-                                ?.map((item) => ({
-                                  label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
-                                  value: item?.commentaryId,
-                                }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.statusListSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.statusType}
-                              // isDisabled={selectedTableElementsLogs?.status}
-                              // defaultValue={statusList?.find(item => item.statusId === 1)?.statusType}
-                              placeholder="Status Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.statusType?.value) {
-                                  handleTableActions("status", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    statusType: e,
-                                  });
-                                }
-                              }}
-                              options={statusList?.map((item) => ({
-                                label: item?.statusType,
-                                value: item?.statusId,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.videoType ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.videoType}
-                              placeholder="Video Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.videoType?.value) {
-                                  handleTableActions("videoType", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    videoType: e,
-                                  });
-                                }
-                              }}
-                              options={matchType?.map((item) => ({
-                                label: item?.matchType,
-                                value: item?.matchTypeId,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.matchTypeSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.matchType}
-                              placeholder="Match Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.matchType?.value) {
-                                  handleTableActions("matchTypeId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    matchType: e,
-                                  });
-                                }
-                              }}
-                              options={[
-                                { label: "Select Match Type", value: null },
-                                ...(matchType?.map((item) => ({
-                                  label: item?.matchType,
-                                  value: item?.matchTypeId,
-                                })) || [])
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.typeSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.type}
-                              placeholder="Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.type?.value) {
-                                  handleTableActions("type", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    type: e,
-                                  });
-                                }
-                              }}
-                              options={[
-                                { label: "Select Type", value: null },
-                                { label: "International", value: 1 },
-                                { label: "Domestic", value: 2 },
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement.title !== "Event Markets" && tableElement?.marketTypeSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.marketTypeName}
-                              placeholder="Market Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.marketTypeName?.value) {
-                                  handleTableActions("marketTypeId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    marketTypeName: e,
-                                    categoryName: { value: 0, label: "Category" },
-                                  });
-                                  setSelectedMarketType(e?.value)
-                                }
-                              }}
-                              options={[
-                                { label: "Select Market Type", value: 0 },
-                                ...marketTypes?.map((item) => ({
-                                  label: item?.marketTypeName,
-                                  value: item?.marketTypeId,
-                                })),
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement.title !== "Event Markets" && tableElement?.categorySelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElements?.categoryName}
-                              placeholder="Category"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.categoryName?.value) {
-                                  handleTableActions("marketTypeCategoryId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    categoryName: e,
-                                  });
-                                }
-                              }}
-                              options={[
-                                { label: "Select Category", value: 0 },
-                                ...categories?.map((item) => ({
-                                  label: item?.categoryName,
-                                  value: item?.marketTypeCategoryId,
-                                })),
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.competitionsSelect ? (
-                          <div className="">
-                            <Select
-                              value={selectedTableElementsLogs?.competition || selectedTableElements?.competition}
-                              isDisabled={selectedTableElementsLogs?.competition}
-                              placeholder="Competition"
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 200,
-                                }), // Adjust width as needed
-                              }}
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.competition?.value) {
-                                  setCompetitionId(e?.value);
-                                  handleTableActions("competitionId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    competition: e,
-                                    commentary: { value: 0, label: "Commentary" },
-                                  });
-                                }
-                              }}
-                              options={competitions?.map((item) => ({
-                                label: item?.competition,
-                                value: item?.competitionId,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.commentarySelect ? (
-                          <div className="">
-                            <Select
-                              value={selectedTableElementsLogs?.commentary || selectedTableElements?.commentary}
-                              isDisabled={selectedTableElementsLogs?.commentary}
-                              placeholder="Commentary"
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 200,
-                                }), // Adjust width as needed
-                              }}
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.commentary?.value) {
-                                  handleTableActions("commentaryId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    commentary: e,
-                                  });
-                                }
-                              }}
-                              options={commentary?.map((item) => ({
-                                label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
-                                value: item?.commentaryId,
-                              }))}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.teamsList ? (
-                          <Select
-                            value={selectedTableElementsLogs?.team ? selectedTableElementsLogs?.team : selectedTableElements?.team}
-                            isDisabled={selectedTableElementsLogs?.team}
-                            placeholder="Team"
-                            styles={{
-                              control: (provided) => ({
-                                ...provided,
-                                width: 200,
-                              }), // Adjust width as needed
-                            }}
-                            onChange={(e) => {
-                              if (e?.value !== selectedTableElements?.team?.value) {
-                                handleTableActions("teamId", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  team: e,
-                                });
-                              }
-                            }}
-                            options={teams?.map((item) => ({
-                              label: item?.teamName,
-                              value: item?.teamId,
-                            }))}
-                            classNamePrefix="filter-dropdown"
-                          />
-                        ) : null}
-                        {tableElement?.commentaryStatus ? (
-                          <Select
-                            value={selectedTableElements?.commentaryStatus}
-                            placeholder="Commentary Status"
-                            styles={{
-                              control: (provided) => ({
-                                ...provided,
-                                width: 200,
-                              }), // Adjust width as needed
-                            }}
-                            onChange={(e) => {
-                              if (e?.value !== selectedTableElements?.commentaryStatus?.value) {
-                                handleTableActions("commentaryStatus", e);
-                                setSelectedTableElements({
-                                  ...selectedTableElements,
-                                  commentaryStatus: e,
-                                });
-                              }
-                            }}
-                            options={tableElement?.statusOptions?.map(
-                              (item) => ({
-                                label: item?.label,
-                                value: item?.value,
-                              })
-                            )}
-                            classNamePrefix="filter-dropdown"
-                          />
-                        ) : null}
-                        {tableElement?.actionType ? (
-                          <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
-                            <div className="d-flex flex-column">
-                              <Select
-                                placeholder="Action Type"
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    width: 200,
-                                  }),
+                          ) : null}
+                          {tableElement?.actionType ? (
+                            <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">
+                              <div className="d-flex flex-column">
+                                <Select
+                                  placeholder="Action Type"
+                                  styles={{
+                                    control: (provided) => ({
+                                      ...provided,
+                                      width: 200,
+                                    }),
+                                  }}
+                                  onChange={(e) => {
+                                    setSearchTerm("");
+                                    setSelectedClientSocket({
+                                      actionType: e?.value,
+                                      clientSocketId: singleCheck,
+                                    });
+                                  }}
+                                  options={actionTypeOptions}
+                                  classNamePrefix="filter-dropdown"
+                                />
+                              </div>
+                              <button
+                                className="btn btn-primary"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  singleCheck.length > 0
+                                    ? handleClientSocketChange()
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
                                 }}
-                                onChange={(e) => {
-                                  setSearchTerm("")
-                                  setSelectedClientSocket({
-                                    actionType: e?.value,
-                                    clientSocketId: singleCheck,
-                                  });
+                                type="delay"
+                                id="create-btn"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          ) : null}
+                          {tableElement?.isShowContent ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolShowStatus />}
+                                checkedIcon={<OnSymbolShowStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions(
+                                    "isShowContent",
+                                    !statusSwitch
+                                  );
                                 }}
-                                options={actionTypeOptions}
-                                classNamePrefix="filter-dropdown"
+                                checked={statusSwitch}
                               />
                             </div>
-                            <button
-                              className="btn btn-primary"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                singleCheck.length > 0
-                                  ? handleClientSocketChange()
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
+                          ) : null}
+                          {tableElement?.isActive ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolStatus />}
+                                checkedIcon={<OnSymbolStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions("isActive", !statusSwitch);
+                                }}
+                                checked={statusSwitch}
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isApproved ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolApprovedStatus />}
+                                checkedIcon={<OnSymbolApprovedStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions(
+                                    "isApproved",
+                                    !statusSwitch
                                   );
+                                }}
+                                checked={statusSwitch}
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isTrending ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolTrendingStatus />}
+                                checkedIcon={<OnSymbolTrendingStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions(
+                                    "isTrending",
+                                    !trendingStatusSwitch
+                                  );
+                                }}
+                                checked={trendingStatusSwitch}
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isMen ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolMenStatus />}
+                                checkedIcon={<OnSymbolMenStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions("isMen", !menSwitch);
+                                }}
+                                checked={menSwitch}
+                              />
+                            </div>
+                          ) : null}
+                          {!tableElement?.isDateRange &&
+                          tableElement?.resetButton &&
+                          tableElement?.title !== "Commentary History" ? (
+                            <div>
+                              <button
+                                disabled={
+                                  selectedTableElementsLogs?.competition ||
+                                  selectedTableElementsLogs?.commentary ||
+                                  selectedTableElementsLogs?.eventType ||
+                                  selectedTableElementsLogs?.team
+                                }
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleTableReset();
+                                }}
+                                type="reset"
+                                id="create-btn"
+                              >
+                                Reset
+                                {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                              </button>
+                            </div>
+                          ) : null}
+                          {!tableElement?.isDateRange &&
+                          tableElement?.reloadButton &&
+                          tableElement?.title !== "Error Logs" &&
+                          tableElement?.title !== "Thirdparty Logs" &&
+                          tableElement?.title !== "Commentary History" ? (
+                            <div>
+                              <button
+                                className="btn btn-primary"
+                                onClick={(e) => {
+                                  handleTableReload(e);
+                                }}
+                                type="reload"
+                                id="create-btn"
+                              >
+                                Reload
+                                {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                              </button>
+                            </div>
+                          ) : null}
+                          {!tableElement?.isDateRange &&
+                          tableElement?.isDateTypeSelect &&
+                          tableElement?.title == "Market Data Logs" ? (
+                            <Select
+                              value={dateType}
+                              placeholder="Date Type"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }),
                               }}
-                              type="delay"
-                              id="create-btn"
-                            >
-                              Save
-                            </button>
-                          </div>
-                        ) : null}
-                        {tableElement?.isShowContent ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolShowStatus />}
-                              checkedIcon={<OnSymbolShowStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions(
-                                  "isShowContent",
-                                  !statusSwitch
-                                );
-                              }}
-                              checked={statusSwitch}
+                              onChange={(e) => setDateType(e)}
+                              options={[
+                                { label: "Local Timezone", value: 1 },
+                                { label: "UTC Timezone", value: 2 },
+                              ]}
+                              classNamePrefix="filter-dropdown"
                             />
-                          </div>
-                        ) : null}
-                        {tableElement?.isActive ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolStatus />}
-                              checkedIcon={<OnSymbolStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isActive", !statusSwitch);
-                              }}
-                              checked={statusSwitch}
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.isApproved ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolApprovedStatus />}
-                              checkedIcon={<OnSymbolApprovedStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isApproved", !statusSwitch);
-                              }}
-                              checked={statusSwitch}
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.isTrending ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolTrendingStatus />}
-                              checkedIcon={<OnSymbolTrendingStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isTrending", !trendingStatusSwitch);
-                              }}
-                              checked={trendingStatusSwitch}
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.isMen ? (
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              width={70}
-                              uncheckedIcon={<OffsymbolMenStatus />}
-                              checkedIcon={<OnSymbolMenStatus />}
-                              className="pe-0"
-                              onColor="#02a499"
-                              onChange={() => {
-                                handleTableActions("isMen", !menSwitch);
-                              }}
-                              checked={menSwitch}
-                            />
-                          </div>
-                        ) : null}
-                        {!tableElement?.isDateRange && tableElement?.resetButton && (tableElement?.title !== "Commentary History") ? (
-                          <div>
-                            <button
-                              disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
-                              className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReset();
-                              }}
-                              type="reset"
-                              id="create-btn"
+                          ) : null}
+                          {tableElement?.importExport ? (
+                            <div
+                              className="d-flex align-items-center"
+                              style={{}}
                             >
-                              Reset
-                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                            </button>
-                          </div>
-                        ) : null}
-                        {(!tableElement?.isDateRange && tableElement?.reloadButton && (tableElement?.title !== "Error Logs" && tableElement?.title !== "Thirdparty Logs" && tableElement?.title !== "Commentary History")) ? (
-                          <div>
-                            <button
-                              className="btn btn-primary"
-                              onClick={(e) => {
-                                handleTableReload(e);
-                              }}
-                              type="reload"
-                              id="create-btn"
+                              <span
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  setSearchTerm("");
+                                  setImportExportModelVisable(true);
+                                }}
+                              >
+                                Bulk Update
+                              </span>
+                            </div>
+                          ) : null}
+                          {tableElement?.importExport ? (
+                            <div
+                              className="d-flex align-items-center"
+                              style={{}}
                             >
-                              Reload
-                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                            </button>
-                          </div>
-                        ) : null}
-                        {(!tableElement?.isDateRange && tableElement?.isDateTypeSelect && (tableElement?.title == "Market Data Logs")) ? (
-                          <Select
-                            value={dateType}
-                            placeholder="Date Type"
-                            styles={{
-                              control: (provided) => ({
-                                ...provided,
-                                width: 200,
-                              }),
-                            }}
-                            onChange={(e) => setDateType(e)}
-                            options={[
-                              { label: "Local Timezone", value: 1 },
-                              { label: "UTC Timezone", value: 2 },
-                            ]}
-                            classNamePrefix="filter-dropdown"
-                          />
-                        ) : null}
-                        {tableElement?.importExport ? (
-                          <div className="d-flex align-items-center" style={{}}>
-                            <span
-                              className="btn btn-primary"
-                              onClick={() => {
-                                setSearchTerm("")
-                                setImportExportModelVisable(true);
-                              }}
-                            >
-                              Bulk Update
-                            </span>
-                          </div>
-                        ) : null}
-                        {tableElement?.importExport ? (
-                          <div className="d-flex align-items-center" style={{}}>
-                            <span
-                              className="btn btn-warning"
-                              onClick={() => {
-                                setSearchTerm("")
-                                handlePlayerHistoryModalPopUp();
-                              }}
-                            >
-                              Player History Update
-                            </span>
-                          </div>
-                        ) : null}
-                      </div>
-                    </Col>
-                    <Col className="col-sm-auto ms-auto">
-                      {!tableElement?.isDateRange && tableElement?.loadData ? (
-                        <Button
-                          color="warning"
-                          onClick={() => {
-                            loadDataModelFunction(true);
-                          }}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <i className="ri-refresh-line"></i>
-                          Load Data
-                        </Button>
-                      ) : null}
-                    </Col>
-                  </Row>
-                  <Col className="col-sm-auto ms-auto my-2">
-                    <div className="d-flex flex-wrap align-items-center gap-2">
-                      {isDeleteAllPermission && (
-                        <Button
-                          color={isSignalRStarted ? "success" : "danger"}
-                          onClick={() => {
-                            loadSignalRToggleFunction();
-                          }}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <i className="ri-refresh-line"></i>
-                          {isSignalRStarted ? "SignalR Started" : "SignalR Stopped"}
-                        </Button>
-                      )}
-                      {isDeleteAllPermission && (
-                        <Button
-                          color="warning"
-                          onClick={() => {
-                            loadPanelModelFunction();
-                          }}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <i className="ri-refresh-line"></i>
-                          Load Panel Data
-                        </Button>
-                      )}
-                      {isDeleteAllPermission && (
-                        <Button
-                          color="warning"
-                          onClick={() => {
-                            loadClientModelFunction();
-                          }}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <i className="ri-refresh-line"></i>
-                          Load Client Data
-                        </Button>
-                      )}
-                      {isDeleteAllPermission && (
-                        <div className="ms-auto">
+                              <span
+                                className="btn btn-warning"
+                                onClick={() => {
+                                  setSearchTerm("");
+                                  handlePlayerHistoryModalPopUp();
+                                }}
+                              >
+                                Player History Update
+                              </span>
+                            </div>
+                          ) : null}
+                        </div>
+                      </Col>
+                      <Col className="col-sm-auto ms-auto">
+                        {!tableElement?.isDateRange &&
+                        tableElement?.loadData ? (
                           <Button
-                            color="danger"
+                            color="warning"
                             onClick={() => {
-                              deleteAllModelFunction(true)
+                              loadDataModelFunction(true);
                             }}
                             className="d-flex align-items-center gap-1"
                           >
-                            <i className="ri-delete-bin-2-line"></i>
-                            Delete All Commentary
+                            <i className="ri-refresh-line"></i>
+                            Load Data
                           </Button>
-                        </div>
-                      )}
-                    </div>
-                  </Col>
-                  {tableElement?.dateRange ? (
-                    <Row className="">
-                      {/* <Col className="bg-white p-2 m-2"> */}
-                      <div className="d-flex flex-wrap align-items-center gap-2 p-2">
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="datetime-local"
-                            defaultValue={dateRange?.startDate}
-                            onChange={(startDate) => {
-                              setDateRange({
-                                ...dateRange,
-                                startDate: startDate?.target?.value,
-                              });
-                            }}
-                            id="example-datetime-local-input"
-                          />
-                        </div>
-                        <span>To</span>
-                        <div className="d-flex flex-column">
-                          <input
-                            className="form-control"
-                            type="datetime-local"
-                            defaultValue={dateRange?.endDate}
-                            onChange={(startDate) => {
-                              setDateRange({
-                                ...dateRange,
-                                endDate: startDate?.target?.value,
-                              });
-                            }}
-                            id="example-datetime-local-input"
-                          />
-                        </div>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => {
-                            if (setServerCurrentPage) {
-                              setServerCurrentPage(0);
-                            }
-                            setCurrentPage(0)
-                            reFetchData();
-                          }}
-                          type="reset"
-                          id="create-btn"
-                        >
-                          Search
-                          {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                        </button>
-
-                        {tableElement?.resetButton && (tableElement?.title === "Commentary History") ? (
-                          <div>
-                            <button
-                              disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
-                              className="btn btn-primary"
-                              onClick={() => {
-                                handleTableReset();
-                              }}
-                              type="reset"
-                              id="create-btn"
-                            >
-                              Reset
-                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                            </button>
-                          </div>
                         ) : null}
-
-                        {(tableElement?.reloadButton && (tableElement?.title === "Error Logs" || tableElement?.title === "Thirdparty Logs" || tableElement?.title === "Commentary History")) ? (
-                          <div>
-                            <button
-                              className="btn btn-primary"
-                              onClick={(e) => {
-                                handleTableReload(e);
-                              }}
-                              type="reload"
-                              id="create-btn"
-                            >
-                              Reload
-                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
-                            </button>
-                          </div>
-                        ) : null}
-                      </div>
-                      {/* </Col> */}
+                      </Col>
                     </Row>
-                  ) : null}
-                  {tableElement?.isDateRange ? (
-                    <Row className="g-2">
-                      <Col className="col-sm-auto">
-                        <div className="d-flex flex-wrap align-items-center gap-2 p-2">
+                    <Col className="col-sm-auto ms-auto my-2">
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        {isDeleteAllPermission && (
                           <Button
-                            color={`${isSearch ? "primary" : "danger"}`}
-                            size="sm"
-                            className="btn"
-                            onClick={() => { setIsSearch(!isSearch) }}
+                            color={isSignalRStarted ? "success" : "danger"}
+                            onClick={() => {
+                              loadSignalRToggleFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
                           >
-                            <i
-                              className={`bx ${isSearch ? "bx-check" : "bx-block"
-                                }`}
-                            ></i>
+                            <i className="ri-refresh-line"></i>
+                            {isSignalRStarted
+                              ? "SignalR Started"
+                              : "SignalR Stopped"}
                           </Button>
+                        )}
+                        {isDeleteAllPermission && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadPanelModelFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Panel Data
+                          </Button>
+                        )}
+                        {isDeleteAllPermission && (
+                          <Button
+                            color="warning"
+                            onClick={() => {
+                              loadClientModelFunction();
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <i className="ri-refresh-line"></i>
+                            Load Client Data
+                          </Button>
+                        )}
+                        {isDeleteAllPermission && (
+                          <div className="ms-auto">
+                            <Button
+                              color="danger"
+                              onClick={() => {
+                                deleteAllModelFunction(true);
+                              }}
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <i className="ri-delete-bin-2-line"></i>
+                              Delete All Commentary
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </Col>
+                    {tableElement?.dateRange ? (
+                      <Row className="">
+                        {/* <Col className="bg-white p-2 m-2"> */}
+                        <div className="d-flex flex-wrap align-items-center gap-2 p-2">
                           <div className="d-flex flex-column">
                             <input
                               className="form-control"
@@ -2250,20 +2459,26 @@ const Index = forwardRef(
                               if (setServerCurrentPage) {
                                 setServerCurrentPage(0);
                               }
-                              setCurrentPage(0)
+                              setCurrentPage(0);
                               reFetchData();
                             }}
-                            disabled={!isSearch}
                             type="reset"
                             id="create-btn"
                           >
                             Search
                             {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                           </button>
-                          {tableElement?.resetButton ? (
+
+                          {tableElement?.resetButton &&
+                          tableElement?.title === "Commentary History" ? (
                             <div>
                               <button
-                                disabled={selectedTableElementsLogs?.competition || selectedTableElementsLogs?.commentary || selectedTableElementsLogs?.eventType || selectedTableElementsLogs?.team}
+                                disabled={
+                                  selectedTableElementsLogs?.competition ||
+                                  selectedTableElementsLogs?.commentary ||
+                                  selectedTableElementsLogs?.eventType ||
+                                  selectedTableElementsLogs?.team
+                                }
                                 className="btn btn-primary"
                                 onClick={() => {
                                   handleTableReset();
@@ -2276,7 +2491,11 @@ const Index = forwardRef(
                               </button>
                             </div>
                           ) : null}
-                          {(tableElement?.reloadButton) ? (
+
+                          {tableElement?.reloadButton &&
+                          (tableElement?.title === "Error Logs" ||
+                            tableElement?.title === "Thirdparty Logs" ||
+                            tableElement?.title === "Commentary History") ? (
                             <div>
                               <button
                                 className="btn btn-primary"
@@ -2291,25 +2510,128 @@ const Index = forwardRef(
                               </button>
                             </div>
                           ) : null}
-                          {tableElement?.isDateTypeSelect ? (
-                            <Select
-                              value={dateType}
-                              placeholder="Date Type"
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 200,
-                                }),
+                        </div>
+                        {/* </Col> */}
+                      </Row>
+                    ) : null}
+                    {tableElement?.isDateRange ? (
+                      <Row className="g-2">
+                        <Col className="col-sm-auto">
+                          <div className="d-flex flex-wrap align-items-center gap-2 p-2">
+                            <Button
+                              color={`${isSearch ? "primary" : "danger"}`}
+                              size="sm"
+                              className="btn"
+                              onClick={() => {
+                                setIsSearch(!isSearch);
                               }}
-                              onChange={(e) => setDateType(e)}
-                              options={[
-                                { label: "Local Timezone", value: 1 },
-                                { label: "UTC Timezone", value: 2 },
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          ) : null}
-                          {/* {tableElement?.isDataprovider ? (
+                            >
+                              <i
+                                className={`bx ${
+                                  isSearch ? "bx-check" : "bx-block"
+                                }`}
+                              ></i>
+                            </Button>
+                            <div className="d-flex flex-column">
+                              <input
+                                className="form-control"
+                                type="datetime-local"
+                                defaultValue={dateRange?.startDate}
+                                onChange={(startDate) => {
+                                  setDateRange({
+                                    ...dateRange,
+                                    startDate: startDate?.target?.value,
+                                  });
+                                }}
+                                id="example-datetime-local-input"
+                              />
+                            </div>
+                            <span>To</span>
+                            <div className="d-flex flex-column">
+                              <input
+                                className="form-control"
+                                type="datetime-local"
+                                defaultValue={dateRange?.endDate}
+                                onChange={(startDate) => {
+                                  setDateRange({
+                                    ...dateRange,
+                                    endDate: startDate?.target?.value,
+                                  });
+                                }}
+                                id="example-datetime-local-input"
+                              />
+                            </div>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                if (setServerCurrentPage) {
+                                  setServerCurrentPage(0);
+                                }
+                                setCurrentPage(0);
+                                reFetchData();
+                              }}
+                              disabled={!isSearch}
+                              type="reset"
+                              id="create-btn"
+                            >
+                              Search
+                              {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                            </button>
+                            {tableElement?.resetButton ? (
+                              <div>
+                                <button
+                                  disabled={
+                                    selectedTableElementsLogs?.competition ||
+                                    selectedTableElementsLogs?.commentary ||
+                                    selectedTableElementsLogs?.eventType ||
+                                    selectedTableElementsLogs?.team
+                                  }
+                                  className="btn btn-primary"
+                                  onClick={() => {
+                                    handleTableReset();
+                                  }}
+                                  type="reset"
+                                  id="create-btn"
+                                >
+                                  Reset
+                                  {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                                </button>
+                              </div>
+                            ) : null}
+                            {tableElement?.reloadButton ? (
+                              <div>
+                                <button
+                                  className="btn btn-primary"
+                                  onClick={(e) => {
+                                    handleTableReload(e);
+                                  }}
+                                  type="reload"
+                                  id="create-btn"
+                                >
+                                  Reload
+                                  {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
+                                </button>
+                              </div>
+                            ) : null}
+                            {tableElement?.isDateTypeSelect ? (
+                              <Select
+                                value={dateType}
+                                placeholder="Date Type"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 200,
+                                  }),
+                                }}
+                                onChange={(e) => setDateType(e)}
+                                options={[
+                                  { label: "Local Timezone", value: 1 },
+                                  { label: "UTC Timezone", value: 2 },
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            ) : null}
+                            {/* {tableElement?.isDataprovider ? (
                           <Button
                             onClick={() => {
                               openDataProvider();
@@ -2320,216 +2642,236 @@ const Index = forwardRef(
                             Data Provider
                           </Button>
                         ) : null} */}
-                          {tableElement?.isCloseAllMarket && (
-                            <Button
-                              color="warning"
-                              onClick={() => {
-                                closeAllModelFunction(true);
-                              }}
-                            >
-                              Close All Market
-                            </Button>
-                          )}
-                          {tableElement?.isCloseMarket && (
-                            <Button
-                              color="danger"
-                              onClick={() => {
-                                singleCheck.length > 0
-                                  ? closeMarketModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Close Market
-                            </Button>
-                          )}
-                          {tableElement?.isCancelAllMarket && (
-                            <Button
-                              color="warning"
-                              onClick={() => {
-                                cancelAllModelFunction(true);
-                              }}
-                            >
-                              Cancel All Market
-                            </Button>
-                          )}
-                          {tableElement?.isCancelMarket && (
-                            <Button
-                              color="danger"
-                              onClick={() => {
-                                singleCheck.length > 0
-                                  ? cancelModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Cancel Market
-                            </Button>
-                          )}
-                          {tableElement?.isResultMarket && (
-                            <Button
-                              color="warning"
-                              onClick={() => {
-                                singleCheck.length > 0
-                                  ? resultModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Result
-                            </Button>
-                          )}
-                        </div>
-                      </Col>
-                      <Col className="col-sm-auto ms-auto p-2">
-                        {tableElement?.loadData ? (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadDataModelFunction(true);
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Data
-                          </Button>
-                        ) : null}
-                      </Col>
-                    </Row>
-                  ) : null}
-                  {(tableElement.title === "Event Markets" || tableElement?.delayTextBox) ?
-                    <Row className="">
-                      <div className="d-flex flex-wrap align-items-center gap-2">
-                        {tableElement.title === "Event Markets" && tableElement?.marketTypeSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }), // Adjust width as needed
-                              }}
-                              value={selectedTableElements?.marketTypeName}
-                              placeholder="Market Type"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.marketTypeName?.value) {
-                                  handleTableActions("marketTypeId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    marketTypeName: e,
-                                    categoryName: { value: 0, label: "Category" },
-                                  });
-                                  setSelectedMarketType(e?.value)
-                                }
-                              }}
-                              options={[
-                                { label: "Select Market Type", value: 0 },
-                                ...marketTypes?.map((item) => ({
-                                  label: item?.marketTypeName,
-                                  value: item?.marketTypeId,
-                                })),
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement.title === "Event Markets" && tableElement?.categorySelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElements?.categoryName}
-                              placeholder="Category"
-                              onChange={(e) => {
-                                if (e?.value !== selectedTableElements?.categoryName?.value) {
-                                  handleTableActions("marketTypeCategoryId", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    categoryName: e,
-                                  });
-                                }
-                              }}
-                              options={[
-                                { label: "Select Category", value: 0 },
-                                ...categories?.map((item) => ({
-                                  label: item?.categoryName,
-                                  value: item?.marketTypeCategoryId,
-                                })),
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
-                        {tableElement?.delayTextBox ? (
-                          <>
-                            <div className="d-flex flex-column">
-                              <input
-                                className="form-control"
-                                type="text"
-                                placeholder="Event Delay"
-                                defaultValue={delay}
-                                onChange={(e) => {
-                                  setDelay(e.target.value);
+                            {tableElement?.isCloseAllMarket && (
+                              <Button
+                                color="warning"
+                                onClick={() => {
+                                  closeAllModelFunction(true);
                                 }}
-                                id="delay"
-                              />
-                              {delayValidationMessage && (
-                                <div style={{ color: 'red', marginTop: '2px' }}>
-                                  {delayValidationMessage}
-                                </div>
-                              )}
-                            </div>
-                            <button
-                              className="btn btn-primary"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                if (!delay) {
-                                  setDelayValidationMessage("Delay value is required.");
-                                } else if (singleCheck.length > 0) {
-                                  setDelayValidationMessage("");
-                                  handleDelay();
-                                } else {
-                                  setDelayValidationMessage("");
-                                  dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only one) row",
-                                      title: "Error",
-                                      type: Error,
-                                    })
-                                  );
-                                }
+                              >
+                                Close All Market
+                              </Button>
+                            )}
+                            {tableElement?.isCloseMarket && (
+                              <Button
+                                color="danger"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? closeMarketModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Close Market
+                              </Button>
+                            )}
+                            {tableElement?.isCancelAllMarket && (
+                              <Button
+                                color="warning"
+                                onClick={() => {
+                                  cancelAllModelFunction(true);
+                                }}
+                              >
+                                Cancel All Market
+                              </Button>
+                            )}
+                            {tableElement?.isCancelMarket && (
+                              <Button
+                                color="danger"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? cancelModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Cancel Market
+                              </Button>
+                            )}
+                            {tableElement?.isResultMarket && (
+                              <Button
+                                color="warning"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? resultModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Result
+                              </Button>
+                            )}
+                          </div>
+                        </Col>
+                        <Col className="col-sm-auto ms-auto p-2">
+                          {tableElement?.loadData ? (
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                loadDataModelFunction(true);
                               }}
-                              type="delay"
-                              id="create-btn"
+                              className="d-flex align-items-center gap-1"
                             >
-                              Save
-                            </button>
-                          </>
-                        ) : null}
-                      </div>
-                    </Row> : null}
-                </form>
-              </CardHeader>
-            )}
+                              <i className="ri-refresh-line"></i>
+                              Load Data
+                            </Button>
+                          ) : null}
+                        </Col>
+                      </Row>
+                    ) : null}
+                    {tableElement.title === "Event Markets" ||
+                    tableElement?.delayTextBox ? (
+                      <Row className="">
+                        <div className="d-flex flex-wrap align-items-center gap-2">
+                          {tableElement.title === "Event Markets" &&
+                          tableElement?.marketTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.marketTypeName}
+                                placeholder="Market Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.marketTypeName?.value
+                                  ) {
+                                    handleTableActions("marketTypeId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      marketTypeName: e,
+                                      categoryName: {
+                                        value: 0,
+                                        label: "Category",
+                                      },
+                                    });
+                                    setSelectedMarketType(e?.value);
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Market Type", value: 0 },
+                                  ...marketTypes?.map((item) => ({
+                                    label: item?.marketTypeName,
+                                    value: item?.marketTypeId,
+                                  })),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement.title === "Event Markets" &&
+                          tableElement?.categorySelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.categoryName}
+                                placeholder="Category"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.categoryName?.value
+                                  ) {
+                                    handleTableActions(
+                                      "marketTypeCategoryId",
+                                      e
+                                    );
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      categoryName: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Category", value: 0 },
+                                  ...categories?.map((item) => ({
+                                    label: item?.categoryName,
+                                    value: item?.marketTypeCategoryId,
+                                  })),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.delayTextBox ? (
+                            <>
+                              <div className="d-flex flex-column">
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  placeholder="Event Delay"
+                                  defaultValue={delay}
+                                  onChange={(e) => {
+                                    setDelay(e.target.value);
+                                  }}
+                                  id="delay"
+                                />
+                                {delayValidationMessage && (
+                                  <div
+                                    style={{ color: "red", marginTop: "2px" }}
+                                  >
+                                    {delayValidationMessage}
+                                  </div>
+                                )}
+                              </div>
+                              <button
+                                className="btn btn-primary"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if (!delay) {
+                                    setDelayValidationMessage(
+                                      "Delay value is required."
+                                    );
+                                  } else if (singleCheck.length > 0) {
+                                    setDelayValidationMessage("");
+                                    handleDelay();
+                                  } else {
+                                    setDelayValidationMessage("");
+                                    dispatch(
+                                      updateToastData({
+                                        data: "Select at least one (only one) row",
+                                        title: "Error",
+                                        type: Error,
+                                      })
+                                    );
+                                  }
+                                }}
+                                type="delay"
+                                id="create-btn"
+                              >
+                                Save
+                              </button>
+                            </>
+                          ) : null}
+                        </div>
+                      </Row>
+                    ) : null}
+                  </form>
+                </CardHeader>
+              )}
 
             <CardBody>
               <div id="customerList">
@@ -2539,7 +2881,7 @@ const Index = forwardRef(
                     updateClickedId={onBreadCrumbsClick}
                   />
                 )}
-                {(showtournamentList && tournamentList.length > 0) && (
+                {showtournamentList && tournamentList.length > 0 && (
                   <div className="">
                     <Select
                       styles={{
@@ -2551,7 +2893,10 @@ const Index = forwardRef(
                       value={selectedTableElements?.tournamentType}
                       placeholder="Tournament List"
                       onChange={(e) => {
-                        if (e?.value !== selectedTableElements?.tournamentType?.value) {
+                        if (
+                          e?.value !==
+                          selectedTableElements?.tournamentType?.value
+                        ) {
                           handleTableActions("onTournamentisChanges", e);
                           setSelectedTableElements({
                             ...selectedTableElements,
@@ -2567,41 +2912,59 @@ const Index = forwardRef(
                     />
                   </div>
                 )}
-                {
-                  tableElement?.isServerPagination ? (<Row className="g-2 d-flex align-items-center">
+                {tableElement?.isServerPagination ? (
+                  <Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
-                      {
-                        Number(serverCurrentPage) != 0 && ((Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal == false) ?
-                          <span>
-                            Showing {Number(Number(serverCurrentPage) - 1) * serverPageSize + 1} -{" "}
-                            {Number(Number(serverCurrentPage) - 1) * serverPageSize + data.length} of{" "}
-                            {/* {tableElement.title === "Tabs"
+                      {Number(serverCurrentPage) != 0 &&
+                      Number((Number(serverCurrentPage) - 1) * serverPageSize) +
+                        1 >
+                        serverTotal ==
+                        false ? (
+                        <span>
+                          Showing{" "}
+                          {Number(Number(serverCurrentPage) - 1) *
+                            serverPageSize +
+                            1}{" "}
+                          -{" "}
+                          {Number(Number(serverCurrentPage) - 1) *
+                            serverPageSize +
+                            data.length}{" "}
+                          of{" "}
+                          {/* {tableElement.title === "Tabs"
                             ? data?.length
                             : serverTotal}{" "} */}
-                            {serverTotal}{" "}
-                            entries
-                          </span> :
-                          (Number((Number(serverCurrentPage) - 1) * serverPageSize) + 1) > serverTotal ?
-                            <span>
-                              Showing {Number(Number(serverCurrentPage) - 2) * serverPageSize + 1} -{" "}
-                              {Number(Number(serverCurrentPage) - 2) * serverPageSize + data.length} of{" "}
-                              {/* {tableElement.title === "Tabs"
+                          {serverTotal} entries
+                        </span>
+                      ) : Number(
+                          (Number(serverCurrentPage) - 1) * serverPageSize
+                        ) +
+                          1 >
+                        serverTotal ? (
+                        <span>
+                          Showing{" "}
+                          {Number(Number(serverCurrentPage) - 2) *
+                            serverPageSize +
+                            1}{" "}
+                          -{" "}
+                          {Number(Number(serverCurrentPage) - 2) *
+                            serverPageSize +
+                            data.length}{" "}
+                          of{" "}
+                          {/* {tableElement.title === "Tabs"
                             ? data?.length
                             : serverTotal}{" "} */}
-                              {serverTotal}{" "}
-                              entries
-                            </span>
-                            :
-                            <span>
-                              Showing {serverCurrentPage * serverPageSize + 1} -{" "}
-                              {serverCurrentPage * serverPageSize + data.length} of{" "}
-                              {/* {tableElement.title === "Tabs"
+                          {serverTotal} entries
+                        </span>
+                      ) : (
+                        <span>
+                          Showing {serverCurrentPage * serverPageSize + 1} -{" "}
+                          {serverCurrentPage * serverPageSize + data.length} of{" "}
+                          {/* {tableElement.title === "Tabs"
                           ? data?.length
                           : serverTotal}{" "} */}
-                              {serverTotal}{" "}
-                              entries
-                            </span>
-                      }
+                          {serverTotal} entries
+                        </span>
+                      )}
 
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>
@@ -2613,13 +2976,21 @@ const Index = forwardRef(
                               data={generateSimplifiedData().csvData}
                               filename={tableElement.title + ".csv"}
                             >
-                              <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                              <Tooltip
+                                title="save as csv"
+                                color={"#e8e8ea"}
+                                overlayInnerStyle={{ color: "#000" }}
+                              >
                                 <Button size="small" className="btn border">
                                   <i className="fas fa-file-csv"></i>
                                 </Button>
                               </Tooltip>
                             </CSVLink>
-                            <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                            <Tooltip
+                              title="save as excel"
+                              color={"#e8e8ea"}
+                              overlayInnerStyle={{ color: "#000" }}
+                            >
                               <Button
                                 size="large"
                                 className="btn border mx-1"
@@ -2628,14 +2999,21 @@ const Index = forwardRef(
                                 <i className="fas fa-file-excel"></i>
                               </Button>
                             </Tooltip>
-                            <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                              <Button onClick={generatePDF} className="btn border">
+                            <Tooltip
+                              title="save as pdf"
+                              color={"#e8e8ea"}
+                              overlayInnerStyle={{ color: "#000" }}
+                            >
+                              <Button
+                                onClick={generatePDF}
+                                className="btn border"
+                              >
                                 <i className="bx bxs-file-pdf"></i>
                               </Button>
                             </Tooltip>
                           </div>
                         )}
-                        <div className="">
+                        <div className="position-relative">
                           <input
                             type="text"
                             className="form-control"
@@ -2645,40 +3023,67 @@ const Index = forwardRef(
                               setSearchTerm(e.target.value);
                             }}
                           />
-                          {/* <i className="ri-search-line search-icon"></i> */}
+                          {isSearching && (
+                            <span
+                              className="position-absolute"
+                              style={{
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <i className="fas fa-spinner fa-spin"></i>
+                            </span>
+                          )}
                         </div>
                       </div>
                     </Col>
-                  </Row>) : isPagination ? (<Row className="g-2 d-flex align-items-center">
+                  </Row>
+                ) : isPagination ? (
+                  <Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
-                      {
-                        Number(currentPage) != 0 && ((Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) == false) ?
-                          <span>
-                            Showing {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
-                            {Number((Number(currentPage) - 1) * pageSize) + data.length} of{" "}
-                            {tableElement.title === "Tabs"
-                              ? serverTotal
-                              : dataSource?.length}{" "}
-                            entries
-                          </span> : (Number((Number(currentPage) - 1) * pageSize) + 1) > (tableElement.title === "Tabs" ? serverTotal : dataSource?.length) ?
-                            <span>
-                              Showing {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
-                              {Number((Number(currentPage) - 2) * pageSize) + data.length} of{" "}
-                              {tableElement.title === "Tabs"
-                                ? serverTotal
-                                : dataSource?.length}{" "}
-                              entries
-                            </span>
-                            :
-                            <span>
-                              Showing {currentPage * pageSize + 1} -{" "}
-                              {currentPage * pageSize + data.length} of{" "}
-                              {tableElement.title === "Tabs"
-                                ? serverTotal
-                                : dataSource?.length}{" "}
-                              entries
-                            </span>
-                      }
+                      {Number(currentPage) != 0 &&
+                      Number((Number(currentPage) - 1) * pageSize) + 1 >
+                        (tableElement.title === "Tabs"
+                          ? serverTotal
+                          : dataSource?.length) ==
+                        false ? (
+                        <span>
+                          Showing{" "}
+                          {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
+                          {Number((Number(currentPage) - 1) * pageSize) +
+                            data.length}{" "}
+                          of{" "}
+                          {tableElement.title === "Tabs"
+                            ? serverTotal
+                            : dataSource?.length}{" "}
+                          entries
+                        </span>
+                      ) : Number((Number(currentPage) - 1) * pageSize) + 1 >
+                        (tableElement.title === "Tabs"
+                          ? serverTotal
+                          : dataSource?.length) ? (
+                        <span>
+                          Showing{" "}
+                          {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
+                          {Number((Number(currentPage) - 2) * pageSize) +
+                            data.length}{" "}
+                          of{" "}
+                          {tableElement.title === "Tabs"
+                            ? serverTotal
+                            : dataSource?.length}{" "}
+                          entries
+                        </span>
+                      ) : (
+                        <span>
+                          Showing {currentPage * pageSize + 1} -{" "}
+                          {currentPage * pageSize + data.length} of{" "}
+                          {tableElement.title === "Tabs"
+                            ? serverTotal
+                            : dataSource?.length}{" "}
+                          entries
+                        </span>
+                      )}
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>
                     <Col className="col-sm">
@@ -2689,13 +3094,21 @@ const Index = forwardRef(
                               data={generateSimplifiedData().csvData}
                               filename={tableElement.title + ".csv"}
                             >
-                              <Tooltip title="save as csv" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                              <Tooltip
+                                title="save as csv"
+                                color={"#e8e8ea"}
+                                overlayInnerStyle={{ color: "#000" }}
+                              >
                                 <Button size="small" className="btn border">
                                   <i className="fas fa-file-csv"></i>
                                 </Button>
                               </Tooltip>
                             </CSVLink>
-                            <Tooltip title="save as excel" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                            <Tooltip
+                              title="save as excel"
+                              color={"#e8e8ea"}
+                              overlayInnerStyle={{ color: "#000" }}
+                            >
                               <Button
                                 size="large"
                                 className="btn border mx-1"
@@ -2704,14 +3117,21 @@ const Index = forwardRef(
                                 <i className="fas fa-file-excel"></i>
                               </Button>
                             </Tooltip>
-                            <Tooltip title="save as pdf" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                              <Button onClick={generatePDF} className="btn border">
+                            <Tooltip
+                              title="save as pdf"
+                              color={"#e8e8ea"}
+                              overlayInnerStyle={{ color: "#000" }}
+                            >
+                              <Button
+                                onClick={generatePDF}
+                                className="btn border"
+                              >
                                 <i className="bx bxs-file-pdf"></i>
                               </Button>
                             </Tooltip>
                           </div>
                         )}
-                        <div className="">
+                        <div className="position-relative">
                           <input
                             type="text"
                             className="form-control"
@@ -2721,11 +3141,23 @@ const Index = forwardRef(
                               setSearchTerm(e.target.value);
                             }}
                           />
-                          {/* <i className="ri-search-line search-icon"></i> */}
+                          {isSearching && (
+                            <span
+                              className="position-absolute"
+                              style={{
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <i className="fas fa-spinner fa-spin"></i>
+                            </span>
+                          )}
                         </div>
                       </div>
                     </Col>
-                  </Row>) : null}
+                  </Row>
+                ) : null}
 
                 <div
                   className="table-responsive table-responsive2 table-card mt-3 mb-1"
@@ -2745,7 +3177,13 @@ const Index = forwardRef(
                               <tr>
                                 {columns.map((column) => (
                                   <th key={column.key} style={column.style}>
-                                    <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
+                                    <div
+                                      className="d-flex flex-row justify-content-between"
+                                      style={{
+                                        visibility:
+                                          column?.key === "select" && "hidden",
+                                      }}
+                                    >
                                       <span>{column.title}</span>
                                       {column.sort ? (
                                         <span className="d-flex flex-column align-items-center">
@@ -2758,12 +3196,13 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${sortOrder.key === column.key &&
+                                              color: `${
+                                                sortOrder.key === column.key &&
                                                 sortOrder.sortOrder ===
-                                                "ascending"
-                                                ? "gray"
-                                                : "lightGray"
-                                                }`,
+                                                  "ascending"
+                                                  ? "gray"
+                                                  : "lightGray"
+                                              }`,
                                               fontSize: "14px",
                                               marginTop: "2px",
                                               cursor: "pointer",
@@ -2778,12 +3217,13 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${sortOrder.key === column.key &&
+                                              color: `${
+                                                sortOrder.key === column.key &&
                                                 sortOrder.sortOrder ===
-                                                "descending"
-                                                ? "gray"
-                                                : "lightGray"
-                                                }`,
+                                                  "descending"
+                                                  ? "gray"
+                                                  : "lightGray"
+                                              }`,
                                               marginTop: "-8px",
                                               fontSize: "14px",
                                               cursor: "pointer",
@@ -2814,7 +3254,9 @@ const Index = forwardRef(
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        className={`hover ${record.isIncluded && 'selected'}`}
+                                        className={`hover ${
+                                          record.isIncluded && "selected"
+                                        }`}
                                       >
                                         {columns.map((column) => (
                                           <>
@@ -2824,9 +3266,9 @@ const Index = forwardRef(
                                             >
                                               {column.render
                                                 ? column.render(
-                                                  record[column.dataIndex],
-                                                  record
-                                                )
+                                                    record[column.dataIndex],
+                                                    record
+                                                  )
                                                 : record[column.dataIndex]}
                                             </td>
                                           </>
@@ -2847,57 +3289,80 @@ const Index = forwardRef(
                       className="table align-middle table-nowrap"
                       id="customerTable"
                     >
-                      <thead className={`table-light ${setStickHeader !== false ? "sticky-header" : ""}`}>
+                      <thead
+                        className={`table-light ${
+                          setStickHeader !== false ? "sticky-header" : ""
+                        }`}
+                      >
                         <tr>
                           {columns.map((column) => (
-                            <th style={{ ...column.style, zIndex: column?.sticky && 100, left: column?.sticky && 0 }} className={column.className}>
-                              <div className="d-flex flex-row justify-content-between" style={{ visibility: column?.key === "select" && "hidden" }}>
+                            <th
+                              style={{
+                                ...column.style,
+                                zIndex: column?.sticky && 100,
+                                left: column?.sticky && 0,
+                              }}
+                              className={column.className}
+                            >
+                              <div
+                                className="d-flex flex-row justify-content-between"
+                                style={{
+                                  visibility:
+                                    column?.key === "select" && "hidden",
+                                }}
+                              >
                                 <span>{column.title}</span>
                                 {column.sort ? (
                                   <span className="d-flex flex-column align-items-center">
                                     <i
-                                      className={"bx bx-caret-up " + column.className}
+                                      className={
+                                        "bx bx-caret-up " + column.className
+                                      }
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                            "ascending",
-                                            column.key
-                                          )
+                                              "ascending",
+                                              column.key
+                                            )
                                           : sortByProperty(
-                                            "ascending",
-                                            column.key
-                                          );
+                                              "ascending",
+                                              column.key
+                                            );
                                       }}
                                       style={{
-                                        color: `${sortOrder.key === column.key &&
+                                        color: `${
+                                          sortOrder.key === column.key &&
                                           sortOrder.sortOrder === "ascending"
-                                          ? "gray"
-                                          : "lightGray"
-                                          }`,
+                                            ? "gray"
+                                            : "lightGray"
+                                        }`,
                                         fontSize: "14px",
                                         marginTop: "2px",
                                         cursor: "pointer",
                                       }}
                                     ></i>
                                     <i
-                                      className={"bx bx-caret-down " + column.className}
+                                      className={
+                                        "bx bx-caret-down " + column.className
+                                      }
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                            "descending",
-                                            column.key
-                                          )
+                                              "descending",
+                                              column.key
+                                            )
                                           : sortByProperty(
-                                            "descending",
-                                            column.key
-                                          );
+                                              "descending",
+                                              column.key
+                                            );
                                       }}
                                       style={{
-                                        color: `${sortOrder.key === column.key &&
+                                        color: `${
+                                          sortOrder.key === column.key &&
                                           sortOrder.sortOrder === "descending"
-                                          ? "gray"
-                                          : "lightGray"
-                                          }`,
+                                            ? "gray"
+                                            : "lightGray"
+                                        }`,
                                         marginTop: "-8px",
                                         fontSize: "14px",
                                         cursor: "pointer",
@@ -2913,24 +3378,48 @@ const Index = forwardRef(
                       <tbody className="list form-check-all">
                         {data.map((record, index) => (
                           <React.Fragment key={index}>
-                            <tr onClick={() => toggleRow(index)} className={`${tableElement.title === "Event Markets" ? "hover1" : "hover"} ${record.isIncluded ? "selected" : ""}`} style={{ backgroundColor: tableElement.title === "Event Markets" && getStatusColor(+record?.status), color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), cursor: tableElement.title === "Market Data Logs" && "pointer" }}>
+                            <tr
+                              onClick={() => toggleRow(index)}
+                              className={`${
+                                tableElement.title === "Event Markets"
+                                  ? "hover1"
+                                  : "hover"
+                              } ${record.isIncluded ? "selected" : ""}`}
+                              style={{
+                                backgroundColor:
+                                  tableElement.title === "Event Markets" &&
+                                  getStatusColor(+record?.status),
+                                color:
+                                  tableElement.title === "Event Markets" &&
+                                  getStatusFontColor(+record?.status),
+                                cursor:
+                                  tableElement.title === "Market Data Logs" &&
+                                  "pointer",
+                              }}
+                            >
                               {columns.map((column) => (
-                                <td key={column.key} style={{ color: tableElement.title === "Event Markets" && getStatusFontColor(+record?.status), ...column.style }} className={column?.sticky && "sticky-column"}>
+                                <td
+                                  key={column.key}
+                                  style={{
+                                    color:
+                                      tableElement.title === "Event Markets" &&
+                                      getStatusFontColor(+record?.status),
+                                    ...column.style,
+                                  }}
+                                  className={column?.sticky && "sticky-column"}
+                                >
                                   {column.render
                                     ? column.render(
-                                      record[column.dataIndex],
-                                      record
-                                    )
+                                        record[column.dataIndex],
+                                        record
+                                      )
                                     : record[column.dataIndex]}
                                 </td>
                               ))}
                             </tr>
                             {expandedRows[index] && record.nestedTable && (
                               <tr>
-                                <td
-                                  colSpan={columns.length}
-                                  className="p-0"
-                                >
+                                <td colSpan={columns.length} className="p-0">
                                   {record.nestedTable}
                                 </td>
                               </tr>
@@ -2950,18 +3439,16 @@ const Index = forwardRef(
                         style={{ width: "75px", height: "75px" }}
                       ></lord-icon>
                       <h5 className="mt-2">Sorry! No Result Found</h5>
-                      <p className="text-muted mb-0">
-                        No Result
-                      </p>
+                      <p className="text-muted mb-0">No Result</p>
                     </div>
                   </div>
                 </div>
                 {!isEmpty(data) ? (
                   <Row>
-                    <Col >{tableElement?.compToRender}</Col>
+                    <Col>{tableElement?.compToRender}</Col>
                     <Col className="d-flex justify-content-end">
-                      {
-                        tableElement?.isServerPagination ? (<Pagination
+                      {tableElement?.isServerPagination ? (
+                        <Pagination
                           total={serverTotal}
                           pageSize={serverPageSize}
                           currentPage={serverCurrentPage}
@@ -2969,7 +3456,9 @@ const Index = forwardRef(
                           setCurrentPage={setServerCurrentPage}
                           setPageSize={setServerPageSize}
                           isServerSide={true}
-                        />) : isPagination ? (<Pagination
+                        />
+                      ) : isPagination ? (
+                        <Pagination
                           total={total}
                           pageSize={pageSize}
                           currentPage={currentPage}
@@ -2977,11 +3466,12 @@ const Index = forwardRef(
                           setCurrentPage={setCurrentPage}
                           setPageSize={setPageSize}
                           isServerSide={false}
-                        />) : null}
+                        />
+                      ) : null}
                     </Col>
                   </Row>
                 ) : (
-                  <div className="d-flex justify-content-center no-data-available" >
+                  <div className="d-flex justify-content-center no-data-available">
                     <span style={{ color: "lightgray" }}>
                       No Data Available
                     </span>
@@ -2997,4 +3487,3 @@ const Index = forwardRef(
 );
 
 export default Index;
-
