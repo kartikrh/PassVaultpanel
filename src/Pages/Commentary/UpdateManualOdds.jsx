@@ -453,7 +453,11 @@ export const UpdateManualOdds = () => {
         point: ''
     });
     const settingsRef = useRef(settings);
+    const runnersRef = useRef([]);
 
+    useEffect(() => {
+        runnersRef.current = runners;
+    }, [runners]);
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
             document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
@@ -788,6 +792,74 @@ export const UpdateManualOdds = () => {
         };
     };
 
+    const fixedHandleStatusChange = async (newStatus) => {
+        // Add confirmation for market close
+        if (newStatus === CLOSE_VALUE.toString()) {
+            const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
+            if (!confirmed) return;
+        }
+
+        try {
+            setIsLoading(true);
+            setMarketStatus(newStatus);
+
+            // IMPORTANT: Directly construct the complete market data instead of using prepareMarketData
+            const isOpen = +(newStatus || 0) === +OPEN_VALUE;
+
+            // Get runners data from ref if the state is empty
+            const currentRunners = runners.length > 0 ? runners : runnersRef.current;
+
+            console.log("Using runners data:", currentRunners);
+
+            // Construct the payload manually with all required fields
+            const currentMarketData = {
+                eventMarket: [{
+                    eventMarketId: eventData.market.eventMarketId,
+                    marketName: eventData.market.marketName,
+                    margin: settings.margin,
+                    status: parseInt(newStatus),
+                    isActive: settings.active,
+                    isAllow: settings.betAllow,
+                    isSendData: true,
+                    lineRatio: eventData.market.lineRatio || 0,
+                    rateDiff: settings.rateDifferent,
+                    predefinedValue: eventData.market.predefinedValue,
+                    favRatio: settings.favRatio,
+                    runner: currentRunners.map(runner => ({
+                        runnerId: runner.runnerId,
+                        line: runner.line || 0,
+                        overRate: isOpen ? runner.back.price : 0,
+                        underRate: isOpen ? runner.lay.price : 0,
+                        backPrice: isOpen ? runner.back.price : 0,
+                        layPrice: isOpen ? runner.lay.price : 0,
+                        backSize: runner.back?.volume || 0,
+                        laySize: runner.lay?.volume || 0
+                    }))
+                }]
+            };
+
+            console.log("FIXED PAYLOAD:", JSON.stringify(currentMarketData, null, 2));
+
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
+            if (response?.success) {
+                handleSavedRunnerUpdate(currentMarketData)
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
         const value = settings.shortcutValues[key];
@@ -808,21 +880,21 @@ export const UpdateManualOdds = () => {
         }
         switch (key) {
             case 'S':
-                handleStatusChange(SUSPEND_VALUE.toString)
+                fixedHandleStatusChange(SUSPEND_VALUE.toString());
                 break;
             case 'D':
-                handleStatusChange(INACTIVE_VALUE.toString)
+                fixedHandleStatusChange(INACTIVE_VALUE.toString());
                 break;
             case 'F':
-                handleStatusChange(CLOSE_VALUE.toString)
+                fixedHandleStatusChange(CLOSE_VALUE.toString());
                 break;
             case 'G':
-                handleStatusChange(OPEN_VALUE.toString)
+                fixedHandleStatusChange(OPEN_VALUE.toString());
                 break;
             default:
                 break;
         }
-    }, [settings.shortcutValues, isLive, calculateRunnerRates]);
+    }, [settings.shortcutValues, isLive, calculateRunnerRates, eventData.market, settings]);
 
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
@@ -1219,7 +1291,7 @@ export const UpdateManualOdds = () => {
                 }
                 setEventData({
                     comDetails: response.result.comDetails || null,
-                    teams: response.result.teams?.sort((a,b)=> a?.teamNo - b?.teamNo) || [],
+                    teams: response.result.teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
                     market: response.result.market?.[0] || {},
                 });
                 const marketData = response.result.market?.[0];
@@ -1675,7 +1747,7 @@ export const UpdateManualOdds = () => {
         // Use incoming data if provided; otherwise, fallback to stored original innings data.
         const dataToProcess = incomingData || originalInningsData;
         if (!dataToProcess || !dataToProcess.length) return;
-        // console.log("Processing Innings Data:", dataToProcess);
+        console.log("Processing Innings Data:", dataToProcess);
 
         let updatedMarketData = [];
         if (socketMarketData.length > 0) {
@@ -1695,7 +1767,7 @@ export const UpdateManualOdds = () => {
         } else {
             updatedMarketData = dataToProcess;
         }
-        // console.log("Updated Innings Market Data:", updatedMarketData);
+        console.log("Updated Innings Market Data:", updatedMarketData);
         setSocketMarketData(updatedMarketData);
         handleInningsDataUpdate(updatedMarketData);
     };
@@ -2088,7 +2160,7 @@ export const UpdateManualOdds = () => {
         const currentInningsMarket = sortedMarkets[0];
 
         if (!currentInningsMarket?.runner?.[0]) {
-            // console.log("No valid market data found");
+            console.log("No valid market data found");
             return;
         }
 
@@ -2121,7 +2193,8 @@ export const UpdateManualOdds = () => {
         // if both odds are equal then override both runners:
         if (!isLive && directLineEnabled && Math.abs(oddsA - oddsB) < 0.01) {
             const tieValue = parseFloat(settings.tieProbability);
-            // console.log("Tie detected. Setting both runner back prices to tieProbability:", tieValue);
+            console.log("Tie detected. Setting both runner back prices to tieProbability:", tieValue);
+
             // Update both original and current runner states
             setOriginalRunner(prevRunners =>
                 prevRunners.map(runner => ({
@@ -2137,6 +2210,10 @@ export const UpdateManualOdds = () => {
                     lay: { ...runner.lay, price: 0 }
                 }))
             );
+
+            // REMOVED: Update of savedPrices for tie scenario
+            // We no longer update savedPrices from socket data when !isLive && directLineEnabled
+
             return; // Exit early; tie scenario handled.
         }
 
@@ -2152,14 +2229,14 @@ export const UpdateManualOdds = () => {
             }
         };
 
-        // console.log("Odds by team:", oddsObj);
+        console.log("Odds by team:", oddsObj);
 
         // Find the smallest non-zero back price (favorite team)
         const nonZeroOdds = Object.entries(oddsObj)
             .filter(([_, odds]) => odds.back > 0);
 
         if (!nonZeroOdds.length) {
-            // console.log("No valid odds found");
+            console.log("No valid odds found");
             return;
         }
 
@@ -2168,11 +2245,11 @@ export const UpdateManualOdds = () => {
             nonZeroOdds[0]
         );
 
-        // console.log("Selected team and odds:", { selectedTeamId, odds: selectedOdds });
+        console.log("Selected team and odds:", { selectedTeamId, odds: selectedOdds });
 
         // Update runners with the calculated odds
         const updateRunners = (prevRunners) => {
-            return prevRunners.map(runner => {
+            const updatedRunners = prevRunners.map(runner => {
                 // Convert teamId to string for comparison
                 const teamId = runner.teamId?.toString();
                 const odds = oddsObj[teamId];
@@ -2212,6 +2289,30 @@ export const UpdateManualOdds = () => {
                     l2: Math.max(0, Number((odds.lay + (2 * lRateDiff)).toFixed(2)))
                 };
             });
+
+            // REMOVED: Update savedPrices section
+            // The following code block has been removed:
+            /*
+            if (!isLive && directLineEnabled) {
+                setSavedPrices(prevSavedPrices => {
+                    const newSavedPrices = { ...prevSavedPrices };
+                    updatedRunners.forEach(runner => {
+                        const teamId = runner.teamId?.toString();
+                        const odds = oddsObj[teamId];
+                        if (odds) {
+                            newSavedPrices[runner.runnerId] = {
+                                back: Number(odds.back.toFixed(2)),
+                                lay: Number(odds.lay.toFixed(2))
+                            };
+                        }
+                    });
+                    console.log("Updated savedPrices from socket data:", newSavedPrices);
+                    return newSavedPrices;
+                });
+            }
+            */
+
+            return updatedRunners;
         };
 
         // Update both original and current runner states
