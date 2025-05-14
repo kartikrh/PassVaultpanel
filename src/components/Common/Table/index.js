@@ -131,15 +131,18 @@ const Index = forwardRef(
       setStickHeader,
       renderHeader,
       manualExcel,
+      defaultTableActionData,
     },
     ref
   ) => {
     const globalPageSize = localStorage.getItem("pageSize");
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
-    const [tableActions, setTableActions] = useState({
-      isActive: true,
-    });
+    const [tableActions, setTableActions] = useState(
+      defaultTableActionData || {
+        isActive: true,
+      }
+    );
     const [total, setTotal] = useState(dataSource.length);
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
     const [currentPage, setCurrentPage] = useState(0);
@@ -149,7 +152,13 @@ const Index = forwardRef(
       sortOrder: "",
       key: "",
     });
-    const [statusSwitch, setStatusSwitch] = useState(true);
+    //defaultStatusSwitch added for RegistrationPending Table
+    const defaultStatusSwitch = defaultTableActionData
+      ? defaultTableActionData.isActive === false
+        ? false
+        : true
+      : true;
+    const [statusSwitch, setStatusSwitch] = useState(defaultStatusSwitch);
     const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(false);
     const [menSwitch, setMenSwitch] = useState(false);
     const [selectedTableElements, setSelectedTableElements] = useState({});
@@ -159,6 +168,7 @@ const Index = forwardRef(
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectInputRef = useRef(null);
+
     useEffect(() => {
       setData(filteredData);
     }, [filteredData]);

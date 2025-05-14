@@ -20,7 +20,10 @@ import {
   TAB_CLIENT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import {
+  checkPermission,
+  convertDateUTCToLocalWithoutSec,
+} from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
@@ -50,7 +53,9 @@ const Index = () => {
         isUserActive: 1,
       })
       .then((response) => {
-        const clientData = response?.result?.sort((a,b)=>a.clientId- b.clientId);
+        const clientData = response?.result?.sort(
+          (a, b) => a.clientId - b.clientId
+        );
         let clientDataIdList = [];
         clientData.forEach((ele) => {
           clientDataIdList.push(ele?.clientId);
@@ -200,6 +205,16 @@ const Index = () => {
       style: { width: "2%" },
     },
     {
+      title: "Date",
+      dataIndex: "createdDate",
+      key: "createdDate",
+      render: (text, record) => (
+        <span>{convertDateUTCToLocalWithoutSec(text, "index")}</span>
+      ),
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
       title: "Full Name",
       dataIndex: "fullName",
       key: "fullName",
@@ -228,11 +243,15 @@ const Index = () => {
           // }}
         >
           {" "}
-          <i className={`bx ${record.isAllowMultiLogin ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${
+              record.isAllowMultiLogin ? "bx-check" : "bx-block"
+            }`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
-    }, 
+    },
     {
       title: "Delete",
       dataIndex: "isDelete",
@@ -252,7 +271,7 @@ const Index = () => {
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
-    }, 
+    },
     {
       title: "Email Verified",
       dataIndex: "isEmailVerified",
@@ -268,18 +287,20 @@ const Index = () => {
           // }}
         >
           {" "}
-          <i className={`bx ${record.isEmailVerified ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${record.isEmailVerified ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
-    }, 
+    },
     {
       title: "Email Id",
       dataIndex: "emailId",
       key: "emailId",
       sort: true,
       style: { width: "10%" },
-    }, 
+    },
     {
       title: "Mobile Verified",
       dataIndex: "isMobileVerified",
@@ -295,7 +316,11 @@ const Index = () => {
           // }}
         >
           {" "}
-          <i className={`bx ${record.isMobileVerified ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${
+              record.isMobileVerified ? "bx-check" : "bx-block"
+            }`}
+          ></i>
         </Button>
       ),
       style: { width: "10%", textAlign: "center" },
@@ -342,19 +367,25 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive User"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${text ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isActive", record, record.isActive);
-          }}
+        <Tooltip
+          title={"Active/Inactive User"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          {" "}
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${text ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isActive", record, record.isActive);
+            }}
+          >
+            {" "}
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -372,7 +403,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_CLIENTS], password})
+      .post(`/loadPanelData`, { module: [MODULE_CLIENTS], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -473,13 +504,14 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Registered Users"} 
-            />}
+              moduleName={"Registered Users"}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

@@ -1308,18 +1308,19 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip> */}
-            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-              <Button
-                color={"primary"}
-                size="sm"
-                className="btn"
-                onClick={() => {
-                  handlePredictorDetailsClick(record);
-                }}
-              >
-                <i class='bx bxs-up-arrow-square' ></i>
-              </Button>
-            </Tooltip>
+            {record.isPredictMarket &&
+              <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handlePredictorDetailsClick(record);
+                  }}
+                >
+                  <i class='bx bxs-up-arrow-square' ></i>
+                </Button>
+              </Tooltip>}
 
 
             {record.isPredictMarket &&
@@ -1728,6 +1729,13 @@ const Index = () => {
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "CID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "10%" },
     },
   ];
 
