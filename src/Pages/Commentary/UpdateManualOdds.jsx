@@ -1818,27 +1818,27 @@ export const UpdateManualOdds = () => {
                 };
             }
 
-            // When directLine is enabled and not live, use savedPrices
-            if (!isLive && directLineEnabled) {
-                let backPrice = savedPrices[runner.runnerId]?.back || 0;
-                let layPrice = savedPrices[runner.runnerId]?.lay || 0;
+            // // When directLine is enabled and not live, use savedPrices
+            // if (!isLive && directLineEnabled) {
+            //     let backPrice = savedPrices[runner.runnerId]?.back || 0;
+            //     let layPrice = savedPrices[runner.runnerId]?.lay || 0;
+            //     console.log("Inside If Runner conditions")
+            //     // If prices are < 1.01, explicitly set to 0
+            //     backPrice = backPrice < 1.01 ? 0 : backPrice;
+            //     layPrice = layPrice < 1.01 ? 0 : layPrice;
 
-                // If prices are < 1.01, explicitly set to 0
-                backPrice = backPrice < 1.01 ? 0 : backPrice;
-                layPrice = layPrice < 1.01 ? 0 : layPrice;
-
-                return {
-                    ...runner,
-                    backPrice: backPrice,
-                    layPrice: layPrice,
-                    overRate: backPrice,
-                    underRate: layPrice,
-                    backSize: runner.back.volume,
-                    laySize: runner.lay.volume,
-                    runnerId: runner.runnerId,
-                    line: runner.line || 0
-                };
-            }
+            //     return {
+            //         ...runner,
+            //         backPrice: backPrice,
+            //         layPrice: layPrice,
+            //         overRate: backPrice,
+            //         underRate: layPrice,
+            //         backSize: runner.back.volume,
+            //         laySize: runner.lay.volume,
+            //         runnerId: runner.runnerId,
+            //         line: runner.line || 0
+            //     };
+            // }
 
             const useSavedPrices = (!isLive && !directLineEnabled) || (event && event.shiftKey);
             return {
@@ -1868,7 +1868,7 @@ export const UpdateManualOdds = () => {
                     )
                 }]
             };
-
+            console.log("Inside Update Market:", { currentMarketData })
             setIsLoading(true);
             try {
                 const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
