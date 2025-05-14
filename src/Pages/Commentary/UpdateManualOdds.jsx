@@ -1915,7 +1915,8 @@ export const UpdateManualOdds = () => {
                 if (e.shiftKey && +marketStatus !== +OPEN_VALUE) return;
                 // Handle Shift+Enter case
                 if (e.shiftKey) {
-                    await updateMarket(e);
+
+                    await handleSave();
                     return;
                 }
 
