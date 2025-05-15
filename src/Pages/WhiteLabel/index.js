@@ -162,7 +162,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_WHITE_LABEL], password})
+      .post(`/loadPanelData`, { module: [MODULE_WHITE_LABEL], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -222,6 +222,36 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value);
   };
+
+  const handleToggleDefault = async (record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/whitelabel/upIsDefault`, {
+        id: record.id,
+        isDefault: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const columns = [
     {
       title: (
@@ -294,16 +324,28 @@ const Index = () => {
       title: "Demo Android",
       key: "isDemoClientLogin",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Demo Android"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Demo Android"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isDemoClientLogin ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleIsDemoClientLogin("isDemoClientLogin", record, record.isDemoClientLogin);
+              handleIsDemoClientLogin(
+                "isDemoClientLogin",
+                record,
+                record.isDemoClientLogin
+              );
             }}
           >
-            <i className={`bx ${record.isDemoClientLogin ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${
+                record.isDemoClientLogin ? "bx-check" : "bx-block"
+              }`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -313,16 +355,28 @@ const Index = () => {
       title: "Demo IOS",
       key: "isDemoClientEnableInIOS",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Demo IOS"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Demo IOS"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isDemoClientEnableInIOS ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleIsDemoClientEnableInIOS("isDemoClientEnableInIOS", record, record.isDemoClientEnableInIOS);
+              handleIsDemoClientEnableInIOS(
+                "isDemoClientEnableInIOS",
+                record,
+                record.isDemoClientEnableInIOS
+              );
             }}
           >
-            <i className={`bx ${record.isDemoClientEnableInIOS ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${
+                record.isDemoClientEnableInIOS ? "bx-check" : "bx-block"
+              }`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -332,7 +386,11 @@ const Index = () => {
       title: "Active",
       key: "IsActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive White Label"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive White Label"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -341,7 +399,217 @@ const Index = () => {
               handlePermissions("isActive", record, record.isActive);
             }}
           >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+
+    {
+      title: "reCATCH",
+      key: "isRecatchEnable",
+      render: (text, record) => (
+        <Button color="primary" size="sm" className="btn" disabled={true}>
+          <i
+            className={`bx ${record.isRecatchEnable ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Google Login",
+      key: "isGoogleLogin",
+      render: (text, record) => (
+        <Button color="primary" size="sm" className="btn" disabled={true}>
+          <i
+            className={`bx ${record.isGoogleLogin ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "FB Login",
+      key: "isFacebookLogin",
+      render: (text, record) => (
+        <Button color="primary" size="sm" className="btn" disabled={true}>
+          <i
+            className={`bx ${record.isFacebookLogin ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Mobile OTP",
+      key: "isSendMobileOTP",
+      render: (text, record) => (
+        <Button color="primary" size="sm" className="btn" disabled={true}>
+          <i
+            className={`bx ${record.isSendMobileOTP ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "OTP Type",
+      dataIndex: "sendMobileOTPType",
+      key: "sendMobileOTPType",
+      render: (text, record) => {
+        switch (record.sendMobileOTPType) {
+          case 1:
+            return "OTP Login";
+          case 2:
+            return "OTPless SDK";
+          default:
+            return "-";
+        }
+      },
+      style: { width: "5%" },
+    },
+    {
+      title: "Mail OTP",
+      key: "isSendMailOTP",
+      render: (text, record) => (
+        <Button color="primary" size="sm" className="btn" disabled={true}>
+          <i
+            className={`bx ${record.isSendMailOTP ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Mail Type",
+      dataIndex: "sendMailType",
+      key: "sendMailType",
+      render: (text, record) => {
+        switch (record.sendMailType) {
+          case 1:
+            return "Gmail";
+          case 2:
+            return "SMTP";
+          default:
+            return "-";
+        }
+      },
+      style: { width: "5%" },
+    },
+    {
+      title: "Recatch Key",
+      dataIndex: "recatchKey",
+      key: "recatchKey",
+      style: { width: "10%" },
+    },
+    {
+      title: "Google Key",
+      dataIndex: "googleKey",
+      key: "googleKey",
+      style: { width: "10%" },
+    },
+    {
+      title: "Facebook Key",
+      dataIndex: "facebookKey",
+      key: "facebookKey",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile Google Firebase Key",
+      dataIndex: "mobileGoogleFirebaseKey",
+      key: "mobileGoogleFirebaseKey",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile Google Firebase Url",
+      dataIndex: "mobileGoogleFirebaseUrl",
+      key: "mobileGoogleFirebaseUrl",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP Max Limit",
+      dataIndex: "sendMobileOTPMaxSendLimit",
+      key: "sendMobileOTPMaxSendLimit",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP Auth Key",
+      dataIndex: "mobileOTPAuthKey",
+      key: "mobileOTPAuthKey",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP Expiry Time",
+      dataIndex: "mobileOTPExpired",
+      key: "mobileOTPExpired",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile Seamless OTP Key",
+      dataIndex: "mobileSemlessOTPKey",
+      key: "mobileSemlessOTPKey",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP SendUrl",
+      dataIndex: "mobileOTPSendUrl",
+      key: "mobileOTPSendUrl",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP Resend Url",
+      dataIndex: "mobileOTPResendUrl",
+      key: "mobileOTPResendUrl",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP Forgot Url",
+      dataIndex: "mobileOTPForgotUrl",
+      key: "mobileOTPForgotUrl",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mobile OTP Verification Url",
+      dataIndex: "mobileOTPVerify",
+      key: "mobileOTPVerify",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mail Max Send Limit",
+      dataIndex: "sendMailMaxSendLimit",
+      key: "sendMailMaxSendLimit",
+      style: { width: "10%" },
+    },
+    {
+      title: "Client OTP",
+      dataIndex: "clientOTP",
+      key: "sclientOTP",
+      style: { width: "10%" },
+    },
+    {
+      title: "Default",
+      key: "isDefault",
+      render: (text, record) => (
+        <Tooltip
+          title={"Set as Default"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isDefault ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleToggleDefault(record, record.isDefault);
+            }}
+          >
+            <i
+              className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -357,7 +625,7 @@ const Index = () => {
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
   }, []);
@@ -400,13 +668,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"White Label"}
-            />}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
