@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import { RiRefreshLine } from 'react-icons/ri';
 import { AUTO_STATUS, BALL_START_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SCORING_STATUS, SUSPEND_VALUE } from './CommentartConst.js';
-import { calculateExpectedFinalScore, calculateLayFromBack, decimalOddsTwoOutcomes, predictWinProbability } from '../../components/Helper/UpdateManualOddHelper.js';
+import { calculateLayFromBack, decimalOddsTwoOutcomes, predictWinProbability } from '../../components/Helper/UpdateManualOddHelper.js';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -917,6 +917,7 @@ export const UpdateManualOdds = () => {
                 rateDiff: settings.rateDifferent,
                 predefinedValue: eventData.market.predefinedValue,
                 favRatio: settings?.favRatio,
+                delay: settings?.delay,
                 runner: runners.map(runner => ({
                     runnerId: runner.runnerId,
                     line: runner.line || 0,
@@ -1954,6 +1955,7 @@ export const UpdateManualOdds = () => {
 
     useEffect(() => {
         fetchMarketData();
+        handleSettingChange('volumeType', CUSTOM_STATUS)
         // Store original shortcut values
         setOriginalShortcutValues(settings.shortcutValues);
         window.addEventListener('keydown', handleKeyPress);
@@ -2454,22 +2456,138 @@ export const UpdateManualOdds = () => {
                                     )}
                                 </Box>
                                 <Box width="33.33%" sx={{ textAlign: 'right' }}>
-                                    <Button
-                                        color="primary"
-                                        className="me-2"
-                                        onClick={handleSave}
-                                        disabled={marketStatus === CLOSE_VALUE.toString()}
-                                    >
-                                        Save
-                                    </Button>
-                                    <Button color="danger" onClick={() => navigate("/commentary")}>Exit</Button>
+                                    <Button color="danger"
+                                        className="w-50"
+                                        onClick={() => navigate("/commentary")}>Exit</Button>
                                 </Box>
                             </Box>
 
                             {isLoading && <SpinnerModel />}
                             {/* Status Controls */}
                             <Box display="flex" gap={2} sx={{ mb: 3 }}>
-                                <Box width="66.67%">
+                                <Box width="35%">
+                                    <FormControl component="fieldset">
+                                        <RadioGroup
+                                            row
+                                            value={isLive ? "live" : directLineEnabled ? "directLine" : "manual"}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (value === "live") {
+                                                    setIsLive(true);
+                                                    setDirectLineEnabled(false);
+                                                } else if (value === "directLine") {
+                                                    setIsLive(false);
+                                                    setDirectLineEnabled(true);
+                                                } else { // manual
+                                                    setIsLive(false);
+                                                    setDirectLineEnabled(false);
+                                                }
+                                            }}
+                                        >
+                                            <FormControlLabel
+                                                value="live"
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Live"
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                            <FormControlLabel
+                                                value="directLine"
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Direct Line"
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                            <FormControlLabel
+                                                value="manual"
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Manual"
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                            />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </Box>
+                                <Box width="10%">
+                                    <StyledTextField
+                                        label="Margin"
+                                        type="number"
+                                        size="small"
+                                        color="warning"
+                                        focused
+                                        fullWidth
+                                        value={settings.margin}
+                                        inputProps={{ step: "1.00" }}
+                                        onChange={(e) => handleSettingChange('margin', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
+                                </Box>
+                                <Box width="10%">
+                                    <StyledTextField
+                                        label="Delay"
+                                        type="number"
+                                        size="small"
+                                        fullWidth
+                                        color="warning"
+                                        focused
+                                        value={settings.delay}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('delay', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
+                                </Box>
+                                <Box width="10%">
+                                    <StyledTextField
+                                        label="Line Ratio"
+                                        type="number"
+                                        size="small"
+                                        color="warning"
+                                        focused
+                                        fullWidth
+                                        value={settings.lineRatio}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('lineRatio', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
+                                </Box>
+                                <Box width="10%">
+                                    <StyledTextField
+                                        label="Rate Different"
+                                        type="number"
+                                        size="small"
+                                        color="warning"
+                                        focused
+                                        fullWidth
+                                        value={settings.rateDifferent}
+                                        inputProps={{ step: "0.01" }}
+                                        onChange={(e) => handleSettingChange('rateDifferent', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
+                                </Box>
+                                <Box width="10%">
+                                    <StyledTextField
+                                        label="Fav Ratio"
+                                        type="number"
+                                        size="small"
+                                        color="warning"
+                                        focused
+                                        fullWidth
+                                        value={settings.favRatio}
+                                        inputProps={{ step: "1.00" }}
+                                        onChange={(e) => handleSettingChange('favRatio', e.target.value)}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    />
+                                </Box>
+                                <Box width="15%">
+                                    <Button
+                                        color="primary"
+                                        className="me-2 w-100"
+                                        onClick={handleSave}
+                                        disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    >
+                                        Save
+                                    </Button>
+                                </Box>
+                            </Box>
+                            <Box display="flex" gap={2} sx={{ mb: 3 }}>
+                                <Box width="85%">
                                     <FormControl component="fieldset">
                                         <RadioGroup
                                             row
@@ -2518,44 +2636,6 @@ export const UpdateManualOdds = () => {
                                         }
                                         label="Active"
                                     />
-                                    <FormControl component="fieldset">
-                                        <RadioGroup
-                                            row
-                                            value={isLive ? "live" : directLineEnabled ? "directLine" : "manual"}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                if (value === "live") {
-                                                    setIsLive(true);
-                                                    setDirectLineEnabled(false);
-                                                } else if (value === "directLine") {
-                                                    setIsLive(false);
-                                                    setDirectLineEnabled(true);
-                                                } else { // manual
-                                                    setIsLive(false);
-                                                    setDirectLineEnabled(false);
-                                                }
-                                            }}
-                                        >
-                                            <FormControlLabel
-                                                value="live"
-                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
-                                                label="Live"
-                                                disabled={marketStatus === CLOSE_VALUE.toString()}
-                                            />
-                                            <FormControlLabel
-                                                value="directLine"
-                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
-                                                label="Direct Line"
-                                                disabled={marketStatus === CLOSE_VALUE.toString()}
-                                            />
-                                            <FormControlLabel
-                                                value="manual"
-                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
-                                                label="Manual"
-                                                disabled={marketStatus === CLOSE_VALUE.toString()}
-                                            />
-                                        </RadioGroup>
-                                    </FormControl>
                                     <StyledFormControlLabel
                                         control={
                                             <Switch
@@ -2592,7 +2672,7 @@ export const UpdateManualOdds = () => {
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
-                                <Box width="15%">
+                                {/* <Box width="15%">
                                     <StyledTextField
                                         label="Ball Start After"
                                         type="number"
@@ -2602,7 +2682,7 @@ export const UpdateManualOdds = () => {
                                         onChange={(e) => handleSettingChange('ballStartAfter', e.target.value)}
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
-                                </Box>
+                                </Box> */}
                             </Box>
 
                             {/* Settings Row */}
@@ -2620,18 +2700,6 @@ export const UpdateManualOdds = () => {
                                             min: 1,
                                             max: 3
                                         }}
-                                    />
-                                </Box>
-                                <Box width="20%">
-                                    <StyledTextField
-                                        label="Rate Different"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.rateDifferent}
-                                        inputProps={{ step: "0.01" }}
-                                        onChange={(e) => handleSettingChange('rateDifferent', e.target.value)}
-                                        disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
                                 <Box width="20%">
@@ -2658,42 +2726,7 @@ export const UpdateManualOdds = () => {
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
-                                <Box width="20%">
-                                    <StyledTextField
-                                        label="Margin"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.margin}
-                                        inputProps={{ step: "1.00" }}
-                                        onChange={(e) => handleSettingChange('margin', e.target.value)}
-                                        disabled={marketStatus === CLOSE_VALUE.toString()}
-                                    />
-                                </Box>
-                                <Box width="20%">
-                                    <StyledTextField
-                                        label="Delay"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.delay}
-                                        inputProps={{ step: "0.01" }}
-                                        onChange={(e) => handleSettingChange('delay', e.target.value)}
-                                        disabled={marketStatus === CLOSE_VALUE.toString()}
-                                    />
-                                </Box>
-                                <Box width="20%">
-                                    <StyledTextField
-                                        label="Line Ratio"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.lineRatio}
-                                        inputProps={{ step: "0.01" }}
-                                        onChange={(e) => handleSettingChange('lineRatio', e.target.value)}
-                                        disabled={marketStatus === CLOSE_VALUE.toString()}
-                                    />
-                                </Box>
+
                             </Box>
 
                             {/* Volume Controls */}
@@ -2728,18 +2761,6 @@ export const UpdateManualOdds = () => {
                                         value={settings.tieProbability}
                                         inputProps={{ step: "0.1" }}
                                         onChange={(e) => handleSettingChange('tieProbability', e.target.value)}
-                                        disabled={marketStatus === CLOSE_VALUE.toString()}
-                                    />
-                                </Box>
-                                <Box width="16.67%">
-                                    <StyledTextField
-                                        label="Fav Ratio"
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={settings.favRatio}
-                                        inputProps={{ step: "1.00" }}
-                                        onChange={(e) => handleSettingChange('favRatio', e.target.value)}
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     />
                                 </Box>
@@ -2996,8 +3017,8 @@ export const UpdateManualOdds = () => {
                             )}
                         </Paper>
                     </Box>
-                </Box>
-            </Container>
-        </Box>
+                </Box >
+            </Container >
+        </Box >
     );
 };
