@@ -1729,19 +1729,22 @@ export const UpdateManualOdds = () => {
             });
         });
 
-        // Update selectedRunner based on minimum back price
-        if (minBackRunner && minBackRunner.selectionId) {
-            const runner = adjustedRunners.find(r => r.selectionId === minBackRunner.selectionId);
-            if (runner) {
-                setSelectedRunner(runner.runnerId);
-                setSelectedRunnerDetails(prev => ({
-                    ...prev,
-                    runnerId: runner.runnerId,
-                    main: Math.floor(runner.backPrice).toString(),
-                    point: ((runner.backPrice % 1) * 100).toFixed(0).padStart(2, '0')
-                }));
-            }
-        }
+        // // Update selectedRunner based on minimum back price
+        // if (minBackRunner && minBackRunner.selectionId) {
+        //     const runner = adjustedRunners.find(r => r.selectionId === minBackRunner.selectionId);
+        //     console.log({ adjustedRunners })
+        //     if (runner) {
+        //         setSelectedRunner(runner.runnerId);
+        //         console.log("Selected from socket", { selectedRunnerDetails })
+        //         console.log("7")
+        //         setSelectedRunnerDetails(prev => ({
+        //             ...prev,
+        //             runnerId: runner.runnerId,
+        //             main: Math.floor(runner.backPrice).toString(),
+        //             point: ((runner.backPrice % 1) * 100).toFixed(0).padStart(2, '0')
+        //         }));
+        //     }
+        // }
     };
 
     // Reusable method for processing INNINGS_RUN_DATA
