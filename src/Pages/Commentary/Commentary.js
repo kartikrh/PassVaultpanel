@@ -6,7 +6,7 @@ import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
-import { fetchNextPlayerOrder, fetchWinnerMessage, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getBowlerRelatedWickets, getEconomyRate, getNonNegativeValue, getPlayerNameById, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
+import { fetchNextPlayerOrder, fetchWinnerMessage, fetchWinnerMessageRmk, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getBowlerRelatedWickets, getEconomyRate, getNonNegativeValue, getPlayerNameById, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
 import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryBallStatus, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
@@ -216,22 +216,27 @@ const Commentary = (props) => {
     }
     const checkWinner = () => {
         let WINNING_MESSAGE = ""
+        let WINNING_RMK_MESSAGE = ""
         let WINNING_TEAM = ""
         let isBattingTeamWon = undefined
         if (isWonByInnings) {
             isBattingTeamWon = false
             WINNING_TEAM = BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
+            WINNING_RMK_MESSAGE = `won by innings and ${isWonByInnings} runs.`
         } else if (superOverText) {
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
             WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
             WINNING_MESSAGE = `${teams?.[WINNING_TEAM]?.shortName} won in super over.`
+            WINNING_RMK_MESSAGE = `won in super over.`
         } else {
             const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
             WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
             WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
                 : fetchWinnerMessage({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
+            WINNING_RMK_MESSAGE = isMatchTie ? `Match tied`
+                : fetchWinnerMessageRmk({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
         }
         const teamUpdates = [
             { ...teams?.[BATTING_TEAM], isBattingComplete: true, isWin: isBattingTeamWon },
@@ -241,7 +246,8 @@ const Commentary = (props) => {
             "winnerId": teams?.[WINNING_TEAM].teamId,
             "winnerName": teams?.[WINNING_TEAM].teamName,
             "displayStatus": "",
-            "result": WINNING_MESSAGE
+            "result": WINNING_MESSAGE,
+            "winRmk": WINNING_RMK_MESSAGE,
         }
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
@@ -253,7 +259,7 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": Object.values(onPitchPlayers).filter(x => x),
         }
-        //  console.log("Called from : 1");
+        //  console.log("objToSave", objToSave);
         dispatch(addCommentaryScreenData(objToSave))
         setIsWonByInnings(undefined)
         setShowInningsChangePopup(undefined)
