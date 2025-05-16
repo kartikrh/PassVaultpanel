@@ -2535,22 +2535,24 @@ export const UpdateManualOdds = () => {
                                                     setDirectLineEnabled(false);
                                                 }
                                             }}
-                                            disabled={marketStatus === CLOSE_VALUE.toString()}
                                         >
-                                            <StyledFormControlLabel
+                                            <FormControlLabel
                                                 value="live"
-                                                // control={<StyledRadio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Live"
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
-                                            <StyledFormControlLabel
+                                            <FormControlLabel
                                                 value="directLine"
-                                                // control={<StyledRadio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Direct Line"
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
-                                            <StyledFormControlLabel
+                                            <FormControlLabel
                                                 value="manual"
-                                                // control={<StyledRadio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Manual"
+                                                disabled={marketStatus === CLOSE_VALUE.toString()}
                                             />
                                         </RadioGroup>
                                     </FormControl>
