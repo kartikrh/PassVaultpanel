@@ -1818,27 +1818,27 @@ export const UpdateManualOdds = () => {
                 };
             }
 
-            // // When directLine is enabled and not live, use savedPrices
-            // if (!isLive && directLineEnabled) {
-            //     let backPrice = savedPrices[runner.runnerId]?.back || 0;
-            //     let layPrice = savedPrices[runner.runnerId]?.lay || 0;
-            //     console.log("Inside If Runner conditions")
-            //     // If prices are < 1.01, explicitly set to 0
-            //     backPrice = backPrice < 1.01 ? 0 : backPrice;
-            //     layPrice = layPrice < 1.01 ? 0 : layPrice;
+            // When directLine is enabled and not live, use savedPrices
+            if (!isLive && directLineEnabled) {
+                let backPrice = savedPrices[runner.runnerId]?.back || 0;
+                let layPrice = savedPrices[runner.runnerId]?.lay || 0;
+                console.log("Inside If Runner conditions")
+                // If prices are < 1.01, explicitly set to 0
+                backPrice = backPrice < 1.01 ? 0 : backPrice;
+                layPrice = layPrice < 1.01 ? 0 : layPrice;
 
-            //     return {
-            //         ...runner,
-            //         backPrice: backPrice,
-            //         layPrice: layPrice,
-            //         overRate: backPrice,
-            //         underRate: layPrice,
-            //         backSize: runner.back.volume,
-            //         laySize: runner.lay.volume,
-            //         runnerId: runner.runnerId,
-            //         line: runner.line || 0
-            //     };
-            // }
+                return {
+                    ...runner,
+                    backPrice: backPrice,
+                    layPrice: layPrice,
+                    overRate: backPrice,
+                    underRate: layPrice,
+                    backSize: runner.back.volume,
+                    laySize: runner.lay.volume,
+                    runnerId: runner.runnerId,
+                    line: runner.line || 0
+                };
+            }
 
             const useSavedPrices = (!isLive && !directLineEnabled) || (event && event.shiftKey);
             return {
@@ -2518,26 +2518,42 @@ export const UpdateManualOdds = () => {
                                         }
                                         label="Active"
                                     />
-                                    <StyledFormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={isLive}
-                                                onChange={(e) => setIsLive(!isLive)}
-                                                disabled={marketStatus === CLOSE_VALUE.toString()}
+                                    <FormControl component="fieldset">
+                                        <RadioGroup
+                                            row
+                                            value={isLive ? "live" : directLineEnabled ? "directLine" : "manual"}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (value === "live") {
+                                                    setIsLive(true);
+                                                    setDirectLineEnabled(false);
+                                                } else if (value === "directLine") {
+                                                    setIsLive(false);
+                                                    setDirectLineEnabled(true);
+                                                } else { // manual
+                                                    setIsLive(false);
+                                                    setDirectLineEnabled(false);
+                                                }
+                                            }}
+                                            disabled={marketStatus === CLOSE_VALUE.toString()}
+                                        >
+                                            <StyledFormControlLabel
+                                                value="live"
+                                                // control={<StyledRadio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Live"
                                             />
-                                        }
-                                        label="Live"
-                                    />
-                                    <StyledFormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={directLineEnabled}
-                                                onChange={(e) => setDirectLineEnabled(e.target.checked)}
-                                                disabled={isLive || marketStatus === CLOSE_VALUE.toString()}
+                                            <StyledFormControlLabel
+                                                value="directLine"
+                                                // control={<StyledRadio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Direct Line"
                                             />
-                                        }
-                                        label="Direct Line"
-                                    />
+                                            <StyledFormControlLabel
+                                                value="manual"
+                                                // control={<StyledRadio disabled={marketStatus === CLOSE_VALUE.toString()} />}
+                                                label="Manual"
+                                            />
+                                        </RadioGroup>
+                                    </FormControl>
                                     <StyledFormControlLabel
                                         control={
                                             <Switch
