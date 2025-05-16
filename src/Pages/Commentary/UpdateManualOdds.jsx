@@ -433,8 +433,8 @@ export const UpdateManualOdds = () => {
         betAllow: false,
         active: false,
         rateDifferent: 5,
-        bRateVolume: 300,
-        lRateVolume: 300,
+        bRateVolume: 10000,
+        lRateVolume: 10000,
         margin: 10,
         delay: 10,
         lineRatio: 10,
@@ -1343,6 +1343,7 @@ export const UpdateManualOdds = () => {
                         };
                     });
                     setSavedPrices(initialSavedPrices);
+                    handleSettingChange('volumeType', CUSTOM_STATUS)
                 }
 
                 if (socket && commentaryId) {
@@ -1955,7 +1956,6 @@ export const UpdateManualOdds = () => {
 
     useEffect(() => {
         fetchMarketData();
-        handleSettingChange('volumeType', CUSTOM_STATUS)
         // Store original shortcut values
         setOriginalShortcutValues(settings.shortcutValues);
         window.addEventListener('keydown', handleKeyPress);
