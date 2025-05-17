@@ -901,47 +901,46 @@ export const UpdateManualOdds = () => {
         setHasShortcutChanges(false);
     };
 
-    // Prepare data for saving
-    const prepareMarketData = (optionalStatus) => {
-        const isOpen = +(optionalStatus || marketStatus || 0) === +OPEN_VALUE;
-        const marketData = {
+    const prepareMarketData = (options = {}) => {
+        const { newStatus = null, doNotChangeStatus = false, useMainPoint = false, useSocketData = false } = options;
+
+        // Determine which status to use
+        const statusToUse = doNotChangeStatus ? marketStatus : (newStatus || marketStatus);
+        const isOpen = parseInt(statusToUse) === OPEN_VALUE;
+
+        // Build the market data structure
+        return {
             eventMarket: [{
                 eventMarketId: eventData.market.eventMarketId,
                 marketName: eventData.market.marketName,
                 margin: settings.margin,
-                status: parseInt(marketStatus),
+                status: parseInt(statusToUse),
                 isActive: settings.active,
                 isAllow: settings.betAllow,
                 isSendData: true,
-                lineRatio: eventData.market.lineRatio,
+                lineRatio: eventData.market.lineRatio || 0,
                 rateDiff: settings.rateDifferent,
                 predefinedValue: eventData.market.predefinedValue,
-                favRatio: settings?.favRatio,
-                delay: settings?.delay,
-                runner: runners.map(runner => ({
-                    runnerId: runner.runnerId,
-                    line: runner.line || 0,
-                    overRate: isOpen ? runner.back.price : 0,
-                    underRate: isOpen ? runner.lay.price : 0,
-                    backPrice: isOpen ? runner.back.price : 0,
-                    layPrice: isOpen ? runner.lay.price : 0,
-                    backSize: runner.back.volume,
-                    laySize: runner.lay.volume
-                }))
+                favRatio: settings.favRatio,
+                delay: settings.delay,
+                runner: prepareRunnerData(runners, { isOpen, useMainPoint, useSocketData })
             }]
         };
-        return marketData;
     };
 
-    // Save handler
-    const handleSave = async () => {
+    const handleSave = async (options = {}) => {
         setIsLoading(true);
         try {
-            const marketData = prepareMarketData();
+            const marketData = prepareMarketData(options);
             const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
 
             if (response?.success) {
-                handleSavedRunnerUpdate(marketData)
+                // If status should be changed, update it
+                if (!options.doNotChangeStatus && options.newStatus) {
+                    setMarketStatus(options.newStatus);
+                }
+
+                handleSavedRunnerUpdate(marketData);
                 dispatch(updateToastData({
                     data: "Market updated successfully",
                     title: "Success",
@@ -1806,156 +1805,151 @@ export const UpdateManualOdds = () => {
         }
     }, [savedPrices, selectedRunner, isLive]);
 
-    useEffect(() => {
-        const prepareRunnerData = (runner, event, useNewStatus = false, newStatus = marketStatus) => {
-            const isOpenStatus = +(useNewStatus ? newStatus : marketStatus) === +OPEN_VALUE;
-            if (!isOpenStatus) {
+    const prepareRunnerData = (runners, options = {}) => {
+        const { isOpen = true, useMainPoint = false, useSocketData = false } = options;
+
+        return runners.map(runner => {
+            // Base runner object with required fields only
+            const baseRunner = {
+                runnerId: runner.runnerId,
+                line: runner.line || 0,
+                backSize: runner.back?.volume || 10000,
+                laySize: runner.lay?.volume || 10000
+            };
+
+            // If market is not open, set all rates to 0
+            if (!isOpen) {
                 return {
-                    ...runner,
-                    backPrice: 0,
-                    layPrice: 0,
+                    ...baseRunner,
                     overRate: 0,
                     underRate: 0,
-                    backSize: runner.back.volume,
-                    laySize: runner.lay.volume,
-                    runnerId: runner.runnerId,
-                    line: runner.line || 0
+                    backPrice: 0,
+                    layPrice: 0
                 };
             }
 
-            // When directLine is enabled and not live, use savedPrices
+            // For + key: Use the socket-formatted runner data directly
+            if (useSocketData) {
+                return {
+                    ...baseRunner,
+                    overRate: runner.back.price,
+                    underRate: runner.lay.price,
+                    backPrice: runner.back.price,
+                    layPrice: runner.lay.price
+                };
+            }
+
+            // When using main/point values (for Shift+Enter)
+            if (useMainPoint && selectedRunnerDetails.runnerId === runner.runnerId) {
+                // Calculate price from main/point fields
+                const mainValue = parseFloat(selectedRunnerDetails.main) || 0;
+                const pointValue = parseFloat(selectedRunnerDetails.point) || 0;
+                const calculatedPrice = mainValue + (pointValue / 100);
+
+                // Calculate lay price based on the settings
+                const layPrice = calculatedPrice > 0 ?
+                    Math.max(1.01, Number((calculatedPrice + parseFloat(settings.rateDifferent)).toFixed(2))) : 1.01;
+
+                return {
+                    ...baseRunner,
+                    overRate: calculatedPrice,
+                    underRate: layPrice,
+                    backPrice: calculatedPrice,
+                    layPrice: layPrice
+                };
+            }
+
+            // When using direct line and not live mode, use saved prices
             if (!isLive && directLineEnabled) {
                 let backPrice = savedPrices[runner.runnerId]?.back || 0;
                 let layPrice = savedPrices[runner.runnerId]?.lay || 0;
-                console.log("Inside If Runner conditions")
-                // If prices are < 1.01, explicitly set to 0
+
+                // Handle very small prices
                 backPrice = backPrice < 1.01 ? 0 : backPrice;
                 layPrice = layPrice < 1.01 ? 0 : layPrice;
 
                 return {
-                    ...runner,
-                    backPrice: backPrice,
-                    layPrice: layPrice,
+                    ...baseRunner,
                     overRate: backPrice,
                     underRate: layPrice,
-                    backSize: runner.back.volume,
-                    laySize: runner.lay.volume,
-                    runnerId: runner.runnerId,
-                    line: runner.line || 0
+                    backPrice: backPrice,
+                    layPrice: layPrice
                 };
             }
 
-            const useSavedPrices = (!isLive && !directLineEnabled) || (event && event.shiftKey);
+            // Default case: use the formatted runner data
             return {
-                ...runner,
-                backPrice: useSavedPrices ? (savedPrices[runner.runnerId]?.back || 0) : runner.back.price,
-                layPrice: useSavedPrices ? (savedPrices[runner.runnerId]?.lay || 0) : runner.lay.price,
-                overRate: useSavedPrices ? (savedPrices[runner.runnerId]?.back || 0) : runner.back.price,
-                underRate: useSavedPrices ? (savedPrices[runner.runnerId]?.lay || 0) : runner.lay.price,
-                backSize: runner.back.volume,
-                laySize: runner.lay.volume,
-                runnerId: runner.runnerId,
-                line: runner.line || 0
+                ...baseRunner,
+                overRate: runner.back.price,
+                underRate: runner.lay.price,
+                backPrice: runner.back.price,
+                layPrice: runner.lay.price
             };
-        };
-
-        const updateMarket = async (event, customStatus = null) => {
-            const baseMarketData = prepareMarketData(customStatus);
-            const currentMarketData = {
-                eventMarket: [{
-                    ...baseMarketData.eventMarket[0],
-                    ...(customStatus && {
-                        status: parseInt(customStatus),
-                        isActive: settings.active
-                    }),
-                    runner: runners.map(runner =>
-                        prepareRunnerData(runner, event, !!customStatus, customStatus)
-                    )
-                }]
-            };
-            console.log("Inside Update Market:", { currentMarketData })
-            setIsLoading(true);
-            try {
-                const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', currentMarketData);
-                if (response?.success) {
-                    handleSavedRunnerUpdate(currentMarketData);
-                    dispatch(updateToastData({
-                        data: "Market updated successfully",
-                        title: "Success",
-                        type: SUCCESS
-                    }));
-                }
-            } catch (error) {
-                dispatch(updateToastData({
-                    data: error?.message,
-                    title: error?.title,
-                    type: ERROR
-                }));
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
+        });
+    };
+    useEffect(() => {
         const handleKeyDown = async (e) => {
+            // Cannot perform operations on closed markets
+            if (+marketStatus === +CLOSE_VALUE) return;
+
+            // + key: Save socket-formatted runner data without changing status
             if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
                 e.preventDefault();
 
-                // If there's selected runner details, update price from main/point
-                if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
-                    const calculatedPrice = (parseFloat(selectedRunnerDetails.main) || 0) +
-                        ((parseFloat(selectedRunnerDetails.point) || 0) / 100);
-                    await new Promise(resolve => {
-                        handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
-                        resolve();
-                    });
-                }
-
-                // Save without changing status
-                await updateMarket(e);
+                // Important: For + key we use the socket data directly
+                // without updating from main/point fields
+                await handleSave({
+                    doNotChangeStatus: true,
+                    useSocketData: true // This is the key difference - use socket data
+                });
                 return;
             }
 
+            // Enter key: Handle status toggle or simple save with socket data
             if (e.key === 'Enter') {
                 e.preventDefault();
-                if (e.shiftKey && +marketStatus !== +OPEN_VALUE) return;
-                // Handle Shift+Enter case
-                if (e.shiftKey) {
 
-                    await handleSave();
+                // Handle Shift+Enter: save main/point values without changing status
+                if (e.shiftKey) {
+                    if (+marketStatus !== +OPEN_VALUE) return;
+
+                    // For Shift+Enter: Update values from main/point fields
+                    await handleSave({
+                        useMainPoint: true,
+                        doNotChangeStatus: true
+                    });
                     return;
                 }
 
-                // Update price from main/point if exists
+                // Update price from main/point if exists, for normal Enter
                 if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
                     const calculatedPrice = (parseFloat(selectedRunnerDetails.main) || 0) +
                         ((parseFloat(selectedRunnerDetails.point) || 0) / 100);
+
                     await new Promise(resolve => {
                         handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
                         resolve();
                     });
                 }
 
-                // Handle status toggle
+                // For regular Enter: Toggle status and use socket-formatted data
                 let newStatus;
                 if (+marketStatus === +OPEN_VALUE) {
                     newStatus = SUSPEND_VALUE;
                 } else if (+marketStatus === +INACTIVE_VALUE || +marketStatus === +SUSPEND_VALUE) {
                     newStatus = OPEN_VALUE;
                 } else {
-                    return;
+                    return; // Don't change status for closed markets
                 }
 
-                await new Promise(resolve => {
-                    setMarketStatus(newStatus);
-                    resolve();
-                });
-                await updateMarket(e, newStatus);
+                // Update with new status and socket-formatted data
+                await handleSave({ newStatus });
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus, runners, prepareMarketData, settings, savedPrices, isLive, directLineEnabled, originalRunner]);
+    }, [selectedRunnerDetails, marketStatus, runners, settings, savedPrices, isLive, directLineEnabled, eventData]);
 
     useEffect(() => {
         fetchMarketData();
