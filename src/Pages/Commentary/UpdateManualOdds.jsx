@@ -1887,33 +1887,20 @@ export const UpdateManualOdds = () => {
             };
         });
     };
+    // This is the specific useEffect for the Enter key functionality
     useEffect(() => {
         const handleKeyDown = async (e) => {
             // Cannot perform operations on closed markets
             if (+marketStatus === +CLOSE_VALUE) return;
 
-            // + key: Save socket-formatted runner data without changing status
-            if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
-                e.preventDefault();
-
-                // Important: For + key we use the socket data directly
-                // without updating from main/point fields
-                await handleSave({
-                    doNotChangeStatus: true,
-                    useSocketData: true // This is the key difference - use socket data
-                });
-                return;
-            }
-
-            // Enter key: Handle status toggle or simple save with socket data
+            // Handle Enter key press
             if (e.key === 'Enter') {
                 e.preventDefault();
 
-                // Handle Shift+Enter: save main/point values without changing status
+                // Handle Shift+Enter case
                 if (e.shiftKey) {
                     if (+marketStatus !== +OPEN_VALUE) return;
-
-                    // For Shift+Enter: Update values from main/point fields
+                    // Keep existing Shift+Enter behavior - working fine
                     await handleSave({
                         useMainPoint: true,
                         doNotChangeStatus: true
@@ -1921,36 +1908,86 @@ export const UpdateManualOdds = () => {
                     return;
                 }
 
-                // Update price from main/point if exists, for normal Enter
-                if (selectedRunnerDetails.main || selectedRunnerDetails.point) {
-                    const calculatedPrice = (parseFloat(selectedRunnerDetails.main) || 0) +
-                        ((parseFloat(selectedRunnerDetails.point) || 0) / 100);
-
-                    await new Promise(resolve => {
-                        handleCellEdit(selectedRunnerDetails.runnerId, 'back', 'price', calculatedPrice);
-                        resolve();
-                    });
-                }
-
-                // For regular Enter: Toggle status and use socket-formatted data
+                // Determine the next status when pressing Enter
                 let newStatus;
                 if (+marketStatus === +OPEN_VALUE) {
+                    // Toggle from Open to Suspend - keep existing behavior
                     newStatus = SUSPEND_VALUE;
-                } else if (+marketStatus === +INACTIVE_VALUE || +marketStatus === +SUSPEND_VALUE) {
-                    newStatus = OPEN_VALUE;
-                } else {
-                    return; // Don't change status for closed markets
+                    await handleSave({ newStatus });
                 }
+                else if (+marketStatus === +INACTIVE_VALUE || +marketStatus === +SUSPEND_VALUE) {
+                    // Toggle from Inactive/Suspend to Open - ALWAYS use socket data
+                    newStatus = OPEN_VALUE;
 
-                // Update with new status and socket-formatted data
-                await handleSave({ newStatus });
+                    // Create the specific payload for this case to ensure socket data is used
+                    const marketData = {
+                        eventMarket: [{
+                            eventMarketId: eventData.market.eventMarketId,
+                            marketName: eventData.market.marketName,
+                            margin: settings.margin,
+                            status: parseInt(newStatus),
+                            isActive: settings.active,
+                            isAllow: settings.betAllow,
+                            isSendData: true,
+                            lineRatio: eventData.market.lineRatio || 0,
+                            rateDiff: settings.rateDifferent,
+                            predefinedValue: eventData.market.predefinedValue,
+                            favRatio: settings.favRatio,
+                            delay: settings.delay,
+                            // Use runner data directly from the socket-formatted values
+                            runner: runners.map(runner => ({
+                                runnerId: runner.runnerId,
+                                line: runner.line || 0,
+                                // IMPORTANT: Use the socket-formatted prices directly
+                                overRate: runner.back.price,
+                                underRate: runner.lay.price,
+                                backPrice: runner.back.price,
+                                layPrice: runner.lay.price,
+                                backSize: runner.back?.volume || 10000,
+                                laySize: runner.lay?.volume || 10000
+                            }))
+                        }]
+                    };
+
+                    // Send the custom-built payload with socket data
+                    setIsLoading(true);
+                    try {
+                        const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+                        if (response?.success) {
+                            setMarketStatus(newStatus);
+                            handleSavedRunnerUpdate(marketData);
+                            dispatch(updateToastData({
+                                data: "Market updated successfully",
+                                title: "Success",
+                                type: SUCCESS
+                            }));
+                        }
+                    } catch (error) {
+                        dispatch(updateToastData({
+                            data: error?.message,
+                            title: error?.title,
+                            type: ERROR
+                        }));
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            }
+
+            // Handle + key press - leave existing behavior
+            if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
+                e.preventDefault();
+                await handleSave({
+                    doNotChangeStatus: true,
+                    useSocketData: true
+                });
+                return;
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [selectedRunnerDetails, marketStatus, runners, settings, savedPrices, isLive, directLineEnabled, eventData]);
-
     useEffect(() => {
         fetchMarketData();
         // Store original shortcut values
