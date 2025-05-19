@@ -46,6 +46,7 @@ export const TAB_COMMENTARY = "Commentary";
 export const TAB_COMMENTARY_HISTORY = "Commentary History";
 export const TAB_COMMENTARY_LIST = "Commentary List";
 export const TAB_COMMENTARY_LOGS = "Commentary Logs";
+export const TAB_MARKET_DATA_LOGS = "Market Data Logs";
 export const TAB_COMPETITION = "Competition";
 export const TAB_CONFIG = "Config";
 
