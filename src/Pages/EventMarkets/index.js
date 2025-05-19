@@ -20,8 +20,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
+  convertDateUtcFormat,
+  convertDateUTCToLocal2,
   convertDateLocalToUTC,
-  convertDateUTCToLocal,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "./CloseModal";
@@ -32,11 +33,15 @@ import CloseModel from "./CloseModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
-  const commentaryId = +sessionStorage.getItem('commentaryEventMarketId') || 0;
-  const commentaryDetails = JSON.parse(sessionStorage.getItem('commentaryEventMarketDetails') || "{}");
+  const commentaryId = +sessionStorage.getItem("commentaryEventMarketId") || 0;
+  const commentaryDetails = JSON.parse(
+    sessionStorage.getItem("commentaryEventMarketDetails") || "{}"
+  );
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
+  const marketTypeObj = useSelector(
+    (state) => state.marketType?.marketTypeList
+  );
   document.title = TAB_EVENT_MARKETS;
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
@@ -48,26 +53,33 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
-  const [competitionId, setCompetitionId] = useState(commentaryId ? commentaryDetails?.competitionId : null);
+  const [competitionId, setCompetitionId] = useState(
+    commentaryId ? commentaryDetails?.competitionId : null
+  );
   const [closeModalData, setCloseModalData] = useState(null);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [closeAllModelVisable, setCloseAllModelVisable] = useState(false);
   const [closeModelVisable, setCloseModelVisable] = useState(false);
-  const [closeSuspendTimeModelVisible, setCloseSuspendTimeModelVisible] = useState(false);
+  const [closeSuspendTimeModelVisible, setCloseSuspendTimeModelVisible] =
+    useState(false);
   const [closeSuspendTimeRecord, setCloseSuspendTimeRecord] = useState({});
   const [mtAndCategories, setMtAndCategories] = useState(null);
   const [selectedMarketType, setSelectedMarketType] = useState(null);
   const [categories, setCategories] = useState([]);
   const [delay, setDelay] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [ratesource, setRatesource] = useState({
     rateSourceRefId: 1,
-    rateSourceType: "Ratesource"
-  })
+    rateSourceType: "Ratesource",
+  });
 
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -75,12 +87,11 @@ const Index = () => {
     eventName: null,
   });
 
-
   useEffect(() => {
     if (commentaryId !== 0) {
-      setEventTypeId(commentaryDetails.eventTypeId)
+      setEventTypeId(commentaryDetails.eventTypeId);
     }
-  }, [])
+  }, []);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -89,23 +100,35 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction();
     // Use latestValueFromTable if available; otherwise, fallback to tableActions
     const dataSource = latestValueFromTable || tableActions;
-  
+
     setEventTypeActive(dataSource?.isActive);
 
     let payload = {
       ...dataSource,
-      rateSourceRefId: dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
+      rateSourceRefId:
+        dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
       marketTypeId: dataSource?.marketTypeId || 0,
-      marketTypeCategoryId: dataSource?.marketTypeId !== selectedMarketType ? 0 : dataSource?.marketTypeCategoryId || 0,
+      marketTypeCategoryId:
+        dataSource?.marketTypeId !== selectedMarketType
+          ? 0
+          : dataSource?.marketTypeCategoryId || 0,
       eventTypeId: dataSource?.eventTypeId || 0,
-      competitionId: dataSource?.eventTypeId !== eventTypeId ? 0 : dataSource?.competitionId || 0,
-      commentaryId: (dataSource?.competitionId !== competitionId || dataSource?.eventTypeId !== eventTypeId) ? 0 : dataSource?.commentaryId || 0,
+      competitionId:
+        dataSource?.eventTypeId !== eventTypeId
+          ? 0
+          : dataSource?.competitionId || 0,
+      commentaryId:
+        dataSource?.competitionId !== competitionId ||
+        dataSource?.eventTypeId !== eventTypeId
+          ? 0
+          : dataSource?.commentaryId || 0,
     };
     if (commentaryId !== 0) {
       payload = {
         ...dataSource,
-        rateSourceRefId: dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
-        commentaryId: commentaryId
+        rateSourceRefId:
+          dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
+        commentaryId: commentaryId,
       };
     }
     if (isSearch) {
@@ -134,16 +157,22 @@ const Index = () => {
       });
   };
 
-  const fetchMarketCategoriesList = async () =>{
+  const fetchMarketCategoriesList = async () => {
     await axiosInstance
-    .post("/admin/marketTemplate/mtAndCategories", {})
-    .then((response) => {
-      setMtAndCategories(response?.result);
-    })
-    .catch((error) => {
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    });
-  }
+      .post("/admin/marketTemplate/mtAndCategories", {})
+      .then((response) => {
+        setMtAndCategories(response?.result);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -154,7 +183,7 @@ const Index = () => {
         setEventTypes(response.result);
         setIsLoading(false);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const fetchCompetitionList = async (eventTypeId) => {
     await axiosInstance
@@ -165,7 +194,7 @@ const Index = () => {
         setCompetitionList(response.result);
         setIsLoading(false);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const fetchEventList = async (competitionId) => {
     await axiosInstance
@@ -176,7 +205,7 @@ const Index = () => {
         setEventList(response.result);
         setIsLoading(false);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const handleSingleCheck = (e) => {
@@ -191,25 +220,37 @@ const Index = () => {
     setCheckedList(updateSingleCheck);
   };
 
-    useEffect(()=>{
-      if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId){
-        setIsSearch(false)
-        fetchEventTypeData();
-        fetchCompetitionList(commentaryDetails?.eventTypeId);
-        fetchEventList(commentaryDetails?.competitionId);
-      } /* else {
+  useEffect(() => {
+    if (
+      commentaryId !== 0 &&
+      commentaryDetails?.eventTypeId &&
+      commentaryDetails?.competitionId &&
+      commentaryDetails?.commentaryId
+    ) {
+      setIsSearch(false);
+      fetchEventTypeData();
+      fetchCompetitionList(commentaryDetails?.eventTypeId);
+      fetchEventList(commentaryDetails?.competitionId);
+    } /* else {
         setIsSearch(true)
       } */
-    },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.commentaryId])
+  }, [
+    commentaryId,
+    commentaryDetails?.eventTypeId,
+    commentaryDetails?.competitionId,
+    commentaryDetails?.commentaryId,
+  ]);
 
   useEffect(() => {
-      if(mtAndCategories && selectedMarketType) {
-        const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
-        setCategories(categoriesData || []);
-      } else if(!selectedMarketType) {
-        setCategories([]);
-      }
-  },[mtAndCategories, selectedMarketType])
+    if (mtAndCategories && selectedMarketType) {
+      const categoriesData = mtAndCategories?.categories?.filter(
+        (item) => item?.marketTypeId == selectedMarketType
+      );
+      setCategories(categoriesData || []);
+    } else if (!selectedMarketType) {
+      setCategories([]);
+    }
+  }, [mtAndCategories, selectedMarketType]);
 
   const handleAllowPermissions = async (pType, record, cState) => {
     setIsLoading(true);
@@ -399,15 +440,21 @@ const Index = () => {
   };
   const handleSL = (details) => {
     const url = new URL(window.location.origin + "/marketLogs");
-    sessionStorage.setItem('eventMarketLogId', "" + details?.eventMarketId);
-    sessionStorage.setItem('eventMarketLogDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("eventMarketLogId", "" + details?.eventMarketId);
+    sessionStorage.setItem(
+      "eventMarketLogDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
   };
   const handleDS = (details) => {
     const url = new URL(window.location.origin + "/marketDataLogs");
-    sessionStorage.setItem('eventMarketDataLogId', "" + details?.eventMarketId);
-    sessionStorage.setItem('eventMarketDataLogDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("eventMarketDataLogId", "" + details?.eventMarketId);
+    sessionStorage.setItem(
+      "eventMarketDataLogDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
   };
   const handleClose = async (record) => {
     setCloseModalData(record);
@@ -437,48 +484,48 @@ const Index = () => {
   const statusList = [
     {
       statusType: "All",
-      statusId: -1
+      statusId: -1,
     },
     {
       statusType: "NotOpen",
-      statusId: 0
+      statusId: 0,
     },
     {
       statusType: "Open",
-      statusId: 1
+      statusId: 1,
     },
     {
       statusType: "Inactive",
-      statusId: 2
+      statusId: 2,
     },
     {
       statusType: "Suspend",
-      statusId: 3
+      statusId: 3,
     },
     {
       statusType: "Close",
-      statusId: 4
+      statusId: 4,
     },
     {
       statusType: "Settled",
-      statusId: 5
+      statusId: 5,
     },
     {
       statusType: "Cancel",
-      statusId: 6
+      statusId: 6,
     },
-  ]
+  ];
 
   const rateSourceList = [
     {
       rateSourceType: "Ratesource",
-      rateSourceRefId: 1
+      rateSourceRefId: 1,
     },
     {
       rateSourceType: "External",
-      rateSourceRefId: 2
-    }
-  ]
+      rateSourceRefId: 2,
+    },
+  ];
   //table columns
   const columns = [
     {
@@ -539,7 +586,9 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -644,7 +693,11 @@ const Index = () => {
       title: "Allow",
       key: "isAllow",
       render: (text, record) => (
-        <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Allow/Disable Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isAllow ? "primary" : "danger"}`}
             size="sm"
@@ -663,7 +716,11 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -676,7 +733,9 @@ const Index = () => {
               );
             }}
           >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -686,7 +745,11 @@ const Index = () => {
       title: "Inning Run",
       key: "isInningRun",
       render: (text, record) => (
-        <Tooltip title={"Inactive Inning Run"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Inactive Inning Run"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isInningRun ? "primary" : "danger"}`}
             size="sm"
@@ -700,7 +763,9 @@ const Index = () => {
               );
             }}
           >
-            <i className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -711,7 +776,11 @@ const Index = () => {
       key: "close",
       render: (text, record) => (
         <>
-          <Tooltip title={"Close Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Close Market"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color="danger"
               size="sm"
@@ -734,15 +803,20 @@ const Index = () => {
       style: { width: "5%", textAlign: "center" },
       sort: true,
       render: (text, record) => {
-        return (record?.marketTypeId == marketTypeObj?.Fancy || record?.marketTypeId == marketTypeObj?.LineMarket)
+        return record?.marketTypeId == marketTypeObj?.Fancy ||
+          record?.marketTypeId == marketTypeObj?.LineMarket
           ? text
           : record?.resultRunner;
-      }
+      },
     },
     {
       render: (text, record) => (
         <>
-          <Tooltip title={"View Status Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"View Status Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color="primary"
               size="sm"
@@ -754,7 +828,11 @@ const Index = () => {
               SL
             </Button>
           </Tooltip>{" "}
-          <Tooltip title={"View Data Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"View Data Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color="primary"
               size="sm"
@@ -766,7 +844,11 @@ const Index = () => {
               DS
             </Button>
           </Tooltip>
-          <Tooltip title={"Close Suspend Time"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Close Suspend Time"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color="primary"
               size="sm"
@@ -802,11 +884,15 @@ const Index = () => {
     isCloseAllMarket: true,
     isCloseMarket: true,
     marketTypeSelect: true,
-    categorySelect: true
+    categorySelect: true,
+    isDateTypeSelect: true,
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
       navigate("/dashboard");
     }
     fetchData();
@@ -827,25 +913,48 @@ const Index = () => {
   useEffect(() => {
     if (eventTypeId) {
       fetchCompetitionList(eventTypeId);
-    } else if(!eventTypeId) {
+    } else if (!eventTypeId) {
       setCompetitionList([]);
       setEventList([]);
     }
   }, [eventTypeId]);
 
   useEffect(() => {
-    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
-      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
-      const competition = competitionList.find(c => c.competitionId === commentaryDetails.competitionId)
-      const eventListData = eventList.find(c => c.commentaryId === commentaryDetails.commentaryId)
+    if (
+      commentaryDetails?.eventTypeId &&
+      commentaryDetails?.competitionId &&
+      commentaryDetails?.commentaryId
+    ) {
+      const event = eventTypes.find(
+        (e) => e.eventTypeId === commentaryDetails.eventTypeId
+      );
+      const competition = competitionList.find(
+        (c) => c.competitionId === commentaryDetails.competitionId
+      );
+      const eventListData = eventList.find(
+        (c) => c.commentaryId === commentaryDetails.commentaryId
+      );
 
       setSelectedTableElements({
         eventType: { value: event?.eventTypeId, label: event?.eventType },
-        competition: { value: competition?.competitionId, label: competition?.competition },
-        eventName: { value: eventListData?.commentaryId, label: eventListData?.eventName }
+        competition: {
+          value: competition?.competitionId,
+          label: competition?.competition,
+        },
+        eventName: {
+          value: eventListData?.commentaryId,
+          label: eventListData?.eventName,
+        },
       });
     }
-  }, [commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.commentaryId, competitionList, eventTypes, eventList]);
+  }, [
+    commentaryDetails?.eventTypeId,
+    commentaryDetails?.competitionId,
+    commentaryDetails?.commentaryId,
+    competitionList,
+    eventTypes,
+    eventList,
+  ]);
 
   useEffect(() => {
     if (competitionId) {
@@ -884,7 +993,7 @@ const Index = () => {
             delay={delay}
             setDelay={setDelay}
             handleDelay={handleDelay}
-            selectedTableElementsLogs = {selectedTableElements}
+            selectedTableElementsLogs={selectedTableElements}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
@@ -897,6 +1006,8 @@ const Index = () => {
             )}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            dateType={dateType}
+            setDateType={setDateType}
             ratesource={ratesource}
             setRatesource={setRatesource}
             isSearch={isSearch}
@@ -930,14 +1041,15 @@ const Index = () => {
           singleCheck={checekedList}
           fetchData={fetchData}
         />
-        {closeSuspendTimeModelVisible &&
+        {closeSuspendTimeModelVisible && (
           <CloseSuspendTimeModel
             closeSuspendTimeModelVisible={closeSuspendTimeModelVisible}
             setCloseSuspendTimeModelVisible={setCloseSuspendTimeModelVisible}
             handleCloseSuspendTime={handleCloseSuspendTime}
             closeSuspendTimeRecord={closeSuspendTimeRecord}
             setCloseSuspendTimeRecord={setCloseSuspendTimeRecord}
-          />}
+          />
+        )}
       </div>
     </React.Fragment>
   );

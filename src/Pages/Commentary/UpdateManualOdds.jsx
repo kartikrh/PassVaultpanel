@@ -454,7 +454,7 @@ export const UpdateManualOdds = () => {
     });
     const settingsRef = useRef(settings);
     const runnersRef = useRef([]);
-
+    // console.log({ savedPrices })
     useEffect(() => {
         runnersRef.current = runners;
     }, [runners]);
@@ -1341,6 +1341,7 @@ export const UpdateManualOdds = () => {
                             lay: runner.layPrice
                         };
                     });
+                    console.log("Hello 1")
                     setSavedPrices(initialSavedPrices);
                     handleSettingChange('volumeType', CUSTOM_STATUS)
                 }
@@ -1427,6 +1428,7 @@ export const UpdateManualOdds = () => {
                 lay: getNonZeroSavedData(runner.layPrice, runner.runnerId, "lay")
             };
         });
+        console.log("Hello 2")
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
     };
@@ -1439,7 +1441,7 @@ export const UpdateManualOdds = () => {
 
         // For directLineEnabled and !isLive mode, if value < 1.01, set it to 0
         const adjustedValue = !isLive && directLineEnabled && numericValue < 1.01 ? 0 : numericValue;
-
+        console.log("Hello 3")
         setSavedPrices(prevValue => {
             const newSavedPrices = {
                 ...prevValue,
@@ -1887,11 +1889,12 @@ export const UpdateManualOdds = () => {
             };
         });
     };
-    // This is the specific useEffect for the Enter key functionality
+
     useEffect(() => {
         const handleKeyDown = async (e) => {
             // Cannot perform operations on closed markets
             if (+marketStatus === +CLOSE_VALUE) return;
+            const isManualMode = !isLive && !directLineEnabled;
 
             // Handle Enter key press
             if (e.key === 'Enter') {
@@ -1907,9 +1910,21 @@ export const UpdateManualOdds = () => {
                     });
                     return;
                 }
-
-                // Determine the next status when pressing Enter
                 let newStatus;
+                if (isManualMode) {
+                    // if (+marketStatus !== +OPEN_VALUE) return;
+                    // Keep existing Shift+Enter behavior - working fine
+
+                    newStatus = +marketStatus === +OPEN_VALUE ? +SUSPEND_VALUE : +OPEN_VALUE;
+                    await handleSave({
+                        useMainPoint: true,
+                        doNotChangeStatus: true,
+                        newStatus
+
+                    });
+                    return;
+                }
+                // Determine the next status when pressing Enter
                 if (+marketStatus === +OPEN_VALUE) {
                     // Toggle from Open to Suspend - keep existing behavior
                     newStatus = SUSPEND_VALUE;
@@ -1974,7 +1989,6 @@ export const UpdateManualOdds = () => {
                 }
             }
 
-            // Handle + key press - leave existing behavior
             if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
                 e.preventDefault();
                 await handleSave({
@@ -1988,6 +2002,8 @@ export const UpdateManualOdds = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [selectedRunnerDetails, marketStatus, runners, settings, savedPrices, isLive, directLineEnabled, eventData]);
+
+
     useEffect(() => {
         fetchMarketData();
         // Store original shortcut values
