@@ -222,18 +222,18 @@ const Commentary = (props) => {
         if (isWonByInnings) {
             isBattingTeamWon = false
             WINNING_TEAM = BOWLING_TEAM
-            WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs.`
-            WINNING_RMK_MESSAGE = `won by innings and ${isWonByInnings} runs.`
+            WINNING_MESSAGE = `${teams?.[BOWLING_TEAM]?.shortName} won by innings and ${isWonByInnings} runs`
+            WINNING_RMK_MESSAGE = `by innings and ${isWonByInnings} runs`
         } else if (superOverText) {
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
             WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
-            WINNING_MESSAGE = `${teams?.[WINNING_TEAM]?.shortName} won in super over.`
-            WINNING_RMK_MESSAGE = `won in super over.`
+            WINNING_MESSAGE = `${teams?.[WINNING_TEAM]?.shortName} won in super over`
+            WINNING_RMK_MESSAGE = `in super over`
         } else {
             const isMatchTie = teams?.[BATTING_TEAM]?.teamScore === target - 1
             isBattingTeamWon = teams?.[BATTING_TEAM]?.teamScore >= target
             WINNING_TEAM = isBattingTeamWon ? BATTING_TEAM : BOWLING_TEAM
-            WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}.`
+            WINNING_MESSAGE = isMatchTie ? `Match tied  between ${teams?.[BATTING_TEAM].teamName} and ${teams?.[BOWLING_TEAM].teamName}`
                 : fetchWinnerMessage({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })
             WINNING_RMK_MESSAGE = isMatchTie ? `Match tied`
                 : fetchWinnerMessageRmk({ team: teams, matchTypeDetails, target, winningTeam: WINNING_TEAM, isBattingTeamWon })

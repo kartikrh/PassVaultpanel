@@ -27,16 +27,17 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
-  convertDateUTCToLocalWithoutSec,
+  convertDateUtcFormat,
+  convertDateUTCToLocal2,
   convertDateLocalToUTC,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
 import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
 import { ChangeResultModel } from "../../components/Model/ChangeResult";
-import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
+import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId";
 import { DlsModal } from "./CommentaryModels/DlsModal";
-import "./CommentaryCss.css"
+import "./CommentaryCss.css";
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
 import AwardSelectionComponent from "./CommentaryModels/AwardModal";
@@ -63,13 +64,17 @@ const Index = () => {
   const [selectedEventRef, setSelectedEventRef] = useState({});
   const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-  const [userRefData, setUserRefData] = useState(false)
-  const [filledDropdownData, setFilledDropdownData] = useState(false)
+  const [userRefData, setUserRefData] = useState(false);
+  const [filledDropdownData, setFilledDropdownData] = useState(false);
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
   });
   const [isSearch, setIsSearch] = useState(false);
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -86,7 +91,8 @@ const Index = () => {
   const [runnerModelVisible, setRunnerModelVisible] = useState(false);
   const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
   const [showAwardModel, setShowAwardModel] = useState(undefined);
-  const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
+  const [marketTemplateModelVisible, setMarketTemplateModelVisible] =
+    useState(false);
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
@@ -97,11 +103,17 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const tabelNoteDisplay = <>
-    <b><i>Note :</i></b>
-    {/* <div>Click on Event Id to open <b>Odds View</b> page  </div> */}
-    <div>Click on Event Name to open <b>Open Market</b> page </div>
-  </>
+  const tabelNoteDisplay = (
+    <>
+      <b>
+        <i>Note :</i>
+      </b>
+      {/* <div>Click on Event Id to open <b>Odds View</b> page  </div> */}
+      <div>
+        Click on Event Name to open <b>Open Market</b> page{" "}
+      </div>
+    </>
+  );
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -113,8 +125,10 @@ const Index = () => {
       competitionId: latestValueFromTable?.eventTypeId == eventTypeId ? latestValueFromTable?.competitionId : tableActions?.eventTypeId == eventTypeId ? tableActions?.competitionId : 0,
     };
     if (!isEmpty(userRefData)) {
-      if (userRefData.eventTypeId && userRefData.eventTypeId !== 0) payload['eventTypeId'] = userRefData.eventTypeId
-      if (userRefData.competitionId && userRefData.competitionId !== 0) payload['competitionId'] = userRefData.competitionId
+      if (userRefData.eventTypeId && userRefData.eventTypeId !== 0)
+        payload["eventTypeId"] = userRefData.eventTypeId;
+      if (userRefData.competitionId && userRefData.competitionId !== 0)
+        payload["competitionId"] = userRefData.competitionId;
     }
     if (isSearch) {
       payload = {
@@ -142,24 +156,24 @@ const Index = () => {
       });
     if (latestValueFromTable?.eventTypeId || userRefData.eventTypeId) {
       const valueToFetchFrom =
-        userRefData.eventTypeId && +userRefData.eventTypeId !== 0 ?
-          userRefData.eventTypeId :
-          latestValueFromTable?.eventTypeId
+        userRefData.eventTypeId && +userRefData.eventTypeId !== 0
+          ? userRefData.eventTypeId
+          : latestValueFromTable?.eventTypeId;
       fetchCompetitionData(valueToFetchFrom);
     }
   };
   const fetchUserPermission = () => {
-    const refData = JSON.parse(localStorage.getItem("refData"))
-    setUserRefData(refData)
-    fetchData(refData)
-  }
+    const refData = JSON.parse(localStorage.getItem("refData"));
+    setUserRefData(refData);
+    fetchData(refData);
+  };
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/commentary/eventTypeList`, { isActive: true })
       .then((response) => {
         setEventTypes(response.result);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
@@ -169,7 +183,7 @@ const Index = () => {
       .then((response) => {
         setCompetitions(response.result);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -264,7 +278,8 @@ const Index = () => {
         fetchData();
         setSuspendModelVisable(false);
         if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
             updateToastData({
@@ -387,10 +402,10 @@ const Index = () => {
   };
   const handleDetailsClick = (id) => {
     // navigate("/commentaryMaster", { state: { commentaryId: id } });
-    localStorage.setItem('commentaryMasterId', "" + id);
-    localStorage.setItem('commentary', "commentary");
+    localStorage.setItem("commentaryMasterId", "" + id);
+    localStorage.setItem("commentary", "commentary");
     const url = new URL(window.location.origin + "/commentaryMaster");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleUpdatePlayersClick = (details) => {
     // navigate("/updateCommentaryPlayer", {
@@ -399,139 +414,181 @@ const Index = () => {
     //     commentaryDetails: details,
     //   },
     // });
-    localStorage.setItem('updatePlayerCommentaryId', "" + details?.commentaryId);
-    localStorage.setItem('updatePlayerCommentaryDetails', "" + JSON.stringify(details));
+    localStorage.setItem(
+      "updatePlayerCommentaryId",
+      "" + details?.commentaryId
+    );
+    localStorage.setItem(
+      "updatePlayerCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
     const url = new URL(window.location.origin + "/updateCommentaryPlayer");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleScoringLogsClick = (details) => {
     const url = new URL(window.location.origin + "/scoringLogs");
-    sessionStorage.setItem('scoringLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('scoringLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("scoringLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem("scoringLogsDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("scoringLogsId");
     sessionStorage.removeItem("scoringLogsDetails");
   };
   const handlePredictorDetailsClick = (details) => {
     const url = new URL(window.location.origin + "/predictorLogs");
-    sessionStorage.setItem('predictorLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('predictorLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("predictorLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem(
+      "predictorLogsDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("predictorLogsId");
     sessionStorage.removeItem("predictorLogsDetails");
   };
   const handleCommentaryLogsClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryLogs");
-    sessionStorage.setItem('commentaryLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('commentaryLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("commentaryLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem(
+      "commentaryLogsDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("commentaryLogsId");
     sessionStorage.removeItem("commentaryLogsDetails");
   };
   const handleSessionResultClick = (details) => {
     const url = new URL(window.location.origin + "/setSessionResult");
-    sessionStorage.setItem('sessionResultId', "" + details?.commentaryId);
-    sessionStorage.setItem('sessionResultDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("sessionResultId", "" + details?.commentaryId);
+    sessionStorage.setItem(
+      "sessionResultDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("sessionResultId");
     sessionStorage.removeItem("sessionResultDetails");
   };
   const handleCloseMarketClick = (details) => {
     const url = new URL(window.location.origin + "/unsettledMarket");
-    sessionStorage.setItem('closeMarketId', "" + details?.commentaryId);
-    sessionStorage.setItem('closeMarketDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("closeMarketId", "" + details?.commentaryId);
+    sessionStorage.setItem("closeMarketDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("closeMarketId");
     sessionStorage.removeItem("closeMarketDetails");
   };
   const handleMarketResultClick = (details) => {
     const url = new URL(window.location.origin + "/setMarketResult");
-    sessionStorage.setItem('marketResultId', "" + details?.commentaryId);
-    sessionStorage.setItem('marketResultDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("marketResultId", "" + details?.commentaryId);
+    sessionStorage.setItem("marketResultDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("marketResultId");
     sessionStorage.removeItem("marketResultDetails");
   };
   const handleUndoLogsClick = (details) => {
     const url = new URL(window.location.origin + "/undoLogs");
-    sessionStorage.setItem('undoLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('undoLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("undoLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem("undoLogsDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
   const handleEventMarketLogsClick = (details) => {
     const url = new URL(window.location.origin + "/EventMarketLogs");
-    sessionStorage.setItem('eventMarketLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('eventMarketLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("eventMarketLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem(
+      "eventMarketLogsDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("eventMarketLogsId");
     sessionStorage.removeItem("eventMarketLogsDetails");
   };
   const handleCommentaryMarketRunnerClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryMarketRunner");
-    sessionStorage.setItem('marketRunnerCommentaryId', "" + details?.commentaryId);
-    sessionStorage.setItem('marketRunnerCommentaryDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem(
+      "marketRunnerCommentaryId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "marketRunnerCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
   };
   const handleEventMarketClick = (details) => {
     const url = new URL(window.location.origin + "/eventMarkets");
-    sessionStorage.setItem('commentaryEventMarketId', "" + details?.commentaryId);
-    sessionStorage.setItem('commentaryEventMarketDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem(
+      "commentaryEventMarketId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "commentaryEventMarketDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("commentaryEventMarketId");
     sessionStorage.removeItem("commentaryEventMarketDetails");
   };
   const handleCommentaryMarketTemplateClick = (id) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
-    localStorage.setItem('marketTemplateCommentaryId', "" + id);
+    localStorage.setItem("marketTemplateCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/commentaryMarketTemplate");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleCommentaryMarketTemplateClickV1 = (details) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
     const url = new URL(window.location.origin + "/commentaryMarkets");
-    sessionStorage.setItem('marketTemplateCommentaryId', "" + details?.commentaryId);
-    sessionStorage.setItem('marketTemplateCommentaryDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem(
+      "marketTemplateCommentaryId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "marketTemplateCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
   };
   const handleCommentaryEventSnapClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryEventSnap");
-    sessionStorage.setItem('eventSnapId', "" + details?.commentaryId);
-    sessionStorage.setItem('eventSnapDetails', "" + JSON.stringify(details));
-    sessionStorage.setItem('eventSnapCommentaryHistory', true);
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("eventSnapId", "" + details?.commentaryId);
+    sessionStorage.setItem("eventSnapDetails", "" + JSON.stringify(details));
+    sessionStorage.setItem("eventSnapCommentaryHistory", true);
+    window.open(url.href, "_blank");
   };
   const handleMarketEventActionClick = (id) => {
-    localStorage.setItem('openMarketCommentaryId', "" + id);
+    localStorage.setItem("openMarketCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/openMarket");
     // url.searchParams.append("commentaryId", id);
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleOddsViewClick = (id) => {
-    localStorage.setItem('oddsViewCommentaryId', "" + id);
+    localStorage.setItem("oddsViewCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/oddsView");
     // url.searchParams.append("commentaryId", id);
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleShortCommentaryClick = (id) => {
     // navigate("/shortCommentary", { state: { commentaryId: id } });
-    localStorage.setItem('shortCommentaryId', "" + id);
+    localStorage.setItem("shortCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/shortCommentary");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleUpdateCommentaryClick = (id) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateCommentaryId', "" + id);
+    localStorage.setItem("updateCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/updateCommentaryFeature");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleUpdateManualOddsClick = (details) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateManualOddsCommentaryId', "" + details?.commentaryId);
-    localStorage.setItem('updateManualOddsCommentaryDetails', "" + JSON.stringify(details));
+    localStorage.setItem(
+      "updateManualOddsCommentaryId",
+      "" + details?.commentaryId
+    );
+    localStorage.setItem(
+      "updateManualOddsCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
     const url = new URL(window.location.origin + "/manualOddsMarket");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
@@ -581,7 +638,8 @@ const Index = () => {
       .then((response) => {
         fetchData();
         if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
             updateToastData({
@@ -614,7 +672,10 @@ const Index = () => {
   };
   const handleChangeRunner = async () => {
     setIsLoading(true);
-    const payload = [selectedCommentaryRunner?.team1, selectedCommentaryRunner?.team2]
+    const payload = [
+      selectedCommentaryRunner?.team1,
+      selectedCommentaryRunner?.team2,
+    ];
     await axiosInstance
       .post(`/admin/ImportMarket/updateTeamId`, payload)
       .then((response) => {
@@ -638,7 +699,7 @@ const Index = () => {
           })
         );
         setIsLoading(false);
-      })
+      });
   };
   const handleChangeResult = async () => {
     setIsLoading(true);
@@ -677,7 +738,8 @@ const Index = () => {
       .then((response) => {
         fetchData();
         if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
             updateToastData({
@@ -717,7 +779,8 @@ const Index = () => {
       .then((response) => {
         fetchData();
         if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
             updateToastData({
@@ -1006,10 +1069,7 @@ const Index = () => {
             handleEdit(record.commentaryId);
           }}
         >
-          <i
-            className="bx bx-edit"
-
-          ></i>
+          <i className="bx bx-edit"></i>
         </span>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1019,7 +1079,9 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocalWithoutSec(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -1055,11 +1117,11 @@ const Index = () => {
         <div className="d-flex align-items-center gap-1">
           <span
             style={{ cursor: record.isPredictMarket && "pointer" }}
-          // onClick={() => {
-          //   if (record.isPredictMarket) {
-          //     handleOddsViewClick(record.commentaryId);
-          //   }
-          // }}
+            // onClick={() => {
+            //   if (record.isPredictMarket) {
+            //     handleOddsViewClick(record.commentaryId);
+            //   }
+            // }}
           >
             {text}
           </span>
@@ -1068,7 +1130,16 @@ const Index = () => {
             onClick={() => {
               setEventRefModelVisible(true);
               setSelectedEventRef(record);
-            }}> <Tooltip title="Edit Event Id" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+            }}
+          >
+            {" "}
+            <Tooltip
+              title="Edit Event Id"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              {<a className="bx bx-edit-alt"></a>}
+            </Tooltip>
           </span>
         </div>
       ),
@@ -1117,8 +1188,14 @@ const Index = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-          {text} {" "}
-          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+          {text}{" "}
+          <Tooltip
+            title="Edit Match Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
         </span>
       ),
       key: "matchType",
@@ -1130,7 +1207,11 @@ const Index = () => {
       key: "commentaryScoring",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Go to scoring"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"warning"}
             size="sm"
@@ -1139,7 +1220,7 @@ const Index = () => {
               handleDetailsClick(record.commentaryId);
             }}
           >
-            <i class='bx bxs-right-arrow' ></i>
+            <i class="bx bxs-right-arrow"></i>
           </Button>
         </Tooltip>
       ),
@@ -1148,9 +1229,7 @@ const Index = () => {
     {
       title: "Status",
       dataIndex: "commentaryStatus",
-      render: (text, record) => (
-        <span>{mapCommentaryStatus(text)}</span>
-      ),
+      render: (text, record) => <span>{mapCommentaryStatus(text)}</span>,
       key: "commentaryStatus",
       sort: true,
       style: { width: "40%" },
@@ -1159,7 +1238,11 @@ const Index = () => {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
-        <Tooltip title={"Show/Hide Client"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Show/Hide Client"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isClientShow ? "primary" : "danger"}`}
             size="sm"
@@ -1180,7 +1263,11 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -1202,7 +1289,11 @@ const Index = () => {
       key: "updatePlayers",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Update Players"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Update Players"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"info"}
             size="sm"
@@ -1211,7 +1302,7 @@ const Index = () => {
               handleUpdatePlayersClick(record);
             }}
           >
-            <i class='bx bxs-up-arrow-square' ></i>
+            <i class="bx bxs-up-arrow-square"></i>
           </Button>
         </Tooltip>
       ),
@@ -1236,7 +1327,11 @@ const Index = () => {
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-          <Tooltip title={"Active/Inactive Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Active/Inactive Predict Market"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color={`${record.isPredictMarket ? "primary" : "danger"}`}
               size="sm"
@@ -1250,14 +1345,19 @@ const Index = () => {
               }}
             >
               <i
-                className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
-                  }`}
+                className={`bx ${
+                  record?.isPredictMarket ? "bx-check" : "bx-block"
+                }`}
               ></i>
             </Button>
           </Tooltip>
           <>
-            {record.isPredictMarket &&
-              <Tooltip title={"Add Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Add Market Template"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
                 <Button
                   color={"primary"}
                   size="sm"
@@ -1269,7 +1369,8 @@ const Index = () => {
                 >
                   <i className="bx bx-plus"></i>
                 </Button>
-              </Tooltip>}
+              </Tooltip>
+            )}
             {/* {record.isPredictMarket &&
               <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
@@ -1283,8 +1384,12 @@ const Index = () => {
                   <i class='bx bxs-store' ></i>
                 </Button>
               </Tooltip>} */}
-            {record.isPredictMarket &&
-              <Tooltip title={"Create Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Create Market Template"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
                 <Button
                   color={"primary"}
                   size="sm"
@@ -1293,10 +1398,11 @@ const Index = () => {
                     handleCommentaryMarketTemplateClickV1(record);
                   }}
                 >
-                  <i class='bx bxs-store' ></i>
+                  <i class="bx bxs-store"></i>
                   {/* <i class='bx bxs-bookmarks'></i> */}
                 </Button>
-              </Tooltip>}
+              </Tooltip>
+            )}
             {/* <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
@@ -1309,8 +1415,12 @@ const Index = () => {
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
             </Tooltip> */}
-            {record.isPredictMarket &&
-              <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Predictor Api Logs"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
                 <Button
                   color={"primary"}
                   size="sm"
@@ -1319,13 +1429,17 @@ const Index = () => {
                     handlePredictorDetailsClick(record);
                   }}
                 >
-                  <i class='bx bxs-up-arrow-square' ></i>
+                  <i class="bx bxs-up-arrow-square"></i>
                 </Button>
-              </Tooltip>}
+              </Tooltip>
+            )}
 
-
-            {record.isPredictMarket &&
-              <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Manual Odds"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
                 <Button
                   color={"success"}
                   size="sm"
@@ -1334,9 +1448,10 @@ const Index = () => {
                     handleUpdateManualOddsClick(record);
                   }}
                 >
-                  <i class='bx bx-arrow-to-right' ></i>
+                  <i class="bx bx-arrow-to-right"></i>
                 </Button>
-              </Tooltip>}
+              </Tooltip>
+            )}
           </>
         </div>
       ),
@@ -1368,7 +1483,11 @@ const Index = () => {
       key: "shortCommentary",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Short Score"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Short Score"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"secondary"}
             size="sm"
@@ -1377,7 +1496,7 @@ const Index = () => {
               handleShortCommentaryClick(record.commentaryId);
             }}
           >
-            <i class='bx bxs-chevrons-right'></i>
+            <i class="bx bxs-chevrons-right"></i>
           </Button>
         </Tooltip>
       ),
@@ -1388,7 +1507,11 @@ const Index = () => {
       key: "updateCommentary",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Update Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Update Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"success"}
             size="sm"
@@ -1397,7 +1520,7 @@ const Index = () => {
               handleUpdateCommentaryClick(record.commentaryId);
             }}
           >
-            <i class='bx bx-arrow-to-right' ></i>
+            <i class="bx bx-arrow-to-right"></i>
           </Button>
         </Tooltip>
       ),
@@ -1424,7 +1547,11 @@ const Index = () => {
               <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
-          <Tooltip title={"Scoring Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Scoring Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color={"info"}
               size="sm"
@@ -1433,7 +1560,7 @@ const Index = () => {
                 handleScoringLogsClick(record);
               }}
             >
-              <i class='bx bxs-up-arrow-square' ></i>
+              <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
           <Tooltip
@@ -1476,7 +1603,11 @@ const Index = () => {
       title: "SR",
       dataIndex: "setRunner",
       render: (text, record) => (
-        <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Set Runner"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             size="sm"
             className="btn runner-button-commentary"
@@ -1486,7 +1617,7 @@ const Index = () => {
             }}
             style={{ cursor: "pointer" }}
           >
-            <i class='bx bxs-up-arrow-square' ></i>
+            <i class="bx bxs-up-arrow-square"></i>
           </Button>
         </Tooltip>
       ),
@@ -1498,12 +1629,19 @@ const Index = () => {
       title: "DLS",
       dataIndex: "dls",
       render: (text, record) => (
-        <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Duckworth-Lewis-Stern"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             size="sm"
             className="dls-button btn"
-            onClick={() => { setDlsModalCommentary(record) }}>
-            <i class='bx bx-cloud-light-rain'></i>
+            onClick={() => {
+              setDlsModalCommentary(record);
+            }}
+          >
+            <i class="bx bx-cloud-light-rain"></i>
           </Button>
         </Tooltip>
       ),
@@ -1513,17 +1651,27 @@ const Index = () => {
       title: "CP",
       key: "isCountInPoint",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Count In Point"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isCountInPoint ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
+              handleIsCountInPoint(
+                "isCountInPoint",
+                record,
+                record?.isCountInPoint
+              );
             }}
           >
             <i
-              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
+              className={`bx ${
+                record?.isCountInPoint ? "bx-check" : "bx-block"
+              }`}
             ></i>
           </Button>
         </Tooltip>
@@ -1534,16 +1682,28 @@ const Index = () => {
       title: "Win %",
       key: "isTeamPredictionOn",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Team Prediction"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
+              handleTeamPredictionPermissions(
+                "isTeamPredictionOn",
+                record,
+                record.isTeamPredictionOn
+              );
             }}
           >
-            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${
+                record.isTeamPredictionOn ? "bx-check" : "bx-block"
+              }`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -1553,7 +1713,11 @@ const Index = () => {
       title: "Rates",
       key: "marketRunner",
       render: (text, record) => (
-        <Tooltip title={"Market Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Market Runner"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"warning"}
             size="sm"
@@ -1562,7 +1726,7 @@ const Index = () => {
               handleCommentaryMarketRunnerClick(record);
             }}
           >
-            <i class='bx bxs-store' ></i>
+            <i class="bx bxs-store"></i>
           </Button>
         </Tooltip>
       ),
@@ -1587,7 +1751,7 @@ const Index = () => {
     //     </Tooltip>
     //   ),
     //   style: { width: "2%", textAlign: "center" },
-    // }, 
+    // },
     {
       title: "Delay",
       dataIndex: "delay",
@@ -1599,8 +1763,14 @@ const Index = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-          {text} {" "}
-          <Tooltip title="Edit Delay" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+          {text}{" "}
+          <Tooltip
+            title="Edit Delay"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
         </span>
       ),
       key: "delay",
@@ -1619,24 +1789,26 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-          {record.isPredictMarket &&
+          {record.isPredictMarket && (
             <>
-              {record.isPredictMarket && <Tooltip
-                title={"Event Market"}
-                color={"#e8e8ea"}
-                overlayInnerStyle={{ color: "#000" }}
-              >
-                <Button
-                  color={"danger"}
-                  size="sm"
-                  className="bstn"
-                  onClick={() => {
-                    handleEventMarketClick(record)
-                  }}
+              {record.isPredictMarket && (
+                <Tooltip
+                  title={"Event Market"}
+                  color={"#e8e8ea"}
+                  overlayInnerStyle={{ color: "#000" }}
                 >
-                  <i class="bx bxs-up-arrow-square"></i>
-                </Button>
-              </Tooltip>}
+                  <Button
+                    color={"danger"}
+                    size="sm"
+                    className="bstn"
+                    onClick={() => {
+                      handleEventMarketClick(record);
+                    }}
+                  >
+                    <i class="bx bxs-up-arrow-square"></i>
+                  </Button>
+                </Tooltip>
+              )}
               <Tooltip
                 title={"Session Result"}
                 color={"#e8e8ea"}
@@ -1654,7 +1826,11 @@ const Index = () => {
                 </Button>
               </Tooltip>
 
-              <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+              <Tooltip
+                title={"Market Result"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
                 <Button
                   color={"info"}
                   size="sm"
@@ -1683,7 +1859,8 @@ const Index = () => {
                   C
                 </Button>
               </Tooltip>
-            </>}
+            </>
+          )}
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -1693,7 +1870,11 @@ const Index = () => {
       key: "generateImage",
       render: (text, record) => (
         <>
-          <Tooltip title={"Generate Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Generate Image"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color={"info"}
               size="sm"
@@ -1714,7 +1895,11 @@ const Index = () => {
       title: "Test",
       key: "isTest",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Test"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Test"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isTest ? "primary" : "danger"}`}
             size="sm"
@@ -1723,9 +1908,7 @@ const Index = () => {
               handleActiveInactiveTest("isTest", record, record?.isTest);
             }}
           >
-            <i
-              className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}
-            ></i>
+            <i className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}></i>
           </Button>
         </Tooltip>
       ),
@@ -1764,25 +1947,33 @@ const Index = () => {
       key: "commentaryAward",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Awards"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Awards"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             size="sm"
             className="award-button btn"
             onClick={() => {
-              setShowAwardModel(record.commentaryId)
+              setShowAwardModel(record.commentaryId);
             }}
           >
-            <i class='bx bxs-award'></i>
+            <i class="bx bxs-award"></i>
           </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    }
+    };
     const eventSnapColumn = {
       title: "Event Snap",
       dataIndex: "eventSnap",
       render: (text, record) => (
-        <Tooltip title={"Event Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Event Snap"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"primary"}
             size="sm"
@@ -1791,7 +1982,7 @@ const Index = () => {
               handleCommentaryEventSnapClick(record);
             }}
           >
-            <i class='bx bxs-up-arrow-square' ></i>
+            <i class="bx bxs-up-arrow-square"></i>
           </Button>
         </Tooltip>
       ),
@@ -1801,7 +1992,7 @@ const Index = () => {
     };
     const updatedColumn = [...columns];
 
-    if (data.some(record => record?.commentaryStatus === 4)) {
+    if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
       updatedColumn.splice(8, 0, eventSnapColumn);
@@ -1824,6 +2015,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     loadData: true,
+    isDateTypeSelect: true,
     statusOptions: [
       {
         label: "All",
@@ -1856,7 +2048,10 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
       navigate("/dashboard");
     }
     fetchData();
@@ -1864,8 +2059,8 @@ const Index = () => {
 
   useEffect(() => {
     fetchEventTypeData();
-    fetchUserPermission()
-  }, [])
+    fetchUserPermission();
+  }, []);
 
   useEffect(() => {
     if (!eventTypeId) {
@@ -1874,19 +2069,29 @@ const Index = () => {
   }, [eventTypeId]);
 
   useEffect(() => {
-    const objToSave = {}
+    const objToSave = {};
     let shouldFetchData = false;
 
     if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
-      const matchedEvent = eventTypes.find((item) => item.eventTypeId === userRefData?.eventTypeId)
-      objToSave["eventType"] = { label: matchedEvent.eventType, value: matchedEvent.eventTypeId }
+      const matchedEvent = eventTypes.find(
+        (item) => item.eventTypeId === userRefData?.eventTypeId
+      );
+      objToSave["eventType"] = {
+        label: matchedEvent.eventType,
+        value: matchedEvent.eventTypeId,
+      };
     }
 
     if (competitions && competitions.length > 0) {
       if (userRefData?.competitionId !== 0) {
-        const matchedCompetition = competitions.find((item) => item.competitionId === userRefData?.competitionId)
+        const matchedCompetition = competitions.find(
+          (item) => item.competitionId === userRefData?.competitionId
+        );
         if (matchedCompetition) {
-          objToSave["competition"] = { label: matchedCompetition.competition, value: matchedCompetition.competitionId }
+          objToSave["competition"] = {
+            label: matchedCompetition.competition,
+            value: matchedCompetition.competitionId,
+          };
           shouldFetchData = true;
         }
       } else {
@@ -1930,11 +2135,15 @@ const Index = () => {
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
-            openDataProvider={() => { navigate("/dataprovider"); }}
+            openDataProvider={() => {
+              navigate("/dataprovider");
+            }}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            dateType={dateType}
+            setDateType={setDateType}
             selectedTableElementsLogs={filledDropdownData}
             isAddPermission={checkPermission(
               permissionObj,
@@ -2054,33 +2263,46 @@ const Index = () => {
               setSelectedCommentaryRunner={setSelectedCommentaryRunner}
             />
           )}
-          {dlsModalCommentary && <DlsModal
-            commentaryDetails={dlsModalCommentary}
-            toggle={() => { setDlsModalCommentary(false) }}
-          />}
-          {showAwardModel && <AwardSelectionComponent
-            commentaryId={showAwardModel}
-            onClose={() => { setShowAwardModel(undefined) }} />}
-          {marketTemplateModelVisible &&
+          {dlsModalCommentary && (
+            <DlsModal
+              commentaryDetails={dlsModalCommentary}
+              toggle={() => {
+                setDlsModalCommentary(false);
+              }}
+            />
+          )}
+          {showAwardModel && (
+            <AwardSelectionComponent
+              commentaryId={showAwardModel}
+              onClose={() => {
+                setShowAwardModel(undefined);
+              }}
+            />
+          )}
+          {marketTemplateModelVisible && (
             <CommentaryMarketTemplateModel
               marketTemplateModelVisible={marketTemplateModelVisible}
               setMarketTemplateModelVisible={setMarketTemplateModelVisible}
               marketTemplateRecord={marketTemplateRecord}
               fetchData={fetchData}
-            />}
-          {loadDataModelVisable &&
+            />
+          )}
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Commentary"}
-            />}
-          {isGenerateModalOpen && <GenerateModal
-            isOpen={isGenerateModalOpen}
-            toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
-            data={generateModalData}
-            fetchData={fetchData}
-          />}
+            />
+          )}
+          {isGenerateModalOpen && (
+            <GenerateModal
+              isOpen={isGenerateModalOpen}
+              toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
+              data={generateModalData}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

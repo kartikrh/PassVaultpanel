@@ -1086,6 +1086,7 @@ const Index = forwardRef(
         });
       }
       setStatusSwitch(true);
+      setIsSearch(false);
       if (tableElement?.rateSourceListSelect) {
         handleReset({
           isActive: true,
@@ -2580,7 +2581,7 @@ const Index = forwardRef(
                                 setCurrentPage(0);
                                 reFetchData();
                               }}
-                              disabled={!isSearch}
+                              disabled={!isSearch && (dateRange?.startDate > dateRange?.endDate)}
                               type="reset"
                               id="create-btn"
                             >
@@ -2744,6 +2745,13 @@ const Index = forwardRef(
                         </Col>
                       </Row>
                     ) : null}
+                    {
+                      <div className="text-danger">
+                        {dateRange?.startDate > dateRange?.endDate
+                          ? "Error: The Start date should be less than the end date."
+                          : null}
+                      </div>
+                    }
                     {tableElement.title === "Event Markets" ||
                     tableElement?.delayTextBox ? (
                       <Row className="">
