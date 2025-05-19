@@ -53,9 +53,7 @@ const Index = () => {
         isUserActive: 1,
       })
       .then((response) => {
-        const clientData = response?.result?.sort(
-          (a, b) => a.clientId - b.clientId
-        );
+        const clientData = response?.result;
         let clientDataIdList = [];
         clientData.forEach((ele) => {
           clientDataIdList.push(ele?.clientId);

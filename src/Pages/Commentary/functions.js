@@ -344,10 +344,23 @@ export const fetchWinnerMessage = ({ team, matchTypeDetails, target, isBattingTe
   if (isBattingTeamWon) {
     const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
     const wicketRemaining = maxNoOfWicket - (+battingTeam.teamWicket || 0)
-    return `${battingTeam.shortName} won by ${wicketRemaining} wickets.`
+    return `${battingTeam.shortName} won by ${wicketRemaining} wickets`
   } else {
     const runsLeft = target - battingTeam.teamScore - 1
-    return `${bowlingTeam.shortName} won by ${runsLeft} runs.`
+    return `${bowlingTeam.shortName} won by ${runsLeft} runs`
+  }
+}
+
+export const fetchWinnerMessageRmk = ({ team, matchTypeDetails, target, isBattingTeamWon }) => {
+  const battingTeam = team[BATTING_TEAM]
+  const bowlingTeam = team[BOWLING_TEAM]
+  if (isBattingTeamWon) {
+    const maxNoOfWicket = matchTypeDetails.noOfPlayer - (matchTypeDetails.isLastManStand ? 0 : 1);
+    const wicketRemaining = maxNoOfWicket - (+battingTeam.teamWicket || 0)
+    return `by ${wicketRemaining} wickets`
+  } else {
+    const runsLeft = target - battingTeam.teamScore - 1
+    return `by ${runsLeft} runs`
   }
 }
 
