@@ -13,7 +13,12 @@ import {
   ERROR,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import {
+  checkPermission,
+  convertDateLocalToUTC,
+  convertDateUTCToLocal2,
+  convertDateUtcFormat,
+} from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeSessionResult } from "../../components/Model/ChangeSessionResult";
 import { Tooltip } from "antd";
@@ -24,8 +29,10 @@ import ResultSelectedModel from "./ResultSelectedModel";
 
 const Index = () => {
   const pageName = TAB_SET_SESSION_RESULT;
-  const commentaryId = +sessionStorage.getItem('sessionResultId') || 0;
-  const commentaryDetails = JSON.parse(sessionStorage.getItem('sessionResultDetails') || "{}");
+  const commentaryId = +sessionStorage.getItem("sessionResultId") || 0;
+  const commentaryDetails = JSON.parse(
+    sessionStorage.getItem("sessionResultDetails") || "{}"
+  );
 
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
@@ -38,7 +45,9 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [EventTypeActive, setEventTypeActive] = useState(true);
   const [eventTypeId, setEventTypeId] = useState(null);
-  const [competitionId, setCompetitionId] = useState(commentaryId ? commentaryDetails?.competitionId : null);
+  const [competitionId, setCompetitionId] = useState(
+    commentaryId ? commentaryDetails?.competitionId : null
+  );
   const [isSearch, setIsSearch] = useState(false);
   const [mtAndCategories, setMtAndCategories] = useState(null);
   const [selectedMarketType, setSelectedMarketType] = useState(null);
@@ -51,14 +60,18 @@ const Index = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [resultModelVisable, setResultModelVisable] = useState(false);
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [ratesource, setRatesource] = useState({
     rateSourceRefId: 1,
-    rateSourceType: "Ratesource"
-  })
+    rateSourceType: "Ratesource",
+  });
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
     competition: null,
@@ -67,30 +80,38 @@ const Index = () => {
 
   useEffect(() => {
     if (commentaryId !== 0) {
-      setEventTypeId(commentaryDetails.eventTypeId)
+      setEventTypeId(commentaryDetails.eventTypeId);
     }
-  }, [])
+  }, []);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    const data = latestValueFromTable || tableActions
-    setEventTypeActive(tableActions?.isActive)
+    const data = latestValueFromTable || tableActions;
+    setEventTypeActive(tableActions?.isActive);
     let payload = {
       ...data,
-      rateSourceRefId : data?.rateSourceRefId || ratesource?.rateSourceRefId,
+      rateSourceRefId: data?.rateSourceRefId || ratesource?.rateSourceRefId,
       marketTypeId: data?.marketTypeId || 0,
-      marketTypeCategoryId: data?.marketTypeId !== selectedMarketType ? 0 : data?.marketTypeCategoryId || 0,
+      marketTypeCategoryId:
+        data?.marketTypeId !== selectedMarketType
+          ? 0
+          : data?.marketTypeCategoryId || 0,
       eventTypeId: data?.eventTypeId || 0,
-      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
-      commentaryId: (data?.competitionId !== competitionId || data?.eventTypeId !== eventTypeId) ? 0 : data?.commentaryId || 0,
+      competitionId:
+        data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      commentaryId:
+        data?.competitionId !== competitionId ||
+        data?.eventTypeId !== eventTypeId
+          ? 0
+          : data?.commentaryId || 0,
     };
-    if(commentaryId !== 0) {
+    if (commentaryId !== 0) {
       payload = {
         ...data,
-        commentaryId: commentaryId
+        commentaryId: commentaryId,
       };
     }
     if (isSearch) {
@@ -134,16 +155,22 @@ const Index = () => {
     setCheckedList(updateSingleCheck);
   };
 
-  const fetchMarketCategoriesList = async () =>{
+  const fetchMarketCategoriesList = async () => {
     await axiosInstance
-    .post("/admin/marketTemplate/mtAndCategories", {})
-    .then((response) => {
-      setMtAndCategories(response?.result);
-    })
-    .catch((error) => {
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    });
-  }
+      .post("/admin/marketTemplate/mtAndCategories", {})
+      .then((response) => {
+        setMtAndCategories(response?.result);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/eventMarket/eventTypeList`, {
@@ -212,7 +239,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/eventMarket/UpdateResulOrApproveMarketResult`, {
         ...selectedResult,
-        isResult: val
+        isResult: val,
       })
       .then((response) => {
         fetchData();
@@ -268,13 +295,13 @@ const Index = () => {
   const rateSourceList = [
     {
       rateSourceType: "Ratesource",
-      rateSourceRefId: 1
+      rateSourceRefId: 1,
     },
     {
       rateSourceType: "External",
-      rateSourceRefId: 2
-    }
-  ]
+      rateSourceRefId: 2,
+    },
+  ];
   //table columns
   const columns = [
     {
@@ -321,7 +348,9 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -419,9 +448,15 @@ const Index = () => {
           style={{ cursor: "pointer" }}
         >
           <div>{text}</div>
-          <div><Tooltip title="Edit Result" color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-           <i className="bx bx-edit-alt"></i>
-          </Tooltip></div>
+          <div>
+            <Tooltip
+              title="Edit Result"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <i className="bx bx-edit-alt"></i>
+            </Tooltip>
+          </div>
         </span>
       ),
       style: { width: "10%", textAlign: "center" },
@@ -438,19 +473,25 @@ const Index = () => {
       title: "Result",
       key: "isResult",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isResult ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            setIsResultModalOpen(true);
-            setResultModalData(record);
-          }}
+        <Tooltip
+          title={"Active/Inactive Result"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isResult ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setIsResultModalOpen(true);
+              setResultModalData(record);
+            }}
+          >
+            <i
+              className={`bx ${record.isResult ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -458,21 +499,26 @@ const Index = () => {
       title: "Cancel",
       key: "cancel",
       render: (text, record) => (
-      <>
-      {(!record?.isResult && record?.status == 5) &&
-      <Tooltip title={"Cancel Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color="warning"
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleCancel(record);
-          }}
-        >
-          Cancel
-        </Button>
-      </Tooltip>}
-      </>
+        <>
+          {!record?.isResult && record?.status == 5 && (
+            <Tooltip
+              title={"Cancel Market"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color="warning"
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handleCancel(record);
+                }}
+              >
+                Cancel
+              </Button>
+            </Tooltip>
+          )}
+        </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -489,6 +535,7 @@ const Index = () => {
     importExport: false,
     teamsList: false,
     isDateRange: true,
+    isDateTypeSelect: true,
     marketTypeSelect: true,
     categorySelect: true,
     isResultMarket: true,
@@ -500,57 +547,95 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
       navigate("/dashboard");
     }
     fetchData();
     fetchMarketCategoriesList();
   }, [isSearch, ratesource, permissionObj]);
 
-  useEffect(()=>{
-    if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId){
-      setIsSearch(false)
+  useEffect(() => {
+    if (
+      commentaryId !== 0 &&
+      commentaryDetails?.eventTypeId &&
+      commentaryDetails?.competitionId &&
+      commentaryDetails?.commentaryId
+    ) {
+      setIsSearch(false);
       fetchEventTypeData();
       fetchCompetitionList(commentaryDetails?.eventTypeId);
       fetchEventList(commentaryDetails?.competitionId);
     } /* else {
       setIsSearch(true)
     } */
-  },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.commentaryId])
+  }, [
+    commentaryId,
+    commentaryDetails?.eventTypeId,
+    commentaryDetails?.competitionId,
+    commentaryDetails?.commentaryId,
+  ]);
 
   useEffect(() => {
-    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
-      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
-      const competition = competitionList.find(c => c.competitionId === commentaryDetails.competitionId)
-      const eventListData = eventList.find(c => c.commentaryId === commentaryDetails.commentaryId)
-  
+    if (
+      commentaryDetails?.eventTypeId &&
+      commentaryDetails?.competitionId &&
+      commentaryDetails?.commentaryId
+    ) {
+      const event = eventTypes.find(
+        (e) => e.eventTypeId === commentaryDetails.eventTypeId
+      );
+      const competition = competitionList.find(
+        (c) => c.competitionId === commentaryDetails.competitionId
+      );
+      const eventListData = eventList.find(
+        (c) => c.commentaryId === commentaryDetails.commentaryId
+      );
+
       setSelectedTableElements({
         eventType: { value: event?.eventTypeId, label: event?.eventType },
-        competition: { value: competition?.competitionId, label: competition?.competition },
-        eventName: { value: eventListData?.commentaryId, label: eventListData?.eventName }
+        competition: {
+          value: competition?.competitionId,
+          label: competition?.competition,
+        },
+        eventName: {
+          value: eventListData?.commentaryId,
+          label: eventListData?.eventName,
+        },
       });
     }
-  }, [commentaryDetails?.eventTypeId, commentaryDetails?.competitionId, commentaryDetails?.commentaryId, competitionList, eventTypes, eventList]);
+  }, [
+    commentaryDetails?.eventTypeId,
+    commentaryDetails?.competitionId,
+    commentaryDetails?.commentaryId,
+    competitionList,
+    eventTypes,
+    eventList,
+  ]);
 
   useEffect(() => {
-      if(mtAndCategories && selectedMarketType) {
-        const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
-        setCategories(categoriesData || []);
-      } else if(!selectedMarketType) {
-        setCategories([]);
-      }
-  },[mtAndCategories, selectedMarketType])
+    if (mtAndCategories && selectedMarketType) {
+      const categoriesData = mtAndCategories?.categories?.filter(
+        (item) => item?.marketTypeId == selectedMarketType
+      );
+      setCategories(categoriesData || []);
+    } else if (!selectedMarketType) {
+      setCategories([]);
+    }
+  }, [mtAndCategories, selectedMarketType]);
 
   useEffect(() => {
-    if(EventTypeActive){
-     fetchEventTypeData();
+    if (EventTypeActive) {
+      fetchEventTypeData();
     }
   }, [EventTypeActive]);
 
   useEffect(() => {
     if (eventTypeId) {
       fetchCompetitionList(eventTypeId);
-    } else if(!eventTypeId) {
+    } else if (!eventTypeId) {
       setCompetitionList([]);
       setEventList([]);
     }
@@ -593,6 +678,8 @@ const Index = () => {
             setRatesource={setRatesource}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            dateType={dateType}
+            setDateType={setDateType}
             selectedTableElementsLogs={selectedTableElements}
             marketTypes={mtAndCategories?.marketTypes || []}
             categories={categories}
@@ -610,24 +697,24 @@ const Index = () => {
           )}
           {isResultModalOpen && (
             <SetResultModal
-             isOpen={isResultModalOpen}
-             toggle={() => setIsResultModalOpen(!isResultModalOpen)}
-             data={resultModalData}
-             fetchData={fetchData}
+              isOpen={isResultModalOpen}
+              toggle={() => setIsResultModalOpen(!isResultModalOpen)}
+              data={resultModalData}
+              fetchData={fetchData}
             />
           )}
-        <CancelModal
-          isOpen={isCancelModalOpen}
-          toggle={() => setIsCancelModalOpen(!isCancelModalOpen)}
-          data={cancelModalData}
-          fetchData={fetchData}
-        />
-        <ResultSelectedModel
-          resultModelVisable={resultModelVisable}
-          setResultModelVisable={setResultModelVisable}
-          singleCheck={checekedList}
-          fetchData={fetchData}
-        />
+          <CancelModal
+            isOpen={isCancelModalOpen}
+            toggle={() => setIsCancelModalOpen(!isCancelModalOpen)}
+            data={cancelModalData}
+            fetchData={fetchData}
+          />
+          <ResultSelectedModel
+            resultModelVisable={resultModelVisable}
+            setResultModelVisable={setResultModelVisable}
+            singleCheck={checekedList}
+            fetchData={fetchData}
+          />
         </Container>
       </div>
     </React.Fragment>
