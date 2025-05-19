@@ -6,35 +6,56 @@ import Table from "../../components/Common/Table";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { useNavigate } from "react-router-dom";
+import {
+  checkPermission,
+  convertDateUtcFormat,
+  convertDateUTCToLocal2,
+} from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
 import { Tooltip } from "antd";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import CheckBackLayPrice from "./CheckBackLayPrice";
+import {
+  PERMISSION_VIEW,
+  TAB_MARKET_DATA_LOGS,
+} from "../../components/Common/Const";
 
 function MarketDataLogs() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const pageName = TAB_MARKET_DATA_LOGS;
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  document.title = "Market Data Logs";
   const [category, setCategory] = useState(null);
   const [checekedList, setCheckedList] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
-  const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
+  const marketTypeObj = useSelector(
+    (state) => state.marketType?.marketTypeList
+  );
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [dateModelVisable, setDateModelVisable] = useState(false);
   const [datePriceValues, setDatePriceValues] = useState([]);
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
-  const eventMarketId = +sessionStorage.getItem('eventMarketDataLogId') || "0";
-  const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketDataLogDetails') || "{}");
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
+  const [isSearch, setIsSearch] = useState(true);
+  const eventMarketId = +sessionStorage.getItem("eventMarketDataLogId") || "0";
+  const marketDetails = JSON.parse(
+    sessionStorage.getItem("eventMarketDataLogDetails") || "{}"
+  );
   const finalizeRef = useRef(null);
+  const navigate = useNavigate();
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    const data = latestValueFromTable || tableActions
+    const data = latestValueFromTable || tableActions;
     await axiosInstance
       .post("/admin/eventMarket/getDSReport", {
         ...data,
@@ -45,7 +66,7 @@ function MarketDataLogs() {
         createdType: data?.createdType,
       })
       .then((response) => {
-        setTotal(response?.result?.totalRecords || 0); 
+        setTotal(response?.result?.totalRecords || 0);
         const apiData = response?.result?.data;
         let apiDataIdList = [];
         apiData.forEach((ele) => {
@@ -71,10 +92,12 @@ function MarketDataLogs() {
 
   const fetchmMarketTypeCategoryId = async (id) => {
     await axiosInstance
-      .post("/admin/eventMarket/getMarketTypeCategory", { marketTypeCategoryId: id })
+      .post("/admin/eventMarket/getMarketTypeCategory", {
+        marketTypeCategoryId: id,
+      })
       .then((response) => {
-        if(response?.result[0]?.categoryName){
-          setCategory(response?.result[0]?.displayName)
+        if (response?.result[0]?.categoryName) {
+          setCategory(response?.result[0]?.displayName);
         }
       })
       .catch((error) => {
@@ -95,8 +118,8 @@ function MarketDataLogs() {
   }, [eventMarketId, currentPage, pageSize]);
 
   useEffect(() => {
-    if(marketDetails?.marketTypeCategoryId) {
-    fetchmMarketTypeCategoryId(marketDetails?.marketTypeCategoryId);
+    if (marketDetails?.marketTypeCategoryId) {
+      fetchmMarketTypeCategoryId(marketDetails?.marketTypeCategoryId);
     }
   }, [marketDetails?.marketTypeCategoryId]);
 
@@ -168,7 +191,11 @@ function MarketDataLogs() {
               const isChecked = checekedList.includes(record.marketDataLogId);
               handleSingleCheck(record);
               if (isChecked) {
-                setDatePriceValues(datePriceValues.filter(item => item.marketDataLogId !== record.marketDataLogId));
+                setDatePriceValues(
+                  datePriceValues.filter(
+                    (item) => item.marketDataLogId !== record.marketDataLogId
+                  )
+                );
               } else {
                 setDatePriceValues([...datePriceValues, record]);
               }
@@ -186,8 +213,7 @@ function MarketDataLogs() {
         <span>
           {dateType?.value == 1
             ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
-          }
+            : convertDateUtcFormat(text, "index")}
         </span>
       ),
       key: "createdDate",
@@ -259,16 +285,22 @@ function MarketDataLogs() {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
+        <Tooltip
+          title={"Active/Inactive Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -276,16 +308,22 @@ function MarketDataLogs() {
       title: "Send Data",
       key: "isSendData",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record?.isSendData ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
+        <Tooltip
+          title={"Active/Inactive Send Data"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record?.isSendData ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record?.isSendData ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i
+              className={`bx ${record?.isSendData ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -293,16 +331,20 @@ function MarketDataLogs() {
       title: "Bet Allow",
       key: "isAllow",
       render: (text, record) => (
-      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isAllow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
+        <Tooltip
+          title={"Allow/Disable Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isAllow ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -312,7 +354,7 @@ function MarketDataLogs() {
       key: "userName",
       style: { width: "5%", textAlign: "center" },
     },
-  ]
+  ];
   const customColumns = [
     {
       title: (
@@ -348,7 +390,11 @@ function MarketDataLogs() {
               const isChecked = checekedList.includes(record.marketDataLogId);
               handleSingleCheck(record);
               if (isChecked) {
-                setDatePriceValues(datePriceValues.filter(item => item.marketDataLogId !== record.marketDataLogId));
+                setDatePriceValues(
+                  datePriceValues.filter(
+                    (item) => item.marketDataLogId !== record.marketDataLogId
+                  )
+                );
               } else {
                 setDatePriceValues([...datePriceValues, record]);
               }
@@ -362,7 +408,13 @@ function MarketDataLogs() {
     {
       title: "Date",
       dataIndex: "createdDate",
-      render: (text) => <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal2(text, "index")}</span>,
+      render: (text) => (
+        <span style={{ cursor: "pointer" }}>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")}
+        </span>
+      ),
       key: "createdDate",
       style: { width: "5%" },
       sort: true,
@@ -371,7 +423,7 @@ function MarketDataLogs() {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
-      style: { width: "10%"},
+      style: { width: "10%" },
     },
     {
       title: "Status",
@@ -384,16 +436,22 @@ function MarketDataLogs() {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
+        <Tooltip
+          title={"Active/Inactive Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -401,16 +459,22 @@ function MarketDataLogs() {
       title: "Send Data",
       key: "isSendData",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record?.isSendData ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
+        <Tooltip
+          title={"Active/Inactive Send Data"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record?.isSendData ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record?.isSendData ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i
+              className={`bx ${record?.isSendData ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -418,16 +482,20 @@ function MarketDataLogs() {
       title: "Bet Allow",
       key: "isAllow",
       render: (text, record) => (
-      <Tooltip title={"Allow/Disable Event Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isAllow ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
+        <Tooltip
+          title={"Allow/Disable Event Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isAllow ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -437,8 +505,8 @@ function MarketDataLogs() {
       key: "userName",
       style: { width: "5%", textAlign: "center" },
     },
-  ] 
-  // marketDetails?.marketName?.toLowerCase() !== "match odds" ? 
+  ];
+  // marketDetails?.marketName?.toLowerCase() !== "match odds" ?
   //: [
   //   {
   //     title: "Date",
@@ -485,7 +553,7 @@ function MarketDataLogs() {
 
   const MarketDetailsDate = marketDetails?.eventDate
     ? convertDateUTCToLocal2(marketDetails.eventDate, "index")
-    : (marketDetails?.eventDay && marketDetails?.eventTime) 
+    : marketDetails?.eventDay && marketDetails?.eventTime
     ? `${marketDetails?.eventDay} ${marketDetails?.eventTime}`
     : "";
 
@@ -500,35 +568,45 @@ function MarketDataLogs() {
     isDateTypeSelect: true,
   };
 
+  useEffect(() => {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
+      navigate("/dashboard");
+    }
+    fetchData();
+  }, [isSearch, currentPage, pageSize, permissionObj]);
+
   const sendDataList = [
     {
       sendDataType: "All",
-      isSendData: null
+      isSendData: null,
     },
     {
       sendDataType: "true",
-      isSendData: true
+      isSendData: true,
     },
     {
       sendDataType: "false",
-      isSendData: false
-    }
-  ]
+      isSendData: false,
+    },
+  ];
 
   const createdTypeList = [
     {
       createdTypeName: "Both",
-      createdType: null
+      createdType: null,
     },
     {
       createdTypeName: "Panel",
-      createdType: 1
+      createdType: 1,
     },
     {
       createdTypeName: "Python",
-      createdType: 2
-    }
-  ]
+      createdType: 2,
+    },
+  ];
 
   const handleReset = (value) => {
     fetchData(value);
@@ -556,11 +634,12 @@ function MarketDataLogs() {
               )}
             </Row>
           </CardHeader>
-          {(marketDetails?.marketTypeId == marketTypeObj?.Fancy || marketDetails?.marketTypeId == marketTypeObj?.LineMarket) ?
-          <Table
-            ref={finalizeRef}
-            columns={columns}
-            dataSource={data.map((item) => {
+          {marketDetails?.marketTypeId == marketTypeObj?.Fancy ||
+          marketDetails?.marketTypeId == marketTypeObj?.LineMarket ? (
+            <Table
+              ref={finalizeRef}
+              columns={columns}
+              dataSource={data.map((item) => {
                 const logObject = item?.data && JSON.parse(item.data);
                 return {
                   ...item,
@@ -577,66 +656,69 @@ function MarketDataLogs() {
                   overRate: logObject?.runner?.[0]?.overRate || "",
                   underRate: logObject?.runner?.[0]?.underRate || "",
                 };
-            })}
-            tableElement={tableElement}
-            singleCheck={checekedList}
-            reFetchData={fetchData}
-            serverCurrentPage={currentPage}
-            serverPageSize={pageSize}
-            serverTotal={total}
-            setServerCurrentPage={setCurrentPage}
-            setServerPageSize={setPageSize}
-            datePriceModelFunction={setDateModelVisable}
-            sendDataList={sendDataList}
-            createdTypeList={createdTypeList}
-            handleReset={handleReset}
-            handleReload={handleReload}
-            dateType={dateType}
-            setDateType={setDateType}
-          /> : 
-          <Table
-            ref={finalizeRef}
-            columns={customColumns}
-            tableElement={tableElement}
-            singleCheck={checekedList}
-            serverCurrentPage={currentPage}
-            serverPageSize={pageSize}
-            serverTotal={total}
-            setServerCurrentPage={setCurrentPage}
-            setServerPageSize={setPageSize}
-            setServerTotal={setTotal}
-            datePriceModelFunction={setDateModelVisable}
-            dataSource={data.map((item) => {
-              const logObject = item?.data ? JSON.parse(item.data) : {};
-              const runners = logObject?.runner || [];
-              return {
-                ...item,
-                createdDate: item?.createdDate,
-                userName: item?.userName,
-                marketName: logObject?.marketName,
-                status: logObject?.status,
-                isActive: logObject?.isActive,
-                isAllow: logObject?.isAllow,
-                isSendData: item?.isSendData,
-                nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
-              };
-            })}
-            sendDataList={sendDataList}
-            createdTypeList={createdTypeList}
-            handleReset={handleReset}
-            handleReload={handleReload}
-            dateType={dateType}
-            setDateType={setDateType}
-          />}
-          {dateModelVisable &&
-          <CheckBackLayPrice
-            dateModelVisable={dateModelVisable}
-            setDateModelVisable={setDateModelVisable}
-            datePriceValues={datePriceValues}
-            setDatePriceValues={setDatePriceValues}
-            setCheckedList={setCheckedList}
-            marketDetails={marketDetails}
-          />}
+              })}
+              tableElement={tableElement}
+              singleCheck={checekedList}
+              reFetchData={fetchData}
+              serverCurrentPage={currentPage}
+              serverPageSize={pageSize}
+              serverTotal={total}
+              setServerCurrentPage={setCurrentPage}
+              setServerPageSize={setPageSize}
+              datePriceModelFunction={setDateModelVisable}
+              sendDataList={sendDataList}
+              createdTypeList={createdTypeList}
+              handleReset={handleReset}
+              handleReload={handleReload}
+              dateType={dateType}
+              setDateType={setDateType}
+            />
+          ) : (
+            <Table
+              ref={finalizeRef}
+              columns={customColumns}
+              tableElement={tableElement}
+              singleCheck={checekedList}
+              serverCurrentPage={currentPage}
+              serverPageSize={pageSize}
+              serverTotal={total}
+              setServerCurrentPage={setCurrentPage}
+              setServerPageSize={setPageSize}
+              setServerTotal={setTotal}
+              datePriceModelFunction={setDateModelVisable}
+              dataSource={data.map((item) => {
+                const logObject = item?.data ? JSON.parse(item.data) : {};
+                const runners = logObject?.runner || [];
+                return {
+                  ...item,
+                  createdDate: item?.createdDate,
+                  userName: item?.userName,
+                  marketName: logObject?.marketName,
+                  status: logObject?.status,
+                  isActive: logObject?.isActive,
+                  isAllow: logObject?.isAllow,
+                  isSendData: item?.isSendData,
+                  nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
+                };
+              })}
+              sendDataList={sendDataList}
+              createdTypeList={createdTypeList}
+              handleReset={handleReset}
+              handleReload={handleReload}
+              dateType={dateType}
+              setDateType={setDateType}
+            />
+          )}
+          {dateModelVisable && (
+            <CheckBackLayPrice
+              dateModelVisable={dateModelVisable}
+              setDateModelVisable={setDateModelVisable}
+              datePriceValues={datePriceValues}
+              setDatePriceValues={setDatePriceValues}
+              setCheckedList={setCheckedList}
+              marketDetails={marketDetails}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
