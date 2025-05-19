@@ -25,12 +25,14 @@ import {
   SAVE_AND_NEW,
   WHITE_LABEL,
 } from "../../components/Common/Const";
-import { addWhiteLabelToDb, updateSavedState } from "../../Features/Tabs/WhiteLabelSlice";
+import {
+  addWhiteLabelToDb,
+  updateSavedState,
+} from "../../Features/Tabs/WhiteLabelSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertObjtoFormData } from "../../components/Common/utilities";
 
 const AddWhiteLabel = () => {
   const pageName = WHITE_LABEL;
@@ -38,13 +40,17 @@ const AddWhiteLabel = () => {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector((state) => state.tabsData.whiteLabel);
+  const { isSaved, isLoading } = useSelector(
+    (state) => state.tabsData.whiteLabel
+  );
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [whiteLabelId, setwhiteLabelId] = useState(location.state?.whiteLabelId || "0");
-  
+  const [whiteLabelId, setwhiteLabelId] = useState(
+    location.state?.whiteLabelId || "0"
+  );
+
   useEffect(() => {
     if (whiteLabelId !== 0) {
       fetchData(whiteLabelId);
@@ -93,12 +99,16 @@ const AddWhiteLabel = () => {
     if (dataToSave) {
       const extraData = {
         id: whiteLabelId,
-        isActive: dataToSave?.isActive || false,
+        isRecatchEnable: dataToSave?.isRecatchEnable || false,
+        isGoogleLogin: dataToSave?.isGoogleLogin || false,
+        isFacebookLogin: dataToSave?.isFacebookLogin || false,
+        isSendMobileOTP: dataToSave?.isSendMobileOTP || false,
+        isSendMailOTP: dataToSave?.isSendMailOTP || false,
+        isDemoClientLogin: dataToSave?.isDemoClientLogin || false,
         isDemoClientEnableInIOS: dataToSave?.isDemoClientEnableInIOS || false,
+        isDefault: dataToSave?.isDefault || false,
       };
-      dispatch(
-        addWhiteLabelToDb({ ...dataToSave, ...extraData })
-      );
+      dispatch(addWhiteLabelToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };
@@ -167,27 +177,27 @@ const AddWhiteLabel = () => {
                           pageName,
                           PERMISSION_EDIT
                         ) && (
-                            <DropdownItem
-                              onClick={() => {
-                                handleSaveClick(SAVE);
-                              }}
-                            >
-                              Save
-                            </DropdownItem>
-                          )}
+                          <DropdownItem
+                            onClick={() => {
+                              handleSaveClick(SAVE);
+                            }}
+                          >
+                            Save
+                          </DropdownItem>
+                        )}
                         {checkPermission(
                           permissionObj,
                           pageName,
                           PERMISSION_ADD
                         ) && (
-                            <DropdownItem
-                              onClick={() => {
-                                handleSaveClick(SAVE_AND_NEW);
-                              }}
-                            >
-                              Save & New
-                            </DropdownItem>
-                          )}
+                          <DropdownItem
+                            onClick={() => {
+                              handleSaveClick(SAVE_AND_NEW);
+                            }}
+                          >
+                            Save & New
+                          </DropdownItem>
+                        )}
                       </DropdownMenu>
                     </ButtonDropdown>
                   </Col>

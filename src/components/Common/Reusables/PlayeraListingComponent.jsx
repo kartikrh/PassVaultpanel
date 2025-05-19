@@ -29,7 +29,7 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
         // Check runner name first
         if (runnerName.includes('run') || marketName.includes('run')) return 'Runs';
         if (runnerName.includes('boundar') || marketName.includes('boundar')) return 'Boundaries';
-        if (runnerName.includes('ball') || marketName.includes('ball')) return 'Balls';
+        if (runnerName.includes('ball') || runnerName.includes('face') || marketName.includes('ball') || marketName.includes('face')) return 'Balls';
         if (runnerName.includes('wicket') || marketName.includes('wicket')) return 'Wickets';
 
         return null; // Unknown market type
