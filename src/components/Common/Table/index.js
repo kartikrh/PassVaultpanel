@@ -2534,7 +2534,8 @@ const Index = forwardRef(
                               size="sm"
                               className="btn"
                               onClick={() => {
-                                setIsSearch(!isSearch);
+                                if (isSearch || (dateRange?.startDate < dateRange?.endDate))
+                                  setIsSearch(!isSearch);
                               }}
                             >
                               <i
@@ -2581,7 +2582,10 @@ const Index = forwardRef(
                                 setCurrentPage(0);
                                 reFetchData();
                               }}
-                              disabled={!isSearch && (dateRange?.startDate > dateRange?.endDate)}
+                              disabled={
+                                !isSearch ||
+                                dateRange?.startDate > dateRange?.endDate
+                              }
                               type="reset"
                               id="create-btn"
                             >
