@@ -1927,7 +1927,11 @@ export const UpdateManualOdds = () => {
             if (isManualMode && (e.key === 'Enter' || e.key === '+')) {
 
                 let updatedStatus = marketStatus
-                if (e.key === 'Enter') updatedStatus = +updatedStatus === OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
+                if (e.key === 'Enter') {
+                    if (e.shiftKey) { if (+marketStatus !== +OPEN_VALUE) return; }
+                    else updatedStatus = +updatedStatus === OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
+                }
+                if (e.key === '+') { if (+marketStatus !== +OPEN_VALUE) return; }
                 await handleManualSave(updatedStatus);
                 return;
             }
