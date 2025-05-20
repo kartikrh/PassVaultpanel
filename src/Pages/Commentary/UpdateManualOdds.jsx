@@ -1307,7 +1307,7 @@ export const UpdateManualOdds = () => {
                                     return formatPriceDisplay(origPrice);
                                 })()}
                             </Typography>
-                            {!directLineEnabled && <Typography className="live-label-calculated">
+                            {<Typography className="live-label-calculated">
                                 {formatPriceDisplay(price)}
                             </Typography>}
                         </Box>
