@@ -454,7 +454,7 @@ export const UpdateManualOdds = () => {
     });
     const settingsRef = useRef(settings);
     const runnersRef = useRef([]);
-    // console.log({ savedPrices })
+    console.log({ savedPrices })
     useEffect(() => {
         runnersRef.current = runners;
     }, [runners]);
@@ -940,6 +940,50 @@ export const UpdateManualOdds = () => {
                     setMarketStatus(options.newStatus);
                 }
 
+                handleSavedRunnerUpdate(marketData);
+                dispatch(updateToastData({
+                    data: "Market updated successfully",
+                    title: "Success",
+                    type: SUCCESS
+                }));
+            }
+        } catch (error) {
+            dispatch(updateToastData({
+                data: error?.message,
+                title: error?.title,
+                type: ERROR
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleManualSave = async (updatedStatus) => {
+        setIsLoading(true);
+        try {
+            const marketData = {
+                eventMarket: [{
+                    eventMarketId: eventData.market.eventMarketId,
+                    marketName: eventData.market.marketName,
+                    margin: settings.margin,
+                    status: updatedStatus,
+                    isActive: settings.active,
+                    isAllow: settings.betAllow,
+                    isSendData: true,
+                    lineRatio: eventData.market.lineRatio || 0,
+                    rateDiff: settings.rateDifferent,
+                    predefinedValue: eventData.market.predefinedValue,
+                    favRatio: settings.favRatio,
+                    delay: settings.delay,
+                    runner: prepareManualRunnerData()
+                }]
+            };
+            const response = await axiosInstance.post('/admin/eventMarket/upManualMarket', marketData);
+
+            if (response?.success) {
+                // If status should be changed, update it
+                if (marketStatus !== updatedStatus)
+                    setMarketStatus(updatedStatus);
                 handleSavedRunnerUpdate(marketData);
                 dispatch(updateToastData({
                     data: "Market updated successfully",
@@ -1889,13 +1933,44 @@ export const UpdateManualOdds = () => {
             };
         });
     };
+    const prepareManualRunnerData = () => {
+
+        return runners.map(runner => {
+            // Base runner object with required fields only
+            const baseRunner = {
+                runnerId: runner.runnerId,
+                line: runner.line || 0,
+                backSize: runner.back?.volume || 10000,
+                laySize: runner.lay?.volume || 10000
+            };
+            let backPrice = savedPrices[runner.runnerId]?.back || 0;
+            let layPrice = savedPrices[runner.runnerId]?.lay || 0;
+
+            // Handle very small prices
+            backPrice = backPrice < 1.01 ? 0 : backPrice;
+            layPrice = layPrice < 1.01 ? 0 : layPrice;
+
+            return {
+                ...baseRunner,
+                overRate: backPrice,
+                underRate: layPrice,
+                backPrice: backPrice,
+                layPrice: layPrice
+            };
+        });
+    }
 
     useEffect(() => {
         const handleKeyDown = async (e) => {
             // Cannot perform operations on closed markets
             if (+marketStatus === +CLOSE_VALUE) return;
             const isManualMode = !isLive && !directLineEnabled;
-
+            if (isManualMode && (e.key === 'Enter' || e.key === '+')) {
+                let updatedStatus = marketStatus
+                if (e.key === 'Enter') updatedStatus = +updatedStatus === !OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
+                await handleManualSave(updatedStatus);
+                return;
+            }
             // Handle Enter key press
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -1910,21 +1985,9 @@ export const UpdateManualOdds = () => {
                     });
                     return;
                 }
-                let newStatus;
-                if (isManualMode) {
-                    // if (+marketStatus !== +OPEN_VALUE) return;
-                    // Keep existing Shift+Enter behavior - working fine
 
-                    newStatus = +marketStatus === +OPEN_VALUE ? +SUSPEND_VALUE : +OPEN_VALUE;
-                    await handleSave({
-                        useMainPoint: true,
-                        doNotChangeStatus: true,
-                        newStatus
-
-                    });
-                    return;
-                }
                 // Determine the next status when pressing Enter
+                let newStatus;
                 if (+marketStatus === +OPEN_VALUE) {
                     // Toggle from Open to Suspend - keep existing behavior
                     newStatus = SUSPEND_VALUE;
