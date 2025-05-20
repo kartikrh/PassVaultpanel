@@ -1931,7 +1931,7 @@ export const UpdateManualOdds = () => {
                     if (e.shiftKey) { if (+marketStatus !== +OPEN_VALUE) return; }
                     else updatedStatus = +updatedStatus === OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
                 }
-                if (e.key === '+') { if (+marketStatus !== +OPEN_VALUE) return; }
+                if (e.key === '+') return;
                 await handleManualSave(updatedStatus);
                 return;
             }
