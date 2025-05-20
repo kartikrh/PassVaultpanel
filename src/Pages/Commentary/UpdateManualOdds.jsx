@@ -1253,11 +1253,11 @@ export const UpdateManualOdds = () => {
         // Handle display value for saved price
         const displaySavedPrice = !isLive && directLineEnabled && savedPrice < 1.01 ? '' :
             isActive ? savedPrice : '-';
-
+        const isManualMode = !isLive && !directLineEnabled;
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <RateBox type={type}>
-                    {showSavedAndLive && (
+                    {!isManualMode && showSavedAndLive && (
                         <Box sx={{ display: 'flex', width: '100%' }}>
                             <Typography className="live-label-original">
                                 {(() => {
