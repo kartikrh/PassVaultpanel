@@ -1086,9 +1086,9 @@ export const CreateEventMarket = () => {
 
         // Apply specific logic only when isPerEvent is true
         if (template.isPerEvent && teams.length >= 2) {
-            const team1Name = teams[0]?.shortName || 'Team1';
-            const team2Name = teams[1]?.shortName || 'Team2';
-            marketName = `${template.templateName} (${team1Name} vs ${team2Name}) ADV`;
+            // const team1Name = teams[0]?.shortName || 'Team1';
+            // const team2Name = teams[1]?.shortName || 'Team2';
+            marketName = `${template.templateName}`;
         }
 
         return {
