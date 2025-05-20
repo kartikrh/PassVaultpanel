@@ -662,7 +662,6 @@ export const UpdateManualOdds = () => {
 
             setSettings(prev => ({ ...prev, [key]: numericValue }));
 
-            // Trigger recalculation when rate differences, volumes, or margin-related settings change
             if (['rateDifferent', 'bRateDifferent', 'lRateDifferent', 'margin', 'favRatio'].includes(key)) {
                 // If we have socket data and in live mode or direct line mode, reprocess the data
                 if (((originalMarketRunnerData.length > 0 && isLive) ||
@@ -675,45 +674,50 @@ export const UpdateManualOdds = () => {
                         processInningsData(originalInningsData);
                     }
                 } else if (!isLive && !directLineEnabled) {
-                    // MANUAL MODE: Update savedPrices to reflect rate difference changes
-                    // Find the selected runner
-                    const selectedRunnerData = runners.find(r => r.isSelected);
+                    // MANUAL MODE: Update savedPrices to reflect rate difference changes for BOTH runners
+                    if (key === 'rateDifferent') {
+                        const newRateDiff = parseFloat(numericValue);
 
-                    if (selectedRunnerData && selectedRunner) {
-                        // Get current saved back price for selected runner
-                        const currentBackPrice = savedPrices[selectedRunner]?.back || 0;
+                        // Update savedPrices for all runners
+                        setSavedPrices(prevSavedPrices => {
+                            const updatedPrices = { ...prevSavedPrices };
+                            const runnerIds = runners.map(r => r.runnerId);
 
-                        if (currentBackPrice > 0) {
-                            // Calculate the new lay price based on the new rate difference
-                            const newLayPrice = Math.max(1.01, parseFloat((currentBackPrice + parseFloat(numericValue)).toFixed(2)));
+                            // Find selected runner
+                            const selectedRunnerData = runners.find(r => r.isSelected);
+                            if (!selectedRunnerData) return prevSavedPrices;
 
-                            // Update savedPrices for this runner
-                            setSavedPrices(prevSavedPrices => {
-                                const updatedPrices = { ...prevSavedPrices };
+                            // Get the non-selected runner
+                            const nonSelectedRunners = runners.filter(r => !r.isSelected);
+                            if (nonSelectedRunners.length === 0) return prevSavedPrices;
+                            const nonSelectedRunner = nonSelectedRunners[0];
 
-                                // Update selected runner
-                                updatedPrices[selectedRunner] = {
-                                    back: currentBackPrice,
-                                    lay: newLayPrice
+                            // Get the current prices
+                            const selectedBackPrice = prevSavedPrices[selectedRunnerData.runnerId]?.back || 0;
+
+                            // Only proceed if we have a valid back price for the selected runner
+                            if (selectedBackPrice > 0) {
+                                // Calculate new prices with the new rate diff
+                                const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + newRateDiff).toFixed(2)));
+
+                                // Calculate the non-selected runner prices using the two-outcome formula
+                                const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                                const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                                // Update both runners in savedPrices
+                                updatedPrices[selectedRunnerData.runnerId] = {
+                                    back: selectedBackPrice,
+                                    lay: selectedLayPrice
                                 };
 
-                                // Update the non-selected runner if it exists
-                                const otherRunnerIds = runners.filter(r => r.runnerId !== selectedRunner).map(r => r.runnerId);
-                                if (otherRunnerIds.length > 0) {
-                                    const otherRunnerId = otherRunnerIds[0];
-                                    // Calculate the non-selected runner prices using the two-outcome formula
-                                    const nonSelectedBack = parseFloat((1 / (1 - (1 / newLayPrice))).toFixed(2));
-                                    const nonSelectedLay = parseFloat((1 / (1 - (1 / currentBackPrice))).toFixed(2));
+                                updatedPrices[nonSelectedRunner.runnerId] = {
+                                    back: nonSelectedBackPrice,
+                                    lay: nonSelectedLayPrice
+                                };
+                            }
 
-                                    updatedPrices[otherRunnerId] = {
-                                        back: nonSelectedBack,
-                                        lay: nonSelectedLay
-                                    };
-                                }
-
-                                return updatedPrices;
-                            });
-                        }
+                            return updatedPrices;
+                        });
                     }
                 }
 
