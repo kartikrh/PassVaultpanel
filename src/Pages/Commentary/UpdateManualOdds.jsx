@@ -375,23 +375,6 @@ const StyledRadio = styled(Radio)(({ theme }) => ({
     },
 }));
 
-//   // Optional: Create a styled RadioGroup if needed
-//   const StyledRadioGroup = styled(RadioGroup)(({ theme }) => ({
-//     // Light Mode Styles
-//     '& .MuiFormControlLabel-root': {
-//       marginBottom: '8px',
-//     },
-
-//     // Dark Mode Styles
-//     [theme.breakpoints.up(0)]: {
-//       'body[data-theme="dark"] &': {
-//         '& .MuiFormControlLabel-root': {
-//           marginBottom: '8px',
-//         },
-//       },
-//     },
-//   }));
-
 export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -679,23 +662,37 @@ export const UpdateManualOdds = () => {
 
             setSettings(prev => ({ ...prev, [key]: numericValue }));
 
-            // Trigger recalculation when rate differences or volumes change
-            if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
-                setRunners(prev => prev.map(runner => {
-                    const newSettings = { ...settings, [key]: numericValue };
-                    const newRates = calculateRunnerRates(runner, newSettings);
-                    let objToSend = {
-                        ...runner,
-                        b2: newRates.b2,
-                        b1: newRates.b1,
-                        back: { ...runner.back, price: newRates.back },
-                        lay: { ...runner.lay, price: newRates.lay },
-                        l1: newRates.l1,
-                        l2: newRates.l2,
+            // Trigger recalculation when rate differences, volumes, or margin-related settings change
+            if (['rateDifferent', 'bRateDifferent', 'lRateDifferent', 'margin', 'favRatio'].includes(key)) {
+                // If we have socket data and it's a margin-related change, reprocess the data
+                if (['margin', 'favRatio'].includes(key) &&
+                    ((originalMarketRunnerData.length > 0 && isLive) ||
+                        (originalInningsData.length > 0 && !isLive && directLineEnabled))) {
+
+                    // Re-process the appropriate data source based on current mode
+                    if (isLive && originalMarketRunnerData.length > 0) {
+                        processMarketRunnerData(originalMarketRunnerData);
+                    } else if (!isLive && directLineEnabled && originalInningsData.length > 0) {
+                        processInningsData(originalInningsData);
                     }
-                    return objToSend
-                }));
+                } else {
+                    // Handle regular rate difference changes
+                    setRunners(prev => prev.map(runner => {
+                        const newSettings = { ...settings, [key]: numericValue };
+                        const newRates = calculateRunnerRates(runner, newSettings);
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2,
+                        };
+                    }));
+                }
             }
+
             if (settings.volumeType === CUSTOM_STATUS) {
                 if (key === 'bRateVolume') {
                     setRunners(prev => prev.map(runner => ({
@@ -1658,8 +1655,6 @@ export const UpdateManualOdds = () => {
         if (!socketData || !socketData.length) return;
         const currentSettings = settingsRef.current;
 
-        // console.log("Processing Market Runner Data with raw socket data:", socketData);
-
         // First, update originalRunner with the raw socket data without any calculations
         setOriginalRunner(prevRunners =>
             prevRunners.map(prevRunner => {
@@ -1697,13 +1692,6 @@ export const UpdateManualOdds = () => {
                 ? parseFloat((adjustedBackPrice / (1 - layMargin)).toFixed(2))
                 : 0;
 
-            // console.log(`Runner ${runner.selectionId} (${runner.runner}) price calculation:`, {
-            //     originalBack: originalBackPrice,
-            //     adjustedBack: adjustedBackPrice,
-            //     layMargin: layMargin,
-            //     calculatedLay: calculatedLayPrice
-            // });
-
             return {
                 ...runner,
                 backPrice: adjustedBackPrice,
@@ -1722,8 +1710,6 @@ export const UpdateManualOdds = () => {
             },
             {}
         );
-
-        // console.log("Selected minimum back price runner:", minBackRunner);
 
         // Update only the current runners state with calculated prices
         setRunners(prevRunners => {
@@ -1745,16 +1731,6 @@ export const UpdateManualOdds = () => {
                 const l1 = Math.max(0, parseFloat((layPrice + lRateDiff).toFixed(2)));
                 const l2 = Math.max(0, parseFloat((layPrice + (2 * lRateDiff)).toFixed(2)));
 
-                // console.log(`Updating current runner ${prevRunner.selectionId} (${prevRunner.runner}) ladder prices:`, {
-                //     isSelected,
-                //     backPrice,
-                //     layPrice,
-                //     b2,
-                //     b1,
-                //     l1,
-                //     l2
-                // });
-
                 return {
                     ...prevRunner,
                     isSelected,
@@ -1773,23 +1749,6 @@ export const UpdateManualOdds = () => {
                 };
             });
         });
-
-        // // Update selectedRunner based on minimum back price
-        // if (minBackRunner && minBackRunner.selectionId) {
-        //     const runner = adjustedRunners.find(r => r.selectionId === minBackRunner.selectionId);
-        //     console.log({ adjustedRunners })
-        //     if (runner) {
-        //         setSelectedRunner(runner.runnerId);
-        //         console.log("Selected from socket", { selectedRunnerDetails })
-        //         console.log("7")
-        //         setSelectedRunnerDetails(prev => ({
-        //             ...prev,
-        //             runnerId: runner.runnerId,
-        //             main: Math.floor(runner.backPrice).toString(),
-        //             point: ((runner.backPrice % 1) * 100).toFixed(0).padStart(2, '0')
-        //         }));
-        //     }
-        // }
     };
 
     // Reusable method for processing INNINGS_RUN_DATA
@@ -2477,11 +2436,11 @@ export const UpdateManualOdds = () => {
     }, [socket, directLineEnabled, isLive, socketMarketData]);
 
 
-    useEffect(() => {
-        if (!directLineEnabled || isLive || !socketMarketData?.length) return;
-        // console.log("Recalculating odds due to margin/favRatio change", { margin: settings.margin, favRatio: settings.favRatio });
-        handleInningsDataUpdate(socketMarketData);
-    }, [settings?.margin, settings?.favRatio]);
+    // useEffect(() => {
+    //     if (!directLineEnabled || isLive || !socketMarketData?.length) return;
+    //     // console.log("Recalculating odds due to margin/favRatio change", { margin: settings.margin, favRatio: settings.favRatio });
+    //     handleInningsDataUpdate(socketMarketData);
+    // }, [settings?.margin, settings?.favRatio]);
 
     useEffect(() => {
         if (runners.length > 0 && !selectedRunner) {
