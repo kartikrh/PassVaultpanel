@@ -2013,6 +2013,7 @@ export const UpdateManualOdds = () => {
             }
 
             if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
+                console.log("Hello 444")
                 e.preventDefault();
                 await handleSave({
                     doNotChangeStatus: true,
@@ -2162,73 +2163,6 @@ export const UpdateManualOdds = () => {
             }
         };
     }, [socket, commentaryId, directLineEnabled, isLive]);
-
-    // const calculatePricesFromSelectedBack = (selectedBackPrice, settings) => {
-    //     const defaultLay = 1 + +settings.rateDifferent
-    //     selectedBackPrice = Math.max(0, selectedBackPrice);
-
-    //     if (selectedBackPrice === 0) {
-    //         return {
-    //             selectedBack: 0,
-    //             selectedLay: defaultLay,
-    //             nonSelectedBack: 0,
-    //             nonSelectedLay: 0
-    //         };
-    //     }
-
-    //     if (selectedBackPrice < 1.01) {
-    //         selectedBackPrice = 1.01;
-    //     }
-
-    //     // Calculate selected lay price first
-    //     const selectedLay = Math.max(defaultLay, Number((selectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2)));
-
-    //     // Calculate non-selected prices using the formulas
-    //     const nonSelectedBack = Math.max(0, Number((1 / (1 - (1 / selectedLay))).toFixed(2)));
-    //     const nonSelectedLay = Math.max(0, Number((1 / (1 - (1 / selectedBackPrice))).toFixed(2)));
-
-    //     return {
-    //         selectedBack: selectedBackPrice,
-    //         selectedLay,
-    //         nonSelectedBack,
-    //         nonSelectedLay
-    //     };
-    // };
-
-    // const updateRunnerWithPrices = (runner, isSelected, prices, settings) => {
-    //     const defaultLay = 1 + +settings.rateDifferent
-    //     const { selectedBack, selectedLay, nonSelectedBack, nonSelectedLay } = prices;
-    //     const backPrice = isSelected ? selectedBack : nonSelectedBack;
-    //     const layPrice = isSelected ? selectedLay : nonSelectedLay;
-
-    //     // Special case for zero prices
-    //     if (backPrice === 0) {
-    //         return {
-    //             ...runner,
-    //             isSelected,
-    //             back: { ...runner.back, price: 0 },
-    //             lay: { ...runner.lay, price: defaultLay },
-    //             b2: 0,
-    //             b1: 0,
-    //             l1: 0,
-    //             l2: 0
-    //         };
-    //     }
-
-    //     const bRateDiff = parseFloat(settings.bRateDifferent);
-    //     const lRateDiff = parseFloat(settings.lRateDifferent);
-
-    //     return {
-    //         ...runner,
-    //         isSelected,
-    //         back: { ...runner.back, price: Number(backPrice.toFixed(2)) },
-    //         lay: { ...runner.lay, price: Number(layPrice.toFixed(2)) },
-    //         b2: Number((backPrice - (2 * bRateDiff)).toFixed(2)),
-    //         b1: Number((backPrice - bRateDiff).toFixed(2)),
-    //         l1: Number((layPrice + lRateDiff).toFixed(2)),
-    //         l2: Number((layPrice + (2 * lRateDiff)).toFixed(2))
-    //     };
-    // };
 
     const handleInningsDataUpdate = (updatedMarketData) => {
         const sortedMarkets = [...updatedMarketData].sort((a, b) => b.inningsId - a.inningsId);
