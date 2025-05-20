@@ -1966,8 +1966,9 @@ export const UpdateManualOdds = () => {
             if (+marketStatus === +CLOSE_VALUE) return;
             const isManualMode = !isLive && !directLineEnabled;
             if (isManualMode && (e.key === 'Enter' || e.key === '+')) {
+
                 let updatedStatus = marketStatus
-                if (e.key === 'Enter') updatedStatus = +updatedStatus === !OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
+                if (e.key === 'Enter') updatedStatus = +updatedStatus === OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
                 await handleManualSave(updatedStatus);
                 return;
             }
