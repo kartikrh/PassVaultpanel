@@ -462,6 +462,85 @@ export const UpdateManualOdds = () => {
         return { backPrice, layPrice };
     };
 
+
+    const calculateRunnerRates = useCallback((runner, settings, options = {}) => {
+        const {
+            forceCalculateLay = true,
+            isSocketData = false,
+            manualEdit = false,
+            editedField = null
+        } = options;
+
+        const back = Math.max(0, parseFloat(runner?.back?.price) || 0);
+        const existingLay = Math.max(0, parseFloat(runner?.lay?.price) || 0);
+        const existingL1 = Math.max(0, parseFloat(runner?.l1) || 0);
+        const existingL2 = Math.max(0, parseFloat(runner?.l2) || 0);
+
+        const bRateDiff = Math.max(0, parseFloat(settings?.bRateDifferent) || 0);
+        const lRateDiff = Math.max(0, parseFloat(settings?.lRateDifferent) || 0);
+
+        // Use tempRateDiff if it's not null, otherwise use the settings value
+        const rateDiff = Math.max(0, tempRateDiff || parseFloat(settings?.rateDifferent) || 0);
+
+        const b2 = Math.max(0, Number((back - (2 * bRateDiff)).toFixed(2)));
+        const b1 = Math.max(0, Number((back - bRateDiff).toFixed(2)));
+
+        let lay, l1, l2;
+
+        if (isSocketData || (manualEdit && editedField === 'back')) {
+            lay = back > 0 ? Math.max(1.01, Number((back + rateDiff).toFixed(2))) : 1.01;
+            l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
+            l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
+        } else if (manualEdit) {
+            switch (editedField) {
+                case 'lay':
+                    lay = Math.max(1.01, Number(parseFloat(runner.lay.price).toFixed(2)));
+                    l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
+                    l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
+                    break;
+                case 'l1':
+                    lay = Math.max(1.01, existingLay);
+                    l1 = Math.max(0, Number(parseFloat(runner.l1).toFixed(2)));
+                    l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
+                    break;
+                case 'l2':
+                    lay = Math.max(1.01, existingLay);
+                    l1 = Math.max(0, existingL1);
+                    l2 = Math.max(0, Number(parseFloat(runner.l2).toFixed(2)));
+                    break;
+                default:
+                    if (forceCalculateLay) {
+                        lay = back > 0 ? Math.max(1.01, Number((back + rateDiff).toFixed(2))) : 1.01;
+                        l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
+                        l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
+                    } else {
+                        lay = Math.max(1.01, existingLay);
+                        l1 = Math.max(0, existingL1);
+                        l2 = Math.max(0, existingL2);
+                    }
+            }
+        } else {
+            if (forceCalculateLay) {
+                lay = back > 0 ? Math.max(1.01, Number((back + rateDiff).toFixed(2))) : 1.01;
+                l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
+                l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
+            } else {
+                lay = Math.max(1.01, existingLay);
+                l1 = Math.max(0, existingL1);
+                l2 = Math.max(0, existingL2);
+            }
+        }
+
+        return {
+            b2: Math.max(0, b2),
+            b1: Math.max(0, b1),
+            back: Math.max(0, back),
+            lay: Math.max(1.01, lay),
+            l1: Math.max(0, l1),
+            l2: Math.max(0, l2)
+        };
+    }, [tempRateDiff]);
+
     const initializeRunners = (runnersData) => {
         const formattedRunners = runnersData.map(runner => {
             const { backPrice, layPrice } = handlePriceCalculations(runner.backPrice, true);
@@ -638,17 +717,24 @@ export const UpdateManualOdds = () => {
                 value = '0.01';
             }
         }
+
         if (isShortcut) {
-            const newValue = settings.shortcutValues[value];
-            if (newValue) {
-                handleSettingChange('rateDifferent', newValue);
-            }
+            // Update specific shortcut value in the settings
+            setSettings(prev => ({
+                ...prev,
+                shortcutValues: {
+                    ...prev.shortcutValues,
+                    [key]: value
+                }
+            }));
+
+            // Mark that shortcut values have changed
+            setHasShortcutChanges(true);
         } else {
-            // Ensure value is numeric for rate-related settings
+            // Rest of your existing handleSettingChange logic...
             const numericValue = value === '' ? '0' : value;
 
             if (key === 'volumeType' && value === CUSTOM_STATUS) {
-                // When switching to custom volume, update all runners with the current B/L rate volumes
                 setRunners(prev => prev.map(runner => ({
                     ...runner,
                     back: { ...runner.back, volume: settings.bRateVolume },
@@ -663,48 +749,34 @@ export const UpdateManualOdds = () => {
             setSettings(prev => ({ ...prev, [key]: numericValue }));
 
             if (['rateDifferent', 'bRateDifferent', 'lRateDifferent', 'margin', 'favRatio'].includes(key)) {
-                // If we have socket data and in live mode or direct line mode, reprocess the data
                 if (((originalMarketRunnerData.length > 0 && isLive) ||
                     (originalInningsData.length > 0 && !isLive && directLineEnabled))) {
 
-                    // Re-process the appropriate data source based on current mode
                     if (isLive && originalMarketRunnerData.length > 0) {
                         processMarketRunnerData(originalMarketRunnerData);
                     } else if (!isLive && directLineEnabled && originalInningsData.length > 0) {
                         processInningsData(originalInningsData);
                     }
                 } else if (!isLive && !directLineEnabled) {
-                    // MANUAL MODE: Update savedPrices to reflect rate difference changes for BOTH runners
                     if (key === 'rateDifferent') {
                         const newRateDiff = parseFloat(numericValue);
 
-                        // Update savedPrices for all runners
                         setSavedPrices(prevSavedPrices => {
                             const updatedPrices = { ...prevSavedPrices };
-                            const runnerIds = runners.map(r => r.runnerId);
-
-                            // Find selected runner
                             const selectedRunnerData = runners.find(r => r.isSelected);
                             if (!selectedRunnerData) return prevSavedPrices;
 
-                            // Get the non-selected runner
                             const nonSelectedRunners = runners.filter(r => !r.isSelected);
                             if (nonSelectedRunners.length === 0) return prevSavedPrices;
                             const nonSelectedRunner = nonSelectedRunners[0];
 
-                            // Get the current prices
                             const selectedBackPrice = prevSavedPrices[selectedRunnerData.runnerId]?.back || 0;
 
-                            // Only proceed if we have a valid back price for the selected runner
                             if (selectedBackPrice > 0) {
-                                // Calculate new prices with the new rate diff
                                 const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + newRateDiff).toFixed(2)));
-
-                                // Calculate the non-selected runner prices using the two-outcome formula
                                 const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
                                 const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
 
-                                // Update both runners in savedPrices
                                 updatedPrices[selectedRunnerData.runnerId] = {
                                     back: selectedBackPrice,
                                     lay: selectedLayPrice
@@ -721,7 +793,6 @@ export const UpdateManualOdds = () => {
                     }
                 }
 
-                // Always update the runner calculations regardless of mode
                 setRunners(prev => prev.map(runner => {
                     const newSettings = { ...settings, [key]: numericValue };
                     const newRates = calculateRunnerRates(runner, newSettings);
@@ -757,81 +828,46 @@ export const UpdateManualOdds = () => {
         }
     };
 
-    const calculateRunnerRates = (runner, settings, options = {}) => {
-        const {
-            forceCalculateLay = true,
-            isSocketData = false,
-            manualEdit = false,
-            editedField = null
-        } = options;
+    useEffect(() => {
+        const handleKeyUp = (event) => {
+            const key = event.key.toUpperCase();
+            if (settings.shortcutValues[key]) {
+                console.log(`Key released: ${key}, resetting temporary rate difference`);
 
-        const back = Math.max(0, parseFloat(runner?.back?.price) || 0);
-        const existingLay = Math.max(0, parseFloat(runner?.lay?.price) || 0);
-        const existingL1 = Math.max(0, parseFloat(runner?.l1) || 0);
-        const existingL2 = Math.max(0, parseFloat(runner?.l2) || 0);
+                // Reset temporary rate difference
+                setTempRateDiff(null);
 
-        const bRateDiff = Math.max(0, parseFloat(settings?.bRateDifferent) || 0);
-        const lRateDiff = Math.max(0, parseFloat(settings?.lRateDifferent) || 0);
-        const rateDiff = Math.max(0, tempRateDiff || parseFloat(settings?.rateDifferent) || 0);
+                // Reset runners back to use the original rate difference
+                setRunners(prevRunners => {
+                    return prevRunners.map(runner => {
+                        // Use the existing calculateRunnerRates function with original settings
+                        const newRates = calculateRunnerRates(runner, settings, {
+                            forceCalculateLay: true
+                        });
 
-        const b2 = Math.max(0, Number((back - (2 * bRateDiff)).toFixed(2)));
-        const b1 = Math.max(0, Number((back - bRateDiff).toFixed(2)));
+                        // Return updated runner
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2
+                        };
+                    });
+                });
 
-        let lay, l1, l2;
-
-        if (isSocketData || (manualEdit && editedField === 'back')) {
-            lay = back > 0 ? Math.max(1.01, Number((back + rateDiff).toFixed(2))) : 1.01;
-            l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
-            l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
-        } else if (manualEdit) {
-            switch (editedField) {
-                case 'lay':
-                    lay = Math.max(1.01, Number(parseFloat(runner.lay.price).toFixed(2)));
-                    l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
-                    l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
-                    break;
-                case 'l1':
-                    lay = Math.max(1.01, existingLay);
-                    l1 = Math.max(0, Number(parseFloat(runner.l1).toFixed(2)));
-                    l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
-                    break;
-                case 'l2':
-                    lay = Math.max(1.01, existingLay);
-                    l1 = Math.max(0, existingL1);
-                    l2 = Math.max(0, Number(parseFloat(runner.l2).toFixed(2)));
-                    break;
-                default:
-                    if (forceCalculateLay) {
-                        lay = back > 0 ? Math.max(1.01, Number((back + rateDiff).toFixed(2))) : 1.01;
-                        l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
-                        l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
-                    } else {
-                        lay = Math.max(1.01, existingLay);
-                        l1 = Math.max(0, existingL1);
-                        l2 = Math.max(0, existingL2);
-                    }
+                // Reset saved prices if in manual mode
+                if (!isLive && !directLineEnabled) {
+                    updateSavedPricesWithOriginalRateDiff();
+                }
             }
-        } else {
-            if (forceCalculateLay) {
-                lay = back > 0 ? Math.max(1.01, Number((back + rateDiff).toFixed(2))) : 1.01;
-                l1 = lay > 0 ? Math.max(0, Number((lay + lRateDiff).toFixed(2))) : 0;
-                l2 = l1 > 0 ? Math.max(0, Number((l1 + lRateDiff).toFixed(2))) : 0;
-            } else {
-                lay = Math.max(1.01, existingLay);
-                l1 = Math.max(0, existingL1);
-                l2 = Math.max(0, existingL2);
-            }
-        }
-
-        return {
-            b2: Math.max(0, b2),
-            b1: Math.max(0, b1),
-            back: Math.max(0, back),
-            lay: Math.max(1.01, lay),
-            l1: Math.max(0, l1),
-            l2: Math.max(0, l2)
         };
-    };
+
+        window.addEventListener('keyup', handleKeyUp);
+        return () => window.removeEventListener('keyup', handleKeyUp);
+    }, [settings, calculateRunnerRates, isLive, directLineEnabled]);
 
     const fixedHandleStatusChange = async (newStatus) => {
         // Add confirmation for market close
@@ -903,22 +939,52 @@ export const UpdateManualOdds = () => {
 
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
+        console.log(`Key pressed: ${key}`);
+
+        // Get the latest shortcut value from settings
         const value = settings.shortcutValues[key];
-        if (value && !isLive) {
-            setTempRateDiff(parseFloat(value));
-            // Recalculate prices using tempRateDiff
-            setRunners(prev => prev.map(runner => {
-                const newRates = calculateRunnerRates(runner, {
-                    ...settings,
-                    rateDifferent: value
+        console.log(`Shortcut value for ${key}: ${value}`);
+
+        if (value) {
+            console.log(`✅ Valid shortcut key: ${key} with value: ${value}`);
+
+            // Set temporary rate difference without updating the settings field
+            const newRateDiff = parseFloat(value);
+            setTempRateDiff(newRateDiff);
+
+            // Update runners with the temporary rate difference
+            setRunners(prevRunners => {
+                return prevRunners.map(runner => {
+                    // Create a temporary settings object with the new rate diff
+                    const tempSettings = { ...settings, rateDifferent: newRateDiff };
+
+                    // Use the existing calculateRunnerRates function
+                    const newRates = calculateRunnerRates(runner, tempSettings, {
+                        forceCalculateLay: true
+                    });
+
+                    // Return updated runner
+                    return {
+                        ...runner,
+                        b2: newRates.b2,
+                        b1: newRates.b1,
+                        back: { ...runner.back, price: newRates.back },
+                        lay: { ...runner.lay, price: newRates.lay },
+                        l1: newRates.l1,
+                        l2: newRates.l2
+                    };
                 });
-                return {
-                    ...runner,
-                    ...newRates
-                };
-            }));
+            });
+
+            // Also update saved prices temporarily if in manual mode
+            if (!isLive && !directLineEnabled) {
+                updateSavedPricesWithNewRateDiff(newRateDiff);
+            }
+
             return;
         }
+
+        // Handle status shortcuts
         switch (key) {
             case 'S':
                 fixedHandleStatusChange(SUSPEND_VALUE.toString());
@@ -935,11 +1001,138 @@ export const UpdateManualOdds = () => {
             default:
                 break;
         }
-    }, [settings.shortcutValues, isLive, calculateRunnerRates, eventData.market, settings]);
+    }, [settings, calculateRunnerRates, fixedHandleStatusChange, isLive, directLineEnabled]);
+
+
+    useEffect(() => {
+        // Load other data
+        fetchMarketData();
+
+        // Load settings from local storage
+        const savedSettings = loadSettingsFromLocalStorage();
+        if (savedSettings) {
+            setSettings(prevSettings => ({
+                ...prevSettings,
+                ...savedSettings
+            }));
+            console.log('Loaded settings from local storage:', savedSettings);
+        }
+
+        // Set up event listener
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, []);
+
+    const loadSettingsFromLocalStorage = () => {
+        try {
+            const savedSettings = localStorage.getItem('manualOddsSettings');
+            if (savedSettings) {
+                return JSON.parse(savedSettings);
+            }
+        } catch (error) {
+            console.error('Error loading settings from local storage:', error);
+        }
+        return null;
+    };
+
+    const saveSettingsToLocalStorage = (settingsObj) => {
+        try {
+            localStorage.setItem('manualOddsSettings', JSON.stringify(settingsObj));
+            console.log('Settings saved to local storage');
+        } catch (error) {
+            console.error('Error saving settings to local storage:', error);
+        }
+    };
+
+    const updateSavedPricesWithNewRateDiff = (rateDiff) => {
+        rateDiff = parseFloat(rateDiff);
+        if (isNaN(rateDiff)) return;
+
+        setSavedPrices(prevSavedPrices => {
+            const updatedPrices = { ...prevSavedPrices };
+
+            // Find selected runner
+            const selectedRunner = runners.find(r => r.isSelected);
+            if (!selectedRunner) return prevSavedPrices;
+
+            // Get non-selected runner
+            const nonSelectedRunners = runners.filter(r => !r.isSelected);
+            if (!nonSelectedRunners.length) return prevSavedPrices;
+            const nonSelectedRunner = nonSelectedRunners[0];
+
+            // Get current selected back price
+            const selectedBackPrice = prevSavedPrices[selectedRunner.runnerId]?.back || 0;
+            if (selectedBackPrice <= 0) return prevSavedPrices;
+
+            // Calculate new lay price with new rate diff
+            const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + rateDiff).toFixed(2)));
+
+            // Calculate non-selected prices using two-outcome formula
+            const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+            const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+            // Update prices for both runners
+            updatedPrices[selectedRunner.runnerId] = {
+                back: selectedBackPrice,
+                lay: selectedLayPrice
+            };
+
+            updatedPrices[nonSelectedRunner.runnerId] = {
+                back: nonSelectedBackPrice,
+                lay: nonSelectedLayPrice
+            };
+
+            console.log('Updated saved prices with rate diff:', rateDiff, updatedPrices);
+            return updatedPrices;
+        });
+    };
 
     const handleSync = () => {
         setOriginalShortcutValues(settings.shortcutValues);
         setHasShortcutChanges(false);
+
+        // Save to local storage
+        saveSettingsToLocalStorage(settings);
+    };
+
+    const updateSavedPricesWithOriginalRateDiff = () => {
+        setSavedPrices(prevSavedPrices => {
+            const updatedPrices = { ...prevSavedPrices };
+
+            // Find selected runner
+            const selectedRunner = runners.find(r => r.isSelected);
+            if (!selectedRunner) return prevSavedPrices;
+
+            // Get non-selected runner
+            const nonSelectedRunners = runners.filter(r => !r.isSelected);
+            if (!nonSelectedRunners.length) return prevSavedPrices;
+            const nonSelectedRunner = nonSelectedRunners[0];
+
+            // Get current selected back price
+            const selectedBackPrice = prevSavedPrices[selectedRunner.runnerId]?.back || 0;
+            if (selectedBackPrice <= 0) return prevSavedPrices;
+
+            // Use original rate difference from settings
+            const originalRateDiff = parseFloat(settings.rateDifferent);
+
+            // Calculate new prices
+            const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + originalRateDiff).toFixed(2)));
+            const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+            const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+            // Update both runners
+            updatedPrices[selectedRunner.runnerId] = {
+                back: selectedBackPrice,
+                lay: selectedLayPrice
+            };
+
+            updatedPrices[nonSelectedRunner.runnerId] = {
+                back: nonSelectedBackPrice,
+                lay: nonSelectedLayPrice
+            };
+
+            return updatedPrices;
+        });
     };
 
     const prepareMarketData = (options = {}) => {
@@ -1497,7 +1690,7 @@ export const UpdateManualOdds = () => {
         };
     }, [settings.volumeType, settings.volumeLength]);
 
-    const handleSavedRunnerUpdate = (marketData) => {
+    const handleSavedRunnerUpdate = useCallback((marketData) => {
         const getNonZeroSavedData = (currenetValue, runnerId, key) => {
             if (+currenetValue === 0) {
                 return savedPrices?.[runnerId]?.[key] || 0
@@ -1516,7 +1709,7 @@ export const UpdateManualOdds = () => {
         console.log("Hello 2")
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
-    };
+    });
 
     const handleSavedRunnerChange = (runnerId, field, value) => {
         const runner = runners.find(r => r.runnerId === runnerId);
@@ -1881,16 +2074,28 @@ export const UpdateManualOdds = () => {
             // Cannot perform operations on closed markets
             if (+marketStatus === +CLOSE_VALUE) return;
             const isManualMode = !isLive && !directLineEnabled;
-            if (isManualMode && (e.key === 'Enter' || e.key === '+')) {
-
-                let updatedStatus = marketStatus
-                if (e.key === 'Enter') {
-                    if (e.shiftKey) { if (+marketStatus !== +OPEN_VALUE) return; }
-                    else updatedStatus = +updatedStatus === OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
-                }
-                if (e.key === '+') return;
-                await handleManualSave(updatedStatus);
-                return;
+            if (isManualMode) {
+                if ((e.key === 'Enter')) {
+                    if (e.key === '+') {
+                        e.preventDefault();
+                        if (e.shiftKey && +marketStatus !== +OPEN_VALUE) {
+                            console.log("Shift + '+' ignored because market is not open");
+                            return;
+                        }
+                        if (+marketStatus === +OPEN_VALUE) {
+                            console.log("Shift + '+' ignored because market is not open");
+                            return;
+                        }
+                        return;
+                    }
+                    let updatedStatus = marketStatus
+                    if (e.key === 'Enter') {
+                        if (e.shiftKey) { if (+marketStatus !== +OPEN_VALUE) return; }
+                        else updatedStatus = +updatedStatus === OPEN_VALUE ? SUSPEND_VALUE : OPEN_VALUE
+                    }
+                    await handleManualSave(updatedStatus);
+                    return;
+                } return
             }
             // Handle Enter key press
             if (e.key === 'Enter') {
@@ -2353,6 +2558,30 @@ export const UpdateManualOdds = () => {
         }
     }, [runners]);
 
+    useEffect(() => {
+        console.log("Setting up keydown event listener"); // Debug log
+
+        // Add a test function to check if the listener works
+        const testKeyPress = (event) => {
+            console.log(`TEST: Key pressed: ${event.key.toUpperCase()}`);
+        };
+
+        window.addEventListener('keydown', testKeyPress);
+        window.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            console.log("Removing keydown event listener"); // Debug log
+            window.removeEventListener('keydown', testKeyPress);
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [settings.shortcutValues, isLive]);
+
+    useEffect(() => {
+        console.log("Initial shortcut values:");
+        Object.entries(settings.shortcutValues).forEach(([key, value]) => {
+            console.log(`  ${key}: ${value}`);
+        });
+    }, []);
     const handleBetAllowToggle = async (newValue) => {
         const marketData = {
             eventMarket: [{
@@ -2802,7 +3031,13 @@ export const UpdateManualOdds = () => {
                                                     value={value}
                                                     onChange={(e) => handleSettingChange(key, e.target.value, true)}
                                                     disabled={marketStatus === CLOSE_VALUE.toString()}
-                                                    sx={{ '& .MuiInputBase-input': { py: 0.5 } }}
+                                                    sx={{
+                                                        '& .MuiInputBase-input': { py: 0.5 },
+                                                        '& .MuiOutlinedInput-notchedOutline': {
+                                                            borderColor: hasShortcutChanges ? 'primary.main' : 'inherit',
+                                                            borderWidth: hasShortcutChanges ? 2 : 1
+                                                        }
+                                                    }}
                                                 />
                                             </KeyBox>
                                         </Box>
@@ -2827,7 +3062,6 @@ export const UpdateManualOdds = () => {
                                     </Button>
                                 </Box>
                             </Box>
-
                             {/* Table Section */}
                             <TableContainer>
                                 <Table size="small">
