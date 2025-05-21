@@ -1747,9 +1747,14 @@ export const UpdateManualOdds = () => {
             setSelectedRunnerDetails(prev => ({
                 ...prev,
                 main: "1",
-                point: "00"  // Changed from "25" to "00"
+                point: "00"
             }));
-            handleSavedRunnerChange(selectedRunner, 'back', "1.00");
+
+            // Only call handleSavedRunnerChange if we're in an OPEN market state
+            // This prevents the infinite loop in suspended state
+            if (+marketStatus === +OPEN_VALUE) {
+                handleSavedRunnerChange(selectedRunner, 'back', "1.00");
+            }
         } else {
             const mainPart = Math.floor(savedPrice);
             const pointPart = Math.round((savedPrice - mainPart) * 100);
@@ -1759,7 +1764,8 @@ export const UpdateManualOdds = () => {
                 point: pointPart.toString().padStart(2, '0')
             }));
         }
-    }, [savedPrices, selectedRunner, isLive]);
+    }, [savedPrices, selectedRunner, isLive, marketStatus]);
+
 
     const prepareRunnerData = (runners, options = {}) => {
         const { isOpen = true, useMainPoint = false, useSocketData = false } = options;
@@ -1967,20 +1973,30 @@ export const UpdateManualOdds = () => {
                 }
             }
 
-            if (e.key === '+' && (+marketStatus === +OPEN_VALUE)) {
-                console.log("Hello 444")
+            if (e.key === '+') {
                 e.preventDefault();
-                await handleSave({
-                    doNotChangeStatus: true,
-                    useSocketData: true
-                });
+
+                // Check if Shift + '+' is pressed and market is not open - do nothing
+                if (e.shiftKey && +marketStatus !== +OPEN_VALUE) {
+                    console.log("Shift + '+' ignored because market is not open");
+                    return;
+                }
+
+                // For regular '+' OR when market is open with Shift + '+'
+                if (+marketStatus === +OPEN_VALUE) {
+                    console.log("Processing '+' key action");
+                    await handleSave({
+                        doNotChangeStatus: true,
+                        useSocketData: true
+                    });
+                }
                 return;
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedRunnerDetails, marketStatus, runners, settings, savedPrices, isLive, directLineEnabled, eventData]);
+    }, [selectedRunnerDetails, marketStatus, runners, settings, savedPrices, isLive, directLineEnabled, eventData, handleManualSave, handleSave, handleSavedRunnerUpdate, dispatch]);
 
 
     useEffect(() => {
