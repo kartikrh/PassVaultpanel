@@ -421,7 +421,7 @@ export const UpdateManualOdds = () => {
         margin: 10,
         delay: 10,
         lineRatio: 10,
-        bfRateDiff: -0.01,
+        bfRateDiff: 0,
         shortcutValues: {
             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
