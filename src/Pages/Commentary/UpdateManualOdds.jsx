@@ -1473,58 +1473,58 @@ export const UpdateManualOdds = () => {
         saveSettingsToLocalStorage(settings);
     };
 
-    const updateSavedPricesWithOriginalRateDiff = useCallback(() => {
-        console.log('updateSavedPricesWithOriginalRateDiff called');
-        setSavedPrices(prevSavedPrices => {
-            console.log('Previous saved prices for reset:', prevSavedPrices);
-            const updatedPrices = { ...prevSavedPrices };
+    // const updateSavedPricesWithOriginalRateDiff = useCallback(() => {
+    //     console.log('updateSavedPricesWithOriginalRateDiff called');
+    //     setSavedPrices(prevSavedPrices => {
+    //         console.log('Previous saved prices for reset:', prevSavedPrices);
+    //         const updatedPrices = { ...prevSavedPrices };
 
-            // Find selected runner
-            const selectedRunner = runners.find(r => r.isSelected);
-            if (!selectedRunner) {
-                console.log('No selected runner found for reset');
-                return prevSavedPrices;
-            }
+    //         // Find selected runner
+    //         const selectedRunner = runners.find(r => r.isSelected);
+    //         if (!selectedRunner) {
+    //             console.log('No selected runner found for reset');
+    //             return prevSavedPrices;
+    //         }
 
-            // Get non-selected runner
-            const nonSelectedRunners = runners.filter(r => !r.isSelected);
-            if (!nonSelectedRunners.length) {
-                console.log('No non-selected runners found for reset');
-                return prevSavedPrices;
-            }
-            const nonSelectedRunner = nonSelectedRunners[0];
+    //         // Get non-selected runner
+    //         const nonSelectedRunners = runners.filter(r => !r.isSelected);
+    //         if (!nonSelectedRunners.length) {
+    //             console.log('No non-selected runners found for reset');
+    //             return prevSavedPrices;
+    //         }
+    //         const nonSelectedRunner = nonSelectedRunners[0];
 
-            // Get current selected back price
-            const selectedBackPrice = prevSavedPrices[selectedRunner.runnerId]?.back || 0;
-            if (selectedBackPrice <= 0) {
-                console.log('Selected back price is 0 or negative for reset');
-                return prevSavedPrices;
-            }
+    //         // Get current selected back price
+    //         const selectedBackPrice = prevSavedPrices[selectedRunner.runnerId]?.back || 0;
+    //         if (selectedBackPrice <= 0) {
+    //             console.log('Selected back price is 0 or negative for reset');
+    //             return prevSavedPrices;
+    //         }
 
-            // Use original rate difference from settings
-            const originalRateDiff = parseFloat(settings.rateDifferent);
-            console.log('Original rate diff for reset:', originalRateDiff);
+    //         // Use original rate difference from settings
+    //         const originalRateDiff = parseFloat(settings.rateDifferent);
+    //         console.log('Original rate diff for reset:', originalRateDiff);
 
-            // Calculate new prices
-            const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + originalRateDiff).toFixed(2)));
-            const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-            const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+    //         // Calculate new prices
+    //         const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + originalRateDiff).toFixed(2)));
+    //         const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+    //         const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
 
-            // Update both runners
-            updatedPrices[selectedRunner.runnerId] = {
-                back: selectedBackPrice,
-                lay: selectedLayPrice
-            };
+    //         // Update both runners
+    //         updatedPrices[selectedRunner.runnerId] = {
+    //             back: selectedBackPrice,
+    //             lay: selectedLayPrice
+    //         };
 
-            updatedPrices[nonSelectedRunner.runnerId] = {
-                back: nonSelectedBackPrice,
-                lay: nonSelectedLayPrice
-            };
+    //         updatedPrices[nonSelectedRunner.runnerId] = {
+    //             back: nonSelectedBackPrice,
+    //             lay: nonSelectedLayPrice
+    //         };
 
-            console.log('Reset saved prices:', updatedPrices);
-            return updatedPrices;
-        });
-    }, [runners, settings.rateDifferent]);
+    //         console.log('Reset saved prices:', updatedPrices);
+    //         return updatedPrices;
+    //     });
+    // }, [runners, settings.rateDifferent]);
 
     const prepareMarketData = (options = {}) => {
         const { newStatus = null, doNotChangeStatus = false, useMainPoint = false, useSocketData = false } = options;
@@ -2230,42 +2230,15 @@ export const UpdateManualOdds = () => {
                 console.log(`Key released: ${key}, resetting temporary rate difference`);
 
                 // Add a small delay to ensure the temporary changes are visible
-                setTimeout(() => {
-                    console.log('Resetting to original rate difference');
-                    // Reset temporary rate difference
-                    setTempRateDiff(null);
-                    tempRateDiffRef.current = null;
+                console.log('Resetting to original rate difference');
+                // Reset temporary rate difference
 
-                    // Reset runners back to use the original rate difference
-                    setRunners(prevRunners => {
-                        console.log('Resetting runners to original rates');
-                        return prevRunners.map(runner => {
-                            const newRates = calculateRunnerRates(runner, settings, {
-                                forceCalculateLay: true
-                            });
-
-                            return {
-                                ...runner,
-                                b2: newRates.b2,
-                                b1: newRates.b1,
-                                back: { ...runner.back, price: newRates.back },
-                                lay: { ...runner.lay, price: newRates.lay },
-                                l1: newRates.l1,
-                                l2: newRates.l2
-                            };
-                        });
-                    });
-
-                    // Reset saved prices if in manual mode
-                    console.log('Resetting saved prices to original rate diff');
-                    updateSavedPricesWithOriginalRateDiff();
-                }, 100); // 100ms delay to ensure visibility
             }
         };
 
         window.addEventListener('keyup', handleKeyUp);
         return () => window.removeEventListener('keyup', handleKeyUp);
-    }, [settings, calculateRunnerRates, isLive, directLineEnabled, updateSavedPricesWithOriginalRateDiff]);
+    }, [settings, calculateRunnerRates, isLive, directLineEnabled]);
 
     useEffect(() => {
         let intervalId;
