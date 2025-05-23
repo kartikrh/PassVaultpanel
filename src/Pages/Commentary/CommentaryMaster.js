@@ -40,6 +40,7 @@ import createSocket from "../../Features/socket";
 import logoDark from "../../assets/images/logo-dark.png";
 import TossScreen from "./CommentryRightControls/TossScreen";
 import PlayerSelectionScreen from "./CommentryRightControls/PlayerSelectionScreen";
+import { loadInit } from "../../config";
 
 const ALL_SCREENS = {
   1: COMMENTARY_TOSS_SCREEN,
@@ -77,11 +78,16 @@ function CommentaryMaster() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
+  if (scorecardFrameUrl) {
+    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", commentaryData?.commentaryDetails?.eid);
+  }
   // const commentaryId = location.state?.commentaryId || "0";
   const commentaryId = +localStorage.getItem("commentaryMasterId") || "0";
   const commentaryList = localStorage.getItem("commentary");
-  const scoreCardUrl =
-    process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
+  // const scoreCardUrl =
+  //   process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
   const socket = createSocket();
 
   function formatDateTime(isoString) {
@@ -280,7 +286,7 @@ function CommentaryMaster() {
   }, [commentaryData, isBetAllow]);
 
   const openIframePopup = () => {
-    const url = `${scoreCardUrl}/scoreboard?id=${commentaryData?.commentaryDetails?.eid}&color=000`;
+    const url = scorecardFrameUrl;
     window.open(url, "_blank", "width=600,height=400");
   };
 

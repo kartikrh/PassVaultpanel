@@ -37,6 +37,7 @@ export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
 export const TAB_COUNTRY_CODE = "Country Code";
 export const WHITE_LABEL = "White Label";
+export const  WHITE_LABEL_EVENT_DATA = "White Label Event Data"
 export const TAB_NOTIFICATION_CONFIG = "Notification Config";
 
 export const TAB_CLIENT = "Client";
@@ -184,6 +185,7 @@ export const MODULE_COUNTRY_CODE = 37;
 export const MODULE_NOTIFICATION_CONFIG = 38;
 export const MODULE_PACKAGES = 39;
 export const MODULE_WHITE_LABEL = 40;
+export const MODULE_WHITE_LABEL_SHOW_HIDE = 40;
 
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG"

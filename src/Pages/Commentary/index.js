@@ -407,6 +407,13 @@ const Index = () => {
     const url = new URL(window.location.origin + "/commentaryMaster");
     window.open(url.href, "_blank");
   };
+  // const handleScorerDetailsClick = (id) => {
+  //   // navigate("/commentaryMaster", { state: { commentaryId: id } });
+  //   localStorage.setItem('commentaryScorerId', "" + id);
+  //   localStorage.setItem('commentaryScorer', "commentary");
+  //   const url = new URL(window.location.origin + "/commentaryScorer");
+  //   window.open(url.href, '_blank');
+  // };
   const handleUpdatePlayersClick = (details) => {
     // navigate("/updateCommentaryPlayer", {
     //   state: {
@@ -1226,6 +1233,26 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    // {
+    //   title: "Scorer",
+    //   key: "commentaryScorer",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip title={"Go to Scorer"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         color={"info"}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleScorerDetailsClick(record.commentaryId);
+    //         }}
+    //       >
+    //         <i class='bx bxs-right-arrow' ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
       title: "Status",
       dataIndex: "commentaryStatus",
@@ -1281,6 +1308,23 @@ const Index = () => {
             ></i>
           </Button>
         </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Virtual",
+      key: "isVirtual",
+      render: (text, record) => (
+          <Button
+            color={`${record.isVirtual ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i
+              className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -2011,6 +2055,7 @@ const Index = () => {
     loadCommentary: true,
     suspend: true,
     commentaryStatus: true,
+    isVirtual: true,
     competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
@@ -2040,6 +2085,20 @@ const Index = () => {
       {
         label: "Innings Break",
         value: 5,
+      },
+    ],
+    virtualOptions: [
+      {
+        label: "All",
+        value: 0,
+      },
+      {
+        label: "true",
+        value: true,
+      },
+      {
+        label: "false",
+        value: false,
       },
     ],
     isDateRange: true,
