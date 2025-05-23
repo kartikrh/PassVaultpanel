@@ -252,6 +252,17 @@ const Index = () => {
       });
   };
 
+  const handleShowHideClick = (id) => {
+    localStorage.setItem(
+      "whiteLabelEventId",
+      "" + id
+    );
+    console.log("id : ",id);
+
+    const url = new URL(window.location.origin + "/whiteLabelEventData");
+    window.open(url.href, "_blank");
+  };
+
   const columns = [
     {
       title: (
@@ -319,6 +330,30 @@ const Index = () => {
       key: "imagePath",
       style: { width: "80%" },
       sort: true,
+    },
+    {
+      title: "S/H",
+      key: "getEventTypes",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Show Hide"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleShowHideClick(record.id);
+            }}
+          >
+            <i class="bx bxs-up-arrow-square"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Demo Android",
