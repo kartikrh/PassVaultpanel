@@ -185,6 +185,7 @@ export const MODULE_COUNTRY_CODE = 37;
 export const MODULE_NOTIFICATION_CONFIG = 38;
 export const MODULE_PACKAGES = 39;
 export const MODULE_WHITE_LABEL = 40;
+export const MODULE_WHITE_LABEL_SHOW_HIDE = 40;
 
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG"

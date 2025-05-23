@@ -252,15 +252,21 @@ const Index = () => {
       });
   };
 
-  const handleShowHideClick = (id) => {
+  const handleShowHideClick = (id,domainName) => {
+    // console.log(id,domainName)
     localStorage.setItem(
       "whiteLabelEventId",
       "" + id
     );
-    console.log("id : ",id);
+      localStorage.setItem(
+      "whiteLabelDomain",
+      "" + domainName
+    );
+    // console.log("id : ",id);
+    navigate("/whiteLabelEventData", { state: { whiteLabelEventId: id,whiteLabelDomain :domainName } });
 
-    const url = new URL(window.location.origin + "/whiteLabelEventData");
-    window.open(url.href, "_blank");
+    // const url = new URL(window.location.origin + "/whiteLabelEventData");
+    // window.open(url.href, "_blank");
   };
 
   const columns = [
@@ -346,7 +352,7 @@ const Index = () => {
             size="sm"
             className="btn"
             onClick={() => {
-              handleShowHideClick(record.id);
+              handleShowHideClick(record.id, record.domain);
             }}
           >
             <i class="bx bxs-up-arrow-square"></i>
