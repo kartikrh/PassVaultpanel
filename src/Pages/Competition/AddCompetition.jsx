@@ -116,6 +116,7 @@ function AddCompetitions() {
       const extraData = {
         competitionId,
         isTrending: dataToSave?.isTrending || false,
+        isVirtual: dataToSave?.isVirtual || false,
         matchTypeId: dataToSave?.matchTypeId || null,
         isMen: dataToSave?.isMen || false,
         isEventSnap: dataToSave?.isEventSnap || false,
