@@ -149,6 +149,7 @@ import AddNotificationConfig from "../Pages/NotificationConfig/AddNotificationCo
 import PlayerDetails from "../Pages/Players/PlayerDetails.jsx";
 import WhiteLabel from "../Pages/WhiteLabel";
 import AddWhiteLabel from "../Pages/WhiteLabel/AddWhiteLabel.jsx";
+import { ShowHide } from "../Pages/WhiteLabel/EventType/index.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -201,6 +202,7 @@ const authProtectedRoutes = [
   { path: "/addNotificationConfig", component: <AddNotificationConfig /> },
   { path: "/whiteLabel", component: <WhiteLabel /> },
   { path: "/addWhiteLabel", component: <AddWhiteLabel /> },
+  { path: "/whiteLabelEventData", component: <ShowHide /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,

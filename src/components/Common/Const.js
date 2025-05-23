@@ -37,6 +37,7 @@ export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
 export const TAB_COUNTRY_CODE = "Country Code";
 export const WHITE_LABEL = "White Label";
+export const  WHITE_LABEL_EVENT_DATA = "White Label Event Data"
 export const TAB_NOTIFICATION_CONFIG = "Notification Config";
 
 export const TAB_CLIENT = "Client";
