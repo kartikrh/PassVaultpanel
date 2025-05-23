@@ -75,7 +75,6 @@ export const ShowHide = () => {
     setIsDataLoading(true);
     let endpoint = "";
     let payload = {};
-    console.log(selectedLevel);
     switch (selectedLevel.level) {
       case "eventType":
         endpoint = "/admin/whitelabel/getEventTypes";
@@ -189,11 +188,12 @@ export const ShowHide = () => {
       value: { ...selectedLevel },
     };
 
+    // eslint-disable-next-line default-case
     switch (nextLevel) {
       case "competition":
         newSelectedLevel = {
           ...selectedLevel,
-          eventTypeId: record.refId || record.id,
+          eventTypeId: record.eventTypeId || record.id,
           level: "competition",
         };
         currentRecord.value = newSelectedLevel;
@@ -236,7 +236,7 @@ export const ShowHide = () => {
       title: "Event Type",
       dataIndex: "eventType",
       key: "eventType",
-      style: { width: "70%" },
+      style: { width: "80%" },
       render: (text, record) => (
         <Tooltip
           title={text}
@@ -246,7 +246,7 @@ export const ShowHide = () => {
           <span
             className="cursor-pointer"
             onClick={() => handleItemClick(record, "competition", "eventType")}
-            style={{ cursor: "pointer", color: "#007bff" }}
+            style={{ cursor: "pointer", color: "#000" }}
           >
             {text}
           </span>
@@ -267,12 +267,13 @@ export const ShowHide = () => {
             color={`${!record.isHide ? "success" : "danger"}`}
             size="sm"
             className="btn"
+            style={{marginRight: "350px"}}
             onClick={() =>
               handleHideUnhide({
                 isHide: record.isHide,
                 hideType: HideEventType.eventType,
                 hideEventId: record.hideEventId,
-                id: record.refId,
+                id: record.eventTypeId,
               })
             }
           >
@@ -280,7 +281,7 @@ export const ShowHide = () => {
           </Button>
         </Tooltip>
       ),
-      style: { width: "20%", textAlign: "center" },
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 
@@ -307,7 +308,7 @@ export const ShowHide = () => {
           <span
             className="cursor-pointer"
             onClick={() => handleItemClick(record, "commentary", "competition")}
-            style={{ cursor: "pointer", color: "#007bff" }}
+            style={{ cursor: "pointer", color: "#000" }}
           >
             {text}
           </span>
@@ -338,6 +339,7 @@ export const ShowHide = () => {
             color={`${!record.isHide ? "success" : "danger"}`}
             size="sm"
             className="btn"
+            style={{marginRight: "350px"}}
             onClick={() =>
               handleHideUnhide({
                 isHide: record.isHide,
@@ -351,7 +353,7 @@ export const ShowHide = () => {
           </Button>
         </Tooltip>
       ),
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 
@@ -379,16 +381,16 @@ export const ShowHide = () => {
         </Tooltip>
       ),
     },
-    {
-      title: "Event Date",
-      dataIndex: "eventDate",
-      key: "eventDate",
-      style: { width: "20%" },
-      render: (text, record) => (
-        <span>{convertDateUTCToLocal(text, "index")}</span>
-      ),
-      sort: true,
-    },
+    // {
+    //   title: "Event Date",
+    //   dataIndex: "eventDate",
+    //   key: "eventDate",
+    //   style: { width: "20%" },
+    //   render: (text, record) => (
+    //     <span>{convertDateUTCToLocal(text, "index")}</span>
+    //   ),
+    //   sort: true,
+    // },
     // {
     //   title: "Status",
     //   dataIndex: "status",
@@ -409,6 +411,7 @@ export const ShowHide = () => {
             color={`${!record.isHide ? "success" : "danger"}`}
             size="sm"
             className="btn"
+            style={{marginRight: "350px"}}
             onClick={() =>
               handleHideUnhide({
                 isHide: record.isHide,
@@ -422,7 +425,7 @@ export const ShowHide = () => {
           </Button>
         </Tooltip>
       ),
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 
@@ -446,9 +449,9 @@ export const ShowHide = () => {
       case "eventType":
         return "White Label Event Types";
       case "competition":
-        return "Competitions Data";
+        return "White Label Competition Data";
       case "commentary":
-        return "Commentary Data";
+        return "White Label Commentary Data";
       default:
         return "White Label Event Data";
     }
