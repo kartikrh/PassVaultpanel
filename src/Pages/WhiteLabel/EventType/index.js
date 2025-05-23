@@ -7,20 +7,22 @@ import {
   SUCCESS,
   PERMISSION_VIEW,
   WHITE_LABEL_EVENT_DATA,
+  MODULE_WHITE_LABEL_SHOW_HIDE,
 } from "../../../components/Common/Const";
 import {
   checkPermission,
   convertDateUTCToLocal,
 } from "../../../components/Common/Reusables/reusableMethods";
-import { Avatar, Tooltip } from "antd";
+import {  Tooltip } from "antd";
 import { Button } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
-import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import {  Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../../components/Model/SpinnerModel";
 import { updateToastData } from "../../../Features/toasterSlice";
 import axiosInstance from "../../../Features/axios";
 import { isEmpty } from "lodash";
 import _ from "lodash";
+import LoadDataModal from "../../../components/Model/LoadDataModal";
 
 const HideEventType = {
   eventType: 1,
@@ -32,11 +34,15 @@ export const ShowHide = () => {
   const [data, setData] = useState([]);
   const pageName = WHITE_LABEL_EVENT_DATA;
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   let navigate = useNavigate();
   const dispatch = useDispatch();
   const [isDataLoading, setIsDataLoading] = useState(false);
-  const whiteLabelId = +localStorage.getItem("whiteLabelEventId") || "0";
+  // const whiteLabelId = +localStorage.getItem("whiteLabelEventId") || "0";
+  const whiteLabelId = location.state?.whiteLabelEventId || "0";
+  const whiteLabelDomain = location.state?.whiteLabelDomain || "";
 
   // New state for nested navigation
   const [selectedLevel, setSelectedLevel] = useState({
@@ -223,6 +229,36 @@ export const ShowHide = () => {
     setData([]); // Clear current data
   };
 
+  const handleLoadData = async (password) => {
+    setIsDataLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, {
+        module: [MODULE_WHITE_LABEL_SHOW_HIDE],
+        password,
+      })
+      .then((response) => {
+        fetchData();
+        setLoadDataModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsDataLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   // Event Type Columns
   const eventTypeColumns = [
     {
@@ -267,7 +303,7 @@ export const ShowHide = () => {
             color={`${!record.isHide ? "success" : "danger"}`}
             size="sm"
             className="btn"
-            style={{marginRight: "350px"}}
+            style={{ marginRight: "350px" }}
             onClick={() =>
               handleHideUnhide({
                 isHide: record.isHide,
@@ -339,7 +375,7 @@ export const ShowHide = () => {
             color={`${!record.isHide ? "success" : "danger"}`}
             size="sm"
             className="btn"
-            style={{marginRight: "350px"}}
+            style={{ marginRight: "350px" }}
             onClick={() =>
               handleHideUnhide({
                 isHide: record.isHide,
@@ -411,7 +447,7 @@ export const ShowHide = () => {
             color={`${!record.isHide ? "success" : "danger"}`}
             size="sm"
             className="btn"
-            style={{marginRight: "350px"}}
+            style={{ marginRight: "350px" }}
             onClick={() =>
               handleHideUnhide({
                 isHide: record.isHide,
@@ -444,24 +480,22 @@ export const ShowHide = () => {
   };
 
   // Get current title based on level
-  const getCurrentTitle = () => {
-    switch (selectedLevel.level) {
-      case "eventType":
-        return "White Label Event Types";
-      case "competition":
-        return "White Label Competition Data";
-      case "commentary":
-        return "White Label Commentary Data";
-      default:
-        return "White Label Event Data";
-    }
-  };
+  // const getCurrentTitle = () => {
+  //   switch (selectedLevel.level) {
+  //     case "eventType":
+  //       return "White Label Event Types";
+  //     case "competition":
+  //       return "White Label Competition Data";
+  //     case "commentary":
+  //       return "White Label Commentary Data";
+  //     default:
+  //       return "White Label Event Data";
+  //   }
+  // };
 
   const tableElement = {
-    title: getCurrentTitle(),
-    reloadButton: true,
+    title: `${whiteLabelDomain} Show/Hide Event`,
     isHide: true,
-    loadData: true,
     subTable: true,
   };
 
@@ -482,16 +516,32 @@ export const ShowHide = () => {
               <Col>
                 <Breadcrumbs
                   title="White Label Event"
-                  breadcrumbItem={getCurrentTitle()}
+                  // breadcrumbItem={getCurrentTitle()}
+                  breadcrumbItem={`${whiteLabelDomain} Show/Hide Event`}
                   page={selectedLevel.level}
                 />
               </Col>
+            </Row>
+            <Row>
               <Col>
                 <button
-                  className="btn btn-danger text-right"
-                  onClick={handleBackClick}
+                  className="btn btn-primary text-left"
+                  onClick={fetchData}
                 >
+                  Reload
+                </button>
+              </Col>
+              <Col className={"d-flex justify-content-end"}>
+                <button className="btn btn-danger  mx-3 " onClick={handleBackClick}>
                   Back
+                </button>
+                <button
+                  className="btn btn-warning"
+                  onClick={() => {
+                    setLoadDataModelVisable(!loadDataModelVisable);
+                  }}
+                >
+                  Load Data
                 </button>
               </Col>
             </Row>
@@ -501,10 +551,19 @@ export const ShowHide = () => {
             tableElement={tableElement}
             dataSource={data}
             handleReload={fetchData}
+            loadDataModelFunction={setLoadDataModelVisable}
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
             reFetchData={fetchData}
           />
+          {loadDataModelVisable && (
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"White Label Event"}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
