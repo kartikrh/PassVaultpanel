@@ -24,6 +24,8 @@ import {
   checkPermission,
   convertDateUTCToLocalWithoutSec,
   convertDateLocalToUTC,
+  convertDateUTCToLocal2,
+  convertDateUtcFormat,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -58,6 +60,10 @@ const Index = () => {
     eventRefId: "",
   });
   const [isSearch, setIsSearch] = useState(false);
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
@@ -494,6 +500,35 @@ const Index = () => {
       });
   };
 
+  const handleActiveInactiveTest = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeIsTest`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -652,8 +687,13 @@ const Index = () => {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
+        // <span>
+        //   {convertDateUTCToLocalWithoutSec(text, "index")}
+        // </span>
         <span>
-          {convertDateUTCToLocalWithoutSec(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -997,6 +1037,36 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Test",
+      key: "isTest",
+      render: (text, record) => (
+        <Tooltip
+          title={"Active/Inactive Test"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isTest ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactiveTest("isTest", record, record?.isTest);
+            }}
+          >
+            <i className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "CID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "10%" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -1080,6 +1150,7 @@ const Index = () => {
     competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
+    isDateTypeSelect: true,
     statusOptions: [
       {
         label: "All",
@@ -1154,6 +1225,8 @@ const Index = () => {
             competitions={competitions}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
+            dateType={dateType}
+            setDateType={setDateType}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
