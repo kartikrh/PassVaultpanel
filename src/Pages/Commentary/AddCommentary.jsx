@@ -445,6 +445,7 @@ function AddCommentary() {
                 ...dataToSave1,
                 "isActive": dataToSave1?.isActive ? dataToSave1.isActive : false,
                 "isTest": dataToSave1?.isTest ? dataToSave1.isTest : false,
+                "isVirtual": dataToSave1?.isVirtual ? dataToSave1.isVirtual : false,
                 "isClientShow": dataToSave1?.isClientShow ? dataToSave1.isClientShow : false,
                 "isCountInPoint": dataToSave1?.isCountInPoint ? dataToSave1.isCountInPoint : false,
                 "team1Id": dataToSave2.team1Id,

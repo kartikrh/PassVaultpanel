@@ -260,7 +260,7 @@ export const MatchDetailFields = [
     // },
     {
         name: "isClientShow",
-        label: "IsClient",
+        label: "Client Show",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
@@ -268,7 +268,7 @@ export const MatchDetailFields = [
     },
     {
         name: "isActive",
-        label: "IsActive",
+        label: "Active",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
@@ -276,7 +276,15 @@ export const MatchDetailFields = [
     },
     {
         name: "isTest",
-        label: "isTest",
+        label: "Test",
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: SWITCH,
+    },
+    {
+        name: "isVirtual",
+        label: "Virtual",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },

@@ -1041,6 +1041,10 @@ const Index = forwardRef(
           value: 0,
           label: "Commentary Status",
         },
+        isVirtual: {
+          value: 0,
+          label: "Virtual Status",
+        },
         displayType: {
           value: 0,
           label: "Display Type",
@@ -1092,6 +1096,11 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
+      // } else if (tableElement?.isVirtual) {
+      //   handleReset({
+      //     isActive: true,
+      //     isVirtual: 0,
+      //   });
       } else {
         handleReset({
           isActive: true,
@@ -1132,6 +1141,11 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
+      // } else if (tableElement?.isVirtual) {
+      //   handleReload({
+      //     isActive: true,
+      //     isVirtual: 0,
+      //   });
       } else {
         handleReload({
           isActive: true,
@@ -2128,6 +2142,37 @@ const Index = forwardRef(
                                 }
                               }}
                               options={tableElement?.statusOptions?.map(
+                                (item) => ({
+                                  label: item?.label,
+                                  value: item?.value,
+                                })
+                              )}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          ) : null}
+                          {tableElement?.isVirtual ? (
+                            <Select
+                              value={selectedTableElements?.isVirtual}
+                              placeholder="Virtual Status"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.isVirtual?.value
+                                ) {
+                                  handleTableActions("isVirtual", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    isVirtual: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.virtualOptions?.map(
                                 (item) => ({
                                   label: item?.label,
                                   value: item?.value,

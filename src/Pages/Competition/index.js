@@ -118,6 +118,22 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+  const handleVirtualPermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/competition/isVirtual`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
   const handleIsTrending = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -415,6 +431,27 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Virtual",
+      key: "isVirtual",
+      render: (text, record) => (
+        <Tooltip title={"Active/Inactive Virtual"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+          <Button
+            color={`${record.isVirtual ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleVirtualPermissions("isVirtual", record, record.isVirtual);
+            }}
+          >
+            <i
+              className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "Trending",
       key: "isTrending",
       render: (text, record) => (
@@ -522,6 +559,21 @@ const Index = () => {
     isTrending: true,
     isMen: true,
     loadData: true,
+    isVirtual: true,
+    virtualOptions: [
+      {
+        label: "All",
+        value: 0,
+      },
+      {
+        label: "true",
+        value: true,
+      },
+      {
+        label: "false",
+        value: false,
+      },
+    ],
   };
 
 
