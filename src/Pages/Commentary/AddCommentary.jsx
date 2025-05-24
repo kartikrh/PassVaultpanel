@@ -78,6 +78,7 @@ function AddCommentary() {
                 "matchTypeId": true,
                 "addSystemPlayer": true,
                 "drsCount": true,
+                "isVirtual": true,
             })
         }
     }, [id]);
@@ -181,8 +182,9 @@ function AddCommentary() {
                     });
                 const selectedCompetition = competitionList.find(item => item?.competitionId == newFormData["competitionId"]);
                 if (selectedCompetition) {
-                    const { matchTypeId, drsCount } = selectedCompetition;
+                    const { matchTypeId, drsCount, isVirtual } = selectedCompetition;
                     finalizeRef1.current.updateFormFromParent({ matchTypeId });
+                    finalizeRef1.current.updateFormFromParent({ isVirtual });
                     finalizeRef2.current.updateFormFromParent({ drsCount });
                 }
             } else {

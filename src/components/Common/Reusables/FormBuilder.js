@@ -633,7 +633,7 @@ const FormBuilder = forwardRef(
                           // width={70}
                           uncheckedIcon={""}
                                     checkedIcon={""}
-                          disabled={disabledFields?.[field.name]}
+                          disabled={disabledFields?.[field.name] || field.name === "isVirtual"}
                           // className="form-check-input"
                           onColor="#02a499"
                           onChange={(e) => {
