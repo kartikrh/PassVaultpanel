@@ -3,10 +3,10 @@ import { SWITCH, TEXT, SELECT, COUNTER } from "../../components/Common/Const";
 export const VenueField = [
   {
     name: "countryId",
-    label: "City Name",
+    label: "Country",
     parentclassName: "",
     type: SELECT,
-    options: [{ label: "Select City", value: "0" }],
+    options: [{ label: "Select Country", value: "0" }],
     defaultValue: "0",
     isRequired: true,
     requiredErrorMessage: "Please select a city name.",

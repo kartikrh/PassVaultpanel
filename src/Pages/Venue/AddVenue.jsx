@@ -25,10 +25,7 @@ import {
   SAVE_AND_NEW,
   VENUE,
 } from "../../components/Common/Const";
-import {
-  addVenueToDb,
-  updateSavedState,
-} from "../../Features/Tabs/VenueSlice";
+import { addVenueToDb, updateSavedState } from "../../Features/Tabs/VenueSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -39,17 +36,14 @@ const AddVenue = () => {
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
+  const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector(
-    (state) => state.tabsData.venue
-  );
+  const { isSaved, isLoading } = useSelector((state) => state.tabsData.venue);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [venueId, setvenueId] = useState(
-    location.state?.venueId || "0"
-  );
+  const [venueId, setvenueId] = useState(location.state?.venueId || "0");
 
   useEffect(() => {
     if (venueId !== 0) {
@@ -60,7 +54,7 @@ const AddVenue = () => {
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
-    }
+    }fetchMasterData();
   }, []);
 
   useEffect(() => {
@@ -82,6 +76,28 @@ const AddVenue = () => {
       .post("/admin/venue/byId", { id: venueId })
       .then((response) => {
         setInitialEditData(response?.result);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const fetchMasterData = async () => {
+    await axiosInstance
+      .post("/admin/venue/countryCodes", {})
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          countryId: response.result?.map((item) => {
+            return { label: item.countryName, value: item.id };
+          }),
+        }));
       })
       .catch((error) => {
         dispatch(
@@ -206,6 +222,7 @@ const AddVenue = () => {
                   ref={finalizeRef}
                   fields={VenueField}
                   editFormData={initialEditData}
+                  masterData={masterData}
                 />
               </CardBody>
             </Card>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { Button, Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -29,7 +29,6 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = VENUE;
   const [data, setData] = useState([]);
-
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -220,7 +219,7 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-        {
+    {
       title: "Country ID",
       dataIndex: "countryId",
       key: "countryId",
@@ -232,21 +231,19 @@ const Index = () => {
       dataIndex: "name",
       key: "name",
       style: { width: "20%" },
-      sort: true,
     },
     {
       title: "City",
       dataIndex: "city",
       key: "city",
       style: { width: "20%" },
-      sort: true,
     },
-        {
+    {
       title: "TPID",
       dataIndex: "tpId",
       key: "tpId",
-      style: { width: "80%" },
-      sort: true,
+      style: { width: "20%" },
+      // sort: true,
     },
     {
       title: "Active",
@@ -273,15 +270,15 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-        {
+    {
       title: "Capacity",
       dataIndex: "capacity",
       key: "capacity",
       style: { width: "20%" },
       sort: true,
     },
-
   ];
+
   const tableElement = {
     title: "Venue",
     reloadButton: true,
