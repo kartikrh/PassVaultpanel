@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 import React from "react";
 import { Navigate } from "react-router-dom";
 
@@ -131,7 +132,7 @@ import TournamentTeamPoints from "../Pages/Competition/TournamentTeamPoints.jsx"
 import TournamentCompetitionPoints from "../Pages/Teams/TournamentCompetitionPoints.jsx";
 import { CommentaryEventSnap } from "../Pages/Commentary/CommentaryEventSnap.jsx";
 import MatchHistory from "../Pages/Players/MatchHistory.jsx";
-import MarketType from "../Pages/MarketType"
+import MarketType from "../Pages/MarketType";
 import AddPhotos from "../Pages/PhotoLibrary/AddPhotos.jsx";
 import ShotType from "../Pages/ShotType";
 import AddShotType from "../Pages/ShotType/AddShotType.jsx";
@@ -150,6 +151,8 @@ import PlayerDetails from "../Pages/Players/PlayerDetails.jsx";
 import WhiteLabel from "../Pages/WhiteLabel";
 import AddWhiteLabel from "../Pages/WhiteLabel/AddWhiteLabel.jsx";
 import { ShowHide } from "../Pages/WhiteLabel/EventType/index.js";
+import Venue from "../Pages/Venue";
+import AddVenue from "../Pages/Venue/AddVenue.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -164,7 +167,7 @@ const authProtectedRoutes = [
   { path: "/events", component: <Events /> },
   { path: "/addEvents", component: <AddEvents /> },
   { path: "/Players", component: <Players /> },
-  { path: "/PlayerDetails", component: <PlayerDetails />},
+  { path: "/PlayerDetails", component: <PlayerDetails /> },
   { path: "/package", component: <Package /> },
   { path: "/addPlayer", component: <AddPlayers /> },
   { path: "/addPackage", component: <AddPackage /> },
@@ -181,7 +184,10 @@ const authProtectedRoutes = [
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
   { path: "/tournamentTeamPoints", component: <TournamentTeamPoints /> },
-  { path: "/tournamentCompetitionPoints", component: <TournamentCompetitionPoints /> },
+  {
+    path: "/tournamentCompetitionPoints",
+    component: <TournamentCompetitionPoints />,
+  },
   { path: "/socialMedia", component: <SocialMedia /> },
   { path: "/addSocialMedia", component: <AddSocialMedia /> },
   { path: "/awards", component: <Awards /> },
@@ -203,6 +209,8 @@ const authProtectedRoutes = [
   { path: "/whiteLabel", component: <WhiteLabel /> },
   { path: "/addWhiteLabel", component: <AddWhiteLabel /> },
   { path: "/whiteLabelEventData", component: <ShowHide /> },
+  { path: "/venue", component: <Venue /> },
+  { path: "/addVenue", component: <AddVenue /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,

@@ -13,7 +13,6 @@ export const ChangeResultModel = ({
   const [selectedWinner, setSelectedWinner] = useState(null);
   const [winRmk, setWinRmk] = useState("");
   const [result, setResult] = useState("");
-  console.log({selectedResult});
   useEffect(() => {
     if (selectedResult) {
       setSelectedResultVals(selectedResult);

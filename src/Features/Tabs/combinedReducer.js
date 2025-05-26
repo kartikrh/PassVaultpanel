@@ -25,7 +25,7 @@ import marketTemplateSlice from "./marketTemplateSlice";
 import eventMarketSlice from "./eventMarketSlice";
 import addVendorSlice from "./addVendorSlice";
 import displayStatusSlice from "./displayStatusSlice";
-import clientSocketSlice from './clientSocketSlice';
+import clientSocketSlice from "./clientSocketSlice";
 import bannerSlice from "./bannerSlice";
 import manualEventSlice from "./manualEventSlice";
 import addApiSlice from "./addApiSlice";
@@ -41,6 +41,7 @@ import countryCodeSlice from "./countryCodeSlice";
 import notificationConfigSlice from "./notificationConfigSlice";
 import packageSlice from "./packageSlice";
 import WhiteLabelSlice from "./WhiteLabelSlice";
+import VenueSlice from "./VenueSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -62,9 +63,9 @@ const rootReducer = combineReducers({
   page: pageSlice,
   menuType: MenuTypeSlice,
   news: NewsSlice,
-  photoLibrary : photoLibrarySlice,
-  videoLibrary : videoLibrarySlice,
-  photos : photosSlice,
+  photoLibrary: photoLibrarySlice,
+  videoLibrary: videoLibrarySlice,
+  photos: photosSlice,
   marketTemplate: marketTemplateSlice,
   eventMarket: eventMarketSlice,
   vendors: addVendorSlice,
@@ -85,6 +86,7 @@ const rootReducer = combineReducers({
   package: packageSlice,
   notificationConfig: notificationConfigSlice,
   whiteLabel: WhiteLabelSlice,
+  venue: VenueSlice,
 });
 
 export default rootReducer;
