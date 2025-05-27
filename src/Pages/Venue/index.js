@@ -226,17 +226,24 @@ const Index = () => {
       style: { width: "10%" },
       sort: true,
     },
+        {
+      title: "City",
+      dataIndex: "city",
+      key: "city",
+      style: { width: "20%" },
+    },
     {
-      title: "Name",
+      title: "Venue",
       dataIndex: "name",
       key: "name",
       style: { width: "20%" },
     },
     {
-      title: "City",
-      dataIndex: "city",
-      key: "city",
+      title: "Capacity",
+      dataIndex: "capacity",
+      key: "capacity",
       style: { width: "20%" },
+      sort: true,
     },
     {
       title: "TPID",
@@ -269,13 +276,6 @@ const Index = () => {
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Capacity",
-      dataIndex: "capacity",
-      key: "capacity",
-      style: { width: "20%" },
-      sort: true,
     },
   ];
 
