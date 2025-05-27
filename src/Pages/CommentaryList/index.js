@@ -403,12 +403,10 @@ const Index = () => {
         setIsLoading(false);
       })
   };
-  const handleChangeResult = async () => {
+  const handleChangeResult = async (dataToSend) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/commentary/changeResult`, {
-        ...selectedResult,
-      })
+      .post(`/admin/commentary/changeResult`, dataToSend)
       .then((response) => {
         fetchData();
         dispatch(
@@ -1315,9 +1313,7 @@ const Index = () => {
               resultModelVisible={resultModelVisible}
               setResultModelVisible={setResultModelVisible}
               handleChange={handleChangeResult}
-              singleCheck={checekedList}
               selectedResult={selectedResult}
-              setSelectedResult={setSelectedResult}
             />
           )}
           {eventRefModelVisible && (

@@ -1,0 +1,57 @@
+import { SWITCH, TEXT, SELECT, COUNTER } from "../../components/Common/Const";
+
+export const VenueField = [
+  {
+    name: "countryId",
+    label: "Country",
+    parentclassName: "",
+    type: SELECT,
+    options: [{ label: "Select Country", value: "0" }],
+    defaultValue: "0",
+    isRequired: true,
+    requiredErrorMessage: "Please select a city name.",
+  },
+  {
+    type: TEXT,
+    name: "name",
+    label: "Name",
+    isRequired: true,
+    regex: /^[a-zA-Z0-9 ]{1,100}$/,
+    regexErrorMessage: "Max allowed Characters 100, No Spacial Character",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    type: SWITCH,
+    name: "isActive",
+    label: "Active",
+    defaultValue: true,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    type: TEXT,
+    name: "city",
+    label: "City",
+    regex: /^[a-zA-Z0-9 ]{0,100}$/,
+    regexErrorMessage: "Max allowed Characters 100, No Spacial Character",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "tpId",
+    label: "TPID",
+    type: COUNTER,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "capacity",
+    label: "Capacity",
+    type: COUNTER,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    // dependsOnField: "Name",
+    // dependsOnValue: true,
+  },
+];
