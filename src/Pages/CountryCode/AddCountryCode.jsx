@@ -28,7 +28,7 @@ import {
 import { addCountryCodeToDb, updateSavedState } from "../../Features/Tabs/countryCodeSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 
@@ -94,6 +94,7 @@ const AddCountryCode = () => {
       const extraData = {
         id: countryCodeId,
         isActive: dataToSave?.isActive || false,
+        timezone: convertDateLocalToUTC(dataToSave?.timezone),
       };
       dispatch(
         addCountryCodeToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
