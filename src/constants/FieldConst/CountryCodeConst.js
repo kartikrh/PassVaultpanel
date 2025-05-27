@@ -1,4 +1,5 @@
 import {
+  DATE_TIME_PICKER,
   IMAGE,
   SWITCH,
   TEXT,
@@ -32,6 +33,14 @@ export const countryCodeField = [
   {
     name: "maxNumber",
     label: "Max Number",
+    isRequired: true,
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+     name: "timezone",
+    label: "Timezone",
     isRequired: true,
     type: TEXT,
     labelColspan: { xs: 12, md: 2, lg: 2 },
