@@ -22,6 +22,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import Select from "react-select";
+import Switch from "react-switch";
+import { StatusSymbol } from "../../components/Common/Reusables/StatusSymbol";
 
 const Index = () => {
   const pageName = VENUE;
@@ -31,6 +34,11 @@ const Index = () => {
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState({
+    isActive: true,
+    selectedCountry: undefined,
+  });
+  const [countryList, setCountryList] = useState([]);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
@@ -38,13 +46,10 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fetchData = async (latestValueFromTable) => {
+  const fetchData = async (dataToPass = {}) => {
     setIsLoading(true);
-    const tableActions = finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/venue/all`, {
-        ...(latestValueFromTable || tableActions),
-      })
+      .post(`/admin/venue/all`, dataToPass)
       .then((response) => {
         const apiData = response?.result;
         let apiDataIdList = [];
@@ -58,6 +63,28 @@ const Index = () => {
       })
       .catch((error) => {
         setIsLoading(false);
+      });
+  };
+
+  const fetchCountryData = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post("/admin/venue/countryCodes", {})
+      .then((response) => {
+        setCountryList(
+          response.result?.map((item) => {
+            return { label: item.countryName, value: item.id };
+          })
+        );
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -161,9 +188,6 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addVenue", { state: { venueId: id } });
   };
-  const handleReset = (value) => {
-    fetchData(value);
-  };
 
   const columns = [
     {
@@ -210,27 +234,28 @@ const Index = () => {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
-        <i
-          className="bx bx-edit"
-          onClick={() => {
-            handleEdit(record.id);
-          }}
-        ></i>
+        <Tooltip
+          title="Edit Venue"
+          color="#e8e8ea"
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <i
+            className="bx bx-edit"
+            onClick={() => {
+              handleEdit(record.id);
+            }}
+            style={{ cursor: "pointer" }}
+          ></i>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Country ID",
-      dataIndex: "countryId",
-      key: "countryId",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Country",
+      dataIndex: "countryName",
+      key: "countryName",
       style: { width: "20%" },
+      sort: true,
     },
     {
       title: "City",
@@ -239,10 +264,23 @@ const Index = () => {
       style: { width: "20%" },
     },
     {
+      title: "Venue",
+      dataIndex: "name",
+      key: "name",
+      style: { width: "20%" },
+    },
+    {
+      title: "Capacity",
+      dataIndex: "capacity",
+      key: "capacity",
+      style: { width: "20%" },
+      sort: true,
+    },
+    {
       title: "TPID",
       dataIndex: "tpId",
       key: "tpId",
-      style: { width: "20%" },
+      style: { width: "10%" },
       // sort: true,
     },
     {
@@ -270,19 +308,12 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Capacity",
-      dataIndex: "capacity",
-      key: "capacity",
-      style: { width: "20%" },
-      sort: true,
-    },
   ];
 
   const tableElement = {
     title: "Venue",
     reloadButton: true,
-    isActive: true,
+    resetButton: true,
     loadData: true,
   };
 
@@ -291,11 +322,38 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
+    fetchCountryData();
   }, []);
 
-  const handleReload = (value) => {
-    fetchData();
+  const handleReset = () => {
+    // console.log("Inside Reset")
+    setSelectedFilter({
+      isActive: true,
+      selectedCountry: { label: "Select Country", value: 0 },
+    });
+    fetchData({
+      isActive: true,
+      countryId: undefined,
+    });
   };
+
+  const handleFilterChange = (key, value) => {
+    const filterDataToUpdate = { ...selectedFilter, [key]: value };
+    setSelectedFilter(filterDataToUpdate);
+    fetchData({
+      isActive: filterDataToUpdate.isActive,
+      countryId: filterDataToUpdate.selectedCountry?.value,
+    });
+  };
+
+  const handleReload = () => {
+    // console.log("Inside reload")
+    fetchData({
+      isActive: selectedFilter.isActive,
+      countryId: selectedFilter.selectedCountry?.value,
+    });
+  };
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -310,7 +368,6 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addVenue"}
-            handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
@@ -324,6 +381,34 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            renderCustomFilter={() => (
+              <div className="d-flex align-items-center">
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 180 }),
+                  }}
+                  value={selectedFilter?.selectedCountry}
+                  placeholder={"Country"}
+                  onChange={(e) => {
+                    handleFilterChange("selectedCountry", e);
+                  }}
+                  options={countryList}
+                  classNamePrefix="filter-dropdown"
+                />
+                <Switch
+                  width={70}
+                  uncheckedIcon={<StatusSymbol valueToShow={"InActive"} />}
+                  checkedIcon={<StatusSymbol valueToShow={"Active"} />}
+                  className="pe-0"
+                  onColor="#02a499"
+                  onChange={() => {
+                    handleFilterChange("isActive", !selectedFilter.isActive);
+                  }}
+                  checked={selectedFilter.isActive}
+                />
+              </div>
+            )}
+            handleCustomReset={handleReset}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
