@@ -264,6 +264,13 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Timezone",
+      dataIndex: "timezone",
+      key: "timezone",
+      style: { width: "10%", textAlign: "center" },
+      sort: true,
+    },
+    {
       title: "Max Number",
       dataIndex: "maxNumber",
       key: "maxNumber",
