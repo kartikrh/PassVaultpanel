@@ -52,7 +52,7 @@ export const ChangeResultModel = ({
   useEffect(() => {
     if (selectedWinner && selectedWinner.value !== null) {
       setResult(`${selectedWinner?.label || ""} ${winRmk}`);
-    }
+    } else setResult(winRmk);
   }, [selectedWinner, winRmk]);
 
   return (
