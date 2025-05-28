@@ -114,6 +114,8 @@ const Index = () => {
         return "clientAPI";
       case 2:
         return "dataProviderAPI";
+      case 3:
+        return "entitySport";
       default:
         return "Unknown";
     } 

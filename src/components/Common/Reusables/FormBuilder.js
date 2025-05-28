@@ -123,7 +123,10 @@ const FormBuilder = forwardRef(
         (isEmpty(formData) || isEqual(formData, defaultValueObj))
       ) {
         fields.forEach(async (element) => {
-          if ((element.type === IMAGE || element.type === VIDEO) && editFormData[element.name]) {
+          if (
+            (element.type === IMAGE || element.type === VIDEO) &&
+            editFormData[element.name]
+          ) {
             fetch(editFormData[element.name])
               .then((response) => response.blob())
               .then((blob) => {
@@ -191,10 +194,10 @@ const FormBuilder = forwardRef(
 
     const filterData = (data) => {
       const imageFields = fields
-        .filter((field) => field.type === IMAGE )
+        .filter((field) => field.type === IMAGE)
         .map((value) => value.name);
       const videoFields = fields
-        .filter((field) => field.type === VIDEO )
+        .filter((field) => field.type === VIDEO)
         .map((value) => value.name);
       for (const key in data) {
         if (imageFields.includes(key) || videoFields.includes(key)) {
@@ -220,7 +223,7 @@ const FormBuilder = forwardRef(
     const getCurrentFormData = () => {
       const filteredData = filterData(formData);
       return sanitizeFormData(filteredData);
-    }
+    };
     const resetForm = () => {
       setFormData({});
       setViewImage(null);
@@ -275,7 +278,7 @@ const FormBuilder = forwardRef(
       finalizeData,
       resetForm,
       updateFormFromParent,
-      getCurrentFormData
+      getCurrentFormData,
     }));
     return (
       <Form
@@ -319,8 +322,20 @@ const FormBuilder = forwardRef(
                   </>
                 )}
                 <Col
-                  className={`${field.label ? "" : "d-none"} ${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent" || field.name === "winPoint" || field.name === "tiePoint" || field.name === "lossPoint" || field.name === "cancelPoint") ? "d-none" : "invisible"
-                    }`}
+                  className={`${field.label ? "" : "d-none"} ${
+                    fetchIsDependable(field)
+                      ? ""
+                      : field.name === "isOpenInNewTab" ||
+                        field.name === "linkURL" ||
+                        field.name === "pageFormatId" ||
+                        field.name === "pageContent" ||
+                        field.name === "winPoint" ||
+                        field.name === "tiePoint" ||
+                        field.name === "lossPoint" ||
+                        field.name === "cancelPoint"
+                      ? "d-none"
+                      : "invisible"
+                  }`}
                   xs={field.labelColspan?.xs || 3}
                   md={field.labelColspan?.md || 2}
                   lg={field.labelColspan?.lg || 2}
@@ -333,13 +348,29 @@ const FormBuilder = forwardRef(
                       {field.isRequired && (
                         <span className="text-danger">*&nbsp;</span>
                       )}
-                      {field.name === "isPredictMarket" ? formData.eventId != "0" ? field.label : '' : field.label }
+                      {field.name === "isPredictMarket"
+                        ? formData.eventId != "0"
+                          ? field.label
+                          : ""
+                        : field.label}
                     </label>
                   </div>
                 </Col>
                 <Col
-                  className={`${field.type !== DIVIDER ? "" : "d-none"}${fetchIsDependable(field) ? "" : (field.name === "isOpenInNewTab" || field.name === "linkURL" || field.name === "pageFormatId" || field.name === "pageContent" || field.name === "winPoint" || field.name === "tiePoint" || field.name === "lossPoint" || field.name === "cancelPoint") ? "d-none" : "invisible"
-                    } mb-4`}
+                  className={`${field.type !== DIVIDER ? "" : "d-none"}${
+                    fetchIsDependable(field)
+                      ? ""
+                      : field.name === "isOpenInNewTab" ||
+                        field.name === "linkURL" ||
+                        field.name === "pageFormatId" ||
+                        field.name === "pageContent" ||
+                        field.name === "winPoint" ||
+                        field.name === "tiePoint" ||
+                        field.name === "lossPoint" ||
+                        field.name === "cancelPoint"
+                      ? "d-none"
+                      : "invisible"
+                  } mb-4`}
                   xs={field.fieldColspan?.xs || 9}
                   md={field.fieldColspan?.md || 4}
                   lg={field.fieldColspan?.lg || 4}
@@ -440,7 +471,7 @@ const FormBuilder = forwardRef(
                             else
                               return compareNumStringValues(
                                 e?.value,
-                                formData[field.name]
+                                field.defaultValue
                               );
                           })}
                         options={[].concat(
@@ -475,9 +506,11 @@ const FormBuilder = forwardRef(
                             id={field.name}
                             name={field.name}
                             isDisabled={disabledFields?.[field.name]}
-                            value={formData[field.name]?.map((val) =>
-                              options.find((option) => option.value === val)
-                            ) || []}
+                            value={
+                              formData[field.name]?.map((val) =>
+                                options.find((option) => option.value === val)
+                              ) || []
+                            }
                             options={options}
                             onChange={(selectedOptions) => {
                               if (
@@ -494,8 +527,8 @@ const FormBuilder = forwardRef(
                                 // Regular selection
                                 const values = selectedOptions
                                   ? selectedOptions.map(
-                                    (option) => option.value
-                                  )
+                                      (option) => option.value
+                                    )
                                   : [];
                                 handleChange(field, values);
                               }
@@ -517,9 +550,9 @@ const FormBuilder = forwardRef(
                           (formData[field.name] &&
                             (typeof formData[field.name] === "string"
                               ? {
-                                label: formData[field.name],
-                                value: formData[field.name],
-                              }
+                                  label: formData[field.name],
+                                  value: formData[field.name],
+                                }
                               : formData[field.name])) ||
                           field.defaultOption
                         }
@@ -608,13 +641,15 @@ const FormBuilder = forwardRef(
                       />
                     )}
                     {field.type === SWITCH && (
-                      <div className={`${
-                        field.name === "isPredictMarket"
-                          ? formData.eventId != "0"
-                            ? ""
-                            : "d-none"
-                          : ""
-                      } mb-4`}>
+                      <div
+                        className={`${
+                          field.name === "isPredictMarket"
+                            ? formData.eventId != "0"
+                              ? ""
+                              : "d-none"
+                            : ""
+                        } mb-4`}
+                      >
                         {/* <input
                           className="form-check-input"
                           style={field?.customStyle}
@@ -697,7 +732,9 @@ const FormBuilder = forwardRef(
                     {field.type === COLOR_PICKER && (
                       <ColorPicker
                         value={formData[field.name]}
-                        onChange={(color) => handleChange(field, color.toHexString())}
+                        onChange={(color) =>
+                          handleChange(field, color.toHexString())
+                        }
                         className="ml-2"
                       />
                     )}

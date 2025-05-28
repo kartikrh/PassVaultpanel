@@ -8,6 +8,7 @@ export const APIConst = [
       { label: "Select Type", value: "0" },
       { label: "clientAPI", value: 1 },
       { label: "dataProviderAPI", value: 2 },
+      { label: "entitySport", value:3 },
     ],
     isRequired: true,
     type: SELECT,

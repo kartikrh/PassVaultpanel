@@ -132,6 +132,8 @@ const Index = forwardRef(
       renderHeader,
       manualExcel,
       defaultTableActionData,
+      renderCustomFilter,
+      handleCustomReset,
     },
     ref
   ) => {
@@ -1004,6 +1006,10 @@ const Index = forwardRef(
     };
 
     const handleTableReset = () => {
+      if (renderCustomFilter && handleCustomReset) {
+        handleCustomReset();
+        return
+      }
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -1614,6 +1620,7 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                          {renderCustomFilter && renderCustomFilter()}
                           {tableElement?.rateSourceListSelect ? (
                             <div className="">
                               <Select
@@ -2579,7 +2586,10 @@ const Index = forwardRef(
                               size="sm"
                               className="btn"
                               onClick={() => {
-                                if (isSearch || (dateRange?.startDate < dateRange?.endDate))
+                                if (
+                                  isSearch ||
+                                  dateRange?.startDate < dateRange?.endDate
+                                )
                                   setIsSearch(!isSearch);
                               }}
                             >

@@ -19,7 +19,7 @@ import {
   MODULE_COUNTRY_CODE,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
@@ -260,6 +260,18 @@ const Index = () => {
       title: "Short Name",
       dataIndex: "shortName",
       key: "shortName",
+      style: { width: "10%", textAlign: "center" },
+      sort: true,
+    },
+    {
+      title: "Timezone",
+      dataIndex: "timezone",
+      render: (text, record) => (
+        <span>
+          {convertDateUTCToLocal2(text, "index")}
+        </span>
+      ),
+      key: "timezone",
       style: { width: "10%", textAlign: "center" },
       sort: true,
     },
