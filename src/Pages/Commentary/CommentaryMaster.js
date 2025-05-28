@@ -7,6 +7,7 @@ import {
   COMMENTARY_MAIN_SCREEN,
   COMMENTARY_PLAYER_SELECTION_SCREEN,
   COMMENTARY_TOSS_SCREEN,
+  COMMENTARY_UPDATE,
   ERROR,
   PERMISSION_ADD,
   PERMISSION_EDIT,
@@ -27,6 +28,7 @@ import PlayerSelection from "./PlayerSelection";
 import {
   addCommentaryScreenData,
   loadCommentaryFeature,
+  updateCommentaryBallStatus,
   updateCommentaryDisplayStatus,
   updateSavedState,
 } from "../../Features/Tabs/commentarySlice";
@@ -41,6 +43,7 @@ import logoDark from "../../assets/images/logo-dark.png";
 import TossScreen from "./CommentryRightControls/TossScreen";
 import PlayerSelectionScreen from "./CommentryRightControls/PlayerSelectionScreen";
 import { loadInit } from "../../config";
+import { BALL_START_STATUS, BOWLER_CHANGE_DISPLAY_STATUS } from "./CommentartConst";
 
 const ALL_SCREENS = {
   1: COMMENTARY_TOSS_SCREEN,
@@ -309,6 +312,17 @@ function CommentaryMaster() {
     dispatch(loadCommentaryFeature({ commentaryId }));
   };
 
+  const handleBallStartClick = () => {
+    if (socket) {
+      socket.emit(COMMENTARY_UPDATE, { ballStatus: BALL_START_STATUS, eventRefId: commentaryData.commentaryDetails?.eventRefId, commentaryId: commentaryId });
+    }
+    dispatch(updateCommentaryBallStatus({
+        "commentaryId": commentaryId,
+        "displayStatus": BOWLER_CHANGE_DISPLAY_STATUS,
+        // "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+    }))
+  };
+
   const renderDate = (date) => {
     const [datee, month, year] = date.split(" ");
     return (
@@ -467,11 +481,14 @@ function CommentaryMaster() {
                             <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
                         </div>
                           {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
-                            <div className="d-flex flex-wrap align-items-center my-2 float-end my-md-4">
+                            <div className="col-12 col-md-12 d-flex flex-wrap align-items-center justify-content-between my-2 float-end">
                               <NetworkStatus/>
-                              {commentaryList === 'commentary' && <Button color="primary" className="mx-1 text-right" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
-                              <Button color="primary" className="mx-1 text-right" onClick={openIframePopup}>Scorecard</Button>
-                              <Button color="primary" className="mx-1 text-right" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
+                              <div>
+                                {commentaryList === 'commentary' && <Button color="primary" className="mx-1" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
+                                <Button color="primary" className="mx-1" onClick={openIframePopup}>Scorecard</Button>
+                                <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
+                                <Button color="primary" className="mx-1 my-2 my-md-0" onClick={handleBallStartClick}>Ball Start</Button>
+                              </div>
                             </div>
                           {/* // } */}
                       </Col>
