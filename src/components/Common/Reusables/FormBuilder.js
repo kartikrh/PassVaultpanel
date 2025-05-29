@@ -64,7 +64,6 @@ const FormBuilder = forwardRef(
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
     const [viewVideo, setViewVideo] = useState(null);
-    console.log("pageName", pageName);
     
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
