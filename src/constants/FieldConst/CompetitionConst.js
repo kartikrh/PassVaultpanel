@@ -1,4 +1,4 @@
-import { IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { DATE_TIME_PICKER, IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const CompetitionFields = [
     {
@@ -31,6 +31,22 @@ export const CompetitionFields = [
         type: TEXT,
     },
     {
+        name: "image",
+        label: "logo",
+        parentclassName: "",
+        type: IMAGE,
+    },
+    {
+        name: "matchTypeId",
+        label: "Match Type",
+        parentclassName: "",
+        type: SELECT,
+        options: [{ label: "Select Match Type", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
         name: "type",
         label: "Type",
         options: [
@@ -45,18 +61,61 @@ export const CompetitionFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        name: "matchTypeId",
-        label: "Match Type",
-        parentclassName: "",
+        type: TEXT,
+        name: "drsCount",
+        label: "Drs Count",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "status",
+        label: "Status",
+        options: [
+          { label: "Select Type", value: "0" },
+          { label: "Open", value: 1 },
+          { label: "Toss", value: 2 },
+          { label: "InProgress", value: 3 },
+          { label: "Completed", value: 4 },
+          { label: "Innings Break", value: 5 },
+        ],
+        isRequired: true,
         type: SELECT,
-        options: [{ label: "Select Match Type", value: "0" }],
         defaultValue: "0",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "startDate",
+        label: "From",
+        isRequired: true,
+        // customStyle: {
+        //   maxWidth: "600px",
+        // },
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: DATE_TIME_PICKER,
+    },
+    {
+        name: "endDate",
+        label: "To",
+        isRequired: true,
+        // customStyle: {
+        //   maxWidth: "600px",
+        // },
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: DATE_TIME_PICKER,
     },
     {
         name: "isMen",
         label: "Is Men",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+    },
+    {
+        name: "isVirtual",
+        label: "Virtual",
         defaultValue: false,
         parentclassName: "",
         type: SWITCH,
@@ -75,6 +134,24 @@ export const CompetitionFields = [
         parentclassName: "",
         type: SWITCH,
     },
+    {
+        name: "isTrending",
+        label: "Trending",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+    },
+    {
+        name: "isActive",
+        label: "Active",
+        defaultValue: true,
+        parentclassName: "",
+        type: SWITCH,
+    },
+
+
+
+    
     {
         type: TEXT,
         name: "winPoint",
@@ -110,39 +187,5 @@ export const CompetitionFields = [
         dependsOnValue: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
-    },
-    {
-        name: "image",
-        label: "Competition",
-        parentclassName: "",
-        type: IMAGE,
-    },
-    {
-        type: TEXT,
-        name: "drsCount",
-        label: "Drs Count",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-    },
-    {
-        name: "isTrending",
-        label: "Trending",
-        defaultValue: false,
-        parentclassName: "",
-        type: SWITCH,
-    },
-    {
-        name: "isActive",
-        label: "Active",
-        defaultValue: true,
-        parentclassName: "",
-        type: SWITCH,
-    },
-     {
-        name: "isVirtual",
-        label: "Virtual",
-        defaultValue: false,
-        parentclassName: "",
-        type: SWITCH,
     },
 ]
