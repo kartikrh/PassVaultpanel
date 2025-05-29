@@ -68,7 +68,7 @@ export const CompetitionFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        name: "status",
+        name: "commStatus",
         label: "Status",
         options: [
           { label: "Select Type", value: "0" },
