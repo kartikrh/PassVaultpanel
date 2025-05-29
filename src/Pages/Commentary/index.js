@@ -1310,23 +1310,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Virtual",
-      key: "isVirtual",
-      render: (text, record) => (
-          <Button
-            color={`${record.isVirtual ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            disabled
-          >
-            <i
-              className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "Player",
       key: "updatePlayers",
       printType: "ignore",
@@ -1962,6 +1945,23 @@ const Index = () => {
       key: "commentaryId",
       sort: true,
       style: { width: "10%" },
+    },
+    {
+      title: "Virtual",
+      key: "isVirtual",
+      render: (text, record) => (
+          <Button
+            color={`${record.isVirtual ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i
+              className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 
