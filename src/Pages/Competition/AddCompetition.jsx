@@ -20,7 +20,7 @@ import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/compet
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { checkPermission, convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 
 function AddCompetitions() {
@@ -126,6 +126,8 @@ function AddCompetitions() {
         lossPoint: dataToSave?.lossPoint || null,
         cancelPoint: dataToSave?.cancelPoint || null,
         drsCount: dataToSave?.drsCount || 0,
+        endDate: convertDateLocalToUTC(dataToSave.endDate),
+        startDate: convertDateLocalToUTC(dataToSave.startDate),
       }
       setCurrentSaveAction(saveAction);
       dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))

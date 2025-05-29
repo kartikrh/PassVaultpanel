@@ -569,6 +569,7 @@ function AddCommentary() {
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
                                                 onFormDataChange={handleFormADataChange}
+                                                pageName="Commentary"
                                             />
                                         </TabPane>
                                         <TabPane tabId={2}>
@@ -579,6 +580,7 @@ function AddCommentary() {
                                                 masterData={masterData}
                                                 disabledFields={disabledFields}
                                                 onFormDataChange={handleFormBDataChange}
+                                                pageName="Commentary"
                                             />
                                         </TabPane>
                                     </TabContent>
