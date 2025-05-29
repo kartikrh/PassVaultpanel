@@ -115,7 +115,6 @@ function AddCompetitions() {
     if (dataToSave) {
       const extraData = {
         competitionId,
-        status: dataToSave.statusFor,
         isTrending: dataToSave?.isTrending || false,
         isVirtual: dataToSave?.isVirtual || false,
         matchTypeId: dataToSave?.matchTypeId || null,
