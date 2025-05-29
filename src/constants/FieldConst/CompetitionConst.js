@@ -72,13 +72,11 @@ export const CompetitionFields = [
         label: "Status",
         options: [
           { label: "Select Type", value: "0" },
-          { label: "Open", value: 1 },
-          { label: "Toss", value: 2 },
-          { label: "InProgress", value: 3 },
-          { label: "Completed", value: 4 },
-          { label: "Innings Break", value: 5 },
+          { label: "Upcoming", value: 1 },
+          { label: "Started", value: 2 },
+          { label: "Completed", value: 3 },
         ],
-        isRequired: true,
+        // isRequired: true,
         type: SELECT,
         defaultValue: "0",
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -87,7 +85,7 @@ export const CompetitionFields = [
     {
         name: "startDate",
         label: "From",
-        isRequired: true,
+        // isRequired: true,
         // customStyle: {
         //   maxWidth: "600px",
         // },
@@ -98,7 +96,7 @@ export const CompetitionFields = [
     {
         name: "endDate",
         label: "To",
-        isRequired: true,
+        // isRequired: true,
         // customStyle: {
         //   maxWidth: "600px",
         // },
