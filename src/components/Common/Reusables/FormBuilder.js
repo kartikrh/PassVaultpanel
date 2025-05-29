@@ -55,6 +55,7 @@ const FormBuilder = forwardRef(
       onFormDataChange,
       generateAlias,
       handleFieldChange,
+      pageName,
     },
     ref
   ) => {
@@ -63,7 +64,8 @@ const FormBuilder = forwardRef(
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
     const [viewVideo, setViewVideo] = useState(null);
-
+    console.log("pageName", pageName);
+    
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
       setFormData((prevFormData) => ({
@@ -668,7 +670,7 @@ const FormBuilder = forwardRef(
                           // width={70}
                           uncheckedIcon={""}
                                     checkedIcon={""}
-                          disabled={disabledFields?.[field.name] || field.name === "isVirtual"}
+                          disabled={disabledFields?.[field.name] || (pageName === "Commentary" && field.name === "isVirtual")}
                           // className="form-check-input"
                           onColor="#02a499"
                           onChange={(e) => {
