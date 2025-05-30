@@ -13,6 +13,7 @@ import TeamSlice from "./teamSlice";
 import changePasswordSlice from "./changePasswordSlice";
 import importMarketSlice from "./importMarketSlice";
 import BlockSlice from "./BlockSlice";
+import CardTypeSlice from "./CardTypeSlice";
 import ConfigSlice from "./ConfigSlice";
 import pageFormatSlice from "./pageFormatSlice";
 import pageSlice from "./pageSlice";
@@ -58,6 +59,7 @@ const rootReducer = combineReducers({
   changePassword: changePasswordSlice,
   importMarket: importMarketSlice,
   block: BlockSlice,
+  cardType: CardTypeSlice,
   config: ConfigSlice,
   pageFormat: pageFormatSlice,
   page: pageSlice,
