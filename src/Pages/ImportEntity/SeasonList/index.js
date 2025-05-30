@@ -6,7 +6,7 @@ import { Container, Row, Col } from "reactstrap";
 import SpinnerModel from "../../../components/Model/SpinnerModel";
 import TabModel from "../../../components/Model/AddTabModel";
 import DeleteTabModel from "../../../components/Model/DeleteModel";
-import MatchCard from "./MatchCard"; // Import the new MatchCard component
+import MatchCard from "./MatchCard"; // Imported new MatchCard component
 import axiosInstance from "../../../Features/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import _, { isEmpty } from "lodash";
@@ -50,8 +50,9 @@ export const SeasonList = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
+  const globalPageSize = localStorage.getItem("pageSize");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
 
@@ -69,8 +70,8 @@ export const SeasonList = () => {
     competitionId: null,
     matchId: null,
     level: "seasonCompetitions", // 'seasonCompetitions', 'competitions', 'competitionMatches', 'matchList','matchInfo'
-    competitionStatus: null, // Default status for competitions (string)
-    matchStatus: null, // Default status for match list (enum)
+    competitionStatus: "result", // Default status for competitions (string)
+    matchStatus: MatchStatus.COMPLETED, // Default status for match list (enum)
   });
   const [navigationHistory, setNavigationHistory] = useState([]);
 
@@ -145,7 +146,7 @@ export const SeasonList = () => {
     if (seasonId !== "0" && navigationHistory.length === 0) {
       setNavigationHistory([
         {
-          label: `Season Competitions (${year})`,
+          label: `Season (${year})`,
           value: {
             seasonId: seasonId,
             competitionId: null,
@@ -182,14 +183,6 @@ export const SeasonList = () => {
             endpoint = `${entitySportUrl}/admin/list/seasonCompetitions`;
             payload = {
               sid: +selectedLevel.seasonId,
-              page: page,
-              limit: limit,
-            };
-            break;
-          case "competitions":
-            endpoint = `${entitySportUrl}/admin/list/competitions`;
-            payload = {
-              status: selectedLevel.competitionStatus,
               page: page,
               limit: limit,
             };
@@ -285,13 +278,6 @@ export const SeasonList = () => {
 
     // eslint-disable-next-line default-case
     switch (nextLevel) {
-      case "competitions":
-        newSelectedLevel = {
-          ...selectedLevel,
-          level: "competitions",
-          competitionStatus: null, // Default status (string)
-        };
-        break;
       case "competitionMatches":
         newSelectedLevel = {
           ...selectedLevel,
@@ -304,7 +290,7 @@ export const SeasonList = () => {
           ...selectedLevel,
           matchId: record.match_id || record.id,
           level: "matchList",
-          matchStatus: null, // Default status (enum)
+          // matchStatus: null, // Default status (enum)
         };
         break;
       case "matchInfo":
@@ -321,7 +307,6 @@ export const SeasonList = () => {
     setNavigationHistory(newHistory);
     setSelectedLevel(newSelectedLevel);
     setData([]);
-    // setMatchData(null); // Clear match data
     setCurrentPage(1); // Reset to first page
   };
 
@@ -348,19 +333,6 @@ export const SeasonList = () => {
     return moment(dateTime).format("DD/MM/YYYY HH:mm");
   };
 
-  // Handle page change
-  const handlePageChange = (page, size) => {
-    if (page !== currentPage || size !== pageSize) {
-      setCurrentPage(page);
-      setPageSize(size);
-      fetchData(page, size, true); // Force refresh for pagination
-    }
-    // setCurrentPage(page);
-    // setPageSize(size);
-    // console.log("HI from 1")
-    // fetchData(page, size);
-  };
-
   // Column configurations for different levels
   const getSeasonCompetitionsColumns = () => [
     {
@@ -375,19 +347,19 @@ export const SeasonList = () => {
       key: "title",
       width: "40%",
       render: (text, record) => (
-        <Tooltip title={`Click to view competitions for ${text}`}>
+        // <Tooltip title={`Click to view competitions for ${text}`}>
           <span
             className="cursor-pointer"
-            onClick={() => handleItemClick(record, "competitions", "title")}
+            onClick={() => handleItemClick(record,"competitionMatches", "title")}
             style={{
               cursor: "pointer",
-              color: "#000",
+              // color: "#000",
               // textDecoration: "underline",
             }}
           >
             {text}
           </span>
-        </Tooltip>
+        // </Tooltip>
       ),
     },
     {
@@ -410,69 +382,6 @@ export const SeasonList = () => {
       key: "status",
       width: "10%",
       render: (status) => getCompetitionStatus(status),
-      // render: (status) => (
-      //   <Tag color={getCompetitionStatusColor(status)}>
-      //     {status?.toUpperCase() || "UNKNOWN"}
-      //   </Tag>
-      // ),
-    },
-  ];
-
-  const getCompetitionsColumns = () => [
-    {
-      title: "ID",
-      dataIndex: "cid",
-      key: "cid",
-      width: "10%",
-    },
-    {
-      title: "Competition Name",
-      dataIndex: "title",
-      key: "title",
-      width: "50%",
-      render: (text, record) => (
-        <Tooltip title={`Click to view matches for ${text}`}>
-          <span
-            className="cursor-pointer"
-            onClick={() =>
-              handleItemClick(record, "competitionMatches", "title")
-            }
-            style={{
-              cursor: "pointer",
-              color: "#000",
-              // textDecoration: "underline",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
-      ),
-    },
-    {
-      title: "Start Date",
-      dataIndex: "datestart",
-      key: "datestart",
-      width: "15%",
-      render: (text) => formatDateTime(text),
-    },
-    {
-      title: "End Date",
-      dataIndex: "dateend",
-      key: "dateend",
-      width: "15%",
-      render: (text) => formatDateTime(text),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status) => getCompetitionStatus(status),
-      // render: (status) => (
-      //   <Tag color={getCompetitionStatusColor(status)}>
-      //     {status?.toUpperCase() || "UNKNOWN"}
-      //   </Tag>
-      // ),
     },
   ];
 
@@ -489,19 +398,15 @@ export const SeasonList = () => {
       key: "title",
       width: "25%",
       render: (text, record) => (
-        <Tooltip title={`Click to view match list for ${text}`}>
           <span
             className="cursor-pointer"
             onClick={() => handleItemClick(record, "matchList", "title")}
             style={{
               cursor: "pointer",
-              color: "#000",
-              // textDecoration: "underline",
             }}
           >
             {text}
           </span>
-        </Tooltip>
       ),
     },
     {
@@ -559,19 +464,15 @@ export const SeasonList = () => {
       key: "title",
       width: "30%",
       render: (text, record) => (
-        <Tooltip title={`Click to view match info of ${text}`}>
           <span
             className="cursor-pointer"
             onClick={() => handleItemClick(record, "matchInfo", "title")}
             style={{
               cursor: "pointer",
-              color: "#000",
-              // textDecoration: "underline",
             }}
           >
             {text}
           </span>
-        </Tooltip>
       ),
     },
     {
@@ -621,14 +522,10 @@ export const SeasonList = () => {
     switch (selectedLevel.level) {
       case "seasonCompetitions":
         return getSeasonCompetitionsColumns();
-      case "competitions":
-        return getCompetitionsColumns();
       case "competitionMatches":
         return getCompetitionMatchesColumns();
       case "matchList":
         return getMatchListColumns();
-      // case "matchInfo":
-      //   return getMatchInfoColumns();
       default:
         return getSeasonCompetitionsColumns();
     }
@@ -639,9 +536,6 @@ export const SeasonList = () => {
     switch (selectedLevel.level) {
       case "seasonCompetitions":
         return `Season Competitions for Year ${year}`;
-      case "competitions":
-        return `Competitions for Year  ${year} `;
-      // return `Competitions (${selectedLevel.competitionStatus})`;
       case "competitionMatches":
         return "Competition Matches";
       case "matchList":
@@ -681,7 +575,6 @@ export const SeasonList = () => {
 
   useEffect(() => {
     if (selectedLevel.seasonId && selectedLevel.seasonId !== "0") {
-
       fetchData(1, pageSize); // Always start from page 1 when level changes
     }
   }, [
@@ -746,10 +639,8 @@ export const SeasonList = () => {
                 serverCurrentPage={currentPage}
                 serverPageSize={pageSize}
                 serverTotal={total}
-                setServerCurrentPage={(page) =>
-                  handlePageChange(page, pageSize)
-                }
-                setServerPageSize={(size) => handlePageChange(1, size)}
+                setServerCurrentPage={setCurrentPage}
+                setServerPageSize={setPageSize}
                 onBreadCrumbsClick={handleBreadcrumbClick}
                 breadCrumbs={navigationHistory}
               />
