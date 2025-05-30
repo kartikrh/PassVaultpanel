@@ -34,6 +34,7 @@ const AddCardType = () => {
   const pageName = TAB_BLOCKS
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
+  const [disabledFields, setDisabledFields] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const { isSaved, isLoading } = useSelector(state => state.tabsData.cardType);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -81,13 +82,21 @@ const AddCardType = () => {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        id: id
+        id: id,
+        isActive: dataToSave?.isActive || false,
       }
       dispatch(addCardTypeToDB(convertObjtoFormData({ ...dataToSave, ...extraData })))
       setCurrentSaveAction(saveAction);
     }
   };
-
+useEffect(() => {
+    if (id !== "0") {
+      fetchData(id);
+      setDisabledFields({
+        isActive: true,
+      });
+    }
+  }, [id]);
 
   return (
     <React.Fragment>
@@ -148,6 +157,7 @@ const AddCardType = () => {
                   ref={finalizeRef}
                   fields={CardTypeFields}
                   editFormData={initialEditData}
+                  disabledFields={disabledFields}
                 />
               </CardBody>
             </Card>

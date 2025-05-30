@@ -36,7 +36,9 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
-      .post(`admin/cardType/all`)
+      .post(`admin/cardType/all`,{
+        ...(latestValueFromTable || tableActions),
+      })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.cardTypeId - b?.cardTypeId);
         let apiDataIdList = [];
@@ -66,9 +68,8 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/block/save`, {
-        // cardTypeId: record.cardTypeId,
-        ...record,
+      .post(`admin/cardType/activeInactive`, {
+        id: record.id,
         [pType]: cState ? false : true,
       })
       .then((response) => {
@@ -232,6 +233,7 @@ const Index = () => {
     // isShowContent: true,
     reloadButton: true,
     loadData: true,
+    isActive: true,
     // clone: false,
   };
 
