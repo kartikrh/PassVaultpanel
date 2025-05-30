@@ -75,13 +75,6 @@ const Index = () => {
       setPageSize(limit);
       setIsLoading(false);
     } catch (error) {
-      // temporary static data
-      // const apiData = tempDataForYear?.result?.response.items || [];
-      // console.log("Here in catch", apiData);
-      // // Sort data by year in descending order, sid refers to season id
-      // const sortedData = apiData.sort((a, b) => b.sid - a.sid);
-      // setData(sortedData);
-
       console.error("Error fetching seasons:", error);
       dispatch(
         updateToastData({
@@ -150,6 +143,10 @@ const Index = () => {
     setNavigationHistory([
       {
         label: "Home",
+        value: {
+          id: 0,
+          level: "home",
+        },
       },
     ]);
     setData([]);
@@ -166,6 +163,11 @@ const Index = () => {
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
     setNavigationHistory(historyList);
     setData([]); // Clear current data
+
+    // If it's Home, re-fetch initial data
+    if (value.id === 0 || value.level === "home") {
+      fetchData(currentPage, pageSize);
+    }
   };
 
   // Handle page change
