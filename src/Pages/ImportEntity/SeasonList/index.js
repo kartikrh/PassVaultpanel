@@ -33,13 +33,6 @@ const MatchStatus = {
   UPCOMING: 3,
 };
 
-// Competition status mapping (strings)
-const CompetitionStatus = {
-  LIVE: "live",
-  RESULT: "result",
-  FIXTURE: "fixture",
-};
-
 export const SeasonList = () => {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
   document.title = "Season Wise Competition List";
@@ -76,40 +69,65 @@ export const SeasonList = () => {
     competitionId: null,
     matchId: null,
     level: "seasonCompetitions", // 'seasonCompetitions', 'competitions', 'competitionMatches', 'matchList','matchInfo'
-    competitionStatus: "result", // Default status for competitions (string)
-    matchStatus: MatchStatus.COMPLETED, // Default status for match list (enum)
+    competitionStatus: null, // Default status for competitions (string)
+    matchStatus: null, // Default status for match list (enum)
   });
   const [navigationHistory, setNavigationHistory] = useState([]);
 
   // Status color mapping for competitions (string values)
-  const getCompetitionStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
+  // const getCompetitionStatusColor = (status) => {
+  //   switch (status?.toLowerCase()) {
+  //     case "live":
+  //       return "processing";
+  //     case "result":
+  //       return "success";
+  //     case "fixture":
+  //       return "warning";
+  //     default:
+  //       return "default";
+  //   }
+  // };
+
+  const getCompetitionStatus = (status) => {
+    switch (status) {
       case "live":
-        return "processing";
+        return "LIVE";
       case "result":
-        return "success";
+        return "COMPLETED";
       case "fixture":
-        return "warning";
+        return "UPCOMING";
       default:
-        return "default";
+        return "UNKNOWN";
     }
   };
-
   // Status color mapping for matches (enum values)
-  const getMatchStatusColor = (status) => {
-    switch (parseInt(status)) {
-      case 1:
-        return "processing";
-      case 2:
-        return "success";
-      case 3:
-        return "warning";
-      default:
-        return "default";
-    }
-  };
+  // const getMatchStatusColor = (status) => {
+  //   switch (parseInt(status)) {
+  //     case 1:
+  //       return "processing";
+  //     case 2:
+  //       return "success";
+  //     case 3:
+  //       return "warning";
+  //     default:
+  //       return "default";
+  //   }
+  // };
 
-  const getMatchStatusText = (status) => {
+  // const getMatchStatusText = (status) => {
+  //   switch (parseInt(status)) {
+  //     case 1:
+  //       return "LIVE";
+  //     case 2:
+  //       return "COMPLETED";
+  //     case 3:
+  //       return "UPCOMING";
+  //     default:
+  //       return "UNKNOWN";
+  //   }
+  // };
+
+  const getMatchStatus = (status) => {
     switch (parseInt(status)) {
       case 1:
         return "LIVE";
@@ -133,8 +151,8 @@ export const SeasonList = () => {
             competitionId: null,
             matchId: null,
             level: "seasonCompetitions",
-            competitionStatus: "result",
-            matchStatus: MatchStatus.COMPLETED,
+            competitionStatus: null,
+            matchStatus: null,
           },
         },
       ]);
@@ -195,7 +213,7 @@ export const SeasonList = () => {
           case "matchInfo":
             endpoint = `${entitySportUrl}/admin/list/MatchInfo`;
             payload = {
-              mid: +selectedLevel.matchId, // Fixed: use 'mid' instead of 'match_id'
+              mid: +selectedLevel.matchId,
               page: page,
               limit: limit,
             };
@@ -265,12 +283,13 @@ export const SeasonList = () => {
       value: { ...selectedLevel },
     };
 
+    // eslint-disable-next-line default-case
     switch (nextLevel) {
       case "competitions":
         newSelectedLevel = {
           ...selectedLevel,
           level: "competitions",
-          competitionStatus: "result", // Default status (string)
+          competitionStatus: null, // Default status (string)
         };
         break;
       case "competitionMatches":
@@ -285,7 +304,7 @@ export const SeasonList = () => {
           ...selectedLevel,
           matchId: record.match_id || record.id,
           level: "matchList",
-          matchStatus: MatchStatus.COMPLETED, // Default status (enum)
+          matchStatus: null, // Default status (enum)
         };
         break;
       case "matchInfo":
@@ -301,7 +320,7 @@ export const SeasonList = () => {
     const newHistory = [...navigationHistory, currentRecord];
     setNavigationHistory(newHistory);
     setSelectedLevel(newSelectedLevel);
-    setData([]); // Clear current data
+    setData([]);
     // setMatchData(null); // Clear match data
     setCurrentPage(1); // Reset to first page
   };
@@ -314,7 +333,7 @@ export const SeasonList = () => {
     setNavigationHistory(historyList);
     setSelectedLevel(value);
     setData([]); // Clear current data
-    // setMatchData(null); // Clear match data
+    // setMatchData(null);
     setCurrentPage(1); // Reset to first page
   };
 
@@ -331,9 +350,15 @@ export const SeasonList = () => {
 
   // Handle page change
   const handlePageChange = (page, size) => {
-    setCurrentPage(page);
-    setPageSize(size);
-    fetchData(page, size);
+    if (page !== currentPage || size !== pageSize) {
+      setCurrentPage(page);
+      setPageSize(size);
+      fetchData(page, size, true); // Force refresh for pagination
+    }
+    // setCurrentPage(page);
+    // setPageSize(size);
+    // console.log("HI from 1")
+    // fetchData(page, size);
   };
 
   // Column configurations for different levels
@@ -384,11 +409,12 @@ export const SeasonList = () => {
       dataIndex: "status",
       key: "status",
       width: "10%",
-      render: (status) => (
-        <Tag color={getCompetitionStatusColor(status)}>
-          {status?.toUpperCase() || "UNKNOWN"}
-        </Tag>
-      ),
+      render: (status) => getCompetitionStatus(status),
+      // render: (status) => (
+      //   <Tag color={getCompetitionStatusColor(status)}>
+      //     {status?.toUpperCase() || "UNKNOWN"}
+      //   </Tag>
+      // ),
     },
   ];
 
@@ -441,11 +467,12 @@ export const SeasonList = () => {
       dataIndex: "status",
       key: "status",
       width: "10%",
-      render: (status) => (
-        <Tag color={getCompetitionStatusColor(status)}>
-          {status?.toUpperCase() || "UNKNOWN"}
-        </Tag>
-      ),
+      render: (status) => getCompetitionStatus(status),
+      // render: (status) => (
+      //   <Tag color={getCompetitionStatusColor(status)}>
+      //     {status?.toUpperCase() || "UNKNOWN"}
+      //   </Tag>
+      // ),
     },
   ];
 
@@ -510,11 +537,12 @@ export const SeasonList = () => {
       dataIndex: "status",
       key: "status",
       width: "10%",
-      render: (status) => (
-        <Tag color={getMatchStatusColor(status)}>
-          {getMatchStatusText(status)}
-        </Tag>
-      ),
+      render: (status) => getMatchStatus(status),
+      // render: (status) => (
+      //   <Tag color={getMatchStatusColor(status)}>
+      //     {getMatchStatusText(status)}
+      //   </Tag>
+      // ),
     },
   ];
 
@@ -530,21 +558,21 @@ export const SeasonList = () => {
       dataIndex: "title",
       key: "title",
       width: "30%",
-      // render: (text, record) => (
-      //   <Tooltip title={`Click to view match info of ${text}`}>
-      //     <span
-      //       className="cursor-pointer"
-      //       onClick={() => handleItemClick(record, "matchInfo", "title")}
-      //       style={{
-      //         cursor: "pointer",
-      //         color: "#000",
-      //         // textDecoration: "underline",
-      //       }}
-      //     >
-      //       {text}
-      //     </span>
-      //   </Tooltip>
-      // ),
+      render: (text, record) => (
+        <Tooltip title={`Click to view match info of ${text}`}>
+          <span
+            className="cursor-pointer"
+            onClick={() => handleItemClick(record, "matchInfo", "title")}
+            style={{
+              cursor: "pointer",
+              color: "#000",
+              // textDecoration: "underline",
+            }}
+          >
+            {text}
+          </span>
+        </Tooltip>
+      ),
     },
     {
       title: "Team A",
@@ -572,55 +600,6 @@ export const SeasonList = () => {
       dataIndex: "date_end",
       key: "date_end",
       width: "15%",
-      render: (text) => formatDateTime(text),
-    },
-  ];
-
-  const getMatchInfoColumns = () => [
-    {
-      title: "ID",
-      dataIndex: "match_id",
-      key: "match_id",
-      width: "10%",
-    },
-    {
-      title: "Match",
-      dataIndex: "title",
-      key: "title",
-      width: "30%",
-    },
-    {
-      title: "Team A",
-      dataIndex: "teama",
-      key: "teama",
-      width: "15%",
-      render: (team) => team?.name || team || "N/A",
-    },
-    {
-      title: "Team B",
-      dataIndex: "teamb",
-      key: "teamb",
-      width: "15%",
-      render: (team) => team?.name || team || "N/A",
-    },
-    {
-      title: "Result",
-      dataIndex: "result",
-      key: "result",
-      width: "10%",
-    },
-    {
-      title: "Start Date",
-      dataIndex: "date_start",
-      key: "date_start",
-      width: "10%",
-      render: (text) => formatDateTime(text),
-    },
-    {
-      title: "End Date",
-      dataIndex: "date_end",
-      key: "date_end",
-      width: "10%",
       render: (text) => formatDateTime(text),
     },
     {
@@ -628,6 +607,12 @@ export const SeasonList = () => {
       dataIndex: "status",
       key: "status",
       width: "10%",
+      render: (status) => getMatchStatus(status),
+      // render: (status) => (
+      //   <Tag color={getMatchStatusColor(status)}>
+      //     {getMatchStatusText(status)}
+      //   </Tag>
+      // ),
     },
   ];
 
@@ -642,8 +627,8 @@ export const SeasonList = () => {
         return getCompetitionMatchesColumns();
       case "matchList":
         return getMatchListColumns();
-      case "matchInfo":
-        return getMatchInfoColumns();
+      // case "matchInfo":
+      //   return getMatchInfoColumns();
       default:
         return getSeasonCompetitionsColumns();
     }
@@ -655,13 +640,14 @@ export const SeasonList = () => {
       case "seasonCompetitions":
         return `Season Competitions for Year ${year}`;
       case "competitions":
-        return `Competitions (${selectedLevel.competitionStatus})`;
+        return `Competitions for Year  ${year} `;
+      // return `Competitions (${selectedLevel.competitionStatus})`;
       case "competitionMatches":
         return "Competition Matches";
       case "matchList":
-        return `Match List (${getMatchStatusText(selectedLevel.matchStatus)})`;
+        return "Match List";
       case "matchInfo":
-        return "Match Info";
+        return "Match Details";
       default:
         return `Season Listing for Year ${year}`;
     }
@@ -695,14 +681,13 @@ export const SeasonList = () => {
 
   useEffect(() => {
     if (selectedLevel.seasonId && selectedLevel.seasonId !== "0") {
+
       fetchData(1, pageSize); // Always start from page 1 when level changes
     }
   }, [
     selectedLevel.level,
     selectedLevel.competitionId,
     selectedLevel.matchId,
-    selectedLevel.competitionStatus,
-    selectedLevel.matchStatus,
     selectedLevel.seasonId,
     pageSize,
   ]);

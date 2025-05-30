@@ -63,7 +63,8 @@ const MatchCard = ({ matchData }) => {
                 {title}
               </h2>
               <p style={{ margin: "4px 0", color: "#666", fontSize: "16px" }}>
-                {subtitle} • Match {match_number} • {format_str}
+                • {subtitle} • Match {match_number} 
+                {/* • {format_str} */}
               </p>
             </Col>
             <Col>
@@ -141,7 +142,7 @@ const MatchCard = ({ matchData }) => {
               {teamb?.scores_full && (
                 <div style={{ marginTop: "12px" }}>
                   <Tag
-                    color="red"
+                    color="blue"
                     style={{ fontSize: "16px", padding: "8px 16px" }}
                   >
                     {teamb.scores_full}
@@ -228,9 +229,9 @@ const MatchCard = ({ matchData }) => {
               <div style={{ marginBottom: "8px" }}>
                 <strong>Category:</strong> {competition?.category?.toUpperCase()}
               </div>
-              <div style={{ marginBottom: "8px" }}>
+              {/* <div style={{ marginBottom: "8px" }}>
                 <strong>Format:</strong> {competition?.match_format?.toUpperCase()}
-              </div>
+              </div> */}
               {umpires && (
                 <div style={{ marginTop: "12px" }}>
                   <strong>Umpires:</strong>
