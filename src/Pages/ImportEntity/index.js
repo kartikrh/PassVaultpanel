@@ -63,8 +63,7 @@ const Index = () => {
 
       const apiData = response?.result?.data || [];
       const totalCount = response?.result?.total || "0";
-      console.log("here", apiData);
-      console.log("total", totalCount)
+      
       // Sort data by year in descending order, sid refers to season id
       const sortedData = apiData.sort((a, b) => b.sid - a.sid);
       setData(sortedData);
@@ -122,8 +121,8 @@ const Index = () => {
             onClick={() => handleClick(record.sid, record?.name)}
             style={{
               cursor: "pointer",
-              color: "#1890ff",
-              textDecoration: "underline",
+              color: "#000",
+              // textDecoration: "underline",
             }}
           >
             {text}

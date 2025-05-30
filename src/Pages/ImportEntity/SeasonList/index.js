@@ -6,6 +6,7 @@ import { Container, Row, Col } from "reactstrap";
 import SpinnerModel from "../../../components/Model/SpinnerModel";
 import TabModel from "../../../components/Model/AddTabModel";
 import DeleteTabModel from "../../../components/Model/DeleteModel";
+import MatchCard from "./MatchCard"; // Import the new MatchCard component
 import axiosInstance from "../../../Features/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import _, { isEmpty } from "lodash";
@@ -51,6 +52,7 @@ export const SeasonList = () => {
 
   // State variables
   const [data, setData] = useState([]);
+  const [matchData, setMatchData] = useState(null); // New state for match data
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
@@ -95,7 +97,7 @@ export const SeasonList = () => {
 
   // Status color mapping for matches (enum values)
   const getMatchStatusColor = (status) => {
-    switch (+status) {
+    switch (parseInt(status)) {
       case 1:
         return "processing";
       case 2:
@@ -108,7 +110,7 @@ export const SeasonList = () => {
   };
 
   const getMatchStatusText = (status) => {
-    switch (+status) {
+    switch (parseInt(status)) {
       case 1:
         return "LIVE";
       case 2:
@@ -137,7 +139,7 @@ export const SeasonList = () => {
         },
       ]);
     }
-  }, [navigationHistory.length, seasonId, year]);
+  }, [seasonId, year]);
 
   // Memoized fetch function to prevent infinite loops
   const fetchData = useCallback(
@@ -193,7 +195,7 @@ export const SeasonList = () => {
           case "matchInfo":
             endpoint = `${entitySportUrl}/admin/list/MatchInfo`;
             payload = {
-              mid: +selectedLevel.matchId, 
+              mid: +selectedLevel.matchId, // Fixed: use 'mid' instead of 'match_id'
               page: page,
               limit: limit,
             };
@@ -203,7 +205,7 @@ export const SeasonList = () => {
             return;
         }
 
-        console.log(`Fetching ${selectedLevel.level} with payload:`, payload);
+        // console.log(`Fetching ${selectedLevel.level} with payload:`, payload);
         const response = await axiosInstance.post(endpoint, payload);
 
         let apiData = [];
@@ -223,22 +225,24 @@ export const SeasonList = () => {
           // For seasonCompetitions
           apiData = response.data.result.appdata;
           totalCount = response.data.result.total || 0;
-        } else {
+        } else if (response?.result?.data) {
           apiData = response?.result.data || [];
           totalCount = response?.total || 0;
+        } else {
+          apiData = response?.result || [];
+          totalCount = response?.total || 0;
         }
-
-        console.log(`${selectedLevel.level} API Response:`, {
-          apiData,
-          totalCount,
-        });
+        // console.log({ apiData, response });
+        // console.log(`${selectedLevel.level} API Response:`, {
+        //   apiData,
+        //   totalCount,
+        // });
 
         setData(apiData);
         setTotal(totalCount);
         setCurrentPage(page);
         setPageSize(limit);
       } catch (error) {
-        console.Log("here is error")
         console.error(`Error fetching ${selectedLevel.level}:`, error);
         dispatch(
           updateToastData({
@@ -261,7 +265,6 @@ export const SeasonList = () => {
       value: { ...selectedLevel },
     };
 
-    // eslint-disable-next-line default-case
     switch (nextLevel) {
       case "competitions":
         newSelectedLevel = {
@@ -299,6 +302,7 @@ export const SeasonList = () => {
     setNavigationHistory(newHistory);
     setSelectedLevel(newSelectedLevel);
     setData([]); // Clear current data
+    // setMatchData(null); // Clear match data
     setCurrentPage(1); // Reset to first page
   };
 
@@ -310,6 +314,7 @@ export const SeasonList = () => {
     setNavigationHistory(historyList);
     setSelectedLevel(value);
     setData([]); // Clear current data
+    // setMatchData(null); // Clear match data
     setCurrentPage(1); // Reset to first page
   };
 
@@ -351,8 +356,8 @@ export const SeasonList = () => {
             onClick={() => handleItemClick(record, "competitions", "title")}
             style={{
               cursor: "pointer",
-              color: "#1890ff",
-              textDecoration: "underline",
+              color: "#000",
+              // textDecoration: "underline",
             }}
           >
             {text}
@@ -408,8 +413,8 @@ export const SeasonList = () => {
             }
             style={{
               cursor: "pointer",
-              color: "#1890ff",
-              textDecoration: "underline",
+              color: "#000",
+              // textDecoration: "underline",
             }}
           >
             {text}
@@ -463,8 +468,8 @@ export const SeasonList = () => {
             onClick={() => handleItemClick(record, "matchList", "title")}
             style={{
               cursor: "pointer",
-              color: "#1890ff",
-              textDecoration: "underline",
+              color: "#000",
+              // textDecoration: "underline",
             }}
           >
             {text}
@@ -488,14 +493,14 @@ export const SeasonList = () => {
     },
     {
       title: "Venue",
-      dataIndex: "venue",
+      dataIndex: "venue", // Assuming venue is an object
       key: "venue",
       width: "12.5%",
       render: (venue) => venue?.name || "N/A",
     },
     {
       title: "Country",
-      dataIndex: "country",
+      dataIndex: "venue", // Assuming venue contains country info
       key: "country",
       width: "12.5%",
       render: (venue) => venue?.country || "N/A",
@@ -515,7 +520,7 @@ export const SeasonList = () => {
 
   const getMatchListColumns = () => [
     {
-      title: "ID",
+      title: "Match ID",
       dataIndex: "match_id",
       key: "match_id",
       width: "10%",
@@ -525,21 +530,21 @@ export const SeasonList = () => {
       dataIndex: "title",
       key: "title",
       width: "30%",
-      render: (text, record) => (
-        <Tooltip title={"Click to view match info"}>
-          <span
-            className="cursor-pointer"
-            onClick={() => handleItemClick(record, "matchInfo", "title")}
-            style={{
-              cursor: "pointer",
-              color: "#000",
-              textDecoration: "underline",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
-      ),
+      // render: (text, record) => (
+      //   <Tooltip title={`Click to view match info of ${text}`}>
+      //     <span
+      //       className="cursor-pointer"
+      //       onClick={() => handleItemClick(record, "matchInfo", "title")}
+      //       style={{
+      //         cursor: "pointer",
+      //         color: "#000",
+      //         // textDecoration: "underline",
+      //       }}
+      //     >
+      //       {text}
+      //     </span>
+      //   </Tooltip>
+      // ),
     },
     {
       title: "Team A",
@@ -568,17 +573,6 @@ export const SeasonList = () => {
       key: "date_end",
       width: "15%",
       render: (text) => formatDateTime(text),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status) => (
-        <Tag color={getMatchStatusColor(status)}>
-          {getMatchStatusText(status)}
-        </Tag>
-      ),
     },
   ];
 
@@ -697,9 +691,8 @@ export const SeasonList = () => {
       navigate("/importEntity");
       return;
     }
-  }, [permissionObj, seasonId, navigate, pageName]);
+  }, [permissionObj, seasonId, navigate]);
 
-  // Fetch data when selectedLevel changes - FIXED: Removed fetchData from dependencies
   useEffect(() => {
     if (selectedLevel.seasonId && selectedLevel.seasonId !== "0") {
       fetchData(1, pageSize); // Always start from page 1 when level changes
@@ -712,7 +705,6 @@ export const SeasonList = () => {
     selectedLevel.matchStatus,
     selectedLevel.seasonId,
     pageSize,
-    fetchData,
   ]);
 
   const handleReload = () => {
@@ -753,24 +745,31 @@ export const SeasonList = () => {
               </Col>
             </Row>
           </Row>
-
-          <Table
-            ref={finalizeRef}
-            columns={getCurrentColumns()}
-            dataSource={data}
-            tableElement={tableElement}
-            deleteModelFunction={setDeleteModelVisable}
-            singleCheck={checekedList}
-            reFetchData={handleReload}
-            serverCurrentPage={currentPage}
-            serverPageSize={pageSize}
-            serverTotal={total}
-            setServerCurrentPage={(page) => handlePageChange(page, pageSize)}
-            setServerPageSize={(size) => handlePageChange(1, size)}
-            onBreadCrumbsClick={handleBreadcrumbClick}
-            breadCrumbs={navigationHistory}
-          />
-
+          <Row>
+            {/* Conditionally render Table or MatchCard */}
+            {selectedLevel.level === "matchInfo" && !isEmpty(data) ? (
+              <MatchCard matchData={data} />
+            ) : (
+              <Table
+                ref={finalizeRef}
+                columns={getCurrentColumns()}
+                dataSource={data}
+                tableElement={tableElement}
+                deleteModelFunction={setDeleteModelVisable}
+                singleCheck={checekedList}
+                reFetchData={handleReload}
+                serverCurrentPage={currentPage}
+                serverPageSize={pageSize}
+                serverTotal={total}
+                setServerCurrentPage={(page) =>
+                  handlePageChange(page, pageSize)
+                }
+                setServerPageSize={(size) => handlePageChange(1, size)}
+                onBreadCrumbsClick={handleBreadcrumbClick}
+                breadCrumbs={navigationHistory}
+              />
+            )}
+          </Row>
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
