@@ -223,31 +223,77 @@ export const SeasonList = () => {
         let totalCount = 0;
 
         // Handle different response structures
-        if (response?.result?.response?.items) {
-          apiData = response.result.response.items;
-          totalCount =
-            response.result.response.total_items ||
-            response.result.response.total ||
-            0;
-        } else if (response?.result?.response) {
-          apiData = response.result.response;
-          totalCount = response?.result?.total || 0;
-        } else if (response?.data?.result?.appdata) {
-          // For seasonCompetitions
-          apiData = response.data.result.appdata;
-          totalCount = response.data.result.total || 0;
-        } else if (response?.result?.data) {
-          apiData = response?.result.data || [];
-          totalCount = response?.total || 0;
-        } else {
-          apiData = response?.result || [];
-          totalCount = response?.total || 0;
-        }
+        // if (response?.result?.response?.items) {
+        //   apiData = response.result.response.items;
+        //   totalCount =
+        //     response.result.response.total_items ||
+        //     response.result.response.total ||
+        //     0;
+        // } else if (response?.result?.response) {
+        //   apiData = response.result.response;
+        //   totalCount = response?.result?.total || 0;
+        // } else if (response?.data?.result?.appdata) {
+        //   // For seasonCompetitions
+        //   apiData = response.data.result.appdata;
+        //   totalCount = response.data.result.total || 0;
+        // } else if (response?.result?.data) {
+        //   apiData = response?.result.data || [];
+        //   totalCount = response?.total || 0;
+        // } else {
+        //   apiData = response?.result || [];
+        //   totalCount = response?.total || 0;
+        // }
         // console.log({ apiData, response });
         // console.log(`${selectedLevel.level} API Response:`, {
         //   apiData,
         //   totalCount,
         // });
+
+        // Special handling for matchInfo - it returns a single object, not an array
+        if (selectedLevel.level === "matchInfo") {
+          if (response?.result) {
+            apiData = response.result; // Single object, not array
+            totalCount = 1;
+          } else {
+            apiData = null;
+            totalCount = 0;
+          }
+        } else {
+          // Handle other levels that return arrays
+          if (response?.data?.result?.appdata) {
+            apiData = response.data.result.appdata;
+            totalCount =
+              response.data.result.total || response.data.result.appdata.length;
+          } else if (response?.result?.response?.items) {
+            apiData = response.result.response.items;
+            totalCount =
+              response.result.response.total_items ||
+              response.result.response.total ||
+              0;
+          } else if (
+            response?.result?.response &&
+            Array.isArray(response.result.response)
+          ) {
+            apiData = response.result.response;
+            totalCount =
+              response?.result?.total || response.result.response.length;
+          } else if (
+            response?.result?.data &&
+            Array.isArray(response.result.data)
+          ) {
+            apiData = response.result.data;
+            totalCount = response?.result?.total || response.result.data.length;
+          } else if (response?.result && Array.isArray(response.result)) {
+            apiData = response.result;
+            totalCount = response?.total || response.result.length;
+          } else {
+            console.error("Unexpected API response structure:", response);
+            apiData = [];
+            totalCount = 0;
+          }
+        }
+        // Ensure we have valid numbers
+        totalCount = Number(totalCount) || 0;
 
         setData(apiData);
         setTotal(totalCount);
@@ -348,17 +394,17 @@ export const SeasonList = () => {
       width: "40%",
       render: (text, record) => (
         // <Tooltip title={`Click to view competitions for ${text}`}>
-          <span
-            className="cursor-pointer"
-            onClick={() => handleItemClick(record,"competitionMatches", "title")}
-            style={{
-              cursor: "pointer",
-              // color: "#000",
-              // textDecoration: "underline",
-            }}
-          >
-            {text}
-          </span>
+        <span
+          className="cursor-pointer"
+          onClick={() => handleItemClick(record, "competitionMatches", "title")}
+          style={{
+            cursor: "pointer",
+            // color: "#000",
+            // textDecoration: "underline",
+          }}
+        >
+          {text}
+        </span>
         // </Tooltip>
       ),
     },
@@ -398,15 +444,15 @@ export const SeasonList = () => {
       key: "title",
       width: "25%",
       render: (text, record) => (
-          <span
-            className="cursor-pointer"
-            onClick={() => handleItemClick(record, "matchList", "title")}
-            style={{
-              cursor: "pointer",
-            }}
-          >
-            {text}
-          </span>
+        <span
+          className="cursor-pointer"
+          onClick={() => handleItemClick(record, "matchList", "title")}
+          style={{
+            cursor: "pointer",
+          }}
+        >
+          {text}
+        </span>
       ),
     },
     {
@@ -464,15 +510,15 @@ export const SeasonList = () => {
       key: "title",
       width: "30%",
       render: (text, record) => (
-          <span
-            className="cursor-pointer"
-            onClick={() => handleItemClick(record, "matchInfo", "title")}
-            style={{
-              cursor: "pointer",
-            }}
-          >
-            {text}
-          </span>
+        <span
+          className="cursor-pointer"
+          onClick={() => handleItemClick(record, "matchInfo", "title")}
+          style={{
+            cursor: "pointer",
+          }}
+        >
+          {text}
+        </span>
       ),
     },
     {

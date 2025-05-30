@@ -64,13 +64,13 @@ const Index = () => {
       );
 
       const apiData = response?.result?.data || [];
-      const totalCount = response?.result?.total || "0";
+      const totalCount = response?.result?.total || apiData.length || 0;
 
       // Sort data by year in descending order, sid refers to season id
       const sortedData = apiData.sort((a, b) => b.sid - a.sid);
 
       setData(sortedData);
-      setTotal(totalCount);
+      setTotal(+totalCount);
       setCurrentPage(page);
       setPageSize(limit);
       setIsLoading(false);
@@ -170,13 +170,6 @@ const Index = () => {
     }
   };
 
-  // Handle page change
-  // const handlePageChange = (page, size) => {
-  //   setCurrentPage(page);
-  //   setPageSize(size);
-  //   fetchData(page, size);
-  // };
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -200,16 +193,6 @@ const Index = () => {
             setServerPageSize={setPageSize}
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
-            // serverCurrentPage={currentPage}
-            // serverPageSize={pageSize}
-            // serverTotal={total}
-            // setServerCurrentPage={(page) => handlePageChange(page, pageSize)}
-            // setServerPageSize={(size) => handlePageChange(1, size)}
-            // isDeletePermission={checkPermission(
-            //   permissionObj,
-            //   pageName,
-            //   PERMISSION_DELETE
-            // )}
           />
 
           <DeleteTabModel
