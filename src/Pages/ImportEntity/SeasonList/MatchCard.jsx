@@ -62,10 +62,9 @@ const MatchCard = ({ matchData }) => {
               <h2 style={{ margin: 0, color: "#1890ff", fontSize: "24px" }}>
                 {title}
               </h2>
-              <p style={{ margin: "4px 0", color: "#666", fontSize: "16px" }}>
-                • {subtitle} • Match {match_number} 
-                {/* • {format_str} */}
-              </p>
+              {/* <p style={{ margin: "4px 0", color: "#666", fontSize: "16px" }}>
+                • Match Number {match_number}  •  {format_str}
+              </p> */}
             </Col>
             <Col>
               <Tag

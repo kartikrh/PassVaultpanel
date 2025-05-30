@@ -42,9 +42,11 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10); // Set higher limit to get more seasons
+  const [currentPage, setCurrentPage] = useState(0);
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
+  const [navigationHistory, setNavigationHistory] = useState([]);
 
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORTURL)?.value ||
@@ -63,22 +65,16 @@ const Index = () => {
 
       const apiData = response?.result?.data || [];
       const totalCount = response?.result?.total || "0";
-      
+
       // Sort data by year in descending order, sid refers to season id
       const sortedData = apiData.sort((a, b) => b.sid - a.sid);
+
       setData(sortedData);
       setTotal(totalCount);
       setCurrentPage(page);
       setPageSize(limit);
       setIsLoading(false);
     } catch (error) {
-      // temporary static data
-      // const apiData = tempDataForYear?.result?.response.items || [];
-      // console.log("Here in catch", apiData);
-      // // Sort data by year in descending order, sid refers to season id
-      // const sortedData = apiData.sort((a, b) => b.sid - a.sid);
-      // setData(sortedData);
-
       console.error("Error fetching seasons:", error);
       dispatch(
         updateToastData({
@@ -111,23 +107,16 @@ const Index = () => {
       key: "sid",
       width: "100%",
       render: (text, record) => (
-        <Tooltip
-          title={`View competitions for ${text}`}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
+        <span
+          className="cursor-pointer"
+          onClick={() => handleClick(record.sid, record?.name)}
+          style={{
+            cursor: "pointer",
+            // textDecoration: "underline",
+          }}
         >
-          <span
-            className="cursor-pointer"
-            onClick={() => handleClick(record.sid, record?.name)}
-            style={{
-              cursor: "pointer",
-              color: "#000",
-              // textDecoration: "underline",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
+          {text}
+        </span>
       ),
     },
   ];
@@ -151,6 +140,15 @@ const Index = () => {
       navigate("/dashboard");
       return;
     }
+    setNavigationHistory([
+      {
+        label: "Home",
+        value: {
+          id: 0,
+          level: "home",
+        },
+      },
+    ]);
     setData([]);
     fetchData(currentPage, pageSize);
   }, [permissionObj]);
@@ -159,19 +157,31 @@ const Index = () => {
     fetchData(currentPage, pageSize);
   };
 
-  // Handle page change
-  const handlePageChange = (page, size) => {
-    setCurrentPage(page);
-    setPageSize(size);
-    fetchData(page, size);
+  const handleBreadcrumbClick = (value) => {
+    let historyList = _.clone(navigationHistory);
+    const index = historyList.findIndex((item) => _.isEqual(item.value, value));
+    historyList = index === -1 ? [] : historyList.slice(0, index + 1);
+    setNavigationHistory(historyList);
+    setData([]); // Clear current data
+
+    // If it's Home, re-fetch initial data
+    if (value.id === 0 || value.level === "home") {
+      fetchData(currentPage, pageSize);
+    }
   };
+
+  // Handle page change
+  // const handlePageChange = (page, size) => {
+  //   setCurrentPage(page);
+  //   setPageSize(size);
+  //   fetchData(page, size);
+  // };
 
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Import EntityImport" />
-
           {isLoading && <SpinnerModel />}
 
           <Table
@@ -186,8 +196,15 @@ const Index = () => {
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
-            setServerCurrentPage={(page) => handlePageChange(page, pageSize)}
-            setServerPageSize={(size) => handlePageChange(1, size)}
+            setServerCurrentPage={setCurrentPage}
+            setServerPageSize={setPageSize}
+            onBreadCrumbsClick={handleBreadcrumbClick}
+            breadCrumbs={navigationHistory}
+            // serverCurrentPage={currentPage}
+            // serverPageSize={pageSize}
+            // serverTotal={total}
+            // setServerCurrentPage={(page) => handlePageChange(page, pageSize)}
+            // setServerPageSize={(size) => handlePageChange(1, size)}
             // isDeletePermission={checkPermission(
             //   permissionObj,
             //   pageName,
