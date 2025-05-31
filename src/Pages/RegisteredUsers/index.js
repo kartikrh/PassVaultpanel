@@ -332,30 +332,30 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
-    {
-      title: "Mobile Verified",
-      dataIndex: "isMobileVerified",
-      key: "isMobileVerified",
-      render: (text, record) => (
-        <Button
-          color={`${text ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-          // onClick={() => {
-          //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
-          // }}
-        >
-          {" "}
-          <i
-            className={`bx ${
-              record.isMobileVerified ? "bx-check" : "bx-block"
-            }`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "10%", textAlign: "center" },
-    },
+    // {
+    //   title: "Mobile Verified",
+    //   dataIndex: "isMobileVerified",
+    //   key: "isMobileVerified",
+    //   render: (text, record) => (
+    //     <Button
+    //       color={`${text ? "primary" : "danger"}`}
+    //       size="sm"
+    //       className="btn"
+    //       disabled
+    //       // onClick={() => {
+    //       //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
+    //       // }}
+    //     >
+    //       {" "}
+    //       <i
+    //         className={`bx ${
+    //           record.isMobileVerified ? "bx-check" : "bx-block"
+    //         }`}
+    //       ></i>
+    //     </Button>
+    //   ),
+    //   style: { width: "10%", textAlign: "center" },
+    // },
     
     {
       title: "Process Status",
