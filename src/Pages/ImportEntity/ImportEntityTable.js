@@ -46,7 +46,6 @@ export default function ImportEntity() {
   const globalPageSize = localStorage.getItem("pageSize");
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [total, setTotal] = useState(0);
-
   // Navigation state
   const [selectedLevel, setSelectedLevel] = useState({
     seasonId: null,
@@ -128,7 +127,7 @@ export default function ImportEntity() {
             endpoint = `${entitySportUrl}/admin/list/seasons`;
             payload = {
               page: page,
-              limit: limit,
+              limit: pageSize,
             };
             break;
           case "seasonCompetitions":
@@ -140,7 +139,7 @@ export default function ImportEntity() {
             payload = {
               sid: +selectedLevel.seasonId,
               page: page,
-              limit: limit,
+              limit: pageSize,
             };
             break;
           case "competitionMatches":
@@ -168,17 +167,18 @@ export default function ImportEntity() {
         // Handle different response structures
         if (selectedLevel.level === "seasons") {
           apiData = response?.result?.data || [];
-          totalCount = response?.result?.total || apiData.length || 0;
+          totalCount = response?.result?.totalRecords || apiData.length || 0;
           // Sort seasons by year in descending order
           apiData = apiData.sort((a, b) => b.sid - a.sid);
         } else if (response?.data?.result?.appdata) {
           apiData = response.data.result.appdata;
           totalCount =
-            response.data.result.total || response.data.result.appdata.length;
+            response.data.result.totalRecordsl ||
+            response.data.result.appdata.length;
         } else if (response?.result?.response?.items) {
           apiData = response.result.response.items;
           totalCount =
-            response.result.response.total_items ||
+            response.result.response.totalRecords ||
             response.result.response.total ||
             0;
         } else if (
@@ -187,23 +187,35 @@ export default function ImportEntity() {
         ) {
           apiData = response.result.response;
           totalCount =
-            response?.result?.total || response.result.response.length;
+            response?.result?.totalRecords || response.result.response.length;
         } else if (
           response?.result?.data &&
           Array.isArray(response.result.data)
         ) {
           apiData = response.result.data;
-          totalCount = response?.result?.total || response.result.data.length;
+          totalCount =
+            response?.result?.totalRecords || response.result.data.length;
         } else if (response?.result && Array.isArray(response.result)) {
           apiData = response.result;
-          totalCount = response?.total || response.result.length;
+          totalCount = response?.totalRecords || response.result.length;
         } else {
           console.error("Unexpected API response structure:", response);
           apiData = [];
           totalCount = 0;
         }
 
-        totalCount = Number(totalCount) || 0;
+        // Sort data in descending order by date
+        if (selectedLevel.level === "seasonCompetitions") {
+          apiData = apiData.sort(
+            (a, b) => new Date(b.datestart) - new Date(a.datestart)
+          );
+        } else if (selectedLevel.level === "competitionMatches") {
+          apiData = apiData.sort(
+            (a, b) => new Date(b.date_start_ist) - new Date(a.date_start_ist)
+          );
+        }
+
+        totalCount = +totalCount || 0;
 
         setData(apiData);
         setTotal(totalCount);
@@ -432,15 +444,22 @@ export default function ImportEntity() {
       dataIndex: "venue",
       key: "venue",
       width: "12.5%",
-      render: (venue) => venue?.name || "N/A",
+      render: (venue) => {
+        const name = venue?.name;
+        const location = venue?.location;
+        const country = venue?.country;
+
+        const parts = [name, location, country].filter(Boolean); // removes undefined/null/empty
+        return parts.length > 0 ? parts.join(", ") : "N/A";
+      },
     },
-    {
-      title: "Country",
-      dataIndex: "venue",
-      key: "country",
-      width: "12.5%",
-      render: (venue) => venue?.country || "N/A",
-    },
+    // {
+    //   title: "Country",
+    //   dataIndex: "venue",
+    //   key: "country",
+    //   width: "12.5%",
+    //   render: (venue) => venue?.country || "N/A",
+    // },
     {
       title: "Status",
       dataIndex: "status",
@@ -486,7 +505,7 @@ export default function ImportEntity() {
     dragDrop: false,
     subTable: selectedLevel.level !== "seasons",
     isServerPagination: true,
-    isNonCrud:true
+    isNonCrud: true,
   };
 
   // Initial permission check
@@ -500,20 +519,25 @@ export default function ImportEntity() {
     }
   }, [permissionObj, navigate]);
 
-  // Fetch data when level changes
-  useEffect(() => {
-    fetchData(1, pageSize);
-  }, [
-    selectedLevel.level,
-    selectedLevel.seasonId,
-    selectedLevel.competitionId,
-    pageSize,
-  ]);
-
-  const handleReload = () => {
-    fetchData(currentPage, pageSize);
+  const handlePageSizeAndLimit = (key, value) => {
+    if (!isLoading) {
+      if (key == "currentpage") {
+        setCurrentPage(value);
+        console.log("1");
+        fetchData(value, pageSize);
+      }
+      if (key == "pagesize") {
+        setPageSize(value);
+        console.log("2");
+        fetchData(currentPage, value);
+      }
+    }
   };
 
+  // Fetch data when level changes
+  useEffect(() => {
+    if (!isLoading) fetchData(currentPage, pageSize);
+  }, [selectedLevel]);
   return (
     <React.Fragment>
       <div className="page-content">
@@ -528,12 +552,15 @@ export default function ImportEntity() {
             tableElement={tableElement}
             singleCheck={checekedList}
             reFetchData={fetchData}
-            handleReload={handleReload}
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
-            setServerCurrentPage={setCurrentPage}
-            setServerPageSize={setPageSize}
+            setServerCurrentPage={(value) =>
+              handlePageSizeAndLimit("currentpage", value)
+            }
+            setServerPageSize={(value) =>
+              handlePageSizeAndLimit("pagesize", value)
+            }
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
           />
@@ -545,6 +572,7 @@ export default function ImportEntity() {
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
             width={800}
+            height={700}
             centered
           >
             <MatchCard matchData={matchData} />
