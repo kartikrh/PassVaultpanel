@@ -2360,7 +2360,7 @@ const Index = forwardRef(
                           ) : null}
                           {!tableElement?.isDateRange &&
                           tableElement?.isDateTypeSelect &&
-                          tableElement?.title == "Market Data Logs" ? (
+                          (tableElement?.title == "Market Data Logs" || tableElement?.title == "Registration Pending" || tableElement?.title == "Registered Users")  ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"
