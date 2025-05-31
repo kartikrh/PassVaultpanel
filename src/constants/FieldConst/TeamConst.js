@@ -1,4 +1,4 @@
-import { IMAGE, MULTI_SELECT, SELECT, TEXT, COLOR_PICKER } from "../../components/Common/Const";
+import { IMAGE, MULTI_SELECT, SELECT, TEXT, COLOR_PICKER, COUNTER } from "../../components/Common/Const";
 
 export const TeamFields = [
     {
@@ -80,5 +80,12 @@ export const TeamFields = [
         name: "backgroundColor",
         label: "Background Color",
         parentclassName: "",
+    },
+    {
+        name: "tpId",
+        label: "TPID",
+        type: COUNTER,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
 ]
