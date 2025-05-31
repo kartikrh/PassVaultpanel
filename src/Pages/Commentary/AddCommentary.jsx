@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { MatchDetailFields, TeamDetailsFields } from '../../constants/FieldConst/CommentaryConst';
+import { MatchDetailFields, PitchDetailsFields, TeamDetailsFields, WeatherDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY } from '../../components/Common/Const';
@@ -32,6 +32,8 @@ function AddCommentary() {
     const pageName = TAB_COMMENTARY
     const finalizeRef1 = useRef(null);
     const finalizeRef2 = useRef(null);
+    const finalizeRef3 = useRef(null);
+    const finalizeRef4 = useRef(null);
     const [savedFormState, setSavedFormState] = useState({});
     const [activeTab, setactiveTab] = useState(1);
     const [isApiLoading, setIsApiLoading] = useState(false);
@@ -97,6 +99,8 @@ function AddCommentary() {
                 setId("0");
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
+                finalizeRef3.current.resetForm()
+                finalizeRef4.current.resetForm()
             }
             setCurrentSaveAction(undefined)
         }
@@ -294,6 +298,10 @@ function AddCommentary() {
         }
     };
 
+    const handleFormCDataChange = (newFormData) => {
+        setSavedFormState({...savedFormState, ...newFormData});
+    }
+
     const fetchData = async (id) => {
         let updateScreenData = {}
         let newMasterData = {}
@@ -442,9 +450,14 @@ function AddCommentary() {
     const handleSaveClick = async (saveAction) => {
         const dataToSave1 = finalizeRef1.current.finalizeData()
         const dataToSave2 = finalizeRef2.current.finalizeData()
-        if (dataToSave1 && dataToSave2) {
+        const dataToSave3 = finalizeRef3.current.finalizeData()
+        const dataToSave4 = finalizeRef4.current.finalizeData()
+        
+        if (dataToSave1 && dataToSave2 && dataToSave3 && dataToSave4) {
             const dataToSave = {
                 ...dataToSave1,
+                ...dataToSave3,
+                ...dataToSave4,
                 "isActive": dataToSave1?.isActive ? dataToSave1.isActive : false,
                 "isTest": dataToSave1?.isTest ? dataToSave1.isTest : false,
                 "isVirtual": dataToSave1?.isVirtual ? dataToSave1.isVirtual : false,
@@ -478,7 +491,7 @@ function AddCommentary() {
     function toggleTab(tab) {
         if (activeTab !== tab) {
             var modifiedSteps = [...passedSteps, tab];
-            if (tab >= 1 && tab <= 2) {
+            if (tab >= 1 && tab <= 4) {
                 setactiveTab(tab);
                 setPassedSteps(modifiedSteps);
             }
@@ -489,6 +502,7 @@ function AddCommentary() {
         let navLink = state === 'isPredict' ? '/CommentaryList' : "/commentary"
         navigate(navLink);
     };
+    useEffect(() => {console.log("active", activeTab)}, [activeTab])
 
     return (
         <React.Fragment>
@@ -504,7 +518,7 @@ function AddCommentary() {
                                 <Row>
                                     <Col className='mb-3 text-end' xs={12}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
-                                        {activeTab !== 1 &&
+                                        {(activeTab !== 1 && activeTab !== 2 && activeTab !== 3) &&
                                             <ButtonDropdown
                                                 direction="down"
                                                 isOpen={drp_up}
@@ -558,6 +572,30 @@ function AddCommentary() {
                                                 <span className="step-title" style={{ paddingLeft: "10px" }}>Team Detail</span>
                                             </NavLink>
                                         </NavItem>
+                                        <NavItem className={classnames({ active: activeTab === 3 })}>
+                                            <NavLink
+                                                data-toggle="tab"
+                                                className={classnames({ active: activeTab === 3 })}
+                                                onClick={() => {
+                                                    setactiveTab(3);
+                                                }}
+                                            >
+                                                <span className="step-number">03</span>
+                                                <span className="step-title" style={{ paddingLeft: "10px" }}>Weather Details </span>
+                                            </NavLink>
+                                        </NavItem>
+                                        <NavItem className={classnames({ active: activeTab === 4 })}>
+                                            <NavLink
+                                                data-toggle="tab"
+                                                className={classnames({ active: activeTab === 4 })}
+                                                onClick={() => {
+                                                    setactiveTab(4);
+                                                }}
+                                            >
+                                                <span className="step-number">04</span>
+                                                <span className="step-title" style={{ paddingLeft: "10px" }}>Pitch Details </span>
+                                            </NavLink>
+                                        </NavItem>
                                     </ul>
                                     <TabContent activeTab={activeTab} className="twitter-bs-wizard-tab-content">
                                         <TabPane tabId={1}>
@@ -583,6 +621,29 @@ function AddCommentary() {
                                                 pageName="Commentary"
                                             />
                                         </TabPane>
+                                        <TabPane tabId={3}>
+                                            <FormBuilder
+                                                ref={finalizeRef3}
+                                                fields={WeatherDetailsFields}
+                                                editFormData={initialEditData}
+                                                masterData={masterData}
+                                                onFormDataChange={handleFormCDataChange}
+                                                
+                                                disabledFields={disabledFields}
+                                                pageName="Commentary"
+                                            />
+                                        </TabPane>
+                                        <TabPane tabId={4}>
+                                            <FormBuilder
+                                                ref={finalizeRef4}
+                                                fields={PitchDetailsFields}
+                                                editFormData={initialEditData}
+                                                masterData={masterData}
+                                                onFormDataChange={handleFormCDataChange}
+                                                disabledFields={disabledFields}
+                                                pageName="Commentary"
+                                            />
+                                        </TabPane>
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
                                         {activeTab !== 1 && <li className="previous me-2" >
@@ -593,7 +654,7 @@ function AddCommentary() {
                                                     toggleTab(activeTab - 1);
                                                 }}>Previous</Button>
                                         </li>}
-                                        {activeTab !== 2 && <li className="next">
+                                        {activeTab !== 4 && <li className="next">
                                             <Button
                                                 color="primary"
                                                 className="btn"
