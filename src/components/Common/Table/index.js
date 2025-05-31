@@ -1319,7 +1319,7 @@ const Index = forwardRef(
           <Card className="card">
             {tableElement?.title !== "Auto Events" &&
               tableElement?.title !== "Manual Events" &&
-              tableElement?.title !== "Import EntityImport" && (
+              !tableElement.isNonCrud && (
                 <CardHeader className="p-0 p-md-2">
                   <form>
                     {renderHeader && renderHeader()}
