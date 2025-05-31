@@ -154,9 +154,8 @@ import AddWhiteLabel from "../Pages/WhiteLabel/AddWhiteLabel.jsx";
 import { ShowHide } from "../Pages/WhiteLabel/EventType/index.js";
 import Venue from "../Pages/Venue";
 import AddVenue from "../Pages/Venue/AddVenue.jsx";
-import ImportEntity from "../Pages/ImportEntity";
-import { SeasonList } from "../Pages/ImportEntity/SeasonList/index.js";
 import AddCardType from "../Pages/CardType/AddCardType.jsx";
+import ImportEntity from "../Pages/ImportEntity/ImportEntityTable.js";
 
 
 const authProtectedRoutes = [
@@ -217,7 +216,6 @@ const authProtectedRoutes = [
   { path: "/venue", component: <Venue /> },
   { path: "/addVenue", component: <AddVenue /> },
   { path: "/importEntity", component: <ImportEntity /> },
-  { path: "/seasonList", component: <SeasonList /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
